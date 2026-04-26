@@ -91,7 +91,7 @@
     cp_custom_element0Masked : cross std_vec, vl_one, v0_element0_masked, vd_ne_vs1;
 
 
-    cp_custom_vreductionw_vd_vs1_emul_16 :      cross std_vec, vtype_lmul_8;
+    // cp_custom_vreductionw_vd_vs1_emul_16 :      cross std_vec, vtype_lmul_8;
 
 
     vd_v0: coverpoint ins.current.insn[11:7] {

@@ -27,7 +27,7 @@
 // Vector configuration
 #define SEWMIN 8
 #define ELEN 64
-#define MAXINDEXEEW 64
+#define MAXINDEXEEW 32
 
 // Supported fractional LMULs for vector
 // all supported now should be generated based on config

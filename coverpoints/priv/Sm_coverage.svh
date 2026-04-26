@@ -79,6 +79,7 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
     // This is Sm machine-mode testing, so all coverpoints are in Machine mode.
     cp_mcause_write_exception: cross priv_mode_m, csrrw, mcause, mcause_exception_values, mcause_exception; // CSR write of mcause in M mode with interesting values
     cp_mcause_write_interrupt: cross priv_mode_m, csrrw, mcause, mcause_interrupt_values, mcause_interrupt; // CSR write of mcause in M mode with interesting values
+
 endgroup
 
 
@@ -413,6 +414,42 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             cp_mtimeh_write :   cross priv_mode_m, csrr,  timeh_csr; // assumes mtimeh has been written
         `endif
     `endif
+
+    `ifdef SM1P13_SUPPORTED
+        misa_b_bit: coverpoint ins.current.rs1_val[1] {
+            bins b_set   = {1'b1};
+            bins b_clear = {1'b0};
+        }
+        misa_v_bit: coverpoint ins.current.rs1_val[21] {
+            bins v_set   = {1'b1};
+            bins v_clear = {1'b0};
+        }
+
+        cp_misa_b: cross priv_mode_m, misa, csrop, misa_b_bit;
+        cp_misa_v: cross priv_mode_m, misa, csrop, misa_v_bit;
+
+
+        `ifdef RVMODEL_MSIP_ADDRESS
+            msip_address: coverpoint ins.current.rs1_val {
+                bin msip = {`RVMODEL_MSIP_ADDRESS};
+            }
+            msip_val: coverpoint ins.current.rs2_val {
+                bin zero = {0};
+                bin one  = {1};
+            }
+            cp_msip: cross priv_mode_m, sw, msip_address, msip_val;
+        `endif // RVMODEL_MSIP_ADDRESS
+
+        `ifdef XLEN32
+            medelegh: coverpoint ins.current.insn[31:20] {
+                bins medelegh = {CSR_MEDELEGH};
+            }
+
+            cp_medelegh: cross priv_mode_m, csrrw, medelegh, rs1_ones; // RV32 only: write all 1s to medelegh and read back
+        `endif // XLEN32
+    `endif // SM1P13_SUPPORTED
+
+
 endgroup
 
 function void sm_sample(int hart, int issue, ins_t ins);

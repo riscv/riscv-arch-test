@@ -14,23 +14,23 @@ concurrency:
 
 env:
   SAIL_VERSION: "0.10"
-  GCC_TOOLCHAIN_VERSION: "2026.04.05"
+  RISCV_TOOLCHAIN_VERSION: "2026.04.05"
   LLVM_VERSION: "22"
 
 jobs:
   lint:
-    name: Pre-commit check
+    name: Pre-commit (prek) check
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7
+      - name: Set up mise
+        uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4
 
-      - name: Ensure pre-commit checks pass
-        run: uvx pre-commit run --all-files --show-diff-on-failure --color=always
+      - name: Run prek
+        uses: j178/prek-action@cbc2f23eb5539cf20d82d1aabd0d0ecbcc56f4e3 # v2.0.2
 
   # Data-driven regression.
   # Configs are auto-discovered from the config directory.
@@ -47,7 +47,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
 
       - name: Discover CI configs
         id: discover
@@ -75,7 +75,7 @@ jobs:
 
       - name: Install RISC-V GCC toolchain
         run: |
-          curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${GCC_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-24.04-gcc.tar.xz \
+          curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${RISCV_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-24.04-gcc.tar.xz \
           | sudo tar xvJ --directory=/usr/local --strip-components=1
 
       - name: Install Clang
@@ -260,7 +260,7 @@ jobs:
 
       - name: Install RISC-V GCC toolchain
         run: |
-          curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${GCC_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-24.04-gcc.tar.xz \
+          curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${RISCV_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-24.04-gcc.tar.xz \
           | sudo tar xvJ --directory=/usr/local --strip-components=1
 
       - name: Build ELFs (exercises full act build DAG)

@@ -1737,13 +1737,19 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 
 //------------- [H]SMode----------------
 \__MODE__\()clr_Ssw_int:                // int 1 default to just return if not defined
-                                        // S-mode software interrupts need to be reset differently when raised in M or S mode
-        .ifc \__MODE__ , M              // Select the interrupt handler function based on current privilege mode
+                                        // SSIP can be set via CSR write or external controller; clear both
+        .ifc \__MODE__ , M              // M-mode: mideleg.SSIP=0 so sip.SSIP is read-only; clear via mip
+            li T2, 2
+            csrc mip, T2
             RVMODEL_CLR_SSW_INT(T2, T5)
         .else
-                .ifc \__MODE__ , S
+                .ifc \__MODE__ , S      // S-mode: mideleg.SSIP=1 so sip.SSIP mirrors mip and is writable
+                        li T2, 2
+                        csrc sip, T2
                         RVMODEL_CLR_SSW_INT(T2, T5)
                 .else
+                        li T2, 2
+                        csrc sip, T2
                         RVMODEL_CLR_SSW_INT(T2, T5)
                 .endif
         .endif

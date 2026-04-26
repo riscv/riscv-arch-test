@@ -18,6 +18,7 @@ covergroup Zihintntl_ntl_all_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
 endgroup
 // ---------------------
 covergroup Zihintntl_ntl_p1_cg with function sample(ins_t ins);
@@ -26,6 +27,7 @@ covergroup Zihintntl_ntl_p1_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
 endgroup
 // ---------------------
 covergroup Zihintntl_ntl_pall_cg with function sample(ins_t ins);
@@ -34,6 +36,7 @@ covergroup Zihintntl_ntl_pall_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
 endgroup
 // ---------------------
 covergroup Zihintntl_ntl_s1_cg with function sample(ins_t ins);
@@ -42,6 +45,7 @@ covergroup Zihintntl_ntl_s1_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
 endgroup
 // ---------------------
 function void zihintntl_sample(int hart, int issue, ins_t ins);

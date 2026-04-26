@@ -1,0 +1,35 @@
+name: Build image
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - act4
+    tags-ignore:
+      - cert-docs-*
+
+jobs:
+  act4-build-image:
+    uses: docker/github-builder/.github/workflows/build.yml@7d2a02426d4b989616ba5aaee4e879afd4134b0d # v1.6.0
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    with:
+      output: image
+      push: true
+      cache: true
+      cache-mode: max
+      platforms: linux/amd64,linux/arm64
+      meta-images: ghcr.io/${{ github.repository_owner }}/act4-build
+      meta-tags: |
+        type=ref,event=tag
+        type=ref,event=branch
+        type=sha,format=long
+      meta-flavor: |
+        latest=${{ github.ref == 'refs/heads/act4' }}
+    secrets:
+      registry-auths: |
+        - registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}

@@ -44,7 +44,7 @@
       "depNameTemplate": "tenstorrent/whisper",
       "datasourceTemplate": "git-refs",
       "packageNameTemplate": "https://github.com/tenstorrent/whisper",
-      "currentValueTemplate": "main"
+      "currentValueTemplate": "master"
     },
     {
       "description": "CVW commit in install script",
@@ -64,7 +64,8 @@
         "GCC_TOOLCHAIN_VERSION:\\s*\"(?<currentValue>[\\d.]+)\""
       ],
       "depNameTemplate": "riscv-collab/riscv-gnu-toolchain",
-      "datasourceTemplate": "github-releases"
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "loose"
     },
     {
       "description": "LLVM version in CI workflow",
@@ -78,18 +79,18 @@
   ],
   "packageRules": [
     {
-      "description": "Do not update Python or Ruby language versions",
-      "matchDepNames": ["python", "ruby"],
+      "description": "Do not update Ruby language versions",
+      "matchDepNames": ["ruby"],
       "enabled": false
     },
     {
       "description": "Keep ruff in sync across pyproject.toml dev deps and the pre-commit hook",
-      "matchDepNames": ["ruff", "https://github.com/astral-sh/ruff-pre-commit"],
+      "matchDepNames": ["ruff", "astral-sh/ruff-pre-commit"],
       "groupName": "ruff"
     },
     {
       "description": "Keep uv in sync across .mise.toml and the pre-commit hook",
-      "matchDepNames": ["uv", "https://github.com/astral-sh/uv-pre-commit"],
+      "matchDepNames": ["uv", "astral-sh/uv-pre-commit"],
       "groupName": "uv"
     },
     {
@@ -98,8 +99,12 @@
       "groupName": "github-actions"
     },
     {
-      "description": "Group remaining pre-commit hook bumps",
+      "description": "Group remaining pre-commit hook bumps (ruff/uv are grouped with their non-hook counterparts above)",
       "matchManagers": ["pre-commit"],
+      "matchDepNames": [
+        "!astral-sh/ruff-pre-commit",
+        "!astral-sh/uv-pre-commit"
+      ],
       "groupName": "pre-commit hooks",
       "schedule": ["before 6am on monday"]
     },

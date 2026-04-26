@@ -68,11 +68,27 @@ mise --version
 >
 > For more details on mise and alternate installation methods, see the [mise getting started guide](https://mise.jdx.dev/getting-started.html).
 >
-> For alternate installation instructions that do not require mise, see Advanced Installation - COMING SOON.
+> If you do not want to install mise, you can install `uv` directly (see the [uv installation guide](https://docs.astral.sh/uv/getting-started/installation/)) or use an existing Python environment as described in [Installing without uv or mise](#installing-without-uv-or-mise).
 
 > [!NOTE]
 >
 > See note on enabling trust in the `.mise.toml` file below.
+
+##### Installing without uv or mise
+
+If you already have your own Python environment, you can install the
+framework packages into it with `pip` instead of using `mise`/`uv`. You are
+responsible for providing Python 3.10+, and Ruby/Bundler must be installed
+separately (see the [UDB repository](https://github.com/riscv/riscv-unified-db)).
+
+Activate your venv, then from the cloned repository run:
+
+```bash
+pip install -e ./framework -e ./generators/testgen -e ./generators/coverage
+```
+
+With the venv active, `make`, `make tests`, `make coverage`, `make spike-*`,
+and the other documented targets work as usual.
 
 #### 3. RISC-V Compiler (GCC or LLVM)
 
@@ -232,6 +248,10 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 - `RVMODEL_MTIME_ADDRESS` (can be omitted if MTIME is not implemented)
 - `RVMODEL_MTIMECMP_ADDRESS` (can be omitted if MTIMECMP is not implemented)
 - `RVMODEL_TIMER_INT_SOON_DELAY`
+
+**MSIP Macro**: Required only for Sm version 1.13 and above. Can be omitted if machine software interrupts are not supported.
+
+- `RVMODEL_MSIP_ADDRESS` (can be omitted if MSIP is not memory-mapped or not tested)
 
 **Interrupt Macros**: Can be left blank if interrupts are not supported.
 

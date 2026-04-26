@@ -1649,6 +1649,8 @@ I_slliw_cg_cp_uimm_5_uimm31:
   # Check if x11 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x18, x8, x7, x11, I_slliw_cg_cp_uimm_5_uimm31, I_slliw_cg_cp_uimm_5_uimm31_str)
 
+  mv x2, x18 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

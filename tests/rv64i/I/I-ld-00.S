@@ -1028,6 +1028,8 @@ I_ld_cg_cp_memval_double_0xffffffffffffffff:
   RVTEST_SIGUPD(x11, x5, x4, x20, I_ld_cg_cp_memval_double_0xffffffffffffffff, I_ld_cg_cp_memval_double_0xffffffffffffffff_str)
   addi x10, x10, SIG_STRIDE # increment data_ptr
 
+  mv x2, x11 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

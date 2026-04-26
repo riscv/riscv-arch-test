@@ -3245,6 +3245,8 @@ Zaamo_amomin_d_cg_cmp_rd_rs1_rs2_nx0_b31:
   # Check if x31 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x1, x5, x4, x31, Zaamo_amomin_d_cg_cmp_rd_rs1_rs2_nx0_b31, Zaamo_amomin_d_cg_cmp_rd_rs1_rs2_nx0_b31_str)
 
+  mv x2, x1 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

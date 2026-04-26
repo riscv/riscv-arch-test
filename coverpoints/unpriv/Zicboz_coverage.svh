@@ -18,16 +18,19 @@ covergroup Zicboz_cbo_zero_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     // Custom coverpoints for cbo.  Coverpoint just checks that instruction was executed
     // but test is more comprehensive, writing and reading back consecutive words
 
     cp_custom_cbo : coverpoint ins.current.insn  {
         wildcard bins cbo_op  = {32'b000000000????????010000000001111};
     }
+
     cp_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.trap == 0) {
         // RS1 register assignment (excluding x0)
         ignore_bins x0 = {x0};
     }
+
 endgroup
 // ---------------------
 function void zicboz_sample(int hart, int issue, ins_t ins);

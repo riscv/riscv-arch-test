@@ -32,7 +32,7 @@ repos:
   # Ruff Python linter
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.15.11
+    rev: v0.15.12
     hooks:
       # Run the linter.
       - id: ruff-check
@@ -83,7 +83,7 @@ repos:
 
   # Validate Renovate configuration
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 43.129.0
+    rev: 43.132.1
     hooks:
       - id: renovate-config-validator
 

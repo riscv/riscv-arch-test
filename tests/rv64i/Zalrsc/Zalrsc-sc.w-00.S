@@ -4651,6 +4651,8 @@ Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248:
   RVTEST_SIGUPD(x21, x5, x4, x25, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248_str)
 
 
+  mv x2, x21 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

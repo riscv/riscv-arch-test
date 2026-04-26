@@ -224,7 +224,7 @@ if __name__ == '__main__':
         fname = pathname + "/" + basename + ".S"
         tempfname = pathname + "/" + basename + "_temp.S"
 
-        print("Generating tests for " + fname)
+        # print("Generating tests for " + fname)
 
         ############################### starting test file ###############################
         # print custom header part

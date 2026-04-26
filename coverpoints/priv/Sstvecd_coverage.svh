@@ -13,7 +13,7 @@ covergroup Sstvecd_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     // ── Instruction coverpoints ───────────────────────────────────────────
-    csrop: coverpoint ins.current.insn {
+    csrrs: coverpoint ins.current.insn {
         wildcard bins csrrs = {CSRRS};
     }
 
@@ -25,7 +25,7 @@ covergroup Sstvecd_cg with function sample(ins_t ins);
     // ── stvec.MODE coverpoint ─────────────────────────────────────────────
     // CTP Normative Rule: stvec.MODE must be capable of holding 0 (Direct).
     // Samples stvec[1:0] at the moment of the CSRRW instruction.
-    stvec_mode: coverpoint ins.current.csr[CSR_STVEC][1:0] {
+    stvec_mode_direct: coverpoint ins.current.csr[CSR_STVEC][1:0] {
         bins direct = {2'b00};   // MODE=0 Direct — the only value tested per CTP
     }
 

@@ -143,8 +143,8 @@
 `ifdef S_COVERAGE
   `include "S_coverage.svh"
 `endif
-`ifdef SCOUNTEREN_COVERAGE
-  `include "Scounteren_coverage.svh"
+`ifdef SSCOUNTERENW_COVERAGE
+  `include "Sscounterenw_coverage.svh"
 `endif
 `ifdef SM_COVERAGE
   `include "Sm_coverage.svh"

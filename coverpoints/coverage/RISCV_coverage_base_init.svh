@@ -186,9 +186,9 @@
         `cover_info("//      S - Enabled");
         `include "S_coverage_init.svh"
     `endif
-    `ifdef COVER_SCOUNTEREN
-        `cover_info("//      Scounteren - Enabled");
-        `include "Scounteren_coverage_init.svh"
+    `ifdef COVER_SSCOUNTERENW
+        `cover_info("//      Sscounterenw - Enabled");
+        `include "Sscounterenw_coverage_init.svh"
     `endif
     `ifdef COVER_SM
         `cover_info("//      Sm - Enabled");

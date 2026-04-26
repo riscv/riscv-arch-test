@@ -19,18 +19,15 @@ env:
 
 jobs:
   lint:
-    name: Pre-commit check
+    name: Pre-commit (prek) check
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
-
-      - name: Ensure pre-commit checks pass
-        run: uvx pre-commit run --all-files --show-diff-on-failure --color=always
+      - name: Run prek
+        uses: j178/prek-action@cbc2f23eb5539cf20d82d1aabd0d0ecbcc56f4e3 # v2.0.2
 
   # Data-driven regression.
   # Configs are auto-discovered from the config directory.

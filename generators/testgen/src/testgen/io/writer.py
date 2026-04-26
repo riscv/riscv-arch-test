@@ -21,6 +21,19 @@ from testgen.io.templates import insert_footer_template, insert_header_template
 
 SIGUPD_MARGIN = 10
 
+# Generated test files are marked read-only (0o444) to deter manual edits.
+# Regeneration temporarily restores write permission (0o644) before overwriting.
+_READONLY_MODE = 0o444
+_WRITABLE_MODE = 0o644
+
+
+def _write_readonly(path: Path, content: str) -> None:
+    """Write content to a generated file and mark it read-only to deter manual edits."""
+    if path.exists():
+        path.chmod(_WRITABLE_MODE)
+    path.write_text(content)
+    path.chmod(_READONLY_MODE)
+
 
 def _reinit_pointer_registers(first_chunk: TestChunk) -> str:
     """Emit code to restore non-default signature/data pointer registers.
@@ -111,4 +124,7 @@ def write_test_file(
 
     # Write test file if different from existing file. This avoids unnecessary rebuilds.
     if not test_file.exists() or test_file.read_text() != test_string:
-        test_file.write_text(test_string)
+        _write_readonly(test_file, test_string)
+    else:
+        # Content unchanged; still ensure the file is marked read-only in case it isn't already.
+        test_file.chmod(_READONLY_MODE)

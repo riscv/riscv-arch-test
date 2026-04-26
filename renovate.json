@@ -85,12 +85,12 @@
     },
     {
       "description": "Keep ruff in sync across pyproject.toml dev deps and the pre-commit hook",
-      "matchDepNames": ["ruff", "https://github.com/astral-sh/ruff-pre-commit"],
+      "matchDepNames": ["ruff", "astral-sh/ruff-pre-commit"],
       "groupName": "ruff"
     },
     {
       "description": "Keep uv in sync across .mise.toml and the pre-commit hook",
-      "matchDepNames": ["uv", "https://github.com/astral-sh/uv-pre-commit"],
+      "matchDepNames": ["uv", "astral-sh/uv-pre-commit"],
       "groupName": "uv"
     },
     {
@@ -99,8 +99,12 @@
       "groupName": "github-actions"
     },
     {
-      "description": "Group remaining pre-commit hook bumps",
+      "description": "Group remaining pre-commit hook bumps (ruff/uv are grouped with their non-hook counterparts above)",
       "matchManagers": ["pre-commit"],
+      "matchDepNames": [
+        "!astral-sh/ruff-pre-commit",
+        "!astral-sh/uv-pre-commit"
+      ],
       "groupName": "pre-commit hooks",
       "schedule": ["before 6am on monday"]
     },

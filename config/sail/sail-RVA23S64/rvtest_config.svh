@@ -14,9 +14,6 @@
 // Maximum supported index EEW for indexed load/store
 `define MAXINDEXEEW64
 
-// Maximum supported index EEW for indexed load/store
-`define MAXINDEXEEW64
-
 // PMP Grain (G)
 // Set G as needed (e.g., 0, 1, 2, ...)
 `define G 4

@@ -186,10 +186,6 @@
         `cover_info("//      S - Enabled");
         `include "S_coverage_init.svh"
     `endif
-    `ifdef COVER_SSCOUNTERENW
-        `cover_info("//      Sscounterenw - Enabled");
-        `include "Sscounterenw_coverage_init.svh"
-    `endif
     `ifdef COVER_SM
         `cover_info("//      Sm - Enabled");
         `include "Sm_coverage_init.svh"
@@ -222,13 +218,10 @@
         `cover_info("//      SsstrictV - Enabled");
         `include "SsstrictV_coverage_init.svh"
     `endif
-    `ifdef COVER_SSTVALA
-        `cover_info("//      Sstvala - Enabled");
-        `include "Sstvala_coverage_init.svh"
-    `endif
     `ifdef COVER_SSTVECD
         `cover_info("//      Sstvecd - Enabled");
         `include "Sstvecd_coverage_init.svh"
+    `endif
     `ifdef COVER_SSU64XL
         `cover_info("//      Ssu64xl - Enabled");
         `include "Ssu64xl_coverage_init.svh"

@@ -142,9 +142,6 @@
     `ifdef COVER_S
         s_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_SSCOUNTERENW
-        sscounterenw_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_SM
         sm_sample(hart, issue, ins);
     `endif
@@ -169,11 +166,9 @@
     `ifdef COVER_SSSTRICTV
         ssstrictv_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_SSTVALA
-        sstvala_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_SSTVECD
         sstvecd_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SSU64XL
         ssu64xl_sample(hart, issue, ins);
     `endif

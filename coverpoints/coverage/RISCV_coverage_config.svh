@@ -143,9 +143,6 @@
 `ifdef S_COVERAGE
   `include "S_coverage.svh"
 `endif
-`ifdef SSCOUNTERENW_COVERAGE
-  `include "Sscounterenw_coverage.svh"
-`endif
 `ifdef SM_COVERAGE
   `include "Sm_coverage.svh"
 `endif
@@ -170,11 +167,9 @@
 `ifdef SSSTRICTV_COVERAGE
   `include "SsstrictV_coverage.svh"
 `endif
-`ifdef SSTVALA_COVERAGE
-  `include "Sstvala_coverage.svh"
-`endif
 `ifdef SSTVECD_COVERAGE
   `include "Sstvecd_coverage.svh"
+`endif
 `ifdef SSU64XL_COVERAGE
   `include "Ssu64xl_coverage.svh"
 `endif

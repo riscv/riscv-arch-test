@@ -171,7 +171,7 @@
     // This specifies both the size and alignment of the reservation set, specified as a power of 2.
     // It must be at least 2 on RV32 and 3 on RV64 to support Zalrsc.  It must not be more than
     // 6 for Za64rs and 7 for Za128rs.  In all cases, it must be less than or equal to 12.
-    "reservation_set_size_exp": 3,
+    "reservation_set_size_exp": 2,
     "clint": {
       // This must be in a suitable memory region (see `memory.regions`).
       "base": 33554432,

@@ -26,7 +26,7 @@ ARCH_VERIF = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), "..", ".
 ##################################
 
 # Define VLEN, ELEN and SEWMIN as extremes which these tests support
-maxVLEN = 4096   # TODO: change to 2048 later, save as 512 for now for smaller files
+maxVLEN = 1024   # matches sail-rv64-max config (VLEN=1024); larger values bloat sig region
 maxELEN = 64
 minSEW_MIN = 8
 
@@ -1384,10 +1384,15 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, load_testline = Non
       avl = maxVLEN            # set to max possible vl since SIGUPD_V needs AVL to be a compile-time constant
     elif ("vwred" in inst_ptr):
       avl = avl * 2
-    if (avl == 1):
-      sigupd_count += avl * 2  # Increment counter on each call
-    else:
-      sigupd_count += avl
+    # Each SIGUPD_V call advances the signature pointer by
+    #   offset_bytes = ((avl * sew / 8) + 11) & ~7
+    # bytes (see `offset` calculation below).  The signature region is sized
+    # `SIGUPD_COUNT * SIG_STRIDE` bytes, where SIG_STRIDE = 4 (rv32) or 8
+    # (rv64).  To work for both XLENs we conservatively account for the
+    # rv32 case (smallest stride): sigupd_count must be at least
+    # ceil(offset_bytes / 4) + a small margin.
+    _offset_bytes = (int((avl) * (sew) / 8 + 4 + 7) & ~7)
+    sigupd_count += (_offset_bytes + 3) // 4 + 2
 
     str_ptr = "test_" + str(testcase_count) + "_str"
 

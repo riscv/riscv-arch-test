@@ -80,6 +80,7 @@ def make_exceptionsv_LS(instruction: str) -> None:
         vd_val_pointer="vector_random",
         vs2_val_pointer="vector_random",
         vs1_val_pointer="vector_random",
+        additional_no_overlap=[['vs3', 'vs2']],
     )
 
     args = common.getInstructionArguments(instruction)
@@ -89,13 +90,27 @@ def make_exceptionsv_LS(instruction: str) -> None:
     common.writeLine(f"vsetivli x8, 1, e{sew}, m1, tu, mu", "# vill=0, vstart=0, vl=1")
 
     # Load valid data address into base register for LS instructions
-    common.writeLine("la x2, random_mask_0", "# valid data address")
-    if "vd" in args:
-        common.writeLine(f"vle{sew}.v v8, (x2)", "# initialize vd (v8)")
-    if "vs3" in args:
-        common.writeLine(f"vle{sew}.v v8, (x2)", "# initialize vs3 (v8)")
+    common.writeLine("la x9, random_mask_0", "# valid data address")
+    vec_data = instruction_data[0]
+    # vs2 init/zero FIRST so that vs3 init below wins on register overlap.
     if "vs2" in args:
-        common.writeLine(f"vle{sew}.v v16, (x2)", "# initialize vs2 (v16)")
+        if instruction in common.indexed_ls_ins:
+            common.writeLine("vmv.v.x v16, x0", "# zero indexes so vluxei/vloxei/vsuxei/vsoxei address == x7")
+        else:
+            common.writeLine(f"vle{sew}.v v16, (x9)", "# initialize vs2 (v16)")
+    if "vd" in args:
+        common.writeLine(f"vle{sew}.v v8, (x9)", "# initialize vd (v8)")
+    if "vs3" in args:
+        # Always init v8 (the register used by signature comparison)
+        common.writeLine(f"vle{sew}.v v8, (x9)", "# initialize vs3-target (v8)")
+        # Also init the actual source register(s) — segment stores use NF consecutive
+        # regs starting at vs3 — so the store is identity (memory unchanged).
+        vs3_reg = vec_data["vs3"]["reg"]
+        nf = max(1, common.getInstructionSegments(instruction))
+        for i in range(nf):
+            r = vs3_reg + i
+            if r != 8:
+                common.writeLine(f"vle{sew}.v v{r}, (x9)", f"# initialize actual vs3+{i} (v{r}) so store is identity")
 
     testline, vd, rd = _build_testline(instruction, instruction_data)
     sig_lmul, sig_wr = _sig_params(instruction, instruction_data)

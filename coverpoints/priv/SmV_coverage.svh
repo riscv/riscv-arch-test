@@ -84,7 +84,7 @@ covergroup SmV_cg with function sample(ins_t ins);
     }
 
     mstatus_vs_initial_clean : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins initial = {1};
+        bins initial_state = {1};
         bins clean  = {2};
     }
 
@@ -185,6 +185,49 @@ covergroup SmV_cg with function sample(ins_t ins);
         bins vill_set = {1};
     }
 
+    // Per spec, when prev vtype has vill=1, all other vtype bits are forced to 0.
+    // Therefore "lmul_8 in SAMPLE_BEFORE" is unsatisfiable. We instead read the
+    // requested lmul from the new instruction itself (rs2[2:0] for vsetvl;
+    // imm[22:20] for vsetvli/vsetivli).
+    vtype_lmul_8_req_vli: coverpoint ins.current.insn[22:20] {
+        bins eight = {3'b011};
+    }
+
+    vtype_lmul_8_req_vl: coverpoint ins.current.rs2_val[2:0] {
+        bins eight = {3'b011};
+    }
+
+    vtype_all_sew_supported_req_vli: coverpoint ins.current.insn[25:23] {
+        `ifdef SEW8_SUPPORTED
+        bins eight      = {0};
+        `endif
+        `ifdef SEW16_SUPPORTED
+        bins sixteen    = {1};
+        `endif
+        `ifdef SEW32_SUPPORTED
+        bins thirtytwo  = {2};
+        `endif
+        `ifdef SEW64_SUPPORTED
+        bins sixtyfour  = {3};
+        `endif
+    }
+
+    vtype_all_sew_supported_req_vl: coverpoint ins.current.rs2_val[5:3] {
+        `ifdef SEW8_SUPPORTED
+        bins eight      = {0};
+        `endif
+        `ifdef SEW16_SUPPORTED
+        bins sixteen    = {1};
+        `endif
+        `ifdef SEW32_SUPPORTED
+        bins thirtytwo  = {2};
+        `endif
+        `ifdef SEW64_SUPPORTED
+        bins sixtyfour  = {3};
+        `endif
+    }
+
+    // Used by other crosses (cp_sew_lmul_vsetvl) -- kept as SAMPLE_BEFORE.
     vtype_lmul_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins eight = {3};
     }
@@ -204,8 +247,8 @@ covergroup SmV_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_vill_vsetvl:     cross vsetvl_instruction,       vtype_prev_vill_set, rs2_vtype_legal,   vtype_all_sew_supported, vtype_lmul_8;
-    cp_vill_vset_i_vli: cross vset_i_vli_instructions,  vtype_prev_vill_set,                    vtype_all_sew_supported, vtype_lmul_8;
+    cp_vill_vsetvl:     cross vsetvl_instruction,       vtype_prev_vill_set, rs2_vtype_legal,   vtype_all_sew_supported_req_vl, vtype_lmul_8_req_vl;
+    cp_vill_vset_i_vli: cross vset_i_vli_instructions,  vtype_prev_vill_set,                    vtype_all_sew_supported_req_vli, vtype_lmul_8_req_vli;
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vill_vsetvl_rs2_vill
@@ -217,7 +260,12 @@ covergroup SmV_cg with function sample(ins_t ins);
         bins set = {1};
     }
 
-    cp_vill_vsetvl_rs2_vill : cross vsetvl_instruction, vtype_prev_vill_set, rs2_vtype_legal,   vtype_all_sew_supported, vtype_lmul_8, rs2_vill_set;
+    // For the rs2_vill case, the high bits except vill must be zero.
+    rs2_vtype_legal_excl_vill: coverpoint ins.current.rs2_val[`XLEN-2:8] {
+        bins legal = {0};
+    }
+
+    cp_vill_vsetvl_rs2_vill : cross vsetvl_instruction, vtype_prev_vill_set, rs2_vtype_legal_excl_vill,   vtype_all_sew_supported_req_vl, vtype_lmul_8_req_vl, rs2_vill_set;
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vsetvl_rs2_vill
@@ -236,7 +284,7 @@ covergroup SmV_cg with function sample(ins_t ins);
         bins vill_not_set = {0};
     }
 
-    cp_vsetvl_rs2_vill : cross vsetvl_instruction, rs2_vill_set, rs2_sew_supported, rs2_lmul_1, rs2_vtype_legal, vtype_prev_vill_clear;
+    cp_vsetvl_rs2_vill : cross vsetvl_instruction, rs2_vill_set, rs2_sew_supported, rs2_lmul_1, rs2_vtype_legal_excl_vill, vtype_prev_vill_clear;
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vtype_vill_set_vl_0
@@ -302,7 +350,15 @@ covergroup SmV_cg with function sample(ins_t ins);
         bins eight  = {3};
     }
 
-    cp_vsetvl_i_rd_nx0_rs1_x0 : cross vsetvl_i_instructions, vl_not_max, rd_n0, rs1_x0, vtype_all_sew_supported, vtype_all_lmul_supported;
+    cp_vsetvl_i_rd_nx0_rs1_x0 : cross vsetvl_i_instructions, vl_not_max, rd_n0, rs1_x0, vtype_all_sew_supported, vtype_all_lmul_supported {
+        // Skip illegal SEW > LMUL*ELEN combinations (vill set, no observable vl):
+        //   sew=64 with lmul=mf2/mf4/mf8 (need ELEN>=128/256/512)
+        //   sew=32 with lmul=mf4/mf8     (need ELEN>=128/256)
+        //   sew=16 with lmul=mf8         (need ELEN>=128)
+        ignore_bins illegal_sew64_mf = binsof(vtype_all_sew_supported.sixtyfour) && binsof(vtype_all_lmul_supported) intersect {5, 6, 7};
+        ignore_bins illegal_sew32_mf = binsof(vtype_all_sew_supported.thirtytwo) && binsof(vtype_all_lmul_supported) intersect {5, 6};
+        ignore_bins illegal_sew16_mf = binsof(vtype_all_sew_supported.sixteen)   && binsof(vtype_all_lmul_supported) intersect {5};
+    }
     cp_vsetvl_i_rd_x0_rs1_x0  : cross vsetvl_i_instructions, vl_nonzero, rd_x0, rs1_x0, vset_i_vli_vlmax_unchanged;
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -380,12 +436,8 @@ covergroup SmV_cg with function sample(ins_t ins);
     }
 
     csr_vl: coverpoint ins.current.insn[31:20]  {
-        bins user_std0[] = {[12'hC20]};
+        bins user_std0 = {12'hC20};
 
-    }
-
-    walking_ones_rs1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
-        bins b_1[] = { [0:`XLEN-1] };
     }
 
 

@@ -142,13 +142,13 @@ def writePrivTestPrep(description, instruction, lmul = 1, vl = 1, vstart = False
     else:
       writeLine(f"vsetivli x8, {vl}, SEWSIZE, m{lmul}, tu, mu",  f"# initialize vl = {vl}, LMUL = 1, SEW = SEWMIN")
 
-    writeLine("la x2, random_mask_0",                      "# load a random vector ") # TODO: change back to vector_random
+    writeLine("la x9, random_mask_0",                      "# load a random vector ") # TODO: change back to vector_random
     if ("vd" in instruction_arguments):
-        writeLine("VLESEWMIN v8, (x2)",                    "# load to initialize vd (v8) ")
+        writeLine("VLESEWMIN v8, (x9)",                    "# load to initialize vd (v8) ")
     if ("vs2" in instruction_arguments):
-        writeLine("VLESEWMIN v16, (x2)",                   "# load to initialize vs2 (v16)")
+        writeLine("VLESEWMIN v16, (x9)",                   "# load to initialize vs2 (v16)")
     if ("vs1" in instruction_arguments):
-        writeLine("VLESEWMIN v24, (x2)",                   "# load to initialize vs1 (v24)")
+        writeLine("VLESEWMIN v24, (x9)",                   "# load to initialize vs1 (v24)")
 
 def writePrivTestLine(instruction, instruction_data, cp="cp_vill", vl=1, lmul=1, maskval=None):
     instruction_arguments = getInstructionArguments(instruction)
@@ -288,23 +288,20 @@ if __name__ == '__main__':
         # Scalar sigupds: each advances SIG_PTR by SIG_STRIDE
         for macro in ("RVTEST_SIGUPD", "RVTEST_SIGUPD_F"):
             total_bytes += sum(1 for _ in iter_calls(src, macro)) * SIG_STRIDE
-        # Vector SIGUPD_V: arg index 7 is _OFFSET in bytes
+        # Vector SIGUPD_V: arg index 7 is _OFFSET in bytes (just the
+        # "remainder" portion when the true offset > 2047; in that case the
+        # caller emits trailing `addi x{sigReg}, x{sigReg}, 2047` instructions
+        # to make up the rest, which we count separately below).
         for args in iter_calls(src, "RVTEST_SIGUPD_V"):
             if len(args) > 7:
                 try:
                     total_bytes += int(args[7])
                 except ValueError:
                     total_bytes += 4096  # fallback upper bound
-        # Vector SIGUPD_V_LEN: arg index 12 is offsetRem; caller emits fullOffsets*2047 separately
-        # via addi, so we count offsetRem here. We also include a conservative extra per-call to
-        # account for the addi adjustments.
-        for args in iter_calls(src, "RVTEST_SIGUPD_V_LEN"):
-            if len(args) > 12:
-                try:
-                    total_bytes += int(args[12])
-                except ValueError:
-                    total_bytes += 4096
-            total_bytes += 2047  # margin for one fullOffset-style adjustment
+        # Count the trailing addi adjustments (each contributes 2047 bytes).
+        # These follow large-offset SIGUPD_V/SIGUPD_V_LEN emissions.
+        addi_pattern = re.compile(r"^[ \t]*addi\s+x2\s*,\s*x2\s*,\s*2047", re.MULTILINE)
+        total_bytes += 2047 * len(addi_pattern.findall(src))
 
         resolved_sigupd = (total_bytes // SIG_STRIDE) + 256  # margin
         temp_path.write_text(src.replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(resolved_sigupd)))

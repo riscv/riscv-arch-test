@@ -143,9 +143,7 @@
     ExceptionsVx_vrgather_vi_cg = new(); ExceptionsVx_vrgather_vi_cg.set_inst_name("obj_ExceptionsVx_vrgather_vi");
     ExceptionsVx_vrgather_vv_cg = new(); ExceptionsVx_vrgather_vv_cg.set_inst_name("obj_ExceptionsVx_vrgather_vv");
     ExceptionsVx_vrgather_vx_cg = new(); ExceptionsVx_vrgather_vx_cg.set_inst_name("obj_ExceptionsVx_vrgather_vx");
-`ifdef MAXINDEXEEW_GE16
     ExceptionsVx_vrgatherei16_vv_cg = new(); ExceptionsVx_vrgatherei16_vv_cg.set_inst_name("obj_ExceptionsVx_vrgatherei16_vv");
-`endif
     ExceptionsVx_vrsub_vi_cg = new(); ExceptionsVx_vrsub_vi_cg.set_inst_name("obj_ExceptionsVx_vrsub_vi");
     ExceptionsVx_vrsub_vx_cg = new(); ExceptionsVx_vrsub_vx_cg.set_inst_name("obj_ExceptionsVx_vrsub_vx");
     ExceptionsVx_vsadd_vi_cg = new(); ExceptionsVx_vsadd_vi_cg.set_inst_name("obj_ExceptionsVx_vsadd_vi");

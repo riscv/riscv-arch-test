@@ -37,9 +37,9 @@ def make_exceptionsv_ffLS(instruction: str) -> None:
     common.writeLine(f"\n# Testcase {CP}")
     common.writeLine(f"vsetivli x8, 1, e{sew}, m1, tu, mu", "# vill=0, vstart=0, vl=1")
 
-    common.writeLine("la x2, random_mask_0", "# valid data address for init")
+    common.writeLine("la x9, random_mask_0", "# valid data address for init")
     if "vd" in args:
-        common.writeLine(f"vle{sew}.v v8, (x2)", "# initialize vd (v8)")
+        common.writeLine(f"vle{sew}.v v8, (x9)", "# initialize vd (v8)")
 
     # rs1 = 0 (address 0 → access fault on first element)
     common.writeLine("li x7, 0", "# rs1 = 0 (address fault trigger)")

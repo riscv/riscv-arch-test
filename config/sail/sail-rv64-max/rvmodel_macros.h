@@ -110,16 +110,16 @@
   sw zero, 0(_R2)            ; /* Clear MEXT interrupt */ \
 
 
-#define MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
+#define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 
 #define RVMODEL_SET_MSW_INT(_R1, _R2)        \
   li _R1, 1;                 \
-  li _R2, MSIP_ADDRESS;              \
+  li _R2, RVMODEL_MSIP_ADDRESS;              \
   sw _R1, 0(_R2);
 
 
 #define RVMODEL_CLR_MSW_INT(_R1, _R2)        \
-  li _R2, MSIP_ADDRESS;              \
+  li _R2, RVMODEL_MSIP_ADDRESS;              \
   sw zero, 0(_R2);
 
 

@@ -1247,7 +1247,6 @@ def myhash(s):
   return h
 
 def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
-    writeLine(f"\n# {name}")
     with open(f"{ARCH_VERIF}/generators/testgen/src/testgen/templates/{name}") as h:
         template = h.read()
 
@@ -1257,7 +1256,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
       # Split extension into components based on capital letters
       ext_parts = re.findall(r'Z[a-z]+|[A-Z]', extension)
       ext_parts_no_I = [ext for ext in ext_parts if ext != "I"]
-      if 'V' in ext_parts_no_I:
+      if 'V' in ext_parts_no_I or any(ext.startswith('Zv') for ext in ext_parts_no_I):
         if (test in vfloattypes):
           fp_exts = ['F'] + ['Zfhmin']
           if flen > 32:
@@ -1286,7 +1285,9 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
         .replace("@TESTCASE_STRINGS@", generate_testcase_string_section())
         .replace("@EXTRA_DEFINES@", f"#define RVTEST_VECTOR\n#define RVTEST_FP\n#define RVTEST_SEW {sew}\n#define VDSEW {vdsew}")
     )
-    writeLine(template)
+    # Strip trailing newlines so writeLine's own appended newline doesn't produce
+    # a blank line at end of file (which breaks the end-of-file-fixer pre-commit hook).
+    writeLine(template.rstrip("\n"))
 
 def writeSIGUPD(inst_ptr, rd):
     global sigupd_count  # Allow modification of global variable
@@ -1776,7 +1777,7 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
           element_positiv_reg = randint(1,31)
         scalar_registers_used.append(element_positiv_reg)
         writeLine(f"li x{element_positiv_reg}, {element_positive}",             "#  make sure the number is positive since it will be 0 extended to XLEN")
-        writeLine(f"vand.vx v{register}, v{register}, x{element_positiv_reg}",  "#  ")
+        writeLine(f"vand.vx v{register}, v{register}, x{element_positiv_reg}",  "#")
       writeLine(f"vrem.vx v{register}, v{register}, x{vlmaxReg}",               "# ensure all values are within (-2*vlmax, 2*vlmax)")
       writeLine(f"vand.vi v{register}, v{register}, {sew_aligned}",             "# sew-aligning elements")
       writeLine(f"vsetvl x0, x{avlReg}, x{vtypeReg}",                           "# restore vl and vtype setting")

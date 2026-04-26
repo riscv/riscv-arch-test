@@ -198,6 +198,22 @@
         `cover_info("//      SmV - Enabled");
         `include "SmV_coverage_init.svh"
     `endif
+    `ifdef COVER_SMMPM
+        `cover_info("//      Smmpm - Enabled");
+        `include "Smmpm_coverage_init.svh"
+    `endif
+    `ifdef COVER_SMNPMS
+        `cover_info("//      SmnpmS - Enabled");
+        `include "SmnpmS_coverage_init.svh"
+    `endif
+    `ifdef COVER_SMNPMU
+        `cover_info("//      SmnpmU - Enabled");
+        `include "SmnpmU_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSNPM
+        `cover_info("//      Ssnpm - Enabled");
+        `include "Ssnpm_coverage_init.svh"
+    `endif
     `ifdef COVER_SSSTRICTS
         `cover_info("//      SsstrictS - Enabled");
         `include "SsstrictS_coverage_init.svh"

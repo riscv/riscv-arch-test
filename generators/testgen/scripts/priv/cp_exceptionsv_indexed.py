@@ -1,9 +1,19 @@
 """Priv coverpoint handler for cp_exceptionsv_indexed.
 
 Runs an indexed vector load/store under otherwise-legal conditions (vill=0,
-vstart=0, vl>0, valid address, mstatus.vs!=0) so that any resulting trap is
-attributable to MAXINDEXEEW gating the index EEW. The test body mirrors
-cp_exceptionsv_LS / cp_exceptionsv_index_eew.
+vstart=0, vl>0, valid 8-byte-aligned base, mstatus.vs!=0) so that any
+resulting trap is attributable to MAXINDEXEEW gating the index EEW. The
+instruction may or may not trap depending on the configured MAXINDEXEEW.
+
+Dual-signature design (vector-priv specific):
+  - The vd SIGUPD_V always fires (no skip_sigupd), capturing the data path
+    when the instruction does not trap.
+  - The framework trap handler writes the trap signature to mtrap_sigptr
+    when a trap does fire.
+  Both DUT and the reference simulator run the same code under the same
+  config, so whichever path fires is observed identically on both sides
+  and the signatures match. Do NOT pass skip_sigupd=True here -- that
+  would discard the no-trap data check.
 """
 
 from __future__ import annotations

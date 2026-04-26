@@ -12,7 +12,7 @@
 #define LARGEST_PROGRAM     0x00010000
 
 #define CLINT_BASE_ADDRESS 0x02000000
-#define MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
+#define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 
 
 #define A_SUPPORTED
@@ -109,3 +109,14 @@
 #define COUNTINHIBIT_EN_0
 #define COUNTINHIBIT_EN_2
 #define TIME_CSR_IMPLEMENTED 1
+
+// Vector configuration
+#define SEWMIN 8
+#define ELEN 64
+#define MAXINDEXEEW 32
+
+// Supported fractional LMULs for vector
+// all supported now should be generated based on config
+#define LMULf8_SUPPORTED
+#define LMULf4_SUPPORTED
+#define LMULf2_SUPPORTED

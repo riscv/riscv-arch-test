@@ -534,6 +534,10 @@
         `cover_info("//      Zknh - Enabled");
         `include "Zknh_coverage_init.svh"
     `endif
+    `ifdef COVER_ZKR
+        `cover_info("//      Zkr - Enabled");
+        `include "Zkr_coverage_init.svh"
+    `endif
     `ifdef COVER_ZKSED
         `cover_info("//      Zksed - Enabled");
         `include "Zksed_coverage_init.svh"

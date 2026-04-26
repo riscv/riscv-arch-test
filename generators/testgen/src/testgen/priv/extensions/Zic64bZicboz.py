@@ -1,7 +1,7 @@
 ##################################
-# priv/extensions/Zic64bzicboz.py
+# priv/extensions/Zic64bZicboz.py
 #
-# Zic64bzicboz privileged extension test generator.
+# Zic64bZicboz privileged extension test generator.
 # Ammarah Wakeel  email:ammarahwakeel9@gmail.com (UET, April 2026)
 # SPDX-License-Identifier: Apache-2.0
 ##################################
@@ -20,9 +20,9 @@ _SAMPLE_OFFSETS: list[int] = [0, 60, 64, 124]
 
 
 def _generate_zic64b_tests(test_data: TestData) -> list[str]:
-    """Generate cp_zic64bzicboz tests for Zic64bZicboz."""
+    """Generate cp_zic64bZicboz tests for Zic64bZicboz."""
 
-    covergroup = "Zic64bzicboz_cg"
+    covergroup = "Zic64bZicboz_cg"
     coverpoint = "cp_zi64cb"
 
     base_reg, tmp_reg, val_reg = test_data.int_regs.get_registers(3)
@@ -72,7 +72,7 @@ def _generate_zic64b_tests(test_data: TestData) -> list[str]:
 
 
 @add_priv_test_generator(
-    "Zic64bzicboz",
+    "Zic64bZicboz",
     required_extensions=["Zicboz", "Zic64b"],
 )
 def make_zic64bzicboz(test_data: TestData) -> list[str]:

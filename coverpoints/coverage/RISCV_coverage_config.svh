@@ -175,6 +175,8 @@
 `endif
 `ifdef SSTVECD_COVERAGE
   `include "Sstvecd_coverage.svh"
+`ifdef SSU64XL_COVERAGE
+  `include "Ssu64xl_coverage.svh"
 `endif
 `ifdef SV_COVERAGE
   `include "Sv_coverage.svh"
@@ -259,6 +261,9 @@
 `endif
 `ifdef VX8_COVERAGE
   `include "Vx8_coverage.svh"
+`endif
+`ifdef ZA64RS_COVERAGE
+  `include "Za64rs_coverage.svh"
 `endif
 `ifdef ZAAMO_COVERAGE
   `include "Zaamo_coverage.svh"
@@ -349,6 +354,9 @@
 `endif
 `ifdef ZFHMIND_COVERAGE
   `include "ZfhminD_coverage.svh"
+`endif
+`ifdef ZIC64BZICBOZ_COVERAGE
+  `include "Zic64bzicboz_coverage.svh"
 `endif
 `ifdef ZICBOM_COVERAGE
   `include "Zicbom_coverage.svh"

@@ -174,6 +174,8 @@
     `endif
     `ifdef COVER_SSTVECD
         sstvecd_sample(hart, issue, ins);
+    `ifdef COVER_SSU64XL
+        ssu64xl_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SV
         sv_sample(hart, issue, ins);
@@ -258,6 +260,9 @@
     `endif
     `ifdef COVER_VX8
         vx8_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZA64RS
+        za64rs_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZAAMO
         zaamo_sample(hart, issue, ins);
@@ -348,6 +353,9 @@
     `endif
     `ifdef COVER_ZFHMIND
         zfhmind_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZIC64BZICBOZ
+        zic64bzicboz_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZICBOM
         zicbom_sample(hart, issue, ins);

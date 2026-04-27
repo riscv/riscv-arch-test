@@ -1284,7 +1284,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
         # @SIGUPD_COUNT_FROM_TESTGEN@ intentionally left unreplaced; finalizeSigupdCount()
         # rewrites it after the test body is fully generated and sigupd_count is final.
         .replace("@TESTCASE_STRINGS@", generate_testcase_string_section())
-        .replace("@EXTRA_DEFINES@", f"#define RVTEST_VECTOR\n#define RVTEST_FP\n#define RVTEST_SEW {sew}\n#define VDSEW {vdsew}")
+        .replace("@EXTRA_DEFINES@", f"#define RVTEST_VECTOR\n#define RVTEST_SEW {sew}\n#define VDSEW {vdsew}")
     )
     # Strip trailing newlines so writeLine's own appended newline doesn't produce
     # a blank line at end of file (which breaks the end-of-file-fixer pre-commit hook).

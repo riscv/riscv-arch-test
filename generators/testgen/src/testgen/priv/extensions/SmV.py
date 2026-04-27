@@ -390,11 +390,12 @@ def _gen_vsetvl_i_rd_rs1(test_data: TestData, temp_reg: int) -> list[str]:
     lines.append(f"vsetivli x{temp_reg}, 1, e8, m1, tu, mu  # vl=1")
     lines.append(test_data.add_testcase("vsetvli_rdx0", cp2, _CG))
     lines.append("vsetvli x0, x0, e8, m1, tu, mu  # rd=x0/rs1=x0; vlmax matches")
-    # Same with vsetvl
+    # Same with vsetvl. Use rs2=x0 so insn[25:20]=000000 (SEW=8/LMUL=1),
+    # which is what vset_i_vli_vlmax_unchanged compares against (it reads
+    # SEW/LMUL from insn[25:20], not rs2_val).
     lines.append(f"vsetivli x{temp_reg}, 1, e8, m1, tu, mu  # vl=1")
-    lines.append(f"LI(x{rs2_reg}, 0x00)  # SEW=8, LMUL=1")
     lines.append(test_data.add_testcase("vsetvl_rdx0", cp2, _CG))
-    lines.append(f"vsetvl x0, x0, x{rs2_reg}")
+    lines.append("vsetvl x0, x0, x0  # rs2=x0 makes insn-encoded SEW/LMUL = e8/m1")
     test_data.int_regs.return_registers([rs2_reg])
     return lines
 
@@ -480,6 +481,12 @@ def _gen_vsetivli_avl_edges(test_data: TestData, temp_reg: int) -> list[str]:
         for imm in range(32):
             lines.append(test_data.add_testcase(f"vsetivli_imm{imm}_{sew_name}", coverpoint, _CG))
             lines.append(f"vsetivli x{temp_reg}, {imm}, {sew_name}, m1, tu, mu")
+    # Cross bin <vsetivli, sixtyfour, auto[0], one> requires BEFORE vtype = (e64, m1)
+    # with imm=0. The loop above never produces this because imm=0 is always the first
+    # iteration of each sew block (so BEFORE vtype.SEW reflects the prior sew).
+    # Run one more vsetivli imm=0,e64,m1 after the e64 block has set vtype=(e64,m1).
+    lines.append(test_data.add_testcase("vsetivli_imm0_e64_after", coverpoint, _CG))
+    lines.append(f"vsetivli x{temp_reg}, 0, e64, m1, tu, mu")
     return lines
 
 

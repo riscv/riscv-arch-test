@@ -31,9 +31,8 @@
 // Total Expected Faults :: 0
 // --------------------------------------------------------------------------------------------------------------------------------
 
-// Remove NORUN once Sail supports Svadu
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Sv48, Svadu, NORUN]
+# REQUIRED_EXTENSIONS: [I, Sv48, Svadu]
 # MARCH: rv64i_zicsr
 ##### END_TEST_CONFIG #####
 

@@ -88,9 +88,9 @@
       // aligned transactions). No alignment exception is ever raised.
       "exceptions": {
         "load_store": { "None": null },
-        "vector":     { "None": null },
+        "vector": { "None": null },
         "lrsc": "AccessFault",
-        "amo":  "AccessFault"
+        "amo": "AccessFault"
       },
       "allowed_within_exp": 0,
       "byte_by_byte": false,
@@ -127,7 +127,7 @@
           // CV32E20 handles misaligned loads/stores in hardware; no per-region fault.
           "misaligned_exceptions": {
             "load_store": { "None": null },
-            "vector":     { "None": null },
+            "vector": { "None": null },
             "amo": "AccessFault"
           },
           "atomic_support": "AMONone",
@@ -161,7 +161,7 @@
           "write_idempotent": false,
           "misaligned_exceptions": {
             "load_store": { "None": null },
-            "vector":     { "None": null },
+            "vector": { "None": null },
             "amo": "AccessFault"
           },
           "atomic_support": "AMONone",

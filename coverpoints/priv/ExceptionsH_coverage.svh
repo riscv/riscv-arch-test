@@ -332,7 +332,7 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
 
     `ifdef XLEN32
         hedelegh: coverpoint ins.current.insn[31:20] {
-                bins hedelegh_read = {CSR_HEDELEG};
+                bins hedelegh_read = {CSR_HEDELEGH};
         }
     `endif
 

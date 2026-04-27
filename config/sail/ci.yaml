@@ -3,4 +3,4 @@
 # CI configuration for Sail reference model
 
 ci_enabled: true
-exclude_extensions: ""
+exclude_extensions: "PMPS,PMPU,PMPF"

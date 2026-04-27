@@ -24,7 +24,7 @@
 
 #define SKIP_MEPC
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I']
+# REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
@@ -104,9 +104,22 @@ main:
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION,test_1
 
-    j exit                                                        // Verification Complete, exit the test
+RVTEST_CODE_END
+RVTEST_DATA_BEGIN
+.align 4
 
-.align 13
+// Test case strings for reporting
+
+test_1_str: .string "\"test: 1; cp: cp_na4_boundary_ld\""
+test_2_str: .string "\"test: 2; cp: cp_na4_boundary_sd\""
+
+.align 12
+.align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    .rept 1024
+    nop
+    .endr
+
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop
@@ -116,16 +129,6 @@ RETURN_INSTRUCTION:
     nop
     nop
     jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
-
-RVTEST_CODE_END
-RVTEST_DATA_BEGIN
-.align 4
-
-// Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: cp_na4_boundary_ld\""
-test_2_str: .string "\"test: 2; cp: cp_na4_boundary_sd\""
 
 RVTEST_DATA_END
 

@@ -23,7 +23,7 @@
 // ---------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','Zca']
+# REQUIRED_EXTENSIONS:  ['Zca','Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
@@ -161,7 +161,7 @@ main:
 #define PMPREGION_LXWR_1111 ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
-#define REGIONSTART            TEST_FOR_EXECUTION    // RAM_BASE_ADDR + PROGRAM_SIZE
+#define REGIONSTART            TEST_FOR_EXECUTION
 #if RVMODEL_PMP_GRAIN != 0
     #define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
     #define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)) - 1
@@ -263,17 +263,6 @@ main:
 
     j exit                                                        // Verification Complete, exit the test
 
-.align 13
-TEST_FOR_EXECUTION:
-    .rept (1<<RVMODEL_PMP_GRAIN+2)
-    c.nop
-    c.nop
-    .endr
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 exit:
 
@@ -288,6 +277,18 @@ test_2_str: .string "\"test: 2; cp: pmpzca_legal_lxwr_lw\""
 test_3_str: .string "\"test: 3; cp: pmpzca_legal_lxwr_c.jalr\""
 test_4_str: .string "\"test: 4; cp: pmpzca_legal_lxwr_sd\""
 test_5_str: .string "\"test: 5; cp: pmpzca_legal_lxwr_ld\""
+
+.align 13
+TEST_FOR_EXECUTION:
+    .rept (1<<RVMODEL_PMP_GRAIN+2)
+    c.nop
+    c.nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

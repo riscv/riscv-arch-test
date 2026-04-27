@@ -180,13 +180,10 @@ covergroup PMPS_cg with function sample(ins_t ins, logic [16*XLEN-1:0] pack_pmpa
     bins pmpcfg15  = {CSR_PMPCFG15};
   }
 
-<<<<<<< act4-work
-=======
   mode_switch: coverpoint ins.current.insn {
     bins mret = {MRET};
   }
 
->>>>>>> act4
   csrrw: coverpoint ins.current.insn {
     wildcard bins csrrw  = {CSRRW};
   }

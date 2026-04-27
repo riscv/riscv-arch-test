@@ -178,17 +178,6 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
       bins locked_na4_regions = {24'b100100001001011110010111};
     }
 
-<<<<<<< act4-work
-    // PMP0, PMP1, PMP2: NA4, L=1, XWR=111 — regions at PMP_REGION_START, PMP_REGION_START+4, PMP_REGION_START+8
-    pmpaddr_consecutive_na4: coverpoint ((ins.current.csr[12'h3B2] == ((`PMP_REGION_START + 8) >> 2)) &&
-                                         (ins.current.csr[12'h3B1] == ((`PMP_REGION_START + 4) >> 2)) &&
-                                         (ins.current.csr[12'h3B0] == (`PMP_REGION_START >> 2))) {
-      bins first_three_regions = {1};
-    }
-
-    na4_region: coverpoint (ins.current.csr[12'h3B0]) {
-      bins address = {`PMP_REGION_START >> 2}; // NA4 region with LXWR 1111
-=======
     // PMP0, PMP1, PMP2: NA4, L=1, XWR=111 — regions at REGIONSTART, REGIONSTART+4, REGIONSTART+8
     pmpaddr_consecutive_na4: coverpoint ((ins.current.csr[CSR_PMPADDR2] == ((`REGIONSTART + 8) >> 2)) &&
                                          (ins.current.csr[CSR_PMPADDR1] == ((`REGIONSTART + 4) >> 2)) &&
@@ -198,7 +187,6 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
 
     na4_region: coverpoint (ins.current.csr[CSR_PMPADDR0]) {
       bins address = {`REGIONSTART >> 2}; // NA4 region with LXWR 1111
->>>>>>> act4
     }
 
     na4_setup: coverpoint (ins.current.csr[CSR_PMPCFG0][7:0]) {

@@ -352,6 +352,9 @@ def set_stimecmp_zero() -> list[str]:
     return [
         f"{INDENT}# Assert Sstc timer: stimecmp = 0  (interrupt fires at next boundary)",
         "CSRW(stimecmp, zero)",
+        "#if __riscv_xlen == 32",
+        "    CSRW(stimecmph, zero)",
+        "#endif",
     ]
 
 
@@ -387,7 +390,7 @@ def set_stimecmp_soon(r_scratch: int, r_time: int, r_hi: int) -> list[str]:
         f"        CSRW(stimecmp, x{r_time})",
         "    #endif",
         "#else",
-        "    CSRW(stimecmp, zero)",
+        *set_stimecmp_zero(),
         "#endif",
     ]
 

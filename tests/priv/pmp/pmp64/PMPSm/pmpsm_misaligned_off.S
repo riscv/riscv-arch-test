@@ -23,7 +23,7 @@
 
 #define SKIP_MEPC
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I']
+# REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
@@ -200,25 +200,9 @@ main:
 
     RVTEST_GOTO_MMODE
 
-    j exit                                                        // Verification Complete, exit the test
-
-.align 13
-TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
-    nop
-    .endr
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
-
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
 
 // Test case strings for reporting
 test_1_str:  .string "\"test: 1;  cp: pmpm_misaligned_napot_sh_address-1\""
@@ -238,6 +222,23 @@ test_13_str: .string "\"test: 13; cp: pmpm_misaligned_napot_lw_address+g-1\""
 test_14_str: .string "\"test: 14; cp: pmpm_misaligned_napot_lwu_address+g-1\""
 test_15_str: .string "\"test: 15; cp: pmpm_misaligned_napot_sd_address+g-1\""
 test_16_str: .string "\"test: 16; cp: pmpm_misaligned_napot_ld_address+g-1\""
+
+.align 12
+.align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    .rept 1024
+    nop
+    .endr
+
+TEST_FOR_EXECUTION:
+    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

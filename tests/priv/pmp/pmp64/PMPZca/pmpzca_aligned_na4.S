@@ -22,7 +22,7 @@
 // ---------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','Zca']
+# REQUIRED_EXTENSIONS:  ['Zca','Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
@@ -74,7 +74,7 @@ main:
 #define PMP2CFG                  ((((PMP_L|                  PMP_NA4)   &0xFF)   << PMP2_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL    -1             // All memory region
-#define REGIONSTART              TEST_FOR_EXECUTION_1     // RAM_BASE_ADDR + PROGRAM_SIZE
+#define REGIONSTART              TEST_FOR_EXECUTION_1
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw    pmpaddr15, x4
@@ -116,6 +116,15 @@ main:
 
     j exit
 
+exit:
+
+RVTEST_CODE_END
+
+RVTEST_DATA_BEGIN
+
+// Test case strings for reporting
+test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
+
 .align 13
 TEST_FOR_EXECUTION_1:               // Uncompressed return inside the first region
     jalr x0, x1, 0
@@ -128,15 +137,6 @@ RETURN_INSTRUCTION:
     nop
     jr ra                           // Get back to the point from where TEST_FOR_EXECUTION was called.
 
-exit:
-
-RVTEST_CODE_END
-
-RVTEST_DATA_BEGIN
-
-.align 4
-// Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
 
 RVTEST_DATA_END
 

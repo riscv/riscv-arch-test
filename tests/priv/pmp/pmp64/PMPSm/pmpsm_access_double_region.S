@@ -24,7 +24,7 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I']
+# REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
@@ -97,12 +97,14 @@ main:
     csrw pmpaddr0, x4
 
     LA(x4, REGIONSTART)
-    addi x4, x4, g
+    li t0, g
+    add x4, x4, g
     srl x4, x4, PMP_SHIFT
     csrw pmpaddr1, x4
 
     LA(x4, REGIONSTART)
-    addi x4, x4, 2*g
+    li t0, 2*g
+    add x4, x4, t0
     srl x4, x4, PMP_SHIFT
     csrw pmpaddr2, x4
 
@@ -114,10 +116,23 @@ main:
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
-    j exit                                                        // Verification Complete, exit the test
 
-.align 13
+RVTEST_CODE_END
+RVTEST_DATA_BEGIN
+.align 4
+
+// Test case strings for reporting
+
+test_1_str: .string "\"test: 1; cp: cp_tor_doubleregionfail_sd\""
+test_2_str: .string "\"test: 2; cp: cp_tor_doubleregionfail_ld\""
+
+.align 12
 .align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    .rept 1024
+    nop
+    .endr
+
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop
@@ -128,15 +143,6 @@ RETURN_INSTRUCTION:
     nop
     jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
-exit:
-
-RVTEST_CODE_END
-RVTEST_DATA_BEGIN
-.align 4
-
-// Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: cp_tor_doubleregionfail_sd\""
-test_2_str: .string "\"test: 2; cp: cp_tor_doubleregionfail_ld\""
 
 RVTEST_DATA_END
 

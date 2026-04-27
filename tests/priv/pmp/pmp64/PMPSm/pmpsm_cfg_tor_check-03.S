@@ -23,7 +23,7 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I']
+# REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
@@ -169,21 +169,6 @@ main:
 
     RVTEST_GOTO_MMODE
 
-    j exit                                                        // Verification Complete, exit the test
-
-.align 13
-TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
-    nop
-    .endr
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
-
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
@@ -196,6 +181,23 @@ test_3_str: .string "\"test: 3; cp: pmpm_cfg_tor_check3_store_access_at_pmpaddr+
 test_4_str: .string "\"test: 4; cp: pmpm_cfg_tor_check3_load_access_at_pmpaddr-4\""
 test_5_str: .string "\"test: 5; cp: pmpm_cfg_tor_check3_load_access_at_pmpaddr\""
 test_6_str: .string "\"test: 6; cp: pmpm_cfg_tor_check3_load_access_at_pmpaddr+4\""
+
+.align 12
+.align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    .rept 1024
+    nop
+    .endr
+
+TEST_FOR_EXECUTION:
+    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

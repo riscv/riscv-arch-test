@@ -21,7 +21,7 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I']
+# REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
@@ -261,20 +261,6 @@ main:
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
 
-    j exit                                                        // Verification Complete, exit the test
-
-.align 12
-TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
-    nop
-    .endr
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
 
 RVTEST_CODE_END
 
@@ -285,6 +271,23 @@ RVTEST_DATA_BEGIN
 test_1_str: .string "\"test: 1; cp: pmpm_cfg_na4_all_lw_address\""
 test_2_str: .string "\"test: 2; cp: pmpm_cfg_na4_all_address-4\""
 test_3_str: .string "\"test: 3; cp: pmpm_cfg_na4_all_address+4\""
+
+.align 12
+.align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    .rept 1024
+    nop
+    .endr
+
+TEST_FOR_EXECUTION:
+    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

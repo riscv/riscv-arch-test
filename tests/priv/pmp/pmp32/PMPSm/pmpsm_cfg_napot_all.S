@@ -25,7 +25,7 @@
 
 #define SKIP_MEPC
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I']
+# REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
@@ -97,13 +97,15 @@ main:
 #define PMPREGION3_XWR_000  (((PMP_L|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT)
 
 #define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
-#define REGIONSTART         TEST_FOR_EXECUTION      // RAM_BASE_ADDR + PROGRAM_SIZE
+#define REGIONSTART         TEST_FOR_EXECUTION
 #if RVMODEL_PMP_GRAIN != 0
     #define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
     #define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)) - 1
+    #define SIZE                (1<<(RVMODEL_PMP_GRAIN+2))
 #else
     #define PMP_MASK            ~0
     #define PMP_REGION_SIZE     0
+    #define SIZE                (1<<(RVMODEL_PMP_GRAIN+3))
 #endif
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
@@ -309,20 +311,6 @@ main:
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
 
-    j exit                                                      // Verification Complete, exit the test
-
-.align 12
-TEST_FOR_EXECUTION:
-    .rept ((1<<(RVMODEL_PMP_GRAIN+2))/4)
-    nop
-    .endr
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
 
 RVTEST_CODE_END
 
@@ -333,6 +321,23 @@ RVTEST_DATA_BEGIN
 test_1_str: .string "\"test: 1; cp: pmpm_cfg_napot_all_lw_address\""
 test_2_str: .string "\"test: 2; cp: pmpm_cfg_napot_all_address-4\""
 test_3_str: .string "\"test: 3; cp: pmpm_cfg_napot_all_address+4\""
+
+.align 12
+.align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    .rept 1024
+    nop
+    .endr
+
+TEST_FOR_EXECUTION:
+    .rept (SIZE/4)
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

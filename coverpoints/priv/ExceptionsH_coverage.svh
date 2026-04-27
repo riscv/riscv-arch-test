@@ -27,32 +27,32 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
 
 
     jal: coverpoint ins.current.insn {
-        wildcard bins jal = {32'b????????????????????_?????_1101111};
+        wildcard bins jal = {JAL};
     }
 
 
     jalr: coverpoint ins.current.insn {
-        wildcard bins jalr = {32'b????????????_?????_000_?????_1100111};
+        wildcard bins jalr = {JALR};
     }
 
 
     loadop: coverpoint ins.current.insn {
-        wildcard bins lw  = {32'b????????????_?????_010_?????_0000011};
+        wildcard bins lw  = {LW};
     }
 
 
     storeop: coverpoint ins.current.insn {
-        wildcard bins sw = {32'b????????????_?????_010_?????_0100011};
+        wildcard bins sw = {SW};
     }
 
 
     ecall: coverpoint ins.current.insn {
-        bins ecall = {32'h00000073};
+        bins ecall = {ECALL};
     }
 
 
     ebreak: coverpoint ins.current.insn {
-        bins ebreak = {32'h00100073};
+        bins ebreak = {EBREAK};
     }
 
 
@@ -62,23 +62,23 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
 
 
     hlv_hsv_instr: coverpoint ins.current.insn {
-        wildcard bins hlv_w = {32'b0110100_00000_?????_100_?????_1110011};
-        wildcard bins hsv_w = {32'b0110101_?????_?????_100_00000_1110011};
+        wildcard bins hlv_w = {HLV_W};
+        wildcard bins hsv_w = {HSV_W};
     }
 
 
     csrr: coverpoint ins.current.insn {
-        wildcard bins csrr = {32'b????????????_00000_010_?????_1110011};
+        wildcard bins csrr = {CSRR};
     }
 
 
     instret: coverpoint ins.current.insn[31:20] {
-        bins instret_read = {12'hc02};
+        bins instret_read = {CSR_INSTRET};
     }
 
 
     instreth: coverpoint ins.current.insn[31:20] {
-        bins instret_read = {12'hc82};
+        bins instret_read = {CSR_INSTRETH};
     }
 
 
@@ -234,71 +234,71 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
     // ============================================================================
 
     hlvw_hlvxwu_hsvw_hfencevvma_hfencegvma_instr: coverpoint ins.current.insn {
-        wildcard bins hlv_w = {32'b011010000000?????100?????1110011};
-        wildcard bins hlvx_wu = {32'b011010000011?????100?????1110011};
-        wildcard bins hsv_w = {32'b0110101_??????????_100_00000_1110011};
-        wildcard bins hfence_vvma = {32'b0010001??????????000000001110011};
-        wildcard bins hfence_gvma = {32'b0110001??????????000000001110011};
+        wildcard bins hlv_w = {HLV_W};
+        wildcard bins hlvx_wu = {HLVX_WU};
+        wildcard bins hsv_w = {HSV_W};
+        wildcard bins hfence_vvma = {HFENCE_VVMA};
+        wildcard bins hfence_gvma = {HFENCE_GVMA};
     }
 
 
     hlv_instructions: coverpoint ins.current.insn {
-        wildcard bins hlv_b  = {32'b011000000000?????100?????1110011};
-        wildcard bins hlv_bu = {32'b011000000001?????100?????1110011};
-        wildcard bins hlv_h  = {32'b011001000000?????100?????1110011};
-        wildcard bins hlv_hu = {32'b011001000001?????100?????1110011};
-        wildcard bins hlv_w  = {32'b011010000000?????100?????1110011};
-        wildcard bins hlvx_hu = {32'b011001000011?????100?????1110011};
-        wildcard bins hlvx_wu = {32'b011010000011?????100?????1110011};
+        wildcard bins hlv_b  = {HLV_B};
+        wildcard bins hlv_bu = {HLV_BU};
+        wildcard bins hlv_h  = {HLV_H};
+        wildcard bins hlv_hu = {HLV_HU};
+        wildcard bins hlv_w  = {HLV_W};
+        wildcard bins hlvx_hu = {HLVX_HU};
+        wildcard bins hlvx_wu = {HLVX_WU};
         `ifdef XLEN64
-            wildcard bins hlv_d = {32'b011011000000?????100?????1110011};
-            wildcard bins hlv_wu = {32'b011010000001?????100?????1110011};
+            wildcard bins hlv_d = {HLV_D};
+            wildcard bins hlv_wu = {HLV_WU};
         `endif
     }
 
 
     hsv_instructions: coverpoint ins.current.insn {
-        wildcard bins hsv_b  = {32'b0110001??????????100000001110011};
-        wildcard bins hsv_h  = {32'b0110011??????????100000001110011};
-        wildcard bins hsv_w  = {32'b0110101??????????100000001110011};
+        wildcard bins hsv_b  = {HSV_B};
+        wildcard bins hsv_h  = {HSV_H};
+        wildcard bins hsv_w  = {HSV_W};
         `ifdef XLEN64
-            wildcard bins hsv_d = {32'b0110111??????????100000001110011};
+            wildcard bins hsv_d = {HSV_D};
         `endif
     }
 
 
     hlvw_hlvxw_hsvw_instr: coverpoint ins.current.insn {
-        wildcard bins hlv_w = {32'b011010000000?????100?????1110011};
-        wildcard bins hlvx_wu = {32'b011010000011?????100?????1110011};
-        wildcard bins hsv_w = {32'b0110101_?????_?????_100_00000_1110011};
+        wildcard bins hlv_w = {HLV_W};
+        wildcard bins hlvx_wu = {HLVX_WU};
+        wildcard bins hsv_w = {HSV_W};
     }
 
 
     sfencevma_hfencevvma_hfencegvma_instr: coverpoint ins.current.insn {
-        wildcard bins sfence_vma = {32'b0001001??????????000000001110011};
-        wildcard bins hfence_vvma = {32'b0010001??????????000000001110011};
-        wildcard bins hfence_gvma = {32'b0110001??????????000000001110011};
+        wildcard bins sfence_vma = {SFENCE_VMA};
+        wildcard bins hfence_vvma = {HFENCE_VVMA};
+        wildcard bins hfence_gvma = {HFENCE_GVMA};
     }
 
 
     wfi: coverpoint ins.current.insn {
-        bins wfi = {32'b00010000010100000000000001110011};
+        bins wfi = {WFI};
     }
 
 
     sret: coverpoint ins.current.insn {
-        bins sret = {32'b00010000001000000000000001110011};
+        bins sret = {SRET};
     }
 
 
     sfence_sinval_vma: coverpoint ins.current.insn {
-        wildcard bins sfence_vma = {32'b0001001??????????000000001110011};
-        wildcard bins sinval_vma = {32'b0001011??????????000000001110011};
+        wildcard bins sfence_vma = {SFENCE_VMA};
+        wildcard bins sinval_vma = {SINVAL_VMA};
     }
 
 
     sfence_vma: coverpoint ins.current.insn {
-        wildcard bins sfence_vma = {32'b0001001??????????000000001110011};
+        wildcard bins sfence_vma = {SFENCE_VMA};
     }
 
 
@@ -307,32 +307,32 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
     // ============================================================================
 
     vstval_htval: coverpoint ins.current.insn[31:20] {
-        bins vstval = {12'h243};
-        bins htval = {12'h643};
+        bins vstval = {CSR_VSTVAL};
+        bins htval = {CSR_HTVAL};
     }
 
 
     satp: coverpoint ins.current.insn[31:20] {
-        bins satp = {12'h180};
+        bins satp = {CSR_SATP};
     }
 
 
     vsatp: coverpoint ins.current.insn[31:20] {
-        bins vsatp = {12'h280};
+        bins vsatp = {CSR_VSATP};
     }
 
 
     stval: coverpoint ins.current.insn[31:20] {
-        bins stval = {12'h143};
+        bins stval = {CSR_STVAL};
     }
 
     vstval: coverpoint ins.current.insn[31:20] {
-        bins vstval = {12'h243};
+        bins vstval = {CSR_VSTVAL};
     }
 
     `ifdef XLEN32
         hedelegh: coverpoint ins.current.insn[31:20] {
-                bins hedelegh_read = {12'h602};
+                bins hedelegh_read = {CSR_HEDELEG};
         }
     `endif
 

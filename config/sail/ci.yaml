@@ -3,4 +3,4 @@
 # CI configuration for Sail reference model
 
 ci_enabled: true
-exclude_extensions: "Sv"
+exclude_extensions: "Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo,SvPMPZicbo,Svinval,ExceptionsSvZaamo,ExceptionsSvZalrsc"

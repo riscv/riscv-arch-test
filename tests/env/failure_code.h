@@ -547,8 +547,8 @@
         li a1, 3
         beq x2, a1, base_mismatchindex   # if mismatch region is vector base, skip loading mismatch index since it is not valid
 
-        lhu x18, -18(DEFAULT_LINK_REG)     # addi, instruction which copies mismatch index to _TEMP_REG2
-        lhu x19, -20(DEFAULT_LINK_REG)
+        lhu x18, -14(DEFAULT_LINK_REG)   # mv, instruction which copies mismatch index to _TEMP_REG2
+        lhu x19, -16(DEFAULT_LINK_REG)
         slli x18, x18, 16
         or   x18, x18, x19
 
@@ -645,7 +645,8 @@
         # --------------------------------------------------
         la x7, failing_reg
         lw x6, 0(x7)                      # vd index
-        slli x6, x6, 7                    # each vector register is 128 bytes -> shift by 7 for register number
+        li   x7, VLEN_BYTES
+        mul  x6, x6, x7                   # offset of vd in bytes = vd_index * vlen_bytes
         la x7, vecreg_scratch
         add  x6, x7, x6
 
@@ -683,8 +684,8 @@
         li a1, 3
         beq x2, a1, copy_done    # if mismatch region is vector base, skip copying failing mask since it is not valid
 
-        lhu x18, -14(DEFAULT_LINK_REG)    # vmv.v.v, instruction which moves failing mask to _MTMP2/_VTMP
-        lhu x19, -16(DEFAULT_LINK_REG)
+        lhu x18, -30(DEFAULT_LINK_REG)    # vmv.v.v, instruction which moves failing mask to _MTMP2/_VTMP
+        lhu x19, -32(DEFAULT_LINK_REG)
         slli x18, x18, 16
         or   x18, x18, x19
 
@@ -694,7 +695,8 @@
 
         # --- compute src = vecreg_scratch + vd * vlenb ---
         la x6, vecreg_scratch
-        slli x19, x19, 7                  # each vector register is 128 bytes -> shift by 7 for register number
+        li   x7, VLEN_BYTES
+        mul  x19, x19, x7                   # offset of vd in bytes = vd_index * vlen_bytes
         add x6, x6, x19                   # offset to where mismatch register is saved in scratch
 
         # --- dst = failing_mask_vec ---
@@ -938,7 +940,7 @@
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
 
-        lw a0, failure_region
+        lw a0, failing_region
         li a1, 3
         beq a0, a1, failedtest_report_vec_done   # if mismatch region is vector base, skip printing mismatch mask since it is not valid
 
@@ -953,8 +955,9 @@
         sb a3, 0(a2)            # write '0'
         LI(a3, 'x')
         sb a3, 1(a2)            # write 'x'
-        addi a2, a2, 2          # move past "0x"
-
+        sb zero, 2(a2)          # null terminator
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str   # prints "0x"
 
         li a1, 8                    # print 8 bits (1 byte) at a time
         csrr x31, vlenb
@@ -1248,7 +1251,7 @@
     failing_sew_bits:                            # SEW in bits
         .fill 1, 4, 0xbaaaaaad
     failing_mask_vec:                            # value of failing mask vector register
-        .fill 32, 4, 0xbaaaaaad                  # Assume max VLEN of 1024 bits = 128 bytes
+        .fill VLEN_WORDS, 4, 0xbaaaaaad
     vecreg_scratch:                              # space to save full vector register contents
         .fill VECREG_REGION_BYTES, 4, 0xfeedf00dbaaaaaad
 #endif // RVTEST_VECTOR

@@ -20,7 +20,10 @@ WORKDIR     ?= work
 #  - Sm, S: Insufficient WARL configuration options.
 #  - InterruptsSm,InterruptsS,InterruptsU,PMPSm,PMPZca,SvaduPMP,SvPMP,SvPMPZicbo: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
 EXTENSIONS  ?=
-EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,InterruptsS,InterruptsU,ExceptionsZalrsc,ExceptionsZaamo,PMPF,PMPS,PMPSm,PMPU,PMPZaamo,PMPZalrsc,PMPZca,PMPZicbo,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo,SvPMPZicbo
+EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,InterruptsS,InterruptsU,ExceptionsZalrsc,ExceptionsZaamo,PMPF,PMPS,PMPSm,PMPU,PMPZaamo,PMPZalrsc,PMPZca,PMPZicbo,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo,SvPMPZicbo,ExceptionsVx,ExceptionsVls,UV
+#ExceptionsVx currently omitted as sail doesn't support non-zero vstart
+#ExceptionsVls currently omitted as qemu does not have x0-4096 address space as illegal
+#UV currently omitted as qemu implements vxrm incorrectly
 
 # Strip spaces from comma-separated lists so shell word-splitting doesn't break CLI arguments
 empty :=

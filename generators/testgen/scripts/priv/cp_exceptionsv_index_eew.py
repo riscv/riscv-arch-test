@@ -29,6 +29,7 @@ def _make_index_eew(cp: str, instruction: str) -> None:
         vs2_val_pointer="vector_random",
         vs1_val_pointer="vector_random",
     )
+    common.remapPrivScalarRegs(instruction_data, instruction)
 
     common.writeLine(f"\n# Testcase {cp}")
     from .cp_exceptionsv_LS import _emit_setup
@@ -37,11 +38,12 @@ def _make_index_eew(cp: str, instruction: str) -> None:
     testline, vd, rd = _build_testline(instruction, instruction_data)
     sig_lmul, sig_wr = _sig_params(instruction, instruction_data)
 
+    skip = instruction in common.vector_stores
     common.add_testcase_string(cp, instruction)
     common.writeVecTest(
         instruction, cp, vd, sew, testline,
         test=instruction, rd=rd, vl=1, sig_lmul=sig_lmul,
-        sig_whole_register_store=sig_wr, priv=True,
+        sig_whole_register_store=sig_wr, priv=True, skip_sigupd=skip,
     )
 
 

@@ -73,12 +73,13 @@ def _emit_setup(instruction: str, instruction_data: list, sew: int) -> int:
     args = common.getInstructionArguments(instruction)
     vd_reg  = vec_data["vd"]["reg"]
     vs2_reg = vec_data["vs2"]["reg"]
+    vs3_reg = vec_data["vs3"]["reg"]
     common.writeLine(f"vsetivli x{scratch}, 1, e{sew}, m1, tu, mu", "# vill=0, vstart=0, vl=1")
     common.writeLine(f"la x{scratch}, random_mask_0", "# valid data address")
     if "vd" in args:
         common.writeLine(f"vle{sew}.v v{vd_reg}, (x{scratch})", f"# initialize vd (v{vd_reg})")
     if "vs3" in args:
-        common.writeLine(f"vle{sew}.v v{vd_reg}, (x{scratch})", f"# initialize vs3 (v{vd_reg})")
+        common.writeLine(f"vle{sew}.v v{vs3_reg}, (x{scratch})", f"# initialize vs3 (v{vs3_reg})")
     if "vs2" in args:
         common.writeLine(f"vle{sew}.v v{vs2_reg}, (x{scratch})", f"# initialize vs2 (v{vs2_reg})")
     return scratch
@@ -99,6 +100,7 @@ def make_exceptionsv_LS(instruction: str) -> None:
         vs2_val_pointer="vector_random",
         vs1_val_pointer="vector_random",
     )
+    common.remapPrivScalarRegs(instruction_data, instruction)
 
     common.writeLine(f"\n# Testcase {CP}")
     _emit_setup(instruction, instruction_data, sew)
@@ -106,9 +108,14 @@ def make_exceptionsv_LS(instruction: str) -> None:
     testline, vd, rd = _build_testline(instruction, instruction_data)
     sig_lmul, sig_wr = _sig_params(instruction, instruction_data)
 
+    # Stores have no architectural vd to compare; the vd used for SIGUPD here is
+    # a random unused vector register and would fail comparison non-deterministically.
+    # Skip the per-test data SIGUPD for stores -- the trap-handler signature still
+    # records trap-vs-no-trap behavior cross-model.
+    skip = instruction in common.vector_stores
     common.add_testcase_string(CP, instruction)
     common.writeVecTest(
         instruction, CP, vd, sew, testline,
         test=instruction, rd=rd, vl=1, sig_lmul=sig_lmul,
-        sig_whole_register_store=sig_wr, priv=True,
+        sig_whole_register_store=sig_wr, priv=True, skip_sigupd=skip,
     )

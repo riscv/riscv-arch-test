@@ -213,10 +213,50 @@ def newInstruction():
 PRIV_RESERVED_SCALAR_REGS = (0, 1, 2, 3, 4, 5)
 PRIV_SCRATCH_CANDIDATES   = (28, 29, 30, 31, 6, 7, 8, 9, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27)
 
+def remapPrivScalarRegs(instruction_data, instruction):
+  """For priv tests: ensure no scalar operand reg (rs1/rs2/rd) lands on a
+  framework-reserved register. The priv flow emits `li xN, 0`, `la xN, ...`,
+  and `loadScalarReg` against operand regs; if N coincides with sigReg (x2/sp)
+  or any framework scratch, sp gets clobbered and every subsequent SIGUPD_V
+  faults. randomizeVectorInstructionData is shared with the unpriv flow and
+  doesn't know about priv reservations, so remap here in-place."""
+  vec_data, scalar_data, _, _ = instruction_data
+  args = set(getInstructionArguments(instruction))
+  reserved = set(PRIV_RESERVED_SCALAR_REGS)
+  reserved.add(sigReg)
+  in_use = set()
+  for k in ("rd", "rs1", "rs2"):
+    v = scalar_data.get(k)
+    if v and v.get("reg") is not None:
+      in_use.add(v["reg"])
+  for k in ("rd", "rs1", "rs2"):
+    v = scalar_data.get(k)
+    if v is None or v.get("reg") is None or k not in args:
+      continue
+    if v["reg"] not in reserved:
+      continue
+    in_use.discard(v["reg"])
+    new_reg = None
+    for r in PRIV_SCRATCH_CANDIDATES:
+      if r not in reserved and r not in in_use:
+        new_reg = r
+        break
+    if new_reg is None:
+      raise RuntimeError(f"no scratch xreg available to remap {k} in priv test")
+    v["reg"] = new_reg
+    in_use.add(new_reg)
+
+
 def pickPrivScratch(scalar_register_data=None, exclude=()):
   """Pick a scratch xreg that doesn't collide with framework-reserved regs,
-  any chosen rd/rs1/rs2 operands, or caller-supplied excludes."""
+  the live signature pointer, any chosen rd/rs1/rs2 operands, or caller-supplied
+  excludes. Critically, the scratch register is written by the priv test prep
+  (vsetivli x{scratch}, la x{scratch}, vsetvli x{scratch}, ...). If sigReg is
+  not excluded the prep destroys the signature pointer mid-test, leaving every
+  subsequent SIGUPD store to write to a tiny address (the LMUL/byte-stride
+  value) and trap."""
   used = set(PRIV_RESERVED_SCALAR_REGS) | set(exclude)
+  used.add(sigReg)
   if scalar_register_data is not None:
     for k in ("rd", "rs1", "rs2"):
       v = scalar_register_data.get(k)
@@ -1978,14 +2018,11 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
 
     if (priv):
       writeLine("nop",                                           "# nop after possible trap")
+      # vstart may still be non-zero after a trapping vector op (e.g. cp_vstart_gt_vl
+      # leaves vstart > vl, which is reserved-behavior for the SIGUPD vse/vle that
+      # follows). Clear it explicitly so the signature ops always run cleanly.
+      writeLine("csrw vstart, x0",                               "# reset vstart so SIGUPD vector ops are not reserved/trapping")
       writeLine(f"vsetivli x0, 1, SEWSIZE, m{sig_lmul}, tu, mu",  f"# re-initialize vl = 1, LMUL = {sig_lmul}, SEW = SEWMIN for signature")
-      if xlen == 64:
-        # RV64 SIGUPD's RVTEST_WORD_PTR is .dword (8B) vs .word (4B) on RV32, which
-        # leaves the trap-handler's fixed mepc advance landing on the unreachable
-        # failedtest jal inside SIGUPD. Pad 8B so the handler lands on a nop and
-        # falls through to SREG/beq instead.
-        writeLine("nop",                                         "# rv64 pad 1/2: keep trap mepc out of SIGUPD jal")
-        writeLine("nop",                                         "# rv64 pad 2/2")
 
     if load_testline is not None:
       if reload_pre_init:
@@ -2138,21 +2175,28 @@ def prepMaskV(maskval, sew, tempReg, lmul):
     writeLine(f"la x{tempReg}, {maskval}")
     writeLine(f"vlm.v v0, (x{tempReg})",                      "# Load mask value into v0")
 
-def prepVstart(vstartval, lmul = 1):
+def prepVstart(vstartval, lmul = 1, scratch = 8, scratch2 = 28):
+  # `scratch` and `scratch2` must be picked via pickPrivScratch (which excludes
+  # sigReg, framework-reserved regs, and the test's operand regs). Hardcoding
+  # x8 / t3 (x28) here previously clobbered sigReg whenever resolveScalarSigConflict
+  # had relocated it to one of those registers, destroying the live signature
+  # pointer mid-test and triggering a chain of store-fault traps.
+  vstart_reg = scratch
   if   (vstartval == "one"):
-    writeLine("li x8, 1",                                    "# Load x8 = 1 for vstart")
+    writeLine(f"li x{vstart_reg}, 1",                                    f"# Load x{vstart_reg} = 1 for vstart")
   elif (vstartval == "vlmaxm1"):
-    writeLine(f"vsetvli x8, x0, SEWSIZE, m{lmul}, ta, ma",    "# x8 = VLMAX")
-    writeLine("addi x8, x8, -1",                             "# x8 = VLMAX - 1")
+    writeLine(f"vsetvli x{vstart_reg}, x0, SEWSIZE, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
+    writeLine(f"addi x{vstart_reg}, x{vstart_reg}, -1",                  f"# x{vstart_reg} = VLMAX - 1")
   elif (vstartval == "vlmaxd2"):
-    writeLine(f"vsetvli x8, x0, SEWSIZE, m{lmul}, ta, ma",    "# x8 = VLMAX")
-    writeLine("srli x8, x8, 1",                              "# x8 = VLMAX / 2")
+    writeLine(f"vsetvli x{vstart_reg}, x0, SEWSIZE, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
+    writeLine(f"srli x{vstart_reg}, x{vstart_reg}, 1",                   f"# x{vstart_reg} = VLMAX / 2")
   else: # random vstart
     randvstart = randint(3, maxVLEN)  # TODO: check logic for this
-    writeLine(f"vsetvli x8, x0, SEWSIZE, m{lmul}, ta, ma",    "# x8 = VLMAX")
-    writeLine(f"la t3, {randvstart}")
-    writeLine("remu t3, t3, x8",                             "# Ensure that vl < VLMAX")
-  writeLine("csrw vstart, x8",                               "# Write desired vstart value to the CSR")
+    writeLine(f"vsetvli x{vstart_reg}, x0, SEWSIZE, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
+    writeLine(f"la x{scratch2}, {randvstart}")
+    writeLine(f"remu x{scratch2}, x{scratch2}, x{vstart_reg}",           f"# x{scratch2} = randvstart % VLMAX (< VLMAX)")
+    vstart_reg = scratch2  # randomized vstart value lives in scratch2 from here on
+  writeLine(f"csrw vstart, x{vstart_reg}",                               f"# Write desired vstart value to the CSR")
 
 def getInstructionArguments(instruction):
   instruction_arguments = []

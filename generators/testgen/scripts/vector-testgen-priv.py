@@ -31,6 +31,7 @@ from vector_testgen_common import (
   getLengthLmul,
   getLengthSuiteTestCount,
   getSigSpace,
+  handleSignaturePointerConflict,
   insertTemplate,
   loadScalarReg,
   maxVLEN,
@@ -43,13 +44,38 @@ from vector_testgen_common import (
   randomizeMask,
   randomizeVectorInstructionData,
   readTestplans,
-  resolveScalarSigConflict,
   setExtension,
   setXlen,
   vd_widen_ins,
   whole_register_move,
   writeVecTest,
 )
+
+
+# Framework-reserved scalar X-registers that sigReg must NEVER be relocated into
+# in the privileged vector flow. RVTEST_CODE_END's check_trap_sig_offset uses x2
+# as the signature pointer and T1..T6 (x6..x11) as scratch; tempReg=x4, linkReg=x5,
+# gp=x3, ra=x1, zero=x0 are also reserved. If sigReg ends up in any of these,
+# either the cleanup epilog stores through a stale x2, or the cleanup's own
+# T-register usage clobbers the live signature pointer.
+_PRIV_RESERVED_SIGREG_FORBIDDEN = (0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+
+
+def resolveScalarSigConflict(instruction_arguments, scalar_register_data):
+  """Priv-aware version of common.resolveScalarSigConflict.
+
+  In addition to the test's own scalar operand registers, also force sigReg
+  away from framework-reserved registers (T1..T6, tempReg, linkReg, gp, ra)
+  so that the trap handler / RVTEST_CODE_END epilog does not collide with a
+  live signature pointer.
+  """
+  scalar_regs_used = [
+    scalar_register_data[a]['reg']
+    for a in instruction_arguments
+    if a and a[0] == 'r' and a in scalar_register_data
+  ]
+  handleSignaturePointerConflict(*scalar_regs_used, *_PRIV_RESERVED_SIGREG_FORBIDDEN)
+  return scalar_regs_used
 
 
 def writeLine(argument: str, comment = ""):
@@ -94,8 +120,9 @@ def make_vstart(instruction, maxlmul = 8):
                                                           additional_no_overlap=no_overlap)
 
         scratch = pickPrivScratch(instruction_data[1])
+        scratch2 = pickPrivScratch(instruction_data[1], exclude=(scratch,))
         writePrivTestPrep(description, instruction, instruction_data, lmul = lmul, vl = "vlmax", scratch=scratch)
-        prepVstart(vstartval)
+        prepVstart(vstartval, scratch=scratch, scratch2=scratch2)
         writePrivTestLine(instruction, instruction_data, cp="cp_vstart", lmul = lmul, vl = "vlmax", maskval = maskval)
 
 def make_vstart_gt_vl(instruction):
@@ -107,22 +134,14 @@ def make_vstart_gt_vl(instruction):
 
     # a0 (x10) and a1 (x11) are used by the cp_vstart_gt_vl_setup helper for vl/vstart
     # inputs and are clobbered on return; exclude them from the scratch candidate set.
+    # Note: sigReg is also kept out of x10/x11 by the priv resolveScalarSigConflict
+    # forbidden-set, so no extra save/restore around the helper call is needed.
     scratch = pickPrivScratch(instruction_data[1], exclude=(10, 11))
     writePrivTestPrep(description, instruction, instruction_data, lmul = 4, vl = "vlmax", vstart = True, scratch=scratch)
 
-    # If sigReg currently lives in a0/a1, save it across the helper call so
-    # subsequent SIGUPDs don't store through a corrupted signature pointer.
-    save_sig = common.sigReg in (10, 11)
-    if save_sig:
-        sigSave = pickPrivScratch(instruction_data[1], exclude=(10, 11, scratch))
-        writeLine(f"mv x{sigSave}, x{common.sigReg}", f"# preserve sigReg (x{common.sigReg}) across cp_vstart_gt_vl_setup")
-
     writeLine(f"li a0, {randvl}",            "# load random number to a0, place holder for vl")
-    writeLine(f"li a0, {randvstart}",        "# load random number to a1, place holder for vstart")
+    writeLine(f"li a1, {randvstart}",        "# load random number to a1, place holder for vstart")
     writeLine("jal cp_vstart_gt_vl_setup",  "# jump to set up vstart and vl for the test")
-
-    if save_sig:
-        writeLine(f"mv x{common.sigReg}, x{sigSave}", f"# restore sigReg (x{common.sigReg}) after helper")
 
     writePrivTestLine(instruction, instruction_data, cp="cp_vstart_gt_vl", vl = "vlmax", lmul = 4)
 
@@ -148,6 +167,21 @@ def makeTest(coverpoints, instruction):
         else:
             print("Warning: " + coverpoint + " not implemented yet for " + instruction)
 
+def _emul_lmul_str(group_size):
+    # Convert an EMUL group size (number of architectural vregs) to the LMUL
+    # field encoding string used by vsetvli (e.g. 1 -> "m1", 2 -> "m2", 8 -> "m8").
+    # Group sizes that are not powers of two (segment NF=3,5,6,7) are clamped to
+    # the smallest legal LMUL ≥ group_size so the init load covers all
+    # constituent registers.
+    if group_size <= 1:
+        return "m1"
+    if group_size <= 2:
+        return "m2"
+    if group_size <= 4:
+        return "m4"
+    return "m8"
+
+
 def writePrivTestPrep(description, instruction, instruction_data=None, lmul = 1, vl = 1, vstart = False, scratch=None):
     instruction_arguments = getInstructionArguments(instruction)
 
@@ -163,24 +197,59 @@ def writePrivTestPrep(description, instruction, instruction_data=None, lmul = 1,
         vd_reg  = vec_data['vd']['reg']
         vs2_reg = vec_data['vs2']['reg']
         vs1_reg = vec_data['vs1']['reg']
+        # vd's SIGUPD_V_LEN comparison runs at sig_lmul (= getLengthLmul for
+        # whole-register moves, otherwise = test lmul, otherwise = 1 for mask/scalar).
+        # The init must cover at least sig_lmul regs of vd so the data-vector
+        # comparison reads/writes hit fully-initialized state — otherwise stale
+        # upper-LMUL regs differ between the SIGRUN and SELFCHECK builds (which
+        # emit different vector ops in the SIGUPD_V slot), causing spurious
+        # mismatches in tests that trap (cp_vill, cp_vstart_gt_vl) where the test
+        # never actually runs.
+        if vec_data['vd']['reg_type'] in ("mask", "scalar"):
+            vd_sig_lmul = 1
+        elif instruction in whole_register_move:
+            vd_sig_lmul = getLengthLmul(instruction) or 1
+        else:
+            vd_sig_lmul = lmul if isinstance(lmul, int) else 1
+        vd_emul  = max(1, int(lmul * vec_data['vd' ].get('size_multiplier', 1) * vec_data['vd' ].get('segments', 1)), vd_sig_lmul)
+        vs2_emul = max(1, int(lmul * vec_data['vs2'].get('size_multiplier', 1) * vec_data['vs2'].get('segments', 1)))
+        vs1_emul = max(1, int(lmul * vec_data['vs1'].get('size_multiplier', 1) * vec_data['vs1'].get('segments', 1)))
     else:
         # Backwards-compatible legacy path (should not be used by new code).
         if scratch is None:
             scratch = 8
         vd_reg, vs2_reg, vs1_reg = 8, 16, 24
+        vd_emul = vs2_emul = vs1_emul = 1
 
+    # Init each constituent vector register of every operand at LMUL=1 vl=VLMAX.
+    # This fully initializes every architectural vreg the test instruction will
+    # read or write, so the SIGRUN and SELFCHECK runs enter the test in
+    # bit-identical state. (Initializing the operand at its full EMUL would be
+    # cheaper but is unsafe in the priv flow because randomizeVectorInstructionData
+    # does not always pick LMUL-aligned vector regs — e.g. widening vwadd.vv with
+    # vd EMUL=8 may pick vd=v22, which is not aligned to 8 and would trap on the
+    # init load.) Constituent regs that would extend past v31 are skipped — the
+    # test instruction itself is also architecturally invalid in that case, and
+    # we don't want the init load to emit an out-of-range vreg.
+    def _emit_init(arg_name, base_reg, emul):
+        if arg_name not in instruction_arguments:
+            return
+        writeLine(f"vsetvli x{scratch}, x0, SEWSIZE, m1, tu, mu",  f"# {arg_name} init: LMUL=1 vl=VLMAX, will iterate {emul} reg(s)")
+        for i in range(emul):
+            if base_reg + i > 31:
+                break
+            writeLine(f"la x{scratch}, random_mask_0",       "# load random vector base")
+            writeLine(f"VLESEWMIN v{base_reg + i}, (x{scratch})",  f"# load to initialize {arg_name} reg #{i} (v{base_reg + i})")
+
+    _emit_init("vd",  vd_reg,  vd_emul)
+    _emit_init("vs2", vs2_reg, vs2_emul)
+    _emit_init("vs1", vs1_reg, vs1_emul)
+
+    # Restore the requested test-time vl/lmul after the init loads.
     if (vl == "vlmax"):
-      writeLine(f"vsetvli x{scratch}, x0, SEWSIZE, m{lmul}, tu, mu",  "# initialize vl = VLMAX, LMUL = 1, SEW = SEWMIN")
+      writeLine(f"vsetvli x{scratch}, x0, SEWSIZE, m{lmul}, tu, mu",  f"# restore test vtype: vl=VLMAX, LMUL={lmul}, SEW=SEWMIN")
     else:
-      writeLine(f"vsetivli x{scratch}, {vl}, SEWSIZE, m{lmul}, tu, mu",  f"# initialize vl = {vl}, LMUL = 1, SEW = SEWMIN")
-
-    writeLine(f"la x{scratch}, random_mask_0",             "# load a random vector ") # TODO: change back to vector_random
-    if ("vd" in instruction_arguments):
-        writeLine(f"VLESEWMIN v{vd_reg}, (x{scratch})",    f"# load to initialize vd (v{vd_reg}) ")
-    if ("vs2" in instruction_arguments):
-        writeLine(f"VLESEWMIN v{vs2_reg}, (x{scratch})",   f"# load to initialize vs2 (v{vs2_reg})")
-    if ("vs1" in instruction_arguments):
-        writeLine(f"VLESEWMIN v{vs1_reg}, (x{scratch})",   f"# load to initialize vs1 (v{vs1_reg})")
+      writeLine(f"vsetivli x{scratch}, {vl}, SEWSIZE, m{lmul}, tu, mu",  f"# restore test vtype: vl={vl}, LMUL={lmul}, SEW=SEWMIN")
 
 def writePrivTestLine(instruction, instruction_data, cp="cp_vill", vl=1, lmul=1, maskval=None):
     instruction_arguments = getInstructionArguments(instruction)
@@ -232,7 +301,28 @@ def writePrivTestLine(instruction, instruction_data, cp="cp_vill", vl=1, lmul=1,
     rd = scalar_register_data ['rd'] ['reg']
 
     add_testcase_string(cp, instruction)
-    writeVecTest(instruction, cp, vd, minSEW_MIN, testline, test=instruction, rd=rd, vl=vl, sig_lmul=sig_lmul, sig_whole_register_store=sig_whole_register_store, priv=True, force_vill=(cp == "cp_vill"))
+    # The data-vector SIGUPD_V is meaningless and actively harmful for tests
+    # that *always* trap, because:
+    #   1. The test instruction never executes, so vd contents are irrelevant.
+    #   2. The SIGUPD_V macro itself emits different vector ops in SIGRUN vs
+    #      SELFCHECK builds (vse vs vle+vmsne+blt). When vd is unaligned to
+    #      sig_lmul, those vector ops trap on different instructions in the
+    #      two builds, producing different mepc/mcause values and a spurious
+    #      trap_signature mismatch.
+    # The trap handler's TRAP_SIGUPD emissions (mvect/mcause/mepc/mtval) still
+    # run regardless of skip_sigupd, so we still verify trap correctness —
+    # which is the entire coverage goal for these always-trapping cases.
+    #
+    # Always-trapping cases:
+    #   - cp_vill: vill=1 forces illegal-instruction on every test.
+    #   - cp_vstart_gt_vl: vstart > vl is reserved → illegal.
+    #   - cp_vstart on whole_register_move: vmv{1,2,4,8}r.v require vstart=0,
+    #     and cp_vstart sets vstart != 0, so they always trap illegal.
+    skip_sigupd = (
+        cp in ("cp_vill", "cp_vstart_gt_vl")
+        or (cp == "cp_vstart" and instruction in whole_register_move)
+    )
+    writeVecTest(instruction, cp, vd, minSEW_MIN, testline, test=instruction, rd=rd, vl=vl, sig_lmul=sig_lmul, sig_whole_register_store=sig_whole_register_store, priv=True, force_vill=(cp == "cp_vill"), skip_sigupd=skip_sigupd)
 
 
 
@@ -302,6 +392,15 @@ if __name__ == '__main__':
             makeTest(coverpoints, instruction)
 
         insertTemplate(basename, 0, "cp_vstart_gt_vl_setup.S")
+
+        # The framework's RVTEST_CODE_END (tests/env/rvtest_setup.h) hardcodes x2
+        # as the signature pointer for its final check_trap_sig_offset SIGUPD.
+        # If our test relocated sigReg away from x2 (handleSignaturePointerConflict),
+        # x2 now holds stale data and the cleanup epilog would store through a
+        # bogus pointer (typical symptom: trap loop with MEPC inside
+        # check_trap_sig_offset). Restore x2 = sigReg here so the cleanup works.
+        if common.sigReg != 2:
+            writeLine(f"mv x2, x{common.sigReg}", "# restore sigReg into x2 for RVTEST_CODE_END cleanup epilog")
 
         ###############################  ending test file  ###############################
         # generate vector data (random and corners)

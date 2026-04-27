@@ -17,20 +17,20 @@ covergroup ExceptionsSv_cg with function sample(ins_t ins);
 
     // building blocks for the main coverpoints
 
-    mstatus_mprv_one: coverpoint ins.current.csr[12'h300][17] {
+    mstatus_mprv_one: coverpoint ins.current.csr[CSR_MSTATUS][17] {
         bins one = {1};
     }
-    mstatus_mpp: coverpoint ins.prev.csr[12'h300][12:11] {
+    mstatus_mpp: coverpoint ins.prev.csr[CSR_MSTATUS][12:11] {
         bins u_mode = {2'b00};
         bins s_mode = {2'b01};
     }
-    instr_page_fault: coverpoint (ins.current.csr[12'h342][31:0] == 32'd12) {
+    instr_page_fault: coverpoint (ins.current.csr[CSR_MCAUSE][31:0] == 32'd12) {
         // auto fill 0/1
     }
-    load_page_fault: coverpoint (ins.current.csr[12'h342][31:0] == 32'd13) {
+    load_page_fault: coverpoint (ins.current.csr[CSR_MCAUSE][31:0] == 32'd13) {
         // auto fill 0/1
     }
-    store_page_fault: coverpoint (ins.current.csr[12'h342][31:0] == 32'd15) {
+    store_page_fault: coverpoint (ins.current.csr[CSR_MCAUSE][31:0] == 32'd15) {
         // auto fill 0/1
     }
     i_virt_adr_misaligned: coverpoint ins.current.virt_adr_i[1:0] {
@@ -51,17 +51,11 @@ covergroup ExceptionsSv_cg with function sample(ins_t ins);
     d_page_table_entry_invalid: coverpoint ins.current.pte_d[0] {
         // auto fill valid bit 0/1
     }
-    // sw: coverpoint ins.current.insn {
-    //     wildcard bins sw = {32'b????????????_?????_010_?????_0100011};
-    // }
-    // lw: coverpoint ins.current.insn {
-    //     wildcard bins lw = {32'b????????????_?????_010_?????_0000011};
-    // }
     memops: coverpoint ins.current.insn {
-        wildcard bins sw       = {32'b????????????_?????_010_?????_0100011};
-        wildcard bins lw       = {32'b????????????_?????_010_?????_0000011};
+        wildcard bins sw       = {SW};
+        wildcard bins lw       = {LW};
     }
-    medeleg_walk: coverpoint ins.current.csr[12'h302] {
+    medeleg_walk: coverpoint ins.current.csr[CSR_MEDELEG] {
         bins zeros                    = {16'b0000_0000_0000_0000};
         `ifndef COVER_ZCA
             bins instrmisaligned_enabled  = {16'b0000_0000_0000_0001};
@@ -88,13 +82,13 @@ covergroup ExceptionsSv_cg with function sample(ins_t ins);
     }
 
     lw: coverpoint ins.current.insn {
-        wildcard bins lw = {32'b????????????_?????_010_?????_0000011};
+        wildcard bins lw = {LW};
     }
     sw: coverpoint ins.current.insn {
-        wildcard bins sw = {32'b????????????_?????_010_?????_0100011};
+        wildcard bins sw = {SW};
     }
     jalr: coverpoint ins.prev.insn {
-        wildcard bins jalr = {32'b????????????_?????_000_?????_1100111};
+        wildcard bins jalr = {JALR};
     }
 
     d_page_table_entry_bad: coverpoint ins.current.pte_d[7:0] {

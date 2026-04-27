@@ -129,7 +129,9 @@ class riscvTraceData
   string                    vs3;
 
   bit [(XLEN-1):0]          rd_val;
+  bit [(XLEN-1):0]          rd_next_val;
   bit [(XLEN-1):0]          rd_val_pre;
+  bit [(XLEN-1):0]          rd_next_val_pre;
   bit [(XLEN-1):0]          rs1_val;
   bit [(XLEN-1):0]          rs2_val;
   bit [(XLEN-1):0]          rs3_val;

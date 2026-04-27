@@ -1,6 +1,6 @@
     cmp_rd_rs1_pair_partial_val : coverpoint (
-            (ins.current.rd_val[`XLEN-1:0] == ins.prev.rd_val[`XLEN-1:0]) ^
-            (ins.current.rd_val[2*`XLEN-1:`XLEN] == ins.prev.rd_val[2*`XLEN-1:`XLEN])
+            (ins.current.rd_val == ins.prev.rd_val) ^
+            (ins.current.rd_next_val == ins.prev.rd_next_val)
         ) iff (ins.trap == 0)
         {
         // Cases where rd and rs1 have matching high or low halves but not both

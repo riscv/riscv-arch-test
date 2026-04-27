@@ -345,7 +345,7 @@
   `include "ZfhminD_coverage.svh"
 `endif
 `ifdef ZIC64BZICBOZ_COVERAGE
-  `include "Zic64bzicboz_coverage.svh"
+  `include "Zic64bZicboz_coverage.svh"
 `endif
 `ifdef ZICBOM_COVERAGE
   `include "Zicbom_coverage.svh"

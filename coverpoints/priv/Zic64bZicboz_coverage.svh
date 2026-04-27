@@ -6,12 +6,12 @@
 // Copyright (C) : 2026 Harvey Mudd College, 10x Engineers, UET Lahore, Habib University
 // SPDX-License-Identifier: Apache-2.0
 //
-// Description: Coverage for RVA23U64 profile - Zic64bzicboz extension
+// Description: Coverage for RVA23U64 profile - Zic64bZicboz extension
 ///////////////////////////////////////////////
 
 `define COVER_ZIC64BZICBOZ
 
-covergroup Zic64bzicboz_cg with function sample(ins_t ins);
+covergroup Zic64bZicboz_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -27,5 +27,5 @@ covergroup Zic64bzicboz_cg with function sample(ins_t ins);
 endgroup
 
 function void zic64bzicboz_sample(int hart, int issue, ins_t ins);
-    Zic64bzicboz_cg.sample(ins);
+    Zic64bZicboz_cg.sample(ins);
 endfunction

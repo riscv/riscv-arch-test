@@ -156,7 +156,7 @@
 #endif
 #define VLEN_BYTES (VLEN>>3)   // in units of #bytes
 #define VLEN_WORDS (VLEN_BYTES>>2) // in units of words
-#define VECREG_REGION_BYTES (VLEN_BYTES * 32) // number of bytes occupied by all 32 vector registers
+#define VECREG_REGION_WORDS (VLEN_WORDS * 32) // number of words occupied by all 32 vector registers
 
 // Max data size alignment for signature and data region.
 // Keyed on TEST_FLEN because the generated .data section and the signature

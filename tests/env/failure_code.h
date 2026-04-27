@@ -133,8 +133,7 @@
         SREG x1, 8(DEFAULT_TEMP_REG)
         li x1, 4
         sw x1, 0(DEFAULT_TEMP_REG)                  # failure_type = 4 (vector)
-        SREG x2, 16(DEFAULT_TEMP_REG)
-        li x2, 0                                    # vector mismatch region = 0 (active)
+        li x1, 0                                    # vector mismatch region = 0 (active)
         j failedtest_saveregs
 
     failedtest_vec_active_x8_x7:
@@ -147,8 +146,7 @@
         sw x1, 0(x7)                                # failure_type = 4 (vector)
         mv DEFAULT_TEMP_REG, x7
         mv DEFAULT_LINK_REG, x8
-        SREG x2, 16(DEFAULT_TEMP_REG)
-        li x2, 0                                    # vector mismatch region = 0 (active)
+        li x1, 0                                    # vector mismatch region = 0 (active)
         j failedtest_saveregs
 
     failedtest_vec_active_x13_x12:
@@ -161,8 +159,7 @@
         sw x1, 0(x12)                               # failure_type = 4 (vector)
         mv DEFAULT_TEMP_REG, x12
         mv DEFAULT_LINK_REG, x13
-        SREG x2, 16(DEFAULT_TEMP_REG)
-        li x2, 0                                    # vector mismatch region = 0 (active)
+        li x1, 0                                    # vector mismatch region = 0 (active)
         j failedtest_saveregs
 
     # -------- TAIL --------
@@ -172,8 +169,7 @@
         SREG x1, 8(DEFAULT_TEMP_REG)
         li x1, 4
         sw x1, 0(DEFAULT_TEMP_REG)                  # failure_type = 4 (vector)
-        SREG x2, 16(DEFAULT_TEMP_REG)
-        li x2, 1                                    # vector mismatch region = 1 (tail)
+        li x1, 1                                    # vector mismatch region = 1 (tail)
         j failedtest_saveregs
 
     failedtest_vec_tail_x8_x7:
@@ -186,8 +182,7 @@
         sw x1, 0(x7)                                # failure_type = 4 (vector)
         mv DEFAULT_TEMP_REG, x7
         mv DEFAULT_LINK_REG, x8
-        SREG x2, 16(DEFAULT_TEMP_REG)
-        li x2, 1                                    # vector mismatch region = 1 (tail)
+        li x1, 1                                    # vector mismatch region = 1 (tail)
         j failedtest_saveregs
 
     failedtest_vec_tail_x13_x12:
@@ -200,8 +195,7 @@
         sw x1, 0(x12)                               # failure_type = 4 (vector)
         mv DEFAULT_TEMP_REG, x12
         mv DEFAULT_LINK_REG, x13
-        SREG x2, 16(DEFAULT_TEMP_REG)
-        li x2, 1                                    # vector mismatch region = 1 (tail)
+        li x1, 1                                    # vector mismatch region = 1 (tail)
         j failedtest_saveregs
 
     # -------- MASK --------
@@ -211,8 +205,7 @@
         SREG x1, 8(DEFAULT_TEMP_REG)
         li x1, 4
         sw x1, 0(DEFAULT_TEMP_REG)                  # failure_type = 4 (vector)
-        SREG x2, 16(DEFAULT_TEMP_REG)
-        li x2, 2                                    # vector mismatch region = 2 (mask)
+        li x1, 2                                    # vector mismatch region = 2 (mask)
         j failedtest_saveregs
 
     failedtest_vec_mask_x8_x7:
@@ -225,8 +218,7 @@
         sw x1, 0(x7)                                # failure_type = 4 (vector)
         mv DEFAULT_TEMP_REG, x7
         mv DEFAULT_LINK_REG, x8
-        SREG x2, 16(DEFAULT_TEMP_REG)
-        li x2, 2                                    # vector mismatch region = 2 (mask)
+        li x1, 2                                    # vector mismatch region = 2 (mask)
         j failedtest_saveregs
 
     failedtest_vec_mask_x13_x12:
@@ -239,8 +231,7 @@
         sw x1, 0(x12)                               # failure_type = 4 (vector)
         mv DEFAULT_TEMP_REG, x12
         mv DEFAULT_LINK_REG, x13
-        SREG x2, 16(DEFAULT_TEMP_REG)
-        li x2, 2                                    # vector mismatch region = 2 (mask)
+        li x1, 2                                    # vector mismatch region = 2 (mask)
         j failedtest_saveregs
 
     # -------- BASE --------
@@ -250,8 +241,7 @@
         SREG x1, 8(DEFAULT_TEMP_REG)
         li x1, 4
         sw x1, 0(DEFAULT_TEMP_REG)                  # failure_type = 4 (vector)
-        SREG x2, 16(DEFAULT_TEMP_REG)
-        li x2, 3                                    # vector mismatch region = 3 (base)
+        li x1, 3                                    # vector mismatch region = 3 (base)
         j failedtest_saveregs
 
     failedtest_vec_base_x8_x7:
@@ -264,8 +254,7 @@
         sw x1, 0(x7)                                # failure_type = 4 (vector)
         mv DEFAULT_TEMP_REG, x7
         mv DEFAULT_LINK_REG, x8
-        SREG x2, 16(DEFAULT_TEMP_REG)
-        li x2, 3                                    # vector mismatch region = 3 (base)
+        li x1, 3                                    # vector mismatch region = 3 (base)
         j failedtest_saveregs
 
     failedtest_vec_base_x13_x12:
@@ -278,8 +267,7 @@
         sw x1, 0(x12)                               # failure_type = 4 (vector)
         mv DEFAULT_TEMP_REG, x12
         mv DEFAULT_LINK_REG, x13
-        SREG x2, 16(DEFAULT_TEMP_REG)
-        li x2, 3                                    # vector mismatch region = 3 (base)
+        li x1, 3                                    # vector mismatch region = 3 (base)
         j failedtest_saveregs
 
 #endif // RVTEST_VECTOR
@@ -287,12 +275,7 @@
     # for the rest of this code, DEFAULT_LINK_REG contains return address of jal from the failure, DEFAULT_TEMP_REG points to scratch space
     failedtest_saveregs:
         # x1 has already been saved by all entry points
-    #ifdef RVTEST_VECTOR
-        # SREG x2, 16(DEFAULT_TEMP_REG)
-        # x2 has already been saved by vector failure entry points to indicate mismatch region (active/tail/mask)
-    #else
         SREG x2, 16(DEFAULT_TEMP_REG)
-    #endif
         SREG x3, 24(DEFAULT_TEMP_REG)
         # SREG x4, 32(DEFAULT_TEMP_REG)
         # SREG x5, 40(DEFAULT_TEMP_REG)
@@ -914,7 +897,7 @@
         j failing_value_print_done
         failing_value_normal_print:
         LREG a0, failing_value
-        li a1, __riscv_xlen
+        lw a1, failing_sew_bits
         jal failedtest_hex_to_str
         failing_value_print_done:
         LA(a0, ascii_buffer)
@@ -934,7 +917,7 @@
         j expected_value_print_done
         expected_value_normal_print:
         LREG a0, expected_value
-        li a1, __riscv_xlen
+        lw a1, failing_sew_bits
         jal failedtest_hex_to_str
         expected_value_print_done:
         LA(a0, ascii_buffer)
@@ -1253,7 +1236,7 @@
     failing_mask_vec:                            # value of failing mask vector register
         .fill VLEN_WORDS, 4, 0xbaaaaaad
     vecreg_scratch:                              # space to save full vector register contents
-        .fill VECREG_REGION_BYTES, 4, 0xfeedf00dbaaaaaad
+        .fill VECREG_REGION_WORDS, 4, 0xfeedf00dbaaaaaad
 #endif // RVTEST_VECTOR
     ascii_buffer:
         .fill 40, 1, 0          # Buffer for hex string conversion (max "0x" + 16 + 16 + "\n" + null)

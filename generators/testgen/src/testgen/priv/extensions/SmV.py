@@ -505,14 +505,17 @@ def _gen_vl_walking1s_sew_lmul(test_data: TestData, temp_reg: int) -> list[str]:
     for sew_name, _ in _SEW_VALUES:
         for lmul_name, _ in _LMUL_VALUES:
             lines.append(f"# {sew_name}, {lmul_name}")
-            lines.append(f"vsetivli x{temp_reg}, 1, {sew_name}, {lmul_name}, tu, mu")
             lines.append(f"LI(x{walk_reg}, 1)")
             for i in range(32):
+                # vsetivli must be the immediately-preceding instruction of the CSRW
+                # so that ins.prev.insn == vsetivli at sample time.
+                lines.append(f"vsetivli x{temp_reg}, 1, {sew_name}, {lmul_name}, tu, mu")
                 lines.append(test_data.add_testcase(f"vl_walk_{sew_name}_{lmul_name}_b{i}", coverpoint, _CG))
                 lines.append(f"CSRW(vl, x{walk_reg})  # bit {i}")
                 lines.append(f"slli x{walk_reg}, x{walk_reg}, 1")
             lines.append("#if __riscv_xlen == 64")
             for i in range(32, 64):
+                lines.append(f"vsetivli x{temp_reg}, 1, {sew_name}, {lmul_name}, tu, mu")
                 lines.append(test_data.add_testcase(f"vl_walk_{sew_name}_{lmul_name}_b{i}", coverpoint, _CG))
                 lines.append(f"CSRW(vl, x{walk_reg})  # bit {i}")
                 lines.append(f"slli x{walk_reg}, x{walk_reg}, 1")

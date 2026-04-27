@@ -33,9 +33,8 @@
 // Total Expected Faults :: 36
 // --------------------------------------------------------------------------------------------------------------------------------
 
-// Remove NORUN once Sail supports Svpbmt
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Sv57, Svpbmt, NORUN]
+# REQUIRED_EXTENSIONS: [I, Sv57, Svpbmt]
 # MARCH: rv64i_zicsr
 ##### END_TEST_CONFIG #####
 

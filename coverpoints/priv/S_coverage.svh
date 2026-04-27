@@ -19,7 +19,7 @@ covergroup S_scause_cg with function sample(ins_t ins);
         wildcard bins csrrw = {CSRRW};
     }
     scause: coverpoint ins.current.insn[31:20] {
-        bins mcause = {CSR_SCAUSE};
+        bins scause = {CSR_SCAUSE};
     }
     scause_interrupt : coverpoint ins.current.rs1_val[XLEN-1] {
         bins interrupt = {1};
@@ -100,7 +100,7 @@ covergroup S_sstatus_cg with function sample(ins_t ins);
         wildcard bins csrrw = {CSRRW};
     }
     sstatus: coverpoint ins.current.insn[31:20] {
-        bins mstatus = {CSR_SSTATUS};
+        bins sstatus = {CSR_SSTATUS};
     }
     // main coverpoints
     cp_sstatus_sd_write: cross priv_mode_s, csrrw, sstatus, cp_sstatus_sd, cp_sstatus_fs, cp_sstatus_vs, cp_sstatus_xs;
@@ -138,8 +138,6 @@ covergroup S_sprivinst_cg with function sample(ins_t ins);
     sret: coverpoint ins.current.insn  {
         bins sret   = {SRET};
     }
-    // old_mstatus_mprv: coverpoint ins.prev.csr[12'h300][17] {
-    // }
     old_mstatus_tsr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tsr")[0] {
     }
     old_sstatus_spp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0] {

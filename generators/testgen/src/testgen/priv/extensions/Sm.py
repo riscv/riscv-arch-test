@@ -379,10 +379,13 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
 
     lines.append("\n#ifdef MSECCFG_SUPPORTED")
     lines.extend(csr_access_test(test_data, "mseccfgh", covergroup, coverpoint))
+    lines.append("#endif // MSECCFG")
+    lines.append("\n#ifdef SM1P13_SUPPORTED")
+    lines.extend(csr_access_test(test_data, "medelegh", covergroup, coverpoint))
     lines.extend(
         [
-            "#endif",
-            "#endif",
+            "#endif // SM1P13",
+            "#endif // xlen = 32",
         ]
     )
 
@@ -724,6 +727,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
             "",
             "# Write 1 to msip (set MSIP) and check mip.MSIP is set",
             f"LI(x{r_msip}, 1)                         # value 1: assert msip",
+            test_data.add_testcase("msip_mmio_1", coverpoint, covergroup),
             f"SW x{r_msip}, 0(x{r_msipaddr})           # write msip = 1 via memory-mapped I/O",
             f"LW x{r_msip}, 0(x{r_msipaddr})            # read back memory-mapped msip register",
             f"andi x{r_msip}, x{r_msip}, 1              # isolate bit 0",
@@ -737,6 +741,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
             "",
             "# Write 0 to msip (clear MSIP) and check mip.MSIP is clear",
             f"LI(x{r_msip}, 0)                         # value 0: deassert msip",
+            test_data.add_testcase("msip_mmio_0", coverpoint, covergroup),
             f"SW x{r_msip}, 0(x{r_msipaddr})           # write msip = 0 via memory-mapped I/O",
             f"LW x{r_msip}, 0(x{r_msipaddr})            # read back memory-mapped msip register",
             f"andi x{r_msip}, x{r_msip}, 1              # isolate bit 0",
@@ -752,36 +757,6 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     )
 
     test_data.int_regs.return_registers([r_msip, r_msipaddr])
-
-    ######################################
-    coverpoint = "cp_medelegh"
-    ######################################
-    lines.append(
-        comment_banner(
-            coverpoint,
-            "Sm1p13 RV32 only: write all 1s to medelegh and read back.\n"
-            "The ref model determines which bits are writable; signature must match.",
-        ),
-    )
-
-    r_medsave, r_medcheck = test_data.int_regs.get_registers(2)
-
-    lines.extend(
-        [
-            "#if __riscv_xlen == 32",
-            f"CSRR(x{r_medsave}, medelegh)   # save medelegh before testing",
-            "",
-            "# Write all 1s to medelegh",
-            f"LI(x{r_medcheck}, -1)          # x{r_medcheck} = all 1s",
-            test_data.add_testcase("write_ones", coverpoint, covergroup),
-            gen_csr_write_sigupd(r_medcheck, "medelegh", test_data),
-            "",
-            f"CSRW(medelegh, x{r_medsave})   # restore medelegh",
-            "#endif // __riscv_xlen == 32",
-        ]
-    )
-
-    test_data.int_regs.return_registers([r_medsave, r_medcheck])
 
     lines.append("#endif // SM1P13_SUPPORTED")
 

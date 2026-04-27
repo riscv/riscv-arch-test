@@ -14,6 +14,7 @@
 #define ZCB_SUPPORTED
 #define ZCD_SUPPORTED
 #define S_SUPPORTED
+#define U_SUPPORTED
 #define SV39_SUPPORTED
 #define SV48_SUPPORTED
 #define SV57_SUPPORTED

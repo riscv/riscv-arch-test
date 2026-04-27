@@ -25,11 +25,13 @@ covergroup Zvfhmin_vfwcvt_f_f_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_csr_fflags_v : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
     }
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -38,6 +40,7 @@ covergroup Zvfhmin_vfwcvt_f_f_v_cg with function sample(ins_t ins);
         bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
         bins random         = {mask_random          };
     }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vd_emul2
     //////////////////////////////////////////////////////////////////////////////////
@@ -63,9 +66,11 @@ covergroup Zvfhmin_vfwcvt_f_f_v_cg with function sample(ins_t ins);
     }
 
     //// end cp_vd_emul2////////////////////////////////////////////////
+
     cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
     bins zero = {0};
     }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vs2
     //////////////////////////////////////////////////////////////////////////////////
@@ -75,6 +80,7 @@ covergroup Zvfhmin_vfwcvt_f_f_v_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vs2_edges_f_sew16
     //////////////////////////////////////////////////////////////////////////////////
@@ -104,6 +110,7 @@ covergroup Zvfhmin_vfwcvt_f_f_v_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_f_sew16////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -135,6 +142,7 @@ covergroup Zvfhmin_vfwcvt_f_f_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     //// end cr_vl_lmul_lmul4max_sew16////////////////////////////////////////////////
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vtype_agnostic_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -160,11 +168,15 @@ covergroup Zvfhmin_vfwcvt_f_f_v_cg with function sample(ins_t ins);
     }
 
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
+
 endgroup
 // ---------------------
 function void zvfhmin_sample(int hart, int issue, ins_t ins);
-
-    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) begin
+    // Want to sample only if the SEW matches the target SEW of the file, some tests require
+    // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
+    // associated sew with these tests
+    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1 ||
+        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
         "vfwcvt.f.f.v"     : begin
             Zvfhmin_vfwcvt_f_f_v_cg.sample(ins);

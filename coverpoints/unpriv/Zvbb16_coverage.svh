@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZVBB16
-`define COVER_VFCUSTOM16
+`define COVER_ZVBBCUSTOM16
 `ifdef ELEN16
     `define SEW_16_EQ_ELEN
 `endif

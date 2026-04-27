@@ -107,7 +107,7 @@
 #define SAIL_SIG_ADDRESS  (0xC000000 + 0x4)  /* Address of memory mapped simple interrupt generator */
 #undef RVMODEL_SET_MEXT_INT
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)        \
-  li _R1, (1 << 31 + 1 << 11);               \
+  li _R1, (1 << 31) | (1 << 11);               \
   li _R2, SAIL_SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Set MEXT interrupt */ \
 
@@ -136,7 +136,7 @@
 ##### Supervisor Interrupts #####
 #undef RVMODEL_SET_SEXT_INT
 #define RVMODEL_SET_SEXT_INT(_R1, _R2)        \
-  li _R1, (1 << 31 + 1 << 9);               \
+  li _R1, (1 << 31) | (1 << 9);               \
   li _R2, SAIL_SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Set SEXT interrupt */ \
 
@@ -148,7 +148,7 @@
 
 #undef RVMODEL_SET_SSW_INT
 #define RVMODEL_SET_SSW_INT(_R1, _R2)        \
-  li _R1, (1 << 31 + 1 << 1);               \
+  li _R1, (1 << 31) | (1 << 1);               \
   li _R2, SAIL_SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Set SSW interrupt */ \
 

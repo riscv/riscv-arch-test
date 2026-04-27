@@ -1,1 +1,10 @@
+        "vsetvl"    : begin
+            ins.add_rd(0);
+            ins.add_rs1(1);
+            ins.add_rs2(2);
+        end
+        "vsetvli"   : begin
+            ins.add_rd(0);
+            ins.add_rs1(1);
+        end
     endcase

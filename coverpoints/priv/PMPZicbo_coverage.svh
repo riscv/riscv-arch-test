@@ -48,11 +48,11 @@ covergroup PMPZicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0]
     }
 
     prefetch_r_instr: coverpoint ins.current.insn {
-        wildcard bins prefetch_i_instr = {PREFETCH_R};
+        wildcard bins prefetch_r_instr = {PREFETCH_R};
     }
 
     prefetch_w_instr: coverpoint ins.current.insn {
-        wildcard bins prefetch_i_instr = {PREFETCH_W};
+        wildcard bins prefetch_w_instr = {PREFETCH_W};
     }
 
     // TOR Regions ((6,5),(5,4),(4,3),(3,2),(2,1),(1,0))

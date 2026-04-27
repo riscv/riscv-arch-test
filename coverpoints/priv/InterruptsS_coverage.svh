@@ -356,9 +356,6 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
                             {ins.current.csr[CSR_MIE][11], ins.current.csr[CSR_MIE][7], ins.current.csr[CSR_MIE][3]}) {
         bins equal = {1};
     }
-    mideleg_mie_eq: coverpoint (ins.current.csr[CSR_MIDELEG][11:0] == ins.current.csr[CSR_MIP][11:0]) {
-        bins equal = {1};
-    }
     // S-mode: Priority among delegated interrupts
     // Exclude combo_000 (nothing enabled = no interrupt)
     mideleg_combinations_delegated: coverpoint {ins.current.csr[CSR_MIDELEG][9],

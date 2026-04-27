@@ -21,7 +21,7 @@
 # Global ARGs - declared before any FROM so they are overridable across all stages.
 # Each stage that uses them must redeclare them with a bare ARG (no default) to bring them into scope.
 ARG RISCV_TOOLCHAIN_PREFIX=/opt/riscv
-ARG SAIL_VERSION=0.10
+ARG SAIL_VERSION=0.11
 ARG RISCV_TOOLCHAIN_VERSION=2026.04.05
 
 # Stage 1: build riscv-gnu-toolchain
@@ -34,61 +34,61 @@ ARG RISCV_TOOLCHAIN_PREFIX
 ARG RISCV_TOOLCHAIN_VERSION
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    autoconf \
-    automake \
-    autotools-dev \
-    bc \
-    bison \
-    build-essential \
-    cmake \
-    ca-certificates \
-    curl \
-    flex \
-    gawk \
-    gperf \
-    git \
-    libexpat-dev \
-    libglib2.0-dev \
-    libgmp-dev \
-    libmpc-dev \
-    libmpfr-dev \
-    libncurses-dev \
-    libslirp-dev \
-    libtool \
-    ninja-build \
-    patchutils \
-    python3 \
-    python3-tomli \
-    texinfo \
-    zlib1g-dev
+  autoconf \
+  automake \
+  autotools-dev \
+  bc \
+  bison \
+  build-essential \
+  cmake \
+  ca-certificates \
+  curl \
+  flex \
+  gawk \
+  gperf \
+  git \
+  libexpat-dev \
+  libglib2.0-dev \
+  libgmp-dev \
+  libmpc-dev \
+  libmpfr-dev \
+  libncurses-dev \
+  libslirp-dev \
+  libtool \
+  ninja-build \
+  patchutils \
+  python3 \
+  python3-tomli \
+  texinfo \
+  zlib1g-dev
 
 RUN git clone --depth 1 --branch "${RISCV_TOOLCHAIN_VERSION}" https://github.com/riscv/riscv-gnu-toolchain /tmp/riscv-gnu-toolchain \
- && cd /tmp/riscv-gnu-toolchain \
- && sed -i 's/c,c++/c/g' Makefile.in \
- && sed -i 's/c,c++,fortran/c/g' Makefile.in \
- && ./configure \
-        --prefix="${RISCV_TOOLCHAIN_PREFIX}" \
-        --disable-gdb \
-        --disable-qemu \
-        --disable-linux \
-        --disable-nls \
-        --enable-strip \
- && GCC_EXTRA_CONFIGURE_FLAGS="\
---enable-languages=c \
---disable-gcov \
---disable-lto \
---disable-libgomp \
---disable-libssp \
---disable-libquadmath \
---disable-decimal-float \
---disable-libsanitizer \
---disable-libvtv \
---enable-static \
---disable-shared" \
-    BINUTILS_TARGET_FLAGS_EXTRA="--disable-gprof --disable-gprofng" \
-    LDFLAGS="-static -static-libgcc -static-libstdc++" \
-    make -j"$(nproc)" \
- && rm -rf /tmp/riscv-gnu-toolchain
+  && cd /tmp/riscv-gnu-toolchain \
+  && sed -i 's/c,c++/c/g' Makefile.in \
+  && sed -i 's/c,c++,fortran/c/g' Makefile.in \
+  && ./configure \
+  --prefix="${RISCV_TOOLCHAIN_PREFIX}" \
+  --disable-gdb \
+  --disable-qemu \
+  --disable-linux \
+  --disable-nls \
+  --enable-strip \
+  && GCC_EXTRA_CONFIGURE_FLAGS="\
+  --enable-languages=c \
+  --disable-gcov \
+  --disable-lto \
+  --disable-libgomp \
+  --disable-libssp \
+  --disable-libquadmath \
+  --disable-decimal-float \
+  --disable-libsanitizer \
+  --disable-libvtv \
+  --enable-static \
+  --disable-shared" \
+  BINUTILS_TARGET_FLAGS_EXTRA="--disable-gprof --disable-gprofng" \
+  LDFLAGS="-static -static-libgcc -static-libstdc++" \
+  make -j"$(nproc)" \
+  && rm -rf /tmp/riscv-gnu-toolchain
 
 # Stage 2: install mise, then use it to install uv (Python) and Ruby, and pre-install the riscv-unified-db Bundler gem,
 # and pre-download all Python dependencies via uv sync.
@@ -105,14 +105,14 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # mise needs curl + ca-certificates to download tools, build-essential is needed for installation of Ruby gems.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates \
-    curl \
-    build-essential \
- && rm -rf /var/lib/apt/lists/*
+  ca-certificates \
+  curl \
+  build-essential \
+  && rm -rf /var/lib/apt/lists/*
 
 ENV MISE_YES=1 \
-    HOME=/home/shared \
-    PATH="/home/shared/.local/bin:${PATH}"
+  HOME=/home/shared \
+  PATH="/home/shared/.local/bin:${PATH}"
 
 RUN mkdir -p /home/shared
 
@@ -127,9 +127,9 @@ COPY . /act4/
 # Pre-install the riscv-unified-db gem into the mise-managed Ruby's gem dir so `bundle install` is a no-op at runtime.
 # Pre-download all Python dependencies so `uv sync` is a no-op at runtime.
 RUN cd /act4 \
- && mise install \
- && mise exec -- bundle install --gemfile=framework/src/act/data/Gemfile \
- && mise exec -- uv sync
+  && mise install \
+  && mise exec -- bundle install --gemfile=framework/src/act/data/Gemfile \
+  && mise exec -- uv sync
 
 # Stage 3: final runtime image
 FROM ubuntu:24.04@sha256:c4a8d5503dfb2a3eb8ab5f807da5bc69a85730fb49b5cfca2330194ebcc41c7b
@@ -143,27 +143,27 @@ ARG RISCV_TOOLCHAIN_PREFIX
 ARG SAIL_VERSION
 
 ENV TZ="${TZ}" \
-    SAIL_PREFIX=/opt/sail \
-    MISE_YES=1 \
-    HOME=/home/shared
+  SAIL_PREFIX=/opt/sail \
+  MISE_YES=1 \
+  HOME=/home/shared
 ENV PATH="${RISCV_TOOLCHAIN_PREFIX}/bin:${SAIL_PREFIX}/bin:/home/shared/.local/bin:${PATH}"
 
 # Runtime-only packages:
 #   - make, ca-certificates: drive the ACT4 Makefile
 #   - curl: required to fetch the sail-riscv release archive
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates \
-    curl \
-    make \
- && rm -rf /var/lib/apt/lists/*
+  ca-certificates \
+  curl \
+  make \
+  && rm -rf /var/lib/apt/lists/*
 
 # Fetch and install sail-riscv directly into the final image
 RUN SAIL_OS="$(uname -s)" \
- && SAIL_ARCH="$(uname -m)" \
- && mkdir -p "${SAIL_PREFIX}" \
- && curl --location --fail \
-      "https://github.com/riscv/sail-riscv/releases/download/${SAIL_VERSION}/sail-riscv-${SAIL_OS}-${SAIL_ARCH}.tar.gz" \
-    | tar xz --directory="${SAIL_PREFIX}" --strip-components=1
+  && SAIL_ARCH="$(uname -m)" \
+  && mkdir -p "${SAIL_PREFIX}" \
+  && curl --location --fail \
+  "https://github.com/riscv/sail-riscv/releases/download/${SAIL_VERSION}/sail-riscv-${SAIL_OS}-${SAIL_ARCH}.tar.gz" \
+  | tar xz --directory="${SAIL_PREFIX}" --strip-components=1
 
 COPY --from=toolchain-builder "${RISCV_TOOLCHAIN_PREFIX}" "${RISCV_TOOLCHAIN_PREFIX}"
 COPY --from=mise-fetcher      /act4                       /act4
@@ -174,8 +174,8 @@ RUN chmod -R 777 /act4 /home/shared
 
 # Smoke-test: verify all the binaries landed correctly (runs as root during build, before USER switch)
 RUN riscv64-unknown-elf-gcc --version \
- && sail_riscv_sim --version \
- && mise --version
+  && sail_riscv_sim --version \
+  && mise --version
 
 # Default user with ID 1000 matching typical desktop installation
 USER ubuntu

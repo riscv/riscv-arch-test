@@ -478,10 +478,10 @@
     30:                                                                                                             \
         /* mask region FAIL path, has to come right after mask region checks */                                     \
         vsetvl      _TEMP_REG, _TEMP_REG, _TEMP_REG2 ;  /* Restore original vl and vtype for failure reporting */   \
-        addi        _TEMP_REG2, _LINK_REG, 0 ;   /* Copy mismatch index to temporary register 2 */                  \
-        vmv.v.v     _VTMP, _VTMP             ;   /* Copy mismatch mask to temporary register 2 */                   \
+        mv          _TEMP_REG2, _LINK_REG    ;   /* Copy mismatch index: keep fail path depth constant for debug */ \
+        vmv.v.v     _VTMP, _VTMP             ;   /* Copy mismatch mask: keep fail path depth constant for debug */  \
         LREG        _TEMP_REG, 0(_SIG_PTR)   ;   /* Load first reference word (for debug context) */                \
-        beq         _TEMP_REG, _TEMP_REG, 31f;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
+        j           31f                      ;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
     31:                                                                                                             \
         jal         _LINK_REG, failedtest_vec_mask_##_LINK_REG##_##_TEMP_REG ;                                      \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
@@ -489,10 +489,10 @@
     10:                                                                                                             \
         /* active region FAIL path */                                                                               \
         vsetvl      _TEMP_REG, _TEMP_REG, _TEMP_REG2 ;  /* Restore original vl and vtype for failure reporting */   \
-        addi        _TEMP_REG2, _LINK_REG, 0 ;   /* Copy mismatch index to temporary register 2 */                  \
-        vmv.v.v     _MTMP2, _MTMP2           ;   /* Copy mismatch mask to temporary register 2 */                   \
+        mv          _TEMP_REG2, _LINK_REG    ;   /* Copy mismatch index: keep fail path depth constant for debug */ \
+        vmv.v.v     _MTMP2, _MTMP2           ;   /* Copy mismatch mask: keep fail path depth constant for debug */  \
         LREG        _TEMP_REG, 0(_SIG_PTR)   ;   /* Load first reference word (for debug context) */                \
-        beq         _TEMP_REG, _TEMP_REG, 11f;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
+        j           11f                      ;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
     11:                                                                                                             \
         jal         _LINK_REG, failedtest_vec_active_##_LINK_REG##_##_TEMP_REG ;                                    \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
@@ -500,10 +500,10 @@
     20:                                                                                                             \
         /* tail region FAIL path */                                                                                 \
         vsetvl      _TEMP_REG, _TEMP_REG, _TEMP_REG2 ;  /* Restore original vl and vtype for failure reporting */   \
-        addi        _TEMP_REG2, _LINK_REG, 0 ;   /* Copy mismatch index to temporary register 2 */                  \
-        vmv.v.v     _VTMP, _VTMP             ;   /* Copy mismatch mask to temporary register 2 */                   \
+        mv          _TEMP_REG2, _LINK_REG    ;   /* Copy mismatch index: keep fail path depth constant for debug */ \
+        vmv.v.v     _VTMP, _VTMP             ;   /* Copy mismatch mask: keep fail path depth constant for debug */  \
         LREG        _TEMP_REG, 0(_SIG_PTR)   ;   /* Load first reference word (for debug context) */                \
-        beq         _TEMP_REG, _TEMP_REG, 21f;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
+        j           21f                      ;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
     21:                                                                                                             \
         jal         _LINK_REG, failedtest_vec_tail_##_LINK_REG##_##_TEMP_REG ;                                      \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
@@ -607,33 +607,33 @@
         nop                                  ;                                                                      \
     30:                                                                                                             \
         /* mask region FAIL path, has to come right after mask region checks */                                     \
-        nop                                  ;  /* Restore original vl and vtype for failure reporting */           \
-        nop                                  ;   /* Copy mismatch index to temporary register 2 */                  \
-        nop                                  ;   /* Copy mismatch mask to temporary register 2 */                   \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
         LREG        _TEMP_REG, 0(_SIG_PTR)   ;   /* Load first reference word (for debug context) */                \
-        beq         _TEMP_REG, _TEMP_REG, 31f;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
+        j           31f                      ;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
     31:                                                                                                             \
         jal         _LINK_REG, failedtest_vec_mask_##_LINK_REG##_##_TEMP_REG ;                                      \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
     10:                                                                                                             \
         /* active region FAIL path */                                                                               \
-        nop                                  ;   /* Restore original vl and vtype for failure reporting */          \
-        nop                                  ;   /* Copy mismatch index to temporary register 2 */                  \
-        nop                                  ;   /* Copy mismatch mask to temporary register 2 */                   \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
         LREG        _TEMP_REG, 0(_SIG_PTR)   ;   /* Load first reference word (for debug context) */                \
-        beq         _TEMP_REG, _TEMP_REG, 11f;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
+        j           11f                      ;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
     11:                                                                                                             \
         jal         _LINK_REG, failedtest_vec_active_##_LINK_REG##_##_TEMP_REG ;                                    \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
     20:                                                                                                             \
         /* tail region FAIL path */                                                                                 \
-        nop                                  ;  /* Restore original vl and vtype for failure reporting */   \
-        nop                                  ;   /* Copy mismatch index to temporary register 2 */                  \
-        nop                                  ;   /* Copy mismatch mask to temporary register 2 */                   \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
         LREG        _TEMP_REG, 0(_SIG_PTR)   ;   /* Load first reference word (for debug context) */                \
-        beq         _TEMP_REG, _TEMP_REG, 21f;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
+        j           21f                      ;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
     21:                                                                                                             \
         jal         _LINK_REG, failedtest_vec_tail_##_LINK_REG##_##_TEMP_REG ;                                      \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \

@@ -151,6 +151,12 @@
 #endif
 #define VDSEWWIDTH (VDSEW>>3)  // in units of #bytes
 
+#ifndef VLEN
+  #define VLEN 0
+#endif
+#define VLEN_BYTES (VLEN>>3)   // in units of #bytes
+#define VECREG_REGION_BYTES (VLEN_BYTES * 32) // number of bytes occupied by all 32 vector registers
+
 // Max data size alignment for signature and data region.
 // Keyed on TEST_FLEN because the generated .data section and the signature
 // reservation were laid out at testgen time with that width.

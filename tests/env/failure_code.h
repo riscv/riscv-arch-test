@@ -528,7 +528,7 @@
         # Load mismatch index & region
         # --------------------------------------------------
         li a1, 3
-        beq x2, a1, base_mismatchindex   # if mismatch region is vector base, skip loading mismatch index since it is not valid
+        beq x1, a1, base_mismatchindex   # if mismatch region is vector base, skip loading mismatch index since it is not valid
 
         lhu x18, -14(DEFAULT_LINK_REG)   # mv, instruction which copies mismatch index to _TEMP_REG2
         lhu x19, -16(DEFAULT_LINK_REG)
@@ -546,7 +546,7 @@
         la x19, failing_index
         sw x8, 0(x19)                      # store mismatch index
         la x19, failing_region
-        sw x2, 0(x19)                      # store region
+        sw x1, 0(x19)                      # store region
         j vlvtype_store
 
         base_mismatchindex:
@@ -554,7 +554,7 @@
         la x19, failing_index
         sw x8, 0(x19)                      # store mismatch index = 0
         la x19, failing_region
-        sw x2, 0(x19)                      # store region
+        sw x1, 0(x19)                      # store region
 
         # --------------------------------------------------
         # Store vl/vtype and SEW for later use
@@ -569,7 +569,12 @@
         SREG x11, 0(x12)                   # save vtype
 
         // vtype[5:3] = vsew encoding: 0→e8, 1→e16, 2→e32, 3→e64
-        srli x16, x11, 3
+        lhu x6, -26(DEFAULT_LINK_REG)      # extract from vsetvli
+        lhu x7, -28(DEFAULT_LINK_REG)
+        slli x6, x6, 16
+        or   x6, x6, x7
+
+        srli x16, x6, 23
         andi x16, x16, 7                   # vsew field
         li   x17, 1
         sll  x17, x17, x16                 # eew_bytes = 1 << vsew
@@ -665,7 +670,7 @@
         # Store failing mask
         # --------------------------------------------------
         li a1, 3
-        beq x2, a1, copy_done    # if mismatch region is vector base, skip copying failing mask since it is not valid
+        beq x1, a1, copy_done    # if mismatch region is vector base, skip copying failing mask since it is not valid
 
         lhu x18, -30(DEFAULT_LINK_REG)    # vmv.v.v, instruction which moves failing mask to _MTMP2/_VTMP
         lhu x19, -32(DEFAULT_LINK_REG)

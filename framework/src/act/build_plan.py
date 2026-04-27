@@ -150,7 +150,7 @@ def gen_compile_tasks(
     # 2. sig – run Sail reference model
     sail_cmd = [str(config.ref_model_exe)]
     if debug:
-        sail_cmd.append("--trace-all")
+        sail_cmd.append("--trace")
         sail_cmd.extend(["--trace-output", str(sig_trace_file)])
     sail_cmd.extend(["--config", str(sail_config_path)])
     sail_cmd.extend(config.ref_model_type.signature_flags(sig_file, xlen // 8))
@@ -265,7 +265,7 @@ def gen_rvvi_tasks(
     # Run Sail with trace
     sail_cmd = [
         str(config.ref_model_exe),
-        "--trace-all",
+        "--trace",
         "--trace-output",
         str(sail_trace),
         "--config",

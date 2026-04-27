@@ -43,6 +43,7 @@ from vector_testgen_common import (
   getLegalVlmul,
   getLengthLmul,
   getLengthSuiteTestCount,
+  finalizeSigupdCount,
   getSigSpace,
   imm_31,
   incrementBasetestCount,
@@ -1375,6 +1376,7 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
     insertTemplate(test, signatureWords, "testgen_footer.S", test_data=test_data)
 
     f.close()
+    finalizeSigupdCount(tempfname, xlen, flen)
     fname_p = Path(fname)
     tempfname_p = Path(tempfname)
     if fname_p.exists():

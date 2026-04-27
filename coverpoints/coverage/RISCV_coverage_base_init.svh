@@ -198,6 +198,10 @@
         `cover_info("//      SmV - Enabled");
         `include "SmV_coverage_init.svh"
     `endif
+    `ifdef COVER_SSCOUNTERENW
+        `cover_info("//      Sscounterenw - Enabled");
+        `include "Sscounterenw_coverage_init.svh"
+    `endif
     `ifdef COVER_SSSTRICTS
         `cover_info("//      SsstrictS - Enabled");
         `include "SsstrictS_coverage_init.svh"
@@ -213,6 +217,10 @@
     `ifdef COVER_SSSTRICTV
         `cover_info("//      SsstrictV - Enabled");
         `include "SsstrictV_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSTVECD
+        `cover_info("//      Sstvecd - Enabled");
+        `include "Sstvecd_coverage_init.svh"
     `endif
     `ifdef COVER_SSU64XL
         `cover_info("//      Ssu64xl - Enabled");

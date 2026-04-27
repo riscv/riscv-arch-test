@@ -379,13 +379,13 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
 
     lines.append("\n#ifdef MSECCFG_SUPPORTED")
     lines.extend(csr_access_test(test_data, "mseccfgh", covergroup, coverpoint))
-    lines.append("#endif")
+    lines.append("#endif // MSECCFG")
     lines.append("\n#ifdef SM1P13_SUPPORTED")
     lines.extend(csr_access_test(test_data, "medelegh", covergroup, coverpoint))
     lines.extend(
         [
-            "#endif",
-            "#endif",
+            "#endif // SM1P13",
+            "#endif // xlen = 32",
         ]
     )
 

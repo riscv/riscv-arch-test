@@ -72,7 +72,8 @@
       // The configuration option determines how to handle the reserved behavior: Odd-numbered registers for RV32Zdinx.
       // "Zdinx_Fatal"  – raise a Sail exception, stopping execution.
       // "Zdinx_Illegal" – treat it as an illegal instruction.
-      "rv32zdinx_odd_register": "Zdinx_Illegal"
+      "rv32zdinx_odd_register": "Zdinx_Illegal",
+      "xtvec_mode": "Xtvec_Ignore"
     }
   },
   "memory": {

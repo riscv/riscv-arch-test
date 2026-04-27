@@ -455,8 +455,8 @@
         `include "ZfhminD_coverage_init.svh"
     `endif
     `ifdef COVER_ZIC64BZICBOZ
-        `cover_info("//      Zic64bzicboz - Enabled");
-        `include "Zic64bzicboz_coverage_init.svh"
+        `cover_info("//      Zic64bZicboz - Enabled");
+        `include "Zic64bZicboz_coverage_init.svh"
     `endif
     `ifdef COVER_ZICBOM
         `cover_info("//      Zicbom - Enabled");

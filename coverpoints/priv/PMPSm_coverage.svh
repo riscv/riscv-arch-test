@@ -30,42 +30,42 @@ covergroup PMPSM_cg with function sample(
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
   addr_in_region: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_region = {`REGIONSTART};
+    bins at_region = {`PMP_REGION_START};
   }
 
   addr_offset_cp_cfg_A_napot_all: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_base      = {`REGIONSTART};
-    bins below_base   = {`REGIONSTART-4};
-    bins just_beyond  = {`REGIONSTART+`g_napot};
+    bins at_base      = {`PMP_REGION_START};
+    bins below_base   = {`PMP_REGION_START-4};
+    bins just_beyond  = {`PMP_REGION_START+`g_napot};
   }
 
   address_offsets_tor: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_base      = {`REGIONSTART};
-    bins below_base   = {`REGIONSTART-4};
-    bins above_base   = {`REGIONSTART+4};
-    bins just_beyond  = {`REGIONSTART+`g_tor};
-    bins highest_word  = {`REGIONSTART +`g_tor-4};
+    bins at_base      = {`PMP_REGION_START};
+    bins below_base   = {`PMP_REGION_START-4};
+    bins above_base   = {`PMP_REGION_START+4};
+    bins just_beyond  = {`PMP_REGION_START+`g_tor};
+    bins highest_word  = {`PMP_REGION_START +`g_tor-4};
   }
 
   address_offsets_napot: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_base      = {`REGIONSTART};
-    bins below_base   = {`REGIONSTART-4};
-    bins above_base   = {`REGIONSTART+4};
-    bins just_beyond  = {`REGIONSTART+`g_napot};
-    bins highest_word  = {`REGIONSTART +`g_napot-4};
+    bins at_base      = {`PMP_REGION_START};
+    bins below_base   = {`PMP_REGION_START-4};
+    bins above_base   = {`PMP_REGION_START+4};
+    bins just_beyond  = {`PMP_REGION_START+`g_napot};
+    bins highest_word  = {`PMP_REGION_START +`g_napot-4};
   }
 
   `ifdef G_IS_0
     addr_offset_cp_cfg_A_na4: coverpoint (ins.current.rs1_val + ins.current.imm) {
-      bins at_base     = {`REGIONSTART};
-      bins just_beyond = {`REGIONSTART+4};
-      bins below_base  = {`REGIONSTART-4};
+      bins at_base     = {`PMP_REGION_START};
+      bins just_beyond = {`PMP_REGION_START+4};
+      bins below_base  = {`PMP_REGION_START-4};
     }
   `endif
 
   addr_offset_cp_cfg_A_tor0: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_base      = {`REGIONSTART};
-    bins below_base   = {`REGIONSTART-4};
+    bins at_base      = {`PMP_REGION_START};
+    bins below_base   = {`PMP_REGION_START-4};
   }
 
   exec_instr: coverpoint ins.current.insn {
@@ -133,102 +133,102 @@ covergroup PMPSM_cg with function sample(
 //-------------------------------------------------------
   // Addresses for TOR regions moving up by g*i
   addr_for_tor_all_region0: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {`REGIONSTART-4}; // Region with XWR-111 for test to be executed.
+    bins address = {`PMP_REGION_START-4}; // Region with XWR-111 for test to be executed.
   }
   // Access at the start of the region
   addr_for_tor_all_region1: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART)};
+    bins address = {(`PMP_REGION_START)};
   }
   addr_for_tor_all_region2: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + `g_tor)};
+    bins address = {(`PMP_REGION_START + `g_tor)};
   }
   addr_for_tor_all_region3: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 3*`g_tor)};
+    bins address = {(`PMP_REGION_START + 3*`g_tor)};
   }
   addr_for_tor_all_region4: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 6*`g_tor)};
+    bins address = {(`PMP_REGION_START + 6*`g_tor)};
   }
   addr_for_tor_all_region5: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 10*`g_tor)};
+    bins address = {(`PMP_REGION_START + 10*`g_tor)};
   }
   addr_for_tor_all_region6: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 15*`g_tor)};
+    bins address = {(`PMP_REGION_START + 15*`g_tor)};
   }
   addr_for_tor_all_region7: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 21*`g_tor)};
+    bins address = {(`PMP_REGION_START + 21*`g_tor)};
   }
   addr_for_tor_all_region8: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 28*`g_tor)};
+    bins address = {(`PMP_REGION_START + 28*`g_tor)};
   }
   addr_for_tor_all_region9: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 36*`g_tor)};
+    bins address = {(`PMP_REGION_START + 36*`g_tor)};
   }
   addr_for_tor_all_region10: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 45*`g_tor)};
+    bins address = {(`PMP_REGION_START + 45*`g_tor)};
   }
   addr_for_tor_all_region11: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 55*`g_tor)};
+    bins address = {(`PMP_REGION_START + 55*`g_tor)};
   }
   addr_for_tor_all_region12: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 66*`g_tor)};
+    bins address = {(`PMP_REGION_START + 66*`g_tor)};
   }
   addr_for_tor_all_region13: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 78*`g_tor)};
+    bins address = {(`PMP_REGION_START + 78*`g_tor)};
   }
   addr_for_tor_all_region14: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 91*`g_tor)};
+    bins address = {(`PMP_REGION_START + 91*`g_tor)};
   }
 
   // TOR regions increasing size by g*i
-  pmpaddr_for_tor_region0: coverpoint (pmpaddr[0]==(`REGIONSTART >> 2))  {
+  pmpaddr_for_tor_region0: coverpoint (pmpaddr[0]==(`PMP_REGION_START >> 2))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region1: coverpoint ((pmpaddr[1]==((`REGIONSTART + 1*`g_tor) >> 2)) && (pmpaddr[0]==(`REGIONSTART >> 2)))  {
+  pmpaddr_for_tor_region1: coverpoint ((pmpaddr[1]==((`PMP_REGION_START + 1*`g_tor) >> 2)) && (pmpaddr[0]==(`PMP_REGION_START >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region2: coverpoint ((pmpaddr[2]==((`REGIONSTART + 3*`g_tor) >> 2)) && (pmpaddr[1]==((`REGIONSTART + 1*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region2: coverpoint ((pmpaddr[2]==((`PMP_REGION_START + 3*`g_tor) >> 2)) && (pmpaddr[1]==((`PMP_REGION_START + 1*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region3: coverpoint ((pmpaddr[3]==((`REGIONSTART + 6*`g_tor) >> 2)) && (pmpaddr[2]==((`REGIONSTART + 3*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region3: coverpoint ((pmpaddr[3]==((`PMP_REGION_START + 6*`g_tor) >> 2)) && (pmpaddr[2]==((`PMP_REGION_START + 3*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region4: coverpoint ((pmpaddr[4]==((`REGIONSTART + 10*`g_tor) >> 2)) && (pmpaddr[3]==((`REGIONSTART + 6*`g_tor) >> 2))) {
+  pmpaddr_for_tor_region4: coverpoint ((pmpaddr[4]==((`PMP_REGION_START + 10*`g_tor) >> 2)) && (pmpaddr[3]==((`PMP_REGION_START + 6*`g_tor) >> 2))) {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region5: coverpoint ((pmpaddr[5]==((`REGIONSTART + 15*`g_tor) >> 2)) && (pmpaddr[4]==((`REGIONSTART + 10*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region5: coverpoint ((pmpaddr[5]==((`PMP_REGION_START + 15*`g_tor) >> 2)) && (pmpaddr[4]==((`PMP_REGION_START + 10*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region6: coverpoint ((pmpaddr[6]==((`REGIONSTART + 21*`g_tor) >> 2)) && (pmpaddr[5]==((`REGIONSTART + 15*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region6: coverpoint ((pmpaddr[6]==((`PMP_REGION_START + 21*`g_tor) >> 2)) && (pmpaddr[5]==((`PMP_REGION_START + 15*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region7: coverpoint ((pmpaddr[7]==((`REGIONSTART + 28*`g_tor) >> 2)) && (pmpaddr[6]==((`REGIONSTART + 21*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region7: coverpoint ((pmpaddr[7]==((`PMP_REGION_START + 28*`g_tor) >> 2)) && (pmpaddr[6]==((`PMP_REGION_START + 21*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region8: coverpoint ((pmpaddr[8]==((`REGIONSTART + 36*`g_tor) >> 2)) && (pmpaddr[7]==((`REGIONSTART + 28*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region8: coverpoint ((pmpaddr[8]==((`PMP_REGION_START + 36*`g_tor) >> 2)) && (pmpaddr[7]==((`PMP_REGION_START + 28*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region9: coverpoint ((pmpaddr[9]==((`REGIONSTART + 45*`g_tor) >> 2)) && (pmpaddr[8]==((`REGIONSTART + 36*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region9: coverpoint ((pmpaddr[9]==((`PMP_REGION_START + 45*`g_tor) >> 2)) && (pmpaddr[8]==((`PMP_REGION_START + 36*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region10: coverpoint ((pmpaddr[10]==((`REGIONSTART + 55*`g_tor) >> 2)) && (pmpaddr[9]==((`REGIONSTART + 45*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region10: coverpoint ((pmpaddr[10]==((`PMP_REGION_START + 55*`g_tor) >> 2)) && (pmpaddr[9]==((`PMP_REGION_START + 45*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region11: coverpoint ((pmpaddr[11]==((`REGIONSTART + 66*`g_tor) >> 2)) && (pmpaddr[10]==((`REGIONSTART + 55*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region11: coverpoint ((pmpaddr[11]==((`PMP_REGION_START + 66*`g_tor) >> 2)) && (pmpaddr[10]==((`PMP_REGION_START + 55*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region12: coverpoint ((pmpaddr[12]==((`REGIONSTART + 78*`g_tor) >> 2)) && (pmpaddr[11]==((`REGIONSTART + 66*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region12: coverpoint ((pmpaddr[12]==((`PMP_REGION_START + 78*`g_tor) >> 2)) && (pmpaddr[11]==((`PMP_REGION_START + 66*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region13: coverpoint ((pmpaddr[13]==((`REGIONSTART + 91*`g_tor) >> 2)) && (pmpaddr[12]==((`REGIONSTART + 78*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region13: coverpoint ((pmpaddr[13]==((`PMP_REGION_START + 91*`g_tor) >> 2)) && (pmpaddr[12]==((`PMP_REGION_START + 78*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region14: coverpoint ((pmpaddr[14]==((`REGIONSTART + 105*`g_tor) >> 2)) && (pmpaddr[13]==((`REGIONSTART + 91*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region14: coverpoint ((pmpaddr[14]==((`PMP_REGION_START + 105*`g_tor) >> 2)) && (pmpaddr[13]==((`PMP_REGION_START + 91*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
 
   //15 configurations, with  pmpcfg.L = 1, pmpcfg.A = TOR, pmpcfg.XWR=00(i%2)
 
-  // Region from 0 to REGIONSTART needs XWR Permissions for test to be exexcuted.
+  // Region from 0 to PMP_REGION_START needs XWR Permissions for test to be exexcuted.
   RWXL_i111_pmp0cfg: coverpoint { pmpcfg[0]} {
     bins pmp0cfg_wrx111  = {8'b10001111};
   }
@@ -403,8 +403,8 @@ covergroup PMPSM_cg with function sample(
     bins range = {`NON_STANDARD_REGION+`g_tor,`NON_STANDARD_REGION};
   }
 
-  pmp_addr_for_tor_bot: coverpoint ((pmpaddr[1]==(`REGIONSTART+`g_tor)>>2) &&
-                                    (pmpaddr[0]==(`REGIONSTART>>2))) {
+  pmp_addr_for_tor_bot: coverpoint ((pmpaddr[1]==(`PMP_REGION_START+`g_tor)>>2) &&
+                                    (pmpaddr[0]==(`PMP_REGION_START>>2))) {
     bins range = {1};
   }
 
@@ -415,21 +415,21 @@ covergroup PMPSM_cg with function sample(
   addr_for_tor_bot: coverpoint (ins.current.rs1_val + ins.current.imm) {
     bins pmpaddr0_4 = {((`NON_STANDARD_REGION)<<2)-4}; //pmpaddr0-4
     bins pmpaddr0   = {(`NON_STANDARD_REGION)<<2}; //pmpaddr0
-    bins pmpaddr1_4 = {(`REGIONSTART+`g_tor)-4}; //pmpaddr1-4 NOTE: REGIONSTART>>2 => NON_STANDARD_REGION (pmp encoded address)
-    bins pmpaddr1   = {`REGIONSTART+`g_tor};
+    bins pmpaddr1_4 = {(`PMP_REGION_START+`g_tor)-4}; //pmpaddr1-4 NOTE: PMP_REGION_START>>2 => NON_STANDARD_REGION (pmp encoded address)
+    bins pmpaddr1   = {`PMP_REGION_START+`g_tor};
   }
 
-  pmp_addr_for_tor_nonoverlap1: coverpoint ((pmpaddr[1]==(`REGIONSTART>>2)) &&
-                                            (pmpaddr[0]==(`REGIONSTART>>2))) { // pmpaddr0 == pmpaddr1.
+  pmp_addr_for_tor_nonoverlap1: coverpoint ((pmpaddr[1]==(`PMP_REGION_START>>2)) &&
+                                            (pmpaddr[0]==(`PMP_REGION_START>>2))) { // pmpaddr0 == pmpaddr1.
     bins range1 = {1};
   }
 
-  pmp_addr_for_tor_nonoverlap2: coverpoint ((pmpaddr[1]==(`REGIONSTART>>2)) &&
-                                            (pmpaddr[0]==((`REGIONSTART+`g_tor)>>2))) { // pmpaddr0 >= pmpaddr1.
+  pmp_addr_for_tor_nonoverlap2: coverpoint ((pmpaddr[1]==(`PMP_REGION_START>>2)) &&
+                                            (pmpaddr[0]==((`PMP_REGION_START+`g_tor)>>2))) { // pmpaddr0 >= pmpaddr1.
     bins range2 = {1};
   }
 
-  pmp_addr_for_tor_nonoverlap3: coverpoint ((pmpaddr[1]==(`REGIONSTART>>2)) &&
+  pmp_addr_for_tor_nonoverlap3: coverpoint ((pmpaddr[1]==(`PMP_REGION_START>>2)) &&
                                             (pmpaddr[0]==({$bits(pmpaddr[0][`EFFECTIVE_PMPADDR:0]){1'b1}} & `READ_ZERO_MASK))) { // pmpaddr0 >= pmpaddr1.
     bins range3 = {1};
   }
@@ -445,7 +445,7 @@ covergroup PMPSM_cg with function sample(
   }
 
   pmpaddr_for_napot_misaligned: coverpoint {pmpaddr[0]} {
-    bins pmpaddr = {(`REGIONSTART>>2) | ((1 << (`k)) - 1) }; //No of Trailing 1s = (1 << G-1) - 1, a standard NAPOT Region
+    bins pmpaddr = {(`PMP_REGION_START>>2) | ((1 << (`k)) - 1) }; //No of Trailing 1s = (1 << G-1) - 1, a standard NAPOT Region
   }
 
   pmpcfg_for_napot_misaligned: coverpoint {pmpcfg[0]} {
@@ -464,16 +464,16 @@ covergroup PMPSM_cg with function sample(
     }
 
     addr_for_na4_misaligned_straddling_start: coverpoint (ins.current.rs1_val + ins.current.imm) {
-      bins addr1 = {`REGIONSTART-1}; //for 1 byte outside the region
+      bins addr1 = {`PMP_REGION_START-1}; //for 1 byte outside the region
     }
 
     addr_for_na4_misaligned_straddling_end: coverpoint (ins.current.rs1_val + ins.current.imm) {
-      bins addr1 = {`REGIONSTART+3}; //for 3 byte outside the region
+      bins addr1 = {`PMP_REGION_START+3}; //for 3 byte outside the region
     }
   `endif
 
-  pmpaddr_for_tor_misaligned: coverpoint ((pmpaddr[3]==(`REGIONSTART+`g_tor)>>2) &&
-                                          (pmpaddr[2]==(`REGIONSTART>>2))) {
+  pmpaddr_for_tor_misaligned: coverpoint ((pmpaddr[3]==(`PMP_REGION_START+`g_tor)>>2) &&
+                                          (pmpaddr[2]==(`PMP_REGION_START>>2))) {
     bins pmpaddr = {1};
   }
 
@@ -483,15 +483,15 @@ covergroup PMPSM_cg with function sample(
   }
 
   addr_for_misaligned_straddling_start: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins addr = {`REGIONSTART-1};
+    bins addr = {`PMP_REGION_START-1};
   }
 
   addr_non_standard_region_straddling_end: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins addr = {(`REGIONSTART+`g_tor)-1};
+    bins addr = {(`PMP_REGION_START+`g_tor)-1};
   }
 
   addr_standard_region_straddling_end: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins addr = {(`REGIONSTART+`g_napot)-1};
+    bins addr = {(`PMP_REGION_START+`g_napot)-1};
   }
 
   pmpcfg_for_off_misaligned: coverpoint pmpcfg[0] {
@@ -499,7 +499,7 @@ covergroup PMPSM_cg with function sample(
     bins pmp_cfg_tor_unlocked = {8'b00000111}; //L=0,A=OFF,XWR=111
   }
 
-  pmpaddr_for_off_misaligned: coverpoint (pmpaddr[0]==`REGIONSTART>>2) {
+  pmpaddr_for_off_misaligned: coverpoint (pmpaddr[0]==`PMP_REGION_START>>2) {
     bins pmpaddr = {1};
   }
 
@@ -685,7 +685,7 @@ covergroup PMPSM_cg with function sample(
 
 //-------------------------------------------------------
 
-  cp_walk_rs1: coverpoint ins.current.rs1_val {
+  cp_walk_pmpaddr_rs1: coverpoint ins.current.rs1_val {
     `ifdef XLEN32
       wildcard bins walking_ones_0  = {32'b00000000000000000000000000000001};
       wildcard bins walking_ones_1  = {32'b00000000000000000000000000000010};
@@ -785,6 +785,97 @@ covergroup PMPSM_cg with function sample(
       wildcard bins walking_ones_61 = {64'b0010000000000000000000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_62 = {64'b0100000000000000000000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_63 = {64'b1000000000000000000000000000000000000000000000000000000000000000};
+    `endif
+  }
+
+  cp_walk_pmpcfg_rs1: coverpoint ins.current.rs1_val {
+    `ifdef XLEN32
+      wildcard bins walking_ones_0  = {32'b00000000000000000000000000000001};
+      wildcard bins walking_ones_1  = {32'b00000000000000000000000000000010};
+      wildcard bins walking_ones_2  = {32'b00000000000000000000000000000100};
+      wildcard bins walking_ones_3  = {32'b00000000000000000000000000001000};
+      wildcard bins walking_ones_4  = {32'b00000000000000000000000000100000};
+      wildcard bins walking_ones_5  = {32'b00000000000000000000000001000000};
+      wildcard bins walking_ones_6  = {32'b00000000000000000000000010000000};
+      wildcard bins walking_ones_7  = {32'b00000000000000000000000100000000};
+      wildcard bins walking_ones_8  = {32'b00000000000000000000001000000000};
+      wildcard bins walking_ones_9  = {32'b00000000000000000000010000000000};
+      wildcard bins walking_ones_10 = {32'b00000000000000000000100000000000};
+      wildcard bins walking_ones_11 = {32'b00000000000000000010000000000000};
+      wildcard bins walking_ones_12 = {32'b00000000000000000100000000000000};
+      wildcard bins walking_ones_13 = {32'b00000000000000001000000000000000};
+      wildcard bins walking_ones_14 = {32'b00000000000000010000000000000000};
+      wildcard bins walking_ones_15 = {32'b00000000000000100000000000000000};
+      wildcard bins walking_ones_16 = {32'b00000000000001000000000000000000};
+      wildcard bins walking_ones_17 = {32'b00000000000010000000000000000000};
+      wildcard bins walking_ones_18 = {32'b00000000001000000000000000000000};
+      wildcard bins walking_ones_19 = {32'b00000000010000000000000000000000};
+      wildcard bins walking_ones_20 = {32'b00000000100000000000000000000000};
+      wildcard bins walking_ones_21 = {32'b00000001000000000000000000000000};
+      wildcard bins walking_ones_22 = {32'b00000010000000000000000000000000};
+      wildcard bins walking_ones_23 = {32'b00000100000000000000000000000000};
+      wildcard bins walking_ones_24 = {32'b00001000000000000000000000000000};
+      wildcard bins walking_ones_25 = {32'b00100000000000000000000000000000};
+      wildcard bins walking_ones_26 = {32'b01000000000000000000000000000000};
+      wildcard bins walking_ones_27 = {32'b10000000000000000000000000000000};
+    `endif
+    `ifdef XLEN64
+      wildcard bins walking_ones_0  = {64'b0000000000000000000000000000000000000000000000000000000000000001};
+      wildcard bins walking_ones_1  = {64'b0000000000000000000000000000000000000000000000000000000000000010};
+      wildcard bins walking_ones_2  = {64'b0000000000000000000000000000000000000000000000000000000000000100};
+      wildcard bins walking_ones_3  = {64'b0000000000000000000000000000000000000000000000000000000000001000};
+      wildcard bins walking_ones_4  = {64'b0000000000000000000000000000000000000000000000000000000000100000};
+      wildcard bins walking_ones_5  = {64'b0000000000000000000000000000000000000000000000000000000001000000};
+      wildcard bins walking_ones_6  = {64'b0000000000000000000000000000000000000000000000000000000010000000};
+      wildcard bins walking_ones_7  = {64'b0000000000000000000000000000000000000000000000000000000100000000};
+      wildcard bins walking_ones_8  = {64'b0000000000000000000000000000000000000000000000000000001000000000};
+      wildcard bins walking_ones_9  = {64'b0000000000000000000000000000000000000000000000000000010000000000};
+      wildcard bins walking_ones_10 = {64'b0000000000000000000000000000000000000000000000000000100000000000};
+      wildcard bins walking_ones_11 = {64'b0000000000000000000000000000000000000000000000000010000000000000};
+      wildcard bins walking_ones_12 = {64'b0000000000000000000000000000000000000000000000000100000000000000};
+      wildcard bins walking_ones_13 = {64'b0000000000000000000000000000000000000000000000001000000000000000};
+      wildcard bins walking_ones_14 = {64'b0000000000000000000000000000000000000000000000010000000000000000};
+      wildcard bins walking_ones_15 = {64'b0000000000000000000000000000000000000000000000100000000000000000};
+      wildcard bins walking_ones_16 = {64'b0000000000000000000000000000000000000000000001000000000000000000};
+      wildcard bins walking_ones_17 = {64'b0000000000000000000000000000000000000000000010000000000000000000};
+      wildcard bins walking_ones_18 = {64'b0000000000000000000000000000000000000000001000000000000000000000};
+      wildcard bins walking_ones_19 = {64'b0000000000000000000000000000000000000000010000000000000000000000};
+      wildcard bins walking_ones_20 = {64'b0000000000000000000000000000000000000000100000000000000000000000};
+      wildcard bins walking_ones_21 = {64'b0000000000000000000000000000000000000001000000000000000000000000};
+      wildcard bins walking_ones_22 = {64'b0000000000000000000000000000000000000010000000000000000000000000};
+      wildcard bins walking_ones_23 = {64'b0000000000000000000000000000000000000100000000000000000000000000};
+      wildcard bins walking_ones_24 = {64'b0000000000000000000000000000000000001000000000000000000000000000};
+      wildcard bins walking_ones_25 = {64'b0000000000000000000000000000000000100000000000000000000000000000};
+      wildcard bins walking_ones_26 = {64'b0000000000000000000000000000000001000000000000000000000000000000};
+      wildcard bins walking_ones_27 = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+      wildcard bins walking_ones_28 = {64'b0000000000000000000000000000000100000000000000000000000000000000};
+      wildcard bins walking_ones_29 = {64'b0000000000000000000000000000001000000000000000000000000000000000};
+      wildcard bins walking_ones_30 = {64'b0000000000000000000000000000010000000000000000000000000000000000};
+      wildcard bins walking_ones_31 = {64'b0000000000000000000000000000100000000000000000000000000000000000};
+      wildcard bins walking_ones_32 = {64'b0000000000000000000000000010000000000000000000000000000000000000};
+      wildcard bins walking_ones_33 = {64'b0000000000000000000000000100000000000000000000000000000000000000};
+      wildcard bins walking_ones_34 = {64'b0000000000000000000000001000000000000000000000000000000000000000};
+      wildcard bins walking_ones_35 = {64'b0000000000000000000000010000000000000000000000000000000000000000};
+      wildcard bins walking_ones_36 = {64'b0000000000000000000000100000000000000000000000000000000000000000};
+      wildcard bins walking_ones_37 = {64'b0000000000000000000001000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_38 = {64'b0000000000000000000010000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_39 = {64'b0000000000000000001000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_40 = {64'b0000000000000000010000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_41 = {64'b0000000000000000100000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_42 = {64'b0000000000000001000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_43 = {64'b0000000000000010000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_44 = {64'b0000000000000100000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_45 = {64'b0000000000001000000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_46 = {64'b0000000000100000000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_47 = {64'b0000000001000000000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_48 = {64'b0000000010000000000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_49 = {64'b0000000100000000000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_50 = {64'b0000001000000000000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_51 = {64'b0000010000000000000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_52 = {64'b0000100000000000000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_53 = {64'b0010000000000000000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_54 = {64'b0100000000000000000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_55 = {64'b1000000000000000000000000000000000000000000000000000000000000000};
     `endif
   }
 
@@ -966,33 +1057,33 @@ covergroup PMPSM_cg with function sample(
   }
 
   overlapping_regions: coverpoint (
-                   pmpaddr[13] == ((`REGIONSTART + 7*`g_tor) >> 2) &&
-                   pmpaddr[12] == (`REGIONSTART  >> 2)     &&
-                   pmpaddr[11] == ((`REGIONSTART + 6*`g_tor) >> 2) &&
-                   pmpaddr[10] == (`REGIONSTART  >> 2)     &&
-                   pmpaddr[9]  == ((`REGIONSTART + 5*`g_tor) >> 2) &&
-                   pmpaddr[8]  == (`REGIONSTART  >> 2)     &&
-                   pmpaddr[7]  == ((`REGIONSTART + 4*`g_tor) >> 2) &&
-                   pmpaddr[6]  == (`REGIONSTART  >> 2)     &&
-                   pmpaddr[5]  == ((`REGIONSTART + 3*`g_tor) >> 2) &&
-                   pmpaddr[4]  == (`REGIONSTART  >> 2)     &&
-                   pmpaddr[3]  == ((`REGIONSTART + 2*`g_tor) >> 2) &&
-                   pmpaddr[2]  == (`REGIONSTART  >> 2)     &&
-                   pmpaddr[1]  == ((`REGIONSTART + 1*`g_tor) >> 2) &&
-                   pmpaddr[0]  == (`REGIONSTART  >> 2)
+                   pmpaddr[13] == ((`PMP_REGION_START + 7*`g_tor) >> 2) &&
+                   pmpaddr[12] == (`PMP_REGION_START  >> 2)     &&
+                   pmpaddr[11] == ((`PMP_REGION_START + 6*`g_tor) >> 2) &&
+                   pmpaddr[10] == (`PMP_REGION_START  >> 2)     &&
+                   pmpaddr[9]  == ((`PMP_REGION_START + 5*`g_tor) >> 2) &&
+                   pmpaddr[8]  == (`PMP_REGION_START  >> 2)     &&
+                   pmpaddr[7]  == ((`PMP_REGION_START + 4*`g_tor) >> 2) &&
+                   pmpaddr[6]  == (`PMP_REGION_START  >> 2)     &&
+                   pmpaddr[5]  == ((`PMP_REGION_START + 3*`g_tor) >> 2) &&
+                   pmpaddr[4]  == (`PMP_REGION_START  >> 2)     &&
+                   pmpaddr[3]  == ((`PMP_REGION_START + 2*`g_tor) >> 2) &&
+                   pmpaddr[2]  == (`PMP_REGION_START  >> 2)     &&
+                   pmpaddr[1]  == ((`PMP_REGION_START + 1*`g_tor) >> 2) &&
+                   pmpaddr[0]  == (`PMP_REGION_START  >> 2)
                    ) {
     bins tor_regions = {1};  // Set 1 when overlapping tor regions set up.
   }
 
   // Address at the end of the overlapping regions
   addr_offset_for_priority_check: coverpoint (ins.current.rs1_val+ins.current.imm) {
-    bins at_end_of_region13 = {`REGIONSTART + 7*`g_tor - 4};
-    bins at_end_of_region11 = {`REGIONSTART + 6*`g_tor - 4};
-    bins at_end_of_region9  = {`REGIONSTART + 5*`g_tor - 4};
-    bins at_end_of_region7  = {`REGIONSTART + 4*`g_tor - 4};
-    bins at_end_of_region5  = {`REGIONSTART + 3*`g_tor - 4};
-    bins at_end_of_region3  = {`REGIONSTART + 2*`g_tor - 4};
-    bins at_end_of_region1  = {`REGIONSTART + 1*`g_tor - 4};
+    bins at_end_of_region13 = {`PMP_REGION_START + 7*`g_tor - 4};
+    bins at_end_of_region11 = {`PMP_REGION_START + 6*`g_tor - 4};
+    bins at_end_of_region9  = {`PMP_REGION_START + 5*`g_tor - 4};
+    bins at_end_of_region7  = {`PMP_REGION_START + 4*`g_tor - 4};
+    bins at_end_of_region5  = {`PMP_REGION_START + 3*`g_tor - 4};
+    bins at_end_of_region3  = {`PMP_REGION_START + 2*`g_tor - 4};
+    bins at_end_of_region1  = {`PMP_REGION_START + 1*`g_tor - 4};
   }
 
 //-------------------------------------------------------
@@ -1002,10 +1093,10 @@ covergroup PMPSM_cg with function sample(
     bins cfg_regions = {32'h8F808D80};
   }
 
-  first_four_pmp_entries: coverpoint (pmpaddr[0]==((`REGIONSTART)     >> 2) &&
-                    pmpaddr[1]==((`REGIONSTART+`g_tor) >> 2) &&
-                    pmpaddr[2]==((`REGIONSTART)     >> 2) &&
-                    pmpaddr[3]==((`REGIONSTART+`g_tor) >> 2)
+  first_four_pmp_entries: coverpoint (pmpaddr[0]==((`PMP_REGION_START)     >> 2) &&
+                    pmpaddr[1]==((`PMP_REGION_START+`g_tor) >> 2) &&
+                    pmpaddr[2]==((`PMP_REGION_START)     >> 2) &&
+                    pmpaddr[3]==((`PMP_REGION_START+`g_tor) >> 2)
                     ) {
     bins pmp_entries = {1};
   }
@@ -1110,8 +1201,8 @@ covergroup PMPSM_cg with function sample(
   cp_cfg_A_tor_nonoverlap3_w: cross priv_mode_m, addr_for_tor_nonoverlap, pmpcfg_tor_nonoverlap, pmp_addr_for_tor_nonoverlap3, write_instr_sw;
   cp_cfg_A_tor_nonoverlap3_r: cross priv_mode_m, addr_for_tor_nonoverlap, pmpcfg_tor_nonoverlap, pmp_addr_for_tor_nonoverlap3, read_instr_lw;
 
-  cp_pmpaddr_walk: cross priv_mode_m, cp_walk_rs1, csrrw, legal_pmpaddr_entries ;
-  cp_pmpcfg_walk: cross priv_mode_m, cp_walk_rs1, csrrw, legal_pmpcfg_entries_even ;
+  cp_pmpaddr_walk: cross priv_mode_m, cp_walk_pmpaddr_rs1, csrrw, legal_pmpaddr_entries ;
+  cp_pmpcfg_walk: cross priv_mode_m, cp_walk_pmpcfg_rs1, csrrw, legal_pmpcfg_entries_even ;
   `ifdef XLEN32
     // Will throw illegal instruction when XLEN = 64.
     cp_pmpcfg_zero: cross priv_mode_m, cp_zero_rs1, csrrw, legal_pmpcfg_entries_odd ;

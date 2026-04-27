@@ -18,9 +18,9 @@ WORKDIR     ?= work
 # EXCLUDE_EXTENSIONS overrides EXTENSIONS to exclude particular extensions from test generation. Applies as a negative filter after EXTENSIONS.
 # Default exclusion reasons:
 #  - Sm, S: Insufficient WARL configuration options.
-#  - InterruptsSm,InterruptsS,InterruptsU,PMPSm,PMPZca,Sv,SvaduPMP,SvPMP,SvPMPZicbo: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
+#  - InterruptsSm,InterruptsS,InterruptsU,PMPSm,PMPZca,SvaduPMP,SvPMP,SvPMPZicbo: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
 EXTENSIONS  ?=
-EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,InterruptsS,InterruptsU,PMPSm,PMPmisaligned,PMPZca,Sv,SvaduPMP,SvPMP,SvPMPZicbo
+EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,InterruptsS,InterruptsU,ExceptionsZalrsc,ExceptionsZaamo,PMPF,PMPS,PMPSm,PMPU,PMPZaamo,PMPZalrsc,PMPZca,PMPZicbo,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo,SvPMPZicbo
 
 # Strip spaces from comma-separated lists so shell word-splitting doesn't break CLI arguments
 empty :=

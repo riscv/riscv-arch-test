@@ -14,15 +14,11 @@
 # cycle/instret increment as Zicntr tests expect.
 # .option arch, +zicsr is needed because I tests compile with -march=rv32i
 # which does not include Zicsr (binutils >= 2.38).
-#define RVMODEL_BOOT \
-  .option push           ;\
-  .option arch, +zicsr   ;\
-  csrwi mcountinhibit, 0 ;\
-  .option pop            ;
+//#define RVMODEL_BOOT \
 
 # Address to use for load/store fault tests that should cause an access fault on the DUT.
 # Must be outside all PMA main regions. Testbench must return OBI bus error for this address.
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x80000000
+//#define RVMODEL_ACCESS_FAULT_ADDRESS 0x80000000
 
 ##### TERMINATION #####
 

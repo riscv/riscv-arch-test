@@ -14,11 +14,8 @@
 # cycle/instret increment as Zicntr tests expect.
 # .option arch, +zicsr is needed because I tests compile with -march=rv32i
 # which does not include Zicsr (binutils >= 2.38).
-#define RVMODEL_BOOT \
-  .option push           ;\
-  .option arch, +zicsr   ;\
-  csrwi mcountinhibit, 0 ;\
-  .option pop            ;
+//#define RVMODEL_BOOT \
+
 
 # This DUT does not generate access faults. Comment out RVMODEL_ACCESS_FAULT_ADDRESS to prevent testing them.
 //#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000

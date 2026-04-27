@@ -569,13 +569,22 @@
         SREG x11, 0(x12)                   # save vtype
 
         // vtype[5:3] = vsew encoding: 0→e8, 1→e16, 2→e32, 3→e64
-        lhu x6, -26(DEFAULT_LINK_REG)      # extract from vsetvli
+        lhu x6, -26(DEFAULT_LINK_REG)      # extract from vsetvli or vle##_VD_EEW.v
         lhu x7, -28(DEFAULT_LINK_REG)
         slli x6, x6, 16
         or   x6, x6, x7
 
+        li a1, 3
+        beq x1, a1, base_vdeew             # if mismatch region is base, extract VD_EEW from vle##_VD_EEW.v, encoded in width ([12:10])
         srli x16, x6, 23
         andi x16, x16, 7                   # vsew field
+        j vsew_mask
+
+        base_vdeew:
+        srli x16, x6, 12
+        andi x16, x16, 3                   # vector element is encoded as 1XX in width, where XX is EEW of elements
+
+        vsew_mask:
         li   x17, 1
         sll  x17, x17, x16                 # eew_bytes = 1 << vsew
         slli x18 ,x17, 3                   # element size in bits = eew_bytes * 8
@@ -930,7 +939,7 @@
 
         lw a0, failing_region
         li a1, 3
-        beq a0, a1, failedtest_report_vec_done   # if mismatch region is vector base, skip printing mismatch mask since it is not valid
+        beq a0, a1, failedtest_report_end   # if mismatch region is vector base, skip printing mismatch mask since it is not valid
 
         // Print mismatch mask (raw bytes of vec_mismatch_mask, VLEN/8 bytes)
         // We print as a hex string by iterating over the bytes.

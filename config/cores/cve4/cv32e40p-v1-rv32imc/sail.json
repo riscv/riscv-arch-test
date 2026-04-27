@@ -12,6 +12,14 @@
       // Only HPM counter 3 is active (NUM_MHPMCOUNTERS=1 default)
       "value": "0x00000008"
     },
+    // CV32E40P has no S-mode, so scounteren bits are read-only zero.
+    "scounteren_writable_bits": {
+      "len": 32,
+      "value": "0x0"
+    },
+    // These settings control whether the specified exceptions
+    // cause information to be written into the appropriate
+    // `xtval` registers.
     "xtval_nonzero": {
       // mtval is hardwired to 0 in cv32e40p — all REPORT_VA_IN_MTVAL_* = false
       "illegal_instruction": false,
@@ -34,6 +42,10 @@
       "fcsr_rm": "Fcsr_RM_Illegal",
       "pmpcfg_write_only": "PMP_ClearPermissions",
       "xenvcfg_cbie": "Xenvcfg_ClearPermissions",
+      // The configuration option determines how to handle the reserved behavior `xtvec[Mode] >= 2`.
+      // "Xtvec_Fatal"  – raise a Sail exception, stopping execution.
+      // "Xtvec_Ignore" – use old Mode of xtvec.
+      "xtvec_mode": "Xtvec_Ignore",
       "rv32zdinx_odd_register": "Zdinx_Illegal"
     }
   },
@@ -47,21 +59,32 @@
       "na4_supported": true,
       "napot_supported": true
     },
+    // These settings control global support for misaligned access so they are
+    // checked before address translation. `misaligned_exceptions` in
+    // `regions` is checked after address translation.
     "misaligned": {
-      // cv32e40p performs misaligned as two bus transactions — no fault
-      "supported": true,
+      // CV32E40P LSU handles misaligned loads/stores in hardware (splits into two
+      // aligned transactions). No alignment exception is ever raised.
+      "exceptions": {
+        "load_store": { "None": null },
+        "vector": { "None": null },
+        "lrsc": "AccessFault",
+        "amo": "AccessFault"
+      },
+      "allowed_within_exp": 0,
       "byte_by_byte": false,
-      "order_decreasing": false,
-      "allowed_within_exp": 0
+      "order_decreasing": false
     },
     "translation": {
       "dirty_update": false
     },
+    // Address to write DTB to (if provided).
     "dtb_address": {
       "len": 64,
       "value": "0x1000"
     },
     "regions": [
+      // Main memory: code and data. Tests link from 0x80 (see link.ld).
       {
         "base": {
           "len": 64,
@@ -69,9 +92,10 @@
         },
         "size": {
           "len": 64,
-          "value": "0x80000000"
+          "value": "0x2000000"
         },
         "attributes": {
+          "mem_type": "MainMemory",
           "cacheable": true,
           "coherent": true,
           "executable": true,
@@ -79,11 +103,53 @@
           "writable": true,
           "read_idempotent": true,
           "write_idempotent": true,
-          "misaligned_fault": "NoFault",
+          // CV32E40P handles misaligned loads/stores in hardware; no per-region fault.
+          "misaligned_exceptions": {
+            "load_store": { "None": null },
+            "vector": { "None": null },
+            "amo": "AccessFault"
+          },
+          "atomic_support": "AMONone",
           "reservability": "RsrvNone",
-          "supports_cbo_zero": false
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
         },
         "include_in_device_tree": true
+      },
+      // IO memory: covers CLINT at 0x2000000, Sail interrupt generator at 0xC000000,
+      // and the full remaining 32-bit address space. CV32E40P has all legal memory
+      // (no access faults), so Sail must not fault on any address the DUT accepts.
+      {
+        "base": {
+          "len": 64,
+          "value": "0x2000000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0xFE000000"
+        },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": false,
+          "coherent": true,
+          "executable": false,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": false,
+          "write_idempotent": false,
+          "misaligned_exceptions": {
+            "load_store": { "None": null },
+            "vector": { "None": null },
+            "amo": "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": false
       }
     ]
   },
@@ -92,18 +158,32 @@
     "vendorid": 1538,
     // marchid=0x4 — verified cv32e40p_pkg.sv:528
     "archid": 4,
-    // mimpid=0x1 for FPU=1 on v1.8.3 — verified cs_registers.sv:511-513
+    // mimpid=0x0 for FPU=0 — verified cs_registers.sv:511-513
     "impid": 0,
     "hartid": 0,
+    // Cache block size, specified as a power of 2.
     "cache_block_size_exp": 6,
-    "reservation_set_size_exp": 3,
+    "reservation": {
+      // Reservation set size/alignment as a power of 2. Minimum 2 on RV32.
+      "reservation_set_size_exp": 3,
+      // CV32E40P has no A extension so LR/SC is never executed.
+      "require_exact_reservation_addr": false
+    },
     "clint": {
+      // This must be in a suitable memory region (see `memory.regions`).
       "base": 33554432,
       "size": 786432
     },
+    // Simple MMIO device to generate interrupts for testing purposes.
+    "simple_interrupt_generator": {
+      // Must be 4-byte aligned and within a memory region. Size is always 0x20.
+      "base": 201326592
+    },
     "clock_frequency": 1000000000,
     "instructions_per_tick": 2,
-    "wfi_is_nop": false
+    "wfi_is_nop": false,
+    // Maximum time before a WFI instruction expires.
+    "max_time_to_wait": 10
   },
   "extensions": {
     "M": {
@@ -149,7 +229,25 @@
     "Zic64b": {
       "supported": false
     },
+    "Ziccamoa": {
+      "supported": false
+    },
+    "Ziccamoc": {
+      "supported": false
+    },
+    "Ziccif": {
+      "supported": false
+    },
+    "Zicclsm": {
+      "supported": false
+    },
+    "Ziccrse": {
+      "supported": false
+    },
     "Zicfilp": {
+      "supported": false
+    },
+    "Zicfiss": {
       "supported": false
     },
     "Zicond": {
@@ -281,7 +379,28 @@
     "Zhinxmin": {
       "supported": false
     },
+    "Zvabd": { "supported": false },
+    "Zvbb": { "supported": false },
+    "Zvbc": { "supported": false },
+    "Zvfbfmin": { "supported": false },
+    "Zvfbfwma": { "supported": false },
+    "Zvfh": { "supported": false },
+    "Zvfhmin": { "supported": false },
+    "Zvkb": { "supported": false },
+    "Zvkg": { "supported": false },
+    "Zvkned": { "supported": false },
+    "Zvknha": { "supported": false },
+    "Zvknhb": { "supported": false },
+    "Zvksed": { "supported": false },
+    "Zvksh": { "supported": false },
+    "Zvkt": { "supported": false },
+    "Ssccptr": {
+      "supported": false
+    },
     "Sscofpmf": {
+      "supported": false
+    },
+    "Sscounterenw": {
       "supported": false
     },
     "Sstc": {
@@ -290,7 +409,16 @@
     "Sstvala": {
       "supported": false
     },
+    "Svade": {
+      "supported": false
+    },
+    "Svadu": {
+      "supported": false
+    },
     "Svinval": {
+      "supported": false
+    },
+    "Svnapot": {
       "supported": false
     },
     "Svrsw60t59b": {
@@ -326,20 +454,11 @@
       "rcid_length": 12,
       "mcid_length": 12
     },
-    "Zvabd": { "supported": false },
-    "Zvbb": { "supported": false },
-    "Zvbc": { "supported": false },
-    "Zvfbfmin": { "supported": false },
-    "Zvfbfwma": { "supported": false },
-    "Zvfh": { "supported": false },
-    "Zvfhmin": { "supported": false },
-    "Zvkb": { "supported": false },
-    "Zvkg": { "supported": false },
-    "Zvkned": { "supported": false },
-    "Zvknha": { "supported": false },
-    "Zvknhb": { "supported": false },
-    "Zvksed": { "supported": false },
-    "Zvksh": { "supported": false },
-    "Zvkt": { "supported": false }
+    "Svpbmt": {
+      "supported": false
+    },
+    "Svvptc": {
+      "supported": false
+    }
   }
 }

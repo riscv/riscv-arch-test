@@ -22,26 +22,8 @@ covergroup Sstvecd_cg with function sample(ins_t ins);
         wildcard bins stvec = {CSR_STVEC};
     }
 
-    // ── stvec.MODE coverpoint ─────────────────────────────────────────────
-    // CTP Normative Rule: stvec.MODE must be capable of holding 0 (Direct).
-    // Samples stvec[1:0] at the moment of the CSRRW instruction.
-    stvec_mode_direct: coverpoint ins.current.csr[CSR_STVEC][1:0] {
-        bins direct = {2'b00};   // MODE=0 Direct — the only value tested per CTP
-    }
-
-    // ── stvec.BASE walking 1s and 0s coverpoint ───────────────────────────
-    // CTP: stvec.BASE must hold any valid four-byte-aligned address.
-    // Bins = 2*XLEN-4:
-    //   walking1_N: only bit N set   in rs1_val (RV64) or stvec readback (RV32)
-    //   walking0_N: only bit N clear in rs1_val (RV64) or stvec readback (RV32)
-    //   N ranges from 2 to XLEN-1 (BASE field — bit 0 and 1 are MODE, always 0)
-    //
-    // RV64: csr_walk checks ins.current.rs1_val — the value written via rs1
-    //       Total bins = (64-2)*2 = 124 = 2*64-4 ✓
-    // RV32: csr_walk checks ins.current.csr[CSR_STVEC] — the readback value
-    //       Total bins = (32-2)*2 = 60 = 2*32-4 ✓
     `ifdef XLEN64
-        stvec_base_walk: coverpoint ins.current.rs1_val {
+        stvec_walk: coverpoint ins.current.rs1_val {
             // Walking 1s — single bit set at each position (bits 2..63), bits 1:0 = 0
             wildcard bins walking1_2  = {64'b0000000000000000000000000000000000000000000000000000000000000100};
             wildcard bins walking1_3  = {64'b0000000000000000000000000000000000000000000000000000000000001000};
@@ -104,11 +86,11 @@ covergroup Sstvecd_cg with function sample(ins_t ins);
             wildcard bins walking1_60 = {64'b0001000000000000000000000000000000000000000000000000000000000000};
             wildcard bins walking1_61 = {64'b0010000000000000000000000000000000000000000000000000000000000000};
             wildcard bins walking1_62 = {64'b0100000000000000000000000000000000000000000000000000000000000000};
-            wildcard bins walking1_63 = {64'b1000000000000000000000000000000000000000000000000000000000000000};             // Walking 0s — single bit clear at each position (bits 2..63), bits 1:0 = 0
+            wildcard bins walking1_63 = {64'b1000000000000000000000000000000000000000000000000000000000000000};
             }
     `else
 
-        stvec_base_walk: coverpoint ins.current.csr[CSR_STVEC] {
+        stvec_walk: coverpoint ins.current.csr[CSR_STVEC] {
             // Walking 1s — single bit set at each BASE position (bits 2..31)
             wildcard bins walking1_2  = {32'b00000000000000000000000000000100};
             wildcard bins walking1_3  = {32'b00000000000000000000000000001000};
@@ -144,7 +126,7 @@ covergroup Sstvecd_cg with function sample(ins_t ins);
         }
     `endif
 
-    cp_stvec_mode: cross priv_mode_s, csrop, stvec_csr, stvec_mode, stvec_base_walk;
+    cp_stvec_mode: cross priv_mode_s, csrrs, stvec_csr, stvec_walk;
 
 endgroup
 

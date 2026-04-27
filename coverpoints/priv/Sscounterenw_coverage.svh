@@ -17,11 +17,11 @@ covergroup Sscounterenw_cg with function sample(ins_t ins);
     scounteren_csr: coverpoint ins.current.insn[31:20] {
         wildcard bins scounteren = {CSR_SCOUNTEREN};
     }
-    scounteren_walk: coverpoint ins.current.rs1_val[31:0] {
+    scounteren_ones_zeros: coverpoint ins.current.rs1_val[31:0] {
             bins all_zeros  =   {32'b00000000000000000000000000000000};
             bins all_ones   =   {32'b11111111111111111111111111111111};
     }
-    cp_scounteren_writable: cross priv_mode_s, csrrw, scounteren_csr, scounteren_walk;
+    cp_scounteren_writable: cross priv_mode_s, csrrw, scounteren_csr, scounteren_ones_zeros;
 
 endgroup
 

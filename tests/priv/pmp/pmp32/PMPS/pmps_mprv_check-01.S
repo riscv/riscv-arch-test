@@ -236,7 +236,7 @@ test_1_str: .string "\"test: 1; cp: pmpm_cfg_A_off_all_jalr\""
 test_2_str: .string "\"test: 2; cp: pmpm_cfg_A_off_all_sw\""
 test_3_str: .string "\"test: 3; cp: pmpm_cfg_A_off_all_lw\""
 
-.align 12
+.align 13
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

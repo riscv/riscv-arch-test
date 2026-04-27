@@ -92,7 +92,7 @@ main:
 #define PMPREGION3_XWR_000   (((PMP_L|PMP_NA4)&0xFF) << PMP3_CFG_SHIFT)
 
 #define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
-#define REGIONSTART     TEST_FOR_EXECUTION      // RAM_BASE_ADDR + PROGRAM_SIZE
+#define REGIONSTART     TEST_FOR_EXECUTION
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw    pmpaddr15, x4
@@ -281,6 +281,11 @@ test_3_str: .string "\"test: 3; cp: pmpm_cfg_na4_all_address+4\""
 
 .align 12
 .align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    .rept 1024
+    nop
+    .endr
+
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

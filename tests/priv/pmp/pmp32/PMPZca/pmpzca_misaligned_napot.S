@@ -150,7 +150,7 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
 
-.align 12
+.align 13
 TEST_FOR_EXECUTION_1:
     .rept ((REGION_SIZE / 2) -1)
     nop

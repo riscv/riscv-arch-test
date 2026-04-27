@@ -62,7 +62,7 @@ main:
 #define PMP_REGION_GLOBAL           ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
 
 #define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
-#define REGIONSTART         TEST_FOR_EXECUTION      // RAM_BASE_ADDR + PROGRAM_SIZE
+#define REGIONSTART         TEST_FOR_EXECUTION
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw    pmpaddr15, x4
@@ -99,7 +99,7 @@ RVTEST_DATA_BEGIN
 test_1_str: .string "\"test: 1; cp: cp_pmp_grain_check_1\""
 test_2_str: .string "\"test: 1; cp: cp_pmp_grain_check_2\""
 
-.align 12
+.align 13
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

@@ -14,7 +14,7 @@
 //               Specification v1.12 and includes:
 //               - Comprehensive RWX checks for multiple PMP regions.
 //
-// Coverpoints : cp_pmpcfg_walk and cp_pmpaddr_walk for PMPM is partially in
+// Coverpoints : cp_csr_walk and cp_pmpaddr_walk for PMPM is partially in
 //               this test file.
 //
 // Test Cases  : Test pmpaddr access. No background region, writing all 1s,
@@ -32,7 +32,7 @@
 ##### END_TEST_CONFIG #####
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "pmpsm_csr_walk-06.S"
-#define SIGUPD_COUNT 500
+#define SIGUPD_COUNT 2000
 
 // Enable trap handler
 #define rvtest_mtrap_routine
@@ -68,51 +68,48 @@ main:
     .set pmpcfgi, pmpcfgi+2
     .endr
 
-    // --- pmpcfg even walking ones, bit 4 ---
+    // --- pmpcfg even walking ones, bit 5 ---
+
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  li t2, (1 << 4)
+1:  li t2, (1 << 5)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_2_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
-    // --- pmpcfg even walking ones, bit 5 ---
+    // --- pmpcfg even walking ones, bit 6 ---
+
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  li t2, (1 << 5)
+1:  li t2, (1 << 6)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_3_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
-    // --- pmpcfg even walking ones, bit 6 ---
+    // --- pmpcfg even walking ones, bit 7 ---
+
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  li t2, (1 << 6)
+1:  li t2, (1 << 7)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_4_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
-    // --- pmpcfg even walking ones, bit 7 ---
+    // --- pmpcfg even walking ones, bit 8 ---
+
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  li t2, (1 << 7)
+1:  li t2, (1 << 8)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_5_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
-    // --- pmpcfg even walking ones, bit 8 ---
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
-1:  li t2, (1 << 8)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_6_str)
-    .set pmpcfgi, pmpcfgi+2
-    .endr
-
     // --- pmpcfg even walking ones, bit 9 ---
+
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
 1:  li t2, (1 << 9)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_7_str)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_6_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
@@ -122,15 +119,14 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_36\""
-test_2_str: .string "\"test: 2; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_37\""
-test_3_str: .string "\"test: 3; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_38\""
-test_4_str: .string "\"test: 4; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_39\""
-test_5_str: .string "\"test: 5; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_40\""
-test_6_str: .string "\"test: 6; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_41\""
-test_7_str: .string "\"test: 7; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_42\""
+test_1_str: .string "\"test: 1; cp: cp_csr_walk\""
+test_2_str: .string "\"test: 2; cp: cp_csr_walk\""
+test_3_str: .string "\"test: 3; cp: cp_csr_walk\""
+test_4_str: .string "\"test: 4; cp: cp_csr_walk\""
+test_5_str: .string "\"test: 5; cp: cp_csr_walk\""
+test_6_str: .string "\"test: 6; cp: cp_csr_walk\""
 
-.align 12
+.align 13
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

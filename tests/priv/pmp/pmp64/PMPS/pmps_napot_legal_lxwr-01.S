@@ -61,6 +61,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_17, test_17_str)
 
+    LA (a4, \ADDRESS)
     addi a4, a4, -4                     // REGIONSTART - 4
     LA(x1, 2f)                          // Store the return Address in x1
     \TEST_CASE\()_18:
@@ -72,6 +73,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_18, test_18_str)
 
+    LA (a4, \ADDRESS)
     addi a4, a4, 8                      // REGIONSTART + 4
     LA(x1, 3f)                          // Store the return Address in x1
     \TEST_CASE\()_19:
@@ -83,6 +85,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_19, test_19_str)
 
+    LA (a4, \ADDRESS)
     addi a4, a4, (g-8)                  // REGIONSTART + g - 4
     LA(x1, 4f)                          // Store the return Address in x1
     \TEST_CASE\()_20:
@@ -94,6 +97,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_20, test_20_str)
 
+    LA (a4, \ADDRESS)
     addi a4, a4, 4                      // REGIONSTART + g
     LA(x1, 5f)                          // Store the return Address in x1
     \TEST_CASE\()_21:
@@ -115,18 +119,21 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
 
+    LA(a5, \ADDRESS)                                        // Address to be verified
     \TEST_CASE\()_2:
     sh a4, 0(a5)
     nop
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
 
+    LA(a5, \ADDRESS)                                        // Address to be verified
     \TEST_CASE\()_3:
     sw a4, 0(a5)
     nop
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
 
+    LA(a5, \ADDRESS)                                        // Address to be verified
     addi a5, a5, -4                                         // REGIONSTART - 4
 
     \TEST_CASE\()_4:
@@ -135,6 +142,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)
 
+    LA(a5, \ADDRESS)                                        // Address to be verified
     addi a5, a5, 8                                          // REGIONSTART + 4
 
     \TEST_CASE\()_5:
@@ -143,6 +151,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_5, test_5_str)
 
+    LA(a5, \ADDRESS)                                        // Address to be verified
     addi a5, a5, (g-8)                                      // REGIONSTART + g - 4
 
     \TEST_CASE\()_6:
@@ -151,6 +160,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_6, test_6_str)
 
+    LA(a5, \ADDRESS)                                        // Address to be verified
     addi a5, a5, 4                                          // REGIONSTART + g
 
     \TEST_CASE\()_7:
@@ -167,30 +177,35 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)                                   // Signature update
 
+    LA(a5, \ADDRESS)                                        // Address to be verified
     \TEST_CASE\()_9:
     lbu a4, 0(a5)
     nop
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_9, test_9_str)                                   // Signature update
 
+    LA(a5, \ADDRESS)                                        // Address to be verified
     \TEST_CASE\()_10:
     lh a4, 0(a5)
     nop
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_10, test_10_str)                                   // Signature update
 
+    LA(a5, \ADDRESS)                                        // Address to be verified
     \TEST_CASE\()_11:
     lhu a4, 0(a5)
     nop
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_11, test_11_str)                                   // Signature update
 
+    LA(a5, \ADDRESS)                                        // Address to be verified
     \TEST_CASE\()_12:
     lw a4, 0(a5)
     nop
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_12, test_12_str)                                   // Signature update
 
+    LA(a5, \ADDRESS)                                        // Address to be verified
     addi a5, a5, -4                                         // REGIONSTART - 4
 
     \TEST_CASE\()_13:
@@ -199,6 +214,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_13, test_13_str)                                   // Signature update
 
+    LA(a5, \ADDRESS)                                        // Address to be verified
     addi a5, a5, 8                                          // REGIONSTART + 4
 
     \TEST_CASE\()_14:
@@ -207,6 +223,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_14, test_14_str)                                   // Signature update
 
+    LA(a5, \ADDRESS)                                        // Address to be verified
     addi a5, a5, (g-8)                                      // REGIONSTART + g - 4
 
     \TEST_CASE\()_15:
@@ -215,6 +232,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_15, test_15_str)                                   // Signature update
 
+    LA(a5, \ADDRESS)                                        // Address to be verified
     addi a5, a5, 4                                          // REGIONSTART + g
 
     \TEST_CASE\()_16:
@@ -231,12 +249,14 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_22, test_22_str)
 
+    LA(a5, \ADDRESS)
     \TEST_CASE\()_23:
     ld a4, 0(a5)
     nop
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_23, test_23_str)                                    // Signature update
 
+    LA(a5, \ADDRESS)
     \TEST_CASE\()_24:
     lwu a4, 0(a5)
     nop
@@ -366,6 +386,11 @@ test_24_str:  .string "\"test: 24;  cp: pmpu_napot_legal_lwxr_lwu_address\""
 
 .align 12
 .align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    .rept 1024
+    nop
+    .endr
+
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

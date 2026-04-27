@@ -366,6 +366,11 @@ test_24_str:  .string "\"test: 24;  cp: pmpu_napot_legal_lwxr_lwu_address\""
 
 .align 12
 .align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    .rept 1024
+    nop
+    .endr
+
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

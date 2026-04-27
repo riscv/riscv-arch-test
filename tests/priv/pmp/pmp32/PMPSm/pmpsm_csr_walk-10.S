@@ -32,7 +32,7 @@
 ##### END_TEST_CONFIG #####
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "pmpsm_csr_walk-10.S"
-#define SIGUPD_COUNT 500
+#define SIGUPD_COUNT 2000
 
 // Enable trap handler
 #define rvtest_mtrap_routine
@@ -77,7 +77,7 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_64\""
 
-.align 12
+.align 13
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

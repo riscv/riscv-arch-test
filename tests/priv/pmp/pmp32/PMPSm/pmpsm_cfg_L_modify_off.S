@@ -184,7 +184,7 @@ test_12_str: .string "\"test: 12; cp: cp_cfg_L_modify_12\""
 test_13_str: .string "\"test: 13; cp: cp_cfg_L_modify_13\""
 test_14_str: .string "\"test: 14; cp: cp_cfg_L_modify_14\""
 
-.align 12
+.align 13
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

@@ -131,16 +131,21 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
-test_50_str: .string "\"test: 50; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_50\""
-test_51_str: .string "\"test: 51; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_51\""
-test_52_str: .string "\"test: 52; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_52\""
-test_53_str: .string "\"test: 53; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_53\""
-test_54_str: .string "\"test: 54; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_54\""
-test_55_str: .string "\"test: 55; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_55\""
-test_56_str: .string "\"test: 56; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_56\""
+test_50_str: .string "\"test: 50; cp: cp_csr_walk_test_50\""
+test_51_str: .string "\"test: 51; cp: cp_csr_walk_test_51\""
+test_52_str: .string "\"test: 52; cp: cp_csr_walk_test_52\""
+test_53_str: .string "\"test: 53; cp: cp_csr_walk_test_53\""
+test_54_str: .string "\"test: 54; cp: cp_csr_walk_test_54\""
+test_55_str: .string "\"test: 55; cp: cp_csr_walk_test_55\""
+test_56_str: .string "\"test: 56; cp: cp_csr_walk_test_56\""
 
 .align 12
 .align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    .rept 1024
+    nop
+    .endr
+
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

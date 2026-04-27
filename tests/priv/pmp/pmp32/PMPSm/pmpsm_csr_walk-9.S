@@ -32,7 +32,7 @@
 ##### END_TEST_CONFIG #####
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "pmpsm_csr_walk-09.S"
-#define SIGUPD_COUNT 500
+#define SIGUPD_COUNT 2000
 
 // Enable trap handler
 #define rvtest_mtrap_routine
@@ -92,19 +92,11 @@ main:
     .set pmpcfgi, pmpcfgi+2
     .endr
 
-    // --- pmpcfg even walking ones, bit 28 ---
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
-1:  li t2, (1 << 28)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_5_str)
-    .set pmpcfgi, pmpcfgi+2
-    .endr
-
     // --- pmpcfg even walking ones, bit 29 ---
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
 1:  li t2, (1 << 29)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_6_str)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_5_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
@@ -112,7 +104,7 @@ main:
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
 1:  li t2, (1 << 30)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_7_str)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_6_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
@@ -122,15 +114,14 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_57\""
-test_2_str: .string "\"test: 2; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_58\""
-test_3_str: .string "\"test: 3; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_59\""
-test_4_str: .string "\"test: 4; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_60\""
-test_5_str: .string "\"test: 5; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_61\""
-test_6_str: .string "\"test: 6; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_62\""
-test_7_str: .string "\"test: 7; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_63\""
+test_1_str: .string "\"test: 1; cp: cp_csr_walk\""
+test_2_str: .string "\"test: 2; cp: cp_csr_walk\""
+test_3_str: .string "\"test: 3; cp: cp_csr_walk\""
+test_4_str: .string "\"test: 4; cp: cp_csr_walk\""
+test_5_str: .string "\"test: 5; cp: cp_csr_walk\""
+test_6_str: .string "\"test: 6; cp: cp_csr_walk\""
 
-.align 12
+.align 13
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

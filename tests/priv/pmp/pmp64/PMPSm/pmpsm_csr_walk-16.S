@@ -67,7 +67,7 @@ main:
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
 1:  li t2, (1 << 41)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_106_str)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_101_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
@@ -76,7 +76,7 @@ main:
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
 1:  li t2, (1 << 42)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_107_str)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_102_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
@@ -85,16 +85,7 @@ main:
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
 1:  li t2, (1 << 43)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_108_str)
-    .set pmpcfgi, pmpcfgi+2
-    .endr
-
-    // --- pmpcfg even walking ones, bit 44 ---
-
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
-1:  li t2, (1 << 44)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_109_str)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_103_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
@@ -103,7 +94,7 @@ main:
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
 1:  li t2, (1 << 45)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_110_str)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_104_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
@@ -112,7 +103,7 @@ main:
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
 1:  li t2, (1 << 46)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_111_str)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_105_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
@@ -121,7 +112,7 @@ main:
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
 1:  li t2, (1 << 47)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_112_str)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_106_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
@@ -131,16 +122,20 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
-test_106_str: .string "\"test: 106; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_106\""
-test_107_str: .string "\"test: 107; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_107\""
-test_108_str: .string "\"test: 108; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_108\""
-test_109_str: .string "\"test: 109; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_109\""
-test_110_str: .string "\"test: 110; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_110\""
-test_111_str: .string "\"test: 111; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_111\""
-test_112_str: .string "\"test: 112; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_112\""
+test_101_str: .string "\"test: 101; cp: cp_csr_walk_test_101\""
+test_102_str: .string "\"test: 102; cp: cp_csr_walk_test_102\""
+test_103_str: .string "\"test: 103; cp: cp_csr_walk_test_103\""
+test_104_str: .string "\"test: 104; cp: cp_csr_walk_test_104\""
+test_105_str: .string "\"test: 105; cp: cp_csr_walk_test_105\""
+test_106_str: .string "\"test: 106; cp: cp_csr_walk_test_106\""
 
 .align 12
 .align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    .rept 1024
+    nop
+    .endr
+
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

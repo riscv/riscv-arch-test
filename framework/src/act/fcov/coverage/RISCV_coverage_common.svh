@@ -40,7 +40,7 @@
             Since the Sail data region begins at 0x80004000, we simply add the size of the test strings,
             which has been fixed at 4 KB.
  */
-`define PMP_REGION_START   32'h80005000
+`define PMP_REGION_START   32'h80006000
 
 // Calculate region size g in bytes.
 `define g_tor       (2 ** (`G + 2))

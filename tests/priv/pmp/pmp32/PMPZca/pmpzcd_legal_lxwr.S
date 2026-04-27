@@ -226,7 +226,7 @@ RVTEST_DATA_BEGIN
 test_1_str:  .string "\"test: 1;  cp: pmpzcb_cfg_wr_c.fsd\""
 test_2_str:  .string "\"test: 2;  cp: pmpzcb_cfg_wr_c.fld\""
 
-.align 12
+.align 13
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

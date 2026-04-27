@@ -143,7 +143,7 @@ test_1_str: .string "\"test: 1; cp: pmpm_priority_off_sw\""
 test_2_str: .string "\"test: 2; cp: pmpm_priority_off_lw\""
 test_3_str: .string "\"test: 2; cp: pmpm_priority_off_jalr\""
 
-.align 12
+.align 13
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

@@ -226,7 +226,7 @@ test_4_str:  .string "\"test: 4;  cp: pmpzcb_cfg_wr_c.lhu\""
 test_5_str:  .string "\"test: 5;  cp: pmpzcb_cfg_wr_c.sh\""
 test_6_str:  .string "\"test: 6;  cp: pmpzcb_cfg_wr_c.shu\""
 
-.align 12
+.align 13
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

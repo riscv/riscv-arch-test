@@ -66,7 +66,7 @@ main:
 #define PMPREGION_TOR       ((((     PMP_R|PMP_W|PMP_X |PMP_TOR)   &0xFF) << PMP0_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
-#define REGIONSTART         TEST_FOR_EXECUTION      // RAM_BASE_ADDR + PROGRAM_SIZE
+#define REGIONSTART         TEST_FOR_EXECUTION
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw    pmpaddr15, x4
@@ -372,7 +372,7 @@ test_16_str: .string "\"test: 16; cp: cp_pmp_grain\""
 test_17_str: .string "\"test: 17; cp: cp_pmp_grain\""
 test_18_str: .string "\"test: 18; cp: cp_pmp_grain\""
 
-.align 12
+.align 13
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

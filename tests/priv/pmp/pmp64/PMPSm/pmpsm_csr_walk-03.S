@@ -131,16 +131,21 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
-test_15_str: .string "\"test: 15; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_15\""
-test_16_str: .string "\"test: 16; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_16\""
-test_17_str: .string "\"test: 17; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_17\""
-test_18_str: .string "\"test: 18; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_18\""
-test_19_str: .string "\"test: 19; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_19\""
-test_20_str: .string "\"test: 20; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_20\""
-test_21_str: .string "\"test: 21; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_21\""
+test_15_str: .string "\"test: 15; cp: cp_csr_walk_test_15\""
+test_16_str: .string "\"test: 16; cp: cp_csr_walk_test_16\""
+test_17_str: .string "\"test: 17; cp: cp_csr_walk_test_17\""
+test_18_str: .string "\"test: 18; cp: cp_csr_walk_test_18\""
+test_19_str: .string "\"test: 19; cp: cp_csr_walk_test_19\""
+test_20_str: .string "\"test: 20; cp: cp_csr_walk_test_20\""
+test_21_str: .string "\"test: 21; cp: cp_csr_walk_test_21\""
 
 .align 12
 .align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    .rept 1024
+    nop
+    .endr
+
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

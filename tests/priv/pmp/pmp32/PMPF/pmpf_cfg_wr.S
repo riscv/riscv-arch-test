@@ -219,7 +219,7 @@ test_4_str:  .string "\"test: 4;  cp: pmpf_cfg_wr_flh.S\""
 test_5_str:  .string "\"test: 5;  cp: pmpf_cfg_wr_flw.S\""
 test_6_str:  .string "\"test: 6;  cp: pmpf_cfg_wr_fld.S\""
 
-.align 12
+.align 13
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

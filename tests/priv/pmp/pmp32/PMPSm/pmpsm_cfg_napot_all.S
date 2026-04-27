@@ -100,7 +100,7 @@ main:
 #define PMPREGION3_XWR_000  (((PMP_L|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT)
 
 #define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
-#define REGIONSTART         TEST_FOR_EXECUTION      // RAM_BASE_ADDR + PROGRAM_SIZE
+#define REGIONSTART         TEST_FOR_EXECUTION
 #if RVMODEL_PMP_GRAIN != 0
     #define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
     #define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)) - 1
@@ -327,6 +327,11 @@ test_3_str: .string "\"test: 3; cp: pmpm_cfg_napot_all_address+4\""
 
 .align 12
 .align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    .rept 1024
+    nop
+    .endr
+
 TEST_FOR_EXECUTION:
     .rept (SIZE/4)
     nop

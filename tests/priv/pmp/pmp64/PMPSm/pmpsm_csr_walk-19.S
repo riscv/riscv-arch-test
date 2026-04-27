@@ -67,7 +67,7 @@ main:
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
 1:  li t2, (1 << 62)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_127_str)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_119_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
@@ -76,7 +76,7 @@ main:
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
 1:  li t2, (1 << 63)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_128_str)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_120_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
@@ -86,11 +86,16 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
-test_127_str: .string "\"test: 127; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_127\""
-test_128_str: .string "\"test: 128; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_128\""
+test_119_str: .string "\"test: 119; cp: cp_csr_walk_119\""
+test_120_str: .string "\"test: 120; cp: cp_csr_walk_120\""
 
 .align 12
 .align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    .rept 1024
+    nop
+    .endr
+
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

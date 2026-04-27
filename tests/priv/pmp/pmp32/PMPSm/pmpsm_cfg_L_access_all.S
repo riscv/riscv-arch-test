@@ -100,7 +100,7 @@ main:
 #define PMPREGION_XWR_000   ((                        PMP_NAPOT)&0xFF)
 
 #define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
-#define REGIONSTART         TEST_FOR_EXECUTION      // RAM_BASE_ADDR + PROGRAM_SIZE
+#define REGIONSTART         TEST_FOR_EXECUTION
 #if RVMODEL_PMP_GRAIN != 0
     #define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
     #define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)) - 1
@@ -321,7 +321,7 @@ RVTEST_DATA_BEGIN
 test_1_str: .string "\"test: 1; cp: cp_cfg_L_access_all_lw and cp_none_lw\""
 test_2_str: .string "\"test: 2; cp: cp_cfg_L_access_all_sw and cp_none_sw\""
 
-.align 12
+.align 13
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

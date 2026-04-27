@@ -123,14 +123,16 @@ test_1_str: .string "\"test: 1; cp: pmpm_mislaigned_na4_wrap_sd\""
 test_2_str: .string "\"test: 1; cp: pmpm_mislaigned_na4_wrap_ld\""
 
 .align 12
-TEST_FOR_EXECUTION:
-    .rept (1<<RVMODEL_PMP_GRAIN)
+.align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    .rept 1024
     nop
     .endr
-//We need to add a extra nop to complete the minimal NAPOT region i.e., 8 Byte in case of 4 Byte Grain
-.if RVMODEL_PMP_GRAIN == 0
+
+TEST_FOR_EXECUTION:
+    .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop
-.endif
+    .endr
 
 RETURN_INSTRUCTION:
     nop

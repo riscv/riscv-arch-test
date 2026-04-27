@@ -212,14 +212,16 @@ test_16_str: .string "\"test: 16; cp: pmpm_misaligned_na4_lhu_address+3\""
 
 
 .align 12
-TEST_FOR_EXECUTION:
-    .rept (1<<RVMODEL_PMP_GRAIN)
+.align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    .rept 1024
     nop
     .endr
-//We need to add a extra nop to complete the minimal NAPOT region i.e., 8 Byte in case of 4 Byte Grain
-.if RVMODEL_PMP_GRAIN == 0
+
+TEST_FOR_EXECUTION:
+    .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop
-.endif
+    .endr
 
 RETURN_INSTRUCTION:
     nop

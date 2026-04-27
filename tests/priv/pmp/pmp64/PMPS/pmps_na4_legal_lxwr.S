@@ -240,6 +240,11 @@ test_9_str: .string "\"test: 9; cp: pmps_cfg_A_off_all_lw_address+4\""
 
 .align 12
 .align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    .rept 1024
+    nop
+    .endr
+
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

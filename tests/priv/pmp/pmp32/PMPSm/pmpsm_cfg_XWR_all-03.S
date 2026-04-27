@@ -279,7 +279,7 @@ test_7_str: .string "\"test: 7; cp: pmpm_cfg_XWR_all_lhu\""
 test_8_str: .string "\"test: 8; cp: pmpm_cfg_XWR_all_lw\""
 test_9_str: .string "\"test: 9; cp: pmpm_cfg_XWR_all_jalr\""
 
-.align 12
+.align 13
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

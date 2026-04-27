@@ -184,7 +184,7 @@ RVTEST_DATA_BEGIN
 
 test_1_str: .string "\"test: 1; cp: pmpm_cfg_tor_all_lw\""
 
-.align 12
+.align 13
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION_0:                        // Adding nops in TOR Region from 0x80001000 to 0x80001000 + g
     .rept (1<<(RVMODEL_PMP_GRAIN))

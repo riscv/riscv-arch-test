@@ -251,7 +251,7 @@ test_10_str: .string "\"test: 10; cp: pmps_cfg_XWR.S_lw\""
 test_11_str: .string "\"test: 11; cp: pmps_cfg_XWR.S_lwu\""
 test_12_str: .string "\"test: 12; cp: pmps_cfg_XWR.S_ld\""
 
-.align 12
+.align 13
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

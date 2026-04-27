@@ -447,6 +447,8 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "mml" : val = val & 'h1;
       "mmwp" : val = (val >> 1) & 'h1;
       "rlb" : val = (val >> 2) & 'h1;
+      "useed" : val = (val >> 8) & 'h1;
+      "sseed" : val = (val >> 9) & 'h1;
       default: val = 0; // Todo: error
     endcase
   end

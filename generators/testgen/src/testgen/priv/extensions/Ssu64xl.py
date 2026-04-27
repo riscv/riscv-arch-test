@@ -23,7 +23,7 @@ def _generate_ssu64xl_tests(test_data: TestData) -> list[str]:
     lines = [
         comment_banner(
             f"{coverpoint}",
-            "sstatus.UXL=2 (UXLEN=64 for User mode)\nSet bit 63 in a GPR in U-mode and read it back.",
+            "sstatus.UXL=2 (UXLEN=64 for User mode)\nWrite 64-bit value to GPR in U-mode and read it back.",
         ),
     ]
 
@@ -48,7 +48,7 @@ def _generate_ssu64xl_tests(test_data: TestData) -> list[str]:
             "RVTEST_GOTO_MMODE",
             "RVTEST_GOTO_LOWER_MODE Umode",
             test_data.add_testcase("uxlen64_gpr_bit63", coverpoint, covergroup),
-            load_int_reg("value", check_reg, 0xFEDCBA9876543210, test_data),
+            load_int_reg("64b_value", check_reg, 0xFEDCBA9876543210, test_data),
             write_sigupd(check_reg, test_data),
         ]
     )

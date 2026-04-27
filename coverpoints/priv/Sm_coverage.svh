@@ -175,7 +175,6 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     mcsrname : coverpoint ins.current.insn[31:20] { // excludes read-only CSRs
         bins mstatus    = {CSR_MSTATUS};
-        bins misa       = {CSR_MISA};
         bins medeleg    = {CSR_MEDELEG};
         bins mideleg    = {CSR_MIDELEG};
         bins mie        = {CSR_MIE};
@@ -222,10 +221,12 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         `endif
         `ifdef XLEN32
             bins mstatush = {CSR_MSTATUSH};
-            // bins medelegh = {12'h312}; // move this to Sm1p13 coverpoints
             bins menvcfgh = {CSR_MENVCFGH};
             `ifdef MSECCFG_SUPPORTED // update this in four places when UDB gives a name to this parameter
                 bins mseccfgh = {CSR_MSECCFGH};
+            `endif
+            `ifdef SM1P13_SUPPORTED
+                bins medelegh = {CSR_MEDELEGH};
             `endif
         `endif
     }
@@ -439,14 +440,6 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             }
             cp_msip: cross priv_mode_m, sw, msip_address, msip_val;
         `endif // RVMODEL_MSIP_ADDRESS
-
-        `ifdef XLEN32
-            medelegh: coverpoint ins.current.insn[31:20] {
-                bins medelegh = {CSR_MEDELEGH};
-            }
-
-            cp_medelegh: cross priv_mode_m, csrrw, medelegh, rs1_ones; // RV32 only: write all 1s to medelegh and read back
-        `endif // XLEN32
     `endif // SM1P13_SUPPORTED
 
 

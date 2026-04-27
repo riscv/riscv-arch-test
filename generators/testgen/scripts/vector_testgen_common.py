@@ -201,6 +201,33 @@ def newInstruction():
   # reset testcase strings for the new instruction file
   reset_testcase_strings()
 
+# Reserved scratch registers in the priv vector test framework:
+#   x0  : zero
+#   x1  : link / used by trap routines
+#   x2  : signature pointer (sigReg)
+#   x3  : gp
+#   x4  : SIGUPD temp register (tempReg)
+#   x5  : SIGUPD link register (linkReg)
+# Avoid these (and any chosen instruction operand registers) when picking a
+# scratch register for `la random_mask_0` / `vsetivli` output / etc.
+PRIV_RESERVED_SCALAR_REGS = (0, 1, 2, 3, 4, 5)
+PRIV_SCRATCH_CANDIDATES   = (28, 29, 30, 31, 6, 7, 8, 9, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27)
+
+def pickPrivScratch(scalar_register_data=None, exclude=()):
+  """Pick a scratch xreg that doesn't collide with framework-reserved regs,
+  any chosen rd/rs1/rs2 operands, or caller-supplied excludes."""
+  used = set(PRIV_RESERVED_SCALAR_REGS) | set(exclude)
+  if scalar_register_data is not None:
+    for k in ("rd", "rs1", "rs2"):
+      v = scalar_register_data.get(k)
+      if v is not None and v.get("reg") is not None:
+        used.add(v["reg"])
+  for r in PRIV_SCRATCH_CANDIDATES:
+    if r not in used:
+      return r
+  raise RuntimeError("no scratch register available for priv test")
+
+
 def setXlen(new_xlen):
     global xlen, formatstr
     xlen = new_xlen
@@ -1855,6 +1882,20 @@ def handleSignaturePointerConflict(*registers):
 
   if (sigReg != oldSigReg):
     writeLine("mv x" + str(sigReg) + ", x" + str(oldSigReg), "# switch signature pointer register to avoid conflict with test")
+
+# resolveScalarSigConflict: collect all x-regs the test will use (rd/rs1/rs2/...)
+# from instruction_data and relocate sigReg if needed. Call this BEFORE any
+# `li x{rd}, ...` is emitted, otherwise SIGUPD can end up using the same x-reg
+# as both signature base and result source (e.g. vcpop.m x2 + RVTEST_SIGUPD(x2, ..., x2)).
+# Returns the list of scalar regs used so callers can pass to allocScratchRegs etc.
+def resolveScalarSigConflict(instruction_arguments, scalar_register_data):
+  scalar_regs_used = [
+    scalar_register_data[a]['reg']
+    for a in instruction_arguments
+    if a and a[0] == 'r' and a in scalar_register_data
+  ]
+  handleSignaturePointerConflict(*scalar_regs_used)
+  return scalar_regs_used
 
 # allocScratchRegs picks `n` unique scratch X-registers, avoiding any in
 # scalar_registers_used (and x0). Mutates scalar_registers_used (appends each

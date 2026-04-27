@@ -25,24 +25,14 @@ def _make_index_eew(cp: str, instruction: str) -> None:
 
     instruction_data = common.randomizeVectorInstructionData(
         instruction, sew, common.getBaseSuiteTestCount(),
-        vd=8, vs2=16, vs1=24, rd=5, rs2=6, rs1=7,
         vd_val_pointer="vector_random",
         vs2_val_pointer="vector_random",
         vs1_val_pointer="vector_random",
     )
 
-    args = common.getInstructionArguments(instruction)
-
     common.writeLine(f"\n# Testcase {cp}")
-    common.writeLine(f"vsetivli x8, 1, e{sew}, m1, tu, mu", "# vill=0, vstart=0, vl=1")
-
-    common.writeLine("la x2, random_mask_0", "# valid data address")
-    if "vd" in args:
-        common.writeLine(f"vle{sew}.v v8, (x2)", "# initialize vd (v8)")
-    if "vs3" in args:
-        common.writeLine(f"vle{sew}.v v8, (x2)", "# initialize vs3 (v8)")
-    if "vs2" in args:
-        common.writeLine(f"vle{sew}.v v16, (x2)", "# initialize vs2 (v16)")
+    from .cp_exceptionsv_LS import _emit_setup
+    _emit_setup(instruction, instruction_data, sew)
 
     testline, vd, rd = _build_testline(instruction, instruction_data)
     sig_lmul, sig_wr = _sig_params(instruction, instruction_data)

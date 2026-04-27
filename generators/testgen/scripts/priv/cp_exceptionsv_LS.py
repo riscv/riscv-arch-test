@@ -35,7 +35,8 @@ def _build_testline(instruction: str, instruction_data: list, maskval: str | Non
         elif arg[0] == "r":
             if arg == "rs1" and instruction in common.vector_ls_ins:
                 # Use random_mask_0 as valid address (vector_ls_random_base
-                # isn't available in priv tests)
+                # isn't available in priv tests). The randomly chosen rs1
+                # holds the address.
                 reg = scalar_data[arg]["reg"]
                 common.writeLine(f"la x{reg}, random_mask_0", "# rs1 = valid memory address")
                 testline += f"(x{reg})"
@@ -65,6 +66,24 @@ def _sig_params(instruction: str, instruction_data: list, lmul: int = 1) -> tupl
     return lmul, False
 
 
+def _emit_setup(instruction: str, instruction_data: list, sew: int) -> int:
+    """Emit vsetivli + vd/vs2/vs3 initialization. Returns scratch reg used."""
+    vec_data, scalar_data, _, _ = instruction_data
+    scratch = common.pickPrivScratch(scalar_data)
+    args = common.getInstructionArguments(instruction)
+    vd_reg  = vec_data["vd"]["reg"]
+    vs2_reg = vec_data["vs2"]["reg"]
+    common.writeLine(f"vsetivli x{scratch}, 1, e{sew}, m1, tu, mu", "# vill=0, vstart=0, vl=1")
+    common.writeLine(f"la x{scratch}, random_mask_0", "# valid data address")
+    if "vd" in args:
+        common.writeLine(f"vle{sew}.v v{vd_reg}, (x{scratch})", f"# initialize vd (v{vd_reg})")
+    if "vs3" in args:
+        common.writeLine(f"vle{sew}.v v{vd_reg}, (x{scratch})", f"# initialize vs3 (v{vd_reg})")
+    if "vs2" in args:
+        common.writeLine(f"vle{sew}.v v{vs2_reg}, (x{scratch})", f"# initialize vs2 (v{vs2_reg})")
+    return scratch
+
+
 @register(CP)
 def make_exceptionsv_LS(instruction: str) -> None:
     """Execute LS instruction normally under std_trap_vec conditions."""
@@ -76,26 +95,13 @@ def make_exceptionsv_LS(instruction: str) -> None:
 
     instruction_data = common.randomizeVectorInstructionData(
         instruction, sew, common.getBaseSuiteTestCount(),
-        vd=8, vs2=16, vs1=24, rd=5, rs2=6, rs1=7,
         vd_val_pointer="vector_random",
         vs2_val_pointer="vector_random",
         vs1_val_pointer="vector_random",
     )
 
-    args = common.getInstructionArguments(instruction)
-
-    # Setup: valid vtype, vstart=0, vl=1
     common.writeLine(f"\n# Testcase {CP}")
-    common.writeLine(f"vsetivli x8, 1, e{sew}, m1, tu, mu", "# vill=0, vstart=0, vl=1")
-
-    # Load valid data address into base register for LS instructions
-    common.writeLine("la x2, random_mask_0", "# valid data address")
-    if "vd" in args:
-        common.writeLine(f"vle{sew}.v v8, (x2)", "# initialize vd (v8)")
-    if "vs3" in args:
-        common.writeLine(f"vle{sew}.v v8, (x2)", "# initialize vs3 (v8)")
-    if "vs2" in args:
-        common.writeLine(f"vle{sew}.v v16, (x2)", "# initialize vs2 (v16)")
+    _emit_setup(instruction, instruction_data, sew)
 
     testline, vd, rd = _build_testline(instruction, instruction_data)
     sig_lmul, sig_wr = _sig_params(instruction, instruction_data)

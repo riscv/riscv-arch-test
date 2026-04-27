@@ -26,7 +26,6 @@ def make_exceptionsv_address_fault(instruction: str) -> None:
 
     instruction_data = common.randomizeVectorInstructionData(
         instruction, sew, common.getBaseSuiteTestCount(),
-        vd=8, vs2=16, vs1=24, rd=5, rs2=6, rs1=7,
         vd_val_pointer="vector_random",
         vs2_val_pointer="vector_random",
         vs1_val_pointer="vector_random",
@@ -36,18 +35,13 @@ def make_exceptionsv_address_fault(instruction: str) -> None:
 
     # Setup: valid vtype (vill=0), vstart=0, vl=1
     common.writeLine(f"\n# Testcase {CP}")
-    common.writeLine(f"vsetivli x8, 1, e{sew}, m1, tu, mu", "# valid vtype, vl=1")
+    from .cp_exceptionsv_LS import _emit_setup
+    _emit_setup(instruction, instruction_data, sew)
 
-    common.writeLine("la x2, random_mask_0", "# valid data address for init")
-    if "vd" in args:
-        common.writeLine(f"vle{sew}.v v8, (x2)", "# initialize vd (v8)")
-    if "vs3" in args:
-        common.writeLine(f"vle{sew}.v v8, (x2)", "# initialize vs3 (v8)")
-    if "vs2" in args:
-        common.writeLine(f"vle{sew}.v v16, (x2)", "# initialize vs2 (v16)")
-
-    # rs1 = 0 → triggers address fault (access to address 0)
-    common.writeLine("li x7, 0", "# rs1 = 0 → address fault trigger")
+    # rs1 = 0 → triggers address fault (access to address 0). Use the
+    # randomly chosen rs1 register, not a hardcoded one.
+    rs1_reg = instruction_data[1]["rs1"]["reg"]
+    common.writeLine(f"li x{rs1_reg}, 0", f"# rs1 (x{rs1_reg}) = 0 → address fault trigger")
 
     # Build testline: unmasked to ensure memory access actually occurs
     vec_data, scalar_data, fp_data, imm_val = instruction_data

@@ -15,7 +15,6 @@ import filecmp
 import math
 import os
 import pathlib
-import re
 from random import randint, seed
 
 import priv  # priv coverpoint generator scripts
@@ -24,6 +23,7 @@ from priv_coverpoint_registry import PRIV_REGISTRY, import_all_modules
 from vector_testgen_common import (
   ARCH_VERIF,
   add_testcase_string,
+  finalizeSigupdCount,
   flen,
   genVMaskedges,
   getBaseSuiteTestCount,
@@ -37,10 +37,13 @@ from vector_testgen_common import (
   minSEW_MIN,
   myhash,
   narrowins,
+  newInstruction,
+  pickPrivScratch,
   prepVstart,
   randomizeMask,
   randomizeVectorInstructionData,
   readTestplans,
+  resolveScalarSigConflict,
   setExtension,
   setXlen,
   vd_widen_ins,
@@ -65,11 +68,12 @@ def writeLine(argument: str, comment = ""):
 
 def make_vill(instruction):
     description = "cp_vill"
-    instruction_data = randomizeVectorInstructionData(instruction, minSEW_MIN, getBaseSuiteTestCount(), vd = 8, vs2 = 16, vs1 = 24, rd = 5, rs2 = 6, rs1 = 7,
+    instruction_data = randomizeVectorInstructionData(instruction, minSEW_MIN, getBaseSuiteTestCount(),
                                                       vd_val_pointer = "vector_random", vs2_val_pointer = "vector_random", vs1_val_pointer = "vector_random")
 
-    writePrivTestPrep(description, instruction)
-    writeLine("vsetivli  x8, 1, e64, mf8, tu, mu",  "# SEW = 64 and LMUL = 1/8, illegal config which sets vill = 1")
+    scratch = pickPrivScratch(instruction_data[1])
+    writePrivTestPrep(description, instruction, instruction_data, scratch=scratch)
+    writeLine(f"vsetivli  x{scratch}, 1, e64, mf8, tu, mu",  "# SEW = 64 and LMUL = 1/8, illegal config which sets vill = 1")
     writePrivTestLine(instruction, instruction_data, cp="cp_vill")
 
 
@@ -86,11 +90,11 @@ def make_vstart(instruction, maxlmul = 8):
 
         description = f"cp_vstart (vstart = {vstartval})"
         instruction_data = randomizeVectorInstructionData(instruction, minSEW_MIN, getLengthSuiteTestCount(), suite = "length", lmul = lmul,
-                                                          vd = 8, vs2 = 16, vs1 = 24, rd = 5, rs2 = 6, rs1 = 7,
                                                           vd_val_pointer = "vector_random", vs2_val_pointer = "vector_random", vs1_val_pointer = "vector_random",
                                                           additional_no_overlap=no_overlap)
 
-        writePrivTestPrep(description, instruction, lmul = lmul, vl = "vlmax")
+        scratch = pickPrivScratch(instruction_data[1])
+        writePrivTestPrep(description, instruction, instruction_data, lmul = lmul, vl = "vlmax", scratch=scratch)
         prepVstart(vstartval)
         writePrivTestLine(instruction, instruction_data, cp="cp_vstart", lmul = lmul, vl = "vlmax", maskval = maskval)
 
@@ -98,10 +102,13 @@ def make_vstart_gt_vl(instruction):
     randvl = randint(1, maxVLEN)
     randvstart = randint(1, maxVLEN)
     description = "cp_vstart_gt_vl"
-    instruction_data = randomizeVectorInstructionData(instruction, minSEW_MIN, getBaseSuiteTestCount(), vd = 8, vs2 = 16, vs1 = 24, rd = 5, rs2 = 6, rs1 = 7,
+    instruction_data = randomizeVectorInstructionData(instruction, minSEW_MIN, getBaseSuiteTestCount(),
                                                       vd_val_pointer = "vector_random", vs2_val_pointer = "vector_random", vs1_val_pointer = "vector_random")
 
-    writePrivTestPrep(description, instruction, lmul = 4, vl = "vlmax", vstart = True)
+    # a0 (x10) is used by the cp_vstart_gt_vl_setup helper for vl/vstart inputs;
+    # exclude it from the scratch candidate set.
+    scratch = pickPrivScratch(instruction_data[1], exclude=(10,))
+    writePrivTestPrep(description, instruction, instruction_data, lmul = 4, vl = "vlmax", vstart = True, scratch=scratch)
     writeLine(f"li a0, {randvl}",            "# load random number to a0, place holder for vl")
     writeLine(f"li a0, {randvstart}",        "# load random number to a1, place holder for vstart")
     writeLine("jal cp_vstart_gt_vl_setup",  "# jump to set up vstart and vl for the test")
@@ -129,7 +136,7 @@ def makeTest(coverpoints, instruction):
         else:
             print("Warning: " + coverpoint + " not implemented yet for " + instruction)
 
-def writePrivTestPrep(description, instruction, lmul = 1, vl = 1, vstart = False):
+def writePrivTestPrep(description, instruction, instruction_data=None, lmul = 1, vl = 1, vstart = False, scratch=None):
     instruction_arguments = getInstructionArguments(instruction)
 
     writeLine("\n# Testcase " + str(description))
@@ -137,22 +144,40 @@ def writePrivTestPrep(description, instruction, lmul = 1, vl = 1, vstart = False
     if (vstart):
         writeLine("csrw vstart, 0",                        "# initialize vstart  = 0 for preparing")
 
-    if (vl == "vlmax"):
-      writeLine(f"vsetvli x8, x0, SEWSIZE, m{lmul}, tu, mu",  "# initialize vl = VLMAX, LMUL = 1, SEW = SEWMIN")
+    if instruction_data is not None:
+        if scratch is None:
+            scratch = pickPrivScratch(instruction_data[1])
+        vec_data = instruction_data[0]
+        vd_reg  = vec_data['vd']['reg']
+        vs2_reg = vec_data['vs2']['reg']
+        vs1_reg = vec_data['vs1']['reg']
     else:
-      writeLine(f"vsetivli x8, {vl}, SEWSIZE, m{lmul}, tu, mu",  f"# initialize vl = {vl}, LMUL = 1, SEW = SEWMIN")
+        # Backwards-compatible legacy path (should not be used by new code).
+        if scratch is None:
+            scratch = 8
+        vd_reg, vs2_reg, vs1_reg = 8, 16, 24
 
-    writeLine("la x2, random_mask_0",                      "# load a random vector ") # TODO: change back to vector_random
+    if (vl == "vlmax"):
+      writeLine(f"vsetvli x{scratch}, x0, SEWSIZE, m{lmul}, tu, mu",  "# initialize vl = VLMAX, LMUL = 1, SEW = SEWMIN")
+    else:
+      writeLine(f"vsetivli x{scratch}, {vl}, SEWSIZE, m{lmul}, tu, mu",  f"# initialize vl = {vl}, LMUL = 1, SEW = SEWMIN")
+
+    writeLine(f"la x{scratch}, random_mask_0",             "# load a random vector ") # TODO: change back to vector_random
     if ("vd" in instruction_arguments):
-        writeLine("VLESEWMIN v8, (x2)",                    "# load to initialize vd (v8) ")
+        writeLine(f"VLESEWMIN v{vd_reg}, (x{scratch})",    f"# load to initialize vd (v{vd_reg}) ")
     if ("vs2" in instruction_arguments):
-        writeLine("VLESEWMIN v16, (x2)",                   "# load to initialize vs2 (v16)")
+        writeLine(f"VLESEWMIN v{vs2_reg}, (x{scratch})",   f"# load to initialize vs2 (v{vs2_reg})")
     if ("vs1" in instruction_arguments):
-        writeLine("VLESEWMIN v24, (x2)",                   "# load to initialize vs1 (v24)")
+        writeLine(f"VLESEWMIN v{vs1_reg}, (x{scratch})",   f"# load to initialize vs1 (v{vs1_reg})")
 
 def writePrivTestLine(instruction, instruction_data, cp="cp_vill", vl=1, lmul=1, maskval=None):
     instruction_arguments = getInstructionArguments(instruction)
     [vector_register_data, scalar_register_data, floating_point_register_data, imm_val] = instruction_data
+
+    # Relocate sigReg before any `li x{rd}, ...` is emitted. Without this,
+    # GPR-writing vector ops (vcpop.m, vfirst.m, vmv.x.s, ...) can land on x2
+    # and produce a self-colliding RVTEST_SIGUPD(x2, ..., x2).
+    resolveScalarSigConflict(instruction_arguments, scalar_register_data)
 
     testline = instruction + " "
 
@@ -227,6 +252,11 @@ if __name__ == '__main__':
         setExtension(extension)
         setXlen(xlen)
 
+        # Reset per-file generator state (sigupd_count, testcase_count, sigReg, ...)
+        # so each (xlen, extension) starts clean. Without this, signature counts
+        # accumulate across files and label numbering drifts.
+        newInstruction()
+
         # Filter instructions to only those marked for this xlen
         all_instructions = list(testplans[extension].keys())
         instructions = [inst for inst in all_instructions if f"RV{xlen}" in testplans[extension][inst]]
@@ -271,43 +301,13 @@ if __name__ == '__main__':
 
         # Finish
         f.close()
-        # Resolve SIGUPD_COUNT by parsing the generated file for the actual bytes
-        # consumed by scalar and vector signature updates. SIGUPD_COUNT is measured
-        # in units of SIG_STRIDE = TEST_FLEN/8 = 4 bytes, so total bytes / 4.
-        SIG_STRIDE = 4  # TEST_FLEN=32 assumed
-        temp_path = pathlib.Path(tempfname)
-        src = temp_path.read_text()
-
-        def iter_calls(text, name):
-            # Matches "<name>(" at start of a (possibly indented) line, not inside a comment/macro definition.
-            pattern = re.compile(rf"^[ \t]*{re.escape(name)}\s*\(([^)\n]*)\)", re.MULTILINE)
-            for m in pattern.finditer(text):
-                yield [a.strip() for a in m.group(1).split(",")]
-
-        total_bytes = 0
-        # Scalar sigupds: each advances SIG_PTR by SIG_STRIDE
-        for macro in ("RVTEST_SIGUPD", "RVTEST_SIGUPD_F"):
-            total_bytes += sum(1 for _ in iter_calls(src, macro)) * SIG_STRIDE
-        # Vector SIGUPD_V: arg index 7 is _OFFSET in bytes
-        for args in iter_calls(src, "RVTEST_SIGUPD_V"):
-            if len(args) > 7:
-                try:
-                    total_bytes += int(args[7])
-                except ValueError:
-                    total_bytes += 4096  # fallback upper bound
-        # Vector SIGUPD_V_LEN: arg index 12 is offsetRem; caller emits fullOffsets*2047 separately
-        # via addi, so we count offsetRem here. We also include a conservative extra per-call to
-        # account for the addi adjustments.
-        for args in iter_calls(src, "RVTEST_SIGUPD_V_LEN"):
-            if len(args) > 12:
-                try:
-                    total_bytes += int(args[12])
-                except ValueError:
-                    total_bytes += 4096
-            total_bytes += 2047  # margin for one fullOffset-style adjustment
-
-        resolved_sigupd = (total_bytes // SIG_STRIDE) + 256  # margin
-        temp_path.write_text(src.replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(resolved_sigupd)))
+        # Replace the @SIGUPD_COUNT_FROM_TESTGEN@ placeholder using the dynamic
+        # sigupd_count tally maintained by writeSIGUPD / writeSIGUPD_V (same path
+        # used by vector-testgen-unpriv.py). PR #1353 dropped the _OFFSET arg from
+        # RVTEST_SIGUPD_V/_V_LEN, so the previous regex-based byte counter no longer
+        # works.
+        finalizeSigupdCount(tempfname, xlen, flen)
+        print(f"DEBUG sigupd_count for rv{xlen} {extension}: {common.sigupd_count} sigupd_countF={common.sigupd_countF}")
         # if new file is different from old file, replace old file with new file
         if pathlib.Path(fname).exists():
             if filecmp.cmp(fname, tempfname): # files are the same

@@ -15,11 +15,11 @@ covergroup SvinvalH_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     cp_instr : coverpoint ins.current.insn {
-        wildcard bins sfence_inval_ir = {32'b0001100_00001_00000_000_00000_1110011};
-        wildcard bins sfence_w_inval  = {32'b0001100_00000_00000_000_00000_1110011};
-        wildcard bins sinval_vma      = {32'b0001011_?????_?????_000_00000_1110011};
-        wildcard bins hinval_vvma     = {32'b0010011_?????_?????_000_00000_1110011};
-        wildcard bins hinval_gvma     = {32'b0110011_?????_?????_000_00000_1110011};
+        wildcard bins sfence_inval_ir = {SFENCE_INVAL_IR};
+        wildcard bins sfence_w_inval  = {SFENCE_W_INVAL};
+        wildcard bins sinval_vma      = {SINVAL_VMA};
+        wildcard bins hinval_vvma     = {HINVAL_VVMA};
+        wildcard bins hinval_gvma     = {HINVAL_GVMA};
     }
     cp_priv : coverpoint {ins.prev.mode_virt, ins.prev.mode} {
         bins M_mode     = {3'b011};
@@ -28,10 +28,10 @@ covergroup SvinvalH_cg with function sample(ins_t ins);
         bins VS_mode    = {3'b101};
         bins VU_mode    = {3'b100};
     }
-    cp_tvm : coverpoint ins.prev.csr[12'h300][20] {
+    cp_tvm : coverpoint ins.prev.csr[CSR_MSTATUS][20] {
     }
 
-    cp_vtvm : coverpoint ins.prev.csr[12'h600][20] { // hstatus.VTVM
+    cp_vtvm : coverpoint ins.prev.csr[CSR_HSTATUS][20] { // hstatus.VTVM
     }
 
     cr_svinivalH : cross cp_instr, cp_priv, cp_tvm, cp_vtvm {

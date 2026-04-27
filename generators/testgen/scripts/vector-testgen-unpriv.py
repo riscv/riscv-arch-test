@@ -17,11 +17,14 @@ import filecmp
 import math
 import os
 import re
+from concurrent.futures import ProcessPoolExecutor, as_completed
+from pathlib import Path
 from random import randint, seed
 
 import custom # custom coverpoint generator scripts
 from coverpoint_registry import import_all_modules
 from coverpoint_registry import REGISTRY
+from rich.progress import track
 
 import vector_testgen_common as common
 from vector_testgen_common import (
@@ -40,6 +43,7 @@ from vector_testgen_common import (
   getLegalVlmul,
   getLengthLmul,
   getLengthSuiteTestCount,
+  finalizeSigupdCount,
   getSigSpace,
   imm_31,
   incrementBasetestCount,
@@ -1237,195 +1241,200 @@ def getExtensions():
           extensions.append(ext)
   return extensions
 
-if __name__ == '__main__':
-  parser = argparse.ArgumentParser(description="Generate directed vector tests for functional coverage")
-  parser.add_argument("--extensions", type=str, default="",
-                      help="Comma-separated list of extensions to generate tests for (default: all)")
-  parser.add_argument("--exclude", type=str, default="",
-                      help="Comma-separated list of extensions to exclude from generation")
-  args = parser.parse_args()
 
-  common.writeLine        = writeLine
-
-  # import custom coverpoints for use
+def _setup_worker() -> None:
+  """Per-process initialization used by both serial and parallel runs."""
+  common.writeLine = writeLine
   import_all_modules(custom)
 
-  # TODO: auipc missing, check whatelse is missing in ^these^ types
 
-  author = "kacassidy@g.hmc.edu"
-  xlens = [32, 64]
-  numrand = 3
-  edges = []
+def generate_extension(xlen_arg: int, extension_arg: str) -> str:
+  """Generate every test file for a single (xlen, extension) pair.
 
-  # setup
-  seed(0) # make tests reproducible
+  This is the unit of work dispatched to the process pool. Each worker
+  process gets its own copy of the module-level globals, so we re-seed
+  here for reproducibility (deterministic per task).
+  """
+  global f, legalvlmuls, redgesv, redges_ls_e8, redges_ls_e16, redges_ls_e32, redges_ls_e64
+  global immedgesv, NaNBox_tests, test, xlen, extension
 
-  # parse extension filters
-  include_set = set(args.extensions.split(",")) if args.extensions else set()
-  exclude_set = set(args.exclude.split(",")) if args.exclude else set()
+  xlen = xlen_arg
+  extension = extension_arg
 
-  # generate files for each test
-  for xlen in xlens:
-    # extensions = getExtensions() # find all extensions in
-    testplans = readTestplans()
-    extensions = list(testplans.keys())
+  seed(common.myhash(f"{xlen}-{extension}"))
 
-    # filter extensions based on --extensions and --exclude
-    if include_set:
-      extensions = [e for e in extensions if e in include_set]
-    if exclude_set:
-      extensions = [e for e in extensions if e not in exclude_set]
-    maxreg = 31 # I uses registers x0-x31
+  testplans = readTestplans()
+  if extension not in testplans:
+    return f"rv{xlen}/{extension}: skipped (no testplan)"
 
-    for extension in extensions:
-      setExtension(extension)
-      setXlen(xlen)
+  setExtension(extension)
+  setXlen(xlen)
 
-      coverdefdir = f"{ARCH_VERIF}/fcov/unpriv"
-      coverfiles = [extension]
-      #coverpoints = getcovergroups(coverdefdir, coverfiles, xlen)
-      pathname = f"{ARCH_VERIF}/tests/rv{xlen}i/{extension}"
+  pathname = f"{ARCH_VERIF}/tests/rv{xlen}i/{extension}"
 
-      print("Generating tests for " + pathname)
+  redgesv = [0, 1, 2, 2**xlen-1, 2**xlen-2, 2**(xlen-1), 2**(xlen-1)+1, 2**(xlen-1)-1, 2**(xlen-1)-2]
+  if (xlen == 32):
+    redgesv = redgesv + [0b01011011101111001000100001110010, 0b10101010101010101010101010101010, 0b01010101010101010101010101010101]
+  else:
+    redgesv = redgesv + [0b0101101110111100100010000111011101100011101011101000011011110010, # random
+                        0b1010101010101010101010101010101010101010101010101010101010101010, # walking odd
+                        0b0101010101010101010101010101010101010101010101010101010101010101, # walking even
+                        0b0000000000000000000000000000000011111111111111111111111111111111, # Wmax
+                        0b0000000000000000000000000000000011111111111111111111111111111110, # Wmaxm1
+                        0b0000000000000000000000000000000100000000000000000000000000000000, # Wmaxp1
+                        0b0000000000000000000000000000000100000000000000000000000000000001] # Wmaxp2
 
-      if (xlen == 32):
-        storecmd = "sw"
-        wordsize = 4
+  redges_ls_e8  = [-2, -1, 0, 1, 2]
+  redges_ls_e16 = [-4, -2, 0, 2, 4]
+  redges_ls_e32 = [-8, -4, 0, 4, 8]
+  redges_ls_e64 = [-16,-8, 0, 8,16]
+
+  NaNBox_tests = False
+
+  os.makedirs(pathname, exist_ok=True)  # noqa: PTH103
+
+  for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$', r'/VlsCustom(\d+)$', r'/VfCustom(\d+)$', r'/Zvbb(\d+)$', r'/Zvkb(\d+)$', r'/Zvbc(\d+)$']:
+    match = re.search(pattern, pathname)
+    if match:
+        sew = int(match.group(1))
+        break
+  else:
+    sew = 8
+
+  instructions = list(testplans[extension].keys())
+  applicable_instructions = list(testplans[extension].keys())
+  effewcp = "EFFEW" + str(sew)
+  for test in instructions:
+    if effewcp not in list(testplans[extension][test]):
+      applicable_instructions.remove(test)
+
+  written = 0
+  for test in applicable_instructions:
+    newInstruction()
+
+    if (test in imm_31):
+      immedgesv = [0, 1, 2, 15, 16, 30, 31]
+    else:
+      immedgesv = [0, 1, 2, 14, 15, -1, -2, -15, -16]
+
+    basename = extension + "-" + test
+    fname = pathname + "/" + basename + ".S"
+    tempfname = pathname + "/" + basename + "_temp.S"
+
+    vdsew = sew * (2 if (test in vd_widen_ins) else 1)
+
+    f = open(tempfname, "w")
+
+    insertTemplate(test, getSigSpace(xlen, flen), "testgen_header.S", sew=sew, vdsew=vdsew)
+
+    if test in vfloattypes:
+      float_en = "\n# set mstatus.FS to 10 to enable fp\nli t0,0x4000\ncsrs mstatus, t0\n\n"
+      f.write(float_en)
+
+    for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$', r'/VlsCustom(\d+)$', r'/VfCustom(\d+)$']:
+      sew_match = re.search(pattern, pathname)
+      if sew_match:
+          sew = int(sew_match.group(1))
+          break
+    else:
+      sew = 8
+
+    if extension.startswith(("VfCustom", "Vf")) and sew > 32:
+      setFlen(sew)
+    else:
+      setFlen(32)
+
+    legalvlmuls = getLegalVlmul(maxELEN, minSEW_MIN, sew)
+
+    f.write("\n")
+    f.write("// Initial set vl = 1\n")
+    f.write("li x31, 1\n")
+    f.write(f"vsetvli x0, x31, e{sew}, m1, tu, mu\n\n\n")
+
+    if (test in vd_widen_ins) or (test in vs2_widen_ins):
+      if (sew == 8):
+        f.write("#if ELEN > 8\n")
+      elif (sew == 16):
+        f.write("#if ELEN > 16\n")
+      elif (sew == 32):
+        f.write("#if ELEN > 32\n")
+      elif (sew == 64):
+        f.write("#if ELEN > 64\n")
+
+    clearCustomData()
+    coverpoints = list(testplans[extension][test])
+    applicable_coverpoints = coverpointInclusions(coverpoints)
+    if test not in unsupported_tests:
+      makeTest(applicable_coverpoints, test, sew=sew)
+
+    if (test in vd_widen_ins) or (test in vs2_widen_ins):
+      f.write("#endif\n")
+
+    test_data = genVtestdata(test, sew)
+
+    signatureWords = getSigSpace(xlen, flen)
+    insertTemplate(test, signatureWords, "testgen_footer.S", test_data=test_data)
+
+    f.close()
+    finalizeSigupdCount(tempfname, xlen, flen)
+    fname_p = Path(fname)
+    tempfname_p = Path(tempfname)
+    if fname_p.exists():
+      if filecmp.cmp(fname, tempfname):
+        tempfname_p.unlink()
       else:
-        storecmd = "sd"
-        wordsize = 8
+        tempfname_p.replace(fname_p)
+    else:
+      tempfname_p.replace(fname_p)
+    written += 1
 
-      redgesv = [0, 1, 2, 2**xlen-1, 2**xlen-2, 2**(xlen-1), 2**(xlen-1)+1, 2**(xlen-1)-1, 2**(xlen-1)-2]
-      if (xlen == 32):
-        redgesv = redgesv + [0b01011011101111001000100001110010, 0b10101010101010101010101010101010, 0b01010101010101010101010101010101]
-      else:
-        redgesv = redgesv + [0b0101101110111100100010000111011101100011101011101000011011110010, # random
-                            0b1010101010101010101010101010101010101010101010101010101010101010, # walking odd
-                            0b0101010101010101010101010101010101010101010101010101010101010101, # walking even
-                            0b0000000000000000000000000000000011111111111111111111111111111111, # Wmax
-                            0b0000000000000000000000000000000011111111111111111111111111111110, # Wmaxm1
-                            0b0000000000000000000000000000000100000000000000000000000000000000, # Wmaxp1
-                            0b0000000000000000000000000000000100000000000000000000000000000001] # Wmaxp2
+  return f"rv{xlen}/{extension}: {written} test(s)"
 
-      redges_ls_e8  = [-2, -1, 0, 1, 2]
-      redges_ls_e16 = [-4, -2, 0, 2, 4]
-      redges_ls_e32 = [-8, -4, 0, 4, 8]
-      redges_ls_e64 = [-16,-8, 0, 8,16]
 
-      # global NaNBox_tests
-      NaNBox_tests = False
+def _list_tasks(include_set: set[str], exclude_set: set[str]) -> list[tuple[int, str]]:
+  """Build the list of (xlen, extension) tasks honoring filters."""
+  tasks: list[tuple[int, str]] = []
+  testplans = readTestplans()
+  extensions = list(testplans.keys())
+  if include_set:
+    extensions = [e for e in extensions if e in include_set]
+  if exclude_set:
+    extensions = [e for e in extensions if e not in exclude_set]
+  for xlen in (32, 64):
+    for extension in sorted(extensions):
+      tasks.append((xlen, extension))
+  return tasks
 
-      # cmd = "mkdir -p " + pathname + " ; rm -f " + pathname + "/*" # make directory and remove old tests in dir
-      cmd = "mkdir -p " + pathname # make directory
-      os.system(cmd)
-      basepathname = pathname
-      includeVData = " "
 
-      for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$', r'/VlsCustom(\d+)$', r'/VfCustom(\d+)$', r'/Zvbb(\d+)$', r'/Zvkb(\d+)$', r'/Zvbc(\d+)$']:
-        match = re.search(pattern, pathname)
-        if match:
-            sew = int(match.group(1))
-            break
-      else:
-        sew = 8
+def main() -> None:
+  parser = argparse.ArgumentParser(description="Generate directed vector tests for functional coverage")
+  parser.add_argument("--extensions", "-e", type=str, default="",
+                      help="Comma-separated list of extensions to generate tests for (default: all)")
+  parser.add_argument("--exclude", "-x", type=str, default="",
+                      help="Comma-separated list of extensions to exclude from generation")
+  parser.add_argument("--jobs", "-j", type=int, default=0,
+                      help="Parallel worker processes (0 = auto-detect CPU count, 1 = serial)")
+  args = parser.parse_args()
 
-      instructions = list(testplans[extension].keys())
-      applicable_instructions = list(testplans[extension].keys())
-      effewcp = "EFFEW" + str(sew)
-      for test in instructions:
-        if effewcp not in list(testplans[extension][test]):
-          applicable_instructions.remove(test)
+  include_set = set(filter(None, (s.strip() for s in args.extensions.split(",")))) if args.extensions else set()
+  exclude_set = set(filter(None, (s.strip() for s in args.exclude.split(",")))) if args.exclude else set()
 
-      for test in applicable_instructions:
-      # print("Generating test for ", test, " with entries: ", coverpoints[test])
+  jobs = args.jobs if args.jobs > 0 else (os.cpu_count() or 1)
 
-        newInstruction()
+  tasks = _list_tasks(include_set, exclude_set)
+  if not tasks:
+    return
 
-        if (test in imm_31):
-          immedgesv = [0, 1, 2, 15, 16, 30, 31]
-        else:
-          immedgesv = [0, 1, 2, 14, 15, -1, -2, -15, -16]
+  if jobs == 1 or len(tasks) == 1:
+    _setup_worker()
+    for xlen, extension in track(tasks, description="[cyan]Generating vector tests...", total=len(tasks)):
+      generate_extension(xlen, extension)
+  else:
+    with ProcessPoolExecutor(max_workers=jobs, initializer=_setup_worker) as executor:
+      futures = [executor.submit(generate_extension, xlen, extension) for xlen, extension in tasks]
+      for future in track(as_completed(futures), description="[cyan]Generating vector tests...", total=len(futures)):
+        future.result()
 
-        basename = extension + "-" + test
-        fname = pathname + "/" + basename + ".S"
-        tempfname = pathname + "/" + basename + "_temp.S"
 
-        vdsew = sew * (2 if (test in vd_widen_ins) else 1)
-
-        # print custom header part
-        f = open(tempfname, "w")
-        line = "///////////////////////////////////////////\n"
-        f.write(line)
-        line="// "+fname+ "\n// " + author + "\n"
-        f.write(line)
-        # Don't print creation date because this forces rebuild of files that are otherwise identical
-        #line ="// Created " + str(datetime.now()) + "\n"
-        #f.write(line)
-
-        # insert generic header
-        insertTemplate(test, getSigSpace(xlen,flen), "testgen_header.S", sew=sew, vdsew=vdsew)
-
-        # add assembly lines to enable fp where needed
-        if test in vfloattypes:
-          float_en = "\n# set mstatus.FS to 10 to enable fp\nli t0,0x4000\ncsrs mstatus, t0\n\n"
-          f.write(float_en)
-
-        for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$', r'/VlsCustom(\d+)$', r'/VfCustom(\d+)$']:
-          sew_match = re.search(pattern, pathname)
-          if sew_match:
-              sew = int(sew_match.group(1))
-              break
-        else:
-          sew = 8
-
-        # Set flen based on extension: VfCustom/Vf tests need flen >= sew for FP operations
-        if extension.startswith(("VfCustom", "Vf")) and sew > 32:
-          setFlen(sew)
-        else:
-          setFlen(32)
-
-        legalvlmuls = getLegalVlmul(maxELEN, minSEW_MIN, sew)
-
-        # Set up vl = 1 for base suite
-        f.write("\n")
-        f.write("// Initial set vl = 1\n")
-        f.write("li x31, 1\n")
-        f.write(f"vsetvli x0, x31, e{sew}, m1, tu, mu\n\n\n")
-
-        # include ifdefs for widening/narrowing instr, which doesn't exist in the ELEN suite
-        if (test in vd_widen_ins) or (test in vs2_widen_ins):
-          if (sew == 8):
-            f.write("#if ELEN > 8\n")
-          elif (sew == 16):
-            f.write("#if ELEN > 16\n")
-          elif (sew == 32):
-            f.write("#if ELEN > 32\n")
-          elif (sew == 64):
-            f.write("#if ELEN > 64\n")
-
-        clearCustomData()  # clear any custom data from previous test
-        coverpoints = list(testplans[extension][test])
-        applicable_coverpoints = coverpointInclusions(coverpoints)
-        if test not in unsupported_tests:
-          makeTest(applicable_coverpoints, test, sew=sew)
-
-        if (test in vd_widen_ins) or (test in vs2_widen_ins):
-          f.write("#endif\n")
-
-        test_data = genVtestdata(test, sew)
-
-        # print footer
-        signatureWords = getSigSpace(xlen, flen) #figure out how many words are needed for signature
-        insertTemplate(test, signatureWords, "testgen_footer.S", test_data=test_data)
-
-        # Finish
-        f.close()
-        # if new file is different from old file, replace old file with new file
-        if os.path.exists(fname):
-          if filecmp.cmp(fname, tempfname): # files are the same
-            os.system(f"rm {tempfname}") # remove temp file
-          else:
-            os.system(f"mv {tempfname} {fname}")
-            print("Updated " + fname)
-        else:
-          os.system(f"mv {tempfname} {fname}")
+if __name__ == '__main__':
+  main()

@@ -379,10 +379,13 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
 
     lines.append("\n#ifdef MSECCFG_SUPPORTED")
     lines.extend(csr_access_test(test_data, "mseccfgh", covergroup, coverpoint))
+    lines.append("#endif // MSECCFG")
+    lines.append("\n#ifdef SM1P13_SUPPORTED")
+    lines.extend(csr_access_test(test_data, "medelegh", covergroup, coverpoint))
     lines.extend(
         [
-            "#endif",
-            "#endif",
+            "#endif // SM1P13",
+            "#endif // xlen = 32",
         ]
     )
 
@@ -643,6 +646,119 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     )
 
     test_data.int_regs.return_registers([r1, r2, rc, rmisasave])
+
+    lines.extend(
+        [
+            "",
+            "#ifdef SM1P13_SUPPORTED",
+        ]
+    )
+
+    ######################################
+    coverpoint = "cp_misa_bv"
+    ######################################
+    lines.append(
+        comment_banner(
+            coverpoint,
+            "Sm1p13: misa.B (bit 1) and misa.V (bit 21) correctness.\n"
+            "Read, set, and clear each bit; read back and write to signature.",
+        ),
+    )
+
+    rmisasave3, rb, rv, rr3 = test_data.int_regs.get_registers(4)
+
+    lines.extend(
+        [
+            f"csrr x{rmisasave3}, misa       # save misa before Sm1p13 B/V tests",
+            f"LI(x{rb}, 0x2)                 # bitmask for misa.B (bit 1)",
+            f"LI(x{rv}, 0x200000)            # bitmask for misa.V (bit 21)",
+            "",
+            "# Set misa.B and read back",
+            test_data.add_testcase("set_B", coverpoint, covergroup),
+            f"csrs misa, x{rb}              # attempt to set misa.B",
+            f"csrr x{rr3}, misa             # read back misa",
+            f"and x{rr3}, x{rr3}, x{rb}     # isolate misa.B",
+            write_sigupd(rr3, test_data),
+            "",
+            "# Clear misa.B and read back",
+            test_data.add_testcase("clr_B", coverpoint, covergroup),
+            f"csrc misa, x{rb}              # attempt to clear misa.B",
+            f"csrr x{rr3}, misa             # read back misa",
+            f"and x{rr3}, x{rr3}, x{rb}     # isolate misa.B",
+            write_sigupd(rr3, test_data),
+            "",
+            "# Set misa.V and read back",
+            test_data.add_testcase("set_V", coverpoint, covergroup),
+            f"csrs misa, x{rv}              # attempt to set misa.V",
+            f"csrr x{rr3}, misa             # read back misa",
+            f"and x{rr3}, x{rr3}, x{rv}     # isolate misa.V",
+            write_sigupd(rr3, test_data),
+            "",
+            "# Clear misa.V and read back",
+            test_data.add_testcase("clr_V", coverpoint, covergroup),
+            f"csrc misa, x{rv}              # attempt to clear misa.V",
+            f"csrr x{rr3}, misa             # read back misa",
+            f"and x{rr3}, x{rr3}, x{rv}     # isolate misa.V",
+            write_sigupd(rr3, test_data),
+            "",
+            f"csrw misa, x{rmisasave3}      # restore misa after B/V tests",
+        ]
+    )
+
+    test_data.int_regs.return_registers([rmisasave3, rb, rv, rr3])
+
+    ######################################
+    coverpoint = "cp_msip"
+    ######################################
+    lines.append(
+        comment_banner(
+            coverpoint,
+            "Sm1p13: write all 1s / all 0s to memory-mapped msip register.\n"
+            "Read back msip, wait, then read mip.MSIP; must reflect the written value.",
+        ),
+    )
+
+    r_msip, r_msipaddr = test_data.int_regs.get_registers(2)
+
+    lines.extend(
+        [
+            "#ifdef RVMODEL_MSIP_ADDRESS",
+            f"LI(x{r_msipaddr}, RVMODEL_MSIP_ADDRESS)   # load address of memory-mapped msip register",
+            "",
+            "# Write 1 to msip (set MSIP) and check mip.MSIP is set",
+            f"LI(x{r_msip}, 1)                         # value 1: assert msip",
+            test_data.add_testcase("msip_mmio_1", coverpoint, covergroup),
+            f"SW x{r_msip}, 0(x{r_msipaddr})           # write msip = 1 via memory-mapped I/O",
+            f"LW x{r_msip}, 0(x{r_msipaddr})            # read back memory-mapped msip register",
+            f"andi x{r_msip}, x{r_msip}, 1              # isolate bit 0",
+            write_sigupd(r_msip, test_data),
+            "RVTEST_IDLE_FOR_INTERRUPT",
+            test_data.add_testcase("msip_set", coverpoint, covergroup),
+            f"CSRR(x{r_msip}, mip)                     # read mip",
+            f"srli x{r_msip}, x{r_msip}, 3            # shift mip.MSIP (bit 3) to bit 0",
+            f"andi x{r_msip}, x{r_msip}, 1            # isolate mip.MSIP",
+            write_sigupd(r_msip, test_data),
+            "",
+            "# Write 0 to msip (clear MSIP) and check mip.MSIP is clear",
+            f"LI(x{r_msip}, 0)                         # value 0: deassert msip",
+            test_data.add_testcase("msip_mmio_0", coverpoint, covergroup),
+            f"SW x{r_msip}, 0(x{r_msipaddr})           # write msip = 0 via memory-mapped I/O",
+            f"LW x{r_msip}, 0(x{r_msipaddr})            # read back memory-mapped msip register",
+            f"andi x{r_msip}, x{r_msip}, 1              # isolate bit 0",
+            write_sigupd(r_msip, test_data),
+            "RVTEST_IDLE_FOR_INTERRUPT",
+            test_data.add_testcase("msip_clear", coverpoint, covergroup),
+            f"CSRR(x{r_msip}, mip)                     # read mip",
+            f"srli x{r_msip}, x{r_msip}, 3            # shift mip.MSIP (bit 3) to bit 0",
+            f"andi x{r_msip}, x{r_msip}, 1            # isolate mip.MSIP",
+            write_sigupd(r_msip, test_data),
+            "#endif // RVMODEL_MSIP_ADDRESS",
+        ]
+    )
+
+    test_data.int_regs.return_registers([r_msip, r_msipaddr])
+
+    lines.append("#endif // SM1P13_SUPPORTED")
 
     return lines
 

@@ -38,7 +38,7 @@ def gen_csr_read_sigupd(check_reg: int, csr_name: str, test_data: TestData) -> s
 
 def gen_csr_write_sigupd(check_reg: int, csr_name: str, test_data: TestData) -> str:
     """
-    Generate assembly for CSR write SIGUPD and increment sigupd_count.
+    Generate assembly to write CSR, read it back, and check against expected.
 
     This function behaves like write_sigupd - it only generates the SIGUPD line.
     Call add_testcase separately before this to create the label.

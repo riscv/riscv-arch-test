@@ -38,7 +38,7 @@ covergroup SmVF_cg with function sample(ins_t ins);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_initial_clean : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins initial_state = {1};
+        bins first_state = {1};
         bins clean  = {2};
     }
 

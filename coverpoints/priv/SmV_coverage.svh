@@ -84,7 +84,7 @@ covergroup SmV_cg with function sample(ins_t ins);
     }
 
     mstatus_vs_initial_clean : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins initial = {1};
+        bins first = {1};
         bins clean  = {2};
     }
 
@@ -380,14 +380,9 @@ covergroup SmV_cg with function sample(ins_t ins);
     }
 
     csr_vl: coverpoint ins.current.insn[31:20]  {
-        bins user_std0[] = {[12'hC20]};
+        bins user_std0 = {12'hC20};
 
     }
-
-    walking_ones_rs1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
-        bins b_1[] = { [0:`XLEN-1] };
-    }
-
 
     vsetivli_prev_instruction: coverpoint ins.prev.insn {
         wildcard bins vsetivli  =   {32'b1100_?_?_???_???_?????_111_?????_1010111};

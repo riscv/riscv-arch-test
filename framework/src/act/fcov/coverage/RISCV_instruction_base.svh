@@ -409,9 +409,6 @@ class RISCV_instruction
       current.rd_next_val = current.x_wdata[rd_idx+1];
       current.rd_next_val_pre = prev.x_wdata[rd_idx+1];
 
-      $display("[DEBUG ZACAS] Pair found! rd: x%0d (Val: %0h) | rd+1: x%0d (Val: %0h)", 
-                rd_idx, current.rd_val, rd_idx+1, current.rd_next_val);
-                
     end else begin
       current.rd_next_val = '0;
       current.rd_next_val_pre = '0;

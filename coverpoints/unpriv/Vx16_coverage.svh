@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_VX16
-`define COVER_VFCUSTOM16
+`define COVER_VXCUSTOM16
 `ifdef ELEN16
     `define SEW_16_EQ_ELEN
 `endif
@@ -27748,7 +27748,7 @@ covergroup Vx16_vrgatherei16_vv_cg with function sample(ins_t ins);
     // cmp_vs1_vs2
     //////////////////////////////////////////////////////////////////////////////////
 
-    `define COVER_VX16
+    `ifdef COVER_VX16
     cmp_vs1_vs2 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.current.vs1 == ins.current.vs2 & ins.trap == 0 )  {
         // Compare assignments of all 32 registers
     }

@@ -6,6 +6,6 @@
 ci_enabled: true
 # TODO: Priv tests mismatch due to config issues. Atomics failure still needs to be diagnosed.
 # TODO: remove za64rs from excluded_extensions when Sail supports UDB_LRSC_FAIL_ON_NON_EXACT_LRSC to match DUT
-exclude_extensions: "Sm,ExceptionsZc,S,InterruptsSm,PMPmisaligned,ExceptionsZalrsc,Sv,Svadu,SvaduPMP,Svnapot,Svpbmt,SvZicbo,ExceptionsZaamo,ExceptionsSvZaamo,ExceptionsSvZalrsc,Za64rs,PMPS,PMPF,PMPU,PMPSm"
+exclude_extensions: "Sm,ExceptionsZc,S,InterruptsSm,PMPmisaligned,ExceptionsZalrsc,Svadu,SvaduPMP,Svnapot,Svpbmt,SvZicbo,ExceptionsZaamo,ExceptionsSvZaamo,ExceptionsSvZalrsc,Za64rs,PMPS,PMPF,PMPU,PMPSm"
 install_script: ".github/scripts/install-spike.sh"
 apt_packages: "device-tree-compiler libboost-regex-dev libboost-system-dev"

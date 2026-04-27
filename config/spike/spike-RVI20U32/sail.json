@@ -597,9 +597,6 @@
     "Smcntrpmf": {
       "supported": false
     },
-    "Smcntrpmf": {
-      "supported": false
-    },
     "Svbare": {
       "supported": false,
       "sfence_vma_illegal_if_svbare_only": true

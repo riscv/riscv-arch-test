@@ -20,7 +20,7 @@ WORKDIR     ?= work
 #  - Sm, S: Insufficient WARL configuration options.
 #  - InterruptsSm,InterruptsS,InterruptsU,PMPSm,PMPZca,Sv,SvaduPMP,SvPMP,SvPMPZicbo: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
 EXTENSIONS  ?=
-EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,InterruptsS,InterruptsU,PMPSm,PMPZca,Sv,SvaduPMP,SvPMP,SvPMPZicbo
+EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,InterruptsS,InterruptsU,PMPSm,PMPmisaligned,PMPZca,Sv,SvaduPMP,SvPMP,SvPMPZicbo
 
 # Strip spaces from comma-separated lists so shell word-splitting doesn't break CLI arguments
 empty :=

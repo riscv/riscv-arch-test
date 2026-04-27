@@ -105,13 +105,25 @@ def make_vstart_gt_vl(instruction):
     instruction_data = randomizeVectorInstructionData(instruction, minSEW_MIN, getBaseSuiteTestCount(),
                                                       vd_val_pointer = "vector_random", vs2_val_pointer = "vector_random", vs1_val_pointer = "vector_random")
 
-    # a0 (x10) is used by the cp_vstart_gt_vl_setup helper for vl/vstart inputs;
-    # exclude it from the scratch candidate set.
-    scratch = pickPrivScratch(instruction_data[1], exclude=(10,))
+    # a0 (x10) and a1 (x11) are used by the cp_vstart_gt_vl_setup helper for vl/vstart
+    # inputs and are clobbered on return; exclude them from the scratch candidate set.
+    scratch = pickPrivScratch(instruction_data[1], exclude=(10, 11))
     writePrivTestPrep(description, instruction, instruction_data, lmul = 4, vl = "vlmax", vstart = True, scratch=scratch)
+
+    # If sigReg currently lives in a0/a1, save it across the helper call so
+    # subsequent SIGUPDs don't store through a corrupted signature pointer.
+    save_sig = common.sigReg in (10, 11)
+    if save_sig:
+        sigSave = pickPrivScratch(instruction_data[1], exclude=(10, 11, scratch))
+        writeLine(f"mv x{sigSave}, x{common.sigReg}", f"# preserve sigReg (x{common.sigReg}) across cp_vstart_gt_vl_setup")
+
     writeLine(f"li a0, {randvl}",            "# load random number to a0, place holder for vl")
     writeLine(f"li a0, {randvstart}",        "# load random number to a1, place holder for vstart")
     writeLine("jal cp_vstart_gt_vl_setup",  "# jump to set up vstart and vl for the test")
+
+    if save_sig:
+        writeLine(f"mv x{common.sigReg}, x{sigSave}", f"# restore sigReg (x{common.sigReg}) after helper")
+
     writePrivTestLine(instruction, instruction_data, cp="cp_vstart_gt_vl", vl = "vlmax", lmul = 4)
 
 #####################################           test generation           #####################################

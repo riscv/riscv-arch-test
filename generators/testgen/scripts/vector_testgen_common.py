@@ -1979,6 +1979,13 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
     if (priv):
       writeLine("nop",                                           "# nop after possible trap")
       writeLine(f"vsetivli x0, 1, SEWSIZE, m{sig_lmul}, tu, mu",  f"# re-initialize vl = 1, LMUL = {sig_lmul}, SEW = SEWMIN for signature")
+      if xlen == 64:
+        # RV64 SIGUPD's RVTEST_WORD_PTR is .dword (8B) vs .word (4B) on RV32, which
+        # leaves the trap-handler's fixed mepc advance landing on the unreachable
+        # failedtest jal inside SIGUPD. Pad 8B so the handler lands on a nop and
+        # falls through to SREG/beq instead.
+        writeLine("nop",                                         "# rv64 pad 1/2: keep trap mepc out of SIGUPD jal")
+        writeLine("nop",                                         "# rv64 pad 2/2")
 
     if load_testline is not None:
       if reload_pre_init:

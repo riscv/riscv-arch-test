@@ -19,7 +19,7 @@ covergroup S_scause_cg with function sample(ins_t ins);
         wildcard bins csrrw = {CSRRW};
     }
     scause: coverpoint ins.current.insn[31:20] {
-        bins mcause = {CSR_SCAUSE};
+        bins scause = {CSR_SCAUSE};
     }
     scause_interrupt : coverpoint ins.current.rs1_val[XLEN-1] {
         bins interrupt = {1};
@@ -80,6 +80,7 @@ covergroup S_scause_cg with function sample(ins_t ins);
     // main coverpoints
     cp_scause_write_exception: cross priv_mode_s, csrrw, scause, scause_exception_values, scause_exception; // CSR write of scause in S mode with interesting values
     cp_scause_write_interrupt: cross priv_mode_s, csrrw, scause, scause_interrupt_values, scause_interrupt; // CSR write of scause in S mode with interesting values
+
 endgroup
 
 
@@ -99,10 +100,24 @@ covergroup S_sstatus_cg with function sample(ins_t ins);
         wildcard bins csrrw = {CSRRW};
     }
     sstatus: coverpoint ins.current.insn[31:20] {
-        bins mstatus = {CSR_SSTATUS};
+        bins sstatus = {CSR_SSTATUS};
     }
     // main coverpoints
     cp_sstatus_sd_write: cross priv_mode_s, csrrw, sstatus, cp_sstatus_sd, cp_sstatus_fs, cp_sstatus_vs, cp_sstatus_xs;
+
+    `ifdef SS1P13_SUPPORTED
+        `ifdef XLEN64
+            uxl_write_attempt: coverpoint ins.current.rs1_val[33:32] {
+                bins attempt_1 = {2'b01};
+                bins attempt_2 = {2'b10};
+            }
+            csrop: coverpoint ins.current.insn {
+                wildcard bins csrrw = {CSRRW};
+            }
+             // main coverpoints
+            cp_sxlen_ge_uxlen: cross priv_mode_s, csrop, sstatus, uxl_write_attempt;
+        `endif // XLEN64
+    `endif // SS1P13_SUPPORTED
 
 endgroup
 
@@ -111,9 +126,11 @@ covergroup S_sprivinst_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     privinstrs: coverpoint ins.current.insn  {
-        bins ecall  = {ECALL};
-        bins ebreak = {EBREAK};
-        bins mret   = {MRET};
+        bins          ecall      = {ECALL};
+        bins          ebreak     = {EBREAK};
+        bins          mret       = {MRET};
+        bins          sret       = {SRET};
+        wildcard bins sfence_vma = {SFENCE_VMA};
     }
     mret: coverpoint ins.current.insn  {
         bins mret   = {MRET};
@@ -121,8 +138,6 @@ covergroup S_sprivinst_cg with function sample(ins_t ins);
     sret: coverpoint ins.current.insn  {
         bins sret   = {SRET};
     }
-    // old_mstatus_mprv: coverpoint ins.prev.csr[12'h300][17] {
-    // }
     old_mstatus_tsr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tsr")[0] {
     }
     old_sstatus_spp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0] {

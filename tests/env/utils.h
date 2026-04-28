@@ -3,14 +3,14 @@
 # Jordan Carlin jcarlin@hmc.edu November 2025
 # SPDX-License-Identifier: BSD-3-Clause
 
-# General utility macros
+// General utility macros
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 #define BIT(addr, bit) (((addr)>>(bit))&1)
 #define MASK (((1<<(XLEN-1))-1) + (1<<(XLEN-1))) // XLEN bits of 1s
 #define MASK_XLEN(val)  val&MASK // shortens 64b values to XLEN when XLEN==32
 
-# Constants and sign extension macros (TODO: Check which of these are actually needed for ACT 4.0)
+// Constants and sign extension macros (TODO: Check which of these are actually needed for ACT 4.0)
 #define WDSZ 32
 #define WDSGN (WDSZ -1)
 #define WDMSK ((1 << WDSZ) -1)
@@ -28,7 +28,7 @@
 #define WDBYTSZ (WDSZ >> 3)  // in units of #bytes
 #define WDBYTMSK (WDBYTSZ-1)
 
-# XLEN specific macros
+// XLEN specific macros
 #define REGWIDTH (XLEN>>3)      // in units of #bytes
 #define ALIGNSZ ((XLEN>>5)+2)   // log2(XLEN): 2,3,4 for XLEN 32,64,128
 
@@ -43,23 +43,106 @@
     #define LREG lq
 #endif
 
-# FLEN specific macros
-#define FREGWIDTH (FLEN>>3)      // in units of #bytes
+// FLEN specific macros
+// ============================================================================
+// Tests are written assuming a certain FLEN. For most tests, the test will only
+// run if the DUT supports at least that FLEN. For example, the D tests (FLEN = 64)
+// will only run on a DUT that supports the D extension. Some tests are written
+// with testcases for multiple floating point extensions. For example, the ZicsrF
+// test only requires F (FLEN = 32), but conditionally includes extra testcases
+// for D (FLEN = 64) and Q (FLEN = 128) when the DUT supports those extensions.
+// The test data values are preloaded in memory assuming the longest FLEN that
+// the test *might* use is supported so that values can be loaded using whole
+// fp register loads (flq if supported else fld if supported else flw). This
+// maximum FLEN must always be used when incrementing the data pointer to ensure
+// the correct values are loaded. Separately, when loading whole fp registers,
+// the largest fp load that is actually supported by the DUT must be used. For
+// tests that have conditional floating point instructions based on the extension,
+// this may differ from the FLEN assumed when generating values for the test.
+// For example, the ZicsrF test on an rv32f core results in a test that was
+// generated to support FLEN of up to 64 (so the data is spaced accordingly)
+// but a DUT that only supports FLEN = 32. This gives rise to the following
+// two distinct FLEN values:
+// ----------------------------------------------------------------------------
+// TEST_FLEN  — the max FLEN this test file was written for. Supplied by the
+//              build via -DTEST_FLEN and based on the march string. It fixes
+//              the width of the .data section entries and of every signature
+//              slot (SIG_STRIDE). It must notvary between configs: the
+//              generated assembly has literal byte offsets and the Sail-produced
+//              signature layout baked in.
+//
+// CONFIG_FLEN — the effective FP width for store/load instruction selection.
+//               It is the minimum of what the DUT actually supports (derived
+//               from D_SUPPORTED / Q_SUPPORTED / F_SUPPORTED) and what the test's
+//               march allows the assembler to emit (TEST_FLEN). It decides which
+//               FP store instruction (fsw/fsd/fsq) are used in the signature macros
+//               and whether a single FP value needs to be sliced into two integer
+//               loads (the "CONFIG_FLEN > XLEN" path in signature.h).
+//
+//               CONFIG_FLEN must not exceed TEST_FLEN because the assembler
+//               only knows instructions up to that width (e.g. an F-only test
+//               with march=rv64if cannot assemble fsd). It must not exceed
+//               the DUT's capability either (e.g. a priv test generated with
+//               D in its march but run on an F-only DUT must not emit fsd).
+//               See issue #1223.
+// ============================================================================
+
+#ifndef TEST_FLEN
+  #error "TEST_FLEN not defined. The build should pass -DTEST_FLEN=<32|64|128>."
+#endif
+
+#define FREGWIDTH (TEST_FLEN>>3)     // data/signature slot width, in bytes
+
+// Derive the DUT's raw FP capability from its rvtest_config.h defines.
+#if defined(Q_SUPPORTED)
+  #define _DUT_FLEN 128
+#elif defined(D_SUPPORTED)
+  #define _DUT_FLEN 64
+#elif defined(F_SUPPORTED)
+  #define _DUT_FLEN 32
+#else
+  #define _DUT_FLEN 0
+#endif
+
+// CONFIG_FLEN = min(TEST_FLEN, _DUT_FLEN).
+// Capping at TEST_FLEN ensures we never emit an instruction the assembler
+// cannot encode (e.g. fsd when march has only F). Capping at _DUT_FLEN
+// ensures we never emit an instruction the DUT does not support.
+#if _DUT_FLEN < TEST_FLEN
+  #define CONFIG_FLEN _DUT_FLEN
+#else
+  #define CONFIG_FLEN TEST_FLEN
+#endif
 
 #ifdef ZFINX
+  // Zfinx: FP values live in integer registers; use plain integer store/load.
   #define FLREG LREG
   #define FSREG SREG
 #else
-  #if FLEN==32
-    #define FLREG flw
-    #define FSREG fsw
-  #elif FLEN==64
-    #define FLREG fld
-    #define FSREG fsd
-  #elif FLEN==128
+  // Pick the FP store/load based on CONFIG_FLEN — the effective FP width that
+  // both the assembler and DUT can handle.
+  #if CONFIG_FLEN == 128
     #define FLREG flq
     #define FSREG fsq
+  #elif CONFIG_FLEN == 64
+    #define FLREG fld
+    #define FSREG fsd
+  #else   // CONFIG_FLEN == 32 (or 0 — no FP; macros are unused)
+    #define FLREG flw
+    #define FSREG fsw
   #endif
+#endif
+
+// Integer-width load matching FSREG's store width, zero-extended to XLEN.
+// Used to read back an FP value from scratch memory after FSREG stored it.
+// When CONFIG_FLEN < XLEN (e.g. F-only on RV64: fsw writes 4 bytes but ld
+// would read 8), using LREG would pull in whatever bytes happened to sit
+// above the stored value. FP_LREG loads exactly the bytes FSREG wrote so
+// the loaded value is deterministic regardless of prior scratch contents.
+#if XLEN == 64 && CONFIG_FLEN == 32
+  #define FP_LREG lwu
+#else
+  #define FP_LREG LREG
 #endif
 
 // Default VDSEW to 0 for non-vector tests
@@ -68,9 +151,17 @@
 #endif
 #define VDSEWWIDTH (VDSEW>>3)  // in units of #bytes
 
-// Max data size alignment for signature and data region
-// Max of XLEN, FLEN, and SEW
-#if XLEN>FLEN
+#ifndef VLEN
+  #define VLEN 0
+#endif
+#define VLEN_BYTES (VLEN>>3)   // in units of #bytes
+#define VLEN_WORDS (VLEN_BYTES>>2) // in units of words
+#define VECREG_REGION_WORDS (VLEN_WORDS * 32) // number of words occupied by all 32 vector registers
+
+// Max data size alignment for signature and data region.
+// Keyed on TEST_FLEN because the generated .data section and the signature
+// reservation were laid out at testgen time with that width.
+#if XLEN>TEST_FLEN
   #define _SIG_STRIDE_1 REGWIDTH
 #else
   #define _SIG_STRIDE_1 FREGWIDTH
@@ -89,6 +180,17 @@
   #define RVTEST_WORD_PTR .word
 #endif
 
+// PMP macros
+#define PMP0_CFG_SHIFT  0
+#define PMP1_CFG_SHIFT  8
+#define PMP2_CFG_SHIFT  16
+#define PMP3_CFG_SHIFT  24
+#define PMP4_CFG_SHIFT  32
+#define PMP5_CFG_SHIFT  40
+#define PMP6_CFG_SHIFT  48
+#define PMP7_CFG_SHIFT  56
+#define NOP              0x13
+#define DOUBLE_NOP       (0x13<<32)+0x13
 
 // RVTEST_TESTDATA_LOAD_INT(data_ptr, dest_reg) loads an integer value from the
 // test data section into dest_reg and increments the data_ptr pointer by SIG_STRIDE.
@@ -104,7 +206,8 @@
 // This macro is used to load floating point test values from the .data section.
 //  _DATA_PTR - Pointer register to current position in test data section (will be incremented)
 //  _DEST_REG - Floating point destination register to load the value into
-// The default version loads the full FLEN width. Variants for smaller widths use an _SIZE suffix.
+// The default version loads the full CONFIG_FLEN (the actual size of the floating-point registers on the DUT).
+// Variants for fixed widths use an _SIZE suffix.
 #define RVTEST_TESTDATA_LOAD_FLOAT(_DATA_PTR, _DEST_REG)  \
   FLREG _DEST_REG, 0(_DATA_PTR)                          ;\
   addi _DATA_PTR, _DATA_PTR, SIG_STRIDE
@@ -267,9 +370,9 @@
   .option pop
 #endif
 
-# Alignment size for LA macro. Must be larger than the longest instruction
-# sequence that the la pseudo-instruction can expand into (to account for the jump hack).
-# On some rv64 targets, this may need to be increased to 6.
+// Alignment size for LA macro. Must be larger than the longest instruction
+// sequence that the la pseudo-instruction can expand into (to account for the jump hack).
+// On some rv64 targets, this may need to be increased to 6.
 #ifndef UNROLLSZ
   #define UNROLLSZ 5
 #endif
@@ -340,9 +443,9 @@
 // Interrupt Macros
 // Idle for interrupt latency
 #define RVTEST_IDLE_FOR_INTERRUPT \
-   .rept RVMODEL_INTERRUPT_LATENCY; \
-       nop; \
-   .endr
+  .rept RVMODEL_INTERRUPT_LATENCY; \
+      nop; \
+  .endr
 
 
 // Using generic RVTEST macros that can be invoked by tests, which then jump to the appropriate RVMODEL macros that implement the interrupt setup for the specific target platform.
@@ -382,33 +485,3 @@
 // Timer interrupts (no parameters)
 #define RVTEST_CLR_STIMER_INT
 #define RVTEST_CLR_VTIMER_INT
-
-// RVMODEL macros for DUT specific interrupts. These implement the actual interrupt setup for the DUT and are invoked by the generic RVTEST macros.
-#define RVTEST_INTERRUPTS \
-  rvtest_set_msw_int: ; \
-    RVMODEL_SET_MSW_INT(T2, T5) ; \
-    ret ; \
-  rvtest_clr_msw_int: ; \
-    RVMODEL_CLR_MSW_INT(T2, T5) ; \
-    ret ; \
-  rvtest_set_mext_int: ; \
-    RVMODEL_SET_MEXT_INT(T2, T5) ; \
-    ret ; \
-  rvtest_clr_mext_int: ; \
-    RVMODEL_CLR_MEXT_INT(T2, T5) ; \
-    ret ; \
-  rvtest_set_ssw_int: ; \
-    RVMODEL_SET_SSW_INT(T2, T5) ; \
-    ret ; \
-  rvtest_clr_ssw_int: ; \
-    RVMODEL_CLR_SSW_INT(T2, T5) ; \
-    csrci sip, 2 ; \
-    ret ; \
-  rvtest_set_sext_int: ; \
-    RVMODEL_SET_SEXT_INT(T2, T5) ; \
-    ret ; \
-  rvtest_clr_sext_int: ; \
-    RVMODEL_CLR_SEXT_INT(T2, T5) ; \
-    LI(T3, 512) ; \
-    csrc sip, T3 ; \
-    ret

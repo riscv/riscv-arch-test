@@ -36,10 +36,13 @@ def format_a_type(
     test = [
         f"{instr_name} x{params.rd}, x{params.rs2}, (x{params.rs1}) # perform operation",
     ]
-    check = [
-        write_sigupd(params.rd, test_data, "int"),
-        f"LA(x{params.rs1}, scratch) # reload base address into rs1" if params.rs1 == params.rd else "",
-        f"LREG x{params.rs1}, 0(x{params.rs1}) # Load the updated value from memory",
-        write_sigupd(params.rs1, test_data, "int"),
-    ]
+    check = [write_sigupd(params.rd, test_data, "int")]
+    if params.rs1 == params.rd:
+        check.append(f"LA(x{params.rs1}, scratch) # reload base address into rs1")
+    check.extend(
+        [
+            f"LREG x{params.rs1}, 0(x{params.rs1}) # Load the updated value from memory",
+            write_sigupd(params.rs1, test_data, "int"),
+        ]
+    )
     return (setup, test, check)

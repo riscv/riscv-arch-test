@@ -21,73 +21,75 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
 
     // building blocks for the main coverpoints
 
-    // Uses ins.prev instead of ins.current because Sail tracer updates CSRs after instruction retirement, so .current shows
-    // post-trap state. May revert to .current depending on implementation consensus
-    mstatus_mie_one: coverpoint ins.prev.csr[12'h300][3] {
+    // Uses ins.prev instead of ins.current because RVVI updates CSRs after instruction retirement,
+    // so ins.current shows post-trap state while ins.prev shows pre-trap state.
+    mstatus_mie_one: coverpoint ins.prev.csr[CSR_MSTATUS][3] {
         bins one = {1};
     }
-    mstatus_mie: coverpoint ins.prev.csr[12'h300][3]  {
+    mstatus_mie: coverpoint ins.prev.csr[CSR_MSTATUS][3]  {
         // autofill 0/1
     }
-    mstatus_tw:  coverpoint ins.current.csr[12'h300][21] {
+    mstatus_tw:  coverpoint ins.current.csr[CSR_MSTATUS][21] {
         // autofill 0/1
     }
-    mie_mtie_one: coverpoint ins.current.csr[12'h304][7] {
+    mie_mtie_one: coverpoint ins.current.csr[CSR_MIE][7] {
         bins one = {1};
     }
-    mie_ones: coverpoint ins.current.csr[12'h304][15:0] {
+    mie_ones: coverpoint ins.current.csr[CSR_MIE][15:0] {
         wildcard bins ones = {16'b????1???1???1???}; // ones in all machine interrupt enable bits
     }
-    mip_msip_one: coverpoint ins.current.csr[12'h344][3] {
+    mip_msip_one: coverpoint ins.current.csr[CSR_MIP][3] {
         bins one = {1};
     }
-    mip_mtip: coverpoint ins.current.csr[12'h344][7] {
+    mip_mtip: coverpoint ins.current.csr[CSR_MIP][7] {
         // autofill 0/1
     }
-    mip_mtip_one: coverpoint ins.current.csr[12'h344][7] {
+    mip_mtip_one: coverpoint ins.current.csr[CSR_MIP][7] {
         bins one = {1};
     }
-    mip_meip_one: coverpoint ins.current.csr[12'h344][11] {
+    mip_meip_one: coverpoint ins.current.csr[CSR_MIP][11] {
         bins one = {1};
     }
-    mie_walking: coverpoint {ins.current.csr[12'h304][11],
-                            ins.current.csr[12'h304][7],
-                            ins.current.csr[12'h304][3] } {
+    mie_walking: coverpoint {ins.current.csr[CSR_MIE][11],
+                            ins.current.csr[CSR_MIE][7],
+                            ins.current.csr[CSR_MIE][3] } {
         bins msie = {3'b001};
         bins mtie = {3'b010};
         bins meie = {3'b100};
     }
-    mip_walking: coverpoint {ins.current.csr[12'h344][11],
-                            ins.current.csr[12'h344][7],
-                            ins.current.csr[12'h344][3] } {
+    mip_walking: coverpoint {ins.current.csr[CSR_MIP][11],
+                            ins.current.csr[CSR_MIP][7],
+                            ins.current.csr[CSR_MIP][3] } {
         bins msip = {3'b001};
         bins mtip = {3'b010};
         bins meip = {3'b100};
     }
-    mie_meie_mtie_msie: coverpoint {ins.current.csr[12'h304][11],
-                                    ins.current.csr[12'h304][7],
-                                    ins.current.csr[12'h304][3] } {
+    mie_meie_mtie_msie: coverpoint {ins.current.csr[CSR_MIE][11],
+                                    ins.current.csr[CSR_MIE][7],
+                                    ins.current.csr[CSR_MIE][3] } {
         // auto fills all 8 combinations
     }
-    mip_meip_mtip_msip: coverpoint {ins.current.csr[12'h344][11],
-                                    ins.current.csr[12'h344][7],
-                                    ins.current.csr[12'h344][3] } {
+    mip_meip_mtip_msip: coverpoint {ins.current.csr[CSR_MIP][11],
+                                    ins.current.csr[CSR_MIP][7],
+                                    ins.current.csr[CSR_MIP][3] } {
         // auto fills all 8 combinations
     }
-    mtvec_direct: coverpoint ins.current.csr[12'h305][1:0] {
+    mtvec_direct: coverpoint ins.current.csr[CSR_MTVEC][1:0] {
         bins direct   = {2'b00};
     }
-    mtvec_vectored: coverpoint ins.current.csr[12'h305][1:0] {
+    mtvec_vectored: coverpoint ins.current.csr[CSR_MTVEC][1:0] {
         bins direct   = {2'b00};
         bins vector   = {2'b01};
     }
     wfi: coverpoint ins.current.insn {
-        bins wfi = {32'b0001000_00101_00000_000_00000_1110011};
+        bins wfi = {WFI};
     }
 
     // main coverpoints
     cp_trigger_mti:      cross priv_mode_m, mstatus_mie, mie_ones, mip_mtip_one;
     cp_trigger_msi:      cross priv_mode_m, mstatus_mie, mie_ones, mip_msip_one;
+
+    // Note: External interrupts (MEI) not supported in Sail simulator yet
     cp_trigger_mei:      cross priv_mode_m, mstatus_mie, mie_ones, mip_meip_one;
     cp_interrupts:       cross priv_mode_m, mstatus_mie, mtvec_direct, mip_walking, mie_walking;
     cp_vectored:         cross priv_mode_m, mstatus_mie_one, mtvec_vectored, mip_walking, mie_ones;
@@ -102,14 +104,14 @@ function void interruptssm_sample(int hart, int issue, ins_t ins);
     //    $display("=== InterruptsSm Debug ===");
     //    $display("PC: %h Instr: %s", ins.current.pc_rdata, ins.current.disass);
     //    $display("  mstatus.MIE=%b mstatus.TW=%b",
-    //                ins.current.csr[12'h300][3], ins.current.csr[12'h300][21]);
+    //                ins.current.csr[CSR_MSTATUS][3], ins.current.csr[CSR_MSTATUS][21]);
     //    $display("  mie: MEIE=%b MTIE=%b MSIE=%b (full=%h)",
-    //                ins.current.csr[12'h304][11], ins.current.csr[12'h304][7],
-    //                ins.current.csr[12'h304][3], ins.current.csr[12'h304][15:0]);
+    //                ins.current.csr[CSR_MIE][11], ins.current.csr[CSR_MIE][7],
+    //                ins.current.csr[CSR_MIE][3], ins.current.csr[CSR_MIE][15:0]);
     //    $display("  mip: MEIP=%b MTIP=%b MSIP=%b (full=%h)",
-    //                ins.current.csr[12'h344][11], ins.current.csr[12'h344][7],
-    //                ins.current.csr[12'h344][3], ins.current.csr[12'h344]);
+    //                ins.current.csr[CSR_MIP][11], ins.current.csr[CSR_MIP][7],
+    //                ins.current.csr[CSR_MIP][3], ins.current.csr[CSR_MIP]);
     //    if (ins.current.trap)
-    //        $display("  TRAP! mcause=%h", ins.current.csr[12'h342]);
+    //        $display("  TRAP! mcause=%h", ins.current.csr[CSR_MCAUSE]);
     //    $display("");
 endfunction

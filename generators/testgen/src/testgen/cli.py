@@ -10,8 +10,10 @@
 
 """Top-level command-line interface for test generation."""
 
+from __future__ import annotations
+
 import os
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Annotated
@@ -62,8 +64,9 @@ def generate_all_tests(
         str, typer.Option("--exclude", "-x", help="Comma-separated list of extensions to exclude from test generation")
     ] = "",
     jobs: Annotated[
-        int | None, typer.Option("--jobs", "-j", show_default="number of CPU cores", help="Number of parallel jobs")
-    ] = None,
+        int,
+        typer.Option("--jobs", "-j", help="Parallel build jobs (0 = auto-detect CPU count)"),
+    ] = 0,
 ) -> None:
     """
     Generate riscv-arch-test tests.
@@ -71,7 +74,7 @@ def generate_all_tests(
     For unprivileged tests, uses the CSV testplan files in `testplan_dir`.
     """
     # Set number of parallel jobs to CPU count if not specified
-    if jobs is None:
+    if jobs <= 0:
         jobs = os.cpu_count() or 1
 
     # Get available extensions
@@ -121,7 +124,7 @@ def generate_all_tests(
         futures = [executor.submit(_dispatch_test_gen, task) for task in tasks]
 
         # Process completed tasks with progress tracking
-        for future in track(futures, description="[cyan]Generating tests...", total=len(futures)):
+        for future in track(as_completed(futures), description="[cyan]Generating tests...", total=len(futures)):
             future.result()  # Re-raise any exceptions
 
 

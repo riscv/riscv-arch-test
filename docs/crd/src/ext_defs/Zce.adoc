@@ -1,0 +1,8 @@
+[[extension:Zce]]
+=== Extension Zce
+
+Long Name::
+Microcontroller compressed instructions
+
+Description::
+Additional compressed instructions for microcontrollers including push/pop and table jump.

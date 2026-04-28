@@ -1,0 +1,72 @@
+=== CSR Field Types
+
+The RISC-V ISA defines CSR field specifications that require special handling by the certification tests.
+This includes determining the read value after writing an illegal value, and whether or not writing
+an unsupported value to a specific field creates an illegal instruction exception.
+This special handling is summarized in the table below and detailed in the sub-sections following the table.
+
+.Definition of CSR Fields
+[%autowidth]
+|===
+| Field Type | Read Value After Writing Illegal Value | Read Value Function Of | Illegal Instruction Exception | Priv ISA Manual Quote
+
+| WARL | Any deterministic legal value | Any architectural hart state | Prohibited
+| Implementations MUST NOT raise an exception on writes of unsupported values to a WARL field. Implementations MUST return any legal value on the read of a WARL field when the last write was of an illegal value, and the legal value returned MUST deterministically depend on the illegal written value and the architectural state of the hart.
+
+| WLRL | Any deterministic legal or illegal value | Value before write and illegal value written | Optional
+| Implementations MAY raise an illegal-instruction exception if an instruction attempts to write a non-supported value to a WLRL field. Implementations MAY return arbitrary bit patterns on the read of a WLRL field when the last write was of an illegal value, but the value returned MUST deterministically depend on the illegal written value and the value of the field prior to the write.
+
+| WPRI | 0 | Nothing | Not specified
+| Some whole read/write fields are reserved for future use. Implementations that do not furnish these fields MUST make them read-only zero.
+|===
+
+==== WARL (Write Anything, Read Legal)
+
+The Priv ISA requires reads of WARL fields to return some implementation-dependent deterministic legal value
+after the field is written with an illegal value.
+Certifying such behaviors is expensive and provides low value for a certificate since software can't rely
+on a particular behavior from one implementation to another.
+
+Processor CRDs define writes to WARL fields of illegal values to be OUT-OF-SCOPE unless otherwise stated
+(i.e., certification tests will only ever write legal values to WARL fields except for the special cases listed below).
+When not OUT-OF-SCOPE, the required behavior is defined as this might be more constrained in implementations than
+in the standard.
+
+The following special cases for WARL are supported when explicitly listed in the corresponding CRD CSR field requirements:
+
+1. Probing for Field Width
+
+* Some WARL fields are variable length such as the ASID field in the virtual memory extension.
+* Here's the algorithm recommended to discover the ASID width:
+** The number of implemented ASID bits, termed ASIDLEN, can be determined by writing one to every bit position in
+   the ASID field, then reading back the value in the satp CSR to see which bit positions in the ASID field hold a one.
+* The RVCP-provided certification materials (certification tests, certification reference models) can map writes of
+  illegal values to the ASID field to the corresponding read value as long as they are provided the ASIDLEN value
+  for an implementation.
+
+2. Probing for Options
+
+* E.g., Writable misa bits
+
+3. Allowed values are a function of extension presence and/or their parameters
+
+* E.g., satp.mode legal write values
+
+==== WLRL (Write Legal, Read Legal)
+
+The Priv ISA requires reads of WLRL fields to return some implementation-dependent deterministic arbitrary value
+after the field is written with an illegal value.
+Certifying such behaviors is expensive and provides low value for a certificate since software can't rely
+on a particular behavior.
+Processor CRDs define writes to WLRL fields of illegal values to be OUT-OF-SCOPE unless otherwise stated
+(i.e., certification tests will only ever write legal values to WLRL fields).
+
+==== WPRI (Write Preserve, Read Ignore)
+
+The Priv ISA requires reads of WPRI fields to return a value of 0.
+Such WPRI fields are always unimplemented by definition.
+Certification tests are aware of which fields in the CSRs are WPRI and normally write them with 0 but will
+also write them with ~0 (all ones) and ensure that reads return 0 in both cases.
+It is OUT-OF-SCOPE for certification tests to write all possible values of WPRI fields
+(especially if they are more than just a few bits) and certification tests aren't intended to be comprehensive
+verification test suites anyways.

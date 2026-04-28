@@ -6,6 +6,7 @@
 ##################################
 
 from testgen.asm.helpers import load_float_reg, write_sigupd
+from testgen.constants import INDENT
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -35,6 +36,7 @@ def format_fs_type(
     # load test value
     setup = [
         load_float_reg("fs2", params.fs2, params.fs2val, test_data, params.fp_load_type),
+        "fsflagsi 0b00000 # clear all fflags",
     ]
 
     # Move sig_reg to rs1
@@ -67,11 +69,13 @@ def format_fs_type(
         "#else",
         f"{instr_name} f{params.fs2}, 0(x{sig_reg}) # repeat store so it is available for checking",
         f"addi x{sig_reg}, x{sig_reg}, SIG_STRIDE # adjust base address for offset",
-        "# nops to ensure length matches SELFCHECK",
+        f"{INDENT}# nops to ensure length matches SELFCHECK",
         "nop",
         "nop",
         "nop",
         "#endif",
     ]
-    test_data.sigupd_count += 1
+    assert test_data.test_chunk is not None
+    test_data.test_chunk.sigupd_count += 1
+    check.append(write_sigupd(None, test_data, "fflags"))
     return (setup, test, check)

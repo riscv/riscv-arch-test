@@ -8,7 +8,7 @@ The ACT4 Framework requires a UDB configuration file specifying the extensions a
 
 RISC-V is highly configurable, such as whether misaligned accesses are allowed or how many PMP registers are implemented. Therefore, the expected results of the tests differ based on the configuration of the DUT. The ACT4 Framework selects the appropriate tests to compile based on the capabilities of the DUT. It then uses the [RISC-V Sail reference model](https://github.com/riscv/sail-riscv), configured to match the DUT, to compute the expected results of each test. These results are then compiled into the final self-checking ELFs.
 
-The Architectural Certification Tests are described in full detail in the [Certification Test Plan](https://riscv.github.io/riscv-arch-test) (CTP). The ACT4 Framework principles of operation are detailed in [LINK COMING SOON]. For details on adding more tests and coverpoints, see the [ACT Developer's Guide](./docs/DeveloperGuide.md).
+The Architectural Certification Tests are described in full detail in the [Certification Test Plan](https://riscv.github.io/riscv-arch-test/ctp.html) (CTP). The ACT4 Framework principles of operation are detailed in [LINK COMING SOON]. For details on adding more tests and coverpoints, see the [ACT Developer's Guide](./docs/DeveloperGuide.md).
 
 ## Table of Contents
 
@@ -32,7 +32,7 @@ The ACTs require several tools to generate and run correctly. Ensure all of the 
 
 #### 1. System Dependencies
 
-The ACT4 framework relies on `make` to orchestrate compilation. `git` is needed to clone the `riscv-arch-test` repository. Both of these packages are available in your system package manager.
+The ACT4 framework uses `make` to run top-level commands. `git` is needed to clone the `riscv-arch-test` repository. Both of these packages are available in your system package manager.
 
 To install system dependencies:
 
@@ -44,27 +44,58 @@ sudo apt-get install make git
 sudo dnf install make git
 ```
 
-#### 2. Python/uv
+#### 2. `mise` (Tool Manager)
 
-The test generator and framework are written in Python. The recommended way of installing and running Python is using the uv project manager, which will handle Python versions, virtual environments, and dependencies transparently.
+The test generator and framework are written in Python. The recommended way of installing and running Python is using the `uv` project manager, which will handle Python versions, virtual environments, and dependencies transparently.
 
-To install uv:
+The framework also relies on the [`riscv-unified-db`](https://github.com/riscv/riscv-unified-db) (UDB) gem, which requires Ruby and Bundler.
 
-```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
+The recommended way of installing both of these tools (`uv` and Ruby) is using [`mise`](https://mise.jdx.dev/). `mise` handles tool versions and installation automatically — you don't need to install uv, Python, Ruby, or UDB manually.
 
-After installation, verify uv is available:
+To install mise:
 
 ```bash
-uv --version
+curl https://mise.jdx.dev/install.sh | sh
 ```
 
-For more details on uv and alternate installation methods, see the [uv installation guide](https://docs.astral.sh/uv/getting-started/installation/).
+After installation, verify mise is available:
 
-#### 3. RISC-V Compiler
+```bash
+mise --version
+```
 
-The ACT framework is compatible with GCC or LLVM/Clang. This guide uses GCC, but if you prefer LLVM you just need to set the path for the compiler appropriately when [creating your config file](#act-framework-configuration-file). See [config/sail/sail-rv64-max-clang/test_config.yaml](./config/sail/sail-rv64-max-clang/test_config.yaml) for an example.
+> [!NOTE]
+>
+> For more details on mise and alternate installation methods, see the [mise getting started guide](https://mise.jdx.dev/getting-started.html).
+>
+> If you do not want to install mise, you can install `uv` directly (see the [uv installation guide](https://docs.astral.sh/uv/getting-started/installation/)) or use an existing Python environment as described in [Installing without uv or mise](#installing-without-uv-or-mise).
+
+> [!NOTE]
+>
+> See note on enabling trust in the `.mise.toml` file below.
+
+##### Installing without uv or mise
+
+If you already have your own Python environment, you can install the
+framework packages into it with `pip` instead of using `mise`/`uv`. You are
+responsible for providing Python 3.10+, and Ruby/Bundler must be installed
+separately (see the [UDB repository](https://github.com/riscv/riscv-unified-db)).
+
+Activate your venv, then from the cloned repository run:
+
+```bash
+pip install -e ./framework -e ./generators/testgen -e ./generators/coverage
+```
+
+With the venv active, `make`, `make tests`, `make coverage`, `make spike-*`,
+and the other documented targets work as usual.
+
+#### 3. RISC-V Compiler (GCC or LLVM)
+
+The ACT framework is compatible with GCC/Binutils or LLVM/Clang. Only the latest release of each is officially supported and tested in CI.
+Currently, that is GCC 15/Binutils 2.44 or LLVM/Clang 21.
+
+This guide uses GCC, but if you prefer LLVM you just need to set the path for the compiler appropriately when [creating your config file](#act-framework-configuration-file). See [config/sail/sail-rv64-max-clang/test_config.yaml](./config/sail/sail-rv64-max-clang/test_config.yaml) for an example.
 
 > [!NOTE]
 >
@@ -91,6 +122,10 @@ cd riscv-gnu-toolchain
 sudo make  # sudo may be required depending on the selected `prefix`
 ```
 
+> [!NOTE]
+> If you don't have sudo access, you can install the tools locally in your home directory.
+> Simply replace `</path/to/install>` with a local directory (e.g., `$HOME/riscv`) and run `make` without `sudo`.
+
 **Important**: Add the toolchain to your `PATH` by adding this line to your `~/.bashrc`:
 
 ```bash
@@ -107,15 +142,19 @@ For more information or if you have issues installing the RISC-V toolchain, refe
 
 #### 4. RISC-V Sail Reference Model
 
-The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.10 of the model.
+The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.11 of the model.
 
 To install the sail model:
 
 ```bash
-curl --location https://github.com/riscv/sail-riscv/releases/download/0.10/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
+curl --location https://github.com/riscv/sail-riscv/releases/download/0.11/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
 ```
 
 Add `/path/to/install/bin` to your `PATH` if you used a different directory than for the `riscv-gnu-toolchain`.
+
+> [!NOTE]
+> If you don't have `sudo` access, you can extract the Sail model into your home directory by specifying a local path:
+> `curl --location <url> | tar xvz --directory=$HOME/riscv/--strip-components=1`
 
 Verify the installation:
 
@@ -125,32 +164,24 @@ sail_riscv_sim --version
 
 For more details on the RISC-V Sail model and alternate installation methods, see the [sail-riscv README](https://github.com/riscv/sail-riscv).
 
-#### 5. Container Runtime
-
-The ACTs use [`riscv-unified-db`](https://github.com/riscv/riscv-unified-db) for configuration validation and parsing. UDB requires a container to run. Currently, the ACTs are only compatible with the Podman container runtime. Work is ongoing to remove this dependency. <!-- TODO: Update this when other containers are supported -->
-
-To install Podman:
-
-```bash
-# On Ubuntu/Debian
-sudo apt-get install podman
-
-# On Fedora/CentOS/RHEL
-sudo dnf install podman
-```
-
-Verify the installation:
-
-```bash
-podman --version
-```
-
 ### Get Source Code
 
-Clone the `riscv-arch-test` repo `act4` branch:
+Clone the `riscv-arch-test` repo:
 
 ```bash
-git clone https://github.com/riscv/riscv-arch-test -b act4
+git clone https://github.com/riscv/riscv-arch-test
+```
+
+On entering the top-level directory of the repository for the first
+time, or on the first use of one of the build commands below, you may
+see messages or a prompt from `mise` requiring enabling trust before
+the `.mise.toml` configuration file can be used. This can be done by
+selecting `Yes` in the prompt or with the following command in the
+top-level directory of the repository:
+
+```bash
+mise trust .mise.toml
+
 ```
 
 ### Configuration
@@ -194,7 +225,7 @@ See [cvw-rv64gc.yaml](./config/cores/cvw/cvw-rv64gc/cvw-rv64gc.yaml) for an exam
 
 #### `rvmodel_macros.h` DUT-Specific Macro Implementation
 
-The ACT Framework uses a selection of assembly macros to run DUT-specific code to boot the DUT, print to a console, terminate the test, and trigger interrupts. These macros are defined and explained in detail in the [CTP](https://riscv.github.io/riscv-arch-test/#_Macros).
+The ACT Framework uses a selection of assembly macros to run DUT-specific code to boot the DUT, print to a console, terminate the test, and trigger interrupts. These macros are defined and explained in detail in the [CTP](https://riscv.github.io/riscv-arch-test/ctp.html#rvmodel-macros).
 
 **Required Macros**:
 
@@ -203,20 +234,24 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 
 **Printing Macros**: Can be left blank if no console is available
 
-- `RVMODEL_IO_INIT(_R1, _R2, _R3)`
+- `RVMODEL_IO_INIT(_R1, _R2, _R3)` (can be omitted if not needed)
 - `RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR)`
 
 **DUT-Specific Functions**: Can be left blank if not needed
 
 - `RVMODEL_DATA_SECTION`
-- `RVMODEL_BOOT`
-- `RVMODEL_ACCESS_FAULT_ADDRESS`
+- `RVMODEL_BOOT` (can be omitted if not needed)
+- `RVMODEL_ACCESS_FAULT_ADDRESS` (can be omitted if DUT does not generate some/all access faults)
 
 **Timer Macros**: Can be left blank if machine mode is not supported.
 
-- `RVMODEL_MTIME_ADDRESS`
-- `RVMODEL_MTIMECMP_ADDRESS`
+- `RVMODEL_MTIME_ADDRESS` (can be omitted if MTIME is not implemented)
+- `RVMODEL_MTIMECMP_ADDRESS` (can be omitted if MTIMECMP is not implemented)
 - `RVMODEL_TIMER_INT_SOON_DELAY`
+
+**MSIP Macro**: Required only for Sm version 1.13 and above. Can be omitted if machine software interrupts are not supported.
+
+- `RVMODEL_MSIP_ADDRESS` (can be omitted if MSIP is not memory-mapped or not tested)
 
 **Interrupt Macros**: Can be left blank if interrupts are not supported.
 
@@ -237,16 +272,19 @@ Complete examples are available for an example DUT ([config/cores/cvw/cvw-rv64gc
 A linker script is needed to place the code and data regions in the appropriate place for the DUT's memory map. This can be customized as needed, but it must adhere to the following requirements:
 
 - The `ENTRY` point must be `rvtest_entry_point`.
-  - DUT-specific boot code can be run using the `RVMODEL_BOOT` macro, which `rvtest_entry_point` will run before anything else. It should not be directly called by the `ENTRY` point.
-- There must be a `.text` section.
-- There must be a `.bss` section. This should follow the `.text` section.
-- There must be a `.data` section. This should follow the `.bss` section.
+  - DUT-specific boot code can be run using the `RVMODEL_BOOT` macro, which `rvtest_entry_point` will jump to before anything else.
+- There must be a `.text.init` output section that contains the `.text.init` input section (i.e. `.text.init : { *(.text.init) }`).
+- There must be a `.text.rvtest` output section that contains the `.text.rvtest` input sections (i.e. `.text.rvtest : { *(.text.rvtest) *(.text.rvtest.*) }`). This must follow the `.text.init` section.
+- There must be a `.data` output section (i.e. `.data : { *(.data) }`). This should follow the `.text.rvtest` section.
+- There must be a `.text.rvmodel` output section for DUT-specific (RVMODEL) code, with catch-all wildcards for any remaining text sections (i.e. `.text.rvmodel : { *(.text.rvmodel) *(.text.rvmodel.*) *(.text) *(.text.*) }`). This **must** follow the `.data` section so that variable-size model-specific code does not affect the addresses of test data symbols (such as `scratch` and `begin_signature`). This ensures the DUT ELF and the reference-model ELF agree on data addresses.
 
-For an example linker script that should work for most basic implementations (modify the base address as needed for your memory map), see [config/cores/cvw/cvw-rv64gc/link.ld](./config/cores/cvw/cvw-rv64gc/link.ld).
+For an example linker script that should work for most basic implementations, see [config/cores/cvw/cvw-rv64gc/link.ld](./config/cores/cvw/cvw-rv64gc/link.ld). The first line of the list of `SECTIONS` in the linker script sets the starting address of the ELF (`. = 0x...`) and is the only part of the sample linker script that most users will need to change. Set it to your reset address for simple DUTs. Users with special needs can customize the linker script to start at their own boot code (leaving the `RVMODEL_BOOT` macro blank) and then jump to `rvtest_entry_point`.
 
 > [!NOTE]
 >
 > If you modify the base address, you also need to modify the RISC-V Sail model memory map under the `memory.regions` key in `sail.json`.
+
+For a detailed description of the test memory layout (section ordering, contents of each section, etc.), see [docs/memory_map.md](./docs/memory_map.md).
 
 #### Other Config Files <!-- TODO: Remove this section when these files are autogenerated -->
 
@@ -269,19 +307,30 @@ CONFIG_FILES=<your_config_directory>/test_config.yaml make --jobs $(nproc)
 
 This will create all of the ELFs that apply to your DUT (based on the provided UDB configuration) in the `$WORKDIR/<config_name>/elfs` directory. These ELFs have the expected results compiled into them and use the provided macros and linker script.
 
-`$WORKDIR` defaults to `work` inside of the `riscv-arch-test` directory, but can be overridden by specifying `WORKDIR` when calling `make`:
+The following variables can be set on the command line to customize the build (e.g., `DEBUG=True CONFIG_FILES=path/to/test_config.yaml make --jobs`):
 
-```bash
-WORKDIR=</path/to/workdir> CONFIG_FILES=<your_config_directory>/test_config.yaml make --jobs $(nproc)
-```
+| Variable             | Default                                         | Description                                                                                                                                                      |
+| -------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CONFIG_FILES`       | Spike rv32/rv64 max configs                     | Space-separated list of `test_config.yaml` paths to build ELFs for.                                                                                              |
+| `WORKDIR`            | `work`                                          | Directory where all build artifacts and ELFs are created.                                                                                                        |
+| `EXTENSIONS`         | _(empty — all extensions)_                      | Comma-separated list of extensions to generate tests for. When empty, generates tests for all extensions in the UDB config.                                      |
+| `EXCLUDE_EXTENSIONS` | _(see below)_                                   | Comma-separated list of extensions to exclude from test generation. Applied as a negative filter after `EXTENSIONS`.                                             |
+| `DEBUG`              | _(empty)_                                       | Set to `True` to enable debug output (signature objdump, trace files, and trap report). Significantly slows down ELF generation. Mutually exclusive with `FAST`. |
+| `VERBOSE`            | _(empty)_                                       | Set to `True` to enable verbose output (prints all commands). Also implies debug mode and serializes all commands (JOBS=1).                                      |
+| `FAST`               | _(empty)_                                       | Set to `True` to skip objdump generation for faster builds. Makes debugging mismatches harder. Mutually exclusive with `DEBUG`.                                  |
+| `JOBS`               | Auto-detected from `make -j` flag, or CPU count | Number of parallel build jobs for test compilation. Set to `1` for debugging test hangs.                                                                         |
 
 By default, both `CONFIG_FILES` and `WORKDIR` are relative to the `riscv-arch-test` directory. Use an absolute path if you need to specify a directory that is out-of-tree.
 
-Note that the ACT framework first compiles signature-generating versions of the tests (with a .sig.elf suffix) in the `$WORKDIR/<config_name>/build` or `$WORKDIR/common/build` directory, then simulates these tests on the RISC-V Sail reference model and saves the signature into a `.sig` file. It then recompiles the tests with the correct results included to enable self-checking, placing the executable in the elfs directory mentioned above. The build directory contents are only of interest when troubleshooting during test development. See [LINK COMING SOON] for details.
+> [!NOTE]
+>
+> The default `EXCLUDE_EXTENSIONS` list excludes several privileged extensions that are still being stabilized or have known issues with the Sail reference model. See [Makefile](./Makefile) for the current list and reasons for each excluded extension.
+
+The ACT framework first compiles signature-generating versions of the tests (with a .sig.elf suffix) in the `$WORKDIR/<config_name>/build` or `$WORKDIR/common/build` directory, then simulates these tests on the RISC-V Sail reference model and saves the signature into a `.sig` file. It then recompiles the tests with the correct results included to enable self-checking, placing the executable in the elfs directory mentioned above. The build directory contents are only of interest when troubleshooting during test development. See [LINK COMING SOON] for details.
 
 > [!NOTE]
 >
-> To generate the assembly tests and coverpoints without compiling or running them, run `make tests`. This only requires `make` and `uv` to be installed.
+> To generate the assembly tests and coverpoints without compiling or running them, run `make tests`. This only requires `make` and `mise` to be installed.
 
 ### Running Certification Tests
 
@@ -289,8 +338,8 @@ All ELFs produced in the `$WORKDIR/<config_name>/elfs` directory must be run on 
 
 Each test will print one of the following to the console:
 
-- **PASSED**: `RVCP-SUMMARY: Test File "<test_name.S>": PASSED`
-- **FAILED**: `RVCP-SUMMARY: Test File "<test_name.S>": FAILED`
+- **PASSED**: `RVCP-SUMMARY: TEST PASSED - Test File "<test_name.S>"`
+- **FAILED**: `RVCP-SUMMARY: TEST FAILED - Test File "<test_name.S>"`
 
 ### Troubleshooting
 
@@ -311,12 +360,21 @@ A common source of errors is configuration mismatches, so ensure that:
 - Your `rvmodel_macros.h` macros correctly implement the required functionality
 - Your linker script places code/data at the correct memory addresses
 
+#### Debug Flag
+
+If the standard debug information is insufficient, use the `DEBUG=True` flag to generate additional artifacts alongside each test that aid in debugging:
+
+- **Sail trace files** (`.sig.log`) — Instruction-by-instruction trace from the Sail reference model. Useful for understanding the expected execution flow.
+- **Trap report** (`.sig.trap_report`) — Human-readable summary of every trap recorded in the trap signature region. Shows cause, mode, xepc, xtval, and status bits for each trap.
+
+These files are generated in the `$WORKDIR/<config_name>/build` directory alongside the `.sig` and `.sig.elf` files. Note that `DEBUG=True` significantly slows down ELF generation and is mutually exclusive with `FAST`. It is recommended to only enable `DEBUG` for an individual extension that is failing (use the `EXTENSIONS` variable).
+
 ## Contributing
 
 Contributors are always welcome. There are several ways to contribute:
 
 - [Open issues](https://github.com/riscv/riscv-arch-test/issues/new) with bug reports or feature requests.
-- [Submit PRs](https://github.com/riscv/riscv-arch-test/pulls) that fix open issues, add tests for new extensions, or add a new feature. Before opening a PR, make sure to review the guidelines and helpful tips in [`CONTRIBUTION.md`](./CONTRIBUTION.md)
+- [Submit PRs](https://github.com/riscv/riscv-arch-test/pulls) that fix open issues, add tests for new extensions, or add a new feature. Before opening a PR, make sure to review the guidelines and helpful tips in [`CONTRIBUTING.md`](./CONTRIBUTING.md)
 - Join the [ACT SIG mailing list](https://lists.riscv.org/g/sig-arch-test) or the biweekly [ACT SIG meetings](https://tech.riscv.org/calendar/). The mailing list and meetings are only open to RISC-V members.
 
 ## Licensing

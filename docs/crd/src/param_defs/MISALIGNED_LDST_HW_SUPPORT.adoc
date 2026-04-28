@@ -1,0 +1,17 @@
+a|
+[#param:MISALIGNED_LDST_HW_SUPPORT]#MISALIGNED_LDST_HW_SUPPORT#
+
+Normative Rule(s):
+
+* https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#MISALIGNED_LDST_HW_SUPPORT[MISALIGNED_LDST_HW_SUPPORT]
+| Boolean
+| RV32I/RV64I Base ISA
+a| Hardware support for misaligned integer and floating-point load/store instructions.
+
+[%autowidth]
+!===
+! Value ! Definition
+
+! False ! No hardware support for misaligned load/store instructions
+! True ! Misaligned load/store instructions are supported in hardware (potentially with restrictions expressed by other parameters).
+!===

@@ -24,7 +24,6 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv32]
 # MARCH: rv32i_zicsr
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 //TODO: instead of using two different tests, use a single test for hart/software update.
@@ -85,7 +84,6 @@ RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
 
-canary_mismatch: .string "Testcase signature canary mismatch!"
 test_1: .string "\"test: 1; cp: check mstatus.tvm\""
 test_2: .string "\"test: 2; cp: check satp\""
 

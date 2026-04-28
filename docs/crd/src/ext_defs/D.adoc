@@ -1,0 +1,8 @@
+[[extension:D]]
+=== Extension D
+
+Long Name::
+Double-Precision Floating-Point
+
+Description::
+Double-precision floating-point instructions and CSRs. Requires F.

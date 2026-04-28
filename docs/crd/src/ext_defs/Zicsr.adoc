@@ -1,0 +1,8 @@
+[[extension:Zicsr]]
+=== Extension Zicsr
+
+Long Name::
+Control and Status Register Instructions
+
+Description::
+Instructions for reading and writing control and status registers.

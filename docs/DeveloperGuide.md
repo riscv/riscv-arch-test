@@ -8,6 +8,8 @@ Each is described below.
 ## Table of Contents
 
 - [Certification Test Plan](#certification-test-plan)
+- [Test Hierarchy](#test-hierarchy)
+- [Test YAML Header](#test-yaml-header)
 - [Table-Driven Unprivileged Coverpoints and Tests](#table-driven-unprivileged-coverpoints-and-tests)
   - [Creating New CSV Testplans](#creating-new-csv-testplans)
   - [Adding New Coverpoints](#adding-new-coverpoints)
@@ -17,6 +19,9 @@ Each is described below.
   - [Adding New Privileged Coverpoints](#adding-new-privileged-coverpoints)
   - [Adding New Privileged Tests](#adding-new-privileged-tests)
 - [Debugging Coverage](#debugging-coverage)
+- [Adding a New Simulator or DUT Config](#adding-a-new-simulator-or-dut-config)
+  - [Adding a Config for Running Locally](#adding-a-config-for-running-locally)
+  - [Adding CI Support for a Simulator](#adding-ci-support-for-a-simulator)
 
 ## Certification Test Plan
 
@@ -58,6 +63,166 @@ Similar YAML files in coverpoints/param are used to make a list of the UDB param
 The `generate_param_table.py` script turns these into .adoc files in ctp/src/param listing the parameter name, description (from UDB), coverpoints it applies to, and effect on the coverpoints. If there is a yaml for normative rules but not for parameters, the parameter adoc just indicates no parameters. The script also makes a summary.adoc table listing all of the UDB parameters used anywhere in the test plan, and UDB parameters not yet mentioned in the test plan.
 
 This script is also run automatically when making the CTP. Hence, all the developer must do is create YAML files in `coverpoints/param` for test suites with parameters.
+
+## Test Hierarchy
+
+The testgen package organizes generated tests into four levels:
+
+```
+test suite
+└── test file
+    └── test chunk
+        └── testcase
+```
+
+- **Testcase**: The smallest unit of testing. Each testcase checks a single bin of a coverpoint. In the generated assembly, a testcase corresponds to one call to `test_data.add_testcase()`, which creates a label and debug string for that specific bin. For example, testing that `add` writes to `x5` is one testcase of the `cp_rd` coverpoint.
+
+- **Test chunk** (`TestChunk`): An unsplittable group of one or more testcases. A test chunk is the building block of test files. Test chunks are never split across multiple files. Standard coverpoint generators (e.g., `cp_rd`, `cp_imm_edges`) produce one chunk per testcase via `format_single_testcase()`. Special coverpoint generators and privileged tests bundle multiple testcases into a single chunk using `test_data.begin_test_chunk()` / `test_data.end_test_chunk()`, typically because the testcases share setup code.
+
+- **Test file**: A complete `.S` assembly file that is compiled into a self-checking ELF. Each test file contains one or more test chunks. When an instruction has many testcases (e.g., hundreds of register/immediate combinations), the framework splits the chunks across multiple test files using `TESTCASES_PER_FILE` as the limit. Test files are named like `I-add-00.S`, `I-add-01.S`, etc., where the suffix indicates the file index.
+
+- **Test suite**: All test files in a given directory. Each test suite corresponds to one extension or combination of extensions (e.g., `I`, `Zcb`, `ZcbZbb`, `ExceptionsSm`) and maps to a single coverage file. Unprivileged test suites contain one or more test files per instruction. For privileged tests, a test suite typically contains a single test file covering all coverpoints for that feature.
+
+## Test YAML Header
+
+Every assembly test file (`.S`) must include a YAML configuration header that
+describes the test's requirements. The framework uses this header to determine
+which tests to select and how to compile them for a given DUT configuration.
+
+The header is embedded in assembly comments between two marker lines:
+
+```asm
+##### START_TEST_CONFIG #####
+# REQUIRED_EXTENSIONS: ['I', 'Zba']
+# params:
+#   MXLEN: 32
+# MARCH: rv32i_zba
+##### END_TEST_CONFIG #####
+```
+
+The framework strips the leading `#` comment characters from each line and
+parses the remaining content as YAML. The header must appear before any
+assembly code in the file.
+
+### Supported Keys
+
+The following top-level keys are recognized. No other keys are permitted
+(the parser uses strict validation and will reject unknown keys).
+
+| Key                   | Type            | Required | Description                                                                                                                                          |
+| --------------------- | --------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `REQUIRED_EXTENSIONS` | list of strings | **Yes**  | RISC-V extensions required by this test. The test is only selected for a DUT whose implemented extensions list contains **all** of these extensions. |
+| `MARCH`               | string          | **Yes**  | The `-march` string passed to the compiler. Must match the pattern `rv(32\|64\|${XLEN})(i\|e\|g)...` (e.g., `rv32i_zba`, `rv64ifd_zfh`).             |
+| `params`              | mapping         | No       | A dictionary of parameter constraints that must match the DUT's UDB configuration for the test to be selected.                                       |
+
+#### `REQUIRED_EXTENSIONS`
+
+A YAML list of extension name strings. Both quoted and unquoted styles are
+accepted:
+
+```yaml
+# Quoted style (common in generated tests)
+REQUIRED_EXTENSIONS: ['I', 'Zba']
+
+# Unquoted style (common in hand-written tests)
+REQUIRED_EXTENSIONS: [I, S, Zicsr, Sm]
+```
+
+During test selection, the framework checks that every extension in this list
+is present in the DUT's implemented extensions (derived from the UDB
+configuration). A test is skipped if any required extension is missing.
+
+#### `MARCH`
+
+The compiler march string determines the available extensions during compilation.
+It will usually contain the same list of extensions as `REQUIRED_EXTENSIONS`, but
+certain privileged extensions are omitted (the compiler does not accept them).
+The `REQUIRED_EXTENSIONS` list and march string may also differ for tests that
+conditionally include extra testcases depending on the DUT configuration.
+It follows the standard RISC-V ISA string naming convention:
+
+- Single-letter extensions are concatenated without separators: `rv32imafd`
+- Multi-letter extensions are separated by underscores: `rv64i_zba_zbb`
+- Privilege-mode extensions (`Sm`, `S`, `U`) are omitted from the march string
+
+For privileged tests that need to support both RV32 and RV64, use the
+`${XLEN}` placeholder:
+
+```yaml
+MARCH: rv${XLEN}i_zicsr
+```
+
+The framework substitutes the actual XLEN value (32 or 64) at compile time
+based on the DUT configuration.
+
+#### `params`
+
+An optional mapping of parameter names to required values. Each parameter
+must exist in the DUT's UDB configuration and match the specified value for the
+test to be selected.
+
+```yaml
+params:
+  MXLEN: 32
+```
+
+Parameters support both exact matching and comparison operators. Comparison
+operators are specified as string-prefixed values:
+
+| Operator | Example                  | Meaning                             |
+| -------- | ------------------------ | ----------------------------------- |
+| _(none)_ | `MXLEN: 32`              | Exact equality (equivalent to `==`) |
+| `==`     | `MXLEN: '==64'`          | Exact equality                      |
+| `>`      | `NUM_PMP_ENTRIES: '>0'`  | Greater than                        |
+| `>=`     | `VLEN: '>=64'`           | Greater than or equal               |
+| `<`      | `VLEN: '<256'`           | Less than                           |
+| `<=`     | `PMP_GRANULARITY: '<=4'` | Less than or equal                  |
+| `!=`     | `PMP_GRANULARITY: '!=0'` | Not equal                           |
+
+Comparison operator values support both decimal and hexadecimal (e.g.,
+`'>=0x80'`, `'<0xFF'`). Comparison values must be quoted in YAML since they
+start with special characters.
+
+### Examples
+
+**Minimal header** (unprivileged test, single extension, fixed XLEN):
+
+```asm
+##### START_TEST_CONFIG #####
+# REQUIRED_EXTENSIONS: ['I']
+# params:
+#   MXLEN: 32
+# MARCH: rv32i
+##### END_TEST_CONFIG #####
+```
+
+**Privileged test** (multi-XLEN, no params):
+
+```asm
+##### START_TEST_CONFIG #####
+# REQUIRED_EXTENSIONS: [I, S, Zicsr, Sm]
+# MARCH: rv${XLEN}i_zicsr
+##### END_TEST_CONFIG #####
+```
+
+Note that `MARCH` does not include `S` or `Sm` because the compiler does not need those extensions.
+
+**Test with parameter constraints** (PMP requirements):
+
+```asm
+##### START_TEST_CONFIG #####
+# REQUIRED_EXTENSIONS: ['I', 'Zca', 'Sm']
+# params:
+#   MXLEN: 32
+#   NUM_PMP_ENTRIES: '>0'
+#   PMP_GRANULARITY: '<=2'
+# MARCH: rv32i_zca_zicsr
+##### END_TEST_CONFIG #####
+```
+
+This header would correspond to a PMP test that uses NA4 mode. NA4 does not exist if
+the PMP_GRANULARITY is >2 and PMP in general does not exist if NUM_PMP_ENTRIES is 0,
+so both of these param constraints are needed to make sure the test can run on the DUT.
 
 ## Table-Driven Unprivileged Coverpoints and Tests
 
@@ -112,12 +277,12 @@ Python generator to generate tests for that coverpoint.
 #### Coverpoint SystemVerilog Templates
 
 All coverpoints (and coverpoint variants) need a template file in
-[`generators/coverage/templates`](../generators/coverage/templates).
+[`generators/coverage/src/covergroupgen/templates`](../generators/coverage/src/covergroupgen/templates).
 These templates should be named `<coverpoint_name>.sv` or
 `<coverpoint_name>_<variant>.sv`.
 The coverpoint templates are directly included in a larger covergroup,
 so they must contain a complete and valid SystemVerilog coverpoint.
-See the [`generators/coverage/templates`](../generators/coverage/templates)
+See the [`generators/coverage/src/covergroupgen/templates`](../generators/coverage/src/covergroupgen/templates)
 directory for example coverpoints. A few hints are included below:
 
 - All data about the instruction is accessed using the `ins` object.
@@ -137,14 +302,14 @@ The following applies to all coverpoint test generators:
 - All coverpoint generator functions must use the following signature:
 
   ```py
-  def make_cp_name(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+  def make_cp_name(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
   ```
 
   - `instr_name` is the instruction currently being tested. This allows coverpoint test generators to be reused for multiple instructions.
   - `instr_type` is the type of the instruction currently being tested. This allows the correct instruction formatter (see below) to be selected.
   - `coverpoint` is the full name of the coverpoint, including any variant suffix. Coverpoint test generators can match multiple variants of a coverpoint. This argument allows different values, registers, etc. to be selected based on the variant.
-  - `test_data` is a dataclass that is passed to all parts of the test generation process and stores the signature count, test values, debug strings, etc.
-  - The generator must return a list of strings. They will be combined with newlines separating each string in the final output test.
+  - `test_data` is the generation context that is passed to all parts of the test generation process and manages register allocation, test counting, and the active `TestChunk`.
+  - The generator must return a list of `TestChunk` objects. Each `TestChunk` is an unsplittable group of one or more testcases. It holds its own assembly code, data values, debug strings, and signature update count. The framework uses these to split test chunks across test files and combine their data for the final output.
 
 Coverpoint test generators can largely be broken into two categories: standard and special.
 Standard generators use the [instruction formatters](#python-instruction-formatters) and can be applied to a wide range
@@ -166,7 +331,7 @@ It is also included below with many additional comments added to explain how it 
 # which coverpoints they apply to.
 @add_coverpoint_generator("cp_rd")
 # Coverpoint generators all use the standard signature described above.
-def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for destination register coverpoints."""
     # Determine which rd registers to test based on the coverpoint variant.
     # Multiple variants can match to the same generator. This is useful when
@@ -182,8 +347,8 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
         # to make debugging easy.
         raise ValueError(f"Unknown cp_rd coverpoint variant: {coverpoint} for {instr_name}")
 
-    # Initialize a list of strings to build up the test
-    test_lines: list[str] = []
+    # Initialize a list of TestChunk objects to collect results
+    test_chunks: list[TestChunk] = []
 
     # Generate tests
     # A common pattern is to use a loop to iterate over some value that is being tested
@@ -193,25 +358,29 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
         # Any registers that are explicitly used must be marked as used using the
         # test_data.int_regs.consume_registers function. This will automatically move
         # any reserved registers to ensure the desired register is free.
-        test_lines.append(test_data.int_regs.consume_registers([rd]))
+        asm_setup = test_data.int_regs.consume_registers([rd])
         # The generate_random_params function will populate any instruction parameters
         # used by the provided instruction type that are not explicitly specified with
         # random (legal) values. In this case, only rd is specified, so rs1, rs2, imm, etc.
         # will get random values.
         params = generate_random_params(test_data, instr_type, rd=rd)
         desc = f"{coverpoint} (Test destination rd = x{rd})"
-        # format_single_test is the key part of standard coverpoint generators. It takes
-        # the provided instruction parameters (created above) and produces the assembly
-        # sequence necessary to test the given instruction. It also calls test_data.add_testcase
+        # format_single_testcase is the key part of standard coverpoint generators. It takes
+        # the provided instruction parameters (created above) and produces a TestChunk object
+        # containing the assembly code and associated data. It also calls test_data.add_testcase
         # to add a label and debugging string.
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc, f"b{rd}", coverpoint))
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{rd}", coverpoint)
+        # If consume_registers returned setup code (register moves), prepend it to the TestChunk
+        if asm_setup:
+            tc.code = asm_setup + "\n" + tc.code
+        test_chunks.append(tc)
         # Once registers are no longer in use, they need to be marked as available again
         # so that the register allocator knows that they can be reused.
         return_test_regs(test_data, params)
 
-    # The final list of assembly lines is returned. It will be concatenated with newlines
-    # when the test is written to a file.
-    return test_lines
+    # Return the list of TestChunk objects. The framework will use these to split test chunks
+    # across test files (based on num_testcases counts) and combine their data for the final output.
+    return test_chunks
 ```
 
 Additional documentation for all of these functions (and many other helper functions) is
@@ -228,10 +397,20 @@ cases each individual instruction).
 
 Special coverpoint generators vary widely, so it is impossible to provide a complete guide,
 but they usually follow the same initial flow as a standard coverpoint and then diverge
-where the call to `format_single_test` would be. Instead of calling `format_single_test`,
-special coverpoint generators manually add assembly code to the `test_lines` list. While
-most of this code is handwritten, you are still encouraged to use helper Python functions.
-The most useful helpers for special coverpoints tends to be `load_int_reg` and
+where the call to `format_single_testcase` would be. Instead of calling `format_single_testcase`,
+special coverpoint generators use `test_data.begin_test_chunk()` and `test_data.end_test_chunk()`
+to wrap their inline assembly in a single `TestChunk`. The typical pattern is:
+
+```py
+tc = test_data.begin_test_chunk()
+test_lines: list[str] = []
+# ... build assembly lines, call test_data.add_testcase(), load_int_reg(), write_sigupd(), etc. ...
+tc.code = "\n".join(test_lines)
+return [test_data.end_test_chunk()]
+```
+
+While most of this code is handwritten, you are still encouraged to use helper Python
+functions. The most useful helpers for special coverpoints tend to be `load_int_reg` and
 `write_sigupd`. See [Python Instruction Formatters](#python-instruction-formatters) for
 details on those functions.
 
@@ -246,7 +425,7 @@ Python instruction formatter.
 #### Instruction Format Sample Templates
 
 All instruction formats need a template file in
-[`generators/coverage/templates`](../generators/coverage/templates).
+[`generators/coverage/src/covergroupgen/templates`](../generators/coverage/src/covergroupgen/templates).
 These templates should be named `sample_<INSTRUCTION_TYPE>.sv`.
 The instruction format templates are directly included in a SystemVerilog
 case statement.
@@ -266,7 +445,7 @@ All instruction sample templates must match the following format:
 - The various `add_*` functions assign parameters from the instruction's assembly string to variables. The number indicates which parameter from the assembly string should be assigned to the specified variable. For example, in the code above, the first parameter is assigned to `rd`, the second to `rs1`, and the third to `rs2`.
 - For a full list of all the `add_*` functions, see [`RISCV_instruction_base.svh`](../framework/src/act/fcov/coverage/RISCV_instruction_base.svh).
 
-See the [`generators/coverage/templates`](../generators/coverage/templates)
+See the [`generators/coverage/src/covergroupgen/templates`](../generators/coverage/src/covergroupgen/templates)
 directory for example instruction format sample sequences.
 
 #### Python Instruction Formatters
@@ -518,6 +697,10 @@ For examples of how to write the individual coverpoint helper functions for priv
 - Begin each coverpoint with a call to `comment_banner(coverpoint, "comments")` to add a descriptive marker to the generated test.
 - Include a call to `test_data.add_testcase` at the beginning of each testcase within a coverpoint. This creates the appropriate labels and debug strings.
 - To the extent possible, reuse functions and define new helper functions if a snippet of assembly seems like it will be useful in multiple tests. See [`csr.py`](../generators/testgen/src/testgen/asm/csr.py) for a few examples including `gen_csr_read_sigupd`, `gen_csr_write_sigupd`, and `csr_walk_test`.
+- Test are automatically formatted as follows:
+  - Pre-processor directives (`#ifdef`, etc.), comments, and labels are unindented.
+  - Code (instructions and macros) is indented by 2 spaces.
+  - If deviations from this help the readability of a test (most often indenting certain comments), use the `INDENT` global at the beginning of the line (e.g. `f"{INDENT}# comment`).
 
 ## Debugging Coverage
 
@@ -544,3 +727,66 @@ $display("mode: %b, medel: %b, funct3: %b, rs1_1_0: %b, pc_1: %b, offset: %b ",
 ```
 
 Then look in the `work/sail-rv64-max/coverage/priv/ExceptionsZc/ExceptionsZc.ucdb.log` file to see how these RVVI signals change after each instruction. Find the instruction that should have hit a bin, and see which coverpoint input(s) aren't taking on the necessary values. It is often useful to compare the `*.ucdb.log` file with the `*.trace` file in `work/sail-rv64-max/coverage/priv/ExceptionsZc`.
+
+## Adding a New Simulator or DUT Config
+
+The Makefile and CI workflow auto-discover configs from the `config/` directory. No changes to the Makefile or GitHub Actions workflow are needed when adding a new config.
+
+### Adding a Config for Running Locally
+
+Create a configuration directory following the instructions in the [Configuration section of the README](../README.md#configuration). In addition to the config files described there, add a `run_cmd.txt` file containing a single-line shell command to run an ELF. The ELF path is appended to the end of the command by `run_tests.py`. See `config/spike/spike-rv64-max/run_cmd.txt` for a reference example.
+
+The command can include `{debug:...}` placeholders for DUT-specific trace flags that are only enabled when running with `DEBUG=1`. For example:
+
+```
+spike {debug:-l --log-commits --log=__TRACEFILE__} --isa=rv64gc
+```
+
+When `DEBUG=1` is set, the placeholder expands to its contents (e.g., `spike -l --log-commits --log=<trace_file> --isa=rv64gc`). Otherwise, it is removed (e.g., `spike --isa=rv64gc`). `stdout` and `stderr` are captured in the existing log files under `work/<config>/logs/`.
+
+When debug mode enables simulator tracing, trace output can interleave with `RVCP-SUMMARY` lines and prevent `run_tests.py` from detecting pass/fail. Two placeholders solve this by redirecting output to per-test files:
+
+- **`__TRACEFILE__`** — Use when the simulator can redirect its _trace_ output to a file. `run_tests.py` substitutes this with a per-test `.trace.log` path so trace output goes to a separate file, keeping `RVCP-SUMMARY` lines clean in the main log. Examples:
+
+  ```
+  spike {debug:-l --log-commits --log=__TRACEFILE__} --isa=rv64gc
+  qemu-system-riscv64 {debug:-d in_asm,int -D __TRACEFILE__} -nographic ...
+  sail_riscv_sim {debug:--trace --trace-output __TRACEFILE__} --config ...
+  ```
+
+- **`__SUMMARYFILE__`** — Use when the simulator cannot redirect trace but _can_ redirect its console output (which contains `RVCP-SUMMARY`) to a file. When present, `run_tests.py` reads `RVCP-SUMMARY` from this `.summary.log` file instead of the main log. Example:
+
+  ```
+  wsim --sim verilator {debug:--sim questa --lockstepverbose --args '+UART_LOG=1 +UART_LOG_FILE=__SUMMARYFILE__'} rv64gc --elf
+  ```
+
+Both placeholders should be placed inside `{debug:...}` blocks since they are only needed when trace output is enabled. When debug is off, the placeholders are stripped along with the rest of the block.
+
+Once the config directory exists and has a `run_cmd.txt` file, the following Make targets are automatically available:
+
+```bash
+make <config-name>   # Build ELFs and run tests for this config
+make <group>         # Build and run all configs in the group
+```
+
+The `<group>` can be any ancestor directory name. For example, configs under `config/cores/cvw/` produce targets for both `make cvw` (all CVW configs) and `make cores` (all configs under `cores/`).
+
+### Adding CI Support for a Simulator
+
+To run a simulator's configs in GitHub Actions CI, create a `ci.yaml` file in the simulator's group directory (e.g., `config/<group>/ci.yaml`):
+
+```yaml
+ci_enabled: true # Set false to skip in CI
+exclude_extensions: "Ext1,Ext2" # Extensions to skip (optional)
+apt_packages: "libfoo libbar" # apt packages needed at runtime (optional)
+install_script: ".github/scripts/install-<sim>.sh" # Build script, skipped on cache hit (optional)
+setup_script: ".github/scripts/setup-<sim>.sh" # Setup script, always run before running tests
+```
+
+Field details:
+
+- **`ci_enabled`**: Controls whether configs under this group appear in the CI matrix. Defaults to `true` if omitted.
+- **`exclude_extensions`**: Comma-separated list of extensions to exclude when running this simulator's tests in CI. Use for known failures with the simulator so CI passes until bugs are resolved upstream.
+- **`apt_packages`**: Space-separated list of apt packages required to run the simulator. These are installed unconditionally (even on cache hit).
+- **`install_script`**: Path to a shell script that builds and installs the simulator. Receives the install directory as its first argument. The built simulator is cached — the script only runs on cache miss. The cache key is derived from the script's content hash, so updating the script (e.g., bumping a version) automatically invalidates the cache.
+- **`setup_script`**: Path to a shell script that sets up the simulator environment. This script is always run before running tests.

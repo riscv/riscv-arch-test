@@ -34,7 +34,9 @@ def format_ciw_type(
     setup: list[str] = []
     if params.rd != 2:
         # For c.addi4spn, rs1 must be x2 (sp)
-        setup.append(test_data.int_regs.consume_registers([2]))  # ensure sp is reserved
+        asm = test_data.int_regs.consume_registers([2])  # ensure sp is reserved
+        if asm:
+            setup.append(asm)
     setup.append(load_int_reg("sp", 2, params.rs1val, test_data))
     test = [
         f"{instr_name} x{params.rd}, sp, {params.immval} # perform operation",

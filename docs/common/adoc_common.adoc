@@ -1,0 +1,47 @@
+include::../docs-resources/global-config.adoc[]
+include::symbols.adoc[]
+// Images
+:imagesoutdir: {docdir}/../build/images-out
+:imagesdir: ../docs-resources/images
+:title-logo-image: image:risc-v_logo.png["RISC-V International Logo",pdfwidth=3.25in,align=center]
+ifdef::draft-watermark[]
+:page-background-image: image:/draft.png[opacity=20%]
+endif::[]
+// Misc Settings
+:preface-title: Licensing and Acknowledgements
+:colophon:
+:appendix-caption: Appendix
+:experimental:
+:reproducible:
+:icons: font
+:lang: en
+:example-caption: Example
+:listing-caption: Listing
+:table-caption: Table
+:figure-caption: Figure
+:xrefstyle: short
+:chapter-refsig: Chapter
+:section-refsig: Section
+:appendix-refsig: Appendix
+:sectnums:
+:data-uri:
+:hide-uri-scheme:
+:stem:
+:footnote:
+// Table of contents
+// Limit levels to level 0 (parts) and level 1 (2 equals signs).
+:toc: left
+:toclevels: 1
+// The number of levels in the PDF outline. Max is 5.
+// See https://docs.asciidoctor.org/pdf-converter/latest/pdf-outline/#levels.
+:outlinelevels: 5
+// A4 is the default for RISC-V but isn't wide enough for good display of tables.
+// See https://github.com/prawnpdf/pdf-core/blob/0.6.0/lib/pdf/core/page_geometry.rb#L16-L68
+:pdf-page-size: A3
+
+// Put the table of contents here when using the VSCode AsciiDoc previewer extension.
+// You also have to put the following in your settings.json file:
+//  "asciidoc.preview.asciidoctorAttributes": {
+//  "toc": "macro"
+//  }
+toc::[]

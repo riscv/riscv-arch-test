@@ -1,0 +1,21 @@
+<<<
+[appendix]
+[[parameter_defs]]
+== Parameter Definitions
+
+Parameters are hardware options supported by RISC-V standards.
+Many parameters are not named in RISC-V standards but a golden list of parameters
+is maintained separately by RISC-V International and this section uses those names.
+
+NOTE: The golden list of parameters is still under development so the parameters in this document
+are "preliminary parameters" and subject to change as the golden list is finalized.
+
+Parameters map to one or more normative rules in the RISC-V ISA manual.
+Typically these normative rules are the Implementation-Defined Behavior variant of normative rules.
+These are normative rules that allow for multiple behaviors and require the implementation to specify its behavior.
+By convention, Implementation-Defined Behaviors have uppercase names while other types of normative rules have lowercase names.
+
+.Parameter Definitions
+[cols="30%,10%,10%,50%"]
+|===
+| Parameter and Mapping to Normative Rules | Type | ISA Feature | Definition

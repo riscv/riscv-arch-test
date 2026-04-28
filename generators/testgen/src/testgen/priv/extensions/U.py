@@ -26,17 +26,17 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
             "Execute privileged instructions\nShould cause ecall, breakpoint, illegal instruction traps",
         ),
         test_data.add_testcase("ecall", coverpoint, covergroup),
-        "    ecall                 # test ecall instruction",
-        "    nop",
+        "ecall                 # test ecall instruction",
+        "nop",
         test_data.add_testcase("ebreak", coverpoint, covergroup),
-        "    ebreak                # test ebreak instruction",
-        "    nop",
+        "ebreak                # test ebreak instruction",
+        "nop",
         test_data.add_testcase("mret", coverpoint, covergroup),
-        "    mret                  # test mret instruction",
-        "    nop",
+        "mret                  # test mret instruction",
+        "nop",
         test_data.add_testcase("sret", coverpoint, covergroup),
-        "    sret                  # test sret instruction",
-        "    nop",
+        "sret                  # test sret instruction",
+        "nop",
     ]
 
     return lines
@@ -56,14 +56,15 @@ def _generate_ucsr_tests(test_data: TestData) -> list[str]:
             "Attempt to read non-user-mode registers.  Should throw illegal instruction",
         ),
     ]
-    temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
+    temp_reg = test_data.int_regs.get_register()
     for csr in (
         list(range(0x100, 0x400)) + list(range(0x500, 0x800)) + list(range(0x900, 0xC00)) + list(range(0xD00, 0x1000))
     ):
         lines.extend(
             [
                 test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"\tCSRR(x{temp_reg}, 0x{csr:03x})    # attempt to read CSR {csr:03x}; should get illegal instruction",
+                f"CSRR(x{temp_reg}, 0x{csr:03x})    # attempt to read CSR {csr:03x}; should get illegal instruction",
+                "",
             ]
         )
 
@@ -78,12 +79,13 @@ def _generate_ucsr_tests(test_data: TestData) -> list[str]:
         ),
     )
 
-    lines.append(f"\tLI(x{temp_reg}, -1)          # x{temp_reg} = all 1s\n")
+    lines.append(f"LI(x{temp_reg}, -1)          # x{temp_reg} = all 1s\n")
     for csr in range(0xC00, 0xD00):
         lines.extend(
             [
                 test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"\tCSRW(0x{csr:03x}, x{temp_reg})    # attempt to write read-only CSR {csr:03x}; should get illegal instruction\n",
+                f"CSRW(0x{csr:03x}, x{temp_reg})    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
+                "",
             ]
         )
 
@@ -97,7 +99,7 @@ def make_u(test_data: TestData) -> list[str]:
     """Generate tests for U user-mode testsuite."""
     lines: list[str] = []
 
-    lines.extend(["\tRVTEST_GOTO_LOWER_MODE Umode  # Run tests in user mode\n"])
+    lines.extend(["RVTEST_GOTO_LOWER_MODE Umode  # Run tests in user mode\n"])
     lines.extend(_generate_priv_inst_tests(test_data))
     lines.extend(_generate_ucsr_tests(test_data))
 

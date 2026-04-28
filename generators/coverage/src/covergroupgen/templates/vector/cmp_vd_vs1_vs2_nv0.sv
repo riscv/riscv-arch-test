@@ -1,0 +1,10 @@
+    //////////////////////////////////////////////////////////////////////////////////
+    // cmp_vd_vs1_vs2_nv0
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cmp_vd_vs1_vs2_nv0 : coverpoint ins.get_vr_reg(ins.current.vd) iff (ins.current.vd == ins.current.vs1 & ins.current.vd == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers, vd not v0
+        ignore_bins v0 = {v0};
+    }
+
+    //// end cmp_vd_vs1_vs2_nv0////////////////////////////////////////////////

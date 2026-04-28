@@ -1,0 +1,8 @@
+[[extension:Zicntr]]
+=== Extension Zicntr
+
+Long Name::
+Base Counters and Timers
+
+Description::
+Base counters and timers including the time/timeh, cycle/cycleh, and instret/instreth CSRs.

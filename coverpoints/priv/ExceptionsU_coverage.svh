@@ -17,7 +17,7 @@ covergroup ExceptionsU_cg with function sample(ins_t ins);
 
     // building blocks for the main coverpoints
     ecall: coverpoint ins.current.insn {
-        bins ecall  = {32'h00000073};
+        bins ecall  = {ECALL};
     }
     branch: coverpoint ins.current.insn {
         wildcard bins branch = {32'b???????_?????_?????_???_?????_1100011};
@@ -45,34 +45,34 @@ covergroup ExceptionsU_cg with function sample(ins_t ins);
         wildcard bins bgeu_nottaken = {6'b111_?_?_1};
     }
     jal: coverpoint ins.current.insn {
-        wildcard bins jal = {32'b????????????????????_?????_1101111};
+        wildcard bins jal = {JAL};
     }
     jalr: coverpoint ins.current.insn {
-        wildcard bins jalr = {32'b????????????_?????_000_?????_1100111};
+        wildcard bins jalr = {JALR};
     }
     csrops: coverpoint ins.current.insn {
-        wildcard bins csrrs  = {32'b????????????_?????_010_?????_1110011};
-        wildcard bins csrrc  = {32'b????????????_?????_011_?????_1110011};
-        wildcard bins csrrsi = {32'b????????????_?????_110_?????_1110011};
-        wildcard bins csrrci = {32'b????????????_?????_111_?????_1110011};
+        wildcard bins csrrs  = {CSRRS};
+        wildcard bins csrrc  = {CSRRC};
+        wildcard bins csrrsi = {CSRRSI};
+        wildcard bins csrrci = {CSRRCI};
     }
     loadops: coverpoint ins.current.insn {
-        wildcard bins lw  = {32'b????????????_?????_010_?????_0000011};
-        wildcard bins lh  = {32'b????????????_?????_001_?????_0000011};
-        wildcard bins lhu = {32'b????????????_?????_101_?????_0000011};
-        wildcard bins lb  = {32'b????????????_?????_000_?????_0000011};
-        wildcard bins lbu = {32'b????????????_?????_100_?????_0000011};
+        wildcard bins lw  = {LW};
+        wildcard bins lh  = {LH};
+        wildcard bins lhu = {LHU};
+        wildcard bins lb  = {LB};
+        wildcard bins lbu = {LBU};
         `ifdef XLEN64
-            wildcard bins ld  = {32'b????????????_?????_001_?????_0000011};
-            wildcard bins lwu = {32'b????????????_?????_110_?????_0000011};
+            wildcard bins ld  = {LD};
+            wildcard bins lwu = {LWU};
         `endif
     }
     storeops: coverpoint ins.current.insn {
-        wildcard bins sb = {32'b????????????_?????_000_?????_0100011};
-        wildcard bins sh = {32'b????????????_?????_001_?????_0100011};
-        wildcard bins sw = {32'b????????????_?????_010_?????_0100011};
+        wildcard bins sb = {SB};
+        wildcard bins sh = {SH};
+        wildcard bins sw = {SW};
         `ifdef XLEN64
-            wildcard bins sd = {32'b????????????_?????_011_?????_0100011};
+            wildcard bins sd = {SD};
         `endif
     }
     illegalops: coverpoint ins.current.insn {
@@ -80,7 +80,7 @@ covergroup ExceptionsU_cg with function sample(ins_t ins);
         bins ones  = {'1};
     }
     ebreak: coverpoint ins.current.insn {
-        bins ebreak = {32'h00100073};
+        bins ebreak = {EBREAK};
     }
     adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0]  {
         // auto fills 000 through 111
@@ -89,9 +89,9 @@ covergroup ExceptionsU_cg with function sample(ins_t ins);
         bins zero = {5'b00000};
     }
     seed: coverpoint ins.current.insn[31:20] {
-        bins seed = {12'h015};
+        bins seed = {CSR_SEED};
     }
-    mstatus_MIE: coverpoint ins.prev.csr[12'h300][3] {
+    mstatus_MIE: coverpoint ins.prev.csr[CSR_MSTATUS][3] {
         // auto fills 1 and 0
     }
     pc_bit_1: coverpoint ins.current.pc_rdata[1] {
@@ -104,36 +104,40 @@ covergroup ExceptionsU_cg with function sample(ins_t ins);
     }
     rs1_1_0: coverpoint ins.current.rs1_val[1:0] {
     }
-    illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
-        bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
-    }
-    illegal_address_priority: coverpoint {{ins.current.imm + ins.current.rs1_val}[XLEN-1:3], 3'b000} {
-        bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
-    }
-
     // main coverpoints
     cp_instr_adr_misaligned_branch:          cross priv_mode_u, branch, branches_taken, pc_bit_1, imm_bit_1;
     cp_instr_adr_misaligned_branch_nottaken: cross priv_mode_u, branch, branches_nottaken, pc_bit_1, imm_bit_1;
     cp_instr_adr_misaligned_jal:             cross priv_mode_u, jal, pc_bit_1, imm_bit_1;
     cp_instr_adr_misaligned_jalr:            cross priv_mode_u, jalr, rs1_1_0, offset;
-    cp_instr_access_fault:                   cross priv_mode_u, jalr, illegal_address;
     cp_illegal_instruction:                  cross priv_mode_u, illegalops;
     cp_illegal_instruction_seed:             cross priv_mode_u, csrops, rs1_zero, seed;
     cp_breakpoint:                           cross priv_mode_u, ebreak;
     cp_load_address_misaligned:              cross priv_mode_u, loadops, adr_LSBs;
-    cp_load_access_fault:                    cross priv_mode_u, loadops, illegal_address;
     cp_store_address_misaligned:             cross priv_mode_u, storeops, adr_LSBs;
-    cp_store_access_fault:                   cross priv_mode_u, storeops, illegal_address;
     cp_ecall_u:                              cross priv_mode_u, ecall;
-    cp_misaligned_priority_load:             cross priv_mode_u, loadops, adr_LSBs, illegal_address_priority;
-    cp_misaligned_priority_store:            cross priv_mode_u, storeops, adr_LSBs, illegal_address_priority;
     cp_mstatus_ie:                           cross priv_mode_u, ecall, mstatus_MIE;
+
+    // access fault coverpoints
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
+        }
+        illegal_address_priority: coverpoint {{ins.current.imm + ins.current.rs1_val}[XLEN-1:3], 3'b000} {
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
+        }
+        cp_instr_access_fault:                   cross priv_mode_u, jalr, illegal_address;
+        cp_load_access_fault:                    cross priv_mode_u, loadops, illegal_address;
+        cp_misaligned_priority_load:             cross priv_mode_u, loadops, adr_LSBs, illegal_address_priority;
+        cp_misaligned_priority_store:            cross priv_mode_u, storeops, adr_LSBs, illegal_address_priority;
+        cp_store_access_fault:                   cross priv_mode_u, storeops, illegal_address;
+    `endif
+
 
 endgroup
 
 function void exceptionsu_sample(int hart, int issue, ins_t ins);
     ExceptionsU_cg.sample(ins);
 
-    //$display("Instruction is: PC %h: %h = %s (rd = %h rs1 = %h rs2 = %h) trap = %b mode = %b (old mode %b) mstatus %h (old mstatus %h).  Retired: %d",ins.current.pc_rdata, ins.current.insn, ins.current.disass, ins.current.rd_val, ins.current.rs1_val, ins.current.rs2_val, ins.current.trap, ins.current.mode, ins.prev.mode, ins.current.csr[12'h300], ins.prev.csr[12'h300], ins.current.csr[12'hB02]);
+    //$display("Instruction is: PC %h: %h = %s (rd = %h rs1 = %h rs2 = %h) trap = %b mode = %b (old mode %b) mstatus %h (old mstatus %h).  Retired: %d",ins.current.pc_rdata, ins.current.insn, ins.current.disass, ins.current.rd_val, ins.current.rs1_val, ins.current.rs2_val, ins.current.trap, ins.current.mode, ins.prev.mode, ins.current.csr[CSR_MSTATUS], ins.prev.csr[CSR_MSTATUS], ins.current.csr[CSR_MINSTRET]);
 
 endfunction

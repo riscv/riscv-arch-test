@@ -7,11 +7,35 @@
 # Parse YAML comment header from test files
 ##################################
 
-from pathlib import Path
-from typing import Any
+from __future__ import annotations
 
-from pydantic import BaseModel, Field, FilePath
+from pathlib import Path
+
+from pydantic import BaseModel, Field, FilePath, ValidationError
+from rich.console import Console
+from rich.panel import Panel
 from ruamel.yaml import YAML
+from ruamel.yaml.error import YAMLError
+
+
+class TestYamlHeaderError(Exception):
+    """Raised when a test file's YAML config header is missing, malformed, or fails validation."""
+
+    def __init__(self, file: Path, problem: str) -> None:
+        self.file = file
+        self.problem = problem
+        super().__init__(f"Malformed {file.name} YAML header: {problem} ({file})")
+
+    def print(self) -> None:
+        """Render this error as a formatted panel on stderr."""
+        body = (
+            f"[bold red]Malformed YAML header in[/] [underline]{self.file.name}[/]\n\n"
+            f"[bold]Problem:[/] {self.problem}\n"
+            f"[bold]File:[/]    [cyan]{self.file}[/]"
+        )
+        Console(stderr=True).print(
+            Panel(body, title="[bold red]Test YAML Header Error[/]", border_style="red", expand=False)
+        )
 
 
 class TestMetadata(BaseModel):
@@ -20,8 +44,7 @@ class TestMetadata(BaseModel):
     test_path: FilePath
     required_extensions: set[str] = Field(alias="REQUIRED_EXTENSIONS", min_length=1)
     march: str = Field(alias="MARCH", pattern=r"rv(?:32|64|\$\{XLEN\})[ieg].*")
-    config_dependent: bool = Field(alias="CONFIG_DEPENDENT")
-    params: dict[str, Any] = Field(default_factory=dict)
+    params: dict[str, int | bool | str] = Field(default_factory=dict)
 
     model_config = {"extra": "forbid", "frozen": True}
 
@@ -32,7 +55,8 @@ class TestMetadata(BaseModel):
     @property
     def mxlen(self) -> int | None:
         """Get MXLEN parameter if present."""
-        return self.params.get("MXLEN")
+        value = self.params.get("MXLEN")
+        return value if isinstance(value, int) else None
 
     @property
     def flen(self) -> str:
@@ -56,6 +80,21 @@ class TestMetadata(BaseModel):
         return self.march.startswith(("rv32e", "rv64e", "rv${XLEN}e"))
 
 
+def _describe_validation_error(err: ValidationError) -> str:
+    """Translate the first Pydantic error into a short human-readable error."""
+    e = err.errors()[0]
+    field = ".".join(str(p) for p in e["loc"]) or "<root>"
+    etype = e["type"]
+    got = e.get("input")
+    if etype == "extra_forbidden":
+        return f"unexpected key '{field}' found"
+    if etype == "missing":
+        return f"required key '{field}' is missing"
+    if etype.startswith(("string_pattern_mismatch", "value_error")):
+        return f"illegal value for key '{field}': {got!r}"
+    return f"invalid value for key '{field}': {e['msg']}"
+
+
 def extract_yaml_config(file: Path) -> TestMetadata:
     """Extract YAML configuration from a test file between START_TEST_CONFIG and END_TEST_CONFIG markers."""
     content = file.read_text()
@@ -68,7 +107,7 @@ def extract_yaml_config(file: Path) -> TestMetadata:
     end_pos = content.find(end_marker)
 
     if start_pos == -1 or end_pos == -1:
-        raise ValueError(f"Could not find YAML config section in {file}")
+        raise TestYamlHeaderError(file, f"missing {start_marker}/{end_marker} markers")
 
     # Extract content between markers
     start_pos = content.find("\n", start_pos) + 1  # Skip to next line after start marker
@@ -77,15 +116,19 @@ def extract_yaml_config(file: Path) -> TestMetadata:
     yaml_section = content[start_pos:end_pos]
 
     # Process lines to remove comment prefixes
-    yaml_lines: list[str] = []
-    for line in yaml_section.split("\n"):
-        line = line.lstrip("#")
-        yaml_lines.append(line)
+    yaml_lines = [line.lstrip("#") for line in yaml_section.split("\n")]
     yaml_lines.append(f" test_path: '{file.absolute()}'")  # Add test_path to config data
 
     yaml = YAML(typ="safe", pure=True)
-    config_dict = yaml.load("\n".join(yaml_lines))
-    return TestMetadata.model_validate(config_dict)
+    try:
+        config_dict = yaml.load("\n".join(yaml_lines))
+    except YAMLError as e:
+        raise TestYamlHeaderError(file, f"YAML parse error: {e}") from None
+
+    try:
+        return TestMetadata.model_validate(config_dict)
+    except ValidationError as e:
+        raise TestYamlHeaderError(file, _describe_validation_error(e)) from None
 
 
 def generate_test_dict(tests_dir: Path, extensions: str, exclude: str = "") -> dict[str, TestMetadata]:

@@ -10,6 +10,9 @@
 `define FLEN64
 `define VLEN512
 
+// Maximum supported index EEW for indexed load/store
+`define MAXINDEXEEW64
+
 // PMP Grain (G)
 // Set G as needed (e.g., 0, 1, 2, ...)
 `define G 4
@@ -42,6 +45,8 @@
 `define ZCD_SUPPORTED
 `define ZAAMO_SUPPORTED
 `define ZALRSC_SUPPORTED
+`define SV39_SUPPORTED
+`define SV48_SUPPORTED
 
 `define COUNTINHIBIT_EN_0
 `define COUNTINHIBIT_EN_2

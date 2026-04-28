@@ -30,92 +30,92 @@ covergroup PMPSM_cg with function sample(
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
   addr_in_region: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_region = {`REGIONSTART};
+    bins at_region = {`PMP_REGION_START};
   }
 
   addr_offset_cp_cfg_A_napot_all: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_base      = {`REGIONSTART};
-    bins below_base   = {`REGIONSTART-4};
-    bins just_beyond  = {`REGIONSTART+`g_napot};
+    bins at_base      = {`PMP_REGION_START};
+    bins below_base   = {`PMP_REGION_START-4};
+    bins just_beyond  = {`PMP_REGION_START+`g_napot};
   }
 
   address_offsets_tor: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_base      = {`REGIONSTART};
-    bins below_base   = {`REGIONSTART-4};
-    bins above_base   = {`REGIONSTART+4};
-    bins just_beyond  = {`REGIONSTART+`g_tor};
-    bins highest_word  = {`REGIONSTART +`g_tor-4};
+    bins at_base      = {`PMP_REGION_START};
+    bins below_base   = {`PMP_REGION_START-4};
+    bins above_base   = {`PMP_REGION_START+4};
+    bins just_beyond  = {`PMP_REGION_START+`g_tor};
+    bins highest_word  = {`PMP_REGION_START +`g_tor-4};
   }
 
   address_offsets_napot: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_base      = {`REGIONSTART};
-    bins below_base   = {`REGIONSTART-4};
-    bins above_base   = {`REGIONSTART+4};
-    bins just_beyond  = {`REGIONSTART+`g_napot};
-    bins highest_word  = {`REGIONSTART +`g_napot-4};
+    bins at_base      = {`PMP_REGION_START};
+    bins below_base   = {`PMP_REGION_START-4};
+    bins above_base   = {`PMP_REGION_START+4};
+    bins just_beyond  = {`PMP_REGION_START+`g_napot};
+    bins highest_word  = {`PMP_REGION_START +`g_napot-4};
   }
 
   `ifdef G_IS_0
     addr_offset_cp_cfg_A_na4: coverpoint (ins.current.rs1_val + ins.current.imm) {
-      bins at_base     = {`REGIONSTART};
-      bins just_beyond = {`REGIONSTART+4};
-      bins below_base  = {`REGIONSTART-4};
+      bins at_base     = {`PMP_REGION_START};
+      bins just_beyond = {`PMP_REGION_START+4};
+      bins below_base  = {`PMP_REGION_START-4};
     }
   `endif
 
   addr_offset_cp_cfg_A_tor0: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_base      = {`REGIONSTART};
-    bins below_base   = {`REGIONSTART-4};
+    bins at_base      = {`PMP_REGION_START};
+    bins below_base   = {`PMP_REGION_START-4};
   }
 
   exec_instr: coverpoint ins.current.insn {
-    wildcard bins jalr = {32'b????????????_?????_000_?????_1100111};
+    wildcard bins jalr = {JALR};
   }
 
   read_instr_lw: coverpoint ins.current.insn {
-    wildcard bins lw  = {32'b????????????_?????_010_?????_0000011};
+    wildcard bins lw  = {LW};
   }
 
   read_instr: coverpoint ins.current.insn {
-    wildcard bins lb  = {32'b????????????_?????_000_?????_0000011};
-    wildcard bins lbu = {32'b????????????_?????_100_?????_0000011};
-    wildcard bins lh  = {32'b????????????_?????_001_?????_0000011};
-    wildcard bins lhu = {32'b????????????_?????_101_?????_0000011};
-    wildcard bins lw  = {32'b????????????_?????_010_?????_0000011};
+    wildcard bins lb  = {LB};
+    wildcard bins lbu = {LBU};
+    wildcard bins lh  = {LH};
+    wildcard bins lhu = {LHU};
+    wildcard bins lw  = {LW};
     `ifdef XLEN64
-      wildcard bins lwu = {32'b????????????_?????_110_?????_0000011};
-      wildcard bins ld  = {32'b????????????_?????_011_?????_0000011};
+      wildcard bins lwu = {LWU};
+      wildcard bins ld  = {LD};
     `endif
   }
 
   read_instr_for_misaligned: coverpoint ins.current.insn {
-    wildcard bins lh  = {32'b????????????_?????_001_?????_0000011};
-    wildcard bins lhu = {32'b????????????_?????_101_?????_0000011};
-    wildcard bins lw  = {32'b????????????_?????_010_?????_0000011};
+    wildcard bins lh  = {LH};
+    wildcard bins lhu = {LHU};
+    wildcard bins lw  = {LW};
     `ifdef XLEN64
-      wildcard bins lwu = {32'b????????????_?????_110_?????_0000011};
-      wildcard bins ld  = {32'b????????????_?????_011_?????_0000011};
+      wildcard bins lwu = {LWU};
+      wildcard bins ld  = {LD};
     `endif
   }
 
   write_instr_sw: coverpoint ins.current.insn {
-    wildcard bins sw = {32'b???????_?????_?????_010_?????_0100011};
+    wildcard bins sw = {SW};
   }
 
   write_instr: coverpoint ins.current.insn {
-    wildcard bins sb = {32'b???????_?????_?????_000_?????_0100011};
-    wildcard bins sh = {32'b???????_?????_?????_001_?????_0100011};
-    wildcard bins sw = {32'b???????_?????_?????_010_?????_0100011};
+    wildcard bins sb = {SB};
+    wildcard bins sh = {SH};
+    wildcard bins sw = {SW};
     `ifdef XLEN64
-      wildcard bins sd = {32'b???????_?????_?????_011_?????_0100011};
+      wildcard bins sd = {SD};
     `endif
   }
 
   write_instr_for_misaligned: coverpoint ins.current.insn {
-    wildcard bins sh = {32'b???????_?????_?????_001_?????_0100011};
-    wildcard bins sw = {32'b???????_?????_?????_010_?????_0100011};
+    wildcard bins sh = {SH};
+    wildcard bins sw = {SW};
     `ifdef XLEN64
-      wildcard bins sd = {32'b???????_?????_?????_011_?????_0100011};
+      wildcard bins sd = {SD};
     `endif
   }
 
@@ -133,102 +133,102 @@ covergroup PMPSM_cg with function sample(
 //-------------------------------------------------------
   // Addresses for TOR regions moving up by g*i
   addr_for_tor_all_region0: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {`REGIONSTART-4}; // Region with XWR-111 for test to be executed.
+    bins address = {`PMP_REGION_START-4}; // Region with XWR-111 for test to be executed.
   }
   // Access at the start of the region
   addr_for_tor_all_region1: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART)};
+    bins address = {(`PMP_REGION_START)};
   }
   addr_for_tor_all_region2: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + `g_tor)};
+    bins address = {(`PMP_REGION_START + `g_tor)};
   }
   addr_for_tor_all_region3: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 3*`g_tor)};
+    bins address = {(`PMP_REGION_START + 3*`g_tor)};
   }
   addr_for_tor_all_region4: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 6*`g_tor)};
+    bins address = {(`PMP_REGION_START + 6*`g_tor)};
   }
   addr_for_tor_all_region5: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 10*`g_tor)};
+    bins address = {(`PMP_REGION_START + 10*`g_tor)};
   }
   addr_for_tor_all_region6: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 15*`g_tor)};
+    bins address = {(`PMP_REGION_START + 15*`g_tor)};
   }
   addr_for_tor_all_region7: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 21*`g_tor)};
+    bins address = {(`PMP_REGION_START + 21*`g_tor)};
   }
   addr_for_tor_all_region8: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 28*`g_tor)};
+    bins address = {(`PMP_REGION_START + 28*`g_tor)};
   }
   addr_for_tor_all_region9: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 36*`g_tor)};
+    bins address = {(`PMP_REGION_START + 36*`g_tor)};
   }
   addr_for_tor_all_region10: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 45*`g_tor)};
+    bins address = {(`PMP_REGION_START + 45*`g_tor)};
   }
   addr_for_tor_all_region11: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 55*`g_tor)};
+    bins address = {(`PMP_REGION_START + 55*`g_tor)};
   }
   addr_for_tor_all_region12: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 66*`g_tor)};
+    bins address = {(`PMP_REGION_START + 66*`g_tor)};
   }
   addr_for_tor_all_region13: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 78*`g_tor)};
+    bins address = {(`PMP_REGION_START + 78*`g_tor)};
   }
   addr_for_tor_all_region14: coverpoint(ins.current.rs1_val+ ins.current.imm){
-    bins address = {(`REGIONSTART + 91*`g_tor)};
+    bins address = {(`PMP_REGION_START + 91*`g_tor)};
   }
 
   // TOR regions increasing size by g*i
-  pmpaddr_for_tor_region0: coverpoint (pmpaddr[0]==(`REGIONSTART >> 2))  {
+  pmpaddr_for_tor_region0: coverpoint (pmpaddr[0]==(`PMP_REGION_START >> 2))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region1: coverpoint ((pmpaddr[1]==((`REGIONSTART + 1*`g_tor) >> 2)) && (pmpaddr[0]==(`REGIONSTART >> 2)))  {
+  pmpaddr_for_tor_region1: coverpoint ((pmpaddr[1]==((`PMP_REGION_START + 1*`g_tor) >> 2)) && (pmpaddr[0]==(`PMP_REGION_START >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region2: coverpoint ((pmpaddr[2]==((`REGIONSTART + 3*`g_tor) >> 2)) && (pmpaddr[1]==((`REGIONSTART + 1*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region2: coverpoint ((pmpaddr[2]==((`PMP_REGION_START + 3*`g_tor) >> 2)) && (pmpaddr[1]==((`PMP_REGION_START + 1*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region3: coverpoint ((pmpaddr[3]==((`REGIONSTART + 6*`g_tor) >> 2)) && (pmpaddr[2]==((`REGIONSTART + 3*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region3: coverpoint ((pmpaddr[3]==((`PMP_REGION_START + 6*`g_tor) >> 2)) && (pmpaddr[2]==((`PMP_REGION_START + 3*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region4: coverpoint ((pmpaddr[4]==((`REGIONSTART + 10*`g_tor) >> 2)) && (pmpaddr[3]==((`REGIONSTART + 6*`g_tor) >> 2))) {
+  pmpaddr_for_tor_region4: coverpoint ((pmpaddr[4]==((`PMP_REGION_START + 10*`g_tor) >> 2)) && (pmpaddr[3]==((`PMP_REGION_START + 6*`g_tor) >> 2))) {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region5: coverpoint ((pmpaddr[5]==((`REGIONSTART + 15*`g_tor) >> 2)) && (pmpaddr[4]==((`REGIONSTART + 10*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region5: coverpoint ((pmpaddr[5]==((`PMP_REGION_START + 15*`g_tor) >> 2)) && (pmpaddr[4]==((`PMP_REGION_START + 10*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region6: coverpoint ((pmpaddr[6]==((`REGIONSTART + 21*`g_tor) >> 2)) && (pmpaddr[5]==((`REGIONSTART + 15*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region6: coverpoint ((pmpaddr[6]==((`PMP_REGION_START + 21*`g_tor) >> 2)) && (pmpaddr[5]==((`PMP_REGION_START + 15*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region7: coverpoint ((pmpaddr[7]==((`REGIONSTART + 28*`g_tor) >> 2)) && (pmpaddr[6]==((`REGIONSTART + 21*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region7: coverpoint ((pmpaddr[7]==((`PMP_REGION_START + 28*`g_tor) >> 2)) && (pmpaddr[6]==((`PMP_REGION_START + 21*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region8: coverpoint ((pmpaddr[8]==((`REGIONSTART + 36*`g_tor) >> 2)) && (pmpaddr[7]==((`REGIONSTART + 28*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region8: coverpoint ((pmpaddr[8]==((`PMP_REGION_START + 36*`g_tor) >> 2)) && (pmpaddr[7]==((`PMP_REGION_START + 28*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region9: coverpoint ((pmpaddr[9]==((`REGIONSTART + 45*`g_tor) >> 2)) && (pmpaddr[8]==((`REGIONSTART + 36*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region9: coverpoint ((pmpaddr[9]==((`PMP_REGION_START + 45*`g_tor) >> 2)) && (pmpaddr[8]==((`PMP_REGION_START + 36*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region10: coverpoint ((pmpaddr[10]==((`REGIONSTART + 55*`g_tor) >> 2)) && (pmpaddr[9]==((`REGIONSTART + 45*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region10: coverpoint ((pmpaddr[10]==((`PMP_REGION_START + 55*`g_tor) >> 2)) && (pmpaddr[9]==((`PMP_REGION_START + 45*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region11: coverpoint ((pmpaddr[11]==((`REGIONSTART + 66*`g_tor) >> 2)) && (pmpaddr[10]==((`REGIONSTART + 55*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region11: coverpoint ((pmpaddr[11]==((`PMP_REGION_START + 66*`g_tor) >> 2)) && (pmpaddr[10]==((`PMP_REGION_START + 55*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region12: coverpoint ((pmpaddr[12]==((`REGIONSTART + 78*`g_tor) >> 2)) && (pmpaddr[11]==((`REGIONSTART + 66*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region12: coverpoint ((pmpaddr[12]==((`PMP_REGION_START + 78*`g_tor) >> 2)) && (pmpaddr[11]==((`PMP_REGION_START + 66*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region13: coverpoint ((pmpaddr[13]==((`REGIONSTART + 91*`g_tor) >> 2)) && (pmpaddr[12]==((`REGIONSTART + 78*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region13: coverpoint ((pmpaddr[13]==((`PMP_REGION_START + 91*`g_tor) >> 2)) && (pmpaddr[12]==((`PMP_REGION_START + 78*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
-  pmpaddr_for_tor_region14: coverpoint ((pmpaddr[14]==((`REGIONSTART + 105*`g_tor) >> 2)) && (pmpaddr[13]==((`REGIONSTART + 91*`g_tor) >> 2)))  {
+  pmpaddr_for_tor_region14: coverpoint ((pmpaddr[14]==((`PMP_REGION_START + 105*`g_tor) >> 2)) && (pmpaddr[13]==((`PMP_REGION_START + 91*`g_tor) >> 2)))  {
     bins region_setup  = {1};
   }
 
   //15 configurations, with  pmpcfg.L = 1, pmpcfg.A = TOR, pmpcfg.XWR=00(i%2)
 
-  // Region from 0 to REGIONSTART needs XWR Permissions for test to be exexcuted.
+  // Region from 0 to PMP_REGION_START needs XWR Permissions for test to be exexcuted.
   RWXL_i111_pmp0cfg: coverpoint { pmpcfg[0]} {
     bins pmp0cfg_wrx111  = {8'b10001111};
   }
@@ -348,23 +348,23 @@ covergroup PMPSM_cg with function sample(
   }
 //-------------------------------------------------------
   `ifndef G_IS_0
-    pmpcfg0_A_mode_was_OFF: coverpoint {ins.prev.csr[12'h3A0]} {
+    pmpcfg0_A_mode_was_OFF: coverpoint {ins.prev.csr[CSR_PMPCFG0]} {
       wildcard bins OFF = {8'b00000???};
     }
 
-    pmpcfg0_A_mode_was_NAPOT: coverpoint {ins.prev.csr[12'h3A0]} {
+    pmpcfg0_A_mode_was_NAPOT: coverpoint {ins.prev.csr[CSR_PMPCFG0]} {
       wildcard bins OFF = {8'b00011???};
     }
 
-    pmpcfg0_A_mode_is_OFF: coverpoint {ins.current.csr[12'h3A0]} {
+    pmpcfg0_A_mode_is_OFF: coverpoint {ins.current.csr[CSR_PMPCFG0]} {
       wildcard bins OFF = {8'b00000???};
     }
 
-    pmpcfg0_A_mode_is_NAPOT: coverpoint {ins.current.csr[12'h3A0]} {
+    pmpcfg0_A_mode_is_NAPOT: coverpoint {ins.current.csr[CSR_PMPCFG0]} {
       wildcard bins OFF = {8'b00011???};
     }
 
-    pmpcfg0_A_mode_is_TOR: coverpoint {ins.current.csr[12'h3A0]} {
+    pmpcfg0_A_mode_is_TOR: coverpoint {ins.current.csr[CSR_PMPCFG0]} {
       wildcard bins OFF = {8'b00001???};
     }
   `endif
@@ -373,11 +373,11 @@ covergroup PMPSM_cg with function sample(
     bins zero = {0};
   }
 
-  pmpaddr0_for_cp_grain_check: coverpoint ins.prev.rs1_val {
+  value_to_write: coverpoint ins.current.rs1_val {
     bins one = {{(`XLEN){1'b1}}};
   }
 
-  csrw_to_pmpaddr0: coverpoint ins.prev.insn {
+  csrw_to_pmpaddr0: coverpoint ins.current.insn {
     wildcard bins csrrw  = {32'b001110110000_?????_001_?????_1110011}; // A write is being performed to pmpaddr[0]
   }
 
@@ -403,8 +403,8 @@ covergroup PMPSM_cg with function sample(
     bins range = {`NON_STANDARD_REGION+`g_tor,`NON_STANDARD_REGION};
   }
 
-  pmp_addr_for_tor_bot: coverpoint ((pmpaddr[1]==(`REGIONSTART+`g_tor)>>2) &&
-                                    (pmpaddr[0]==(`REGIONSTART>>2))) {
+  pmp_addr_for_tor_bot: coverpoint ((pmpaddr[1]==(`PMP_REGION_START+`g_tor)>>2) &&
+                                    (pmpaddr[0]==(`PMP_REGION_START>>2))) {
     bins range = {1};
   }
 
@@ -415,21 +415,21 @@ covergroup PMPSM_cg with function sample(
   addr_for_tor_bot: coverpoint (ins.current.rs1_val + ins.current.imm) {
     bins pmpaddr0_4 = {((`NON_STANDARD_REGION)<<2)-4}; //pmpaddr0-4
     bins pmpaddr0   = {(`NON_STANDARD_REGION)<<2}; //pmpaddr0
-    bins pmpaddr1_4 = {(`REGIONSTART+`g_tor)-4}; //pmpaddr1-4 NOTE: REGIONSTART>>2 => NON_STANDARD_REGION (pmp encoded address)
-    bins pmpaddr1   = {`REGIONSTART+`g_tor};
+    bins pmpaddr1_4 = {(`PMP_REGION_START+`g_tor)-4}; //pmpaddr1-4 NOTE: PMP_REGION_START>>2 => NON_STANDARD_REGION (pmp encoded address)
+    bins pmpaddr1   = {`PMP_REGION_START+`g_tor};
   }
 
-  pmp_addr_for_tor_nonoverlap1: coverpoint ((pmpaddr[1]==(`REGIONSTART>>2)) &&
-                                            (pmpaddr[0]==(`REGIONSTART>>2))) { // pmpaddr0 == pmpaddr1.
+  pmp_addr_for_tor_nonoverlap1: coverpoint ((pmpaddr[1]==(`PMP_REGION_START>>2)) &&
+                                            (pmpaddr[0]==(`PMP_REGION_START>>2))) { // pmpaddr0 == pmpaddr1.
     bins range1 = {1};
   }
 
-  pmp_addr_for_tor_nonoverlap2: coverpoint ((pmpaddr[1]==(`REGIONSTART>>2)) &&
-                                            (pmpaddr[0]==((`REGIONSTART+`g_tor)>>2))) { // pmpaddr0 >= pmpaddr1.
+  pmp_addr_for_tor_nonoverlap2: coverpoint ((pmpaddr[1]==(`PMP_REGION_START>>2)) &&
+                                            (pmpaddr[0]==((`PMP_REGION_START+`g_tor)>>2))) { // pmpaddr0 >= pmpaddr1.
     bins range2 = {1};
   }
 
-  pmp_addr_for_tor_nonoverlap3: coverpoint ((pmpaddr[1]==(`REGIONSTART>>2)) &&
+  pmp_addr_for_tor_nonoverlap3: coverpoint ((pmpaddr[1]==(`PMP_REGION_START>>2)) &&
                                             (pmpaddr[0]==({$bits(pmpaddr[0][`EFFECTIVE_PMPADDR:0]){1'b1}} & `READ_ZERO_MASK))) { // pmpaddr0 >= pmpaddr1.
     bins range3 = {1};
   }
@@ -445,7 +445,7 @@ covergroup PMPSM_cg with function sample(
   }
 
   pmpaddr_for_napot_misaligned: coverpoint {pmpaddr[0]} {
-    bins pmpaddr = {(`REGIONSTART>>2) | ((1 << (`k)) - 1) }; //No of Trailing 1s = (1 << G-1) - 1, a standard NAPOT Region
+    bins pmpaddr = {(`PMP_REGION_START>>2) | ((1 << (`k)) - 1) }; //No of Trailing 1s = (1 << G-1) - 1, a standard NAPOT Region
   }
 
   pmpcfg_for_napot_misaligned: coverpoint {pmpcfg[0]} {
@@ -464,16 +464,16 @@ covergroup PMPSM_cg with function sample(
     }
 
     addr_for_na4_misaligned_straddling_start: coverpoint (ins.current.rs1_val + ins.current.imm) {
-      bins addr1 = {`REGIONSTART-1}; //for 1 byte outside the region
+      bins addr1 = {`PMP_REGION_START-1}; //for 1 byte outside the region
     }
 
     addr_for_na4_misaligned_straddling_end: coverpoint (ins.current.rs1_val + ins.current.imm) {
-      bins addr1 = {`REGIONSTART+3}; //for 3 byte outside the region
+      bins addr1 = {`PMP_REGION_START+3}; //for 3 byte outside the region
     }
   `endif
 
-  pmpaddr_for_tor_misaligned: coverpoint ((pmpaddr[3]==(`REGIONSTART+`g_tor)>>2) &&
-                                          (pmpaddr[2]==(`REGIONSTART>>2))) {
+  pmpaddr_for_tor_misaligned: coverpoint ((pmpaddr[3]==(`PMP_REGION_START+`g_tor)>>2) &&
+                                          (pmpaddr[2]==(`PMP_REGION_START>>2))) {
     bins pmpaddr = {1};
   }
 
@@ -483,15 +483,15 @@ covergroup PMPSM_cg with function sample(
   }
 
   addr_for_misaligned_straddling_start: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins addr = {`REGIONSTART-1};
+    bins addr = {`PMP_REGION_START-1};
   }
 
   addr_non_standard_region_straddling_end: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins addr = {(`REGIONSTART+`g_tor)-1};
+    bins addr = {(`PMP_REGION_START+`g_tor)-1};
   }
 
   addr_standard_region_straddling_end: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins addr = {(`REGIONSTART+`g_napot)-1};
+    bins addr = {(`PMP_REGION_START+`g_napot)-1};
   }
 
   pmpcfg_for_off_misaligned: coverpoint pmpcfg[0] {
@@ -499,7 +499,7 @@ covergroup PMPSM_cg with function sample(
     bins pmp_cfg_tor_unlocked = {8'b00000111}; //L=0,A=OFF,XWR=111
   }
 
-  pmpaddr_for_off_misaligned: coverpoint (pmpaddr[0]==`REGIONSTART>>2) {
+  pmpaddr_for_off_misaligned: coverpoint (pmpaddr[0]==`PMP_REGION_START>>2) {
     bins pmpaddr = {1};
   }
 
@@ -660,14 +660,14 @@ covergroup PMPSM_cg with function sample(
    we need to check from tests and logs that pmpcfg and pmpaddr are unwritable when
    L = 1, and write to pmpaddr of previous region in case of TOR is also ignored.*/
 
-  pmp_region: coverpoint ins.prev.csr[12'h3A0][12:11] {
+  pmp_region: coverpoint ins.prev.csr[CSR_PMPCFG0][12:11] {
     bins OFF   = {0};
     bins TOR   = {1};
     bins NAPOT = {3};
   }
 
   // L = {0/1} pmp_region_1 and check the writes on pmp_region_1 and pmp_region_0
-  lock_checking: coverpoint ins.prev.csr[12'h3A0][15] {
+  lock_checking: coverpoint ins.prev.csr[CSR_PMPCFG0][15] {
     bins locked_region = {1};
     bins unlocked_region = {0};
   }
@@ -685,7 +685,7 @@ covergroup PMPSM_cg with function sample(
 
 //-------------------------------------------------------
 
-  cp_walk_rs1: coverpoint ins.current.rs1_val {
+  cp_walk_pmpaddr_rs1: coverpoint ins.current.rs1_val {
     `ifdef XLEN32
       wildcard bins walking_ones_0  = {32'b00000000000000000000000000000001};
       wildcard bins walking_ones_1  = {32'b00000000000000000000000000000010};
@@ -788,106 +788,197 @@ covergroup PMPSM_cg with function sample(
     `endif
   }
 
+  cp_walk_pmpcfg_rs1: coverpoint ins.current.rs1_val {
+    `ifdef XLEN32
+      wildcard bins walking_ones_0  = {32'b00000000000000000000000000000001};
+      wildcard bins walking_ones_1  = {32'b00000000000000000000000000000010};
+      wildcard bins walking_ones_2  = {32'b00000000000000000000000000000100};
+      wildcard bins walking_ones_3  = {32'b00000000000000000000000000001000};
+      wildcard bins walking_ones_4  = {32'b00000000000000000000000000100000};
+      wildcard bins walking_ones_5  = {32'b00000000000000000000000001000000};
+      wildcard bins walking_ones_6  = {32'b00000000000000000000000010000000};
+      wildcard bins walking_ones_7  = {32'b00000000000000000000000100000000};
+      wildcard bins walking_ones_8  = {32'b00000000000000000000001000000000};
+      wildcard bins walking_ones_9  = {32'b00000000000000000000010000000000};
+      wildcard bins walking_ones_10 = {32'b00000000000000000000100000000000};
+      wildcard bins walking_ones_11 = {32'b00000000000000000010000000000000};
+      wildcard bins walking_ones_12 = {32'b00000000000000000100000000000000};
+      wildcard bins walking_ones_13 = {32'b00000000000000001000000000000000};
+      wildcard bins walking_ones_14 = {32'b00000000000000010000000000000000};
+      wildcard bins walking_ones_15 = {32'b00000000000000100000000000000000};
+      wildcard bins walking_ones_16 = {32'b00000000000001000000000000000000};
+      wildcard bins walking_ones_17 = {32'b00000000000010000000000000000000};
+      wildcard bins walking_ones_18 = {32'b00000000001000000000000000000000};
+      wildcard bins walking_ones_19 = {32'b00000000010000000000000000000000};
+      wildcard bins walking_ones_20 = {32'b00000000100000000000000000000000};
+      wildcard bins walking_ones_21 = {32'b00000001000000000000000000000000};
+      wildcard bins walking_ones_22 = {32'b00000010000000000000000000000000};
+      wildcard bins walking_ones_23 = {32'b00000100000000000000000000000000};
+      wildcard bins walking_ones_24 = {32'b00001000000000000000000000000000};
+      wildcard bins walking_ones_25 = {32'b00100000000000000000000000000000};
+      wildcard bins walking_ones_26 = {32'b01000000000000000000000000000000};
+      wildcard bins walking_ones_27 = {32'b10000000000000000000000000000000};
+    `endif
+    `ifdef XLEN64
+      wildcard bins walking_ones_0  = {64'b0000000000000000000000000000000000000000000000000000000000000001};
+      wildcard bins walking_ones_1  = {64'b0000000000000000000000000000000000000000000000000000000000000010};
+      wildcard bins walking_ones_2  = {64'b0000000000000000000000000000000000000000000000000000000000000100};
+      wildcard bins walking_ones_3  = {64'b0000000000000000000000000000000000000000000000000000000000001000};
+      wildcard bins walking_ones_4  = {64'b0000000000000000000000000000000000000000000000000000000000100000};
+      wildcard bins walking_ones_5  = {64'b0000000000000000000000000000000000000000000000000000000001000000};
+      wildcard bins walking_ones_6  = {64'b0000000000000000000000000000000000000000000000000000000010000000};
+      wildcard bins walking_ones_7  = {64'b0000000000000000000000000000000000000000000000000000000100000000};
+      wildcard bins walking_ones_8  = {64'b0000000000000000000000000000000000000000000000000000001000000000};
+      wildcard bins walking_ones_9  = {64'b0000000000000000000000000000000000000000000000000000010000000000};
+      wildcard bins walking_ones_10 = {64'b0000000000000000000000000000000000000000000000000000100000000000};
+      wildcard bins walking_ones_11 = {64'b0000000000000000000000000000000000000000000000000010000000000000};
+      wildcard bins walking_ones_12 = {64'b0000000000000000000000000000000000000000000000000100000000000000};
+      wildcard bins walking_ones_13 = {64'b0000000000000000000000000000000000000000000000001000000000000000};
+      wildcard bins walking_ones_14 = {64'b0000000000000000000000000000000000000000000000010000000000000000};
+      wildcard bins walking_ones_15 = {64'b0000000000000000000000000000000000000000000000100000000000000000};
+      wildcard bins walking_ones_16 = {64'b0000000000000000000000000000000000000000000001000000000000000000};
+      wildcard bins walking_ones_17 = {64'b0000000000000000000000000000000000000000000010000000000000000000};
+      wildcard bins walking_ones_18 = {64'b0000000000000000000000000000000000000000001000000000000000000000};
+      wildcard bins walking_ones_19 = {64'b0000000000000000000000000000000000000000010000000000000000000000};
+      wildcard bins walking_ones_20 = {64'b0000000000000000000000000000000000000000100000000000000000000000};
+      wildcard bins walking_ones_21 = {64'b0000000000000000000000000000000000000001000000000000000000000000};
+      wildcard bins walking_ones_22 = {64'b0000000000000000000000000000000000000010000000000000000000000000};
+      wildcard bins walking_ones_23 = {64'b0000000000000000000000000000000000000100000000000000000000000000};
+      wildcard bins walking_ones_24 = {64'b0000000000000000000000000000000000001000000000000000000000000000};
+      wildcard bins walking_ones_25 = {64'b0000000000000000000000000000000000100000000000000000000000000000};
+      wildcard bins walking_ones_26 = {64'b0000000000000000000000000000000001000000000000000000000000000000};
+      wildcard bins walking_ones_27 = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+      wildcard bins walking_ones_28 = {64'b0000000000000000000000000000000100000000000000000000000000000000};
+      wildcard bins walking_ones_29 = {64'b0000000000000000000000000000001000000000000000000000000000000000};
+      wildcard bins walking_ones_30 = {64'b0000000000000000000000000000010000000000000000000000000000000000};
+      wildcard bins walking_ones_31 = {64'b0000000000000000000000000000100000000000000000000000000000000000};
+      wildcard bins walking_ones_32 = {64'b0000000000000000000000000010000000000000000000000000000000000000};
+      wildcard bins walking_ones_33 = {64'b0000000000000000000000000100000000000000000000000000000000000000};
+      wildcard bins walking_ones_34 = {64'b0000000000000000000000001000000000000000000000000000000000000000};
+      wildcard bins walking_ones_35 = {64'b0000000000000000000000010000000000000000000000000000000000000000};
+      wildcard bins walking_ones_36 = {64'b0000000000000000000000100000000000000000000000000000000000000000};
+      wildcard bins walking_ones_37 = {64'b0000000000000000000001000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_38 = {64'b0000000000000000000010000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_39 = {64'b0000000000000000001000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_40 = {64'b0000000000000000010000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_41 = {64'b0000000000000000100000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_42 = {64'b0000000000000001000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_43 = {64'b0000000000000010000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_44 = {64'b0000000000000100000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_45 = {64'b0000000000001000000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_46 = {64'b0000000000100000000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_47 = {64'b0000000001000000000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_48 = {64'b0000000010000000000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_49 = {64'b0000000100000000000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_50 = {64'b0000001000000000000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_51 = {64'b0000010000000000000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_52 = {64'b0000100000000000000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_53 = {64'b0010000000000000000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_54 = {64'b0100000000000000000000000000000000000000000000000000000000000000};
+      wildcard bins walking_ones_55 = {64'b1000000000000000000000000000000000000000000000000000000000000000};
+    `endif
+  }
+
   cp_zero_rs1: coverpoint ins.current.rs1_val {
     bins rs1_val = {0};
   }
 
   csrrw: coverpoint ins.current.insn {
-    wildcard bins csrrw  = {32'b????????????_?????_001_?????_1110011}; // Try to write pmpaddr or pmpcfg
+    wildcard bins csrrw  = {CSRRW}; // Try to write pmpaddr or pmpcfg
   }
 
   legal_pmpaddr_entries: coverpoint ins.current.insn[31:20] {
-    bins pmpaddr0   = {12'h3B0};
-    bins pmpaddr1   = {12'h3B1};
-    bins pmpaddr2   = {12'h3B2};
-    bins pmpaddr3   = {12'h3B3};
-    bins pmpaddr4   = {12'h3B4};
-    bins pmpaddr5   = {12'h3B5};
-    bins pmpaddr6   = {12'h3B6};
-    bins pmpaddr7   = {12'h3B7};
-    bins pmpaddr8   = {12'h3B8};
-    bins pmpaddr9   = {12'h3B9};
-    bins pmpaddr10  = {12'h3BA};
-    bins pmpaddr11  = {12'h3BB};
-    bins pmpaddr12  = {12'h3BC};
-    bins pmpaddr13  = {12'h3BD};
-    bins pmpaddr14  = {12'h3BE};
-    bins pmpaddr15  = {12'h3BF};
+    bins pmpaddr0   = {CSR_PMPADDR0};
+    bins pmpaddr1   = {CSR_PMPADDR1};
+    bins pmpaddr2   = {CSR_PMPADDR2};
+    bins pmpaddr3   = {CSR_PMPADDR3};
+    bins pmpaddr4   = {CSR_PMPADDR4};
+    bins pmpaddr5   = {CSR_PMPADDR5};
+    bins pmpaddr6   = {CSR_PMPADDR6};
+    bins pmpaddr7   = {CSR_PMPADDR7};
+    bins pmpaddr8   = {CSR_PMPADDR8};
+    bins pmpaddr9   = {CSR_PMPADDR9};
+    bins pmpaddr10  = {CSR_PMPADDR10};
+    bins pmpaddr11  = {CSR_PMPADDR11};
+    bins pmpaddr12  = {CSR_PMPADDR12};
+    bins pmpaddr13  = {CSR_PMPADDR13};
+    bins pmpaddr14  = {CSR_PMPADDR14};
+    bins pmpaddr15  = {CSR_PMPADDR15};
     `ifdef PMP_64
-      bins pmpaddr16  = {12'h3C0};
-      bins pmpaddr17  = {12'h3C1};
-      bins pmpaddr18  = {12'h3C2};
-      bins pmpaddr19  = {12'h3C3};
-      bins pmpaddr20  = {12'h3C4};
-      bins pmpaddr21  = {12'h3C5};
-      bins pmpaddr22  = {12'h3C6};
-      bins pmpaddr23  = {12'h3C7};
-      bins pmpaddr24  = {12'h3C8};
-      bins pmpaddr25  = {12'h3C9};
-      bins pmpaddr26  = {12'h3CA};
-      bins pmpaddr27  = {12'h3CB};
-      bins pmpaddr28  = {12'h3CC};
-      bins pmpaddr29  = {12'h3CD};
-      bins pmpaddr30  = {12'h3CE};
-      bins pmpaddr31  = {12'h3CF};
-      bins pmpaddr32  = {12'h3D0};
-      bins pmpaddr33  = {12'h3D1};
-      bins pmpaddr34  = {12'h3D2};
-      bins pmpaddr35  = {12'h3D3};
-      bins pmpaddr36  = {12'h3D4};
-      bins pmpaddr37  = {12'h3D5};
-      bins pmpaddr38  = {12'h3D6};
-      bins pmpaddr39  = {12'h3D7};
-      bins pmpaddr40  = {12'h3D8};
-      bins pmpaddr41  = {12'h3D9};
-      bins pmpaddr42  = {12'h3DA};
-      bins pmpaddr43  = {12'h3DB};
-      bins pmpaddr44  = {12'h3DC};
-      bins pmpaddr45  = {12'h3DD};
-      bins pmpaddr46  = {12'h3DE};
-      bins pmpaddr47  = {12'h3DF};
-      bins pmpaddr48  = {12'h3E0};
-      bins pmpaddr49  = {12'h3E1};
-      bins pmpaddr50  = {12'h3E2};
-      bins pmpaddr51  = {12'h3E3};
-      bins pmpaddr52  = {12'h3E4};
-      bins pmpaddr53  = {12'h3E5};
-      bins pmpaddr54  = {12'h3E6};
-      bins pmpaddr55  = {12'h3E7};
-      bins pmpaddr56  = {12'h3E8};
-      bins pmpaddr57  = {12'h3E9};
-      bins pmpaddr58  = {12'h3EA};
-      bins pmpaddr59  = {12'h3EB};
-      bins pmpaddr60  = {12'h3EC};
-      bins pmpaddr61  = {12'h3ED};
-      bins pmpaddr62  = {12'h3EE};
-      bins pmpaddr63  = {12'h3EF};
+      bins pmpaddr16  = {CSR_PMPADDR16};
+      bins pmpaddr17  = {CSR_PMPADDR17};
+      bins pmpaddr18  = {CSR_PMPADDR18};
+      bins pmpaddr19  = {CSR_PMPADDR19};
+      bins pmpaddr20  = {CSR_PMPADDR20};
+      bins pmpaddr21  = {CSR_PMPADDR21};
+      bins pmpaddr22  = {CSR_PMPADDR22};
+      bins pmpaddr23  = {CSR_PMPADDR23};
+      bins pmpaddr24  = {CSR_PMPADDR24};
+      bins pmpaddr25  = {CSR_PMPADDR25};
+      bins pmpaddr26  = {CSR_PMPADDR26};
+      bins pmpaddr27  = {CSR_PMPADDR27};
+      bins pmpaddr28  = {CSR_PMPADDR28};
+      bins pmpaddr29  = {CSR_PMPADDR29};
+      bins pmpaddr30  = {CSR_PMPADDR30};
+      bins pmpaddr31  = {CSR_PMPADDR31};
+      bins pmpaddr32  = {CSR_PMPADDR32};
+      bins pmpaddr33  = {CSR_PMPADDR33};
+      bins pmpaddr34  = {CSR_PMPADDR34};
+      bins pmpaddr35  = {CSR_PMPADDR35};
+      bins pmpaddr36  = {CSR_PMPADDR36};
+      bins pmpaddr37  = {CSR_PMPADDR37};
+      bins pmpaddr38  = {CSR_PMPADDR38};
+      bins pmpaddr39  = {CSR_PMPADDR39};
+      bins pmpaddr40  = {CSR_PMPADDR40};
+      bins pmpaddr41  = {CSR_PMPADDR41};
+      bins pmpaddr42  = {CSR_PMPADDR42};
+      bins pmpaddr43  = {CSR_PMPADDR43};
+      bins pmpaddr44  = {CSR_PMPADDR44};
+      bins pmpaddr45  = {CSR_PMPADDR45};
+      bins pmpaddr46  = {CSR_PMPADDR46};
+      bins pmpaddr47  = {CSR_PMPADDR47};
+      bins pmpaddr48  = {CSR_PMPADDR48};
+      bins pmpaddr49  = {CSR_PMPADDR49};
+      bins pmpaddr50  = {CSR_PMPADDR50};
+      bins pmpaddr51  = {CSR_PMPADDR51};
+      bins pmpaddr52  = {CSR_PMPADDR52};
+      bins pmpaddr53  = {CSR_PMPADDR53};
+      bins pmpaddr54  = {CSR_PMPADDR54};
+      bins pmpaddr55  = {CSR_PMPADDR55};
+      bins pmpaddr56  = {CSR_PMPADDR56};
+      bins pmpaddr57  = {CSR_PMPADDR57};
+      bins pmpaddr58  = {CSR_PMPADDR58};
+      bins pmpaddr59  = {CSR_PMPADDR59};
+      bins pmpaddr60  = {CSR_PMPADDR60};
+      bins pmpaddr61  = {CSR_PMPADDR61};
+      bins pmpaddr62  = {CSR_PMPADDR62};
+      bins pmpaddr63  = {CSR_PMPADDR63};
     `endif
   }
 
   legal_pmpcfg_entries_even: coverpoint ins.current.insn[31:20] {   // For writing walking ones in even PMPCFGs
-    bins pmpcfg0   = {12'h3A0};
-    bins pmpcfg2   = {12'h3A2};
+    bins pmpcfg0   = {CSR_PMPCFG0};
+    bins pmpcfg2   = {CSR_PMPCFG2};
     `ifdef PMP_64
-      bins pmpcfg4   = {12'h3A4};
-      bins pmpcfg6   = {12'h3A6};
-      bins pmpcfg8   = {12'h3A8};
-      bins pmpcfg10  = {12'h3AA};
-      bins pmpcfg12  = {12'h3AC};
-      bins pmpcfg14  = {12'h3AE};
+      bins pmpcfg4   = {CSR_PMPCFG4};
+      bins pmpcfg6   = {CSR_PMPCFG6};
+      bins pmpcfg8   = {CSR_PMPCFG8};
+      bins pmpcfg10  = {CSR_PMPCFG10};
+      bins pmpcfg12  = {CSR_PMPCFG12};
+      bins pmpcfg14  = {CSR_PMPCFG14};
     `endif
   }
 
   legal_pmpcfg_entries_odd: coverpoint ins.current.insn[31:20] {   // For writing zero in odd PMPCFGs
-    bins pmpcfg1   = {12'h3A1};
-    bins pmpcfg3   = {12'h3A3};
+    bins pmpcfg1   = {CSR_PMPCFG1};
+    bins pmpcfg3   = {CSR_PMPCFG3};
     `ifdef PMP_64
-      bins pmpcfg5   = {12'h3A5};
-      bins pmpcfg7   = {12'h3A7};
-      bins pmpcfg9   = {12'h3A9};
-      bins pmpcfg11  = {12'h3AB};
-      bins pmpcfg13  = {12'h3AD};
-      bins pmpcfg15  = {12'h3AF};
+      bins pmpcfg5   = {CSR_PMPCFG5};
+      bins pmpcfg7   = {CSR_PMPCFG7};
+      bins pmpcfg9   = {CSR_PMPCFG9};
+      bins pmpcfg11  = {CSR_PMPCFG11};
+      bins pmpcfg13  = {CSR_PMPCFG13};
+      bins pmpcfg15  = {CSR_PMPCFG15};
     `endif
   }
 //-------------------------------------------------------
@@ -966,33 +1057,33 @@ covergroup PMPSM_cg with function sample(
   }
 
   overlapping_regions: coverpoint (
-                   pmpaddr[13] == ((`REGIONSTART + 7*`g_tor) >> 2) &&
-                   pmpaddr[12] == (`REGIONSTART  >> 2)     &&
-                   pmpaddr[11] == ((`REGIONSTART + 6*`g_tor) >> 2) &&
-                   pmpaddr[10] == (`REGIONSTART  >> 2)     &&
-                   pmpaddr[9]  == ((`REGIONSTART + 5*`g_tor) >> 2) &&
-                   pmpaddr[8]  == (`REGIONSTART  >> 2)     &&
-                   pmpaddr[7]  == ((`REGIONSTART + 4*`g_tor) >> 2) &&
-                   pmpaddr[6]  == (`REGIONSTART  >> 2)     &&
-                   pmpaddr[5]  == ((`REGIONSTART + 3*`g_tor) >> 2) &&
-                   pmpaddr[4]  == (`REGIONSTART  >> 2)     &&
-                   pmpaddr[3]  == ((`REGIONSTART + 2*`g_tor) >> 2) &&
-                   pmpaddr[2]  == (`REGIONSTART  >> 2)     &&
-                   pmpaddr[1]  == ((`REGIONSTART + 1*`g_tor) >> 2) &&
-                   pmpaddr[0]  == (`REGIONSTART  >> 2)
+                   pmpaddr[13] == ((`PMP_REGION_START + 7*`g_tor) >> 2) &&
+                   pmpaddr[12] == (`PMP_REGION_START  >> 2)     &&
+                   pmpaddr[11] == ((`PMP_REGION_START + 6*`g_tor) >> 2) &&
+                   pmpaddr[10] == (`PMP_REGION_START  >> 2)     &&
+                   pmpaddr[9]  == ((`PMP_REGION_START + 5*`g_tor) >> 2) &&
+                   pmpaddr[8]  == (`PMP_REGION_START  >> 2)     &&
+                   pmpaddr[7]  == ((`PMP_REGION_START + 4*`g_tor) >> 2) &&
+                   pmpaddr[6]  == (`PMP_REGION_START  >> 2)     &&
+                   pmpaddr[5]  == ((`PMP_REGION_START + 3*`g_tor) >> 2) &&
+                   pmpaddr[4]  == (`PMP_REGION_START  >> 2)     &&
+                   pmpaddr[3]  == ((`PMP_REGION_START + 2*`g_tor) >> 2) &&
+                   pmpaddr[2]  == (`PMP_REGION_START  >> 2)     &&
+                   pmpaddr[1]  == ((`PMP_REGION_START + 1*`g_tor) >> 2) &&
+                   pmpaddr[0]  == (`PMP_REGION_START  >> 2)
                    ) {
     bins tor_regions = {1};  // Set 1 when overlapping tor regions set up.
   }
 
   // Address at the end of the overlapping regions
   addr_offset_for_priority_check: coverpoint (ins.current.rs1_val+ins.current.imm) {
-    bins at_end_of_region13 = {`REGIONSTART + 7*`g_tor - 4};
-    bins at_end_of_region11 = {`REGIONSTART + 6*`g_tor - 4};
-    bins at_end_of_region9  = {`REGIONSTART + 5*`g_tor - 4};
-    bins at_end_of_region7  = {`REGIONSTART + 4*`g_tor - 4};
-    bins at_end_of_region5  = {`REGIONSTART + 3*`g_tor - 4};
-    bins at_end_of_region3  = {`REGIONSTART + 2*`g_tor - 4};
-    bins at_end_of_region1  = {`REGIONSTART + 1*`g_tor - 4};
+    bins at_end_of_region13 = {`PMP_REGION_START + 7*`g_tor - 4};
+    bins at_end_of_region11 = {`PMP_REGION_START + 6*`g_tor - 4};
+    bins at_end_of_region9  = {`PMP_REGION_START + 5*`g_tor - 4};
+    bins at_end_of_region7  = {`PMP_REGION_START + 4*`g_tor - 4};
+    bins at_end_of_region5  = {`PMP_REGION_START + 3*`g_tor - 4};
+    bins at_end_of_region3  = {`PMP_REGION_START + 2*`g_tor - 4};
+    bins at_end_of_region1  = {`PMP_REGION_START + 1*`g_tor - 4};
   }
 
 //-------------------------------------------------------
@@ -1002,10 +1093,10 @@ covergroup PMPSM_cg with function sample(
     bins cfg_regions = {32'h8F808D80};
   }
 
-  first_four_pmp_entries: coverpoint (pmpaddr[0]==((`REGIONSTART)     >> 2) &&
-                    pmpaddr[1]==((`REGIONSTART+`g_tor) >> 2) &&
-                    pmpaddr[2]==((`REGIONSTART)     >> 2) &&
-                    pmpaddr[3]==((`REGIONSTART+`g_tor) >> 2)
+  first_four_pmp_entries: coverpoint (pmpaddr[0]==((`PMP_REGION_START)     >> 2) &&
+                    pmpaddr[1]==((`PMP_REGION_START+`g_tor) >> 2) &&
+                    pmpaddr[2]==((`PMP_REGION_START)     >> 2) &&
+                    pmpaddr[3]==((`PMP_REGION_START+`g_tor) >> 2)
                     ) {
     bins pmp_entries = {1};
   }
@@ -1110,8 +1201,8 @@ covergroup PMPSM_cg with function sample(
   cp_cfg_A_tor_nonoverlap3_w: cross priv_mode_m, addr_for_tor_nonoverlap, pmpcfg_tor_nonoverlap, pmp_addr_for_tor_nonoverlap3, write_instr_sw;
   cp_cfg_A_tor_nonoverlap3_r: cross priv_mode_m, addr_for_tor_nonoverlap, pmpcfg_tor_nonoverlap, pmp_addr_for_tor_nonoverlap3, read_instr_lw;
 
-  cp_pmpaddr_walk: cross priv_mode_m, cp_walk_rs1, csrrw, legal_pmpaddr_entries ;
-  cp_pmpcfg_walk: cross priv_mode_m, cp_walk_rs1, csrrw, legal_pmpcfg_entries_even ;
+  cp_pmpaddr_walk: cross priv_mode_m, cp_walk_pmpaddr_rs1, csrrw, legal_pmpaddr_entries ;
+  cp_pmpcfg_walk: cross priv_mode_m, cp_walk_pmpcfg_rs1, csrrw, legal_pmpcfg_entries_even ;
   `ifdef XLEN32
     // Will throw illegal instruction when XLEN = 64.
     cp_pmpcfg_zero: cross priv_mode_m, cp_zero_rs1, csrrw, legal_pmpcfg_entries_odd ;
@@ -1156,7 +1247,8 @@ covergroup PMPSM_cg with function sample(
     cp_grain_NAPOT_to_TOR : cross priv_mode_m, pmpcfg0_A_mode_was_NAPOT, pmpcfg0_A_mode_is_TOR ;
   `endif
 
-  cp_grain_check: cross priv_mode_m, pmpcfg_for_cp_grain_check, pmpaddr0_for_cp_grain_check, csrw_to_pmpaddr0, csrr_to_pmpaddr0;
+  cp_grain_check_write: cross priv_mode_m, pmpcfg_for_cp_grain_check, value_to_write, csrw_to_pmpaddr0;
+  cp_grain_check_read: cross priv_mode_m, pmpcfg_for_cp_grain_check, csrr_to_pmpaddr0;
 
   //crosses boundary for napot region at the start of the region.
   cp_misaligned_napot_start_r: cross priv_mode_m, pmpaddr_for_napot_misaligned, pmpcfg_for_napot_misaligned, addr_for_misaligned_straddling_start, read_instr_for_misaligned;
@@ -1260,11 +1352,11 @@ covergroup PMPSM_cg with function sample(
       }
 
       read_instr_ld: coverpoint ins.current.insn {
-        wildcard bins ld = {32'b?????????????????_011?????_0000011};
+        wildcard bins ld = {LD};
       }
 
       write_instr_sd: coverpoint ins.current.insn {
-        wildcard bins sd = {32'b?????????????????_011?????_0100011};
+        wildcard bins sd = {SD};
       }
 
       cp_na4_boundary_ld_even: cross priv_mode_m, pmpaddr_for_na4_even, pmpcfg_na4_lxwr_even, read_instr_ld, addr_to_access ;
@@ -1305,7 +1397,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
   `ifdef XLEN32
       // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
       for (int i = 0; i < 16; i++) begin
-        logic [31:0] cfg_word = ins.current.csr[12'h3A0 + i];
+        logic [31:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + i];
         pmpcfg[i*4 + 0] = cfg_word[7:0];
         pmpcfg[i*4 + 1] = cfg_word[15:8];
         pmpcfg[i*4 + 2] = cfg_word[23:16];
@@ -1314,7 +1406,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
   `elsif XLEN64
       // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
-      logic [63:0] cfg_word = ins.current.csr[12'h3A0 + 2*i];
+      logic [63:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + 2*i];
       pmpcfg[i*8 + 0] = cfg_word[7:0];
       pmpcfg[i*8 + 1] = cfg_word[15:8];
       pmpcfg[i*8 + 2] = cfg_word[23:16];
@@ -1327,7 +1419,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
   `endif
 
   for (int j = 0; j < 63; j++) begin
-    pmpaddr[j] = ins.current.csr[12'h3B0 + j];
+    pmpaddr[j] = ins.current.csr[CSR_PMPADDR0 + j];
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
@@ -1338,597 +1430,597 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
     pmp_HIT[k-15] = (pmpaddr[k] == `STANDARD_REGION);
   end
 
-  pack_pmpaddr = { ins.current.csr[12'h3BF]
-                  ,ins.current.csr[12'h3BE]
-                  ,ins.current.csr[12'h3BD]
-                  ,ins.current.csr[12'h3BC]
-                  ,ins.current.csr[12'h3BB]
-                  ,ins.current.csr[12'h3BA]
-                  ,ins.current.csr[12'h3B9]
-                  ,ins.current.csr[12'h3B8]
-                  ,ins.current.csr[12'h3B7]
-                  ,ins.current.csr[12'h3B6]
-                  ,ins.current.csr[12'h3B5]
-                  ,ins.current.csr[12'h3B4]
-                  ,ins.current.csr[12'h3B3]
-                  ,ins.current.csr[12'h3B2]
-                  ,ins.current.csr[12'h3B1]
-                  ,ins.current.csr[12'h3B0]
+  pack_pmpaddr = { ins.current.csr[CSR_PMPADDR15]
+                  ,ins.current.csr[CSR_PMPADDR14]
+                  ,ins.current.csr[CSR_PMPADDR13]
+                  ,ins.current.csr[CSR_PMPADDR12]
+                  ,ins.current.csr[CSR_PMPADDR11]
+                  ,ins.current.csr[CSR_PMPADDR10]
+                  ,ins.current.csr[CSR_PMPADDR9]
+                  ,ins.current.csr[CSR_PMPADDR8]
+                  ,ins.current.csr[CSR_PMPADDR7]
+                  ,ins.current.csr[CSR_PMPADDR6]
+                  ,ins.current.csr[CSR_PMPADDR5]
+                  ,ins.current.csr[CSR_PMPADDR4]
+                  ,ins.current.csr[CSR_PMPADDR3]
+                  ,ins.current.csr[CSR_PMPADDR2]
+                  ,ins.current.csr[CSR_PMPADDR1]
+                  ,ins.current.csr[CSR_PMPADDR0]
                 };
 
   `ifdef XLEN32
     pmpcfg_wr = {
-          ins.current.csr[12'h3A3][17:16],
-          ins.current.csr[12'h3A3][9:8],
-          ins.current.csr[12'h3A3][1:0],
-          ins.current.csr[12'h3A2][25:24],
-          ins.current.csr[12'h3A2][17:16],
-          ins.current.csr[12'h3A2][9:8],
-          ins.current.csr[12'h3A2][1:0],
-          ins.current.csr[12'h3A1][25:24],
-          ins.current.csr[12'h3A1][17:16],
-          ins.current.csr[12'h3A1][9:8],
-          ins.current.csr[12'h3A1][1:0],
-          ins.current.csr[12'h3A0][25:24],
-          ins.current.csr[12'h3A0][17:16],
-          ins.current.csr[12'h3A0][9:8],
-          ins.current.csr[12'h3A0][1:0]
+          ins.current.csr[CSR_PMPCFG3][17:16],
+          ins.current.csr[CSR_PMPCFG3][9:8],
+          ins.current.csr[CSR_PMPCFG3][1:0],
+          ins.current.csr[CSR_PMPCFG2][25:24],
+          ins.current.csr[CSR_PMPCFG2][17:16],
+          ins.current.csr[CSR_PMPCFG2][9:8],
+          ins.current.csr[CSR_PMPCFG2][1:0],
+          ins.current.csr[CSR_PMPCFG1][25:24],
+          ins.current.csr[CSR_PMPCFG1][17:16],
+          ins.current.csr[CSR_PMPCFG1][9:8],
+          ins.current.csr[CSR_PMPCFG1][1:0],
+          ins.current.csr[CSR_PMPCFG0][25:24],
+          ins.current.csr[CSR_PMPCFG0][17:16],
+          ins.current.csr[CSR_PMPCFG0][9:8],
+          ins.current.csr[CSR_PMPCFG0][1:0]
           };
   `endif
   `ifdef XLEN64
     pmpcfg_wr = {
-          ins.current.csr[12'h3A2][49:48],
-          ins.current.csr[12'h3A2][41:40],
-          ins.current.csr[12'h3A2][33:32],
-          ins.current.csr[12'h3A2][25:24],
-          ins.current.csr[12'h3A2][17:16],
-          ins.current.csr[12'h3A2][9:8],
-          ins.current.csr[12'h3A2][1:0],
-          ins.current.csr[12'h3A0][57:56],
-          ins.current.csr[12'h3A0][49:48],
-          ins.current.csr[12'h3A0][41:40],
-          ins.current.csr[12'h3A0][33:32],
-          ins.current.csr[12'h3A0][25:24],
-          ins.current.csr[12'h3A0][17:16],
-          ins.current.csr[12'h3A0][9:8],
-          ins.current.csr[12'h3A0][1:0]
+          ins.current.csr[CSR_PMPCFG2][49:48],
+          ins.current.csr[CSR_PMPCFG2][41:40],
+          ins.current.csr[CSR_PMPCFG2][33:32],
+          ins.current.csr[CSR_PMPCFG2][25:24],
+          ins.current.csr[CSR_PMPCFG2][17:16],
+          ins.current.csr[CSR_PMPCFG2][9:8],
+          ins.current.csr[CSR_PMPCFG2][1:0],
+          ins.current.csr[CSR_PMPCFG0][57:56],
+          ins.current.csr[CSR_PMPCFG0][49:48],
+          ins.current.csr[CSR_PMPCFG0][41:40],
+          ins.current.csr[CSR_PMPCFG0][33:32],
+          ins.current.csr[CSR_PMPCFG0][25:24],
+          ins.current.csr[CSR_PMPCFG0][17:16],
+          ins.current.csr[CSR_PMPCFG0][9:8],
+          ins.current.csr[CSR_PMPCFG0][1:0]
           };
   `endif
 
   `ifdef XLEN32
     pmpcfg_WR = {
-          ins.current.csr[12'h3AF][17:16],
-          ins.current.csr[12'h3AF][9:8],
-          ins.current.csr[12'h3AF][1:0],
-          ins.current.csr[12'h3AE][25:24],
-          ins.current.csr[12'h3AE][17:16],
-          ins.current.csr[12'h3AE][9:8],
-          ins.current.csr[12'h3AE][1:0],
-          ins.current.csr[12'h3AD][25:24],
-          ins.current.csr[12'h3AD][17:16],
-          ins.current.csr[12'h3AD][9:8],
-          ins.current.csr[12'h3AD][1:0],
-          ins.current.csr[12'h3AC][25:24],
-          ins.current.csr[12'h3AC][17:16],
-          ins.current.csr[12'h3AC][9:8],
-          ins.current.csr[12'h3AC][1:0],
-          ins.current.csr[12'h3AB][25:24],
-          ins.current.csr[12'h3AB][17:16],
-          ins.current.csr[12'h3AB][9:8],
-          ins.current.csr[12'h3AB][1:0],
-          ins.current.csr[12'h3AA][25:24],
-          ins.current.csr[12'h3AA][17:16],
-          ins.current.csr[12'h3AA][9:8],
-          ins.current.csr[12'h3AA][1:0],
-          ins.current.csr[12'h3A9][25:24],
-          ins.current.csr[12'h3A9][17:16],
-          ins.current.csr[12'h3A9][9:8],
-          ins.current.csr[12'h3A9][1:0],
-          ins.current.csr[12'h3A8][25:24],
-          ins.current.csr[12'h3A8][17:16],
-          ins.current.csr[12'h3A8][9:8],
-          ins.current.csr[12'h3A8][1:0],
-          ins.current.csr[12'h3A7][25:24],
-          ins.current.csr[12'h3A7][17:16],
-          ins.current.csr[12'h3A7][9:8],
-          ins.current.csr[12'h3A7][1:0],
-          ins.current.csr[12'h3A6][25:24],
-          ins.current.csr[12'h3A6][17:16],
-          ins.current.csr[12'h3A6][9:8],
-          ins.current.csr[12'h3A6][1:0],
-          ins.current.csr[12'h3A5][25:24],
-          ins.current.csr[12'h3A5][17:16],
-          ins.current.csr[12'h3A5][9:8],
-          ins.current.csr[12'h3A5][1:0],
-          ins.current.csr[12'h3A4][25:24],
-          ins.current.csr[12'h3A4][17:16],
-          ins.current.csr[12'h3A4][9:8],
-          ins.current.csr[12'h3A4][1:0],
-          ins.current.csr[12'h3A3][25:24]
+          ins.current.csr[CSR_PMPCFG15][17:16],
+          ins.current.csr[CSR_PMPCFG15][9:8],
+          ins.current.csr[CSR_PMPCFG15][1:0],
+          ins.current.csr[CSR_PMPCFG14][25:24],
+          ins.current.csr[CSR_PMPCFG14][17:16],
+          ins.current.csr[CSR_PMPCFG14][9:8],
+          ins.current.csr[CSR_PMPCFG14][1:0],
+          ins.current.csr[CSR_PMPCFG13][25:24],
+          ins.current.csr[CSR_PMPCFG13][17:16],
+          ins.current.csr[CSR_PMPCFG13][9:8],
+          ins.current.csr[CSR_PMPCFG13][1:0],
+          ins.current.csr[CSR_PMPCFG12][25:24],
+          ins.current.csr[CSR_PMPCFG12][17:16],
+          ins.current.csr[CSR_PMPCFG12][9:8],
+          ins.current.csr[CSR_PMPCFG12][1:0],
+          ins.current.csr[CSR_PMPCFG11][25:24],
+          ins.current.csr[CSR_PMPCFG11][17:16],
+          ins.current.csr[CSR_PMPCFG11][9:8],
+          ins.current.csr[CSR_PMPCFG11][1:0],
+          ins.current.csr[CSR_PMPCFG10][25:24],
+          ins.current.csr[CSR_PMPCFG10][17:16],
+          ins.current.csr[CSR_PMPCFG10][9:8],
+          ins.current.csr[CSR_PMPCFG10][1:0],
+          ins.current.csr[CSR_PMPCFG9][25:24],
+          ins.current.csr[CSR_PMPCFG9][17:16],
+          ins.current.csr[CSR_PMPCFG9][9:8],
+          ins.current.csr[CSR_PMPCFG9][1:0],
+          ins.current.csr[CSR_PMPCFG8][25:24],
+          ins.current.csr[CSR_PMPCFG8][17:16],
+          ins.current.csr[CSR_PMPCFG8][9:8],
+          ins.current.csr[CSR_PMPCFG8][1:0],
+          ins.current.csr[CSR_PMPCFG7][25:24],
+          ins.current.csr[CSR_PMPCFG7][17:16],
+          ins.current.csr[CSR_PMPCFG7][9:8],
+          ins.current.csr[CSR_PMPCFG7][1:0],
+          ins.current.csr[CSR_PMPCFG6][25:24],
+          ins.current.csr[CSR_PMPCFG6][17:16],
+          ins.current.csr[CSR_PMPCFG6][9:8],
+          ins.current.csr[CSR_PMPCFG6][1:0],
+          ins.current.csr[CSR_PMPCFG5][25:24],
+          ins.current.csr[CSR_PMPCFG5][17:16],
+          ins.current.csr[CSR_PMPCFG5][9:8],
+          ins.current.csr[CSR_PMPCFG5][1:0],
+          ins.current.csr[CSR_PMPCFG4][25:24],
+          ins.current.csr[CSR_PMPCFG4][17:16],
+          ins.current.csr[CSR_PMPCFG4][9:8],
+          ins.current.csr[CSR_PMPCFG4][1:0],
+          ins.current.csr[CSR_PMPCFG3][25:24]
           };
   `endif
   `ifdef XLEN64
     pmpcfg_WR = {
-          ins.current.csr[12'h3AE][49:48],
-          ins.current.csr[12'h3AE][41:40],
-          ins.current.csr[12'h3AE][33:32],
-          ins.current.csr[12'h3AE][25:24],
-          ins.current.csr[12'h3AE][17:16],
-          ins.current.csr[12'h3AE][9:8],
-          ins.current.csr[12'h3AE][1:0],
-          ins.current.csr[12'h3AC][57:56],
-          ins.current.csr[12'h3AC][49:48],
-          ins.current.csr[12'h3AC][41:40],
-          ins.current.csr[12'h3AC][33:32],
-          ins.current.csr[12'h3AC][25:24],
-          ins.current.csr[12'h3AC][17:16],
-          ins.current.csr[12'h3AC][9:8],
-          ins.current.csr[12'h3AC][1:0],
-          ins.current.csr[12'h3AA][57:56],
-          ins.current.csr[12'h3AA][49:48],
-          ins.current.csr[12'h3AA][41:40],
-          ins.current.csr[12'h3AA][33:32],
-          ins.current.csr[12'h3AA][25:24],
-          ins.current.csr[12'h3AA][17:16],
-          ins.current.csr[12'h3AA][9:8],
-          ins.current.csr[12'h3AA][1:0],
-          ins.current.csr[12'h3A8][57:56],
-          ins.current.csr[12'h3A8][49:48],
-          ins.current.csr[12'h3A8][41:40],
-          ins.current.csr[12'h3A8][33:32],
-          ins.current.csr[12'h3A8][25:24],
-          ins.current.csr[12'h3A8][17:16],
-          ins.current.csr[12'h3A8][9:8],
-          ins.current.csr[12'h3A8][1:0],
-          ins.current.csr[12'h3A6][57:56],
-          ins.current.csr[12'h3A6][49:48],
-          ins.current.csr[12'h3A6][41:40],
-          ins.current.csr[12'h3A6][33:32],
-          ins.current.csr[12'h3A6][25:24],
-          ins.current.csr[12'h3A6][17:16],
-          ins.current.csr[12'h3A6][9:8],
-          ins.current.csr[12'h3A6][1:0],
-          ins.current.csr[12'h3A4][57:56],
-          ins.current.csr[12'h3A4][49:48],
-          ins.current.csr[12'h3A4][41:40],
-          ins.current.csr[12'h3A4][33:32],
-          ins.current.csr[12'h3A4][25:24],
-          ins.current.csr[12'h3A4][17:16],
-          ins.current.csr[12'h3A4][9:8],
-          ins.current.csr[12'h3A4][1:0],
-          ins.current.csr[12'h3A2][57:56]
+          ins.current.csr[CSR_PMPCFG14][49:48],
+          ins.current.csr[CSR_PMPCFG14][41:40],
+          ins.current.csr[CSR_PMPCFG14][33:32],
+          ins.current.csr[CSR_PMPCFG14][25:24],
+          ins.current.csr[CSR_PMPCFG14][17:16],
+          ins.current.csr[CSR_PMPCFG14][9:8],
+          ins.current.csr[CSR_PMPCFG14][1:0],
+          ins.current.csr[CSR_PMPCFG12][57:56],
+          ins.current.csr[CSR_PMPCFG12][49:48],
+          ins.current.csr[CSR_PMPCFG12][41:40],
+          ins.current.csr[CSR_PMPCFG12][33:32],
+          ins.current.csr[CSR_PMPCFG12][25:24],
+          ins.current.csr[CSR_PMPCFG12][17:16],
+          ins.current.csr[CSR_PMPCFG12][9:8],
+          ins.current.csr[CSR_PMPCFG12][1:0],
+          ins.current.csr[CSR_PMPCFG10][57:56],
+          ins.current.csr[CSR_PMPCFG10][49:48],
+          ins.current.csr[CSR_PMPCFG10][41:40],
+          ins.current.csr[CSR_PMPCFG10][33:32],
+          ins.current.csr[CSR_PMPCFG10][25:24],
+          ins.current.csr[CSR_PMPCFG10][17:16],
+          ins.current.csr[CSR_PMPCFG10][9:8],
+          ins.current.csr[CSR_PMPCFG10][1:0],
+          ins.current.csr[CSR_PMPCFG8][57:56],
+          ins.current.csr[CSR_PMPCFG8][49:48],
+          ins.current.csr[CSR_PMPCFG8][41:40],
+          ins.current.csr[CSR_PMPCFG8][33:32],
+          ins.current.csr[CSR_PMPCFG8][25:24],
+          ins.current.csr[CSR_PMPCFG8][17:16],
+          ins.current.csr[CSR_PMPCFG8][9:8],
+          ins.current.csr[CSR_PMPCFG8][1:0],
+          ins.current.csr[CSR_PMPCFG6][57:56],
+          ins.current.csr[CSR_PMPCFG6][49:48],
+          ins.current.csr[CSR_PMPCFG6][41:40],
+          ins.current.csr[CSR_PMPCFG6][33:32],
+          ins.current.csr[CSR_PMPCFG6][25:24],
+          ins.current.csr[CSR_PMPCFG6][17:16],
+          ins.current.csr[CSR_PMPCFG6][9:8],
+          ins.current.csr[CSR_PMPCFG6][1:0],
+          ins.current.csr[CSR_PMPCFG4][57:56],
+          ins.current.csr[CSR_PMPCFG4][49:48],
+          ins.current.csr[CSR_PMPCFG4][41:40],
+          ins.current.csr[CSR_PMPCFG4][33:32],
+          ins.current.csr[CSR_PMPCFG4][25:24],
+          ins.current.csr[CSR_PMPCFG4][17:16],
+          ins.current.csr[CSR_PMPCFG4][9:8],
+          ins.current.csr[CSR_PMPCFG4][1:0],
+          ins.current.csr[CSR_PMPCFG2][57:56]
           };
   `endif
 
   `ifdef XLEN32
     pmpcfg_X =  {
-          ins.current.csr[12'h3AF][18],
-          ins.current.csr[12'h3AF][10],
-          ins.current.csr[12'h3AF][2],
-          ins.current.csr[12'h3AE][26],
-          ins.current.csr[12'h3AE][18],
-          ins.current.csr[12'h3AE][10],
-          ins.current.csr[12'h3AE][2],
-          ins.current.csr[12'h3AD][26],
-          ins.current.csr[12'h3AD][18],
-          ins.current.csr[12'h3AD][10],
-          ins.current.csr[12'h3AD][2],
-          ins.current.csr[12'h3AC][26],
-          ins.current.csr[12'h3AC][18],
-          ins.current.csr[12'h3AC][10],
-          ins.current.csr[12'h3AC][2],
-          ins.current.csr[12'h3AB][26],
-          ins.current.csr[12'h3AB][18],
-          ins.current.csr[12'h3AB][10],
-          ins.current.csr[12'h3AB][2],
-          ins.current.csr[12'h3AA][26],
-          ins.current.csr[12'h3AA][18],
-          ins.current.csr[12'h3AA][10],
-          ins.current.csr[12'h3AA][2],
-          ins.current.csr[12'h3A9][26],
-          ins.current.csr[12'h3A9][18],
-          ins.current.csr[12'h3A9][10],
-          ins.current.csr[12'h3A9][2],
-          ins.current.csr[12'h3A8][26],
-          ins.current.csr[12'h3A8][18],
-          ins.current.csr[12'h3A8][10],
-          ins.current.csr[12'h3A8][2],
-          ins.current.csr[12'h3A7][26],
-          ins.current.csr[12'h3A7][18],
-          ins.current.csr[12'h3A7][10],
-          ins.current.csr[12'h3A7][2],
-          ins.current.csr[12'h3A6][26],
-          ins.current.csr[12'h3A6][18],
-          ins.current.csr[12'h3A6][10],
-          ins.current.csr[12'h3A6][2],
-          ins.current.csr[12'h3A5][26],
-          ins.current.csr[12'h3A5][18],
-          ins.current.csr[12'h3A5][10],
-          ins.current.csr[12'h3A5][2],
-          ins.current.csr[12'h3A4][26],
-          ins.current.csr[12'h3A4][18],
-          ins.current.csr[12'h3A4][10],
-          ins.current.csr[12'h3A4][2],
-          ins.current.csr[12'h3A3][18]
+          ins.current.csr[CSR_PMPCFG15][18],
+          ins.current.csr[CSR_PMPCFG15][10],
+          ins.current.csr[CSR_PMPCFG15][2],
+          ins.current.csr[CSR_PMPCFG14][26],
+          ins.current.csr[CSR_PMPCFG14][18],
+          ins.current.csr[CSR_PMPCFG14][10],
+          ins.current.csr[CSR_PMPCFG14][2],
+          ins.current.csr[CSR_PMPCFG13][26],
+          ins.current.csr[CSR_PMPCFG13][18],
+          ins.current.csr[CSR_PMPCFG13][10],
+          ins.current.csr[CSR_PMPCFG13][2],
+          ins.current.csr[CSR_PMPCFG12][26],
+          ins.current.csr[CSR_PMPCFG12][18],
+          ins.current.csr[CSR_PMPCFG12][10],
+          ins.current.csr[CSR_PMPCFG12][2],
+          ins.current.csr[CSR_PMPCFG11][26],
+          ins.current.csr[CSR_PMPCFG11][18],
+          ins.current.csr[CSR_PMPCFG11][10],
+          ins.current.csr[CSR_PMPCFG11][2],
+          ins.current.csr[CSR_PMPCFG10][26],
+          ins.current.csr[CSR_PMPCFG10][18],
+          ins.current.csr[CSR_PMPCFG10][10],
+          ins.current.csr[CSR_PMPCFG10][2],
+          ins.current.csr[CSR_PMPCFG9][26],
+          ins.current.csr[CSR_PMPCFG9][18],
+          ins.current.csr[CSR_PMPCFG9][10],
+          ins.current.csr[CSR_PMPCFG9][2],
+          ins.current.csr[CSR_PMPCFG8][26],
+          ins.current.csr[CSR_PMPCFG8][18],
+          ins.current.csr[CSR_PMPCFG8][10],
+          ins.current.csr[CSR_PMPCFG8][2],
+          ins.current.csr[CSR_PMPCFG7][26],
+          ins.current.csr[CSR_PMPCFG7][18],
+          ins.current.csr[CSR_PMPCFG7][10],
+          ins.current.csr[CSR_PMPCFG7][2],
+          ins.current.csr[CSR_PMPCFG6][26],
+          ins.current.csr[CSR_PMPCFG6][18],
+          ins.current.csr[CSR_PMPCFG6][10],
+          ins.current.csr[CSR_PMPCFG6][2],
+          ins.current.csr[CSR_PMPCFG5][26],
+          ins.current.csr[CSR_PMPCFG5][18],
+          ins.current.csr[CSR_PMPCFG5][10],
+          ins.current.csr[CSR_PMPCFG5][2],
+          ins.current.csr[CSR_PMPCFG4][26],
+          ins.current.csr[CSR_PMPCFG4][18],
+          ins.current.csr[CSR_PMPCFG4][10],
+          ins.current.csr[CSR_PMPCFG4][2],
+          ins.current.csr[CSR_PMPCFG3][18]
           };
   `endif
   `ifdef XLEN64
     pmpcfg_X =  {
-          ins.current.csr[12'h3AE][50],
-          ins.current.csr[12'h3AE][42],
-          ins.current.csr[12'h3AE][34],
-          ins.current.csr[12'h3AE][26],
-          ins.current.csr[12'h3AE][18],
-          ins.current.csr[12'h3AE][10],
-          ins.current.csr[12'h3AE][2],
-          ins.current.csr[12'h3AC][58],
-          ins.current.csr[12'h3AC][50],
-          ins.current.csr[12'h3AC][42],
-          ins.current.csr[12'h3AC][34],
-          ins.current.csr[12'h3AC][26],
-          ins.current.csr[12'h3AC][18],
-          ins.current.csr[12'h3AC][10],
-          ins.current.csr[12'h3AC][2],
-          ins.current.csr[12'h3AA][58],
-          ins.current.csr[12'h3AA][50],
-          ins.current.csr[12'h3AA][42],
-          ins.current.csr[12'h3AA][34],
-          ins.current.csr[12'h3AA][26],
-          ins.current.csr[12'h3AA][18],
-          ins.current.csr[12'h3AA][10],
-          ins.current.csr[12'h3AA][2],
-          ins.current.csr[12'h3A8][58],
-          ins.current.csr[12'h3A8][50],
-          ins.current.csr[12'h3A8][42],
-          ins.current.csr[12'h3A8][34],
-          ins.current.csr[12'h3A8][26],
-          ins.current.csr[12'h3A8][18],
-          ins.current.csr[12'h3A8][10],
-          ins.current.csr[12'h3A8][2],
-          ins.current.csr[12'h3A6][58],
-          ins.current.csr[12'h3A6][50],
-          ins.current.csr[12'h3A6][42],
-          ins.current.csr[12'h3A6][34],
-          ins.current.csr[12'h3A6][26],
-          ins.current.csr[12'h3A6][18],
-          ins.current.csr[12'h3A6][10],
-          ins.current.csr[12'h3A6][2],
-          ins.current.csr[12'h3A4][58],
-          ins.current.csr[12'h3A4][50],
-          ins.current.csr[12'h3A4][42],
-          ins.current.csr[12'h3A4][34],
-          ins.current.csr[12'h3A4][26],
-          ins.current.csr[12'h3A4][18],
-          ins.current.csr[12'h3A4][10],
-          ins.current.csr[12'h3A4][2],
-          ins.current.csr[12'h3A2][58]
+          ins.current.csr[CSR_PMPCFG14][50],
+          ins.current.csr[CSR_PMPCFG14][42],
+          ins.current.csr[CSR_PMPCFG14][34],
+          ins.current.csr[CSR_PMPCFG14][26],
+          ins.current.csr[CSR_PMPCFG14][18],
+          ins.current.csr[CSR_PMPCFG14][10],
+          ins.current.csr[CSR_PMPCFG14][2],
+          ins.current.csr[CSR_PMPCFG12][58],
+          ins.current.csr[CSR_PMPCFG12][50],
+          ins.current.csr[CSR_PMPCFG12][42],
+          ins.current.csr[CSR_PMPCFG12][34],
+          ins.current.csr[CSR_PMPCFG12][26],
+          ins.current.csr[CSR_PMPCFG12][18],
+          ins.current.csr[CSR_PMPCFG12][10],
+          ins.current.csr[CSR_PMPCFG12][2],
+          ins.current.csr[CSR_PMPCFG10][58],
+          ins.current.csr[CSR_PMPCFG10][50],
+          ins.current.csr[CSR_PMPCFG10][42],
+          ins.current.csr[CSR_PMPCFG10][34],
+          ins.current.csr[CSR_PMPCFG10][26],
+          ins.current.csr[CSR_PMPCFG10][18],
+          ins.current.csr[CSR_PMPCFG10][10],
+          ins.current.csr[CSR_PMPCFG10][2],
+          ins.current.csr[CSR_PMPCFG8][58],
+          ins.current.csr[CSR_PMPCFG8][50],
+          ins.current.csr[CSR_PMPCFG8][42],
+          ins.current.csr[CSR_PMPCFG8][34],
+          ins.current.csr[CSR_PMPCFG8][26],
+          ins.current.csr[CSR_PMPCFG8][18],
+          ins.current.csr[CSR_PMPCFG8][10],
+          ins.current.csr[CSR_PMPCFG8][2],
+          ins.current.csr[CSR_PMPCFG6][58],
+          ins.current.csr[CSR_PMPCFG6][50],
+          ins.current.csr[CSR_PMPCFG6][42],
+          ins.current.csr[CSR_PMPCFG6][34],
+          ins.current.csr[CSR_PMPCFG6][26],
+          ins.current.csr[CSR_PMPCFG6][18],
+          ins.current.csr[CSR_PMPCFG6][10],
+          ins.current.csr[CSR_PMPCFG6][2],
+          ins.current.csr[CSR_PMPCFG4][58],
+          ins.current.csr[CSR_PMPCFG4][50],
+          ins.current.csr[CSR_PMPCFG4][42],
+          ins.current.csr[CSR_PMPCFG4][34],
+          ins.current.csr[CSR_PMPCFG4][26],
+          ins.current.csr[CSR_PMPCFG4][18],
+          ins.current.csr[CSR_PMPCFG4][10],
+          ins.current.csr[CSR_PMPCFG4][2],
+          ins.current.csr[CSR_PMPCFG2][58]
           };
   `endif
 
   `ifdef XLEN32
     pmpcfg_x =  {
-          ins.current.csr[12'h3A3][18],
-          ins.current.csr[12'h3A3][10],
-          ins.current.csr[12'h3A3][2],
-          ins.current.csr[12'h3A2][26],
-          ins.current.csr[12'h3A2][18],
-          ins.current.csr[12'h3A2][10],
-          ins.current.csr[12'h3A2][2],
-          ins.current.csr[12'h3A1][26],
-          ins.current.csr[12'h3A1][18],
-          ins.current.csr[12'h3A1][10],
-          ins.current.csr[12'h3A1][2],
-          ins.current.csr[12'h3A0][26],
-          ins.current.csr[12'h3A0][18],
-          ins.current.csr[12'h3A0][10],
-          ins.current.csr[12'h3A0][2]
+          ins.current.csr[CSR_PMPCFG3][18],
+          ins.current.csr[CSR_PMPCFG3][10],
+          ins.current.csr[CSR_PMPCFG3][2],
+          ins.current.csr[CSR_PMPCFG2][26],
+          ins.current.csr[CSR_PMPCFG2][18],
+          ins.current.csr[CSR_PMPCFG2][10],
+          ins.current.csr[CSR_PMPCFG2][2],
+          ins.current.csr[CSR_PMPCFG1][26],
+          ins.current.csr[CSR_PMPCFG1][18],
+          ins.current.csr[CSR_PMPCFG1][10],
+          ins.current.csr[CSR_PMPCFG1][2],
+          ins.current.csr[CSR_PMPCFG0][26],
+          ins.current.csr[CSR_PMPCFG0][18],
+          ins.current.csr[CSR_PMPCFG0][10],
+          ins.current.csr[CSR_PMPCFG0][2]
           };
   `endif
   `ifdef XLEN64
     pmpcfg_x =  {
-          ins.current.csr[12'h3A2][50],
-          ins.current.csr[12'h3A2][42],
-          ins.current.csr[12'h3A2][34],
-          ins.current.csr[12'h3A2][26],
-          ins.current.csr[12'h3A2][18],
-          ins.current.csr[12'h3A2][10],
-          ins.current.csr[12'h3A2][2],
-          ins.current.csr[12'h3A0][58],
-          ins.current.csr[12'h3A0][50],
-          ins.current.csr[12'h3A0][42],
-          ins.current.csr[12'h3A0][34],
-          ins.current.csr[12'h3A0][26],
-          ins.current.csr[12'h3A0][18],
-          ins.current.csr[12'h3A0][10],
-          ins.current.csr[12'h3A0][2]
+          ins.current.csr[CSR_PMPCFG2][50],
+          ins.current.csr[CSR_PMPCFG2][42],
+          ins.current.csr[CSR_PMPCFG2][34],
+          ins.current.csr[CSR_PMPCFG2][26],
+          ins.current.csr[CSR_PMPCFG2][18],
+          ins.current.csr[CSR_PMPCFG2][10],
+          ins.current.csr[CSR_PMPCFG2][2],
+          ins.current.csr[CSR_PMPCFG0][58],
+          ins.current.csr[CSR_PMPCFG0][50],
+          ins.current.csr[CSR_PMPCFG0][42],
+          ins.current.csr[CSR_PMPCFG0][34],
+          ins.current.csr[CSR_PMPCFG0][26],
+          ins.current.csr[CSR_PMPCFG0][18],
+          ins.current.csr[CSR_PMPCFG0][10],
+          ins.current.csr[CSR_PMPCFG0][2]
           };
   `endif
 
   `ifdef XLEN32
     pmpcfg_a =  {
-          ins.current.csr[12'h3A3][20:19],
-          ins.current.csr[12'h3A3][12:11],
-          ins.current.csr[12'h3A3][4:3],
-          ins.current.csr[12'h3A2][28:27],
-          ins.current.csr[12'h3A2][20:19],
-          ins.current.csr[12'h3A2][12:11],
-          ins.current.csr[12'h3A2][4:3],
-          ins.current.csr[12'h3A1][28:27],
-          ins.current.csr[12'h3A1][20:19],
-          ins.current.csr[12'h3A1][12:11],
-          ins.current.csr[12'h3A1][4:3],
-          ins.current.csr[12'h3A0][28:27],
-          ins.current.csr[12'h3A0][20:19],
-          ins.current.csr[12'h3A0][12:11],
-          ins.current.csr[12'h3A0][4:3]
+          ins.current.csr[CSR_PMPCFG3][20:19],
+          ins.current.csr[CSR_PMPCFG3][12:11],
+          ins.current.csr[CSR_PMPCFG3][4:3],
+          ins.current.csr[CSR_PMPCFG2][28:27],
+          ins.current.csr[CSR_PMPCFG2][20:19],
+          ins.current.csr[CSR_PMPCFG2][12:11],
+          ins.current.csr[CSR_PMPCFG2][4:3],
+          ins.current.csr[CSR_PMPCFG1][28:27],
+          ins.current.csr[CSR_PMPCFG1][20:19],
+          ins.current.csr[CSR_PMPCFG1][12:11],
+          ins.current.csr[CSR_PMPCFG1][4:3],
+          ins.current.csr[CSR_PMPCFG0][28:27],
+          ins.current.csr[CSR_PMPCFG0][20:19],
+          ins.current.csr[CSR_PMPCFG0][12:11],
+          ins.current.csr[CSR_PMPCFG0][4:3]
           };
   `endif
   `ifdef XLEN64
     pmpcfg_a =  {
-          ins.current.csr[12'h3A2][52:51],
-          ins.current.csr[12'h3A2][44:43],
-          ins.current.csr[12'h3A2][36:35],
-          ins.current.csr[12'h3A2][28:27],
-          ins.current.csr[12'h3A2][20:19],
-          ins.current.csr[12'h3A2][12:11],
-          ins.current.csr[12'h3A2][4:3],
-          ins.current.csr[12'h3A0][60:59],
-          ins.current.csr[12'h3A0][52:51],
-          ins.current.csr[12'h3A0][44:43],
-          ins.current.csr[12'h3A0][36:35],
-          ins.current.csr[12'h3A0][28:27],
-          ins.current.csr[12'h3A0][20:19],
-          ins.current.csr[12'h3A0][12:11],
-          ins.current.csr[12'h3A0][4:3]
+          ins.current.csr[CSR_PMPCFG2][52:51],
+          ins.current.csr[CSR_PMPCFG2][44:43],
+          ins.current.csr[CSR_PMPCFG2][36:35],
+          ins.current.csr[CSR_PMPCFG2][28:27],
+          ins.current.csr[CSR_PMPCFG2][20:19],
+          ins.current.csr[CSR_PMPCFG2][12:11],
+          ins.current.csr[CSR_PMPCFG2][4:3],
+          ins.current.csr[CSR_PMPCFG0][60:59],
+          ins.current.csr[CSR_PMPCFG0][52:51],
+          ins.current.csr[CSR_PMPCFG0][44:43],
+          ins.current.csr[CSR_PMPCFG0][36:35],
+          ins.current.csr[CSR_PMPCFG0][28:27],
+          ins.current.csr[CSR_PMPCFG0][20:19],
+          ins.current.csr[CSR_PMPCFG0][12:11],
+          ins.current.csr[CSR_PMPCFG0][4:3]
           };
   `endif
 
   `ifdef XLEN32
     pmpcfg_A =  {
-          ins.current.csr[12'h3AF][20:19],
-          ins.current.csr[12'h3AF][12:11],
-          ins.current.csr[12'h3AF][4:3],
-          ins.current.csr[12'h3AE][28:27],
-          ins.current.csr[12'h3AE][20:19],
-          ins.current.csr[12'h3AE][12:11],
-          ins.current.csr[12'h3AE][4:3],
-          ins.current.csr[12'h3AD][28:27],
-          ins.current.csr[12'h3AD][20:19],
-          ins.current.csr[12'h3AD][12:11],
-          ins.current.csr[12'h3AD][4:3],
-          ins.current.csr[12'h3AC][28:27],
-          ins.current.csr[12'h3AC][20:19],
-          ins.current.csr[12'h3AC][12:11],
-          ins.current.csr[12'h3AC][4:3],
-          ins.current.csr[12'h3AB][28:27],
-          ins.current.csr[12'h3AB][20:19],
-          ins.current.csr[12'h3AB][12:11],
-          ins.current.csr[12'h3AB][4:3],
-          ins.current.csr[12'h3AA][28:27],
-          ins.current.csr[12'h3AA][20:19],
-          ins.current.csr[12'h3AA][12:11],
-          ins.current.csr[12'h3AA][4:3],
-          ins.current.csr[12'h3A9][28:27],
-          ins.current.csr[12'h3A9][20:19],
-          ins.current.csr[12'h3A9][12:11],
-          ins.current.csr[12'h3A9][4:3],
-          ins.current.csr[12'h3A8][28:27],
-          ins.current.csr[12'h3A8][20:19],
-          ins.current.csr[12'h3A8][12:11],
-          ins.current.csr[12'h3A8][4:3],
-          ins.current.csr[12'h3A7][28:27],
-          ins.current.csr[12'h3A7][20:19],
-          ins.current.csr[12'h3A7][12:11],
-          ins.current.csr[12'h3A7][4:3],
-          ins.current.csr[12'h3A6][28:27],
-          ins.current.csr[12'h3A6][20:19],
-          ins.current.csr[12'h3A6][12:11],
-          ins.current.csr[12'h3A6][4:3],
-          ins.current.csr[12'h3A5][28:27],
-          ins.current.csr[12'h3A5][20:19],
-          ins.current.csr[12'h3A5][12:11],
-          ins.current.csr[12'h3A5][4:3],
-          ins.current.csr[12'h3A4][28:27],
-          ins.current.csr[12'h3A4][20:19],
-          ins.current.csr[12'h3A4][12:11],
-          ins.current.csr[12'h3A4][4:3],
-          ins.current.csr[12'h3A3][28:27]
+          ins.current.csr[CSR_PMPCFG15][20:19],
+          ins.current.csr[CSR_PMPCFG15][12:11],
+          ins.current.csr[CSR_PMPCFG15][4:3],
+          ins.current.csr[CSR_PMPCFG14][28:27],
+          ins.current.csr[CSR_PMPCFG14][20:19],
+          ins.current.csr[CSR_PMPCFG14][12:11],
+          ins.current.csr[CSR_PMPCFG14][4:3],
+          ins.current.csr[CSR_PMPCFG13][28:27],
+          ins.current.csr[CSR_PMPCFG13][20:19],
+          ins.current.csr[CSR_PMPCFG13][12:11],
+          ins.current.csr[CSR_PMPCFG13][4:3],
+          ins.current.csr[CSR_PMPCFG12][28:27],
+          ins.current.csr[CSR_PMPCFG12][20:19],
+          ins.current.csr[CSR_PMPCFG12][12:11],
+          ins.current.csr[CSR_PMPCFG12][4:3],
+          ins.current.csr[CSR_PMPCFG11][28:27],
+          ins.current.csr[CSR_PMPCFG11][20:19],
+          ins.current.csr[CSR_PMPCFG11][12:11],
+          ins.current.csr[CSR_PMPCFG11][4:3],
+          ins.current.csr[CSR_PMPCFG10][28:27],
+          ins.current.csr[CSR_PMPCFG10][20:19],
+          ins.current.csr[CSR_PMPCFG10][12:11],
+          ins.current.csr[CSR_PMPCFG10][4:3],
+          ins.current.csr[CSR_PMPCFG9][28:27],
+          ins.current.csr[CSR_PMPCFG9][20:19],
+          ins.current.csr[CSR_PMPCFG9][12:11],
+          ins.current.csr[CSR_PMPCFG9][4:3],
+          ins.current.csr[CSR_PMPCFG8][28:27],
+          ins.current.csr[CSR_PMPCFG8][20:19],
+          ins.current.csr[CSR_PMPCFG8][12:11],
+          ins.current.csr[CSR_PMPCFG8][4:3],
+          ins.current.csr[CSR_PMPCFG7][28:27],
+          ins.current.csr[CSR_PMPCFG7][20:19],
+          ins.current.csr[CSR_PMPCFG7][12:11],
+          ins.current.csr[CSR_PMPCFG7][4:3],
+          ins.current.csr[CSR_PMPCFG6][28:27],
+          ins.current.csr[CSR_PMPCFG6][20:19],
+          ins.current.csr[CSR_PMPCFG6][12:11],
+          ins.current.csr[CSR_PMPCFG6][4:3],
+          ins.current.csr[CSR_PMPCFG5][28:27],
+          ins.current.csr[CSR_PMPCFG5][20:19],
+          ins.current.csr[CSR_PMPCFG5][12:11],
+          ins.current.csr[CSR_PMPCFG5][4:3],
+          ins.current.csr[CSR_PMPCFG4][28:27],
+          ins.current.csr[CSR_PMPCFG4][20:19],
+          ins.current.csr[CSR_PMPCFG4][12:11],
+          ins.current.csr[CSR_PMPCFG4][4:3],
+          ins.current.csr[CSR_PMPCFG3][28:27]
           };
   `endif
   `ifdef XLEN64
     pmpcfg_A =  {
-          ins.current.csr[12'h3AE][52:51],
-          ins.current.csr[12'h3AE][44:43],
-          ins.current.csr[12'h3AE][36:35],
-          ins.current.csr[12'h3AE][28:27],
-          ins.current.csr[12'h3AE][20:19],
-          ins.current.csr[12'h3AE][12:11],
-          ins.current.csr[12'h3AE][4:3],
-          ins.current.csr[12'h3AC][60:59],
-          ins.current.csr[12'h3AC][52:51],
-          ins.current.csr[12'h3AC][44:43],
-          ins.current.csr[12'h3AC][36:35],
-          ins.current.csr[12'h3AC][28:27],
-          ins.current.csr[12'h3AC][20:19],
-          ins.current.csr[12'h3AC][12:11],
-          ins.current.csr[12'h3AC][4:3],
-          ins.current.csr[12'h3AA][60:59],
-          ins.current.csr[12'h3AA][52:51],
-          ins.current.csr[12'h3AA][44:43],
-          ins.current.csr[12'h3AA][36:35],
-          ins.current.csr[12'h3AA][28:27],
-          ins.current.csr[12'h3AA][20:19],
-          ins.current.csr[12'h3AA][12:11],
-          ins.current.csr[12'h3AA][4:3],
-          ins.current.csr[12'h3A8][60:59],
-          ins.current.csr[12'h3A8][52:51],
-          ins.current.csr[12'h3A8][44:43],
-          ins.current.csr[12'h3A8][36:35],
-          ins.current.csr[12'h3A8][28:27],
-          ins.current.csr[12'h3A8][20:19],
-          ins.current.csr[12'h3A8][12:11],
-          ins.current.csr[12'h3A8][4:3],
-          ins.current.csr[12'h3A6][60:59],
-          ins.current.csr[12'h3A6][52:51],
-          ins.current.csr[12'h3A6][44:43],
-          ins.current.csr[12'h3A6][36:35],
-          ins.current.csr[12'h3A6][28:27],
-          ins.current.csr[12'h3A6][20:19],
-          ins.current.csr[12'h3A6][12:11],
-          ins.current.csr[12'h3A6][4:3],
-          ins.current.csr[12'h3A4][60:59],
-          ins.current.csr[12'h3A4][52:51],
-          ins.current.csr[12'h3A4][44:43],
-          ins.current.csr[12'h3A4][36:35],
-          ins.current.csr[12'h3A4][28:27],
-          ins.current.csr[12'h3A4][20:19],
-          ins.current.csr[12'h3A4][12:11],
-          ins.current.csr[12'h3A4][4:3],
-          ins.current.csr[12'h3A2][60:59]
+          ins.current.csr[CSR_PMPCFG14][52:51],
+          ins.current.csr[CSR_PMPCFG14][44:43],
+          ins.current.csr[CSR_PMPCFG14][36:35],
+          ins.current.csr[CSR_PMPCFG14][28:27],
+          ins.current.csr[CSR_PMPCFG14][20:19],
+          ins.current.csr[CSR_PMPCFG14][12:11],
+          ins.current.csr[CSR_PMPCFG14][4:3],
+          ins.current.csr[CSR_PMPCFG12][60:59],
+          ins.current.csr[CSR_PMPCFG12][52:51],
+          ins.current.csr[CSR_PMPCFG12][44:43],
+          ins.current.csr[CSR_PMPCFG12][36:35],
+          ins.current.csr[CSR_PMPCFG12][28:27],
+          ins.current.csr[CSR_PMPCFG12][20:19],
+          ins.current.csr[CSR_PMPCFG12][12:11],
+          ins.current.csr[CSR_PMPCFG12][4:3],
+          ins.current.csr[CSR_PMPCFG10][60:59],
+          ins.current.csr[CSR_PMPCFG10][52:51],
+          ins.current.csr[CSR_PMPCFG10][44:43],
+          ins.current.csr[CSR_PMPCFG10][36:35],
+          ins.current.csr[CSR_PMPCFG10][28:27],
+          ins.current.csr[CSR_PMPCFG10][20:19],
+          ins.current.csr[CSR_PMPCFG10][12:11],
+          ins.current.csr[CSR_PMPCFG10][4:3],
+          ins.current.csr[CSR_PMPCFG8][60:59],
+          ins.current.csr[CSR_PMPCFG8][52:51],
+          ins.current.csr[CSR_PMPCFG8][44:43],
+          ins.current.csr[CSR_PMPCFG8][36:35],
+          ins.current.csr[CSR_PMPCFG8][28:27],
+          ins.current.csr[CSR_PMPCFG8][20:19],
+          ins.current.csr[CSR_PMPCFG8][12:11],
+          ins.current.csr[CSR_PMPCFG8][4:3],
+          ins.current.csr[CSR_PMPCFG6][60:59],
+          ins.current.csr[CSR_PMPCFG6][52:51],
+          ins.current.csr[CSR_PMPCFG6][44:43],
+          ins.current.csr[CSR_PMPCFG6][36:35],
+          ins.current.csr[CSR_PMPCFG6][28:27],
+          ins.current.csr[CSR_PMPCFG6][20:19],
+          ins.current.csr[CSR_PMPCFG6][12:11],
+          ins.current.csr[CSR_PMPCFG6][4:3],
+          ins.current.csr[CSR_PMPCFG4][60:59],
+          ins.current.csr[CSR_PMPCFG4][52:51],
+          ins.current.csr[CSR_PMPCFG4][44:43],
+          ins.current.csr[CSR_PMPCFG4][36:35],
+          ins.current.csr[CSR_PMPCFG4][28:27],
+          ins.current.csr[CSR_PMPCFG4][20:19],
+          ins.current.csr[CSR_PMPCFG4][12:11],
+          ins.current.csr[CSR_PMPCFG4][4:3],
+          ins.current.csr[CSR_PMPCFG2][60:59]
           };
   `endif
 
   `ifdef XLEN32
     pmpcfg_L =  {
-          ins.current.csr[12'h3AF][23],
-          ins.current.csr[12'h3AF][15],
-          ins.current.csr[12'h3AF][7],
-          ins.current.csr[12'h3AE][31],
-          ins.current.csr[12'h3AE][23],
-          ins.current.csr[12'h3AE][15],
-          ins.current.csr[12'h3AE][7],
-          ins.current.csr[12'h3AD][31],
-          ins.current.csr[12'h3AD][23],
-          ins.current.csr[12'h3AD][15],
-          ins.current.csr[12'h3AD][7],
-          ins.current.csr[12'h3AC][31],
-          ins.current.csr[12'h3AC][23],
-          ins.current.csr[12'h3AC][15],
-          ins.current.csr[12'h3AC][7],
-          ins.current.csr[12'h3AB][31],
-          ins.current.csr[12'h3AB][23],
-          ins.current.csr[12'h3AB][15],
-          ins.current.csr[12'h3AB][7],
-          ins.current.csr[12'h3AA][31],
-          ins.current.csr[12'h3AA][23],
-          ins.current.csr[12'h3AA][15],
-          ins.current.csr[12'h3AA][7],
-          ins.current.csr[12'h3A9][31],
-          ins.current.csr[12'h3A9][23],
-          ins.current.csr[12'h3A9][15],
-          ins.current.csr[12'h3A9][7],
-          ins.current.csr[12'h3A8][31],
-          ins.current.csr[12'h3A8][23],
-          ins.current.csr[12'h3A8][15],
-          ins.current.csr[12'h3A8][7],
-          ins.current.csr[12'h3A7][31],
-          ins.current.csr[12'h3A7][23],
-          ins.current.csr[12'h3A7][15],
-          ins.current.csr[12'h3A7][7],
-          ins.current.csr[12'h3A6][31],
-          ins.current.csr[12'h3A6][23],
-          ins.current.csr[12'h3A6][15],
-          ins.current.csr[12'h3A6][7],
-          ins.current.csr[12'h3A5][31],
-          ins.current.csr[12'h3A5][23],
-          ins.current.csr[12'h3A5][15],
-          ins.current.csr[12'h3A5][7],
-          ins.current.csr[12'h3A4][31],
-          ins.current.csr[12'h3A4][23],
-          ins.current.csr[12'h3A4][15],
-          ins.current.csr[12'h3A4][7],
-          ins.current.csr[12'h3A3][31]
+          ins.current.csr[CSR_PMPCFG15][23],
+          ins.current.csr[CSR_PMPCFG15][15],
+          ins.current.csr[CSR_PMPCFG15][7],
+          ins.current.csr[CSR_PMPCFG14][31],
+          ins.current.csr[CSR_PMPCFG14][23],
+          ins.current.csr[CSR_PMPCFG14][15],
+          ins.current.csr[CSR_PMPCFG14][7],
+          ins.current.csr[CSR_PMPCFG13][31],
+          ins.current.csr[CSR_PMPCFG13][23],
+          ins.current.csr[CSR_PMPCFG13][15],
+          ins.current.csr[CSR_PMPCFG13][7],
+          ins.current.csr[CSR_PMPCFG12][31],
+          ins.current.csr[CSR_PMPCFG12][23],
+          ins.current.csr[CSR_PMPCFG12][15],
+          ins.current.csr[CSR_PMPCFG12][7],
+          ins.current.csr[CSR_PMPCFG11][31],
+          ins.current.csr[CSR_PMPCFG11][23],
+          ins.current.csr[CSR_PMPCFG11][15],
+          ins.current.csr[CSR_PMPCFG11][7],
+          ins.current.csr[CSR_PMPCFG10][31],
+          ins.current.csr[CSR_PMPCFG10][23],
+          ins.current.csr[CSR_PMPCFG10][15],
+          ins.current.csr[CSR_PMPCFG10][7],
+          ins.current.csr[CSR_PMPCFG9][31],
+          ins.current.csr[CSR_PMPCFG9][23],
+          ins.current.csr[CSR_PMPCFG9][15],
+          ins.current.csr[CSR_PMPCFG9][7],
+          ins.current.csr[CSR_PMPCFG8][31],
+          ins.current.csr[CSR_PMPCFG8][23],
+          ins.current.csr[CSR_PMPCFG8][15],
+          ins.current.csr[CSR_PMPCFG8][7],
+          ins.current.csr[CSR_PMPCFG7][31],
+          ins.current.csr[CSR_PMPCFG7][23],
+          ins.current.csr[CSR_PMPCFG7][15],
+          ins.current.csr[CSR_PMPCFG7][7],
+          ins.current.csr[CSR_PMPCFG6][31],
+          ins.current.csr[CSR_PMPCFG6][23],
+          ins.current.csr[CSR_PMPCFG6][15],
+          ins.current.csr[CSR_PMPCFG6][7],
+          ins.current.csr[CSR_PMPCFG5][31],
+          ins.current.csr[CSR_PMPCFG5][23],
+          ins.current.csr[CSR_PMPCFG5][15],
+          ins.current.csr[CSR_PMPCFG5][7],
+          ins.current.csr[CSR_PMPCFG4][31],
+          ins.current.csr[CSR_PMPCFG4][23],
+          ins.current.csr[CSR_PMPCFG4][15],
+          ins.current.csr[CSR_PMPCFG4][7],
+          ins.current.csr[CSR_PMPCFG3][31]
           };
   `endif
   `ifdef XLEN64
     pmpcfg_L =  {
-          ins.current.csr[12'h3AE][55],
-          ins.current.csr[12'h3AE][47],
-          ins.current.csr[12'h3AE][39],
-          ins.current.csr[12'h3AE][31],
-          ins.current.csr[12'h3AE][23],
-          ins.current.csr[12'h3AE][15],
-          ins.current.csr[12'h3AE][7],
-          ins.current.csr[12'h3AC][63],
-          ins.current.csr[12'h3AC][55],
-          ins.current.csr[12'h3AC][47],
-          ins.current.csr[12'h3AC][39],
-          ins.current.csr[12'h3AC][31],
-          ins.current.csr[12'h3AC][23],
-          ins.current.csr[12'h3AC][15],
-          ins.current.csr[12'h3AC][7],
-          ins.current.csr[12'h3AA][63],
-          ins.current.csr[12'h3AA][55],
-          ins.current.csr[12'h3AA][47],
-          ins.current.csr[12'h3AA][39],
-          ins.current.csr[12'h3AA][31],
-          ins.current.csr[12'h3AA][23],
-          ins.current.csr[12'h3AA][15],
-          ins.current.csr[12'h3AA][7],
-          ins.current.csr[12'h3A8][63],
-          ins.current.csr[12'h3A8][55],
-          ins.current.csr[12'h3A8][47],
-          ins.current.csr[12'h3A8][39],
-          ins.current.csr[12'h3A8][31],
-          ins.current.csr[12'h3A8][23],
-          ins.current.csr[12'h3A8][15],
-          ins.current.csr[12'h3A8][7],
-          ins.current.csr[12'h3A6][63],
-          ins.current.csr[12'h3A6][55],
-          ins.current.csr[12'h3A6][47],
-          ins.current.csr[12'h3A6][39],
-          ins.current.csr[12'h3A6][31],
-          ins.current.csr[12'h3A6][23],
-          ins.current.csr[12'h3A6][15],
-          ins.current.csr[12'h3A6][7],
-          ins.current.csr[12'h3A4][63],
-          ins.current.csr[12'h3A4][55],
-          ins.current.csr[12'h3A4][47],
-          ins.current.csr[12'h3A4][39],
-          ins.current.csr[12'h3A4][31],
-          ins.current.csr[12'h3A4][23],
-          ins.current.csr[12'h3A4][15],
-          ins.current.csr[12'h3A4][7],
-          ins.current.csr[12'h3A2][63]
+          ins.current.csr[CSR_PMPCFG14][55],
+          ins.current.csr[CSR_PMPCFG14][47],
+          ins.current.csr[CSR_PMPCFG14][39],
+          ins.current.csr[CSR_PMPCFG14][31],
+          ins.current.csr[CSR_PMPCFG14][23],
+          ins.current.csr[CSR_PMPCFG14][15],
+          ins.current.csr[CSR_PMPCFG14][7],
+          ins.current.csr[CSR_PMPCFG12][63],
+          ins.current.csr[CSR_PMPCFG12][55],
+          ins.current.csr[CSR_PMPCFG12][47],
+          ins.current.csr[CSR_PMPCFG12][39],
+          ins.current.csr[CSR_PMPCFG12][31],
+          ins.current.csr[CSR_PMPCFG12][23],
+          ins.current.csr[CSR_PMPCFG12][15],
+          ins.current.csr[CSR_PMPCFG12][7],
+          ins.current.csr[CSR_PMPCFG10][63],
+          ins.current.csr[CSR_PMPCFG10][55],
+          ins.current.csr[CSR_PMPCFG10][47],
+          ins.current.csr[CSR_PMPCFG10][39],
+          ins.current.csr[CSR_PMPCFG10][31],
+          ins.current.csr[CSR_PMPCFG10][23],
+          ins.current.csr[CSR_PMPCFG10][15],
+          ins.current.csr[CSR_PMPCFG10][7],
+          ins.current.csr[CSR_PMPCFG8][63],
+          ins.current.csr[CSR_PMPCFG8][55],
+          ins.current.csr[CSR_PMPCFG8][47],
+          ins.current.csr[CSR_PMPCFG8][39],
+          ins.current.csr[CSR_PMPCFG8][31],
+          ins.current.csr[CSR_PMPCFG8][23],
+          ins.current.csr[CSR_PMPCFG8][15],
+          ins.current.csr[CSR_PMPCFG8][7],
+          ins.current.csr[CSR_PMPCFG6][63],
+          ins.current.csr[CSR_PMPCFG6][55],
+          ins.current.csr[CSR_PMPCFG6][47],
+          ins.current.csr[CSR_PMPCFG6][39],
+          ins.current.csr[CSR_PMPCFG6][31],
+          ins.current.csr[CSR_PMPCFG6][23],
+          ins.current.csr[CSR_PMPCFG6][15],
+          ins.current.csr[CSR_PMPCFG6][7],
+          ins.current.csr[CSR_PMPCFG4][63],
+          ins.current.csr[CSR_PMPCFG4][55],
+          ins.current.csr[CSR_PMPCFG4][47],
+          ins.current.csr[CSR_PMPCFG4][39],
+          ins.current.csr[CSR_PMPCFG4][31],
+          ins.current.csr[CSR_PMPCFG4][23],
+          ins.current.csr[CSR_PMPCFG4][15],
+          ins.current.csr[CSR_PMPCFG4][7],
+          ins.current.csr[CSR_PMPCFG2][63]
           };
   `endif
 
   `ifdef XLEN32
     pmpcfg_l =  {
-          ins.current.csr[12'h3A3][23],
-          ins.current.csr[12'h3A3][15],
-          ins.current.csr[12'h3A3][7],
-          ins.current.csr[12'h3A2][31],
-          ins.current.csr[12'h3A2][23],
-          ins.current.csr[12'h3A2][15],
-          ins.current.csr[12'h3A2][7],
-          ins.current.csr[12'h3A1][31],
-          ins.current.csr[12'h3A1][23],
-          ins.current.csr[12'h3A1][15],
-          ins.current.csr[12'h3A1][7],
-          ins.current.csr[12'h3A0][31],
-          ins.current.csr[12'h3A0][23],
-          ins.current.csr[12'h3A0][15],
-          ins.current.csr[12'h3A0][7]
+          ins.current.csr[CSR_PMPCFG3][23],
+          ins.current.csr[CSR_PMPCFG3][15],
+          ins.current.csr[CSR_PMPCFG3][7],
+          ins.current.csr[CSR_PMPCFG2][31],
+          ins.current.csr[CSR_PMPCFG2][23],
+          ins.current.csr[CSR_PMPCFG2][15],
+          ins.current.csr[CSR_PMPCFG2][7],
+          ins.current.csr[CSR_PMPCFG1][31],
+          ins.current.csr[CSR_PMPCFG1][23],
+          ins.current.csr[CSR_PMPCFG1][15],
+          ins.current.csr[CSR_PMPCFG1][7],
+          ins.current.csr[CSR_PMPCFG0][31],
+          ins.current.csr[CSR_PMPCFG0][23],
+          ins.current.csr[CSR_PMPCFG0][15],
+          ins.current.csr[CSR_PMPCFG0][7]
           };
   `endif
   `ifdef XLEN64
     pmpcfg_l =  {
-          ins.current.csr[12'h3A2][55],
-          ins.current.csr[12'h3A2][47],
-          ins.current.csr[12'h3A2][39],
-          ins.current.csr[12'h3A2][31],
-          ins.current.csr[12'h3A2][23],
-          ins.current.csr[12'h3A2][15],
-          ins.current.csr[12'h3A2][7],
-          ins.current.csr[12'h3A0][63],
-          ins.current.csr[12'h3A0][55],
-          ins.current.csr[12'h3A0][47],
-          ins.current.csr[12'h3A0][39],
-          ins.current.csr[12'h3A0][31],
-          ins.current.csr[12'h3A0][23],
-          ins.current.csr[12'h3A0][15],
-          ins.current.csr[12'h3A0][7]
+          ins.current.csr[CSR_PMPCFG2][55],
+          ins.current.csr[CSR_PMPCFG2][47],
+          ins.current.csr[CSR_PMPCFG2][39],
+          ins.current.csr[CSR_PMPCFG2][31],
+          ins.current.csr[CSR_PMPCFG2][23],
+          ins.current.csr[CSR_PMPCFG2][15],
+          ins.current.csr[CSR_PMPCFG2][7],
+          ins.current.csr[CSR_PMPCFG0][63],
+          ins.current.csr[CSR_PMPCFG0][55],
+          ins.current.csr[CSR_PMPCFG0][47],
+          ins.current.csr[CSR_PMPCFG0][39],
+          ins.current.csr[CSR_PMPCFG0][31],
+          ins.current.csr[CSR_PMPCFG0][23],
+          ins.current.csr[CSR_PMPCFG0][15],
+          ins.current.csr[CSR_PMPCFG0][7]
           };
   `endif
   PMPSM_cg.sample(ins, pmpcfg, pmpaddr, pack_pmpaddr, pmpcfg_wr, pmpcfg_WR, pmpcfg_a, pmpcfg_A, pmpcfg_x, pmpcfg_X, pmpcfg_l, pmpcfg_L, pmp_hit, pmp_HIT);

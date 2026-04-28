@@ -8,6 +8,8 @@
 
 """Template loading and insertion for test files."""
 
+from __future__ import annotations
+
 import importlib.resources
 import re
 from pathlib import Path
@@ -41,6 +43,8 @@ def insert_header_template(
     E_ext = test_config.E_ext
     required_extensions = test_config.required_extensions
     ext_components, params = canonicalize_extensions(testsuite, xlen, E_ext, required_extensions)
+    if test_config.extra_params:
+        params.extend(test_config.extra_params)
     march_extensions = test_config.march_extensions
     if march_extensions is not None:
         march_ext_components, _ = canonicalize_extensions(testsuite, xlen, E_ext, march_extensions)
@@ -61,7 +65,6 @@ def insert_header_template(
         .replace("@PARAMS@", format_params(params))
         .replace("@MARCH@", march)
         .replace("@EXTRA_DEFINES@", "\n".join(extra_defines))
-        .replace("@CONFIG_DEPENDENT@", str(test_config.config_dependent).lower())
         .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(sigupd_count))
     )
     return template
@@ -166,6 +169,14 @@ def generate_march_string(ext_components: list[str], xlen: int) -> str:
             single_letter.append(ext)
         else:
             multi_letter.append(ext)
+
+    # Always include Zicsr so boot code CSR instructions can compile
+    if "Zicsr" not in multi_letter:
+        multi_letter.append("Zicsr")
+
+    # workaround for https://github.com/llvm/llvm-project/issues/190910; can be removed when this is resolved
+    if ("Zihintntl" in multi_letter) and ("Zca" in multi_letter):
+        single_letter.append("C")
 
     # Sort single-letter extensions in canonical order (I/E, M, A, F, D, Q, C, B, V, H)
     single_letter.sort(key=_single_letter_sort_key)

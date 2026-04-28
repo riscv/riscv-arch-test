@@ -1,0 +1,8 @@
+[[extension:Zihpm]]
+=== Extension Zihpm
+
+Long Name::
+Hardware Performance Counters
+
+Description::
+The number of counters is platform-specific.

@@ -22,7 +22,7 @@ def _generate_ufcsr_tests(test_data: TestData) -> list[str]:
     csrs = ["fcsr", "frm", "fflags"]
     lines = []
 
-    lines.extend(["\tRVTEST_GOTO_LOWER_MODE Umode  # Run tests in user mode\n"])
+    lines.extend(["RVTEST_GOTO_LOWER_MODE Umode  # Run tests in user mode\n"])
 
     ######################################
     coverpoint = "cp_ufcsr_access"

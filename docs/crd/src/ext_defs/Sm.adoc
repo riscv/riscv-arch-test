@@ -1,0 +1,99 @@
+[[extension:Sm]]
+=== Extension Sm
+
+Long Name::
+Minimal Machine Mode
+
+Description::
+All Machine-mode features defined as mandatory by the RISC-V Privileged Architectures specification.
+
+.RV32/64 mandatory CSRs (many can be read-only zero)
+[%autowidth]
+|===
+| CSR name | Normative rule defining CSR as mandatory | Notes
+
+| misa | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#misa_always_rd[misa_always_rd] |
+| mvendorid | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mvendorid_always_rd[mvendorid_always_rd] |
+| marchid | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#marchid_always_rd[marchid_always_rd] |
+| mimpid | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mimpid_always_rd[mimpid_always_rd] |
+| mhartid | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mhartid_always_rd[mhartid_always_rd] |
+| mstatus | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mstatus_acc[mstatus_acc] | closest rule requiring CSR to be implemented, seems implicitly required
+| mtvec | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mtvec_mandatory[mtvec_mandatory] |
+| mip | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mip_acc[mip_acc] | closest rule requiring CSR to be implemented, seems implicitly required
+| mie | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mie_acc[mie_acc] | closest rule requiring CSR to be implemented, seems implicitly required
+| mcycle | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#m_mode_perf_monitoring[m_mode_perf_monitoring] |
+| minstret | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#m_mode_perf_monitoring[m_mode_perf_monitoring] |
+| mhpmcounter3-mhpmcounter31 | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mhpmcounter_mandatory[mhpmcounter_mandatory] |
+| mscratch | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mscratch_sz_acc[mscratch_sz_acc] | closest rule requiring CSR to be implemented, seems implicitly required
+| mepc | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mepc_op[mepc_op] | closest rule requiring CSR to be implemented, seems implicitly required
+| mcause | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mcause_op[mcause_op] | closest rule requiring CSR to be implemented, seems implicitly required
+| mtval | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mtval_op[mtval_op] | closest rule requiring CSR to be implemented, seems implicitly required
+| mconfigptr |https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mconfigptr_mandatory[mconfigptr_mandatory] |
+|===
+
+.RV32/64 read-only shadows of M-mode CSRs
+[%autowidth]
+|===
+| Shadow CSR | M-mode CSR | Normative rule defining shadow | Notes
+
+| cycle | mcycle | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#cycle_op[cycle_op] | read-only shadow of mcycle[31:0]
+| time | mtime | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#time_op[time_op] | read-only shadow of mtime[31:0] memory-mapped register, only exists if TIME_CSR_HW_SUPPORT parameter is true
+| instret | minstret | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#instret_op[instret_op] | read-only shadow of minstret[31:0]
+| hpmcounter3-hpmcounter31 | mhpmcounter3-mhpmcounter31 | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#hpmcounter_op[hpmcounter_op] | read-only shadow of mhpmcounter3[31:0]-mhpmcounter31[31:0]
+|===
+
+.Additional RV32-only mandatory CSRs (many can be read-only zero)
+[%autowidth]
+|===
+| CSR name | Normative rule defining CSR as mandatory | Notes
+
+| mstatush | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mstatush_acc[mstatush_acc] | Mentioned as mandatory in the Priv ISA manual "Preface to Version 20211203"
+| mcycleh | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mcycleh_op[mcycleh_op] |
+| minstreth | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#minstreth_op[minstreth_op] |
+| mhpmcounter3h-mhpmcounter31h | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mhpmcounterh_op[mhpmcounterh_op] |
+|===
+
+.Additional RV32-only read-only shadows of M-mode CSRs
+[%autowidth]
+|===
+| Shadow CSR | M-mode CSR | Normative rule defining shadow | Notes
+
+| cycleh | mcycleh | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#cycle_op[cycle_op] | read-only shadow of mcycle[63:32]
+| timeh | mtimeh | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#time_op[time_op] | read-only shadow of mtime[63:32] memory-mapped register, only exists if TIME_CSR_HW_SUPPORT parameter is true
+| instreth | minstreth | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#instret_op[instret_op] | read-only shadow of minstret[63:32]
+| hpmcounterh3-hpmcounterh31 | mhpmcounterh3-mhpmcounterh31 | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#hpmcounter_op[hpmcounter_op] | read-only shadow of mhpmcounter3[63:32]-mhpmcounter31[63:32]
+|===
+
+.Memory-mapped registers (not CSRs)
+[%autowidth]
+|===
+| Register name | Normative rule defining register as mandatory | Notes
+
+| mtime | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mtime_acc[mtime_acc] |
+| mtimecmp | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mtimecmp_sz[mtimecmp_sz] |
+|===
+
+.Instructions
+[%autowidth]
+|===
+| Instruction name | Normative rule defining operation | Notes
+
+| ecall | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#ecall_op[ecall_op] |
+| ebreak | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#ebreak_op[ebreak_op] |
+| c.ebreak | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#c-ebreak_op[c-ebreak_op] | Only present when the C extension is present
+| mret | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mret_presence[mret_presence] |
+| wfi | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#wfi_op[wfi_op] |
+|===
+
+.PMAs (Physical Memory Attributes)
+[%autowidth]
+|===
+| PMA | Normative rule or Implementation-defined behavior
+
+| Main-memory PMAs | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#pma_mm_vs_io_def[pma_mm_vs_io_def]
+| Support read and write of all access widths required by the attached devices | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#pma_mm_rw[pma_mm_rw]
+| Support instruction fetch if PMA_MM_IFETCH is true for the PMA region | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#PMA_MM_IFETCH[PMA_MM_IFETCH]
+| Support atomics if PMA_CACHE_MM_ALL_ATOMICS is true for the PMA region | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#PMA_CACHE_MM_ALL_ATOMICS[PMA_CACHE_MM_ALL_ATOMICS]
+| AMO support levels | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#pma_amo_levels[pma_amo_levels]
+| Size support per AMO level | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#pma_amo_sz_support[pma_amo_sz_support]
+|===

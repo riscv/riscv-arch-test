@@ -15,18 +15,18 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
     option.per_instance = 0;
 
     // building blocks for the main coverpoints
-    mstatus_FS_zero: coverpoint ins.prev.csr[12'h300][14:13] {
+    mstatus_FS_zero: coverpoint ins.prev.csr[CSR_MSTATUS][14:13] {
         bins disabled = {2'b00};
     }
-    mstatus_FS_nonzero: coverpoint ins.prev.csr[12'h300][14:13] {
+    mstatus_FS_nonzero: coverpoint ins.prev.csr[CSR_MSTATUS][14:13] {
         bins enabled = {2'b01, 2'b10, 2'b11};
     }
-    mstatus_FS_status: coverpoint ins.prev.csr[12'h300][14:13] {
+    mstatus_FS_status: coverpoint ins.prev.csr[CSR_MSTATUS][14:13] {
         bins fs_initial = {2'b01};
         bins fs_clean   = {2'b10};
         bins fs_dirty   = {2'b11};
     }
-    frm_legal: coverpoint ins.prev.csr[12'h003][7:5] {
+    frm_legal: coverpoint ins.prev.csr[CSR_FCSR][7:5] {
         bins legal_frm = {3'b000, 3'b001, 3'b010, 3'b011, 3'b100};
     }
     instrs: coverpoint ins.current.insn {
@@ -63,16 +63,54 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
             wildcard bins fmvp         = {32'b1011001_?????_?????_000_?????_1010011};
         `endif
     }
+    loadops: coverpoint ins.current.insn {
+        wildcard bins flw = {FLW};
+        `ifdef ZFH_SUPPORTED
+            wildcard bins flh = {FLH};
+        `endif
+        `ifdef D_SUPPORTED
+            wildcard bins fld = {FLD};
+        `endif
+        `ifdef Q_SUPPORTED
+            wildcard bins flq = {FLQ};
+        `endif
+    }
+    storeops: coverpoint ins.current.insn {
+        wildcard bins fsw = {FSW};
+        `ifdef ZFH_SUPPORTED
+            wildcard bins fsh = {FSH};
+        `endif
+        `ifdef D_SUPPORTED
+            wildcard bins fsd = {FSD};
+        `endif
+        `ifdef Q_SUPPORTED
+            wildcard bins fsq = {FSQ};
+        `endif
+    }
+    adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[3:0]  {
+        // auto fills 0000 through 1111
+    }
+
 
     // main coverpoints
     cp_mstatus_fs_illegal_instr: cross instrs, mstatus_FS_zero;
-    // cp_mstatus_fs_csr_write:  redundant, covered by cp_mstatus_fs_illegal_instr
-    cp_badfrm: cross instrs_dynrm, mstatus_FS_nonzero, frm_illegal;
-    cp_mstatus_fs_legal: cross instrs, mstatus_FS_status, frm_legal;
+    cp_badfrm:                   cross instrs_dynrm, mstatus_FS_nonzero, frm_illegal;
+    cp_mstatus_fs_legal:         cross instrs, mstatus_FS_status, frm_legal;
+    cp_load_address_misaligned:  cross loadops, adr_LSBs;
+    cp_store_address_misaligned: cross storeops, adr_LSBs;
+
+    // access fault coverpoints
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
+        }
+        cp_load_access_fault:        cross loadops, illegal_address;
+        cp_store_access_fault:       cross storeops, illegal_address;
+    `endif
 endgroup
 
 function void exceptionsf_sample(int hart, int issue, ins_t ins);
-    //$display("Mstatus FS: %b, frmIllegal: %b, op: %b, fmrBits: %b, imm: %b", ins.current.csr[12'h300][14:13], ins.current.csr[12'h003][7:5],  ins.current.insn[6:0], ins.current.insn[14:12], ins.current.insn[31:27]);
+    //$display("Mstatus FS: %b, frmIllegal: %b, op: %b, fmrBits: %b, imm: %b", ins.current.csr[CSR_MSTATUS][14:13], ins.current.csr[CSR_FCSR][7:5],  ins.current.insn[6:0], ins.current.insn[14:12], ins.current.insn[31:27]);
     ExceptionsF_cg.sample(ins);
 
 

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # /// script
-# requires-python = ">=3.12"
+# requires-python = ">=3.10"
 # dependencies = [
 #     "ruamel-yaml>=0.18.16",
 # ]
@@ -12,20 +12,26 @@
 Generate ASCIIDoc tables from parameter YAML files.
 
 Usage:
-  generate_param_table.py [--yaml PATH] [--udb PATH] [--out PATH]
+  generate_param_table.py [--yaml PATH] [--out PATH]
 
 Defaults:
     yaml: coverpoints/param
-    udb:  external/riscv-unified-db/spec/std/isa/param
-    out:  docs/ctp/src/param/
+    out:  docs/ctp/build/generated/param/
 
 The script generates:
   - One .adoc file per YAML in coverpoints/param with parameter tables
   - A summary.adoc with used and unused parameter tables
+
+UDB parameters are loaded via the `udb list parameters` CLI command (from the udb gem).
 """
 
 import argparse
+import json
+import re
+import shutil
+import subprocess
 import sys
+import time
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -97,90 +103,94 @@ def load_yaml(path: Path) -> dict[str, Any]:
         return parse_malformed_yaml(text)
 
 
-def load_udb_params(udb_dir: Path) -> dict[str, dict[str, Any]]:
-    """Load all UDB parameter definitions into a dict keyed by parameter name."""
+def _ensure_udb_installed() -> None:
+    """Ensure the UDB gem is installed via bundler, installing if necessary."""
+    if shutil.which("udb") is not None:
+        return
+
+    gemfile = Path(__file__).resolve().parent.parent.parent / "framework" / "src" / "act" / "data" / "Gemfile"
+    if not gemfile.exists():
+        print(
+            "Error: 'udb' command not found and Gemfile not found. Install the udb gem (see README).", file=sys.stderr
+        )
+        sys.exit(2)
+
+    try:
+        subprocess.run(["bundle", "check"], check=True, cwd=gemfile.parent, capture_output=True, text=True)
+    except FileNotFoundError:
+        print(
+            "Error: 'udb' and 'bundle' commands not found. See the README for installation instructions.",
+            file=sys.stderr,
+        )
+        sys.exit(2)
+    except subprocess.CalledProcessError:
+        print("UDB gem missing or out of date; running 'bundle install'...")
+        max_attempts = 3
+        for attempt in range(1, max_attempts + 1):
+            try:
+                subprocess.run(["bundle", "install"], check=True, cwd=gemfile.parent)
+                break
+            except subprocess.CalledProcessError:
+                if attempt == max_attempts:
+                    print("Error: 'bundle install' failed. Check Ruby and bundler installation.", file=sys.stderr)
+                    sys.exit(2)
+                backoff = attempt * 10
+                print(f"'bundle install' attempt {attempt} failed. Retrying in {backoff}s...")
+                time.sleep(backoff)
+
+    if shutil.which("udb") is None:
+        print("Error: 'udb' command still not found after 'bundle install'.", file=sys.stderr)
+        sys.exit(2)
+
+
+def load_udb_params() -> dict[str, dict[str, Any]]:
+    """Load all UDB parameter definitions via the `udb list parameters` CLI command."""
+    _ensure_udb_installed()
+    try:
+        result = subprocess.run(
+            ["udb", "list", "parameters", "-f", "json"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except FileNotFoundError:
+        print("Error: 'udb' command not found. Install the udb gem (see README).", file=sys.stderr)
+        sys.exit(2)
+    except subprocess.CalledProcessError as e:
+        print(f"Error: 'udb list parameters' failed: {e.stderr}", file=sys.stderr)
+        sys.exit(2)
+
     params = {}
-    for yaml_file in sorted(udb_dir.glob("*.yaml")):
-        try:
-            data = load_yaml(yaml_file)
-            if isinstance(data, dict) and data.get("kind") == "parameter":
-                name = data.get("name")
-                if name:
-                    params[name] = {
-                        "description": data.get("description", ""),
-                        "definedBy": data.get("definedBy", {}),
-                        "file": yaml_file.name,
-                    }
-        except (OSError, YAMLError, KeyError, TypeError) as e:
-            print(f"Warning: Failed to load {yaml_file}: {e}", file=sys.stderr)
+    for entry in json.loads(result.stdout):
+        name = entry.get("name")
+        if name:
+            params[name] = {
+                "description": entry.get("description", "").strip(),
+                "exts": entry.get("exts", ""),
+            }
     return params
 
 
-def extract_extensions(defined_by: dict[str, Any]) -> list[str]:
-    """Extract extension names from definedBy field, handling allOf/anyOf."""
-    extensions = []
+def extract_extensions(exts_str: str) -> list[str]:
+    """Extract extension names from a UDB exts expression string.
 
-    def extract_from_obj(obj: dict[str, Any] | list[Any] | str) -> None:
-        """Recursively extract extensions from nested structures."""
-        if isinstance(obj, dict):
-            # Direct name field - this is an extension
-            if "name" in obj and isinstance(obj.get("name"), str):
-                # Only add if this looks like an extension (has name at top level or in extension context)
-                extensions.append(obj["name"])
-                return
-
-            # Check for direct extension field
-            if "extension" in obj:
-                ext = obj["extension"]
-                if isinstance(ext, dict):
-                    # Handle nested allOf/anyOf inside extension
-                    if "allOf" in ext:
-                        for item in ext.get("allOf", []):
-                            extract_from_obj(item)
-                    elif "anyOf" in ext:
-                        for item in ext.get("anyOf", []):
-                            extract_from_obj(item)
-                    elif "name" in ext:
-                        # Direct name in extension dict
-                        extensions.append(ext["name"])
-                elif isinstance(ext, str):
-                    extensions.append(ext)
-
-            # Check for extensions (plural) field
-            if "extensions" in obj:
-                exts = obj["extensions"]
-                if isinstance(exts, list):
-                    for ext in exts:
-                        if isinstance(ext, dict) and "name" in ext:
-                            extensions.append(ext["name"])
-                        elif isinstance(ext, str):
-                            extensions.append(ext)
-
-            # Handle allOf - list of conditions (not inside extension)
-            if "allOf" in obj and "extension" not in obj:
-                for item in obj.get("allOf", []):
-                    extract_from_obj(item)
-
-            # Handle anyOf - list of alternatives (not inside extension)
-            if "anyOf" in obj and "extension" not in obj:
-                for item in obj.get("anyOf", []):
-                    extract_from_obj(item)
-
-        elif isinstance(obj, list):
-            for item in obj:
-                extract_from_obj(item)
-
-    extract_from_obj(defined_by)
+    Examples:
+        "S>=0" -> ["S"]
+        "(Zicbom>=0 || Zicbop>=0 || Zicboz>=0)" -> ["Zicbom", "Zicbop", "Zicboz"]
+        "(Sm>=0 && (MARCHID_IMPLEMENTED==true))" -> ["Sm"]
+    """
+    # Match extension names: sequences of word characters that start with an uppercase letter,
+    # followed by a version comparison operator (>=, <=, ==, >, <)
+    extensions = re.findall(r"\b([A-Z][A-Za-z0-9]*)\s*(?:>=|<=|==|>|<)", exts_str)
 
     # Remove duplicates while preserving order
-    seen = set()
-    unique_extensions = []
+    seen: set[str] = set()
+    unique: list[str] = []
     for ext in extensions:
         if ext not in seen:
             seen.add(ext)
-            unique_extensions.append(ext)
-
-    return unique_extensions
+            unique.append(ext)
+    return unique
 
 
 def parse_input_yaml(yaml_path: Path) -> list[dict[str, Any]]:
@@ -354,7 +364,7 @@ def make_summary_tables(all_input_files: list[Path], udb_params: dict[str, dict[
         # Get UDB info
         udb_info = udb_params.get(param_name, {})
         description = udb_info.get("description", "")
-        extensions = extract_extensions(udb_info.get("definedBy", {}))
+        extensions = extract_extensions(udb_info.get("exts", ""))
         defined_by_str = ", ".join(extensions)
 
         # Escape pipes
@@ -387,7 +397,7 @@ def make_summary_tables(all_input_files: list[Path], udb_params: dict[str, dict[
 
         udb_info = udb_params.get(param_name, {})
         description = udb_info.get("description", "")
-        extensions = extract_extensions(udb_info.get("definedBy", {}))
+        extensions = extract_extensions(udb_info.get("exts", ""))
         defined_by_str = ", ".join(extensions)
 
         # Escape pipes
@@ -407,10 +417,8 @@ def make_summary_tables(all_input_files: list[Path], udb_params: dict[str, dict[
 def main() -> None:
     p = argparse.ArgumentParser(description="Generate ASCIIDoc tables from parameter YAML files")
     p.add_argument("--yaml", default="coverpoints/param", help="Path to directory containing input YAML files")
-    p.add_argument(
-        "--udb", default="external/riscv-unified-db/spec/std/isa/param", help="Path to UDB parameter directory"
-    )
-    p.add_argument("--out", default="docs/ctp/src/param/", help="Output directory for ASCIIDoc files")
+    p.add_argument("--out", default="docs/ctp/build/generated/param/", help="Output directory for ASCIIDoc files")
+    p.add_argument("--norm-dir", default=None, help="Path to norm rules directory (for placeholder generation)")
     args = p.parse_args()
 
     # Resolve paths relative to script directory if needed
@@ -425,20 +433,11 @@ def main() -> None:
             print(f"Error: YAML directory not found: {args.yaml} or {alt}", file=sys.stderr)
             sys.exit(2)
 
-    udb_path = Path(args.udb)
-    if not udb_path.exists():
-        alt = script_dir.parent / args.udb
-        if alt.exists():
-            udb_path = alt
-        else:
-            print(f"Error: UDB directory not found: {args.udb} or {alt}", file=sys.stderr)
-            sys.exit(2)
-
     out_path = Path(args.out)
 
-    # Load UDB parameters
-    print(f"Loading UDB parameters from: {udb_path}")
-    udb_params = load_udb_params(udb_path)
+    # Load UDB parameters via the udb gem CLI
+    print("Loading UDB parameters via 'udb list parameters'...")
+    udb_params = load_udb_params()
     print(f"Loaded {len(udb_params)} UDB parameters")
 
     # Find all input YAML files
@@ -467,21 +466,26 @@ def main() -> None:
 
     # Also produce a placeholder .adoc for any extension that has a norm adoc
     # but lacks a corresponding input YAML in the provided yaml source directory.
-    # We treat files named "<base>_norm_rules.adoc" in docs/ctp/src/norm as extensions.
+    # We treat files named "<base>_norm_rules.adoc" in the norm directory as extensions.
 
-    # Resolve norm directory relative to repository layout
-    script_dir = Path(__file__).resolve().parent
-    # Prefer top-level docs/ctp/src/norm relative to the repo (sibling of generators)
-    repo_root_candidate = script_dir.parent.parent  # .../riscv-arch-test-dh
-    norm_dir_candidates = [
-        repo_root_candidate / "docs" / "ctp" / "src" / "norm",
-        (Path.cwd() / "src" / "norm"),
-    ]
-    norm_dir = None
-    for cand in norm_dir_candidates:
-        if cand.exists():
-            norm_dir = cand
-            break
+    # Resolve norm directory
+    if args.norm_dir:
+        norm_dir = Path(args.norm_dir)
+        if not norm_dir.exists():
+            print(f"Error: specified norm directory does not exist: {norm_dir}", file=sys.stderr)
+            sys.exit(2)
+    else:
+        script_dir = Path(__file__).resolve().parent
+        repo_root_candidate = script_dir.parent.parent
+        norm_dir_candidates = [
+            repo_root_candidate / "docs" / "ctp" / "build" / "generated" / "norm",
+            (Path.cwd() / "build" / "generated" / "norm"),
+        ]
+        norm_dir = None
+        for cand in norm_dir_candidates:
+            if cand.exists():
+                norm_dir = cand
+                break
 
     if norm_dir is None:
         print("Warning: norm directory not found; skipping placeholder generation", file=sys.stderr)

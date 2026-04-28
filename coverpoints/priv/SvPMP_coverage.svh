@@ -24,61 +24,61 @@ covergroup SvPMP_cg with function sample(ins_t ins);
 
     `ifdef XLEN64
         PageType_i: coverpoint ins.current.page_type_i {
-            `ifdef SV48
-                bins sv48_tera = {2'b11} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
-                bins sv48_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
-                bins sv48_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
-                bins sv48_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
+            `ifdef SV48_SUPPORTED
+                bins sv48_tera = {2'b11} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
+                bins sv48_giga = {2'b10} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
+                bins sv48_mega = {2'b01} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
+                bins sv48_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
             `endif
-            `ifdef SV39
-                bins sv39_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
-                bins sv39_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
-                bins sv39_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
+            `ifdef SV39_SUPPORTED
+                bins sv39_giga = {2'b10} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
+                bins sv39_mega = {2'b01} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
+                bins sv39_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
             `endif
     }
     `else
         PageType_i: coverpoint ins.current.page_type_i {
-            bins sv32_mega = {2'b01} iff (ins.current.csr[12'h180][31] == 1'b1);
-            bins sv32_kilo = {2'b00} iff (ins.current.csr[12'h180][31] == 1'b1);
+            bins sv32_mega = {2'b01} iff (ins.current.csr[CSR_SATP][31] == 1'b1);
+            bins sv32_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][31] == 1'b1);
         }
     `endif
 
     `ifdef XLEN64
         PageType_d: coverpoint ins.current.page_type_d {
-            `ifdef SV48
-                bins sv48_tera = {2'b11} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
-                bins sv48_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
-                bins sv48_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
-                bins sv48_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
+            `ifdef SV48_SUPPORTED
+                bins sv48_tera = {2'b11} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
+                bins sv48_giga = {2'b10} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
+                bins sv48_mega = {2'b01} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
+                bins sv48_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
             `endif
-            `ifdef SV39
-                bins sv39_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
-                bins sv39_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
-                bins sv39_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
+            `ifdef SV39_SUPPORTED
+                bins sv39_giga = {2'b10} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
+                bins sv39_mega = {2'b01} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
+                bins sv39_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
             `endif
     }
     `else
         PageType_d: coverpoint ins.current.page_type_d {
-            bins sv32_mega = {2'b01} iff (ins.current.csr[12'h180][31] == 1'b1);
-            bins sv32_kilo = {2'b00} iff (ins.current.csr[12'h180][31] == 1'b1);
+            bins sv32_mega = {2'b01} iff (ins.current.csr[CSR_SATP][31] == 1'b1);
+            bins sv32_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][31] == 1'b1);
         }
     `endif
 
     // satp.mode for coverage of SV32, SV39, SV48 & SV57
         `ifdef XLEN64
-        mode: coverpoint  ins.current.csr[12'h180][63:60] {
-            `ifdef SV57
+        mode: coverpoint  ins.current.csr[CSR_SATP][63:60] {
+            `ifdef SV57_SUPPORTED
                 bins sv57 = {4'b1010};
             `endif
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48 = {4'b1001};
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39 = {4'b1000};
             `endif
         }
     `else
-        mode: coverpoint  ins.current.csr[12'h180][31] {
+        mode: coverpoint  ins.current.csr[CSR_SATP][31] {
             bins sv32 = {1'b1};
         }
     `endif
@@ -94,27 +94,27 @@ covergroup SvPMP_cg with function sample(ins_t ins);
         bins set = {1};
     }
 
-    load_acc_fault: coverpoint  ins.current.csr[12'h342] {
+    load_acc_fault: coverpoint  ins.current.csr[CSR_MCAUSE] {
         bins load_acc_fault = {64'd5};
     }
-    store_acc_fault: coverpoint  ins.current.csr[12'h342] {
+    store_acc_fault: coverpoint  ins.current.csr[CSR_MCAUSE] {
         bins store_acc_fault = {64'd7};
     }
-    ins_acc_fault: coverpoint  ins.current.csr[12'h342] {
+    ins_acc_fault: coverpoint  ins.current.csr[CSR_MCAUSE] {
         bins ins_acc_fault  = {64'd1};
     }
 
     lw: coverpoint ins.current.insn {
-        wildcard bins lw = {32'b????????????_?????_010_?????_0000011};
+        wildcard bins lw = {LW};
     }
     sw: coverpoint ins.current.insn {
-        wildcard bins sw = {32'b????????????_?????_010_?????_0100011};
+        wildcard bins sw = {SW};
     }
     jalr: coverpoint ins.prev.insn {
-        wildcard bins jalr = {32'b????????????_?????_000_?????_1100111};
+        wildcard bins jalr = {JALR};
     }
 
-    PMP0_PTE: coverpoint  ins.current.csr[12'h3A0][7:0] {        // PMP permissions of PTE
+    PMP0_PTE: coverpoint  ins.current.csr[CSR_PMPCFG0][7:0] {        // PMP permissions of PTE
         wildcard bins noread   = {8'b?????100};
     }
 
@@ -127,7 +127,7 @@ covergroup SvPMP_cg with function sample(ins_t ins);
     pmp0_pte_noexec_u:  cross PageType_i, PMP0_PTE, ins_acc_fault, priv_mode_u, jalr;
 
 
-    PMP0_PA: coverpoint  ins.current.csr[12'h3A0][15:8] {       // PMP permissions of (translated) phys addr region
+    PMP0_PA: coverpoint  ins.current.csr[CSR_PMPCFG0][15:8] {       // PMP permissions of (translated) phys addr region
         wildcard bins noread   = {8'b?????100};
         wildcard bins nowrite  = {8'b?????101};
         wildcard bins noexe    = {8'b?????011};

@@ -86,19 +86,80 @@ function string disassemble (logic [31:0] instrRaw);
   automatic string  ma    = get_vtype_ma_name(instr[26]);
 
   casez (instr)
-    // Hints
+    // Hints: gated by their covergroups so they don't confuse decoding as non-hint instructions
+  `ifdef ZIHINTPAUSE_COVERAGE
     PAUSE:   $sformat(decoded, "pause");
-    // No need to decode NTL hints for present coverpoints, and they might confuse testing normal instructions
-    // NTL_ALL: $sformat(decoded, "NTL.ALL");
-    // NTL_PALL:$sformat(decoded, "NTL.PALL");
-    // NTL_P1:  $sformat(decoded, "NTL.P1");
-    // NTL_S1:  $sformat(decoded, "NTL.S1");
-    // C_NTL_ALL: $sformat(decoded, "C.NTL.ALL");
-    // C_NTL_PALL: $sformat(decoded, "C.NTL.PALL");
-    // C_NTL_P1: $sformat(decoded, "C.NTL.P1");
-    // C_NTL_S1: $sformat(decoded, "C.NTL.S1");
+  `endif
+  `ifdef ZICBOP_COVERAGE
+    // Zicbop Extension (note these are hints)
+    PREFETCH_I: $sformat(decoded, "prefetch.i %0d(%s)", immIType, rs1);
+    PREFETCH_R: $sformat(decoded, "prefetch.r %0d(%s)", immIType, rs1);
+    PREFETCH_W: $sformat(decoded, "prefetch.w %0d(%s)", immIType, rs1);
+  `endif
+  `ifdef ZIHINTNTL_COVERAGE
+    NTL_ALL: $sformat(decoded, "ntl.all");
+    NTL_PALL:$sformat(decoded, "ntl.pall");
+    NTL_P1:  $sformat(decoded, "ntl.p1");
+    NTL_S1:  $sformat(decoded, "ntl.s1");
+  `endif
+  `ifdef ZIHINTNTLZCA_COVERAGE
+    C_NTL_ALL: $sformat(decoded, "c.ntl.all");
+    C_NTL_PALL: $sformat(decoded, "c.ntl.pall");
+    C_NTL_P1: $sformat(decoded, "c.ntl.p1");
+    C_NTL_S1: $sformat(decoded, "c.ntl.s1");
+  `endif
     // NOP
     NOP:     $sformat(decoded, "nop");
+    // Zimop Extension
+    MOP_R_0: $sformat(decoded, "mop.r.0 %s, %s", rd, rs1);
+    MOP_R_1: $sformat(decoded, "mop.r.1 %s, %s", rd, rs1);
+    MOP_R_2: $sformat(decoded, "mop.r.2 %s, %s", rd, rs1);
+    MOP_R_3: $sformat(decoded, "mop.r.3 %s, %s", rd, rs1);
+    MOP_R_4: $sformat(decoded, "mop.r.4 %s, %s", rd, rs1);
+    MOP_R_5: $sformat(decoded, "mop.r.5 %s, %s", rd, rs1);
+    MOP_R_6: $sformat(decoded, "mop.r.6 %s, %s", rd, rs1);
+    MOP_R_7: $sformat(decoded, "mop.r.7 %s, %s", rd, rs1);
+    MOP_R_8: $sformat(decoded, "mop.r.8 %s, %s", rd, rs1);
+    MOP_R_9: $sformat(decoded, "mop.r.9 %s, %s", rd, rs1);
+    MOP_R_10: $sformat(decoded, "mop.r.10 %s, %s", rd, rs1);
+    MOP_R_11: $sformat(decoded, "mop.r.11 %s, %s", rd, rs1);
+    MOP_R_12: $sformat(decoded, "mop.r.12 %s, %s", rd, rs1);
+    MOP_R_13: $sformat(decoded, "mop.r.13 %s, %s", rd, rs1);
+    MOP_R_14: $sformat(decoded, "mop.r.14 %s, %s", rd, rs1);
+    MOP_R_15: $sformat(decoded, "mop.r.15 %s, %s", rd, rs1);
+    MOP_R_16: $sformat(decoded, "mop.r.16 %s, %s", rd, rs1);
+    MOP_R_17: $sformat(decoded, "mop.r.17 %s, %s", rd, rs1);
+    MOP_R_18: $sformat(decoded, "mop.r.18 %s, %s", rd, rs1);
+    MOP_R_19: $sformat(decoded, "mop.r.19 %s, %s", rd, rs1);
+    MOP_R_20: $sformat(decoded, "mop.r.20 %s, %s", rd, rs1);
+    MOP_R_21: $sformat(decoded, "mop.r.21 %s, %s", rd, rs1);
+    MOP_R_22: $sformat(decoded, "mop.r.22 %s, %s", rd, rs1);
+    MOP_R_23: $sformat(decoded, "mop.r.23 %s, %s", rd, rs1);
+    MOP_R_24: $sformat(decoded, "mop.r.24 %s, %s", rd, rs1);
+    MOP_R_25: $sformat(decoded, "mop.r.25 %s, %s", rd, rs1);
+    MOP_R_26: $sformat(decoded, "mop.r.26 %s, %s", rd, rs1);
+    MOP_R_27: $sformat(decoded, "mop.r.27 %s, %s", rd, rs1);
+    MOP_R_28: $sformat(decoded, "mop.r.28 %s, %s", rd, rs1);
+    MOP_R_29: $sformat(decoded, "mop.r.29 %s, %s", rd, rs1);
+    MOP_R_30: $sformat(decoded, "mop.r.30 %s, %s", rd, rs1);
+    MOP_R_31: $sformat(decoded, "mop.r.31 %s, %s", rd, rs1);
+    MOP_RR_0: $sformat(decoded, "mop.rr.0 %s, %s, %s", rd, rs1, rs2);
+    MOP_RR_1: $sformat(decoded, "mop.rr.1 %s, %s, %s", rd, rs1, rs2);
+    MOP_RR_2: $sformat(decoded, "mop.rr.2 %s, %s, %s", rd, rs1, rs2);
+    MOP_RR_3: $sformat(decoded, "mop.rr.3 %s, %s, %s", rd, rs1, rs2);
+    MOP_RR_4: $sformat(decoded, "mop.rr.4 %s, %s, %s", rd, rs1, rs2);
+    MOP_RR_5: $sformat(decoded, "mop.rr.5 %s, %s, %s", rd, rs1, rs2);
+    MOP_RR_6: $sformat(decoded, "mop.rr.6 %s, %s, %s", rd, rs1, rs2);
+    MOP_RR_7: $sformat(decoded, "mop.rr.7 %s, %s, %s", rd, rs1, rs2);
+    // Zcmop Extension
+    C_MOP_1:  $sformat(decoded, "c.mop.1");
+    C_MOP_3:  $sformat(decoded, "c.mop.3");
+    C_MOP_5:  $sformat(decoded, "c.mop.5");
+    C_MOP_7:  $sformat(decoded, "c.mop.7");
+    C_MOP_9:  $sformat(decoded, "c.mop.9");
+    C_MOP_11: $sformat(decoded, "c.mop.11");
+    C_MOP_13: $sformat(decoded, "c.mop.13");
+    C_MOP_15: $sformat(decoded, "c.mop.15");
     // Base Instructions
     ADD:     $sformat(decoded, "add %s, %s, %s", rd, rs1, rs2);
     SUB:     $sformat(decoded, "sub %s, %s, %s", rd, rs1, rs2);
@@ -175,10 +236,6 @@ function string disassemble (logic [31:0] instrRaw);
     CBO_CLEAN: $sformat(decoded, "cbo.clean (%s)", rs1);
     CBO_FLUSH: $sformat(decoded, "cbo.flush (%s)", rs1);
     CBO_INVAL: $sformat(decoded, "cbo.inval (%s)", rs1);
-    // Zicbop Extension
-    PREFETCH_I: $sformat(decoded, "prefetch.i %0d(%s)", immIType, rs1);
-    PREFETCH_R: $sformat(decoded, "prefetch.r %0d(%s)", immIType, rs1);
-    PREFETCH_W: $sformat(decoded, "prefetch.w %0d(%s)", immIType, rs1);
     // Zicond Extension
     CZERO_EQZ: $sformat(decoded, "czero.eqz %s, %s, %s", rd, rs1, rs2);
     CZERO_NEZ: $sformat(decoded, "czero.nez %s, %s, %s", rd, rs1, rs2);
@@ -582,13 +639,13 @@ function string disassemble (logic [31:0] instrRaw);
             C_ILLEGAL: $sformat(decoded, "c.illegal");
         end
     end
-    C_LW:                             $sformat(decoded, "c.lw %s, %0d(%s)", rs2p, immCLSType, rs1p);
-    C_SW:                             $sformat(decoded, "c.sw %s, %0d(%s)", rs2p, immCLSType, rs1p);
-    C_NOP: if(rdBits == '0 & immCIType == '0) $sformat(decoded, "c.nop");
-    C_ADDI: if(rdBits != '0 & immCIType != '0) $sformat(decoded, "c.addi %s, %0d", rd, immCIType);
-    C_LI:   if(rdBits != '0) $sformat(decoded, "c.li %s, %0d", rd, immCIType);
+    C_LW:   $sformat(decoded, "c.lw %s, %0d(%s)", rs2p, immCLSType, rs1p);
+    C_SW:   $sformat(decoded, "c.sw %s, %0d(%s)", rs2p, immCLSType, rs1p);
+    C_NOP:  if(rdBits == '0) $sformat(decoded, "c.nop %0d", immCIType);
+    C_ADDI: if(rdBits != '0) $sformat(decoded, "c.addi %s, %0d", rd, immCIType);
+    C_LI:   $sformat(decoded, "c.li %s, %0d", rd, immCIType);
     C_ADDI16SP: if(rdBits == 5'd2 & immCIASPType != '0) $sformat(decoded, "c.addi16sp sp, %0d", immCIASPType);
-    C_LUI: if(rdBits != '0 & rdBits != 5'd2 & immCIType != '0) $sformat(decoded, "c.lui %s, %0d", rd, immCIType);
+    C_LUI: if(rdBits != 5'd2 & immCIType != '0) $sformat(decoded, "c.lui %s, %0d", rd, immCIType);
     C_SRLI: $sformat(decoded, "c.srli %s, %0d", rs1p, immCBpType);
     C_SRAI: $sformat(decoded, "c.srai %s, %0d", rs1p, immCBpType);
     C_ANDI: $sformat(decoded, "c.andi %s, %0d", rs1p, $signed(immCBpType));
@@ -602,10 +659,10 @@ function string disassemble (logic [31:0] instrRaw);
     C_SLLI: if(rdBits != '0) $sformat(decoded, "c.slli %s, %0d", rd, immUCIType);
     C_LWSP: if(rdBits != '0) $sformat(decoded, "c.lwsp %s, %0d", rd, immCILSPType);
     C_JR:   if(rdBits != '0 & crs2Bits == '0) $sformat(decoded, "c.jr %s", rd);
-    C_MV:   if(rdBits != '0 & crs2Bits != '0) $sformat(decoded, "c.mv %s, %s", rd, crs2);
+    C_MV:   if(crs2Bits != '0) $sformat(decoded, "c.mv %s, %s", rd, crs2);
     C_EBREAK: if(rdBits == '0 & crs2Bits == '0) $sformat(decoded, "c.ebreak");
     C_JALR: if(rdBits != '0 & crs2Bits == '0) $sformat(decoded, "c.jalr %s", rd);
-    C_ADD:  if(rdBits != '0 & crs2Bits != '0) $sformat(decoded, "c.add %s, %s", rd, crs2);
+    C_ADD:  if(crs2Bits != '0) $sformat(decoded, "c.add %s, %s", rd, crs2);
     C_SWSP: $sformat(decoded, "c.swsp %s, %0d", crs2, immCSSType);
 
   `ifdef XLEN32

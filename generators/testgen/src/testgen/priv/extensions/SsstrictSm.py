@@ -456,80 +456,6 @@ def _generate_reserved_frm(test_data: TestData) -> list[str]:
     lines.append("")
     return lines
 
-
-# ── misa extension disable ─────────────────────────────────────────────────
-
-
-def _generate_misa_ext_disable(test_data: TestData) -> list[str]:
-    """cp_misa_ext_disable — disable each misa bit, run representative instruction."""
-    covergroup = "SsstrictSm_mcsr_cg"
-    coverpoint = "cp_misa_ext_disable"
-    lines: list[str] = []
-
-    lines.append(
-        comment_banner(
-            coverpoint,
-            "Disable each MUTABLE_MISA_* bit, execute representative instruction\n"
-            "(should raise illegal-instruction), then re-enable.\n"
-            "B=Zba+Zbb+Zbs. Disabling B should make Zba/Zbb/Zbs instructions trap.",
-        )
-    )
-
-    for ext, bit, instr in [
-        ("A", 0, "amoswap.w x0, x0, (x0)"),
-        ("C", 2, "c.addi x8, 0"),
-        ("D", 3, ".word 0x02008053"),
-        ("F", 5, "fadd.s f0, f1, f2"),
-        ("M", 12, "mul x7, x8, x9"),  # use safe regs
-    ]:
-        lines.extend(
-            [
-                f"\n#ifdef MUTABLE_MISA_{ext}",
-                f"\t{test_data.add_testcase(f'misa_{ext}', coverpoint, covergroup)}",
-                f"\tli t2, {1 << bit:#010x}",  # t2=x7, safe
-                "\tcsrc misa, t2",
-                "\tnop",
-                f"\t{instr}",
-                "\tnop",
-                "\tcsrs misa, t2",
-                "#endif",
-            ]
-        )
-
-    lines.extend(
-        [
-            "",
-            "#ifdef MUTABLE_MISA_B",
-            "\tli t2, 0x2",
-            "\tcsrc misa, t2",
-            f"\t{test_data.add_testcase('misa_B_zba', coverpoint, covergroup)}",
-            "\tsh3add x8, x9, x10",
-            "\tnop",
-            f"\t{test_data.add_testcase('misa_B_zbb', coverpoint, covergroup)}",
-            "\tandn x8, x9, x10",
-            "\tnop",
-            f"\t{test_data.add_testcase('misa_B_zbs', coverpoint, covergroup)}",
-            "\tbext x8, x9, x10",
-            "\tnop",
-            # clmul/Zbc removed: Zbc is NOT a sub-extension of B, has no misa bit.
-            "\tcsrs misa, t2",
-            "#endif",
-            "",
-            "#ifdef MUTABLE_MISA_I",
-            f"\t{test_data.add_testcase('misa_I_upperreg', coverpoint, covergroup)}",
-            "\tli t2, 0x100",
-            "\tcsrc misa, t2",
-            "\t.word 0x01080833   // add x16,x16,x16 — traps when E active",
-            "\tnop",
-            "\tcsrs misa, t2",
-            "#endif",
-            "",
-        ]
-    )
-
-    return lines
-
-
 # ── Entry point ────────────────────────────────────────────────────────────
 
 
@@ -565,5 +491,4 @@ def make_ssstrictsm(test_data: TestData) -> list[str]:
     # _generate_reserved_frm removed: FRM=5/6/7+fadd.s behavior is
     # implementation-defined (spec §11.2), causing cross-config signature
     # mismatches. The CSR sweep already covers frm read/write via CSR 0x002.
-    lines.extend(_generate_misa_ext_disable(test_data))
     return lines

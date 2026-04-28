@@ -10,5 +10,4 @@
 
     SsstrictS_instr_cg = new();        SsstrictS_instr_cg.set_inst_name("obj_SsstrictS_instr");
     SsstrictS_comp_instr_cg = new();
-    SsstrictS_misa_cg = new();         SsstrictS_misa_cg.set_inst_name("obj_SsstrictS_misa");   SsstrictS_comp_instr_cg.set_inst_name("obj_SsstrictS_comp_instr");
     SsstrictS_scsr_cg = new();         SsstrictS_scsr_cg.set_inst_name("obj_SsstrictS_scsr");

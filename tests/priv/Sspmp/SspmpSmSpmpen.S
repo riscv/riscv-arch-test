@@ -9,10 +9,9 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'Ss', 'Zicsr', 'Sspmp']
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp']
 # # # no param constraints
 # MARCH: rv${XLEN}i_zicsr
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -21,6 +20,7 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
+#define rvtest_strap_routine
 #define rvtest_mtrap_routine
 
 // Include framework macros
@@ -29,6 +29,19 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
+
+
+/////////////////////////////////
+// SPMP boot preamble
+//   Delegate all PMP entries to SPMP by writing mpmpdeleg.pmpnum = 0.
+//   Without this, SPMP CSRs read 0 and writes are ignored per Smpmpdeleg spec.
+/////////////////////////////////
+  RVTEST_GOTO_MMODE
+  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all 64 entries as SPMP
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  RVTEST_GOTO_LOWER_MODE Smode
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
 
 /////////////////////////////////
@@ -45,48 +58,48 @@ RVTEST_BEGIN
   LI(x22, -1)  # all ones
   CSRW(CSR_SPMPEN, x22)
   nop
-SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_write_allones:
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_allones:
   # Read CSR_SPMPEN into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_write_allones, SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_write_allones_str)
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_allones, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_allones_str)
 
 # Write zero to spmpen (disable all entries)
   CSRW(CSR_SPMPEN, zero)
   nop
-SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_write_zero:
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_zero:
   # Read CSR_SPMPEN into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_write_zero, SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_write_zero_str)
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_zero, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_zero_str)
 
 # Enable only entry 0
   LI(x22, 1)
   CSRW(CSR_SPMPEN, x22)
   nop
-SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_bit0:
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit0:
   # Read CSR_SPMPEN into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_bit0, SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_bit0_str)
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit0, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit0_str)
 
 # Enable only entry 1
   LI(x22, 2)
   CSRW(CSR_SPMPEN, x22)
   nop
-SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_bit1:
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit1:
   # Read CSR_SPMPEN into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_bit1, SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_bit1_str)
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit1, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit1_str)
 
 # Enable only entry 2
   LI(x22, 4)
   CSRW(CSR_SPMPEN, x22)
   nop
-SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_bit2:
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit2:
   # Read CSR_SPMPEN into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_bit2, SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_bit2_str)
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit2, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit2_str)
 
 # Enable only entry 3
   LI(x22, 8)
   CSRW(CSR_SPMPEN, x22)
   nop
-SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_bit3:
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit3:
   # Read CSR_SPMPEN into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_bit3, SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_bit3_str)
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit3, SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit3_str)
 
 
 /////////////////////////////////
@@ -108,18 +121,18 @@ SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_bit3:
   CSRW(CSR_SPMPEN, zero)
   nop
   sfence.vma x0, x0
-SspmpSm_csr_cg_cp_spmpen_activation_spmpen_entry0_disabled:
+SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_disabled:
   # Read CSR_SPMPEN into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_csr_cg_cp_spmpen_activation_spmpen_entry0_disabled, SspmpSm_csr_cg_cp_spmpen_activation_spmpen_entry0_disabled_str)
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_disabled, SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_disabled_str)
 
 # Enable entry 0 via spmpen[0] = 1
   LI(x22, 1)
   CSRW(CSR_SPMPEN, x22)
   nop
   sfence.vma x0, x0
-SspmpSm_csr_cg_cp_spmpen_activation_spmpen_entry0_enabled:
+SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_enabled:
   # Read CSR_SPMPEN into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_csr_cg_cp_spmpen_activation_spmpen_entry0_enabled, SspmpSm_csr_cg_cp_spmpen_activation_spmpen_entry0_enabled_str)
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_enabled, SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_enabled_str)
 
 # Set A=OFF (disable), spmpen[0]=1 -> entry still inactive
   CSRW(0x152, zero)  # spmpcfg.A=OFF via sireg2
@@ -128,9 +141,9 @@ SspmpSm_csr_cg_cp_spmpen_activation_spmpen_entry0_enabled:
   CSRW(CSR_SPMPEN, x22)
   nop
   sfence.vma x0, x0
-SspmpSm_csr_cg_cp_spmpen_activation_spmpen_aoff_no_activate:
+SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_aoff_no_activate:
   # Read 0x152 into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_csr_cg_cp_spmpen_activation_spmpen_aoff_no_activate, SspmpSm_csr_cg_cp_spmpen_activation_spmpen_aoff_no_activate_str)
+  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_aoff_no_activate, SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_aoff_no_activate_str)
   LI(x14, 0x100)  # siselect = SPMP entry 0
   CSRW(siselect, x14)
   LI(x22, 0x0)  # spmpcfg value
@@ -165,14 +178,14 @@ SspmpSm_csr_cg_cp_spmpen_activation_spmpen_aoff_no_activate:
   LI(x22, 0x2)
   CSRC(CSR_SPMPEN, x22)
   nop
-SspmpSm_csr_cg_cp_spmpen_locked_readonly_spmpen_locked_clear_rejected:
+SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_spmpen_locked_clear_rejected:
   # Read CSR_SPMPEN into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_csr_cg_cp_spmpen_locked_readonly_spmpen_locked_clear_rejected, SspmpSm_csr_cg_cp_spmpen_locked_readonly_spmpen_locked_clear_rejected_str)
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_spmpen_locked_clear_rejected, SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_spmpen_locked_clear_rejected_str)
 
 # Verify spmpen[1] is still 1 (read-only when locked)
-SspmpSm_csr_cg_cp_spmpen_locked_readonly_spmpen_locked_still_set:
+SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_spmpen_locked_still_set:
   # Read CSR_SPMPEN into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_csr_cg_cp_spmpen_locked_readonly_spmpen_locked_still_set, SspmpSm_csr_cg_cp_spmpen_locked_readonly_spmpen_locked_still_set_str)
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_spmpen_locked_still_set, SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_spmpen_locked_still_set_str)
 
 # Clean up: clear locked entry config
   LI(x14, 0x101)
@@ -197,17 +210,17 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_write_allones_str: .string "\"test: 1; cg: SspmpSm_csr_cg; cp: cp_spmpen_readwrite; bin: spmpen_write_allones\""
-SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_write_zero_str: .string "\"test: 2; cg: SspmpSm_csr_cg; cp: cp_spmpen_readwrite; bin: spmpen_write_zero\""
-SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_bit0_str: .string "\"test: 3; cg: SspmpSm_csr_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit0\""
-SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_bit1_str: .string "\"test: 4; cg: SspmpSm_csr_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit1\""
-SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_bit2_str: .string "\"test: 5; cg: SspmpSm_csr_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit2\""
-SspmpSm_csr_cg_cp_spmpen_readwrite_spmpen_bit3_str: .string "\"test: 6; cg: SspmpSm_csr_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit3\""
-SspmpSm_csr_cg_cp_spmpen_activation_spmpen_entry0_disabled_str: .string "\"test: 7; cg: SspmpSm_csr_cg; cp: cp_spmpen_activation; bin: spmpen_entry0_disabled\""
-SspmpSm_csr_cg_cp_spmpen_activation_spmpen_entry0_enabled_str: .string "\"test: 8; cg: SspmpSm_csr_cg; cp: cp_spmpen_activation; bin: spmpen_entry0_enabled\""
-SspmpSm_csr_cg_cp_spmpen_activation_spmpen_aoff_no_activate_str: .string "\"test: 9; cg: SspmpSm_csr_cg; cp: cp_spmpen_activation; bin: spmpen_aoff_no_activate\""
-SspmpSm_csr_cg_cp_spmpen_locked_readonly_spmpen_locked_clear_rejected_str: .string "\"test: 10; cg: SspmpSm_csr_cg; cp: cp_spmpen_locked_readonly; bin: spmpen_locked_clear_rejected\""
-SspmpSm_csr_cg_cp_spmpen_locked_readonly_spmpen_locked_still_set_str: .string "\"test: 11; cg: SspmpSm_csr_cg; cp: cp_spmpen_locked_readonly; bin: spmpen_locked_still_set\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_allones_str: .string "\"test: 1; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_write_allones\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_zero_str: .string "\"test: 2; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_write_zero\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit0_str: .string "\"test: 3; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit0\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit1_str: .string "\"test: 4; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit1\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit2_str: .string "\"test: 5; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit2\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit3_str: .string "\"test: 6; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit3\""
+SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_disabled_str: .string "\"test: 7; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_entry0_disabled\""
+SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_enabled_str: .string "\"test: 8; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_entry0_enabled\""
+SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_aoff_no_activate_str: .string "\"test: 9; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_aoff_no_activate\""
+SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_spmpen_locked_clear_rejected_str: .string "\"test: 10; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_locked_readonly; bin: spmpen_locked_clear_rejected\""
+SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_spmpen_locked_still_set_str: .string "\"test: 11; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_locked_readonly; bin: spmpen_locked_still_set\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

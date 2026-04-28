@@ -9,10 +9,9 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'Ss', 'Zicsr', 'Sspmp']
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp']
 # # # no param constraints
 # MARCH: rv${XLEN}i_zicsr
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -21,6 +20,7 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
+#define rvtest_strap_routine
 #define rvtest_mtrap_routine
 
 // Include framework macros
@@ -29,6 +29,19 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
+
+
+/////////////////////////////////
+// SPMP boot preamble
+//   Delegate all PMP entries to SPMP by writing mpmpdeleg.pmpnum = 0.
+//   Without this, SPMP CSRs read 0 and writes are ignored per Smpmpdeleg spec.
+/////////////////////////////////
+  RVTEST_GOTO_MMODE
+  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all 64 entries as SPMP
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  RVTEST_GOTO_LOWER_MODE Smode
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
 
 /////////////////////////////////
@@ -45,40 +58,47 @@ RVTEST_BEGIN
   CSRW(CSR_MPMPDELEG, zero)
   nop
 SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_0:
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_zero_all_delegated:
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_zero_zero_and_delegating:
   # Read CSR_MPMPDELEG into x7 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x7, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_0, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_0_str)
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x7, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_zero_zero_and_delegating, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_zero_zero_and_delegating_str)
 
 # pmpnum = 8
   LI(x10, 8)
   CSRW(CSR_MPMPDELEG, x10)
   nop
 SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_8:
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_8:
   # Read CSR_MPMPDELEG into x7 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x7, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_8, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_8_str)
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x7, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_8, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_8_str)
 
 # pmpnum = 16
   LI(x10, 16)
   CSRW(CSR_MPMPDELEG, x10)
   nop
 SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_16:
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_16:
   # Read CSR_MPMPDELEG into x7 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x7, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_16, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_16_str)
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x7, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_16, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_16_str)
 
 # pmpnum = 32
   LI(x10, 32)
   CSRW(CSR_MPMPDELEG, x10)
   nop
 SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_32:
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_32:
   # Read CSR_MPMPDELEG into x7 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x7, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_32, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_32_str)
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x7, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_32, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_32_str)
 
 # pmpnum = 64 (no delegation, SPMP disabled)
   LI(x10, 64)
   CSRW(CSR_MPMPDELEG, x10)
   nop
 SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_64:
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_max_none_delegated:
+SspmpSm_csr_cg_cp_mpmpdeleg_no_delegation_max_no_deleg_reads_zero:
   # Read CSR_MPMPDELEG into x7 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x7, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_64, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_64_str)
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x7, SspmpSm_csr_cg_cp_mpmpdeleg_no_delegation_max_no_deleg_reads_zero, SspmpSm_csr_cg_cp_mpmpdeleg_no_delegation_max_no_deleg_reads_zero_str)
 
 # pmpnum = 100 (should clamp to number of writable entries)
   LI(x10, 100)
@@ -150,13 +170,20 @@ RVTEST_DATA_BEGIN
 
 // Testcase strings
 SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_0_str: .string "\"test: 1; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum; bin: pmpnum_0\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_8_str: .string "\"test: 2; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum; bin: pmpnum_8\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_16_str: .string "\"test: 3; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum; bin: pmpnum_16\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_32_str: .string "\"test: 4; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum; bin: pmpnum_32\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_64_str: .string "\"test: 5; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum; bin: pmpnum_64\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_100_clamp_str: .string "\"test: 6; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum; bin: pmpnum_100_clamp\""
-SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_16_ok_str: .string "\"test: 7; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_locked; bin: locked_pmpnum_16_ok\""
-SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_4_rejected_str: .string "\"test: 8; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_locked; bin: locked_pmpnum_4_rejected\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_zero_all_delegated_str: .string "\"test: 2; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: zero_all_delegated\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_zero_zero_and_delegating_str: .string "\"test: 3; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_zero; bin: zero_and_delegating\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_8_str: .string "\"test: 4; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum; bin: pmpnum_8\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_8_str: .string "\"test: 5; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: partial_8\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_16_str: .string "\"test: 6; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum; bin: pmpnum_16\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_16_str: .string "\"test: 7; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: partial_16\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_32_str: .string "\"test: 8; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum; bin: pmpnum_32\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_32_str: .string "\"test: 9; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: partial_32\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_64_str: .string "\"test: 10; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum; bin: pmpnum_64\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_max_none_delegated_str: .string "\"test: 11; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: max_none_delegated\""
+SspmpSm_csr_cg_cp_mpmpdeleg_no_delegation_max_no_deleg_reads_zero_str: .string "\"test: 12; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_no_delegation; bin: max_no_deleg_reads_zero\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_100_clamp_str: .string "\"test: 13; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum; bin: pmpnum_100_clamp\""
+SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_16_ok_str: .string "\"test: 14; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_locked; bin: locked_pmpnum_16_ok\""
+SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_4_rejected_str: .string "\"test: 15; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_locked; bin: locked_pmpnum_4_rejected\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

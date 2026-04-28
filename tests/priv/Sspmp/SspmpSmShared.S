@@ -9,10 +9,9 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'Ss', 'Zicsr', 'Sspmp']
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp']
 # # # no param constraints
 # MARCH: rv${XLEN}i_zicsr
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -21,6 +20,7 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
+#define rvtest_strap_routine
 #define rvtest_mtrap_routine
 
 // Include framework macros
@@ -29,6 +29,19 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
+
+
+/////////////////////////////////
+// SPMP boot preamble
+//   Delegate all PMP entries to SPMP by writing mpmpdeleg.pmpnum = 0.
+//   Without this, SPMP CSRs read 0 and writes are ignored per Smpmpdeleg spec.
+/////////////////////////////////
+  RVTEST_GOTO_MMODE
+  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all 64 entries as SPMP
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  RVTEST_GOTO_LOWER_MODE Smode
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
 
 /////////////////////////////////

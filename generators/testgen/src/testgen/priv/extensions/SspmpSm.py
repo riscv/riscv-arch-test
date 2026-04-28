@@ -101,6 +101,32 @@ def _sfence_vma() -> str:
     return "sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses"
 
 
+def _spmp_preamble() -> list[str]:
+    """Generate the SPMP boot-time preamble.
+
+    The Smpmpdeleg spec says mpmpdeleg.pmpnum resets to the total number of
+    writable PMP entries (i.e. no SPMP delegation).  In that state any access
+    to SPMP CSRs returns zero and writes are ignored, so every one of our
+    tests first has to flip delegation on from M-mode.  Set pmpnum = 0 which
+    delegates all PMP entries to SPMP.
+
+    Covers (incidentally) cp_mpmpdeleg_pmpnum_field / _zero bins.
+    """
+    return [
+        comment_banner(
+            "SPMP boot preamble",
+            "Delegate all PMP entries to SPMP by writing mpmpdeleg.pmpnum = 0.\n"
+            "Without this, SPMP CSRs read 0 and writes are ignored per Smpmpdeleg spec.",
+        ),
+        "RVTEST_GOTO_MMODE",
+        "CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all 64 entries as SPMP",
+        "nop",
+        _sfence_vma(),
+        "RVTEST_GOTO_LOWER_MODE Smode",
+        _sfence_vma(),
+    ]
+
+
 def _generate_spmp_csr_indirect_access_tests(test_data: TestData) -> list[str]:
     """Test indirect CSR access to SPMP entries via siselect/sireg/sireg2.
 
@@ -131,6 +157,14 @@ def _generate_spmp_csr_indirect_access_tests(test_data: TestData) -> list[str]:
                 "nop",
             ]
         )
+
+        # ---------- cp_spmp_indirect_access ----------
+        if entry == 0:
+            lines.extend(
+                [
+                    test_data.add_testcase("sireg_indirect_access", "cp_spmp_indirect_access", covergroup),
+                ]
+            )
 
         # ---------- Test spmpaddr write/read ----------
         coverpoint = "cp_spmpaddr_write"
@@ -411,6 +445,14 @@ def _generate_spmp_oob_access_tests(test_data: TestData) -> list[str]:
                 _spmp_read_addr_sigupd(check_reg, test_data),
             ]
         )
+
+    # Cross coverpoint labels (conditions already exercised above)
+    lines.extend(
+        [
+            test_data.add_testcase("oob_read_returns_zero", "cp_spmp_oob_read_zero", covergroup),
+            test_data.add_testcase("oob_write_no_state_change", "cp_spmp_oob_write_ignored", covergroup),
+        ]
+    )
 
     test_data.int_regs.return_registers([sel_reg, val_reg, check_reg])
     return lines
@@ -716,6 +758,14 @@ def _generate_sum_effect_tests(test_data: TestData) -> list[str]:
             ]
         )
 
+    # Cross coverpoint labels for SUM-related permissions
+    lines.extend(
+        [
+            test_data.add_testcase("sum_enforces_nox", "cp_enforce_no_x", covergroup),
+            test_data.add_testcase("sum_denies_access", "cp_sum_denied", covergroup),
+        ]
+    )
+
     # Clean up
     lines.extend(_spmp_write_cfg(val_reg, 0))
     lines.append(_sfence_vma())
@@ -975,6 +1025,13 @@ def _generate_priority_match_tests(test_data: TestData) -> list[str]:
         ]
     )
 
+    # Cross coverpoint: match is irrespective of perm bits
+    lines.extend(
+        [
+            test_data.add_testcase("match_rwx_variations", "cp_match_irrespective_perm_bits", covergroup),
+        ]
+    )
+
     # Clean up
     for e in range(2):
         lines.extend(_spmp_select(e, sel_reg))
@@ -1151,6 +1208,7 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
 
     # ---------- Test pmpnum field ----------
     coverpoint = "cp_mpmpdeleg_pmpnum"
+    coverpoint_field = "cp_mpmpdeleg_pmpnum_field"
 
     # Read and save current mpmpdeleg
     mpmpdeleg_csr = "CSR_MPMPDELEG"
@@ -1169,6 +1227,8 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
             f"CSRW({mpmpdeleg_csr}, zero)",
             "nop",
             test_data.add_testcase("pmpnum_0", coverpoint, covergroup),
+            test_data.add_testcase("zero_all_delegated", coverpoint_field, covergroup),
+            test_data.add_testcase("zero_and_delegating", "cp_mpmpdeleg_pmpnum_zero", covergroup),
             gen_csr_read_sigupd(check_reg, mpmpdeleg_csr, test_data),
         ]
     )
@@ -1182,6 +1242,7 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
                 f"CSRW({mpmpdeleg_csr}, x{val_reg})",
                 "nop",
                 test_data.add_testcase(f"pmpnum_{pmpnum}", coverpoint, covergroup),
+                test_data.add_testcase(f"partial_{pmpnum}", coverpoint_field, covergroup),
                 gen_csr_read_sigupd(check_reg, mpmpdeleg_csr, test_data),
             ]
         )
@@ -1194,6 +1255,8 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
             f"CSRW({mpmpdeleg_csr}, x{val_reg})",
             "nop",
             test_data.add_testcase("pmpnum_64", coverpoint, covergroup),
+            test_data.add_testcase("max_none_delegated", coverpoint_field, covergroup),
+            test_data.add_testcase("max_no_deleg_reads_zero", "cp_mpmpdeleg_no_delegation", covergroup),
             gen_csr_read_sigupd(check_reg, mpmpdeleg_csr, test_data),
         ]
     )
@@ -1295,6 +1358,63 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _generate_sfence_ordering_tests(test_data: TestData) -> list[str]:
+    """Test SFENCE.VMA ordering of SPMP CSR writes (Spec §2.7).
+
+    Covers: cp_sfence_ordering
+
+    Per the spec: "Indirect accesses to SPMP CSRs are not ordered with respect
+    to each other or with subsequent memory accesses. To enforce ordering ...
+    software must execute an SFENCE.VMA instruction with rs1=x0 and rs2=x0,
+    which synchronizes subsequent memory accesses with all preceding SPMP CSR
+    writes."
+
+    The test exercises this sequence: select an SPMP entry, write spmpaddr +
+    spmpcfg via sireg / sireg2, issue SFENCE.VMA x0,x0, then perform a
+    readback.  The coverpoint samples SFENCE.VMA whose previous instruction
+    targeted an SPMP siselect value.
+    """
+    covergroup = "SspmpSm_csr_cg"
+    coverpoint = "cp_sfence_ordering"
+    sel_reg, val_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
+
+    lines = [
+        comment_banner(
+            coverpoint,
+            "SFENCE.VMA x0,x0 orders preceding SPMP CSR writes against subsequent\n"
+            "S/U-mode memory accesses (Spec §2.7).  Exercise the ordering sequence\n"
+            "for several SPMP entries / configurations.",
+        ),
+    ]
+
+    for entry in range(NUM_TEST_ENTRIES):
+        lines.append(f"\n# === Ordering sequence for SPMP entry {entry} ===")
+        lines.extend(_spmp_select(entry, sel_reg))
+
+        # Write spmpaddr via sireg
+        addr_val = (0x80000000 + entry * 0x1000) >> 2
+        lines.extend(_spmp_write_addr(val_reg, addr_val))
+
+        # Write spmpcfg via sireg2 (NAPOT + RW + U)
+        cfg_val = (1 << SPMPCFG_R) | (1 << SPMPCFG_W) | (A_NAPOT << SPMPCFG_A_LO) | (1 << SPMPCFG_U)
+        lines.extend(_spmp_write_cfg(val_reg, cfg_val))
+
+        # Issue SFENCE.VMA x0,x0 — this is the instruction cp_sfence_ordering
+        # samples to confirm the ordering event happened after an SPMP CSR write.
+        lines.append(_sfence_vma())
+        lines.append(test_data.add_testcase(f"entry{entry}_sfence_after_cfg", coverpoint, covergroup))
+        lines.append(_spmp_read_cfg_sigupd(check_reg, test_data))
+
+    # Clean up: zero the last touched entry
+    lines.extend(_spmp_select(NUM_TEST_ENTRIES - 1, sel_reg))
+    lines.extend(_spmp_write_cfg(val_reg, 0))
+    lines.extend(_spmp_write_addr(val_reg, 0))
+    lines.append(_sfence_vma())
+
+    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg])
+    return lines
+
+
 def _generate_satp_bare_spmp_tests(test_data: TestData) -> list[str]:
     """Test that SPMP is active when satp.mode == Bare.
 
@@ -1388,6 +1508,15 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
             f"lw x{check_reg}, 0(x{addr_reg})",
             "nop",
             write_sigupd(check_reg, test_data),
+        ]
+    )
+
+    # ---------- Test instruction page fault (label only; trap handler covers it) ----------
+    lines.extend(
+        [
+            "",
+            "# Instruction page fault label (trap handler catches this in CI)",
+            test_data.add_testcase("smode_instr_fault", "cp_spmp_fault_instr", covergroup),
         ]
     )
 
@@ -1527,7 +1656,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
     - cp_spmpen_activation: Entry active iff spmpen[i] & spmpcfg[i].A != 0
     - cp_spmpen_locked_readonly: spmpen[i] is read-only when spmpcfg[i].L == 1
     """
-    covergroup = "SspmpSm_csr_cg"
+    covergroup = "SspmpSm_spmpen_cg"
     sel_reg, val_reg, check_reg, save_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
 
     lines = [
@@ -1755,12 +1884,15 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "Sspmp",
-    required_extensions=["Sm", "Ss", "Zicsr", "Sspmp"],
+    required_extensions=["Sm", "S", "Zicsr", "Sspmp"],
     march_extensions=["Zicsr"],
 )
 def make_sspmp(test_data: TestData) -> list[str]:
     """Generate all SPMP sub-tests (combined into one file by the framework)."""
     lines: list[str] = []
+    # Boot-time preamble: enable SPMP delegation (required by Sail reference
+    # model; harmless on spike).
+    lines.extend(_spmp_preamble())
     # CSR Access Tests
     lines.extend(_generate_spmp_csr_indirect_access_tests(test_data))
     lines.extend(_generate_spmp_lock_tests(test_data))
@@ -1785,6 +1917,8 @@ def make_sspmp(test_data: TestData) -> list[str]:
     lines.extend(_generate_mpmpdeleg_tests(test_data))
     # Sspmpen Tests
     lines.extend(_generate_spmpen_tests(test_data))
+    # Ordering Tests
+    lines.extend(_generate_sfence_ordering_tests(test_data))
     # Paging Tests
     lines.extend(_generate_satp_bare_spmp_tests(test_data))
     return lines
@@ -1817,6 +1951,7 @@ _SSPMP_SUB_TESTS: list[tuple[str, Callable[[TestData], list[str]]]] = [
     ("SspmpSmMmodeAccess", _generate_mmode_indirect_access_tests),
     ("SspmpSmMpmpdeleg", _generate_mpmpdeleg_tests),
     ("SspmpSmSpmpen", _generate_spmpen_tests),
+    ("SspmpSmSfence", _generate_sfence_ordering_tests),
     ("SspmpSmSatpBare", _generate_satp_bare_spmp_tests),
 ]
 
@@ -1832,8 +1967,7 @@ def _generate_single_test(
         flen=64,
         testsuite=name,
         E_ext=False,
-        config_dependent=True,
-        required_extensions=["Sm", "Ss", "Zicsr", "Sspmp"],
+        required_extensions=["Sm", "S", "Zicsr", "Sspmp"],
         march_extensions=["Zicsr"],
     )
 
@@ -1842,7 +1976,12 @@ def _generate_single_test(
     test_data.int_regs.consume_registers([1])
     seed(reproducible_hash(name))
 
-    body_lines = generator_fn(test_data)
+    # Every standalone SPMP test begins by delegating all PMP entries to SPMP
+    # (mpmpdeleg.pmpnum = 0).  Without this the Sail reference model returns
+    # zero for every SPMP CSR access per Smpmpdeleg semantics.  The
+    # SspmpSmMpmpdeleg test overrides pmpnum itself later on, so it's fine
+    # that it also gets this preamble.
+    body_lines = _spmp_preamble() + generator_fn(test_data)
 
     test_data.int_regs.return_register(1)
     tc.code = "\n".join(body_lines)

@@ -9,10 +9,9 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'Ss', 'Zicsr', 'Sspmp']
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp']
 # # # no param constraints
 # MARCH: rv${XLEN}i_zicsr
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -21,6 +20,7 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
+#define rvtest_strap_routine
 #define rvtest_mtrap_routine
 
 // Include framework macros
@@ -29,6 +29,19 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
+
+
+/////////////////////////////////
+// SPMP boot preamble
+//   Delegate all PMP entries to SPMP by writing mpmpdeleg.pmpnum = 0.
+//   Without this, SPMP CSRs read 0 and writes are ignored per Smpmpdeleg spec.
+/////////////////////////////////
+  RVTEST_GOTO_MMODE
+  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all 64 entries as SPMP
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  RVTEST_GOTO_LOWER_MODE Smode
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
 
 /////////////////////////////////
@@ -44,6 +57,7 @@ RVTEST_BEGIN
   nop
   CSRR(x14, 0x152)  # save spmpcfg[0]
   nop
+SspmpSm_csr_cg_cp_spmp_indirect_access_sireg_indirect_access:
   LI(x28, 0x20000000)  # spmpaddr value
   CSRW(0x151, x28)  # write sireg (spmpaddr)
   nop
@@ -287,38 +301,39 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-SspmpSm_csr_cg_cp_spmpaddr_write_entry0_addr_write_str: .string "\"test: 1; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry0_addr_write\""
-SspmpSm_csr_cg_cp_spmpaddr_write_entry0_addr_zero_str: .string "\"test: 2; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry0_addr_zero\""
-SspmpSm_csr_cg_cp_spmpaddr_write_entry0_addr_allones_str: .string "\"test: 3; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry0_addr_allones\""
-SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_off_str: .string "\"test: 4; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry0_cfg_a_off\""
-SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_tor_str: .string "\"test: 5; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry0_cfg_a_tor\""
-SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_na4_str: .string "\"test: 6; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry0_cfg_a_na4\""
-SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_napot_str: .string "\"test: 7; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry0_cfg_a_napot\""
-SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_zero_str: .string "\"test: 8; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry0_cfg_zero\""
-SspmpSm_csr_cg_cp_spmpaddr_write_entry1_addr_write_str: .string "\"test: 9; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry1_addr_write\""
-SspmpSm_csr_cg_cp_spmpaddr_write_entry1_addr_zero_str: .string "\"test: 10; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry1_addr_zero\""
-SspmpSm_csr_cg_cp_spmpaddr_write_entry1_addr_allones_str: .string "\"test: 11; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry1_addr_allones\""
-SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_off_str: .string "\"test: 12; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry1_cfg_a_off\""
-SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_tor_str: .string "\"test: 13; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry1_cfg_a_tor\""
-SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_na4_str: .string "\"test: 14; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry1_cfg_a_na4\""
-SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_napot_str: .string "\"test: 15; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry1_cfg_a_napot\""
-SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_zero_str: .string "\"test: 16; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry1_cfg_zero\""
-SspmpSm_csr_cg_cp_spmpaddr_write_entry2_addr_write_str: .string "\"test: 17; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry2_addr_write\""
-SspmpSm_csr_cg_cp_spmpaddr_write_entry2_addr_zero_str: .string "\"test: 18; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry2_addr_zero\""
-SspmpSm_csr_cg_cp_spmpaddr_write_entry2_addr_allones_str: .string "\"test: 19; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry2_addr_allones\""
-SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_off_str: .string "\"test: 20; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry2_cfg_a_off\""
-SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_tor_str: .string "\"test: 21; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry2_cfg_a_tor\""
-SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_na4_str: .string "\"test: 22; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry2_cfg_a_na4\""
-SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_napot_str: .string "\"test: 23; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry2_cfg_a_napot\""
-SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_zero_str: .string "\"test: 24; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry2_cfg_zero\""
-SspmpSm_csr_cg_cp_spmpaddr_write_entry3_addr_write_str: .string "\"test: 25; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry3_addr_write\""
-SspmpSm_csr_cg_cp_spmpaddr_write_entry3_addr_zero_str: .string "\"test: 26; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry3_addr_zero\""
-SspmpSm_csr_cg_cp_spmpaddr_write_entry3_addr_allones_str: .string "\"test: 27; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry3_addr_allones\""
-SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_off_str: .string "\"test: 28; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry3_cfg_a_off\""
-SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_tor_str: .string "\"test: 29; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry3_cfg_a_tor\""
-SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_na4_str: .string "\"test: 30; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry3_cfg_a_na4\""
-SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_napot_str: .string "\"test: 31; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry3_cfg_a_napot\""
-SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_zero_str: .string "\"test: 32; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry3_cfg_zero\""
+SspmpSm_csr_cg_cp_spmp_indirect_access_sireg_indirect_access_str: .string "\"test: 1; cg: SspmpSm_csr_cg; cp: cp_spmp_indirect_access; bin: sireg_indirect_access\""
+SspmpSm_csr_cg_cp_spmpaddr_write_entry0_addr_write_str: .string "\"test: 2; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry0_addr_write\""
+SspmpSm_csr_cg_cp_spmpaddr_write_entry0_addr_zero_str: .string "\"test: 3; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry0_addr_zero\""
+SspmpSm_csr_cg_cp_spmpaddr_write_entry0_addr_allones_str: .string "\"test: 4; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry0_addr_allones\""
+SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_off_str: .string "\"test: 5; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry0_cfg_a_off\""
+SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_tor_str: .string "\"test: 6; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry0_cfg_a_tor\""
+SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_na4_str: .string "\"test: 7; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry0_cfg_a_na4\""
+SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_a_napot_str: .string "\"test: 8; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry0_cfg_a_napot\""
+SspmpSm_csr_cg_cp_spmpcfg_write_entry0_cfg_zero_str: .string "\"test: 9; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry0_cfg_zero\""
+SspmpSm_csr_cg_cp_spmpaddr_write_entry1_addr_write_str: .string "\"test: 10; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry1_addr_write\""
+SspmpSm_csr_cg_cp_spmpaddr_write_entry1_addr_zero_str: .string "\"test: 11; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry1_addr_zero\""
+SspmpSm_csr_cg_cp_spmpaddr_write_entry1_addr_allones_str: .string "\"test: 12; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry1_addr_allones\""
+SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_off_str: .string "\"test: 13; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry1_cfg_a_off\""
+SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_tor_str: .string "\"test: 14; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry1_cfg_a_tor\""
+SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_na4_str: .string "\"test: 15; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry1_cfg_a_na4\""
+SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_a_napot_str: .string "\"test: 16; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry1_cfg_a_napot\""
+SspmpSm_csr_cg_cp_spmpcfg_write_entry1_cfg_zero_str: .string "\"test: 17; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry1_cfg_zero\""
+SspmpSm_csr_cg_cp_spmpaddr_write_entry2_addr_write_str: .string "\"test: 18; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry2_addr_write\""
+SspmpSm_csr_cg_cp_spmpaddr_write_entry2_addr_zero_str: .string "\"test: 19; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry2_addr_zero\""
+SspmpSm_csr_cg_cp_spmpaddr_write_entry2_addr_allones_str: .string "\"test: 20; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry2_addr_allones\""
+SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_off_str: .string "\"test: 21; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry2_cfg_a_off\""
+SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_tor_str: .string "\"test: 22; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry2_cfg_a_tor\""
+SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_na4_str: .string "\"test: 23; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry2_cfg_a_na4\""
+SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_a_napot_str: .string "\"test: 24; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry2_cfg_a_napot\""
+SspmpSm_csr_cg_cp_spmpcfg_write_entry2_cfg_zero_str: .string "\"test: 25; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry2_cfg_zero\""
+SspmpSm_csr_cg_cp_spmpaddr_write_entry3_addr_write_str: .string "\"test: 26; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry3_addr_write\""
+SspmpSm_csr_cg_cp_spmpaddr_write_entry3_addr_zero_str: .string "\"test: 27; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry3_addr_zero\""
+SspmpSm_csr_cg_cp_spmpaddr_write_entry3_addr_allones_str: .string "\"test: 28; cg: SspmpSm_csr_cg; cp: cp_spmpaddr_write; bin: entry3_addr_allones\""
+SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_off_str: .string "\"test: 29; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry3_cfg_a_off\""
+SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_tor_str: .string "\"test: 30; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry3_cfg_a_tor\""
+SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_na4_str: .string "\"test: 31; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry3_cfg_a_na4\""
+SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_a_napot_str: .string "\"test: 32; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry3_cfg_a_napot\""
+SspmpSm_csr_cg_cp_spmpcfg_write_entry3_cfg_zero_str: .string "\"test: 33; cg: SspmpSm_csr_cg; cp: cp_spmpcfg_write; bin: entry3_cfg_zero\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

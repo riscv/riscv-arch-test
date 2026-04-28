@@ -35,6 +35,7 @@ implemented_extensions:
   - { name: Smepmp, version: "= 1.0.0" }
   - { name: Smmpm, version: "= 1.0.0" }
   - { name: Smnpm, version: "= 1.0.0" }
+  - { name: Smpmpdeleg, version: "= 1.0.0" }
   - { name: Smrnmi, version: "= 1.0.0" }
   - { name: Smstateen, version: "= 1.0.0" }
   - { name: Ssaia, version: "= 1.0.0" }
@@ -47,6 +48,8 @@ implemented_extensions:
   - { name: Ssdbltrp, version: "= 1.0.0" }
   - { name: Ssnpm, version: "= 1.0.0" }
   - { name: Sspm, version: "= 1.0.0" }
+  - { name: Sspmp, version: "= 1.0.0" }
+  - { name: Sspmpen, version: "= 1.0.0" }
   - { name: Ssqosid, version: "= 1.0.0" }
   - { name: Ssstateen, version: "= 1.0.0" }
   - { name: Ssstrict, version: "= 1.0.0" }

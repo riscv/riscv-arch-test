@@ -105,7 +105,10 @@ normative_rule_definitions:
   # Loads with a destination of x0 must still raise any exceptions and cause any
   # other side effects even though the load value is discarded.
   - name: load_exc_x0
-    coverpoint: ["ExceptionsSm/cp_{load_address_misaligned, load_access_fault}"]
+    coverpoint:
+      [
+        "TODO: currently have no cp in ExceptionsSM that tests for load with rd = x0",
+      ]
 
   # Loads and stores whose effective address is not naturally aligned to the
   # referenced datatype (i.e., the effective address is not divisible by the size of

@@ -1282,6 +1282,8 @@ Zicbom_cbo_flush_cg_cp_custom_cbo_word_64_offset_255:
   RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_64_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_64_offset_255_str)
 
 
+  mv x2, x6 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

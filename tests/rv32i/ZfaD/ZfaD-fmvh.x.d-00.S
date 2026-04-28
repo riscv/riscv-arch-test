@@ -969,6 +969,8 @@ ZfaD_fmvh_x_d_cg_cp_fs1_edges_D_b0xa6e895993737426c:
   # Check fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x1, x5, x4, ZfaD_fmvh_x_d_cg_cp_fs1_edges_D_b0xa6e895993737426c, ZfaD_fmvh_x_d_cg_cp_fs1_edges_D_b0xa6e895993737426c_str)
 
+  mv x2, x1 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

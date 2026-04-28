@@ -21,16 +21,16 @@ covergroup SsstrictS_scsr_cg with function sample(ins_t ins);
         bins nonzero = { [1:$] }; // rd != 0
     }
     csrr: coverpoint ins.current.insn  {
-        wildcard bins csrr = {32'b????????????_00000_010_?????_1110011};
+        wildcard bins csrr = {CSRR};
     }
     csrrw: coverpoint ins.current.insn {
-        wildcard bins csrrw = {32'b????????????_?????_001_?????_1110011};
+        wildcard bins csrrw = {CSRRW};
     }
     // csr is similar to in Sm, but also exercises custom/debug machine mode CSRs, which should trap from supervisor level
     csr: coverpoint ins.current.insn[31:20]  {
         bins user_std0[] = {[12'h000:12'h0FF]};
         bins super_std0[] = {[12'h100:12'h17F]};
-        ignore_bins satp = {12'h180}; // satp accesses may cause complex side effects
+        ignore_bins satp = {CSR_SATP}; // satp accesses may cause complex side effects
         bins super_std02[] = {[12'h181:12'h1FF]};
         bins hyper_std0[] = {[12'h200:12'h2FF]};
         bins mach_std0[] = {[12'h300:12'h3FF]};
@@ -72,14 +72,14 @@ covergroup SsstrictS_scsr_cg with function sample(ins_t ins);
         bins csrrc = {3'b011};
     }
     mcsrs: coverpoint ins.current.insn[31:20] {
-        bins mstatus = {12'h300};
-        bins mie     = {12'h304};
-        bins mip     = {12'h344};
+        bins mstatus = {CSR_MSTATUS};
+        bins mie     = {CSR_MIE};
+        bins mip     = {CSR_MIP};
     }
     scsrs: coverpoint ins.current.insn[31:20] {
-        bins sstatus = {12'h100};
-        bins sie     = {12'h104};
-        bins sip     = {12'h144};
+        bins sstatus = {CSR_SSTATUS};
+        bins sie     = {CSR_SIE};
+        bins sip     = {CSR_SIP};
     }
 
     // main coverpoints

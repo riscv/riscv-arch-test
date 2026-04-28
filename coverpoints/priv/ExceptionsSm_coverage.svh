@@ -44,16 +44,16 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
         wildcard bins bgeu_nottaken = {6'b111_?_?_1};
     }
     jal: coverpoint ins.current.insn {
-        wildcard bins jal = {32'b????????????????????_?????_1101111};
+        wildcard bins jal = {JAL};
     }
     jalr: coverpoint ins.current.insn {
-        wildcard bins jalr = {32'b????????????_?????_000_?????_1100111};
+        wildcard bins jalr = {JALR};
     }
     csrops: coverpoint ins.current.insn {
-        wildcard bins csrrs  = {32'b????????????_?????_010_?????_1110011};
-        wildcard bins csrrc  = {32'b????????????_?????_011_?????_1110011};
-        wildcard bins csrrsi = {32'b????????????_?????_110_?????_1110011};
-        wildcard bins csrrci = {32'b????????????_?????_111_?????_1110011};
+        wildcard bins csrrs  = {CSRRS};
+        wildcard bins csrrc  = {CSRRC};
+        wildcard bins csrrsi = {CSRRSI};
+        wildcard bins csrrci = {CSRRCI};
     }
     loadops: coverpoint ins.current.insn {
         wildcard bins lw  = {LW};
@@ -88,9 +88,9 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
         bins zero = {5'b00000};
     }
     seed: coverpoint ins.current.insn[31:20] {
-        bins seed = {12'h015};
+        bins seed = {CSR_SEED};
     }
-    mstatus_MIE: coverpoint ins.prev.csr[12'h300][3] {
+    mstatus_MIE: coverpoint ins.prev.csr[CSR_MSTATUS][3] {
         // auto fills 1 and 0
     }
     pc_bit_1: coverpoint ins.current.pc_rdata[1] {

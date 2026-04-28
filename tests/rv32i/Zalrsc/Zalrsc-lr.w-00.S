@@ -872,6 +872,8 @@ Zalrsc_lr_w_cg_cp_custom_rd_edges_m1:
   RVTEST_SIGUPD(x20, x8, x7, x4, Zalrsc_lr_w_cg_cp_custom_rd_edges_m1, Zalrsc_lr_w_cg_cp_custom_rd_edges_m1_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
+  mv x2, x20 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

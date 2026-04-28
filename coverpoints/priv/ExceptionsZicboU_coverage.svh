@@ -24,24 +24,24 @@ covergroup ExceptionsZicboU_cg with function sample(ins_t ins);
             wildcard bins cbo_flush = {CBO_FLUSH};
             wildcard bins cbo_clean = {CBO_CLEAN};
         }
-        menvcfg_cbie: coverpoint ins.current.csr[12'h30A][5:4] {
+        menvcfg_cbie: coverpoint ins.current.csr[CSR_MENVCFG][5:4] {
             ignore_bins reserved = {2'b10};
         }
-        menvcfg_cbcfe: coverpoint ins.current.csr[12'h30A][6] {
+        menvcfg_cbcfe: coverpoint ins.current.csr[CSR_MENVCFG][6] {
         }
     `endif
     `ifdef ZICBOZ_SUPPORTED
         cbo_zero: coverpoint ins.current.insn {
             wildcard bins cbo_zero = {CBO_ZERO};
         }
-        menvcfg_cbze: coverpoint ins.current.csr[12'h30A][7] {
+        menvcfg_cbze: coverpoint ins.current.csr[CSR_MENVCFG][7] {
         }
     `endif
 
     adr_misaligned: coverpoint ins.current.rs1_val[0]  {
         bins misaligned = {1};
     }
-    menvcfg_all_enable: coverpoint ins.current.csr[12'h30A][7:4] {
+    menvcfg_all_enable: coverpoint ins.current.csr[CSR_MENVCFG][7:4] {
         bins ones = {4'b1111};
     }
     cbo_instrs: coverpoint ins.current.insn {

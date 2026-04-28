@@ -23,7 +23,7 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I']
+# REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
@@ -52,10 +52,12 @@ RVTEST_BEGIN
     LA (a4, \ADDRESS)
     LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     LA(x1, 1f)                            // Store the return Address in x1
+    \TEST_CASE\()_9:
     jalr ra, 0(a4)
     nop
 1:
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_9, test_9_str)
 
     // Store Access Check
     LA(a5, \ADDRESS)                                         // Address to be verified
@@ -123,8 +125,13 @@ main:
 
 #define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
 #define PMPADDRESS          TEST_FOR_EXECUTION                              // Test section address
-#define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)-1)
-#define PMP_MASK            ~(1 << (RVMODEL_PMP_GRAIN - 1)-1)
+#if RVMODEL_PMP_GRAIN != 0
+    #define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
+    #define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)) - 1
+#else
+    #define PMP_MASK            ~0
+    #define PMP_REGION_SIZE     0
+#endif
 
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
@@ -256,21 +263,6 @@ main:
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_30
 
-    j exit                                                      // Verification Complete, exit the test
-
-.align 11
-.align (RVMODEL_PMP_GRAIN+2)
-TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
-    nop
-    .endr
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
 
 RVTEST_CODE_END
 
@@ -286,6 +278,19 @@ test_5_str: .string "\"test: 5; cp: pmpm_cfg_XWR_all_lbu\""
 test_6_str: .string "\"test: 6; cp: pmpm_cfg_XWR_all_lh\""
 test_7_str: .string "\"test: 7; cp: pmpm_cfg_XWR_all_lhu\""
 test_8_str: .string "\"test: 8; cp: pmpm_cfg_XWR_all_lw\""
+test_9_str: .string "\"test: 9; cp: pmpm_cfg_XWR_all_jalr\""
+
+.align 13
+.align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION:
+    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

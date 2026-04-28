@@ -1064,7 +1064,7 @@
         2:
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
-        mv x7, a0           # move xepc
+        mv a2, a0           # move xepc
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
     failedtest_report_xepc_instr:
@@ -1072,12 +1072,12 @@
         LA(a0, xepcinstrstr)
         call rvmodel_io_write_str
         # Check if its a compressed instruction
-        lhu a0, 0(x7)       # load lower half of instruction at xepc
+        lhu a0, 0(a2)       # load lower half of instruction at xepc
         li a1, 16
         andi x8, a0, 3
         li x9, 3
         bne x8, x9, 1f      # compressed: only lower half needed
-        lhu x8, 2(x7)
+        lhu x8, 2(a2)
         slli x8, x8, 16
         or a0, a0, x8
         li a1, 32

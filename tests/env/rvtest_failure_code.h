@@ -1355,10 +1355,6 @@
         .string "\"Mismatch in supervisor external interrupt ID! Trap was being handled in VS-Mode.\"";
     Vclr_Vext_int_str:
         .string "\"Mismatch in virtual supervisor external interrupt ID! Trap was being handled in VS-Mode.\"";
-#else
-    addrstr:
-        .string "RVCP: Address: "
-#endif
 #ifdef RVTEST_VECTOR
     regionstr:
         .string "RVCP: Region: "

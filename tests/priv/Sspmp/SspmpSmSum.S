@@ -9,10 +9,9 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'Ss', 'Zicsr', 'Sspmp']
+# REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp']
 # # # no param constraints
 # MARCH: rv${XLEN}i_zicsr
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -21,6 +20,7 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
+#define rvtest_strap_routine
 #define rvtest_mtrap_routine
 
 // Include framework macros
@@ -29,6 +29,19 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
+
+
+/////////////////////////////////
+// SPMP boot preamble
+//   Delegate all PMP entries to SPMP by writing mpmpdeleg.pmpnum = 0.
+//   Without this, SPMP CSRs read 0 and writes are ignored per Smpmpdeleg spec.
+/////////////////////////////////
+  RVTEST_GOTO_MMODE
+  CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all 64 entries as SPMP
+  nop
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
+  RVTEST_GOTO_LOWER_MODE Smode
+  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
 
 /////////////////////////////////
@@ -61,6 +74,8 @@ SspmpSm_perm_cg_cp_sum_effect_sum_1_smode_access:
   # Read sstatus into x15 and check against expected.
   RVTEST_SIGUPD_CSR_READ(sstatus, x15, SspmpSm_perm_cg_cp_sum_effect_sum_1_smode_access, SspmpSm_perm_cg_cp_sum_effect_sum_1_smode_access_str)
   CSRW(sstatus, x8)  # restore sstatus
+SspmpSm_perm_cg_cp_enforce_no_x_sum_enforces_nox:
+SspmpSm_perm_cg_cp_sum_denied_sum_denies_access:
   LI(x30, 0x0)  # spmpcfg value
   CSRW(0x152, x30)  # write sireg2 (spmpcfg)
   nop
@@ -78,6 +93,8 @@ RVTEST_DATA_BEGIN
 // Testcase strings
 SspmpSm_perm_cg_cp_sum_effect_sum_0_smode_access_str: .string "\"test: 1; cg: SspmpSm_perm_cg; cp: cp_sum_effect; bin: sum_0_smode_access\""
 SspmpSm_perm_cg_cp_sum_effect_sum_1_smode_access_str: .string "\"test: 2; cg: SspmpSm_perm_cg; cp: cp_sum_effect; bin: sum_1_smode_access\""
+SspmpSm_perm_cg_cp_enforce_no_x_sum_enforces_nox_str: .string "\"test: 3; cg: SspmpSm_perm_cg; cp: cp_enforce_no_x; bin: sum_enforces_nox\""
+SspmpSm_perm_cg_cp_sum_denied_sum_denies_access_str: .string "\"test: 4; cg: SspmpSm_perm_cg; cp: cp_sum_denied; bin: sum_denies_access\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

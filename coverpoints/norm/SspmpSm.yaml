@@ -63,7 +63,7 @@ normative_rule_definitions:
     coverpoint: ["SspmpSm_addr_cg/cp_addr_match_napot"]
 
   - name: addr_match_tor_entry0
-    coverpoint: ["SspmpSm_addr_cg/cp_addr_match_tor"]
+    coverpoint: ["SspmpSm_addr_cg/cp_addr_match_tor_entry0"]
 
   ##############################################
   # Section 2.4: Permission Encoding
@@ -78,7 +78,7 @@ normative_rule_definitions:
     coverpoint: ["SspmpSm_perm_cg/cp_sum_effect"]
 
   - name: umode_rule_enforceNoX
-    coverpoint: ["SspmpSm_perm_cg/cp_sum_effect"]
+    coverpoint: ["SspmpSm_perm_cg/cp_enforce_no_x"]
 
   - name: shared_rule_enforce
     coverpoint: ["SspmpSm_perm_cg/cp_shared_rule"]
@@ -102,7 +102,7 @@ normative_rule_definitions:
     coverpoint: ["SspmpSm_perm_cg/cp_no_match_deny"]
 
   - name: match_irrespective_perm_bits
-    coverpoint: ["SspmpSm_addr_cg/cp_priority_match"]
+    coverpoint: ["SspmpSm_addr_cg/cp_match_irrespective_perm_bits"]
 
   ##############################################
   # Section 2.6: SPMP and Paging
@@ -120,10 +120,13 @@ normative_rule_definitions:
     coverpoint: ["SspmpSm_csr_cg/cp_spmpcfg_write"]
 
   - name: siselect_oob_read_zero
-    coverpoint: ["SspmpSm_csr_cg/cp_spmp_oob_access"]
+    coverpoint: ["SspmpSm_csr_cg/cp_spmp_oob_read_zero"]
 
   - name: siselect_oob_write_ignored
-    coverpoint: ["SspmpSm_csr_cg/cp_spmp_oob_access"]
+    coverpoint: ["SspmpSm_csr_cg/cp_spmp_oob_write_ignored"]
+
+  - name: sfence_vma_ordering
+    coverpoint: ["SspmpSm_csr_cg/cp_sfence_ordering"]
 
   ##############################################
   # Section 2.8: Exceptions
@@ -153,13 +156,13 @@ normative_rule_definitions:
   # Section 4.1: Resource Sharing (Smpmpdeleg)
   ##############################################
   - name: mpmpdeleg_pmpnum_field
-    coverpoint: ["SspmpSm_csr_cg/cp_mpmpdeleg_pmpnum"]
+    coverpoint: ["SspmpSm_csr_cg/cp_mpmpdeleg_pmpnum_field"]
 
   - name: mpmpdeleg_pmpnum_zero_delegates_all
-    coverpoint: ["SspmpSm_csr_cg/cp_mpmpdeleg_pmpnum"]
+    coverpoint: ["SspmpSm_csr_cg/cp_mpmpdeleg_pmpnum_zero"]
 
   - name: mpmpdeleg_no_delegation_disables
-    coverpoint: ["SspmpSm_csr_cg/cp_mpmpdeleg_pmpnum"]
+    coverpoint: ["SspmpSm_csr_cg/cp_mpmpdeleg_no_delegation"]
 
   - name: mpmpdeleg_locked_pmp_constraint
     coverpoint: ["SspmpSm_csr_cg/cp_mpmpdeleg_locked"]

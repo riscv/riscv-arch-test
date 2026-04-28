@@ -2,10 +2,13 @@
 
 parameter_definitions:
   - name: NUM_SPMP_ENTRIES
-    coverpoint: ["all SPMP coverpoints"]
+    coverpoint:
+      [
+        "cp_spmp_indirect_access, cp_spmpaddr_write, cp_spmpcfg_write, cp_spmp_oob_read_zero, cp_spmp_oob_write_ignored, cp_mpmpdeleg_pmpnum_field",
+      ]
     effect:
       [
-        "Determines the number of available SPMP entries (1-64). Tests adapt to the implemented count.",
+        "Determines the number of available SPMP entries (1-64). Tests adapt to the implemented count; out-of-bounds coverpoints validate unimplemented indices.",
       ]
 
   - name: SPMP_GRAIN
@@ -16,17 +19,17 @@ parameter_definitions:
       ]
 
   - name: NUM_PMP_ENTRIES
-    coverpoint: ["cp_mpmpdeleg_pmpnum"]
+    coverpoint: ["cp_mpmpdeleg_pmpnum_field, cp_mpmpdeleg_pmpnum_zero, cp_mpmpdeleg_no_delegation, cp_mpmpdeleg_locked"]
     effect:
       [
         "Total number of PMP entries in the implementation, determines delegation range.",
       ]
 
   - name: MXLEN
-    coverpoint: ["all tests"]
+    coverpoint: ["cp_spmpen_readwrite, cp_spmpen_activation, cp_spmpen_locked_readonly"]
     effect:
       [
-        "Implicitly tested by XLEN-dependent tests (e.g., spmpen/spmpenh on RV32).",
+        "XLEN-dependent register widths. On RV32 the Sspmpen extension also exposes spmpenh; these coverpoints exercise the XLEN-sensitive paths.",
       ]
 
   - name: SXLEN

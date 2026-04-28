@@ -23,17 +23,24 @@ from priv_coverpoint_registry import PRIV_REGISTRY, import_all_modules
 from vector_testgen_common import (
   ARCH_VERIF,
   add_testcase_string,
+  eew8_ins,
+  eew16_ins,
+  eew32_ins,
+  eew64_ins,
   finalizeSigupdCount,
   flen,
+  genRandomVectorLS,
   genVMaskedges,
   getBaseSuiteTestCount,
   getInstructionArguments,
+  getInstructionSegments,
   getLengthLmul,
   getLengthSuiteTestCount,
   getSigSpace,
   handleSignaturePointerConflict,
   insertTemplate,
   loadScalarReg,
+  loadScalarAddress,
   maxVLEN,
   minSEW_MIN,
   myhash,
@@ -47,9 +54,53 @@ from vector_testgen_common import (
   setExtension,
   setXlen,
   vd_widen_ins,
+  vector_ls_ins,
+  vector_stores,
+  whole_register_ls,
   whole_register_move,
   writeVecTest,
 )
+
+
+def _eew_for_instruction(instruction: str) -> int | None:
+    """Return the explicit EEW (in bits) of an EEW-suffixed load/store, else None."""
+    if instruction in eew64_ins:
+        return 64
+    if instruction in eew32_ins:
+        return 32
+    if instruction in eew16_ins:
+        return 16
+    if instruction in eew8_ins:
+        return 8
+    return None
+
+
+def _eff_sew_for_instruction(instruction: str) -> int:
+    """Effective vsetvli SEW for the priv test execution of `instruction`.
+
+    For EEW-suffixed loads/stores we set SEW = EEW so that the data-register
+    size_multiplier collapses to 1 and EMUL_eff = LMUL * NFIELDS stays small
+    enough to remain architecturally legal at our randomized LMUL choices.
+    All other instructions execute at SEWMIN.
+    """
+    eew = _eew_for_instruction(instruction)
+    if eew is not None:
+        return max(minSEW_MIN, eew)
+    return minSEW_MIN
+
+
+def _max_lmul_for_instruction(instruction: str) -> int:
+    """Cap test-time LMUL so that EMUL = LMUL * size_mult * segments <= 8.
+
+    With eff_sew = EEW for EEW-suffixed loads, the data register's
+    size_multiplier collapses to 1, so EMUL_eff = LMUL * NFIELDS. Segmented
+    variants are the binding case. Whole-register load/store ignore vtype LMUL
+    and are pinned at 1.
+    """
+    if instruction in whole_register_ls:
+        return 1
+    segs = getInstructionSegments(instruction)
+    return max(1, 8 // segs)
 
 
 # Framework-reserved scalar X-registers that sigReg must NEVER be relocated into
@@ -94,42 +145,57 @@ def writeLine(argument: str, comment = ""):
 
 def make_vill(instruction):
     description = "cp_vill"
-    instruction_data = randomizeVectorInstructionData(instruction, minSEW_MIN, getBaseSuiteTestCount(),
+    sew = _eff_sew_for_instruction(instruction)
+    instruction_data = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(),
                                                       vd_val_pointer = "vector_random", vs2_val_pointer = "vector_random", vs1_val_pointer = "vector_random")
 
     scratch = pickPrivScratch(instruction_data[1])
-    writePrivTestPrep(description, instruction, instruction_data, scratch=scratch)
+    writePrivTestPrep(description, instruction, instruction_data, sew=sew, scratch=scratch)
     writeLine(f"vsetivli  x{scratch}, 1, e64, mf8, tu, mu",  "# SEW = 64 and LMUL = 1/8, illegal config which sets vill = 1")
-    writePrivTestLine(instruction, instruction_data, cp="cp_vill")
+    writePrivTestLine(instruction, instruction_data, cp="cp_vill", sew=sew)
 
 
 def make_vstart(instruction, maxlmul = 8):
     # Cap LMUL for widening/narrowing instructions (EMUL = 2*LMUL must be ≤ 8)
     if instruction in vd_widen_ins or instruction in narrowins:
         maxlmul = min(maxlmul, 4)
+    # Further cap for EEW-driven load/store and segmented variants so that
+    # EMUL of every operand stays ≤ 8 (LMUL * size_mult * segments ≤ 8).
+    maxlmul = min(maxlmul, _max_lmul_for_instruction(instruction))
     vstartvals = ["one", "vlmaxm1", "vlmaxd2", "random"]
     for vstartval in vstartvals:
-        lmul = 2 ** randint(1, int(math.log2(maxlmul))) # pick random integer LMUL to ensure that coverpoints are hit
+        if maxlmul <= 1:
+            lmul = 1
+        else:
+            lmul = 2 ** randint(1, int(math.log2(maxlmul))) # pick random integer LMUL to ensure that coverpoints are hit
 
         maskval = randomizeMask(instruction)
         no_overlap = [['vs1', 'v0'], ['vs2', 'v0'], ['vd', 'v0']] if maskval is not None else None
 
         description = f"cp_vstart (vstart = {vstartval})"
-        instruction_data = randomizeVectorInstructionData(instruction, minSEW_MIN, getLengthSuiteTestCount(), suite = "length", lmul = lmul,
+        sew = _eff_sew_for_instruction(instruction)
+        instruction_data = randomizeVectorInstructionData(instruction, sew, getLengthSuiteTestCount(), suite = "length", lmul = lmul,
                                                           vd_val_pointer = "vector_random", vs2_val_pointer = "vector_random", vs1_val_pointer = "vector_random",
                                                           additional_no_overlap=no_overlap)
 
         scratch = pickPrivScratch(instruction_data[1])
         scratch2 = pickPrivScratch(instruction_data[1], exclude=(scratch,))
-        writePrivTestPrep(description, instruction, instruction_data, lmul = lmul, vl = "vlmax", scratch=scratch)
+        writePrivTestPrep(description, instruction, instruction_data, lmul = lmul, vl = "vlmax", sew=sew, scratch=scratch)
         prepVstart(vstartval, scratch=scratch, scratch2=scratch2)
-        writePrivTestLine(instruction, instruction_data, cp="cp_vstart", lmul = lmul, vl = "vlmax", maskval = maskval)
+        writePrivTestLine(instruction, instruction_data, cp="cp_vstart", lmul = lmul, vl = "vlmax", sew=sew, maskval = maskval)
 
 def make_vstart_gt_vl(instruction):
     randvl = randint(1, maxVLEN)
     randvstart = randint(1, maxVLEN)
     description = "cp_vstart_gt_vl"
-    instruction_data = randomizeVectorInstructionData(instruction, minSEW_MIN, getBaseSuiteTestCount(),
+    sew = _eff_sew_for_instruction(instruction)
+    # Cap LMUL by EMUL constraints (EEW-driven loads/stores, segmented variants).
+    # Must be picked BEFORE randomizeVectorInstructionData so register selection
+    # uses the correct alignment (e.g. NF=3 segmented EEW LS at lmul=2 needs even vd).
+    lmul = min(4, _max_lmul_for_instruction(instruction))
+    if instruction in vd_widen_ins or instruction in narrowins:
+        lmul = min(lmul, 4)
+    instruction_data = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), lmul = lmul,
                                                       vd_val_pointer = "vector_random", vs2_val_pointer = "vector_random", vs1_val_pointer = "vector_random")
 
     # a0 (x10) and a1 (x11) are used by the cp_vstart_gt_vl_setup helper for vl/vstart
@@ -137,13 +203,35 @@ def make_vstart_gt_vl(instruction):
     # Note: sigReg is also kept out of x10/x11 by the priv resolveScalarSigConflict
     # forbidden-set, so no extra save/restore around the helper call is needed.
     scratch = pickPrivScratch(instruction_data[1], exclude=(10, 11))
-    writePrivTestPrep(description, instruction, instruction_data, lmul = 4, vl = "vlmax", vstart = True, scratch=scratch)
+    scratch2 = pickPrivScratch(instruction_data[1], exclude=(10, 11, scratch))
+    scratch3 = pickPrivScratch(instruction_data[1], exclude=(10, 11, scratch, scratch2))
+    writePrivTestPrep(description, instruction, instruction_data, lmul = lmul, vl = "vlmax", vstart = True, sew=sew, scratch=scratch)
 
-    writeLine(f"li a0, {randvl}",            "# load random number to a0, place holder for vl")
-    writeLine(f"li a1, {randvstart}",        "# load random number to a1, place holder for vstart")
-    writeLine("jal cp_vstart_gt_vl_setup",  "# jump to set up vstart and vl for the test")
+    # Inline vstart > vl > 0 setup using the test's eff_sew/lmul so VLMAX > vstart > vl > 0
+    # holds with the test's vtype (the shared cp_vstart_gt_vl_setup helper hardcodes
+    # e8/m4 and a follow-up vsetvli can clip vl such that vstart >= VLMAX, breaking
+    # cp_vstart_gt_vl which requires VLMAX > vstart). Algorithm:
+    #   VLMAX = vsetvli(e{sew}, m{lmul})
+    #   vl     = (rand_vl mod (VLMAX-2)) + 1                  in [1, VLMAX-2]
+    #   vstart = vl + 1 + (rand_vstart mod (VLMAX-vl-1))      in [vl+1, VLMAX-1]
+    # Requires VLMAX >= 3 (true for all supported VLEN/SEW/LMUL combos here since
+    # VLEN >= 128 and the largest binding case is sew=64 lmul=1 NF=5 → VLMAX=2 only on
+    # VLEN=128, but our configs use VLEN=1024).
+    writeLine(f"vsetvli x{scratch}, x0, e{sew}, m{lmul}, tu, mu",       f"# x{scratch} = VLMAX at test vtype (e{sew}/m{lmul})")
+    writeLine(f"li x{scratch2}, {randvl}",                              "# rand_vl")
+    writeLine(f"addi x{scratch3}, x{scratch}, -2",                      f"# x{scratch3} = VLMAX-2")
+    writeLine(f"remu x{scratch2}, x{scratch2}, x{scratch3}",            "# rand_vl mod (VLMAX-2)")
+    writeLine(f"addi x{scratch2}, x{scratch2}, 1",                      f"# vl = x{scratch2} in [1, VLMAX-2]")
+    writeLine(f"li a1, {randvstart}",                                   "# rand_vstart")
+    writeLine(f"sub x{scratch3}, x{scratch}, x{scratch2}",              f"# x{scratch3} = VLMAX - vl")
+    writeLine(f"addi x{scratch3}, x{scratch3}, -1",                     f"# x{scratch3} = VLMAX - vl - 1 (>= 1)")
+    writeLine(f"remu a1, a1, x{scratch3}",                              "# rand_vstart mod (VLMAX-vl-1)")
+    writeLine(f"add a1, a1, x{scratch2}",                               "# a1 = vl + (rand mod (VLMAX-vl-1))")
+    writeLine("addi a1, a1, 1",                                         "# vstart = a1+1 in [vl+1, VLMAX-1]")
+    writeLine(f"vsetvli x{scratch}, x{scratch2}, e{sew}, m{lmul}, tu, mu", "# set vl")
+    writeLine("csrw vstart, a1",                                        "# set vstart > vl, < VLMAX")
 
-    writePrivTestLine(instruction, instruction_data, cp="cp_vstart_gt_vl", vl = "vlmax", lmul = 4)
+    writePrivTestLine(instruction, instruction_data, cp="cp_vstart_gt_vl", vl = "vlmax", lmul = lmul, sew=sew)
 
 #####################################           test generation           #####################################
 
@@ -182,8 +270,10 @@ def _emul_lmul_str(group_size):
     return "m8"
 
 
-def writePrivTestPrep(description, instruction, instruction_data=None, lmul = 1, vl = 1, vstart = False, scratch=None):
+def writePrivTestPrep(description, instruction, instruction_data=None, lmul = 1, vl = 1, vstart = False, sew = None, scratch=None):
     instruction_arguments = getInstructionArguments(instruction)
+    if sew is None:
+        sew = minSEW_MIN
 
     writeLine("\n# Testcase " + str(description))
 
@@ -247,11 +337,13 @@ def writePrivTestPrep(description, instruction, instruction_data=None, lmul = 1,
 
     # Restore the requested test-time vl/lmul after the init loads.
     if (vl == "vlmax"):
-      writeLine(f"vsetvli x{scratch}, x0, SEWSIZE, m{lmul}, tu, mu",  f"# restore test vtype: vl=VLMAX, LMUL={lmul}, SEW=SEWMIN")
+      writeLine(f"vsetvli x{scratch}, x0, e{sew}, m{lmul}, tu, mu",  f"# restore test vtype: vl=VLMAX, LMUL={lmul}, SEW={sew}")
     else:
-      writeLine(f"vsetivli x{scratch}, {vl}, SEWSIZE, m{lmul}, tu, mu",  f"# restore test vtype: vl={vl}, LMUL={lmul}, SEW=SEWMIN")
+      writeLine(f"vsetivli x{scratch}, {vl}, e{sew}, m{lmul}, tu, mu",  f"# restore test vtype: vl={vl}, LMUL={lmul}, SEW={sew}")
 
-def writePrivTestLine(instruction, instruction_data, cp="cp_vill", vl=1, lmul=1, maskval=None):
+def writePrivTestLine(instruction, instruction_data, cp="cp_vill", vl=1, lmul=1, sew=None, maskval=None):
+    if sew is None:
+        sew = minSEW_MIN
     instruction_arguments = getInstructionArguments(instruction)
     [vector_register_data, scalar_register_data, floating_point_register_data, imm_val] = instruction_data
 
@@ -275,8 +367,12 @@ def writePrivTestLine(instruction, instruction_data, cp="cp_vill", vl=1, lmul=1,
         elif argument[0] == 'v':
             testline = testline + f"v{vector_register_data[argument]['reg']}"
         elif argument[0] == 'r':
-            loadScalarReg(argument, scalar_register_data)
-            testline = testline + f"x{scalar_register_data[argument]['reg']}"
+            if argument == "rs1" and instruction in vector_ls_ins:
+                loadScalarAddress(argument, scalar_register_data)
+                testline = testline + f"(x{scalar_register_data[argument]['reg']})"
+            else:
+                loadScalarReg(argument, scalar_register_data)
+                testline = testline + f"x{scalar_register_data[argument]['reg']}"
         elif argument[0] == 'f':
             testline = testline + f"f{floating_point_register_data[argument]['reg']}"
         else:
@@ -299,6 +395,7 @@ def writePrivTestLine(instruction, instruction_data, cp="cp_vill", vl=1, lmul=1,
 
     vd = vector_register_data ['vd'] ['reg']
     rd = scalar_register_data ['rd'] ['reg']
+    fd = floating_point_register_data['fd']['reg'] if 'fd' in floating_point_register_data else None
 
     add_testcase_string(cp, instruction)
     # The data-vector SIGUPD_V is meaningless and actively harmful for tests
@@ -321,8 +418,9 @@ def writePrivTestLine(instruction, instruction_data, cp="cp_vill", vl=1, lmul=1,
     skip_sigupd = (
         cp in ("cp_vill", "cp_vstart_gt_vl")
         or (cp == "cp_vstart" and instruction in whole_register_move)
+        or (cp == "cp_vstart" and instruction in vector_stores)
     )
-    writeVecTest(instruction, cp, vd, minSEW_MIN, testline, test=instruction, rd=rd, vl=vl, sig_lmul=sig_lmul, sig_whole_register_store=sig_whole_register_store, priv=True, force_vill=(cp == "cp_vill"), skip_sigupd=skip_sigupd)
+    writeVecTest(instruction, cp, vd, sew, testline, test=instruction, rd=rd, fd=fd, vl=vl, lmul=lmul, sig_lmul=sig_lmul, sig_whole_register_store=sig_whole_register_store, priv=True, force_vill=(cp == "cp_vill"), skip_sigupd=skip_sigupd)
 
 
 
@@ -405,6 +503,7 @@ if __name__ == '__main__':
         ###############################  ending test file  ###############################
         # generate vector data (random and corners)
         test_data = genVMaskedges() # TODO: change to generate a good random (vector_random)
+        test_data += genRandomVectorLS()
 
         # print footer with test data and signature
         signatureWords = getSigSpace(xlen, flen)

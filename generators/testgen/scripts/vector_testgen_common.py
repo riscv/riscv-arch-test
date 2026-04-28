@@ -2032,7 +2032,7 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
 
     if (test in vfloattypes) and (test not in fvtype):
       fcsrsaveReg = 2
-      while fcsrsaveReg in scalar_registers_used:
+      while fcsrsaveReg in scalar_registers_used or fcsrsaveReg == sigReg:
         fcsrsaveReg = randint(1,31)
       scalar_registers_used.append(fcsrsaveReg)
       writeLine(f"csrr x{fcsrsaveReg}, fcsr", f"# save fcsr into x{fcsrsaveReg} for signature")

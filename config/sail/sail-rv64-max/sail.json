@@ -86,6 +86,14 @@
       "len": 64,
       "value": "0x1000"
     },
+    // SPMP: S-level Physical Memory Protection (Sspmp extension).
+    // 64 entries matches the spec-max configuration.
+    "spmp": {
+      "enabled": true,
+      "grain": 0,
+      "count": 64,
+      "usable_count": 64
+    },
     "regions": [
       // ROM
       {
@@ -422,6 +430,12 @@
     "Sscofpmf": {
       "supported": true
     },
+    "Sspmp": {
+      "supported": true
+    },
+    "Sspmpen": {
+      "supported": true
+    },
     "Sstc": {
       "supported": true
     },
@@ -437,6 +451,9 @@
       "supported": true
     },
     "Smcntrpmf": {
+      "supported": true
+    },
+    "Smpmpdeleg": {
       "supported": true
     },
     "Svbare": {

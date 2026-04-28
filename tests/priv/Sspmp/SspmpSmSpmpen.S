@@ -113,7 +113,7 @@ SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit3:
   LI(x22, 0x21ffffff)  # spmpaddr value
   CSRW(0x151, x22)  # write sireg (spmpaddr)
   nop
-  LI(x22, 0x11b)  # spmpcfg value
+  LI(x22, 0x1f)  # spmpcfg value
   CSRW(0x152, x22)  # write sireg2 (spmpcfg)
   nop
 

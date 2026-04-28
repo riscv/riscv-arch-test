@@ -1722,7 +1722,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
     entry = 0
 
     # Configure SPMP entry 0 with NAPOT + RW via S-mode indirect CSR access
-    cfg_napot_rw = (1 << SPMPCFG_R) | (1 << SPMPCFG_W) | (A_NAPOT << SPMPCFG_A_LO) | (1 << SPMPCFG_U)
+    cfg_napot_rwx = (1 << SPMPCFG_R) | (1 << SPMPCFG_W) | (1 << SPMPCFG_X) | (A_NAPOT << SPMPCFG_A_LO)
 
     lines.extend(
         [
@@ -1743,7 +1743,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
     lines.extend(_spmp_write_addr(val_reg, napot_addr))
 
     # Set cfg
-    lines.extend(_spmp_write_cfg(val_reg, cfg_napot_rw))
+    lines.extend(_spmp_write_cfg(val_reg, cfg_napot_rwx))
 
     # Disable entry via spmpen[0] = 0
     lines.extend(

@@ -142,12 +142,12 @@ For more information or if you have issues installing the RISC-V toolchain, refe
 
 #### 4. RISC-V Sail Reference Model
 
-The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.10 of the model.
+The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.11 of the model.
 
 To install the sail model:
 
 ```bash
-curl --location https://github.com/riscv/sail-riscv/releases/download/0.10/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
+curl --location https://github.com/riscv/sail-riscv/releases/download/0.11/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
 ```
 
 Add `/path/to/install/bin` to your `PATH` if you used a different directory than for the `riscv-gnu-toolchain`.
@@ -248,6 +248,10 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 - `RVMODEL_MTIME_ADDRESS` (can be omitted if MTIME is not implemented)
 - `RVMODEL_MTIMECMP_ADDRESS` (can be omitted if MTIMECMP is not implemented)
 - `RVMODEL_TIMER_INT_SOON_DELAY`
+
+**MSIP Macro**: Required only for Sm version 1.13 and above. Can be omitted if machine software interrupts are not supported.
+
+- `RVMODEL_MSIP_ADDRESS` (can be omitted if MSIP is not memory-mapped or not tested)
 
 **Interrupt Macros**: Can be left blank if interrupts are not supported.
 

@@ -23,7 +23,7 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I']
+# REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
@@ -31,7 +31,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_cfg_XWR_all-03.S"
+#define TEST_FILE "pmpsm_cfg_XWR_all-05.S"
 #define SIGUPD_COUNT 400
 
 // Enable trap handler
@@ -51,10 +51,12 @@ RVTEST_BEGIN
     LA (a4, \ADDRESS)
     LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     LA(x1, 1f)                            // Store the return Address in x1
+    \TEST_CASE\()_12:
     jalr ra, 0(a4)
     nop
 1:
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_12, test_12_str)
 
     // Store Access Check
     LA(a5, \ADDRESS)                                         // Address to be verified
@@ -241,23 +243,12 @@ main:
 
     j exit                                                        // Verification Complete, exit the test
 
-.align 12
-TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
-    nop
-    .endr
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 exit:
 
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpm_cfg_XWR_all_sb\""
@@ -271,6 +262,25 @@ test_8_str: .string "\"test: 8; cp: pmpm_cfg_XWR_all_lhu\""
 test_9_str: .string "\"test: 9; cp: pmpm_cfg_XWR_all_lw\""
 test_10_str: .string "\"test: 10; cp: pmpm_cfg_XWR_all_lwu\""
 test_11_str: .string "\"test: 11; cp: pmpm_cfg_XWR_all_ld\""
+test_12_str: .string "\"test: 12; cp: pmpm_cfg_XWR_all_jalr\""
+
+.align 12
+.align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    .rept 1024
+    nop
+    .endr
+
+TEST_FOR_EXECUTION:
+    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
+
 
 RVTEST_DATA_END
 

@@ -24,25 +24,25 @@ covergroup SvPMPZicbo_cg with function sample(ins_t ins);
     `ifdef XLEN64
         PageType_d: coverpoint ins.current.page_type_d {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera = {2'b11} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
-                bins sv48_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
-                bins sv48_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
-                bins sv48_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
+                bins sv48_tera = {2'b11} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
+                bins sv48_giga = {2'b10} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
+                bins sv48_mega = {2'b01} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
+                bins sv48_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
-                bins sv39_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
-                bins sv39_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
+                bins sv39_giga = {2'b10} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
+                bins sv39_mega = {2'b01} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
+                bins sv39_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
             `endif
     }
     `else
         PageType_d: coverpoint ins.current.page_type_d {
-            bins sv32_mega = {2'b01} iff (ins.current.csr[12'h180][31] == 1'b1);
-            bins sv32_kilo = {2'b00} iff (ins.current.csr[12'h180][31] == 1'b1);
+            bins sv32_mega = {2'b01} iff (ins.current.csr[CSR_SATP][31] == 1'b1);
+            bins sv32_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][31] == 1'b1);
         }
     `endif
 
-    store_acc_fault: coverpoint  ins.current.csr[12'h342] {
+    store_acc_fault: coverpoint  ins.current.csr[CSR_MCAUSE] {
         bins store_acc_fault = {64'd7};
     }
 
@@ -55,7 +55,7 @@ covergroup SvPMPZicbo_cg with function sample(ins_t ins);
         `endif
     }
 
-    PMP_perm: coverpoint  ins.current.csr[12'h3A0][7:0] {
+    PMP_perm: coverpoint  ins.current.csr[CSR_PMPCFG0][7:0] {
         wildcard bins rw_unset   = {8'b?????100};
     }
 

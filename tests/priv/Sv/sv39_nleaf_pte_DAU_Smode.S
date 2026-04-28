@@ -19,9 +19,8 @@
 // Total Expected Faults :: 18
 // --------------------------------------------------------------------------------------------------------------------------------
 
-// Remove NORUN once Sail version 0.11 is released
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Sv39, NORUN]
+# REQUIRED_EXTENSIONS: [I, Sv39]
 # MARCH: rv64i_zicsr
 ##### END_TEST_CONFIG #####
 

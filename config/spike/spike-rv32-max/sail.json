@@ -276,7 +276,7 @@
       // address as the matching Load-Reserve in order to succeed, regardless of the
       // configured reservation set size.  This controls whether such an exact address
       // match is required for a Store-Conditional to succeed.
-      "require_exact_reservation_addr": false
+      "require_exact_reservation_addr": true
     },
     "clint": {
       // This must be in a suitable IO memory region (see `memory.regions`).

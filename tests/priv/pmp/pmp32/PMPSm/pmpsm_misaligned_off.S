@@ -23,7 +23,7 @@
 
 #define SKIP_MEPC
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I']
+# REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
@@ -143,7 +143,7 @@ main:
 #define PMPREGION_XWR       ((((      PMP_R|PMP_W|PMP_X)          &0xFF) << PMP0_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
-#define REGIONSTART     TEST_FOR_EXECUTION      // RAM_BASE_ADDR + PROGRAM_SIZE
+#define REGIONSTART     TEST_FOR_EXECUTION
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw    pmpaddr15, x4
@@ -173,23 +173,6 @@ main:
 
     RVTEST_GOTO_MMODE
 
-    j exit                                                      // Verification Complete, exit the test
-
-.align 13
-.align (RVMODEL_PMP_GRAIN+2)
-TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
-    nop
-    .endr
-
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
-
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
@@ -209,6 +192,22 @@ test_7_str:  .string "\"test: 7;  cp: pmpm_misaligned_na4_lw_address-1\""
 test_8_str:  .string "\"test: 8;  cp: pmpm_misaligned_na4_lh_address+g-1\""
 test_9_str:  .string "\"test: 9;  cp: pmpm_misaligned_na4_lhu_address+g-1\""
 test_10_str: .string "\"test: 10; cp: pmpm_misaligned_na4_lw_address+g-1\""
+
+.align 12
+.align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    .rept 1024
+    nop
+    .endr
+TEST_FOR_EXECUTION:
+    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

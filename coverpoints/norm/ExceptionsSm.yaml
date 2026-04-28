@@ -41,18 +41,23 @@ normative_rule_definitions:
   # Value|Name|Description === 0 1 ≥2|Direct Vectored ---|All traps set pc to BASE.
   # Asynchronous interrupts set pc to BASE+4×cause. Reserved ===
   - name: mtvec_mode_enc
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
+      ]
 
   # When MODE=Direct, all traps into machine mode cause the pc to be set to the
   # address in the BASE field.
   - name: mtvec_mode_direct_op
-    coverpoint: ["TODO"]
+    coverpoint:
+      ["TODO: add a coverpoint for exceptions using mtvec direct and vectored"]
 
   # When MODE=Vectored, all synchronous exceptions into machine mode cause the pc to
   # be set to the address in the BASE field, whereas interrupts cause the pc to be
   # set to the address in the BASE field plus four times the interrupt cause number.
   - name: mtvec_mode_vectored_op
-    coverpoint: ["TODO"]
+    coverpoint:
+      ["TODO: add a coverpoint for exceptions using mtvec direct and vectored"]
 
   # By default, all traps at any privilege level are handled in machine mode
   - name: trap_def_M_mode
@@ -63,7 +68,10 @@ normative_rule_definitions:
 
   # Note that load and load-reserved instructions generate load exceptions
   - name: mcause_exccode_ld_ldrsv
-    coverpoint: [""]
+    coverpoint:
+      [
+        "ExceptionsSm/cp_{load_address_misaligned, load_access_fault}, TODO: no load-researved instructions here",
+      ]
 
   # No instruction-address-misaligned exception is generated for a conditional
   # branch that is not taken.
@@ -97,7 +105,7 @@ normative_rule_definitions:
   # Loads with a destination of x0 must still raise any exceptions and cause any
   # other side effects even though the load value is discarded.
   - name: load_exc_x0
-    coverpoint: ["TODO"]
+    coverpoint: ["ExceptionsSm/cp_{load_address_misaligned, load_access_fault}"]
 
   # Loads and stores whose effective address is not naturally aligned to the
   # referenced datatype (i.e., the effective address is not divisible by the size of
@@ -171,7 +179,7 @@ normative_rule_definitions:
 
   # The EBREAK instruction is used to return control to a debugging environment.
   - name: ebreak_op
-    coverpoint: ["ExceptionsSm_cg/cp_breakpoint_m"]
+    coverpoint: ["ExceptionsSm_cg/cp_breakpoint"]
 
   # When a trap is taken into M-mode, mepc is written with the virtual address of
   # the instruction that was interrupted or that encountered the exception.
@@ -210,17 +218,6 @@ normative_rule_definitions:
   # Asynchronous interrupts set pc to BASE+4×cause. Reserved ===
   - name: mtvec_mode_enc
     coverpoint: ["TODO show mtvec does not affect synchronous exceptions"]
-
-  # When MODE=Direct, all traps into machine mode cause the pc to be set to the
-  # address in the BASE field.
-  - name: mtvec_mode_direct_op
-    coverpoint: ["TODO"]
-
-  # When MODE=Vectored, all synchronous exceptions into machine mode cause the pc to
-  # be set to the address in the BASE field, whereas interrupts cause the pc to be
-  # set to the address in the BASE field plus four times the interrupt cause number.
-  - name: mtvec_mode_vectored_op
-    coverpoint: ["TODO"]
 
   # By default, all traps at any privilege level are handled in machine mode
   - name: trap_def_M_mode

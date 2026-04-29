@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Annotated
 
 import typer
+from rich import print as rprint
 
 from act.build import BuildTask, build
 from act.build_plan import generate_build_plan
@@ -141,18 +142,21 @@ def run_act(
     # Print summary
     parts = []
     if result.succeeded:
-        parts.append(f"{result.succeeded} succeeded")
+        parts.append(f"[green]{result.succeeded} succeeded[/]")
     if result.skipped:
-        parts.append(f"{result.skipped} up-to-date")
+        parts.append(f"[dim]{result.skipped} up-to-date[/]")
     if result.failed:
-        parts.append(f"{result.failed} failed")
-    print(f"Build complete: {', '.join(parts)}")
+        parts.append(f"[bold red]{result.failed} failed[/]")
+    summary = ", ".join(parts)
 
     if result.errors:
-        print(f"\n{len(result.errors)} task(s) failed:", file=sys.stderr)
-        for error in result.errors:
-            print(f"  - {error.task_name}", file=sys.stderr)
+        rprint(f"\n[bold red]✗ Build failed:[/] {summary}", file=sys.stderr)
+        if len(result.errors) > 1:
+            rprint(f"  [red]{len(result.errors)} task(s) failed (see details above):[/]", file=sys.stderr)
+            for error in result.errors:
+                rprint(f"    - {error.task_name}", file=sys.stderr)
         sys.exit(1)
+    rprint(f"[bold green]✓ Build complete:[/] {summary}")
 
     # Always print coverage summaries when coverage is enabled, even if up-to-date
     if coverage:

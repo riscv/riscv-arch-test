@@ -58,7 +58,6 @@
   ],
 
   "vector": {
-    "Comment": "Hardware supports 32-bit ELEN plus some widening operations from 32 to 64-bit",
     "always_mark_dirty": true,
     "bytes_per_vec": 32,
     "fp_usum_nan_canonicalize": ["e16", "e32", "e64"],

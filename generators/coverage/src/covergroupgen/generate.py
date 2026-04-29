@@ -16,7 +16,16 @@ import re
 from difflib import get_close_matches
 from pathlib import Path
 
-from rich.progress import track
+from rich import print as rprint
+from rich.progress import (
+    BarColumn,
+    MofNCompleteColumn,
+    Progress,
+    SpinnerColumn,
+    TaskProgressColumn,
+    TextColumn,
+    TimeElapsedColumn,
+)
 
 # Coverpoints whose template name depends on the SEW (element width).
 SEW_DEPENDENT_CPS = {
@@ -426,59 +435,72 @@ def write_covergroups(
     unpriv_dir = output_dir / "unpriv"
     unpriv_dir.mkdir(parents=True, exist_ok=True)
 
-    for arch, tp in track(test_plans.items(), description="[cyan]Generating covergroups...", total=len(test_plans)):
-        vector = _is_vector(arch)
-        effew = _get_effew(arch) if vector else ""
-        instr_keys = _get_sorted_instr_keys(tp, arch)
+    progress = Progress(
+        SpinnerColumn(),
+        TextColumn("[cyan]Generating covergroups..."),
+        BarColumn(),
+        MofNCompleteColumn(),
+        TaskProgressColumn(),
+        TextColumn("elapsed:"),
+        TimeElapsedColumn(),
+        transient=True,
+    )
+    with progress:
+        task_id = progress.add_task("generate", total=len(test_plans))
+        for arch, tp in test_plans.items():
+            vector = _is_vector(arch)
+            effew = _get_effew(arch) if vector else ""
+            instr_keys = _get_sorted_instr_keys(tp, arch)
 
-        lines: list[str] = []
-        init_lines: list[str] = []
+            lines: list[str] = []
+            init_lines: list[str] = []
 
-        # Header
-        header_tmpl = "header_vector" if vector else "header"
-        lines.append(customize_template(templates, header_tmpl, arch, effew=effew))
-        init_lines.append(customize_template(templates, "initheader", arch))
+            # Header
+            header_tmpl = "header_vector" if vector else "header"
+            lines.append(customize_template(templates, header_tmpl, arch, effew=effew))
+            init_lines.append(customize_template(templates, "initheader", arch))
 
-        # Covergroup definitions with XLEN ifdefs
-        # Common instructions (both RV32 and RV64)
-        instr_content, init_content = _gen_instrs(instr_keys, templates, tp, arch, True, True)
-        lines.append(instr_content)
-        init_lines.append(init_content)
+            # Covergroup definitions with XLEN ifdefs
+            # Common instructions (both RV32 and RV64)
+            instr_content, init_content = _gen_instrs(instr_keys, templates, tp, arch, True, True)
+            lines.append(instr_content)
+            init_lines.append(init_content)
 
-        # RV32-only instructions
-        if _any_xlen_exclusion("RV64", instr_keys, tp):
-            guard = customize_template(templates, "RV32", arch)
-            end = customize_template(templates, "end", arch)
-            instr_content, init_content = _gen_instrs(instr_keys, templates, tp, arch, True, False)
-            lines.extend([guard, instr_content, end])
-            init_lines.extend([guard, init_content, end])
+            # RV32-only instructions
+            if _any_xlen_exclusion("RV64", instr_keys, tp):
+                guard = customize_template(templates, "RV32", arch)
+                end = customize_template(templates, "end", arch)
+                instr_content, init_content = _gen_instrs(instr_keys, templates, tp, arch, True, False)
+                lines.extend([guard, instr_content, end])
+                init_lines.extend([guard, init_content, end])
 
-        # RV64-only instructions
-        if _any_xlen_exclusion("RV32", instr_keys, tp):
-            guard = customize_template(templates, "RV64", arch)
-            end = customize_template(templates, "end", arch)
-            instr_content, init_content = _gen_instrs(instr_keys, templates, tp, arch, False, True)
-            lines.extend([guard, instr_content, end])
-            init_lines.extend([guard, init_content, end])
+            # RV64-only instructions
+            if _any_xlen_exclusion("RV32", instr_keys, tp):
+                guard = customize_template(templates, "RV64", arch)
+                end = customize_template(templates, "end", arch)
+                instr_content, init_content = _gen_instrs(instr_keys, templates, tp, arch, False, True)
+                lines.extend([guard, instr_content, end])
+                init_lines.extend([guard, init_content, end])
 
-        # Covergroup sample functions with XLEN ifdefs
-        sample_header = "covergroup_sample_header_vector" if vector else "covergroup_sample_header"
-        lines.append(customize_template(templates, sample_header, arch, effew=effew))
-        lines.append(_gen_covergroup_samples(instr_keys, templates, tp, arch, True, True))
-        if _any_xlen_exclusion("RV64", instr_keys, tp):
-            lines.append(customize_template(templates, "RV32", arch))
-            lines.append(_gen_covergroup_samples(instr_keys, templates, tp, arch, True, False))
-            lines.append(customize_template(templates, "end", arch))
-        if _any_xlen_exclusion("RV32", instr_keys, tp):
-            lines.append(customize_template(templates, "RV64", arch))
-            lines.append(_gen_covergroup_samples(instr_keys, templates, tp, arch, False, True))
-            lines.append(customize_template(templates, "end", arch))
-        sample_end = "covergroup_sample_end_vector" if vector else "covergroup_sample_end"
-        lines.append(customize_template(templates, sample_end, arch))
+            # Covergroup sample functions with XLEN ifdefs
+            sample_header = "covergroup_sample_header_vector" if vector else "covergroup_sample_header"
+            lines.append(customize_template(templates, sample_header, arch, effew=effew))
+            lines.append(_gen_covergroup_samples(instr_keys, templates, tp, arch, True, True))
+            if _any_xlen_exclusion("RV64", instr_keys, tp):
+                lines.append(customize_template(templates, "RV32", arch))
+                lines.append(_gen_covergroup_samples(instr_keys, templates, tp, arch, True, False))
+                lines.append(customize_template(templates, "end", arch))
+            if _any_xlen_exclusion("RV32", instr_keys, tp):
+                lines.append(customize_template(templates, "RV64", arch))
+                lines.append(_gen_covergroup_samples(instr_keys, templates, tp, arch, False, True))
+                lines.append(customize_template(templates, "end", arch))
+            sample_end = "covergroup_sample_end_vector" if vector else "covergroup_sample_end"
+            lines.append(customize_template(templates, sample_end, arch))
 
-        # Write both files
-        _write_if_changed(unpriv_dir / f"{arch}_coverage.svh", "".join(lines))
-        _write_if_changed(unpriv_dir / f"{arch}_coverage_init.svh", "".join(init_lines))
+            # Write both files
+            _write_if_changed(unpriv_dir / f"{arch}_coverage.svh", "".join(lines))
+            _write_if_changed(unpriv_dir / f"{arch}_coverage_init.svh", "".join(init_lines))
+            progress.advance(task_id)
 
 
 def write_coverage_headers(
@@ -586,3 +608,4 @@ def generate_covergroups(testplan_dir: Path, output_dir: Path, extensions: str =
     write_covergroups(test_plans, templates, output_dir)
     write_coverage_headers(all_test_plans, output_dir, templates)
     write_instruction_sample_file(all_test_plans, templates, output_dir)
+    rprint(f"[bold green]✓ Generated covergroups for {len(test_plans)} extension(s)[/]")

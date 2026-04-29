@@ -22,6 +22,7 @@ implemented_extensions:
   - { name: Zvl32b, version: "= 1.0.0" }
   - { name: Zvl64b, version: "= 1.0.0" }
   - { name: Zvl128b, version: "= 1.0.0" }
+  - { name: Zvl256b, version: "= 1.0.0" }
   - { name: Zic64b, version: "= 1.0.0" }
   - { name: Zicbom, version: "= 1.0.0" }
   - { name: Zicbop, version: "= 1.0.0" }
@@ -112,7 +113,7 @@ params:
   MUTABLE_MISA_B: true
   # V params
   MUTABLE_MISA_V: true
-  VLEN: 512
+  VLEN: 256
   ELEN: 64
   FOLLOW_VTYPE_RESET_RECOMMENDATION: true
   HW_MSTATUS_VS_DIRTY_UPDATE: precise

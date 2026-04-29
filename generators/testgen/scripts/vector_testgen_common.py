@@ -1261,7 +1261,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
       "Vx64":  ["Zvl64b"],
       "Vls64": ["Zvl64b"],
 
-      "Vf16":  ["Zve32f"],
+      "Vf16":  ["Zvfh"],
       "Vf32":  ["Zve32f"],
       "Vf64":  ["Zve64d"],
     }

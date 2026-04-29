@@ -4,7 +4,7 @@
 
 
     // vf8 extending with LMUL=8: vs2 overlaps bottom 7/8 of vd group, must trap
-    trap_occurred_74ee6e: coverpoint ins.trap {
+    trap_occurred_74ee6e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 

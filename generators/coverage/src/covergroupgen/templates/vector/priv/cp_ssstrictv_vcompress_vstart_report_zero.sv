@@ -11,7 +11,7 @@
         bins opmvv = {3'b010};
     }
 
-    trap_occurred_d2a850: coverpoint ins.trap {
+    trap_occurred_d2a850: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 

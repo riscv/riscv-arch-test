@@ -4,7 +4,7 @@
 
 
     // Widening .w with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_71b3d0: coverpoint ins.trap {
+    trap_occurred_71b3d0: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 

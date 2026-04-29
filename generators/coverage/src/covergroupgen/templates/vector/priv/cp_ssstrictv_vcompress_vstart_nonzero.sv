@@ -8,7 +8,7 @@
         bins nonzero = {[1:$]};
     }
 
-    trap_occurred_dea7bb: coverpoint ins.trap {
+    trap_occurred_dea7bb: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 

@@ -4,7 +4,7 @@
 
 
     // Narrowing with LMUL=1: vd = vs2 overlaps source group, must trap
-    trap_occurred_eb4360: coverpoint ins.trap {
+    trap_occurred_eb4360: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 

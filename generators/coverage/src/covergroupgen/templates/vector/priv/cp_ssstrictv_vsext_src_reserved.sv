@@ -5,7 +5,7 @@
 
     // vsext source EEW not supported or source EMUL below minimum legal LMUL (1/8)
 
-    trap_occurred_df9621: coverpoint ins.trap {
+    trap_occurred_df9621: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 

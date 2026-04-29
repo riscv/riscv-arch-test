@@ -13,7 +13,7 @@
 #endif
 
 #ifndef TRAP_SIGUPD_COUNT
-  #define TRAP_SIGUPD_COUNT 15000
+  #define TRAP_SIGUPD_COUNT 50000
 #endif
 
 ########## GLOBAL XLEN CHECK  ##########

@@ -21,7 +21,7 @@
 `endif
 covergroup SsstrictV_vaadd_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -95,7 +95,7 @@ covergroup SsstrictV_vaadd_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -107,7 +107,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vaadd_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -181,7 +181,7 @@ covergroup SsstrictV_vaadd_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -193,7 +193,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vaaddu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -267,7 +267,7 @@ covergroup SsstrictV_vaaddu_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -279,7 +279,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vaaddu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -353,7 +353,7 @@ covergroup SsstrictV_vaaddu_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -365,7 +365,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vadc_vim_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -481,7 +481,7 @@ covergroup SsstrictV_vadc_vim_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -493,7 +493,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vadc_vvm_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -609,7 +609,7 @@ covergroup SsstrictV_vadc_vvm_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -621,7 +621,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vadc_vxm_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -737,7 +737,7 @@ covergroup SsstrictV_vadc_vxm_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -749,7 +749,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vadd_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -823,7 +823,7 @@ covergroup SsstrictV_vadd_vi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -835,7 +835,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vadd_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -909,7 +909,7 @@ covergroup SsstrictV_vadd_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -921,7 +921,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vadd_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -995,7 +995,7 @@ covergroup SsstrictV_vadd_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -1007,7 +1007,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vand_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1081,7 +1081,7 @@ covergroup SsstrictV_vand_vi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -1093,7 +1093,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vand_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1167,7 +1167,7 @@ covergroup SsstrictV_vand_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -1179,7 +1179,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vand_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1253,7 +1253,7 @@ covergroup SsstrictV_vand_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -1265,7 +1265,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vasub_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1339,7 +1339,7 @@ covergroup SsstrictV_vasub_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -1351,7 +1351,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vasub_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1425,7 +1425,7 @@ covergroup SsstrictV_vasub_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -1437,7 +1437,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vasubu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1511,7 +1511,7 @@ covergroup SsstrictV_vasubu_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -1523,7 +1523,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vasubu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1597,7 +1597,7 @@ covergroup SsstrictV_vasubu_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -1609,7 +1609,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vcompress_vm_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1696,7 +1696,7 @@ covergroup SsstrictV_vcompress_vm_cg with function sample(ins_t ins);
         bins nonzero = {[1:$]};
     }
 
-    trap_occurred_dea7bb: coverpoint ins.trap {
+    trap_occurred_dea7bb: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -1725,7 +1725,7 @@ covergroup SsstrictV_vcompress_vm_cg with function sample(ins_t ins);
         bins opmvv = {3'b010};
     }
 
-    trap_occurred_d2a850: coverpoint ins.trap {
+    trap_occurred_d2a850: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -1752,7 +1752,7 @@ covergroup SsstrictV_vcompress_vm_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -1764,7 +1764,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vcpop_m_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1838,7 +1838,7 @@ covergroup SsstrictV_vcpop_m_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -1850,7 +1850,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vdiv_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1924,7 +1924,7 @@ covergroup SsstrictV_vdiv_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -1936,7 +1936,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vdiv_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2010,7 +2010,7 @@ covergroup SsstrictV_vdiv_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -2022,7 +2022,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vdivu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2096,7 +2096,7 @@ covergroup SsstrictV_vdivu_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -2108,7 +2108,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vdivu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2182,7 +2182,7 @@ covergroup SsstrictV_vdivu_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -2194,7 +2194,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfadd_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2269,7 +2269,7 @@ covergroup SsstrictV_vfadd_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -2309,7 +2309,7 @@ covergroup SsstrictV_vfadd_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -2352,7 +2352,7 @@ covergroup SsstrictV_vfadd_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -2364,7 +2364,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfadd_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2439,7 +2439,7 @@ covergroup SsstrictV_vfadd_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -2479,7 +2479,7 @@ covergroup SsstrictV_vfadd_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -2522,7 +2522,7 @@ covergroup SsstrictV_vfadd_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -2534,7 +2534,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfclass_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2609,7 +2609,7 @@ covergroup SsstrictV_vfclass_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -2649,7 +2649,7 @@ covergroup SsstrictV_vfclass_v_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -2692,7 +2692,7 @@ covergroup SsstrictV_vfclass_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -2704,7 +2704,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfcvt_f_x_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2779,7 +2779,7 @@ covergroup SsstrictV_vfcvt_f_x_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -2819,7 +2819,7 @@ covergroup SsstrictV_vfcvt_f_x_v_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -2862,7 +2862,7 @@ covergroup SsstrictV_vfcvt_f_x_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -2874,7 +2874,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfcvt_f_xu_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2949,7 +2949,7 @@ covergroup SsstrictV_vfcvt_f_xu_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -2989,7 +2989,7 @@ covergroup SsstrictV_vfcvt_f_xu_v_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -3032,7 +3032,7 @@ covergroup SsstrictV_vfcvt_f_xu_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -3044,7 +3044,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfcvt_rtz_x_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3119,7 +3119,7 @@ covergroup SsstrictV_vfcvt_rtz_x_f_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -3159,7 +3159,7 @@ covergroup SsstrictV_vfcvt_rtz_x_f_v_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -3202,7 +3202,7 @@ covergroup SsstrictV_vfcvt_rtz_x_f_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -3214,7 +3214,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3289,7 +3289,7 @@ covergroup SsstrictV_vfcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -3329,7 +3329,7 @@ covergroup SsstrictV_vfcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -3372,7 +3372,7 @@ covergroup SsstrictV_vfcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -3384,7 +3384,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfcvt_x_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3459,7 +3459,7 @@ covergroup SsstrictV_vfcvt_x_f_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -3499,7 +3499,7 @@ covergroup SsstrictV_vfcvt_x_f_v_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -3542,7 +3542,7 @@ covergroup SsstrictV_vfcvt_x_f_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -3554,7 +3554,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfcvt_xu_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3629,7 +3629,7 @@ covergroup SsstrictV_vfcvt_xu_f_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -3669,7 +3669,7 @@ covergroup SsstrictV_vfcvt_xu_f_v_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -3712,7 +3712,7 @@ covergroup SsstrictV_vfcvt_xu_f_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -3724,7 +3724,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfdiv_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3799,7 +3799,7 @@ covergroup SsstrictV_vfdiv_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -3839,7 +3839,7 @@ covergroup SsstrictV_vfdiv_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -3882,7 +3882,7 @@ covergroup SsstrictV_vfdiv_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -3894,7 +3894,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfdiv_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3969,7 +3969,7 @@ covergroup SsstrictV_vfdiv_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -4009,7 +4009,7 @@ covergroup SsstrictV_vfdiv_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -4052,7 +4052,7 @@ covergroup SsstrictV_vfdiv_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -4064,7 +4064,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfirst_m_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4139,7 +4139,7 @@ covergroup SsstrictV_vfirst_m_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -4179,7 +4179,7 @@ covergroup SsstrictV_vfirst_m_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -4222,7 +4222,7 @@ covergroup SsstrictV_vfirst_m_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -4234,7 +4234,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfmacc_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4309,7 +4309,7 @@ covergroup SsstrictV_vfmacc_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -4349,7 +4349,7 @@ covergroup SsstrictV_vfmacc_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -4392,7 +4392,7 @@ covergroup SsstrictV_vfmacc_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -4404,7 +4404,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfmacc_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4443,7 +4443,7 @@ covergroup SsstrictV_vfmacc_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -4483,7 +4483,7 @@ covergroup SsstrictV_vfmacc_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -4526,7 +4526,7 @@ covergroup SsstrictV_vfmacc_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -4538,7 +4538,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfmadd_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4613,7 +4613,7 @@ covergroup SsstrictV_vfmadd_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -4653,7 +4653,7 @@ covergroup SsstrictV_vfmadd_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -4696,7 +4696,7 @@ covergroup SsstrictV_vfmadd_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -4708,7 +4708,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfmadd_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4747,7 +4747,7 @@ covergroup SsstrictV_vfmadd_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -4787,7 +4787,7 @@ covergroup SsstrictV_vfmadd_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -4830,7 +4830,7 @@ covergroup SsstrictV_vfmadd_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -4842,7 +4842,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfmax_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4917,7 +4917,7 @@ covergroup SsstrictV_vfmax_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -4957,7 +4957,7 @@ covergroup SsstrictV_vfmax_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -5000,7 +5000,7 @@ covergroup SsstrictV_vfmax_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -5012,7 +5012,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfmax_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5087,7 +5087,7 @@ covergroup SsstrictV_vfmax_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -5127,7 +5127,7 @@ covergroup SsstrictV_vfmax_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -5170,7 +5170,7 @@ covergroup SsstrictV_vfmax_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -5182,7 +5182,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfmerge_vfm_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5257,7 +5257,7 @@ covergroup SsstrictV_vfmerge_vfm_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -5297,7 +5297,7 @@ covergroup SsstrictV_vfmerge_vfm_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -5340,7 +5340,7 @@ covergroup SsstrictV_vfmerge_vfm_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -5352,7 +5352,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfmin_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5427,7 +5427,7 @@ covergroup SsstrictV_vfmin_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -5467,7 +5467,7 @@ covergroup SsstrictV_vfmin_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -5510,7 +5510,7 @@ covergroup SsstrictV_vfmin_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -5522,7 +5522,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfmin_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5597,7 +5597,7 @@ covergroup SsstrictV_vfmin_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -5637,7 +5637,7 @@ covergroup SsstrictV_vfmin_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -5680,7 +5680,7 @@ covergroup SsstrictV_vfmin_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -5692,7 +5692,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfmsac_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5767,7 +5767,7 @@ covergroup SsstrictV_vfmsac_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -5807,7 +5807,7 @@ covergroup SsstrictV_vfmsac_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -5850,7 +5850,7 @@ covergroup SsstrictV_vfmsac_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -5862,7 +5862,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfmsac_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5901,7 +5901,7 @@ covergroup SsstrictV_vfmsac_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -5941,7 +5941,7 @@ covergroup SsstrictV_vfmsac_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -5984,7 +5984,7 @@ covergroup SsstrictV_vfmsac_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -5996,7 +5996,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfmsub_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6071,7 +6071,7 @@ covergroup SsstrictV_vfmsub_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -6111,7 +6111,7 @@ covergroup SsstrictV_vfmsub_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -6154,7 +6154,7 @@ covergroup SsstrictV_vfmsub_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -6166,7 +6166,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfmsub_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6205,7 +6205,7 @@ covergroup SsstrictV_vfmsub_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -6245,7 +6245,7 @@ covergroup SsstrictV_vfmsub_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -6288,7 +6288,7 @@ covergroup SsstrictV_vfmsub_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -6300,7 +6300,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfmul_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6375,7 +6375,7 @@ covergroup SsstrictV_vfmul_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -6415,7 +6415,7 @@ covergroup SsstrictV_vfmul_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -6458,7 +6458,7 @@ covergroup SsstrictV_vfmul_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -6470,7 +6470,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfmul_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6545,7 +6545,7 @@ covergroup SsstrictV_vfmul_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -6585,7 +6585,7 @@ covergroup SsstrictV_vfmul_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -6628,7 +6628,7 @@ covergroup SsstrictV_vfmul_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -6640,7 +6640,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfmv_f_s_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6702,7 +6702,7 @@ covergroup SsstrictV_vfmv_f_s_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -6742,7 +6742,7 @@ covergroup SsstrictV_vfmv_f_s_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -6785,7 +6785,7 @@ covergroup SsstrictV_vfmv_f_s_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -6797,7 +6797,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfmv_s_f_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6859,7 +6859,7 @@ covergroup SsstrictV_vfmv_s_f_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -6899,7 +6899,7 @@ covergroup SsstrictV_vfmv_s_f_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -6942,7 +6942,7 @@ covergroup SsstrictV_vfmv_s_f_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -6954,7 +6954,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfmv_v_f_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -7007,7 +7007,7 @@ covergroup SsstrictV_vfmv_v_f_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -7047,7 +7047,7 @@ covergroup SsstrictV_vfmv_v_f_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -7090,7 +7090,7 @@ covergroup SsstrictV_vfmv_v_f_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -7102,7 +7102,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfncvt_f_f_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -7182,7 +7182,7 @@ covergroup SsstrictV_vfncvt_f_f_w_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_e4a27f: coverpoint ins.trap {
+    trap_occurred_e4a27f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -7206,7 +7206,7 @@ covergroup SsstrictV_vfncvt_f_f_w_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -7246,7 +7246,7 @@ covergroup SsstrictV_vfncvt_f_f_w_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -7288,7 +7288,7 @@ covergroup SsstrictV_vfncvt_f_f_w_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -7321,7 +7321,7 @@ covergroup SsstrictV_vfncvt_f_f_w_cg with function sample(ins_t ins);
 
 
     // Narrowing with LMUL=1: vd = vs2 overlaps source group, must trap
-    trap_occurred_eb4360: coverpoint ins.trap {
+    trap_occurred_eb4360: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -7344,7 +7344,7 @@ covergroup SsstrictV_vfncvt_f_f_w_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -7356,7 +7356,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfncvt_f_x_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -7436,7 +7436,7 @@ covergroup SsstrictV_vfncvt_f_x_w_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_e4a27f: coverpoint ins.trap {
+    trap_occurred_e4a27f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -7460,7 +7460,7 @@ covergroup SsstrictV_vfncvt_f_x_w_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -7500,7 +7500,7 @@ covergroup SsstrictV_vfncvt_f_x_w_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -7542,7 +7542,7 @@ covergroup SsstrictV_vfncvt_f_x_w_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -7575,7 +7575,7 @@ covergroup SsstrictV_vfncvt_f_x_w_cg with function sample(ins_t ins);
 
 
     // Narrowing with LMUL=1: vd = vs2 overlaps source group, must trap
-    trap_occurred_eb4360: coverpoint ins.trap {
+    trap_occurred_eb4360: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -7598,7 +7598,7 @@ covergroup SsstrictV_vfncvt_f_x_w_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -7610,7 +7610,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfncvt_f_xu_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -7690,7 +7690,7 @@ covergroup SsstrictV_vfncvt_f_xu_w_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_e4a27f: coverpoint ins.trap {
+    trap_occurred_e4a27f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -7714,7 +7714,7 @@ covergroup SsstrictV_vfncvt_f_xu_w_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -7754,7 +7754,7 @@ covergroup SsstrictV_vfncvt_f_xu_w_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -7796,7 +7796,7 @@ covergroup SsstrictV_vfncvt_f_xu_w_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -7829,7 +7829,7 @@ covergroup SsstrictV_vfncvt_f_xu_w_cg with function sample(ins_t ins);
 
 
     // Narrowing with LMUL=1: vd = vs2 overlaps source group, must trap
-    trap_occurred_eb4360: coverpoint ins.trap {
+    trap_occurred_eb4360: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -7852,7 +7852,7 @@ covergroup SsstrictV_vfncvt_f_xu_w_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -7864,7 +7864,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfncvt_rod_f_f_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -7944,7 +7944,7 @@ covergroup SsstrictV_vfncvt_rod_f_f_w_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_e4a27f: coverpoint ins.trap {
+    trap_occurred_e4a27f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -7968,7 +7968,7 @@ covergroup SsstrictV_vfncvt_rod_f_f_w_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8008,7 +8008,7 @@ covergroup SsstrictV_vfncvt_rod_f_f_w_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8050,7 +8050,7 @@ covergroup SsstrictV_vfncvt_rod_f_f_w_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8083,7 +8083,7 @@ covergroup SsstrictV_vfncvt_rod_f_f_w_cg with function sample(ins_t ins);
 
 
     // Narrowing with LMUL=1: vd = vs2 overlaps source group, must trap
-    trap_occurred_eb4360: coverpoint ins.trap {
+    trap_occurred_eb4360: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8106,7 +8106,7 @@ covergroup SsstrictV_vfncvt_rod_f_f_w_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8118,7 +8118,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfncvt_rtz_x_f_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8198,7 +8198,7 @@ covergroup SsstrictV_vfncvt_rtz_x_f_w_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_e4a27f: coverpoint ins.trap {
+    trap_occurred_e4a27f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8222,7 +8222,7 @@ covergroup SsstrictV_vfncvt_rtz_x_f_w_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8262,7 +8262,7 @@ covergroup SsstrictV_vfncvt_rtz_x_f_w_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8304,7 +8304,7 @@ covergroup SsstrictV_vfncvt_rtz_x_f_w_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8337,7 +8337,7 @@ covergroup SsstrictV_vfncvt_rtz_x_f_w_cg with function sample(ins_t ins);
 
 
     // Narrowing with LMUL=1: vd = vs2 overlaps source group, must trap
-    trap_occurred_eb4360: coverpoint ins.trap {
+    trap_occurred_eb4360: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8360,7 +8360,7 @@ covergroup SsstrictV_vfncvt_rtz_x_f_w_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8372,7 +8372,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfncvt_rtz_xu_f_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8452,7 +8452,7 @@ covergroup SsstrictV_vfncvt_rtz_xu_f_w_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_e4a27f: coverpoint ins.trap {
+    trap_occurred_e4a27f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8476,7 +8476,7 @@ covergroup SsstrictV_vfncvt_rtz_xu_f_w_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8516,7 +8516,7 @@ covergroup SsstrictV_vfncvt_rtz_xu_f_w_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8558,7 +8558,7 @@ covergroup SsstrictV_vfncvt_rtz_xu_f_w_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8591,7 +8591,7 @@ covergroup SsstrictV_vfncvt_rtz_xu_f_w_cg with function sample(ins_t ins);
 
 
     // Narrowing with LMUL=1: vd = vs2 overlaps source group, must trap
-    trap_occurred_eb4360: coverpoint ins.trap {
+    trap_occurred_eb4360: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8614,7 +8614,7 @@ covergroup SsstrictV_vfncvt_rtz_xu_f_w_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8626,7 +8626,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfncvt_x_f_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8706,7 +8706,7 @@ covergroup SsstrictV_vfncvt_x_f_w_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_e4a27f: coverpoint ins.trap {
+    trap_occurred_e4a27f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8730,7 +8730,7 @@ covergroup SsstrictV_vfncvt_x_f_w_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8770,7 +8770,7 @@ covergroup SsstrictV_vfncvt_x_f_w_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8812,7 +8812,7 @@ covergroup SsstrictV_vfncvt_x_f_w_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8845,7 +8845,7 @@ covergroup SsstrictV_vfncvt_x_f_w_cg with function sample(ins_t ins);
 
 
     // Narrowing with LMUL=1: vd = vs2 overlaps source group, must trap
-    trap_occurred_eb4360: coverpoint ins.trap {
+    trap_occurred_eb4360: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8868,7 +8868,7 @@ covergroup SsstrictV_vfncvt_x_f_w_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8880,7 +8880,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfncvt_xu_f_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8960,7 +8960,7 @@ covergroup SsstrictV_vfncvt_xu_f_w_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_e4a27f: coverpoint ins.trap {
+    trap_occurred_e4a27f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -8984,7 +8984,7 @@ covergroup SsstrictV_vfncvt_xu_f_w_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -9024,7 +9024,7 @@ covergroup SsstrictV_vfncvt_xu_f_w_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -9066,7 +9066,7 @@ covergroup SsstrictV_vfncvt_xu_f_w_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -9099,7 +9099,7 @@ covergroup SsstrictV_vfncvt_xu_f_w_cg with function sample(ins_t ins);
 
 
     // Narrowing with LMUL=1: vd = vs2 overlaps source group, must trap
-    trap_occurred_eb4360: coverpoint ins.trap {
+    trap_occurred_eb4360: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -9122,7 +9122,7 @@ covergroup SsstrictV_vfncvt_xu_f_w_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -9134,7 +9134,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfnmacc_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -9209,7 +9209,7 @@ covergroup SsstrictV_vfnmacc_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -9249,7 +9249,7 @@ covergroup SsstrictV_vfnmacc_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -9291,7 +9291,7 @@ covergroup SsstrictV_vfnmacc_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -9333,7 +9333,7 @@ covergroup SsstrictV_vfnmacc_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -9345,7 +9345,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfnmacc_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -9384,7 +9384,7 @@ covergroup SsstrictV_vfnmacc_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -9424,7 +9424,7 @@ covergroup SsstrictV_vfnmacc_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -9466,7 +9466,7 @@ covergroup SsstrictV_vfnmacc_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -9508,7 +9508,7 @@ covergroup SsstrictV_vfnmacc_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -9520,7 +9520,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfnmadd_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -9595,7 +9595,7 @@ covergroup SsstrictV_vfnmadd_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -9635,7 +9635,7 @@ covergroup SsstrictV_vfnmadd_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -9677,7 +9677,7 @@ covergroup SsstrictV_vfnmadd_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -9719,7 +9719,7 @@ covergroup SsstrictV_vfnmadd_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -9731,7 +9731,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfnmadd_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -9770,7 +9770,7 @@ covergroup SsstrictV_vfnmadd_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -9810,7 +9810,7 @@ covergroup SsstrictV_vfnmadd_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -9852,7 +9852,7 @@ covergroup SsstrictV_vfnmadd_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -9894,7 +9894,7 @@ covergroup SsstrictV_vfnmadd_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -9906,7 +9906,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfnmsac_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -9981,7 +9981,7 @@ covergroup SsstrictV_vfnmsac_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -10021,7 +10021,7 @@ covergroup SsstrictV_vfnmsac_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -10063,7 +10063,7 @@ covergroup SsstrictV_vfnmsac_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -10105,7 +10105,7 @@ covergroup SsstrictV_vfnmsac_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -10117,7 +10117,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfnmsac_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -10156,7 +10156,7 @@ covergroup SsstrictV_vfnmsac_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -10196,7 +10196,7 @@ covergroup SsstrictV_vfnmsac_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -10238,7 +10238,7 @@ covergroup SsstrictV_vfnmsac_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -10280,7 +10280,7 @@ covergroup SsstrictV_vfnmsac_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -10292,7 +10292,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfnmsub_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -10367,7 +10367,7 @@ covergroup SsstrictV_vfnmsub_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -10407,7 +10407,7 @@ covergroup SsstrictV_vfnmsub_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -10449,7 +10449,7 @@ covergroup SsstrictV_vfnmsub_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -10491,7 +10491,7 @@ covergroup SsstrictV_vfnmsub_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -10503,7 +10503,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfnmsub_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -10542,7 +10542,7 @@ covergroup SsstrictV_vfnmsub_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -10582,7 +10582,7 @@ covergroup SsstrictV_vfnmsub_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -10624,7 +10624,7 @@ covergroup SsstrictV_vfnmsub_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -10666,7 +10666,7 @@ covergroup SsstrictV_vfnmsub_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -10678,7 +10678,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfrdiv_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -10753,7 +10753,7 @@ covergroup SsstrictV_vfrdiv_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -10793,7 +10793,7 @@ covergroup SsstrictV_vfrdiv_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -10836,7 +10836,7 @@ covergroup SsstrictV_vfrdiv_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -10848,7 +10848,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfrec7_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -10923,7 +10923,7 @@ covergroup SsstrictV_vfrec7_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -10963,7 +10963,7 @@ covergroup SsstrictV_vfrec7_v_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -11006,7 +11006,7 @@ covergroup SsstrictV_vfrec7_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -11018,7 +11018,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfredmax_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -11093,7 +11093,7 @@ covergroup SsstrictV_vfredmax_vs_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -11133,7 +11133,7 @@ covergroup SsstrictV_vfredmax_vs_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -11176,7 +11176,7 @@ covergroup SsstrictV_vfredmax_vs_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -11188,7 +11188,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfredmin_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -11263,7 +11263,7 @@ covergroup SsstrictV_vfredmin_vs_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -11303,7 +11303,7 @@ covergroup SsstrictV_vfredmin_vs_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -11346,7 +11346,7 @@ covergroup SsstrictV_vfredmin_vs_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -11358,7 +11358,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfredosum_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -11433,7 +11433,7 @@ covergroup SsstrictV_vfredosum_vs_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -11473,7 +11473,7 @@ covergroup SsstrictV_vfredosum_vs_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -11516,7 +11516,7 @@ covergroup SsstrictV_vfredosum_vs_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -11528,7 +11528,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfredusum_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -11603,7 +11603,7 @@ covergroup SsstrictV_vfredusum_vs_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -11643,7 +11643,7 @@ covergroup SsstrictV_vfredusum_vs_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -11686,7 +11686,7 @@ covergroup SsstrictV_vfredusum_vs_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -11698,7 +11698,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfrsqrt7_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -11773,7 +11773,7 @@ covergroup SsstrictV_vfrsqrt7_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -11813,7 +11813,7 @@ covergroup SsstrictV_vfrsqrt7_v_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -11856,7 +11856,7 @@ covergroup SsstrictV_vfrsqrt7_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -11868,7 +11868,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfrsub_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -11943,7 +11943,7 @@ covergroup SsstrictV_vfrsub_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -11983,7 +11983,7 @@ covergroup SsstrictV_vfrsub_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -12026,7 +12026,7 @@ covergroup SsstrictV_vfrsub_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -12038,7 +12038,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfsgnj_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -12113,7 +12113,7 @@ covergroup SsstrictV_vfsgnj_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -12153,7 +12153,7 @@ covergroup SsstrictV_vfsgnj_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -12196,7 +12196,7 @@ covergroup SsstrictV_vfsgnj_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -12208,7 +12208,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfsgnj_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -12283,7 +12283,7 @@ covergroup SsstrictV_vfsgnj_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -12323,7 +12323,7 @@ covergroup SsstrictV_vfsgnj_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -12366,7 +12366,7 @@ covergroup SsstrictV_vfsgnj_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -12378,7 +12378,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfsgnjn_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -12453,7 +12453,7 @@ covergroup SsstrictV_vfsgnjn_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -12493,7 +12493,7 @@ covergroup SsstrictV_vfsgnjn_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -12536,7 +12536,7 @@ covergroup SsstrictV_vfsgnjn_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -12548,7 +12548,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfsgnjn_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -12623,7 +12623,7 @@ covergroup SsstrictV_vfsgnjn_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -12663,7 +12663,7 @@ covergroup SsstrictV_vfsgnjn_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -12706,7 +12706,7 @@ covergroup SsstrictV_vfsgnjn_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -12718,7 +12718,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfsgnjx_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -12793,7 +12793,7 @@ covergroup SsstrictV_vfsgnjx_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -12833,7 +12833,7 @@ covergroup SsstrictV_vfsgnjx_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -12876,7 +12876,7 @@ covergroup SsstrictV_vfsgnjx_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -12888,7 +12888,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfsgnjx_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -12963,7 +12963,7 @@ covergroup SsstrictV_vfsgnjx_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -13003,7 +13003,7 @@ covergroup SsstrictV_vfsgnjx_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -13046,7 +13046,7 @@ covergroup SsstrictV_vfsgnjx_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -13058,7 +13058,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfslide1down_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -13133,7 +13133,7 @@ covergroup SsstrictV_vfslide1down_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -13173,7 +13173,7 @@ covergroup SsstrictV_vfslide1down_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -13216,7 +13216,7 @@ covergroup SsstrictV_vfslide1down_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -13228,7 +13228,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfslide1up_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -13303,7 +13303,7 @@ covergroup SsstrictV_vfslide1up_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -13343,7 +13343,7 @@ covergroup SsstrictV_vfslide1up_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -13402,7 +13402,7 @@ covergroup SsstrictV_vfslide1up_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -13414,7 +13414,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfsqrt_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -13489,7 +13489,7 @@ covergroup SsstrictV_vfsqrt_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -13529,7 +13529,7 @@ covergroup SsstrictV_vfsqrt_v_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -13572,7 +13572,7 @@ covergroup SsstrictV_vfsqrt_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -13584,7 +13584,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfsub_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -13659,7 +13659,7 @@ covergroup SsstrictV_vfsub_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -13699,7 +13699,7 @@ covergroup SsstrictV_vfsub_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -13742,7 +13742,7 @@ covergroup SsstrictV_vfsub_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -13754,7 +13754,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfsub_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -13829,7 +13829,7 @@ covergroup SsstrictV_vfsub_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -13869,7 +13869,7 @@ covergroup SsstrictV_vfsub_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -13912,7 +13912,7 @@ covergroup SsstrictV_vfsub_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -13924,7 +13924,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwadd_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -13999,7 +13999,7 @@ covergroup SsstrictV_vfwadd_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14039,7 +14039,7 @@ covergroup SsstrictV_vfwadd_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14081,7 +14081,7 @@ covergroup SsstrictV_vfwadd_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14123,7 +14123,7 @@ covergroup SsstrictV_vfwadd_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14137,7 +14137,7 @@ covergroup SsstrictV_vfwadd_vf_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14151,7 +14151,7 @@ covergroup SsstrictV_vfwadd_vf_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14174,7 +14174,7 @@ covergroup SsstrictV_vfwadd_vf_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14203,7 +14203,7 @@ covergroup SsstrictV_vfwadd_vf_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14215,7 +14215,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwadd_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -14290,7 +14290,7 @@ covergroup SsstrictV_vfwadd_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14330,7 +14330,7 @@ covergroup SsstrictV_vfwadd_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14372,7 +14372,7 @@ covergroup SsstrictV_vfwadd_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14414,7 +14414,7 @@ covergroup SsstrictV_vfwadd_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14428,7 +14428,7 @@ covergroup SsstrictV_vfwadd_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14442,7 +14442,7 @@ covergroup SsstrictV_vfwadd_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14465,7 +14465,7 @@ covergroup SsstrictV_vfwadd_vv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14494,7 +14494,7 @@ covergroup SsstrictV_vfwadd_vv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14506,7 +14506,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwadd_wf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -14581,7 +14581,7 @@ covergroup SsstrictV_vfwadd_wf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14621,7 +14621,7 @@ covergroup SsstrictV_vfwadd_wf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14663,7 +14663,7 @@ covergroup SsstrictV_vfwadd_wf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14705,7 +14705,7 @@ covergroup SsstrictV_vfwadd_wf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14719,7 +14719,7 @@ covergroup SsstrictV_vfwadd_wf_cg with function sample(ins_t ins);
 
 
     // Widening .w with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_71b3d0: coverpoint ins.trap {
+    trap_occurred_71b3d0: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14742,7 +14742,7 @@ covergroup SsstrictV_vfwadd_wf_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14763,7 +14763,7 @@ covergroup SsstrictV_vfwadd_wf_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_9b660f: coverpoint ins.trap {
+    trap_occurred_9b660f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14792,7 +14792,7 @@ covergroup SsstrictV_vfwadd_wf_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14804,7 +14804,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwadd_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -14879,7 +14879,7 @@ covergroup SsstrictV_vfwadd_wv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14919,7 +14919,7 @@ covergroup SsstrictV_vfwadd_wv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -14961,7 +14961,7 @@ covergroup SsstrictV_vfwadd_wv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -15003,7 +15003,7 @@ covergroup SsstrictV_vfwadd_wv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -15017,7 +15017,7 @@ covergroup SsstrictV_vfwadd_wv_cg with function sample(ins_t ins);
 
 
     // Widening .w with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_71b3d0: coverpoint ins.trap {
+    trap_occurred_71b3d0: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -15040,7 +15040,7 @@ covergroup SsstrictV_vfwadd_wv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -15061,7 +15061,7 @@ covergroup SsstrictV_vfwadd_wv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_9b660f: coverpoint ins.trap {
+    trap_occurred_9b660f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -15090,7 +15090,7 @@ covergroup SsstrictV_vfwadd_wv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -15102,7 +15102,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwcvt_f_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -15177,7 +15177,7 @@ covergroup SsstrictV_vfwcvt_f_f_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -15217,7 +15217,7 @@ covergroup SsstrictV_vfwcvt_f_f_v_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -15259,7 +15259,7 @@ covergroup SsstrictV_vfwcvt_f_f_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -15301,7 +15301,7 @@ covergroup SsstrictV_vfwcvt_f_f_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -15313,7 +15313,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwcvt_f_x_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -15388,7 +15388,7 @@ covergroup SsstrictV_vfwcvt_f_x_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -15428,7 +15428,7 @@ covergroup SsstrictV_vfwcvt_f_x_v_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -15470,7 +15470,7 @@ covergroup SsstrictV_vfwcvt_f_x_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -15512,7 +15512,7 @@ covergroup SsstrictV_vfwcvt_f_x_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -15524,7 +15524,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwcvt_f_xu_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -15599,7 +15599,7 @@ covergroup SsstrictV_vfwcvt_f_xu_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -15639,7 +15639,7 @@ covergroup SsstrictV_vfwcvt_f_xu_v_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -15681,7 +15681,7 @@ covergroup SsstrictV_vfwcvt_f_xu_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -15723,7 +15723,7 @@ covergroup SsstrictV_vfwcvt_f_xu_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -15735,7 +15735,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwcvt_rtz_x_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -15810,7 +15810,7 @@ covergroup SsstrictV_vfwcvt_rtz_x_f_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -15850,7 +15850,7 @@ covergroup SsstrictV_vfwcvt_rtz_x_f_v_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -15892,7 +15892,7 @@ covergroup SsstrictV_vfwcvt_rtz_x_f_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -15934,7 +15934,7 @@ covergroup SsstrictV_vfwcvt_rtz_x_f_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -15946,7 +15946,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -16021,7 +16021,7 @@ covergroup SsstrictV_vfwcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -16061,7 +16061,7 @@ covergroup SsstrictV_vfwcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -16103,7 +16103,7 @@ covergroup SsstrictV_vfwcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -16145,7 +16145,7 @@ covergroup SsstrictV_vfwcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -16157,7 +16157,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwcvt_x_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -16232,7 +16232,7 @@ covergroup SsstrictV_vfwcvt_x_f_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -16272,7 +16272,7 @@ covergroup SsstrictV_vfwcvt_x_f_v_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -16314,7 +16314,7 @@ covergroup SsstrictV_vfwcvt_x_f_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -16356,7 +16356,7 @@ covergroup SsstrictV_vfwcvt_x_f_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -16368,7 +16368,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwcvt_xu_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -16443,7 +16443,7 @@ covergroup SsstrictV_vfwcvt_xu_f_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -16483,7 +16483,7 @@ covergroup SsstrictV_vfwcvt_xu_f_v_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -16525,7 +16525,7 @@ covergroup SsstrictV_vfwcvt_xu_f_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -16567,7 +16567,7 @@ covergroup SsstrictV_vfwcvt_xu_f_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -16579,7 +16579,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwmacc_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -16654,7 +16654,7 @@ covergroup SsstrictV_vfwmacc_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -16694,7 +16694,7 @@ covergroup SsstrictV_vfwmacc_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -16736,7 +16736,7 @@ covergroup SsstrictV_vfwmacc_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -16778,7 +16778,7 @@ covergroup SsstrictV_vfwmacc_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -16792,7 +16792,7 @@ covergroup SsstrictV_vfwmacc_vf_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -16806,7 +16806,7 @@ covergroup SsstrictV_vfwmacc_vf_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -16829,7 +16829,7 @@ covergroup SsstrictV_vfwmacc_vf_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -16858,7 +16858,7 @@ covergroup SsstrictV_vfwmacc_vf_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -16870,7 +16870,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwmacc_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -16909,7 +16909,7 @@ covergroup SsstrictV_vfwmacc_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -16949,7 +16949,7 @@ covergroup SsstrictV_vfwmacc_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -16991,7 +16991,7 @@ covergroup SsstrictV_vfwmacc_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17033,7 +17033,7 @@ covergroup SsstrictV_vfwmacc_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17047,7 +17047,7 @@ covergroup SsstrictV_vfwmacc_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17061,7 +17061,7 @@ covergroup SsstrictV_vfwmacc_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17084,7 +17084,7 @@ covergroup SsstrictV_vfwmacc_vv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17113,7 +17113,7 @@ covergroup SsstrictV_vfwmacc_vv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17125,7 +17125,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwmsac_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -17200,7 +17200,7 @@ covergroup SsstrictV_vfwmsac_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17240,7 +17240,7 @@ covergroup SsstrictV_vfwmsac_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17282,7 +17282,7 @@ covergroup SsstrictV_vfwmsac_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17324,7 +17324,7 @@ covergroup SsstrictV_vfwmsac_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17338,7 +17338,7 @@ covergroup SsstrictV_vfwmsac_vf_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17352,7 +17352,7 @@ covergroup SsstrictV_vfwmsac_vf_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17375,7 +17375,7 @@ covergroup SsstrictV_vfwmsac_vf_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17404,7 +17404,7 @@ covergroup SsstrictV_vfwmsac_vf_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17416,7 +17416,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwmsac_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -17455,7 +17455,7 @@ covergroup SsstrictV_vfwmsac_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17495,7 +17495,7 @@ covergroup SsstrictV_vfwmsac_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17537,7 +17537,7 @@ covergroup SsstrictV_vfwmsac_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17579,7 +17579,7 @@ covergroup SsstrictV_vfwmsac_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17593,7 +17593,7 @@ covergroup SsstrictV_vfwmsac_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17607,7 +17607,7 @@ covergroup SsstrictV_vfwmsac_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17630,7 +17630,7 @@ covergroup SsstrictV_vfwmsac_vv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17659,7 +17659,7 @@ covergroup SsstrictV_vfwmsac_vv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17671,7 +17671,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwmul_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -17746,7 +17746,7 @@ covergroup SsstrictV_vfwmul_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17786,7 +17786,7 @@ covergroup SsstrictV_vfwmul_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17828,7 +17828,7 @@ covergroup SsstrictV_vfwmul_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17870,7 +17870,7 @@ covergroup SsstrictV_vfwmul_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17884,7 +17884,7 @@ covergroup SsstrictV_vfwmul_vf_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17898,7 +17898,7 @@ covergroup SsstrictV_vfwmul_vf_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17921,7 +17921,7 @@ covergroup SsstrictV_vfwmul_vf_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17950,7 +17950,7 @@ covergroup SsstrictV_vfwmul_vf_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -17962,7 +17962,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwmul_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -18037,7 +18037,7 @@ covergroup SsstrictV_vfwmul_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18077,7 +18077,7 @@ covergroup SsstrictV_vfwmul_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18119,7 +18119,7 @@ covergroup SsstrictV_vfwmul_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18161,7 +18161,7 @@ covergroup SsstrictV_vfwmul_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18175,7 +18175,7 @@ covergroup SsstrictV_vfwmul_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18189,7 +18189,7 @@ covergroup SsstrictV_vfwmul_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18212,7 +18212,7 @@ covergroup SsstrictV_vfwmul_vv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18241,7 +18241,7 @@ covergroup SsstrictV_vfwmul_vv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18253,7 +18253,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwnmacc_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -18328,7 +18328,7 @@ covergroup SsstrictV_vfwnmacc_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18368,7 +18368,7 @@ covergroup SsstrictV_vfwnmacc_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18410,7 +18410,7 @@ covergroup SsstrictV_vfwnmacc_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18452,7 +18452,7 @@ covergroup SsstrictV_vfwnmacc_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18466,7 +18466,7 @@ covergroup SsstrictV_vfwnmacc_vf_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18480,7 +18480,7 @@ covergroup SsstrictV_vfwnmacc_vf_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18503,7 +18503,7 @@ covergroup SsstrictV_vfwnmacc_vf_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18532,7 +18532,7 @@ covergroup SsstrictV_vfwnmacc_vf_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18544,7 +18544,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwnmacc_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -18583,7 +18583,7 @@ covergroup SsstrictV_vfwnmacc_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18623,7 +18623,7 @@ covergroup SsstrictV_vfwnmacc_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18665,7 +18665,7 @@ covergroup SsstrictV_vfwnmacc_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18707,7 +18707,7 @@ covergroup SsstrictV_vfwnmacc_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18721,7 +18721,7 @@ covergroup SsstrictV_vfwnmacc_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18735,7 +18735,7 @@ covergroup SsstrictV_vfwnmacc_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18758,7 +18758,7 @@ covergroup SsstrictV_vfwnmacc_vv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18787,7 +18787,7 @@ covergroup SsstrictV_vfwnmacc_vv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18799,7 +18799,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwnmsac_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -18874,7 +18874,7 @@ covergroup SsstrictV_vfwnmsac_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18914,7 +18914,7 @@ covergroup SsstrictV_vfwnmsac_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18956,7 +18956,7 @@ covergroup SsstrictV_vfwnmsac_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -18998,7 +18998,7 @@ covergroup SsstrictV_vfwnmsac_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19012,7 +19012,7 @@ covergroup SsstrictV_vfwnmsac_vf_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19026,7 +19026,7 @@ covergroup SsstrictV_vfwnmsac_vf_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19049,7 +19049,7 @@ covergroup SsstrictV_vfwnmsac_vf_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19078,7 +19078,7 @@ covergroup SsstrictV_vfwnmsac_vf_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19090,7 +19090,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwnmsac_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -19129,7 +19129,7 @@ covergroup SsstrictV_vfwnmsac_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19169,7 +19169,7 @@ covergroup SsstrictV_vfwnmsac_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19211,7 +19211,7 @@ covergroup SsstrictV_vfwnmsac_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19253,7 +19253,7 @@ covergroup SsstrictV_vfwnmsac_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19267,7 +19267,7 @@ covergroup SsstrictV_vfwnmsac_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19281,7 +19281,7 @@ covergroup SsstrictV_vfwnmsac_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19304,7 +19304,7 @@ covergroup SsstrictV_vfwnmsac_vv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19333,7 +19333,7 @@ covergroup SsstrictV_vfwnmsac_vv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19345,7 +19345,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwredosum_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -19420,7 +19420,7 @@ covergroup SsstrictV_vfwredosum_vs_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19460,7 +19460,7 @@ covergroup SsstrictV_vfwredosum_vs_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19502,7 +19502,7 @@ covergroup SsstrictV_vfwredosum_vs_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19544,7 +19544,7 @@ covergroup SsstrictV_vfwredosum_vs_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19567,7 +19567,7 @@ covergroup SsstrictV_vfwredosum_vs_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19587,7 +19587,7 @@ covergroup SsstrictV_vfwredosum_vs_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19599,7 +19599,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwredusum_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -19674,7 +19674,7 @@ covergroup SsstrictV_vfwredusum_vs_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19714,7 +19714,7 @@ covergroup SsstrictV_vfwredusum_vs_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19756,7 +19756,7 @@ covergroup SsstrictV_vfwredusum_vs_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19798,7 +19798,7 @@ covergroup SsstrictV_vfwredusum_vs_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19821,7 +19821,7 @@ covergroup SsstrictV_vfwredusum_vs_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19841,7 +19841,7 @@ covergroup SsstrictV_vfwredusum_vs_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19853,7 +19853,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwsub_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -19928,7 +19928,7 @@ covergroup SsstrictV_vfwsub_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -19968,7 +19968,7 @@ covergroup SsstrictV_vfwsub_vf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20010,7 +20010,7 @@ covergroup SsstrictV_vfwsub_vf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20052,7 +20052,7 @@ covergroup SsstrictV_vfwsub_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20066,7 +20066,7 @@ covergroup SsstrictV_vfwsub_vf_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20080,7 +20080,7 @@ covergroup SsstrictV_vfwsub_vf_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20103,7 +20103,7 @@ covergroup SsstrictV_vfwsub_vf_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20132,7 +20132,7 @@ covergroup SsstrictV_vfwsub_vf_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20144,7 +20144,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwsub_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -20219,7 +20219,7 @@ covergroup SsstrictV_vfwsub_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20259,7 +20259,7 @@ covergroup SsstrictV_vfwsub_vv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20301,7 +20301,7 @@ covergroup SsstrictV_vfwsub_vv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20343,7 +20343,7 @@ covergroup SsstrictV_vfwsub_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20357,7 +20357,7 @@ covergroup SsstrictV_vfwsub_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20371,7 +20371,7 @@ covergroup SsstrictV_vfwsub_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20394,7 +20394,7 @@ covergroup SsstrictV_vfwsub_vv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20423,7 +20423,7 @@ covergroup SsstrictV_vfwsub_vv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20435,7 +20435,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwsub_wf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -20510,7 +20510,7 @@ covergroup SsstrictV_vfwsub_wf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20550,7 +20550,7 @@ covergroup SsstrictV_vfwsub_wf_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20592,7 +20592,7 @@ covergroup SsstrictV_vfwsub_wf_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20634,7 +20634,7 @@ covergroup SsstrictV_vfwsub_wf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20648,7 +20648,7 @@ covergroup SsstrictV_vfwsub_wf_cg with function sample(ins_t ins);
 
 
     // Widening .w with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_71b3d0: coverpoint ins.trap {
+    trap_occurred_71b3d0: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20671,7 +20671,7 @@ covergroup SsstrictV_vfwsub_wf_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20692,7 +20692,7 @@ covergroup SsstrictV_vfwsub_wf_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_9b660f: coverpoint ins.trap {
+    trap_occurred_9b660f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20721,7 +20721,7 @@ covergroup SsstrictV_vfwsub_wf_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20733,7 +20733,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vfwsub_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -20808,7 +20808,7 @@ covergroup SsstrictV_vfwsub_wv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_196c2e: coverpoint ins.trap {
+    trap_occurred_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20848,7 +20848,7 @@ covergroup SsstrictV_vfwsub_wv_cg with function sample(ins_t ins);
         bins reserved_7 = {3'b111};
     }
 
-    trap_occurred_6af882: coverpoint ins.trap {
+    trap_occurred_6af882: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20890,7 +20890,7 @@ covergroup SsstrictV_vfwsub_wv_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_155ca2: coverpoint ins.trap {
+    trap_occurred_155ca2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20932,7 +20932,7 @@ covergroup SsstrictV_vfwsub_wv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20946,7 +20946,7 @@ covergroup SsstrictV_vfwsub_wv_cg with function sample(ins_t ins);
 
 
     // Widening .w with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_71b3d0: coverpoint ins.trap {
+    trap_occurred_71b3d0: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20969,7 +20969,7 @@ covergroup SsstrictV_vfwsub_wv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -20990,7 +20990,7 @@ covergroup SsstrictV_vfwsub_wv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_9b660f: coverpoint ins.trap {
+    trap_occurred_9b660f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -21019,7 +21019,7 @@ covergroup SsstrictV_vfwsub_wv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -21031,7 +21031,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vid_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21119,7 +21119,7 @@ covergroup SsstrictV_vid_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -21131,7 +21131,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_viota_m_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_exceptionsv_vd_v0_overlap_mask_active
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21224,7 +21224,7 @@ covergroup SsstrictV_viota_m_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -21236,7 +21236,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vl1re16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21274,7 +21274,7 @@ covergroup SsstrictV_vl1re16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -21286,7 +21286,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vl1re32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21324,7 +21324,7 @@ covergroup SsstrictV_vl1re32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -21336,7 +21336,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vl1re64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21374,7 +21374,7 @@ covergroup SsstrictV_vl1re64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -21386,7 +21386,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vl1re8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21424,7 +21424,7 @@ covergroup SsstrictV_vl1re8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -21436,7 +21436,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vl2re16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21474,7 +21474,7 @@ covergroup SsstrictV_vl2re16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -21486,7 +21486,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vl2re32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21524,7 +21524,7 @@ covergroup SsstrictV_vl2re32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -21536,7 +21536,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vl2re64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21574,7 +21574,7 @@ covergroup SsstrictV_vl2re64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -21586,7 +21586,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vl2re8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21624,7 +21624,7 @@ covergroup SsstrictV_vl2re8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -21636,7 +21636,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vl4re16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21674,7 +21674,7 @@ covergroup SsstrictV_vl4re16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -21686,7 +21686,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vl4re32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21724,7 +21724,7 @@ covergroup SsstrictV_vl4re32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -21736,7 +21736,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vl4re64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21774,7 +21774,7 @@ covergroup SsstrictV_vl4re64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -21786,7 +21786,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vl4re8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21824,7 +21824,7 @@ covergroup SsstrictV_vl4re8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -21836,7 +21836,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vl8re16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21874,7 +21874,7 @@ covergroup SsstrictV_vl8re16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -21886,7 +21886,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vl8re32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21924,7 +21924,7 @@ covergroup SsstrictV_vl8re32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -21936,7 +21936,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vl8re64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21974,7 +21974,7 @@ covergroup SsstrictV_vl8re64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -21986,7 +21986,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vl8re8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -22024,7 +22024,7 @@ covergroup SsstrictV_vl8re8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -22036,7 +22036,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vle16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -22080,7 +22080,7 @@ covergroup SsstrictV_vle16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -22222,7 +22222,7 @@ covergroup SsstrictV_vle16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -22234,7 +22234,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vle16ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -22278,7 +22278,7 @@ covergroup SsstrictV_vle16ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -22420,7 +22420,7 @@ covergroup SsstrictV_vle16ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -22432,7 +22432,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vle32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -22476,7 +22476,7 @@ covergroup SsstrictV_vle32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -22618,7 +22618,7 @@ covergroup SsstrictV_vle32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -22630,7 +22630,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vle32ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -22674,7 +22674,7 @@ covergroup SsstrictV_vle32ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -22816,7 +22816,7 @@ covergroup SsstrictV_vle32ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -22828,7 +22828,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vle64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -22872,7 +22872,7 @@ covergroup SsstrictV_vle64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -23014,7 +23014,7 @@ covergroup SsstrictV_vle64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -23026,7 +23026,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vle64ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -23070,7 +23070,7 @@ covergroup SsstrictV_vle64ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -23212,7 +23212,7 @@ covergroup SsstrictV_vle64ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -23224,7 +23224,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vle8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -23268,7 +23268,7 @@ covergroup SsstrictV_vle8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -23410,7 +23410,7 @@ covergroup SsstrictV_vle8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -23422,7 +23422,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vle8ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -23466,7 +23466,7 @@ covergroup SsstrictV_vle8ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -23608,7 +23608,7 @@ covergroup SsstrictV_vle8ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -23620,7 +23620,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlm_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -23664,7 +23664,7 @@ covergroup SsstrictV_vlm_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -23770,7 +23770,7 @@ covergroup SsstrictV_vlm_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -23782,7 +23782,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -23826,7 +23826,7 @@ covergroup SsstrictV_vloxei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -24070,7 +24070,7 @@ covergroup SsstrictV_vloxei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -24082,7 +24082,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -24126,7 +24126,7 @@ covergroup SsstrictV_vloxei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -24370,7 +24370,7 @@ covergroup SsstrictV_vloxei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -24382,7 +24382,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -24426,7 +24426,7 @@ covergroup SsstrictV_vloxei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -24670,7 +24670,7 @@ covergroup SsstrictV_vloxei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -24682,7 +24682,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -24726,7 +24726,7 @@ covergroup SsstrictV_vloxei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -24970,7 +24970,7 @@ covergroup SsstrictV_vloxei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -24982,7 +24982,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg2ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25117,7 +25117,7 @@ covergroup SsstrictV_vloxseg2ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -25376,7 +25376,7 @@ covergroup SsstrictV_vloxseg2ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -25388,7 +25388,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg2ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25523,7 +25523,7 @@ covergroup SsstrictV_vloxseg2ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -25782,7 +25782,7 @@ covergroup SsstrictV_vloxseg2ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -25794,7 +25794,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg2ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25929,7 +25929,7 @@ covergroup SsstrictV_vloxseg2ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -26188,7 +26188,7 @@ covergroup SsstrictV_vloxseg2ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -26200,7 +26200,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg2ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -26335,7 +26335,7 @@ covergroup SsstrictV_vloxseg2ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -26594,7 +26594,7 @@ covergroup SsstrictV_vloxseg2ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -26606,7 +26606,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg3ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -26741,7 +26741,7 @@ covergroup SsstrictV_vloxseg3ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -27000,7 +27000,7 @@ covergroup SsstrictV_vloxseg3ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -27012,7 +27012,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg3ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -27147,7 +27147,7 @@ covergroup SsstrictV_vloxseg3ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -27406,7 +27406,7 @@ covergroup SsstrictV_vloxseg3ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -27418,7 +27418,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg3ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -27553,7 +27553,7 @@ covergroup SsstrictV_vloxseg3ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -27812,7 +27812,7 @@ covergroup SsstrictV_vloxseg3ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -27824,7 +27824,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg3ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -27959,7 +27959,7 @@ covergroup SsstrictV_vloxseg3ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -28218,7 +28218,7 @@ covergroup SsstrictV_vloxseg3ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -28230,7 +28230,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg4ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -28365,7 +28365,7 @@ covergroup SsstrictV_vloxseg4ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -28624,7 +28624,7 @@ covergroup SsstrictV_vloxseg4ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -28636,7 +28636,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg4ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -28771,7 +28771,7 @@ covergroup SsstrictV_vloxseg4ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -29030,7 +29030,7 @@ covergroup SsstrictV_vloxseg4ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -29042,7 +29042,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg4ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -29177,7 +29177,7 @@ covergroup SsstrictV_vloxseg4ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -29436,7 +29436,7 @@ covergroup SsstrictV_vloxseg4ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -29448,7 +29448,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg4ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -29583,7 +29583,7 @@ covergroup SsstrictV_vloxseg4ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -29842,7 +29842,7 @@ covergroup SsstrictV_vloxseg4ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -29854,7 +29854,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg5ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -29989,7 +29989,7 @@ covergroup SsstrictV_vloxseg5ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -30248,7 +30248,7 @@ covergroup SsstrictV_vloxseg5ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -30260,7 +30260,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg5ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -30395,7 +30395,7 @@ covergroup SsstrictV_vloxseg5ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -30654,7 +30654,7 @@ covergroup SsstrictV_vloxseg5ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -30666,7 +30666,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg5ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -30801,7 +30801,7 @@ covergroup SsstrictV_vloxseg5ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -31060,7 +31060,7 @@ covergroup SsstrictV_vloxseg5ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -31072,7 +31072,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg5ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -31207,7 +31207,7 @@ covergroup SsstrictV_vloxseg5ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -31466,7 +31466,7 @@ covergroup SsstrictV_vloxseg5ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -31478,7 +31478,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg6ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -31613,7 +31613,7 @@ covergroup SsstrictV_vloxseg6ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -31872,7 +31872,7 @@ covergroup SsstrictV_vloxseg6ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -31884,7 +31884,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg6ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -32019,7 +32019,7 @@ covergroup SsstrictV_vloxseg6ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -32278,7 +32278,7 @@ covergroup SsstrictV_vloxseg6ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -32290,7 +32290,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg6ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -32425,7 +32425,7 @@ covergroup SsstrictV_vloxseg6ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -32684,7 +32684,7 @@ covergroup SsstrictV_vloxseg6ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -32696,7 +32696,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg6ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -32831,7 +32831,7 @@ covergroup SsstrictV_vloxseg6ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -33090,7 +33090,7 @@ covergroup SsstrictV_vloxseg6ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -33102,7 +33102,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg7ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -33237,7 +33237,7 @@ covergroup SsstrictV_vloxseg7ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -33496,7 +33496,7 @@ covergroup SsstrictV_vloxseg7ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -33508,7 +33508,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg7ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -33643,7 +33643,7 @@ covergroup SsstrictV_vloxseg7ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -33902,7 +33902,7 @@ covergroup SsstrictV_vloxseg7ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -33914,7 +33914,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg7ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34049,7 +34049,7 @@ covergroup SsstrictV_vloxseg7ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -34308,7 +34308,7 @@ covergroup SsstrictV_vloxseg7ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -34320,7 +34320,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg7ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34455,7 +34455,7 @@ covergroup SsstrictV_vloxseg7ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -34714,7 +34714,7 @@ covergroup SsstrictV_vloxseg7ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -34726,7 +34726,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg8ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34861,7 +34861,7 @@ covergroup SsstrictV_vloxseg8ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -35120,7 +35120,7 @@ covergroup SsstrictV_vloxseg8ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -35132,7 +35132,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg8ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -35267,7 +35267,7 @@ covergroup SsstrictV_vloxseg8ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -35526,7 +35526,7 @@ covergroup SsstrictV_vloxseg8ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -35538,7 +35538,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg8ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -35673,7 +35673,7 @@ covergroup SsstrictV_vloxseg8ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -35932,7 +35932,7 @@ covergroup SsstrictV_vloxseg8ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -35944,7 +35944,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vloxseg8ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -36079,7 +36079,7 @@ covergroup SsstrictV_vloxseg8ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -36338,7 +36338,7 @@ covergroup SsstrictV_vloxseg8ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -36350,7 +36350,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlse16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -36394,7 +36394,7 @@ covergroup SsstrictV_vlse16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -36536,7 +36536,7 @@ covergroup SsstrictV_vlse16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -36548,7 +36548,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlse32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -36592,7 +36592,7 @@ covergroup SsstrictV_vlse32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -36734,7 +36734,7 @@ covergroup SsstrictV_vlse32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -36746,7 +36746,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlse64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -36790,7 +36790,7 @@ covergroup SsstrictV_vlse64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -36932,7 +36932,7 @@ covergroup SsstrictV_vlse64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -36944,7 +36944,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlse8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -36988,7 +36988,7 @@ covergroup SsstrictV_vlse8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -37130,7 +37130,7 @@ covergroup SsstrictV_vlse8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -37142,7 +37142,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg2e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -37277,7 +37277,7 @@ covergroup SsstrictV_vlseg2e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -37483,7 +37483,7 @@ covergroup SsstrictV_vlseg2e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -37495,7 +37495,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg2e16ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -37630,7 +37630,7 @@ covergroup SsstrictV_vlseg2e16ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -37836,7 +37836,7 @@ covergroup SsstrictV_vlseg2e16ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -37848,7 +37848,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg2e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -37983,7 +37983,7 @@ covergroup SsstrictV_vlseg2e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -38189,7 +38189,7 @@ covergroup SsstrictV_vlseg2e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -38201,7 +38201,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg2e32ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -38336,7 +38336,7 @@ covergroup SsstrictV_vlseg2e32ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -38542,7 +38542,7 @@ covergroup SsstrictV_vlseg2e32ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -38554,7 +38554,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg2e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -38689,7 +38689,7 @@ covergroup SsstrictV_vlseg2e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -38895,7 +38895,7 @@ covergroup SsstrictV_vlseg2e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -38907,7 +38907,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg2e64ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -39042,7 +39042,7 @@ covergroup SsstrictV_vlseg2e64ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -39248,7 +39248,7 @@ covergroup SsstrictV_vlseg2e64ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -39260,7 +39260,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg2e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -39395,7 +39395,7 @@ covergroup SsstrictV_vlseg2e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -39601,7 +39601,7 @@ covergroup SsstrictV_vlseg2e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -39613,7 +39613,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg2e8ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -39748,7 +39748,7 @@ covergroup SsstrictV_vlseg2e8ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -39954,7 +39954,7 @@ covergroup SsstrictV_vlseg2e8ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -39966,7 +39966,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg3e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -40101,7 +40101,7 @@ covergroup SsstrictV_vlseg3e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -40307,7 +40307,7 @@ covergroup SsstrictV_vlseg3e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -40319,7 +40319,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg3e16ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -40454,7 +40454,7 @@ covergroup SsstrictV_vlseg3e16ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -40660,7 +40660,7 @@ covergroup SsstrictV_vlseg3e16ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -40672,7 +40672,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg3e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -40807,7 +40807,7 @@ covergroup SsstrictV_vlseg3e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -41013,7 +41013,7 @@ covergroup SsstrictV_vlseg3e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -41025,7 +41025,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg3e32ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -41160,7 +41160,7 @@ covergroup SsstrictV_vlseg3e32ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -41366,7 +41366,7 @@ covergroup SsstrictV_vlseg3e32ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -41378,7 +41378,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg3e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -41513,7 +41513,7 @@ covergroup SsstrictV_vlseg3e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -41719,7 +41719,7 @@ covergroup SsstrictV_vlseg3e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -41731,7 +41731,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg3e64ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -41866,7 +41866,7 @@ covergroup SsstrictV_vlseg3e64ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -42072,7 +42072,7 @@ covergroup SsstrictV_vlseg3e64ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -42084,7 +42084,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg3e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -42219,7 +42219,7 @@ covergroup SsstrictV_vlseg3e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -42425,7 +42425,7 @@ covergroup SsstrictV_vlseg3e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -42437,7 +42437,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg3e8ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -42572,7 +42572,7 @@ covergroup SsstrictV_vlseg3e8ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -42778,7 +42778,7 @@ covergroup SsstrictV_vlseg3e8ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -42790,7 +42790,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg4e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -42925,7 +42925,7 @@ covergroup SsstrictV_vlseg4e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -43131,7 +43131,7 @@ covergroup SsstrictV_vlseg4e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -43143,7 +43143,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg4e16ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43278,7 +43278,7 @@ covergroup SsstrictV_vlseg4e16ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -43484,7 +43484,7 @@ covergroup SsstrictV_vlseg4e16ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -43496,7 +43496,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg4e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43631,7 +43631,7 @@ covergroup SsstrictV_vlseg4e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -43837,7 +43837,7 @@ covergroup SsstrictV_vlseg4e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -43849,7 +43849,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg4e32ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43984,7 +43984,7 @@ covergroup SsstrictV_vlseg4e32ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -44190,7 +44190,7 @@ covergroup SsstrictV_vlseg4e32ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -44202,7 +44202,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg4e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -44337,7 +44337,7 @@ covergroup SsstrictV_vlseg4e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -44543,7 +44543,7 @@ covergroup SsstrictV_vlseg4e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -44555,7 +44555,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg4e64ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -44690,7 +44690,7 @@ covergroup SsstrictV_vlseg4e64ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -44896,7 +44896,7 @@ covergroup SsstrictV_vlseg4e64ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -44908,7 +44908,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg4e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -45043,7 +45043,7 @@ covergroup SsstrictV_vlseg4e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -45249,7 +45249,7 @@ covergroup SsstrictV_vlseg4e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -45261,7 +45261,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg4e8ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -45396,7 +45396,7 @@ covergroup SsstrictV_vlseg4e8ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -45602,7 +45602,7 @@ covergroup SsstrictV_vlseg4e8ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -45614,7 +45614,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg5e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -45749,7 +45749,7 @@ covergroup SsstrictV_vlseg5e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -45955,7 +45955,7 @@ covergroup SsstrictV_vlseg5e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -45967,7 +45967,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg5e16ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -46102,7 +46102,7 @@ covergroup SsstrictV_vlseg5e16ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -46308,7 +46308,7 @@ covergroup SsstrictV_vlseg5e16ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -46320,7 +46320,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg5e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -46455,7 +46455,7 @@ covergroup SsstrictV_vlseg5e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -46661,7 +46661,7 @@ covergroup SsstrictV_vlseg5e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -46673,7 +46673,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg5e32ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -46808,7 +46808,7 @@ covergroup SsstrictV_vlseg5e32ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -47014,7 +47014,7 @@ covergroup SsstrictV_vlseg5e32ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -47026,7 +47026,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg5e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47161,7 +47161,7 @@ covergroup SsstrictV_vlseg5e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -47367,7 +47367,7 @@ covergroup SsstrictV_vlseg5e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -47379,7 +47379,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg5e64ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47514,7 +47514,7 @@ covergroup SsstrictV_vlseg5e64ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -47720,7 +47720,7 @@ covergroup SsstrictV_vlseg5e64ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -47732,7 +47732,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg5e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47867,7 +47867,7 @@ covergroup SsstrictV_vlseg5e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -48073,7 +48073,7 @@ covergroup SsstrictV_vlseg5e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -48085,7 +48085,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg5e8ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -48220,7 +48220,7 @@ covergroup SsstrictV_vlseg5e8ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -48426,7 +48426,7 @@ covergroup SsstrictV_vlseg5e8ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -48438,7 +48438,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg6e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -48573,7 +48573,7 @@ covergroup SsstrictV_vlseg6e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -48779,7 +48779,7 @@ covergroup SsstrictV_vlseg6e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -48791,7 +48791,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg6e16ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -48926,7 +48926,7 @@ covergroup SsstrictV_vlseg6e16ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -49132,7 +49132,7 @@ covergroup SsstrictV_vlseg6e16ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -49144,7 +49144,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg6e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -49279,7 +49279,7 @@ covergroup SsstrictV_vlseg6e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -49485,7 +49485,7 @@ covergroup SsstrictV_vlseg6e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -49497,7 +49497,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg6e32ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -49632,7 +49632,7 @@ covergroup SsstrictV_vlseg6e32ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -49838,7 +49838,7 @@ covergroup SsstrictV_vlseg6e32ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -49850,7 +49850,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg6e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -49985,7 +49985,7 @@ covergroup SsstrictV_vlseg6e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -50191,7 +50191,7 @@ covergroup SsstrictV_vlseg6e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -50203,7 +50203,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg6e64ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -50338,7 +50338,7 @@ covergroup SsstrictV_vlseg6e64ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -50544,7 +50544,7 @@ covergroup SsstrictV_vlseg6e64ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -50556,7 +50556,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg6e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -50691,7 +50691,7 @@ covergroup SsstrictV_vlseg6e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -50897,7 +50897,7 @@ covergroup SsstrictV_vlseg6e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -50909,7 +50909,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg6e8ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51044,7 +51044,7 @@ covergroup SsstrictV_vlseg6e8ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -51250,7 +51250,7 @@ covergroup SsstrictV_vlseg6e8ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -51262,7 +51262,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg7e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51397,7 +51397,7 @@ covergroup SsstrictV_vlseg7e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -51603,7 +51603,7 @@ covergroup SsstrictV_vlseg7e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -51615,7 +51615,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg7e16ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51750,7 +51750,7 @@ covergroup SsstrictV_vlseg7e16ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -51956,7 +51956,7 @@ covergroup SsstrictV_vlseg7e16ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -51968,7 +51968,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg7e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -52103,7 +52103,7 @@ covergroup SsstrictV_vlseg7e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -52309,7 +52309,7 @@ covergroup SsstrictV_vlseg7e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -52321,7 +52321,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg7e32ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -52456,7 +52456,7 @@ covergroup SsstrictV_vlseg7e32ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -52662,7 +52662,7 @@ covergroup SsstrictV_vlseg7e32ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -52674,7 +52674,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg7e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -52809,7 +52809,7 @@ covergroup SsstrictV_vlseg7e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -53015,7 +53015,7 @@ covergroup SsstrictV_vlseg7e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -53027,7 +53027,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg7e64ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53162,7 +53162,7 @@ covergroup SsstrictV_vlseg7e64ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -53368,7 +53368,7 @@ covergroup SsstrictV_vlseg7e64ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -53380,7 +53380,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg7e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53515,7 +53515,7 @@ covergroup SsstrictV_vlseg7e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -53721,7 +53721,7 @@ covergroup SsstrictV_vlseg7e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -53733,7 +53733,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg7e8ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53868,7 +53868,7 @@ covergroup SsstrictV_vlseg7e8ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -54074,7 +54074,7 @@ covergroup SsstrictV_vlseg7e8ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -54086,7 +54086,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg8e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54221,7 +54221,7 @@ covergroup SsstrictV_vlseg8e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -54427,7 +54427,7 @@ covergroup SsstrictV_vlseg8e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -54439,7 +54439,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg8e16ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54574,7 +54574,7 @@ covergroup SsstrictV_vlseg8e16ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -54780,7 +54780,7 @@ covergroup SsstrictV_vlseg8e16ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -54792,7 +54792,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg8e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54927,7 +54927,7 @@ covergroup SsstrictV_vlseg8e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -55133,7 +55133,7 @@ covergroup SsstrictV_vlseg8e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -55145,7 +55145,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg8e32ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -55280,7 +55280,7 @@ covergroup SsstrictV_vlseg8e32ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -55486,7 +55486,7 @@ covergroup SsstrictV_vlseg8e32ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -55498,7 +55498,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg8e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -55633,7 +55633,7 @@ covergroup SsstrictV_vlseg8e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -55839,7 +55839,7 @@ covergroup SsstrictV_vlseg8e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -55851,7 +55851,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg8e64ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -55986,7 +55986,7 @@ covergroup SsstrictV_vlseg8e64ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -56192,7 +56192,7 @@ covergroup SsstrictV_vlseg8e64ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -56204,7 +56204,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg8e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56339,7 +56339,7 @@ covergroup SsstrictV_vlseg8e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -56545,7 +56545,7 @@ covergroup SsstrictV_vlseg8e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -56557,7 +56557,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlseg8e8ff_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56692,7 +56692,7 @@ covergroup SsstrictV_vlseg8e8ff_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -56898,7 +56898,7 @@ covergroup SsstrictV_vlseg8e8ff_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -56910,7 +56910,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg2e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -57045,7 +57045,7 @@ covergroup SsstrictV_vlsseg2e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -57251,7 +57251,7 @@ covergroup SsstrictV_vlsseg2e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -57263,7 +57263,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg2e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -57398,7 +57398,7 @@ covergroup SsstrictV_vlsseg2e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -57604,7 +57604,7 @@ covergroup SsstrictV_vlsseg2e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -57616,7 +57616,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg2e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -57751,7 +57751,7 @@ covergroup SsstrictV_vlsseg2e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -57957,7 +57957,7 @@ covergroup SsstrictV_vlsseg2e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -57969,7 +57969,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg2e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58104,7 +58104,7 @@ covergroup SsstrictV_vlsseg2e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -58310,7 +58310,7 @@ covergroup SsstrictV_vlsseg2e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -58322,7 +58322,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg3e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58457,7 +58457,7 @@ covergroup SsstrictV_vlsseg3e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -58663,7 +58663,7 @@ covergroup SsstrictV_vlsseg3e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -58675,7 +58675,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg3e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58810,7 +58810,7 @@ covergroup SsstrictV_vlsseg3e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -59016,7 +59016,7 @@ covergroup SsstrictV_vlsseg3e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -59028,7 +59028,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg3e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -59163,7 +59163,7 @@ covergroup SsstrictV_vlsseg3e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -59369,7 +59369,7 @@ covergroup SsstrictV_vlsseg3e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -59381,7 +59381,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg3e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -59516,7 +59516,7 @@ covergroup SsstrictV_vlsseg3e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -59722,7 +59722,7 @@ covergroup SsstrictV_vlsseg3e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -59734,7 +59734,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg4e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -59869,7 +59869,7 @@ covergroup SsstrictV_vlsseg4e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -60075,7 +60075,7 @@ covergroup SsstrictV_vlsseg4e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -60087,7 +60087,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg4e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -60222,7 +60222,7 @@ covergroup SsstrictV_vlsseg4e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -60428,7 +60428,7 @@ covergroup SsstrictV_vlsseg4e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -60440,7 +60440,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg4e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -60575,7 +60575,7 @@ covergroup SsstrictV_vlsseg4e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -60781,7 +60781,7 @@ covergroup SsstrictV_vlsseg4e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -60793,7 +60793,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg4e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -60928,7 +60928,7 @@ covergroup SsstrictV_vlsseg4e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -61134,7 +61134,7 @@ covergroup SsstrictV_vlsseg4e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -61146,7 +61146,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg5e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61281,7 +61281,7 @@ covergroup SsstrictV_vlsseg5e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -61487,7 +61487,7 @@ covergroup SsstrictV_vlsseg5e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -61499,7 +61499,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg5e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61634,7 +61634,7 @@ covergroup SsstrictV_vlsseg5e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -61840,7 +61840,7 @@ covergroup SsstrictV_vlsseg5e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -61852,7 +61852,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg5e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61987,7 +61987,7 @@ covergroup SsstrictV_vlsseg5e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -62193,7 +62193,7 @@ covergroup SsstrictV_vlsseg5e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -62205,7 +62205,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg5e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -62340,7 +62340,7 @@ covergroup SsstrictV_vlsseg5e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -62546,7 +62546,7 @@ covergroup SsstrictV_vlsseg5e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -62558,7 +62558,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg6e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -62693,7 +62693,7 @@ covergroup SsstrictV_vlsseg6e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -62899,7 +62899,7 @@ covergroup SsstrictV_vlsseg6e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -62911,7 +62911,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg6e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -63046,7 +63046,7 @@ covergroup SsstrictV_vlsseg6e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -63252,7 +63252,7 @@ covergroup SsstrictV_vlsseg6e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -63264,7 +63264,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg6e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -63399,7 +63399,7 @@ covergroup SsstrictV_vlsseg6e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -63605,7 +63605,7 @@ covergroup SsstrictV_vlsseg6e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -63617,7 +63617,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg6e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -63752,7 +63752,7 @@ covergroup SsstrictV_vlsseg6e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -63958,7 +63958,7 @@ covergroup SsstrictV_vlsseg6e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -63970,7 +63970,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg7e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -64105,7 +64105,7 @@ covergroup SsstrictV_vlsseg7e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -64311,7 +64311,7 @@ covergroup SsstrictV_vlsseg7e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -64323,7 +64323,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg7e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -64458,7 +64458,7 @@ covergroup SsstrictV_vlsseg7e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -64664,7 +64664,7 @@ covergroup SsstrictV_vlsseg7e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -64676,7 +64676,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg7e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -64811,7 +64811,7 @@ covergroup SsstrictV_vlsseg7e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -65017,7 +65017,7 @@ covergroup SsstrictV_vlsseg7e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -65029,7 +65029,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg7e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65164,7 +65164,7 @@ covergroup SsstrictV_vlsseg7e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -65370,7 +65370,7 @@ covergroup SsstrictV_vlsseg7e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -65382,7 +65382,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg8e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65517,7 +65517,7 @@ covergroup SsstrictV_vlsseg8e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -65723,7 +65723,7 @@ covergroup SsstrictV_vlsseg8e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -65735,7 +65735,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg8e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65870,7 +65870,7 @@ covergroup SsstrictV_vlsseg8e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -66076,7 +66076,7 @@ covergroup SsstrictV_vlsseg8e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -66088,7 +66088,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg8e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -66223,7 +66223,7 @@ covergroup SsstrictV_vlsseg8e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -66429,7 +66429,7 @@ covergroup SsstrictV_vlsseg8e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -66441,7 +66441,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vlsseg8e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -66576,7 +66576,7 @@ covergroup SsstrictV_vlsseg8e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -66782,7 +66782,7 @@ covergroup SsstrictV_vlsseg8e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -66794,7 +66794,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -66838,7 +66838,7 @@ covergroup SsstrictV_vluxei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -67082,7 +67082,7 @@ covergroup SsstrictV_vluxei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -67094,7 +67094,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -67138,7 +67138,7 @@ covergroup SsstrictV_vluxei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -67382,7 +67382,7 @@ covergroup SsstrictV_vluxei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -67394,7 +67394,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -67438,7 +67438,7 @@ covergroup SsstrictV_vluxei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -67682,7 +67682,7 @@ covergroup SsstrictV_vluxei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -67694,7 +67694,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -67738,7 +67738,7 @@ covergroup SsstrictV_vluxei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -67982,7 +67982,7 @@ covergroup SsstrictV_vluxei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -67994,7 +67994,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg2ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -68129,7 +68129,7 @@ covergroup SsstrictV_vluxseg2ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -68388,7 +68388,7 @@ covergroup SsstrictV_vluxseg2ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -68400,7 +68400,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg2ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -68535,7 +68535,7 @@ covergroup SsstrictV_vluxseg2ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -68794,7 +68794,7 @@ covergroup SsstrictV_vluxseg2ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -68806,7 +68806,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg2ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -68941,7 +68941,7 @@ covergroup SsstrictV_vluxseg2ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -69200,7 +69200,7 @@ covergroup SsstrictV_vluxseg2ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -69212,7 +69212,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg2ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -69347,7 +69347,7 @@ covergroup SsstrictV_vluxseg2ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -69606,7 +69606,7 @@ covergroup SsstrictV_vluxseg2ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -69618,7 +69618,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg3ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -69753,7 +69753,7 @@ covergroup SsstrictV_vluxseg3ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -70012,7 +70012,7 @@ covergroup SsstrictV_vluxseg3ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -70024,7 +70024,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg3ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -70159,7 +70159,7 @@ covergroup SsstrictV_vluxseg3ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -70418,7 +70418,7 @@ covergroup SsstrictV_vluxseg3ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -70430,7 +70430,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg3ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -70565,7 +70565,7 @@ covergroup SsstrictV_vluxseg3ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -70824,7 +70824,7 @@ covergroup SsstrictV_vluxseg3ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -70836,7 +70836,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg3ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -70971,7 +70971,7 @@ covergroup SsstrictV_vluxseg3ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -71230,7 +71230,7 @@ covergroup SsstrictV_vluxseg3ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -71242,7 +71242,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg4ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -71377,7 +71377,7 @@ covergroup SsstrictV_vluxseg4ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -71636,7 +71636,7 @@ covergroup SsstrictV_vluxseg4ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -71648,7 +71648,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg4ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -71783,7 +71783,7 @@ covergroup SsstrictV_vluxseg4ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -72042,7 +72042,7 @@ covergroup SsstrictV_vluxseg4ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -72054,7 +72054,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg4ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -72189,7 +72189,7 @@ covergroup SsstrictV_vluxseg4ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -72448,7 +72448,7 @@ covergroup SsstrictV_vluxseg4ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -72460,7 +72460,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg4ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -72595,7 +72595,7 @@ covergroup SsstrictV_vluxseg4ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -72854,7 +72854,7 @@ covergroup SsstrictV_vluxseg4ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -72866,7 +72866,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg5ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -73001,7 +73001,7 @@ covergroup SsstrictV_vluxseg5ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -73260,7 +73260,7 @@ covergroup SsstrictV_vluxseg5ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -73272,7 +73272,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg5ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -73407,7 +73407,7 @@ covergroup SsstrictV_vluxseg5ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -73666,7 +73666,7 @@ covergroup SsstrictV_vluxseg5ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -73678,7 +73678,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg5ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -73813,7 +73813,7 @@ covergroup SsstrictV_vluxseg5ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -74072,7 +74072,7 @@ covergroup SsstrictV_vluxseg5ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -74084,7 +74084,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg5ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -74219,7 +74219,7 @@ covergroup SsstrictV_vluxseg5ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -74478,7 +74478,7 @@ covergroup SsstrictV_vluxseg5ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -74490,7 +74490,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg6ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -74625,7 +74625,7 @@ covergroup SsstrictV_vluxseg6ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -74884,7 +74884,7 @@ covergroup SsstrictV_vluxseg6ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -74896,7 +74896,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg6ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75031,7 +75031,7 @@ covergroup SsstrictV_vluxseg6ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -75290,7 +75290,7 @@ covergroup SsstrictV_vluxseg6ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -75302,7 +75302,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg6ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75437,7 +75437,7 @@ covergroup SsstrictV_vluxseg6ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -75696,7 +75696,7 @@ covergroup SsstrictV_vluxseg6ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -75708,7 +75708,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg6ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75843,7 +75843,7 @@ covergroup SsstrictV_vluxseg6ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -76102,7 +76102,7 @@ covergroup SsstrictV_vluxseg6ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -76114,7 +76114,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg7ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -76249,7 +76249,7 @@ covergroup SsstrictV_vluxseg7ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -76508,7 +76508,7 @@ covergroup SsstrictV_vluxseg7ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -76520,7 +76520,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg7ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -76655,7 +76655,7 @@ covergroup SsstrictV_vluxseg7ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -76914,7 +76914,7 @@ covergroup SsstrictV_vluxseg7ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -76926,7 +76926,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg7ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -77061,7 +77061,7 @@ covergroup SsstrictV_vluxseg7ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -77320,7 +77320,7 @@ covergroup SsstrictV_vluxseg7ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -77332,7 +77332,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg7ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -77467,7 +77467,7 @@ covergroup SsstrictV_vluxseg7ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -77726,7 +77726,7 @@ covergroup SsstrictV_vluxseg7ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -77738,7 +77738,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg8ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -77873,7 +77873,7 @@ covergroup SsstrictV_vluxseg8ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -78132,7 +78132,7 @@ covergroup SsstrictV_vluxseg8ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -78144,7 +78144,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg8ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -78279,7 +78279,7 @@ covergroup SsstrictV_vluxseg8ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -78538,7 +78538,7 @@ covergroup SsstrictV_vluxseg8ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -78550,7 +78550,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg8ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -78685,7 +78685,7 @@ covergroup SsstrictV_vluxseg8ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -78944,7 +78944,7 @@ covergroup SsstrictV_vluxseg8ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -78956,7 +78956,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vluxseg8ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79091,7 +79091,7 @@ covergroup SsstrictV_vluxseg8ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -79350,7 +79350,7 @@ covergroup SsstrictV_vluxseg8ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -79362,7 +79362,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmacc_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79400,7 +79400,7 @@ covergroup SsstrictV_vmacc_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -79412,7 +79412,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmacc_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79486,7 +79486,7 @@ covergroup SsstrictV_vmacc_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -79498,7 +79498,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmadc_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79559,7 +79559,7 @@ covergroup SsstrictV_vmadc_vi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -79571,7 +79571,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmadc_vim_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79668,7 +79668,7 @@ covergroup SsstrictV_vmadc_vim_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -79680,7 +79680,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmadc_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79741,7 +79741,7 @@ covergroup SsstrictV_vmadc_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -79753,7 +79753,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmadc_vvm_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79850,7 +79850,7 @@ covergroup SsstrictV_vmadc_vvm_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -79862,7 +79862,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmadc_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79923,7 +79923,7 @@ covergroup SsstrictV_vmadc_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -79935,7 +79935,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmadc_vxm_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80032,7 +80032,7 @@ covergroup SsstrictV_vmadc_vxm_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -80044,7 +80044,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmadd_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80082,7 +80082,7 @@ covergroup SsstrictV_vmadd_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -80094,7 +80094,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmadd_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80168,7 +80168,7 @@ covergroup SsstrictV_vmadd_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -80180,7 +80180,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmand_mm_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80243,7 +80243,7 @@ covergroup SsstrictV_vmand_mm_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -80255,7 +80255,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmandn_mm_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80318,7 +80318,7 @@ covergroup SsstrictV_vmandn_mm_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -80330,7 +80330,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmax_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80404,7 +80404,7 @@ covergroup SsstrictV_vmax_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -80416,7 +80416,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmax_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80490,7 +80490,7 @@ covergroup SsstrictV_vmax_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -80502,7 +80502,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmaxu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80576,7 +80576,7 @@ covergroup SsstrictV_vmaxu_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -80588,7 +80588,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmaxu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80662,7 +80662,7 @@ covergroup SsstrictV_vmaxu_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -80674,7 +80674,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmerge_vim_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80748,7 +80748,7 @@ covergroup SsstrictV_vmerge_vim_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -80760,7 +80760,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmerge_vvm_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80834,7 +80834,7 @@ covergroup SsstrictV_vmerge_vvm_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -80846,7 +80846,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmerge_vxm_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80920,7 +80920,7 @@ covergroup SsstrictV_vmerge_vxm_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -80932,7 +80932,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmfeq_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81006,7 +81006,7 @@ covergroup SsstrictV_vmfeq_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -81018,7 +81018,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmfeq_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81092,7 +81092,7 @@ covergroup SsstrictV_vmfeq_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -81104,7 +81104,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmfge_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81178,7 +81178,7 @@ covergroup SsstrictV_vmfge_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -81190,7 +81190,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmfgt_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81264,7 +81264,7 @@ covergroup SsstrictV_vmfgt_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -81276,7 +81276,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmfle_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81350,7 +81350,7 @@ covergroup SsstrictV_vmfle_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -81362,7 +81362,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmfle_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81436,7 +81436,7 @@ covergroup SsstrictV_vmfle_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -81448,7 +81448,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmflt_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81522,7 +81522,7 @@ covergroup SsstrictV_vmflt_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -81534,7 +81534,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmflt_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81608,7 +81608,7 @@ covergroup SsstrictV_vmflt_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -81620,7 +81620,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmfne_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81694,7 +81694,7 @@ covergroup SsstrictV_vmfne_vf_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -81706,7 +81706,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmfne_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81780,7 +81780,7 @@ covergroup SsstrictV_vmfne_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -81792,7 +81792,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmin_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81866,7 +81866,7 @@ covergroup SsstrictV_vmin_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -81878,7 +81878,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmin_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81952,7 +81952,7 @@ covergroup SsstrictV_vmin_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -81964,7 +81964,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vminu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82038,7 +82038,7 @@ covergroup SsstrictV_vminu_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -82050,7 +82050,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vminu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82124,7 +82124,7 @@ covergroup SsstrictV_vminu_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -82136,7 +82136,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmnand_mm_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82199,7 +82199,7 @@ covergroup SsstrictV_vmnand_mm_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -82211,7 +82211,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmnor_mm_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82274,7 +82274,7 @@ covergroup SsstrictV_vmnor_mm_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -82286,7 +82286,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmor_mm_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82349,7 +82349,7 @@ covergroup SsstrictV_vmor_mm_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -82361,7 +82361,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmorn_mm_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82424,7 +82424,7 @@ covergroup SsstrictV_vmorn_mm_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -82436,7 +82436,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmsbc_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82497,7 +82497,7 @@ covergroup SsstrictV_vmsbc_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -82509,7 +82509,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmsbc_vvm_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82606,7 +82606,7 @@ covergroup SsstrictV_vmsbc_vvm_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -82618,7 +82618,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmsbc_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82679,7 +82679,7 @@ covergroup SsstrictV_vmsbc_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -82691,7 +82691,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmsbc_vxm_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82788,7 +82788,7 @@ covergroup SsstrictV_vmsbc_vxm_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -82800,7 +82800,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmsbf_m_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_exceptionsv_vd_v0_overlap_mask_active
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82893,7 +82893,7 @@ covergroup SsstrictV_vmsbf_m_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -82905,7 +82905,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmseq_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82979,7 +82979,7 @@ covergroup SsstrictV_vmseq_vi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -82991,7 +82991,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmseq_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83065,7 +83065,7 @@ covergroup SsstrictV_vmseq_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -83077,7 +83077,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmseq_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83151,7 +83151,7 @@ covergroup SsstrictV_vmseq_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -83163,7 +83163,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmsgt_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83237,7 +83237,7 @@ covergroup SsstrictV_vmsgt_vi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -83249,7 +83249,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmsgt_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83323,7 +83323,7 @@ covergroup SsstrictV_vmsgt_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -83335,7 +83335,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmsgtu_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83409,7 +83409,7 @@ covergroup SsstrictV_vmsgtu_vi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -83421,7 +83421,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmsgtu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83495,7 +83495,7 @@ covergroup SsstrictV_vmsgtu_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -83507,7 +83507,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmsif_m_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_exceptionsv_vd_v0_overlap_mask_active
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83600,7 +83600,7 @@ covergroup SsstrictV_vmsif_m_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -83612,7 +83612,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmsle_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83686,7 +83686,7 @@ covergroup SsstrictV_vmsle_vi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -83698,7 +83698,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmsle_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83772,7 +83772,7 @@ covergroup SsstrictV_vmsle_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -83784,7 +83784,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmsle_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83858,7 +83858,7 @@ covergroup SsstrictV_vmsle_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -83870,7 +83870,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmsleu_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83944,7 +83944,7 @@ covergroup SsstrictV_vmsleu_vi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -83956,7 +83956,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmsleu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84030,7 +84030,7 @@ covergroup SsstrictV_vmsleu_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -84042,7 +84042,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmsleu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84116,7 +84116,7 @@ covergroup SsstrictV_vmsleu_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -84128,7 +84128,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmslt_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84202,7 +84202,7 @@ covergroup SsstrictV_vmslt_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -84214,7 +84214,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmslt_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84288,7 +84288,7 @@ covergroup SsstrictV_vmslt_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -84300,7 +84300,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmsltu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84374,7 +84374,7 @@ covergroup SsstrictV_vmsltu_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -84386,7 +84386,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmsltu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84460,7 +84460,7 @@ covergroup SsstrictV_vmsltu_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -84472,7 +84472,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmsne_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84546,7 +84546,7 @@ covergroup SsstrictV_vmsne_vi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -84558,7 +84558,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmsne_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84632,7 +84632,7 @@ covergroup SsstrictV_vmsne_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -84644,7 +84644,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmsne_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84718,7 +84718,7 @@ covergroup SsstrictV_vmsne_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -84730,7 +84730,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmsof_m_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_exceptionsv_vd_v0_overlap_mask_active
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84823,7 +84823,7 @@ covergroup SsstrictV_vmsof_m_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -84835,7 +84835,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmul_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84909,7 +84909,7 @@ covergroup SsstrictV_vmul_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -84921,7 +84921,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmul_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84995,7 +84995,7 @@ covergroup SsstrictV_vmul_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -85007,7 +85007,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmulh_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85081,7 +85081,7 @@ covergroup SsstrictV_vmulh_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -85093,7 +85093,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmulh_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85167,7 +85167,7 @@ covergroup SsstrictV_vmulh_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -85179,7 +85179,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmulhsu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85253,7 +85253,7 @@ covergroup SsstrictV_vmulhsu_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -85265,7 +85265,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmulhsu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85339,7 +85339,7 @@ covergroup SsstrictV_vmulhsu_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -85351,7 +85351,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmulhu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85425,7 +85425,7 @@ covergroup SsstrictV_vmulhu_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -85437,7 +85437,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmulhu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85511,7 +85511,7 @@ covergroup SsstrictV_vmulhu_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -85523,7 +85523,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmv_s_x_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85584,7 +85584,7 @@ covergroup SsstrictV_vmv_s_x_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -85596,7 +85596,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmv_v_i_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85648,7 +85648,7 @@ covergroup SsstrictV_vmv_v_i_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -85660,7 +85660,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmv_v_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85712,7 +85712,7 @@ covergroup SsstrictV_vmv_v_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -85724,7 +85724,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmv_v_x_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85776,7 +85776,7 @@ covergroup SsstrictV_vmv_v_x_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -85788,7 +85788,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmv_x_s_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85849,7 +85849,7 @@ covergroup SsstrictV_vmv_x_s_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -85861,7 +85861,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmv1r_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85981,7 +85981,7 @@ covergroup SsstrictV_vmv1r_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -85993,7 +85993,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmv2r_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -86113,7 +86113,7 @@ covergroup SsstrictV_vmv2r_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -86125,7 +86125,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmv4r_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -86245,7 +86245,7 @@ covergroup SsstrictV_vmv4r_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -86257,7 +86257,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmv8r_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -86295,7 +86295,7 @@ covergroup SsstrictV_vmv8r_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -86307,7 +86307,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmxnor_mm_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -86370,7 +86370,7 @@ covergroup SsstrictV_vmxnor_mm_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -86382,7 +86382,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vmxor_mm_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -86445,7 +86445,7 @@ covergroup SsstrictV_vmxor_mm_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -86457,7 +86457,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vnclip_wi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -86537,7 +86537,7 @@ covergroup SsstrictV_vnclip_wi_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_e4a27f: coverpoint ins.trap {
+    trap_occurred_e4a27f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -86551,7 +86551,7 @@ covergroup SsstrictV_vnclip_wi_cg with function sample(ins_t ins);
 
 
     // Narrowing with LMUL=1: vd = vs2 overlaps source group, must trap
-    trap_occurred_eb4360: coverpoint ins.trap {
+    trap_occurred_eb4360: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -86574,7 +86574,7 @@ covergroup SsstrictV_vnclip_wi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -86586,7 +86586,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vnclip_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -86666,7 +86666,7 @@ covergroup SsstrictV_vnclip_wv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_e4a27f: coverpoint ins.trap {
+    trap_occurred_e4a27f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -86680,7 +86680,7 @@ covergroup SsstrictV_vnclip_wv_cg with function sample(ins_t ins);
 
 
     // Narrowing with LMUL=1: vd = vs2 overlaps source group, must trap
-    trap_occurred_eb4360: coverpoint ins.trap {
+    trap_occurred_eb4360: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -86703,7 +86703,7 @@ covergroup SsstrictV_vnclip_wv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -86717,7 +86717,7 @@ covergroup SsstrictV_vnclip_wv_cg with function sample(ins_t ins);
 
 
     // Widening .w with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_71b3d0: coverpoint ins.trap {
+    trap_occurred_71b3d0: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -86740,7 +86740,7 @@ covergroup SsstrictV_vnclip_wv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -86761,7 +86761,7 @@ covergroup SsstrictV_vnclip_wv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_9b660f: coverpoint ins.trap {
+    trap_occurred_9b660f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -86790,7 +86790,7 @@ covergroup SsstrictV_vnclip_wv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -86802,7 +86802,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vnclip_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -86882,7 +86882,7 @@ covergroup SsstrictV_vnclip_wx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_e4a27f: coverpoint ins.trap {
+    trap_occurred_e4a27f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -86896,7 +86896,7 @@ covergroup SsstrictV_vnclip_wx_cg with function sample(ins_t ins);
 
 
     // Narrowing with LMUL=1: vd = vs2 overlaps source group, must trap
-    trap_occurred_eb4360: coverpoint ins.trap {
+    trap_occurred_eb4360: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -86919,7 +86919,7 @@ covergroup SsstrictV_vnclip_wx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -86933,7 +86933,7 @@ covergroup SsstrictV_vnclip_wx_cg with function sample(ins_t ins);
 
 
     // Widening .w with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_71b3d0: coverpoint ins.trap {
+    trap_occurred_71b3d0: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -86956,7 +86956,7 @@ covergroup SsstrictV_vnclip_wx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -86977,7 +86977,7 @@ covergroup SsstrictV_vnclip_wx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_9b660f: coverpoint ins.trap {
+    trap_occurred_9b660f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87006,7 +87006,7 @@ covergroup SsstrictV_vnclip_wx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87018,7 +87018,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vnclipu_wi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -87098,7 +87098,7 @@ covergroup SsstrictV_vnclipu_wi_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_e4a27f: coverpoint ins.trap {
+    trap_occurred_e4a27f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87112,7 +87112,7 @@ covergroup SsstrictV_vnclipu_wi_cg with function sample(ins_t ins);
 
 
     // Narrowing with LMUL=1: vd = vs2 overlaps source group, must trap
-    trap_occurred_eb4360: coverpoint ins.trap {
+    trap_occurred_eb4360: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87135,7 +87135,7 @@ covergroup SsstrictV_vnclipu_wi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87147,7 +87147,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vnclipu_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -87227,7 +87227,7 @@ covergroup SsstrictV_vnclipu_wv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_e4a27f: coverpoint ins.trap {
+    trap_occurred_e4a27f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87241,7 +87241,7 @@ covergroup SsstrictV_vnclipu_wv_cg with function sample(ins_t ins);
 
 
     // Narrowing with LMUL=1: vd = vs2 overlaps source group, must trap
-    trap_occurred_eb4360: coverpoint ins.trap {
+    trap_occurred_eb4360: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87264,7 +87264,7 @@ covergroup SsstrictV_vnclipu_wv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87278,7 +87278,7 @@ covergroup SsstrictV_vnclipu_wv_cg with function sample(ins_t ins);
 
 
     // Widening .w with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_71b3d0: coverpoint ins.trap {
+    trap_occurred_71b3d0: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87301,7 +87301,7 @@ covergroup SsstrictV_vnclipu_wv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87322,7 +87322,7 @@ covergroup SsstrictV_vnclipu_wv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_9b660f: coverpoint ins.trap {
+    trap_occurred_9b660f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87351,7 +87351,7 @@ covergroup SsstrictV_vnclipu_wv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87363,7 +87363,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vnclipu_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -87443,7 +87443,7 @@ covergroup SsstrictV_vnclipu_wx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_e4a27f: coverpoint ins.trap {
+    trap_occurred_e4a27f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87457,7 +87457,7 @@ covergroup SsstrictV_vnclipu_wx_cg with function sample(ins_t ins);
 
 
     // Narrowing with LMUL=1: vd = vs2 overlaps source group, must trap
-    trap_occurred_eb4360: coverpoint ins.trap {
+    trap_occurred_eb4360: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87480,7 +87480,7 @@ covergroup SsstrictV_vnclipu_wx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87494,7 +87494,7 @@ covergroup SsstrictV_vnclipu_wx_cg with function sample(ins_t ins);
 
 
     // Widening .w with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_71b3d0: coverpoint ins.trap {
+    trap_occurred_71b3d0: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87517,7 +87517,7 @@ covergroup SsstrictV_vnclipu_wx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87538,7 +87538,7 @@ covergroup SsstrictV_vnclipu_wx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_9b660f: coverpoint ins.trap {
+    trap_occurred_9b660f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87567,7 +87567,7 @@ covergroup SsstrictV_vnclipu_wx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87579,7 +87579,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vnmsac_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -87617,7 +87617,7 @@ covergroup SsstrictV_vnmsac_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87629,7 +87629,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vnmsac_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -87703,7 +87703,7 @@ covergroup SsstrictV_vnmsac_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87715,7 +87715,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vnmsub_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -87753,7 +87753,7 @@ covergroup SsstrictV_vnmsub_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87765,7 +87765,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vnmsub_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -87839,7 +87839,7 @@ covergroup SsstrictV_vnmsub_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87851,7 +87851,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vnsra_wi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -87931,7 +87931,7 @@ covergroup SsstrictV_vnsra_wi_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_e4a27f: coverpoint ins.trap {
+    trap_occurred_e4a27f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87945,7 +87945,7 @@ covergroup SsstrictV_vnsra_wi_cg with function sample(ins_t ins);
 
 
     // Narrowing with LMUL=1: vd = vs2 overlaps source group, must trap
-    trap_occurred_eb4360: coverpoint ins.trap {
+    trap_occurred_eb4360: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87968,7 +87968,7 @@ covergroup SsstrictV_vnsra_wi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -87980,7 +87980,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vnsra_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -88060,7 +88060,7 @@ covergroup SsstrictV_vnsra_wv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_e4a27f: coverpoint ins.trap {
+    trap_occurred_e4a27f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88074,7 +88074,7 @@ covergroup SsstrictV_vnsra_wv_cg with function sample(ins_t ins);
 
 
     // Narrowing with LMUL=1: vd = vs2 overlaps source group, must trap
-    trap_occurred_eb4360: coverpoint ins.trap {
+    trap_occurred_eb4360: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88097,7 +88097,7 @@ covergroup SsstrictV_vnsra_wv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88111,7 +88111,7 @@ covergroup SsstrictV_vnsra_wv_cg with function sample(ins_t ins);
 
 
     // Widening .w with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_71b3d0: coverpoint ins.trap {
+    trap_occurred_71b3d0: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88134,7 +88134,7 @@ covergroup SsstrictV_vnsra_wv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88155,7 +88155,7 @@ covergroup SsstrictV_vnsra_wv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_9b660f: coverpoint ins.trap {
+    trap_occurred_9b660f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88184,7 +88184,7 @@ covergroup SsstrictV_vnsra_wv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88196,7 +88196,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vnsra_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -88276,7 +88276,7 @@ covergroup SsstrictV_vnsra_wx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_e4a27f: coverpoint ins.trap {
+    trap_occurred_e4a27f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88290,7 +88290,7 @@ covergroup SsstrictV_vnsra_wx_cg with function sample(ins_t ins);
 
 
     // Narrowing with LMUL=1: vd = vs2 overlaps source group, must trap
-    trap_occurred_eb4360: coverpoint ins.trap {
+    trap_occurred_eb4360: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88313,7 +88313,7 @@ covergroup SsstrictV_vnsra_wx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88327,7 +88327,7 @@ covergroup SsstrictV_vnsra_wx_cg with function sample(ins_t ins);
 
 
     // Widening .w with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_71b3d0: coverpoint ins.trap {
+    trap_occurred_71b3d0: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88350,7 +88350,7 @@ covergroup SsstrictV_vnsra_wx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88371,7 +88371,7 @@ covergroup SsstrictV_vnsra_wx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_9b660f: coverpoint ins.trap {
+    trap_occurred_9b660f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88400,7 +88400,7 @@ covergroup SsstrictV_vnsra_wx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88412,7 +88412,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vnsrl_wi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -88492,7 +88492,7 @@ covergroup SsstrictV_vnsrl_wi_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_e4a27f: coverpoint ins.trap {
+    trap_occurred_e4a27f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88506,7 +88506,7 @@ covergroup SsstrictV_vnsrl_wi_cg with function sample(ins_t ins);
 
 
     // Narrowing with LMUL=1: vd = vs2 overlaps source group, must trap
-    trap_occurred_eb4360: coverpoint ins.trap {
+    trap_occurred_eb4360: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88529,7 +88529,7 @@ covergroup SsstrictV_vnsrl_wi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88541,7 +88541,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vnsrl_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -88621,7 +88621,7 @@ covergroup SsstrictV_vnsrl_wv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_e4a27f: coverpoint ins.trap {
+    trap_occurred_e4a27f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88635,7 +88635,7 @@ covergroup SsstrictV_vnsrl_wv_cg with function sample(ins_t ins);
 
 
     // Narrowing with LMUL=1: vd = vs2 overlaps source group, must trap
-    trap_occurred_eb4360: coverpoint ins.trap {
+    trap_occurred_eb4360: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88658,7 +88658,7 @@ covergroup SsstrictV_vnsrl_wv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88672,7 +88672,7 @@ covergroup SsstrictV_vnsrl_wv_cg with function sample(ins_t ins);
 
 
     // Widening .w with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_71b3d0: coverpoint ins.trap {
+    trap_occurred_71b3d0: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88695,7 +88695,7 @@ covergroup SsstrictV_vnsrl_wv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88716,7 +88716,7 @@ covergroup SsstrictV_vnsrl_wv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_9b660f: coverpoint ins.trap {
+    trap_occurred_9b660f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88745,7 +88745,7 @@ covergroup SsstrictV_vnsrl_wv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88757,7 +88757,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vnsrl_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -88837,7 +88837,7 @@ covergroup SsstrictV_vnsrl_wx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_e4a27f: coverpoint ins.trap {
+    trap_occurred_e4a27f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88851,7 +88851,7 @@ covergroup SsstrictV_vnsrl_wx_cg with function sample(ins_t ins);
 
 
     // Narrowing with LMUL=1: vd = vs2 overlaps source group, must trap
-    trap_occurred_eb4360: coverpoint ins.trap {
+    trap_occurred_eb4360: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88874,7 +88874,7 @@ covergroup SsstrictV_vnsrl_wx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88888,7 +88888,7 @@ covergroup SsstrictV_vnsrl_wx_cg with function sample(ins_t ins);
 
 
     // Widening .w with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_71b3d0: coverpoint ins.trap {
+    trap_occurred_71b3d0: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88911,7 +88911,7 @@ covergroup SsstrictV_vnsrl_wx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88932,7 +88932,7 @@ covergroup SsstrictV_vnsrl_wx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_9b660f: coverpoint ins.trap {
+    trap_occurred_9b660f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88961,7 +88961,7 @@ covergroup SsstrictV_vnsrl_wx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -88973,7 +88973,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vor_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89047,7 +89047,7 @@ covergroup SsstrictV_vor_vi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -89059,7 +89059,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vor_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89133,7 +89133,7 @@ covergroup SsstrictV_vor_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -89145,7 +89145,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vor_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89219,7 +89219,7 @@ covergroup SsstrictV_vor_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -89231,7 +89231,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vredand_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89305,7 +89305,7 @@ covergroup SsstrictV_vredand_vs_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -89317,7 +89317,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vredmax_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89391,7 +89391,7 @@ covergroup SsstrictV_vredmax_vs_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -89403,7 +89403,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vredmaxu_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89477,7 +89477,7 @@ covergroup SsstrictV_vredmaxu_vs_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -89489,7 +89489,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vredmin_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89563,7 +89563,7 @@ covergroup SsstrictV_vredmin_vs_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -89575,7 +89575,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vredminu_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89649,7 +89649,7 @@ covergroup SsstrictV_vredminu_vs_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -89661,7 +89661,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vredor_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89735,7 +89735,7 @@ covergroup SsstrictV_vredor_vs_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -89747,7 +89747,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vredsum_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89821,7 +89821,7 @@ covergroup SsstrictV_vredsum_vs_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -89833,7 +89833,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vredxor_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89907,7 +89907,7 @@ covergroup SsstrictV_vredxor_vs_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -89919,7 +89919,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vrem_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89993,7 +89993,7 @@ covergroup SsstrictV_vrem_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -90005,7 +90005,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vrem_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90079,7 +90079,7 @@ covergroup SsstrictV_vrem_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -90091,7 +90091,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vremu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90165,7 +90165,7 @@ covergroup SsstrictV_vremu_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -90177,7 +90177,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vremu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90251,7 +90251,7 @@ covergroup SsstrictV_vremu_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -90263,7 +90263,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vrgather_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90362,7 +90362,7 @@ covergroup SsstrictV_vrgather_vi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -90374,7 +90374,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vrgather_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90498,7 +90498,7 @@ covergroup SsstrictV_vrgather_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -90510,7 +90510,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vrgather_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90609,7 +90609,7 @@ covergroup SsstrictV_vrgather_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -90621,7 +90621,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vrgatherei16_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90764,7 +90764,7 @@ covergroup SsstrictV_vrgatherei16_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -90776,7 +90776,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vrsub_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90850,7 +90850,7 @@ covergroup SsstrictV_vrsub_vi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -90862,7 +90862,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vrsub_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90936,7 +90936,7 @@ covergroup SsstrictV_vrsub_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -90948,7 +90948,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vs1r_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90992,7 +90992,7 @@ covergroup SsstrictV_vs1r_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -91163,7 +91163,7 @@ covergroup SsstrictV_vs1r_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -91175,7 +91175,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vs2r_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -91219,7 +91219,7 @@ covergroup SsstrictV_vs2r_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -91390,7 +91390,7 @@ covergroup SsstrictV_vs2r_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -91402,7 +91402,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vs4r_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -91446,7 +91446,7 @@ covergroup SsstrictV_vs4r_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -91617,7 +91617,7 @@ covergroup SsstrictV_vs4r_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -91629,7 +91629,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vs8r_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -91673,7 +91673,7 @@ covergroup SsstrictV_vs8r_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -91844,7 +91844,7 @@ covergroup SsstrictV_vs8r_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -91856,7 +91856,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsadd_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -91930,7 +91930,7 @@ covergroup SsstrictV_vsadd_vi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -91942,7 +91942,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsadd_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -92016,7 +92016,7 @@ covergroup SsstrictV_vsadd_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -92028,7 +92028,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsadd_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -92102,7 +92102,7 @@ covergroup SsstrictV_vsadd_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -92114,7 +92114,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsaddu_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -92188,7 +92188,7 @@ covergroup SsstrictV_vsaddu_vi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -92200,7 +92200,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsaddu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -92274,7 +92274,7 @@ covergroup SsstrictV_vsaddu_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -92286,7 +92286,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsaddu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -92360,7 +92360,7 @@ covergroup SsstrictV_vsaddu_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -92372,7 +92372,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsbc_vvm_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -92488,7 +92488,7 @@ covergroup SsstrictV_vsbc_vvm_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -92500,7 +92500,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsbc_vxm_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -92616,7 +92616,7 @@ covergroup SsstrictV_vsbc_vxm_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -92628,7 +92628,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vse16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -92672,7 +92672,7 @@ covergroup SsstrictV_vse16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -92814,7 +92814,7 @@ covergroup SsstrictV_vse16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -92826,7 +92826,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vse32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -92870,7 +92870,7 @@ covergroup SsstrictV_vse32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -93012,7 +93012,7 @@ covergroup SsstrictV_vse32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -93024,7 +93024,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vse64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93068,7 +93068,7 @@ covergroup SsstrictV_vse64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -93210,7 +93210,7 @@ covergroup SsstrictV_vse64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -93222,7 +93222,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vse8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93266,7 +93266,7 @@ covergroup SsstrictV_vse8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -93408,7 +93408,7 @@ covergroup SsstrictV_vse8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -93420,7 +93420,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsext_vf2_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_ext_emul_lt1_overlap
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93428,7 +93428,7 @@ covergroup SsstrictV_vsext_vf2_cg with function sample(ins_t ins);
 
     // vzext/vsext overlap with source EMUL < 1 must trap (overlap rule requires src EMUL >= 1)
 
-    trap_occurred_96b595: coverpoint ins.trap {
+    trap_occurred_96b595: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -93516,7 +93516,7 @@ covergroup SsstrictV_vsext_vf2_cg with function sample(ins_t ins);
 
 
     // vf2 widening with LMUL=2: vs2 overlaps bottom half of vd group (vs2 == vd), must trap
-    trap_occurred_7e859f: coverpoint ins.trap {
+    trap_occurred_7e859f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -93531,7 +93531,7 @@ covergroup SsstrictV_vsext_vf2_cg with function sample(ins_t ins);
 
     // vsext source EEW not supported or source EMUL below minimum legal LMUL (1/8)
 
-    trap_occurred_df9621: coverpoint ins.trap {
+    trap_occurred_df9621: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -93627,7 +93627,7 @@ covergroup SsstrictV_vsext_vf2_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -93639,7 +93639,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsext_vf4_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_ext_emul_lt1_overlap
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93647,7 +93647,7 @@ covergroup SsstrictV_vsext_vf4_cg with function sample(ins_t ins);
 
     // vzext/vsext overlap with source EMUL < 1 must trap (overlap rule requires src EMUL >= 1)
 
-    trap_occurred_96b595: coverpoint ins.trap {
+    trap_occurred_96b595: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -93735,7 +93735,7 @@ covergroup SsstrictV_vsext_vf4_cg with function sample(ins_t ins);
 
 
     // vf4 extending with LMUL=4: vs2 overlaps bottom 3/4 of vd group, must trap
-    trap_occurred_ad8d7e: coverpoint ins.trap {
+    trap_occurred_ad8d7e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -93755,7 +93755,7 @@ covergroup SsstrictV_vsext_vf4_cg with function sample(ins_t ins);
 
     // vsext source EEW not supported or source EMUL below minimum legal LMUL (1/8)
 
-    trap_occurred_df9621: coverpoint ins.trap {
+    trap_occurred_df9621: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -93851,7 +93851,7 @@ covergroup SsstrictV_vsext_vf4_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -93863,7 +93863,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsext_vf8_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_ext_emul_lt1_overlap
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93871,7 +93871,7 @@ covergroup SsstrictV_vsext_vf8_cg with function sample(ins_t ins);
 
     // vzext/vsext overlap with source EMUL < 1 must trap (overlap rule requires src EMUL >= 1)
 
-    trap_occurred_96b595: coverpoint ins.trap {
+    trap_occurred_96b595: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -93959,7 +93959,7 @@ covergroup SsstrictV_vsext_vf8_cg with function sample(ins_t ins);
 
 
     // vf8 extending with LMUL=8: vs2 overlaps bottom 7/8 of vd group, must trap
-    trap_occurred_74ee6e: coverpoint ins.trap {
+    trap_occurred_74ee6e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -93979,7 +93979,7 @@ covergroup SsstrictV_vsext_vf8_cg with function sample(ins_t ins);
 
     // vsext source EEW not supported or source EMUL below minimum legal LMUL (1/8)
 
-    trap_occurred_df9621: coverpoint ins.trap {
+    trap_occurred_df9621: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -94075,7 +94075,7 @@ covergroup SsstrictV_vsext_vf8_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -94087,7 +94087,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vslide1down_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94161,7 +94161,7 @@ covergroup SsstrictV_vslide1down_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -94173,7 +94173,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vslide1up_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94263,7 +94263,7 @@ covergroup SsstrictV_vslide1up_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -94275,7 +94275,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vslidedown_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94349,7 +94349,7 @@ covergroup SsstrictV_vslidedown_vi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -94361,7 +94361,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vslidedown_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94435,7 +94435,7 @@ covergroup SsstrictV_vslidedown_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -94447,7 +94447,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vslideup_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94537,7 +94537,7 @@ covergroup SsstrictV_vslideup_vi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -94549,7 +94549,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vslideup_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94639,7 +94639,7 @@ covergroup SsstrictV_vslideup_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -94651,7 +94651,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsll_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94725,7 +94725,7 @@ covergroup SsstrictV_vsll_vi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -94737,7 +94737,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsll_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94811,7 +94811,7 @@ covergroup SsstrictV_vsll_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -94823,7 +94823,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsll_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94897,7 +94897,7 @@ covergroup SsstrictV_vsll_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -94909,7 +94909,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsm_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94953,7 +94953,7 @@ covergroup SsstrictV_vsm_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -95059,7 +95059,7 @@ covergroup SsstrictV_vsm_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -95071,7 +95071,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsmul_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -95145,7 +95145,7 @@ covergroup SsstrictV_vsmul_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -95157,7 +95157,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsmul_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -95231,7 +95231,7 @@ covergroup SsstrictV_vsmul_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -95243,7 +95243,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -95287,7 +95287,7 @@ covergroup SsstrictV_vsoxei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -95531,7 +95531,7 @@ covergroup SsstrictV_vsoxei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -95543,7 +95543,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -95587,7 +95587,7 @@ covergroup SsstrictV_vsoxei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -95831,7 +95831,7 @@ covergroup SsstrictV_vsoxei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -95843,7 +95843,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -95887,7 +95887,7 @@ covergroup SsstrictV_vsoxei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -96131,7 +96131,7 @@ covergroup SsstrictV_vsoxei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -96143,7 +96143,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96187,7 +96187,7 @@ covergroup SsstrictV_vsoxei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -96431,7 +96431,7 @@ covergroup SsstrictV_vsoxei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -96443,7 +96443,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg2ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96578,7 +96578,7 @@ covergroup SsstrictV_vsoxseg2ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -96837,7 +96837,7 @@ covergroup SsstrictV_vsoxseg2ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -96849,7 +96849,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg2ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96984,7 +96984,7 @@ covergroup SsstrictV_vsoxseg2ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -97243,7 +97243,7 @@ covergroup SsstrictV_vsoxseg2ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -97255,7 +97255,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg2ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -97390,7 +97390,7 @@ covergroup SsstrictV_vsoxseg2ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -97649,7 +97649,7 @@ covergroup SsstrictV_vsoxseg2ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -97661,7 +97661,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg2ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -97796,7 +97796,7 @@ covergroup SsstrictV_vsoxseg2ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -98055,7 +98055,7 @@ covergroup SsstrictV_vsoxseg2ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -98067,7 +98067,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg3ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -98202,7 +98202,7 @@ covergroup SsstrictV_vsoxseg3ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -98461,7 +98461,7 @@ covergroup SsstrictV_vsoxseg3ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -98473,7 +98473,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg3ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -98608,7 +98608,7 @@ covergroup SsstrictV_vsoxseg3ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -98867,7 +98867,7 @@ covergroup SsstrictV_vsoxseg3ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -98879,7 +98879,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg3ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99014,7 +99014,7 @@ covergroup SsstrictV_vsoxseg3ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -99273,7 +99273,7 @@ covergroup SsstrictV_vsoxseg3ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -99285,7 +99285,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg3ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99420,7 +99420,7 @@ covergroup SsstrictV_vsoxseg3ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -99679,7 +99679,7 @@ covergroup SsstrictV_vsoxseg3ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -99691,7 +99691,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg4ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99826,7 +99826,7 @@ covergroup SsstrictV_vsoxseg4ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -100085,7 +100085,7 @@ covergroup SsstrictV_vsoxseg4ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -100097,7 +100097,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg4ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -100232,7 +100232,7 @@ covergroup SsstrictV_vsoxseg4ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -100491,7 +100491,7 @@ covergroup SsstrictV_vsoxseg4ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -100503,7 +100503,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg4ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -100638,7 +100638,7 @@ covergroup SsstrictV_vsoxseg4ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -100897,7 +100897,7 @@ covergroup SsstrictV_vsoxseg4ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -100909,7 +100909,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg4ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -101044,7 +101044,7 @@ covergroup SsstrictV_vsoxseg4ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -101303,7 +101303,7 @@ covergroup SsstrictV_vsoxseg4ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -101315,7 +101315,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg5ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -101450,7 +101450,7 @@ covergroup SsstrictV_vsoxseg5ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -101709,7 +101709,7 @@ covergroup SsstrictV_vsoxseg5ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -101721,7 +101721,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg5ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -101856,7 +101856,7 @@ covergroup SsstrictV_vsoxseg5ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -102115,7 +102115,7 @@ covergroup SsstrictV_vsoxseg5ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -102127,7 +102127,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg5ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -102262,7 +102262,7 @@ covergroup SsstrictV_vsoxseg5ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -102521,7 +102521,7 @@ covergroup SsstrictV_vsoxseg5ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -102533,7 +102533,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg5ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -102668,7 +102668,7 @@ covergroup SsstrictV_vsoxseg5ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -102927,7 +102927,7 @@ covergroup SsstrictV_vsoxseg5ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -102939,7 +102939,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg6ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -103074,7 +103074,7 @@ covergroup SsstrictV_vsoxseg6ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -103333,7 +103333,7 @@ covergroup SsstrictV_vsoxseg6ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -103345,7 +103345,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg6ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -103480,7 +103480,7 @@ covergroup SsstrictV_vsoxseg6ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -103739,7 +103739,7 @@ covergroup SsstrictV_vsoxseg6ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -103751,7 +103751,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg6ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -103886,7 +103886,7 @@ covergroup SsstrictV_vsoxseg6ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -104145,7 +104145,7 @@ covergroup SsstrictV_vsoxseg6ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -104157,7 +104157,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg6ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -104292,7 +104292,7 @@ covergroup SsstrictV_vsoxseg6ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -104551,7 +104551,7 @@ covergroup SsstrictV_vsoxseg6ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -104563,7 +104563,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg7ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -104698,7 +104698,7 @@ covergroup SsstrictV_vsoxseg7ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -104957,7 +104957,7 @@ covergroup SsstrictV_vsoxseg7ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -104969,7 +104969,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg7ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -105104,7 +105104,7 @@ covergroup SsstrictV_vsoxseg7ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -105363,7 +105363,7 @@ covergroup SsstrictV_vsoxseg7ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -105375,7 +105375,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg7ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -105510,7 +105510,7 @@ covergroup SsstrictV_vsoxseg7ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -105769,7 +105769,7 @@ covergroup SsstrictV_vsoxseg7ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -105781,7 +105781,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg7ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -105916,7 +105916,7 @@ covergroup SsstrictV_vsoxseg7ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -106175,7 +106175,7 @@ covergroup SsstrictV_vsoxseg7ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -106187,7 +106187,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg8ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -106322,7 +106322,7 @@ covergroup SsstrictV_vsoxseg8ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -106581,7 +106581,7 @@ covergroup SsstrictV_vsoxseg8ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -106593,7 +106593,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg8ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -106728,7 +106728,7 @@ covergroup SsstrictV_vsoxseg8ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -106987,7 +106987,7 @@ covergroup SsstrictV_vsoxseg8ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -106999,7 +106999,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg8ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -107134,7 +107134,7 @@ covergroup SsstrictV_vsoxseg8ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -107393,7 +107393,7 @@ covergroup SsstrictV_vsoxseg8ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -107405,7 +107405,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsoxseg8ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -107540,7 +107540,7 @@ covergroup SsstrictV_vsoxseg8ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -107799,7 +107799,7 @@ covergroup SsstrictV_vsoxseg8ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -107811,7 +107811,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsra_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -107885,7 +107885,7 @@ covergroup SsstrictV_vsra_vi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -107897,7 +107897,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsra_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -107971,7 +107971,7 @@ covergroup SsstrictV_vsra_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -107983,7 +107983,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsra_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108057,7 +108057,7 @@ covergroup SsstrictV_vsra_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -108069,7 +108069,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsrl_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108143,7 +108143,7 @@ covergroup SsstrictV_vsrl_vi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -108155,7 +108155,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsrl_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108229,7 +108229,7 @@ covergroup SsstrictV_vsrl_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -108241,7 +108241,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsrl_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108315,7 +108315,7 @@ covergroup SsstrictV_vsrl_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -108327,7 +108327,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsse16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108371,7 +108371,7 @@ covergroup SsstrictV_vsse16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -108513,7 +108513,7 @@ covergroup SsstrictV_vsse16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -108525,7 +108525,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsse32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108569,7 +108569,7 @@ covergroup SsstrictV_vsse32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -108711,7 +108711,7 @@ covergroup SsstrictV_vsse32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -108723,7 +108723,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsse64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108767,7 +108767,7 @@ covergroup SsstrictV_vsse64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -108909,7 +108909,7 @@ covergroup SsstrictV_vsse64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -108921,7 +108921,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsse8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108965,7 +108965,7 @@ covergroup SsstrictV_vsse8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -109107,7 +109107,7 @@ covergroup SsstrictV_vsse8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -109119,7 +109119,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg2e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -109254,7 +109254,7 @@ covergroup SsstrictV_vsseg2e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -109460,7 +109460,7 @@ covergroup SsstrictV_vsseg2e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -109472,7 +109472,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg2e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -109607,7 +109607,7 @@ covergroup SsstrictV_vsseg2e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -109813,7 +109813,7 @@ covergroup SsstrictV_vsseg2e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -109825,7 +109825,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg2e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -109960,7 +109960,7 @@ covergroup SsstrictV_vsseg2e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -110166,7 +110166,7 @@ covergroup SsstrictV_vsseg2e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -110178,7 +110178,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg2e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -110313,7 +110313,7 @@ covergroup SsstrictV_vsseg2e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -110519,7 +110519,7 @@ covergroup SsstrictV_vsseg2e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -110531,7 +110531,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg3e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -110666,7 +110666,7 @@ covergroup SsstrictV_vsseg3e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -110872,7 +110872,7 @@ covergroup SsstrictV_vsseg3e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -110884,7 +110884,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg3e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -111019,7 +111019,7 @@ covergroup SsstrictV_vsseg3e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -111225,7 +111225,7 @@ covergroup SsstrictV_vsseg3e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -111237,7 +111237,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg3e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -111372,7 +111372,7 @@ covergroup SsstrictV_vsseg3e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -111578,7 +111578,7 @@ covergroup SsstrictV_vsseg3e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -111590,7 +111590,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg3e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -111725,7 +111725,7 @@ covergroup SsstrictV_vsseg3e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -111931,7 +111931,7 @@ covergroup SsstrictV_vsseg3e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -111943,7 +111943,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg4e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112078,7 +112078,7 @@ covergroup SsstrictV_vsseg4e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -112284,7 +112284,7 @@ covergroup SsstrictV_vsseg4e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -112296,7 +112296,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg4e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112431,7 +112431,7 @@ covergroup SsstrictV_vsseg4e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -112637,7 +112637,7 @@ covergroup SsstrictV_vsseg4e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -112649,7 +112649,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg4e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112784,7 +112784,7 @@ covergroup SsstrictV_vsseg4e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -112990,7 +112990,7 @@ covergroup SsstrictV_vsseg4e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -113002,7 +113002,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg4e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -113137,7 +113137,7 @@ covergroup SsstrictV_vsseg4e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -113343,7 +113343,7 @@ covergroup SsstrictV_vsseg4e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -113355,7 +113355,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg5e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -113490,7 +113490,7 @@ covergroup SsstrictV_vsseg5e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -113696,7 +113696,7 @@ covergroup SsstrictV_vsseg5e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -113708,7 +113708,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg5e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -113843,7 +113843,7 @@ covergroup SsstrictV_vsseg5e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -114049,7 +114049,7 @@ covergroup SsstrictV_vsseg5e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -114061,7 +114061,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg5e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -114196,7 +114196,7 @@ covergroup SsstrictV_vsseg5e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -114402,7 +114402,7 @@ covergroup SsstrictV_vsseg5e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -114414,7 +114414,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg5e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -114549,7 +114549,7 @@ covergroup SsstrictV_vsseg5e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -114755,7 +114755,7 @@ covergroup SsstrictV_vsseg5e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -114767,7 +114767,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg6e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -114902,7 +114902,7 @@ covergroup SsstrictV_vsseg6e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -115108,7 +115108,7 @@ covergroup SsstrictV_vsseg6e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -115120,7 +115120,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg6e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -115255,7 +115255,7 @@ covergroup SsstrictV_vsseg6e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -115461,7 +115461,7 @@ covergroup SsstrictV_vsseg6e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -115473,7 +115473,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg6e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -115608,7 +115608,7 @@ covergroup SsstrictV_vsseg6e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -115814,7 +115814,7 @@ covergroup SsstrictV_vsseg6e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -115826,7 +115826,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg6e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -115961,7 +115961,7 @@ covergroup SsstrictV_vsseg6e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -116167,7 +116167,7 @@ covergroup SsstrictV_vsseg6e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -116179,7 +116179,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg7e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -116314,7 +116314,7 @@ covergroup SsstrictV_vsseg7e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -116520,7 +116520,7 @@ covergroup SsstrictV_vsseg7e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -116532,7 +116532,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg7e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -116667,7 +116667,7 @@ covergroup SsstrictV_vsseg7e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -116873,7 +116873,7 @@ covergroup SsstrictV_vsseg7e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -116885,7 +116885,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg7e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -117020,7 +117020,7 @@ covergroup SsstrictV_vsseg7e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -117226,7 +117226,7 @@ covergroup SsstrictV_vsseg7e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -117238,7 +117238,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg7e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -117373,7 +117373,7 @@ covergroup SsstrictV_vsseg7e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -117579,7 +117579,7 @@ covergroup SsstrictV_vsseg7e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -117591,7 +117591,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg8e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -117726,7 +117726,7 @@ covergroup SsstrictV_vsseg8e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -117932,7 +117932,7 @@ covergroup SsstrictV_vsseg8e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -117944,7 +117944,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg8e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -118079,7 +118079,7 @@ covergroup SsstrictV_vsseg8e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -118285,7 +118285,7 @@ covergroup SsstrictV_vsseg8e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -118297,7 +118297,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg8e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -118432,7 +118432,7 @@ covergroup SsstrictV_vsseg8e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -118638,7 +118638,7 @@ covergroup SsstrictV_vsseg8e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -118650,7 +118650,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsseg8e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -118785,7 +118785,7 @@ covergroup SsstrictV_vsseg8e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -118991,7 +118991,7 @@ covergroup SsstrictV_vsseg8e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -119003,7 +119003,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssra_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119077,7 +119077,7 @@ covergroup SsstrictV_vssra_vi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -119089,7 +119089,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssra_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119163,7 +119163,7 @@ covergroup SsstrictV_vssra_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -119175,7 +119175,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssra_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119249,7 +119249,7 @@ covergroup SsstrictV_vssra_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -119261,7 +119261,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssrl_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119335,7 +119335,7 @@ covergroup SsstrictV_vssrl_vi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -119347,7 +119347,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssrl_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119421,7 +119421,7 @@ covergroup SsstrictV_vssrl_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -119433,7 +119433,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssrl_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119507,7 +119507,7 @@ covergroup SsstrictV_vssrl_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -119519,7 +119519,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg2e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119654,7 +119654,7 @@ covergroup SsstrictV_vssseg2e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -119860,7 +119860,7 @@ covergroup SsstrictV_vssseg2e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -119872,7 +119872,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg2e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -120007,7 +120007,7 @@ covergroup SsstrictV_vssseg2e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -120213,7 +120213,7 @@ covergroup SsstrictV_vssseg2e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -120225,7 +120225,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg2e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -120360,7 +120360,7 @@ covergroup SsstrictV_vssseg2e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -120566,7 +120566,7 @@ covergroup SsstrictV_vssseg2e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -120578,7 +120578,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg2e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -120713,7 +120713,7 @@ covergroup SsstrictV_vssseg2e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -120919,7 +120919,7 @@ covergroup SsstrictV_vssseg2e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -120931,7 +120931,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg3e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -121066,7 +121066,7 @@ covergroup SsstrictV_vssseg3e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -121272,7 +121272,7 @@ covergroup SsstrictV_vssseg3e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -121284,7 +121284,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg3e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -121419,7 +121419,7 @@ covergroup SsstrictV_vssseg3e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -121625,7 +121625,7 @@ covergroup SsstrictV_vssseg3e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -121637,7 +121637,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg3e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -121772,7 +121772,7 @@ covergroup SsstrictV_vssseg3e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -121978,7 +121978,7 @@ covergroup SsstrictV_vssseg3e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -121990,7 +121990,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg3e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -122125,7 +122125,7 @@ covergroup SsstrictV_vssseg3e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -122331,7 +122331,7 @@ covergroup SsstrictV_vssseg3e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -122343,7 +122343,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg4e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -122478,7 +122478,7 @@ covergroup SsstrictV_vssseg4e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -122684,7 +122684,7 @@ covergroup SsstrictV_vssseg4e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -122696,7 +122696,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg4e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -122831,7 +122831,7 @@ covergroup SsstrictV_vssseg4e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -123037,7 +123037,7 @@ covergroup SsstrictV_vssseg4e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -123049,7 +123049,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg4e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -123184,7 +123184,7 @@ covergroup SsstrictV_vssseg4e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -123390,7 +123390,7 @@ covergroup SsstrictV_vssseg4e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -123402,7 +123402,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg4e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -123537,7 +123537,7 @@ covergroup SsstrictV_vssseg4e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -123743,7 +123743,7 @@ covergroup SsstrictV_vssseg4e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -123755,7 +123755,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg5e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -123890,7 +123890,7 @@ covergroup SsstrictV_vssseg5e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -124096,7 +124096,7 @@ covergroup SsstrictV_vssseg5e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -124108,7 +124108,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg5e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -124243,7 +124243,7 @@ covergroup SsstrictV_vssseg5e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -124449,7 +124449,7 @@ covergroup SsstrictV_vssseg5e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -124461,7 +124461,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg5e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -124596,7 +124596,7 @@ covergroup SsstrictV_vssseg5e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -124802,7 +124802,7 @@ covergroup SsstrictV_vssseg5e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -124814,7 +124814,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg5e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -124949,7 +124949,7 @@ covergroup SsstrictV_vssseg5e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -125155,7 +125155,7 @@ covergroup SsstrictV_vssseg5e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -125167,7 +125167,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg6e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -125302,7 +125302,7 @@ covergroup SsstrictV_vssseg6e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -125508,7 +125508,7 @@ covergroup SsstrictV_vssseg6e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -125520,7 +125520,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg6e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -125655,7 +125655,7 @@ covergroup SsstrictV_vssseg6e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -125861,7 +125861,7 @@ covergroup SsstrictV_vssseg6e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -125873,7 +125873,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg6e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -126008,7 +126008,7 @@ covergroup SsstrictV_vssseg6e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -126214,7 +126214,7 @@ covergroup SsstrictV_vssseg6e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -126226,7 +126226,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg6e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -126361,7 +126361,7 @@ covergroup SsstrictV_vssseg6e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -126567,7 +126567,7 @@ covergroup SsstrictV_vssseg6e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -126579,7 +126579,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg7e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -126714,7 +126714,7 @@ covergroup SsstrictV_vssseg7e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -126920,7 +126920,7 @@ covergroup SsstrictV_vssseg7e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -126932,7 +126932,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg7e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -127067,7 +127067,7 @@ covergroup SsstrictV_vssseg7e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -127273,7 +127273,7 @@ covergroup SsstrictV_vssseg7e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -127285,7 +127285,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg7e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -127420,7 +127420,7 @@ covergroup SsstrictV_vssseg7e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -127626,7 +127626,7 @@ covergroup SsstrictV_vssseg7e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -127638,7 +127638,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg7e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -127773,7 +127773,7 @@ covergroup SsstrictV_vssseg7e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -127979,7 +127979,7 @@ covergroup SsstrictV_vssseg7e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -127991,7 +127991,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg8e16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -128126,7 +128126,7 @@ covergroup SsstrictV_vssseg8e16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -128332,7 +128332,7 @@ covergroup SsstrictV_vssseg8e16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -128344,7 +128344,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg8e32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -128479,7 +128479,7 @@ covergroup SsstrictV_vssseg8e32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -128685,7 +128685,7 @@ covergroup SsstrictV_vssseg8e32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -128697,7 +128697,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg8e64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -128832,7 +128832,7 @@ covergroup SsstrictV_vssseg8e64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -129038,7 +129038,7 @@ covergroup SsstrictV_vssseg8e64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -129050,7 +129050,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssseg8e8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -129185,7 +129185,7 @@ covergroup SsstrictV_vssseg8e8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -129391,7 +129391,7 @@ covergroup SsstrictV_vssseg8e8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -129403,7 +129403,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssub_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -129477,7 +129477,7 @@ covergroup SsstrictV_vssub_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -129489,7 +129489,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssub_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -129563,7 +129563,7 @@ covergroup SsstrictV_vssub_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -129575,7 +129575,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssubu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -129649,7 +129649,7 @@ covergroup SsstrictV_vssubu_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -129661,7 +129661,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vssubu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -129735,7 +129735,7 @@ covergroup SsstrictV_vssubu_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -129747,7 +129747,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsub_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -129821,7 +129821,7 @@ covergroup SsstrictV_vsub_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -129833,7 +129833,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsub_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -129907,7 +129907,7 @@ covergroup SsstrictV_vsub_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -129919,7 +129919,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -129963,7 +129963,7 @@ covergroup SsstrictV_vsuxei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -130207,7 +130207,7 @@ covergroup SsstrictV_vsuxei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -130219,7 +130219,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -130263,7 +130263,7 @@ covergroup SsstrictV_vsuxei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -130507,7 +130507,7 @@ covergroup SsstrictV_vsuxei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -130519,7 +130519,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -130563,7 +130563,7 @@ covergroup SsstrictV_vsuxei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -130807,7 +130807,7 @@ covergroup SsstrictV_vsuxei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -130819,7 +130819,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -130863,7 +130863,7 @@ covergroup SsstrictV_vsuxei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -131107,7 +131107,7 @@ covergroup SsstrictV_vsuxei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -131119,7 +131119,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg2ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -131254,7 +131254,7 @@ covergroup SsstrictV_vsuxseg2ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -131513,7 +131513,7 @@ covergroup SsstrictV_vsuxseg2ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -131525,7 +131525,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg2ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -131660,7 +131660,7 @@ covergroup SsstrictV_vsuxseg2ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -131919,7 +131919,7 @@ covergroup SsstrictV_vsuxseg2ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -131931,7 +131931,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg2ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -132066,7 +132066,7 @@ covergroup SsstrictV_vsuxseg2ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -132325,7 +132325,7 @@ covergroup SsstrictV_vsuxseg2ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -132337,7 +132337,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg2ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -132472,7 +132472,7 @@ covergroup SsstrictV_vsuxseg2ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -132731,7 +132731,7 @@ covergroup SsstrictV_vsuxseg2ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -132743,7 +132743,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg3ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -132878,7 +132878,7 @@ covergroup SsstrictV_vsuxseg3ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -133137,7 +133137,7 @@ covergroup SsstrictV_vsuxseg3ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -133149,7 +133149,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg3ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -133284,7 +133284,7 @@ covergroup SsstrictV_vsuxseg3ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -133543,7 +133543,7 @@ covergroup SsstrictV_vsuxseg3ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -133555,7 +133555,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg3ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -133690,7 +133690,7 @@ covergroup SsstrictV_vsuxseg3ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -133949,7 +133949,7 @@ covergroup SsstrictV_vsuxseg3ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -133961,7 +133961,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg3ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -134096,7 +134096,7 @@ covergroup SsstrictV_vsuxseg3ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -134355,7 +134355,7 @@ covergroup SsstrictV_vsuxseg3ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -134367,7 +134367,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg4ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -134502,7 +134502,7 @@ covergroup SsstrictV_vsuxseg4ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -134761,7 +134761,7 @@ covergroup SsstrictV_vsuxseg4ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -134773,7 +134773,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg4ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -134908,7 +134908,7 @@ covergroup SsstrictV_vsuxseg4ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -135167,7 +135167,7 @@ covergroup SsstrictV_vsuxseg4ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -135179,7 +135179,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg4ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -135314,7 +135314,7 @@ covergroup SsstrictV_vsuxseg4ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -135573,7 +135573,7 @@ covergroup SsstrictV_vsuxseg4ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -135585,7 +135585,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg4ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -135720,7 +135720,7 @@ covergroup SsstrictV_vsuxseg4ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -135979,7 +135979,7 @@ covergroup SsstrictV_vsuxseg4ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -135991,7 +135991,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg5ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -136126,7 +136126,7 @@ covergroup SsstrictV_vsuxseg5ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -136385,7 +136385,7 @@ covergroup SsstrictV_vsuxseg5ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -136397,7 +136397,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg5ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -136532,7 +136532,7 @@ covergroup SsstrictV_vsuxseg5ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -136791,7 +136791,7 @@ covergroup SsstrictV_vsuxseg5ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -136803,7 +136803,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg5ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -136938,7 +136938,7 @@ covergroup SsstrictV_vsuxseg5ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -137197,7 +137197,7 @@ covergroup SsstrictV_vsuxseg5ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -137209,7 +137209,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg5ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -137344,7 +137344,7 @@ covergroup SsstrictV_vsuxseg5ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -137603,7 +137603,7 @@ covergroup SsstrictV_vsuxseg5ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -137615,7 +137615,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg6ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -137750,7 +137750,7 @@ covergroup SsstrictV_vsuxseg6ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -138009,7 +138009,7 @@ covergroup SsstrictV_vsuxseg6ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -138021,7 +138021,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg6ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -138156,7 +138156,7 @@ covergroup SsstrictV_vsuxseg6ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -138415,7 +138415,7 @@ covergroup SsstrictV_vsuxseg6ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -138427,7 +138427,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg6ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -138562,7 +138562,7 @@ covergroup SsstrictV_vsuxseg6ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -138821,7 +138821,7 @@ covergroup SsstrictV_vsuxseg6ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -138833,7 +138833,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg6ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -138968,7 +138968,7 @@ covergroup SsstrictV_vsuxseg6ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -139227,7 +139227,7 @@ covergroup SsstrictV_vsuxseg6ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -139239,7 +139239,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg7ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -139374,7 +139374,7 @@ covergroup SsstrictV_vsuxseg7ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -139633,7 +139633,7 @@ covergroup SsstrictV_vsuxseg7ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -139645,7 +139645,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg7ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -139780,7 +139780,7 @@ covergroup SsstrictV_vsuxseg7ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -140039,7 +140039,7 @@ covergroup SsstrictV_vsuxseg7ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -140051,7 +140051,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg7ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -140186,7 +140186,7 @@ covergroup SsstrictV_vsuxseg7ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -140445,7 +140445,7 @@ covergroup SsstrictV_vsuxseg7ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -140457,7 +140457,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg7ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -140592,7 +140592,7 @@ covergroup SsstrictV_vsuxseg7ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -140851,7 +140851,7 @@ covergroup SsstrictV_vsuxseg7ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -140863,7 +140863,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg8ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -140998,7 +140998,7 @@ covergroup SsstrictV_vsuxseg8ei16_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -141257,7 +141257,7 @@ covergroup SsstrictV_vsuxseg8ei16_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -141269,7 +141269,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg8ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -141404,7 +141404,7 @@ covergroup SsstrictV_vsuxseg8ei32_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -141663,7 +141663,7 @@ covergroup SsstrictV_vsuxseg8ei32_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -141675,7 +141675,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg8ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -141810,7 +141810,7 @@ covergroup SsstrictV_vsuxseg8ei64_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -142069,7 +142069,7 @@ covergroup SsstrictV_vsuxseg8ei64_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -142081,7 +142081,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vsuxseg8ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -142216,7 +142216,7 @@ covergroup SsstrictV_vsuxseg8ei8_v_cg with function sample(ins_t ins);
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint ins.trap {
+    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -142475,7 +142475,7 @@ covergroup SsstrictV_vsuxseg8ei8_v_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -142487,7 +142487,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwadd_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_all_widening_source_overlap
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -142571,7 +142571,7 @@ covergroup SsstrictV_vwadd_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -142585,7 +142585,7 @@ covergroup SsstrictV_vwadd_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -142599,7 +142599,7 @@ covergroup SsstrictV_vwadd_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -142622,7 +142622,7 @@ covergroup SsstrictV_vwadd_vv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -142651,7 +142651,7 @@ covergroup SsstrictV_vwadd_vv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -142663,7 +142663,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwadd_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -142737,7 +142737,7 @@ covergroup SsstrictV_vwadd_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -142751,7 +142751,7 @@ covergroup SsstrictV_vwadd_vx_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -142765,7 +142765,7 @@ covergroup SsstrictV_vwadd_vx_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -142788,7 +142788,7 @@ covergroup SsstrictV_vwadd_vx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -142817,7 +142817,7 @@ covergroup SsstrictV_vwadd_vx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -142829,7 +142829,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwadd_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -142903,7 +142903,7 @@ covergroup SsstrictV_vwadd_wv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -142917,7 +142917,7 @@ covergroup SsstrictV_vwadd_wv_cg with function sample(ins_t ins);
 
 
     // Widening .w with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_71b3d0: coverpoint ins.trap {
+    trap_occurred_71b3d0: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -142940,7 +142940,7 @@ covergroup SsstrictV_vwadd_wv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -142961,7 +142961,7 @@ covergroup SsstrictV_vwadd_wv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_9b660f: coverpoint ins.trap {
+    trap_occurred_9b660f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -142990,7 +142990,7 @@ covergroup SsstrictV_vwadd_wv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143002,7 +143002,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwadd_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -143076,7 +143076,7 @@ covergroup SsstrictV_vwadd_wx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143090,7 +143090,7 @@ covergroup SsstrictV_vwadd_wx_cg with function sample(ins_t ins);
 
 
     // Widening .w with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_71b3d0: coverpoint ins.trap {
+    trap_occurred_71b3d0: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143113,7 +143113,7 @@ covergroup SsstrictV_vwadd_wx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143134,7 +143134,7 @@ covergroup SsstrictV_vwadd_wx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_9b660f: coverpoint ins.trap {
+    trap_occurred_9b660f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143163,7 +143163,7 @@ covergroup SsstrictV_vwadd_wx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143175,7 +143175,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwaddu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -143249,7 +143249,7 @@ covergroup SsstrictV_vwaddu_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143263,7 +143263,7 @@ covergroup SsstrictV_vwaddu_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143277,7 +143277,7 @@ covergroup SsstrictV_vwaddu_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143300,7 +143300,7 @@ covergroup SsstrictV_vwaddu_vv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143329,7 +143329,7 @@ covergroup SsstrictV_vwaddu_vv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143341,7 +143341,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwaddu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -143415,7 +143415,7 @@ covergroup SsstrictV_vwaddu_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143429,7 +143429,7 @@ covergroup SsstrictV_vwaddu_vx_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143443,7 +143443,7 @@ covergroup SsstrictV_vwaddu_vx_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143466,7 +143466,7 @@ covergroup SsstrictV_vwaddu_vx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143495,7 +143495,7 @@ covergroup SsstrictV_vwaddu_vx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143507,7 +143507,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwaddu_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -143581,7 +143581,7 @@ covergroup SsstrictV_vwaddu_wv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143595,7 +143595,7 @@ covergroup SsstrictV_vwaddu_wv_cg with function sample(ins_t ins);
 
 
     // Widening .w with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_71b3d0: coverpoint ins.trap {
+    trap_occurred_71b3d0: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143618,7 +143618,7 @@ covergroup SsstrictV_vwaddu_wv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143639,7 +143639,7 @@ covergroup SsstrictV_vwaddu_wv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_9b660f: coverpoint ins.trap {
+    trap_occurred_9b660f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143668,7 +143668,7 @@ covergroup SsstrictV_vwaddu_wv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143680,7 +143680,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwaddu_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -143754,7 +143754,7 @@ covergroup SsstrictV_vwaddu_wx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143768,7 +143768,7 @@ covergroup SsstrictV_vwaddu_wx_cg with function sample(ins_t ins);
 
 
     // Widening .w with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_71b3d0: coverpoint ins.trap {
+    trap_occurred_71b3d0: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143791,7 +143791,7 @@ covergroup SsstrictV_vwaddu_wx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143812,7 +143812,7 @@ covergroup SsstrictV_vwaddu_wx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_9b660f: coverpoint ins.trap {
+    trap_occurred_9b660f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143841,7 +143841,7 @@ covergroup SsstrictV_vwaddu_wx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143853,7 +143853,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwmacc_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -143891,7 +143891,7 @@ covergroup SsstrictV_vwmacc_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143905,7 +143905,7 @@ covergroup SsstrictV_vwmacc_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143919,7 +143919,7 @@ covergroup SsstrictV_vwmacc_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143942,7 +143942,7 @@ covergroup SsstrictV_vwmacc_vv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143971,7 +143971,7 @@ covergroup SsstrictV_vwmacc_vv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -143983,7 +143983,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwmacc_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -144057,7 +144057,7 @@ covergroup SsstrictV_vwmacc_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144071,7 +144071,7 @@ covergroup SsstrictV_vwmacc_vx_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144085,7 +144085,7 @@ covergroup SsstrictV_vwmacc_vx_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144108,7 +144108,7 @@ covergroup SsstrictV_vwmacc_vx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144137,7 +144137,7 @@ covergroup SsstrictV_vwmacc_vx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144149,7 +144149,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwmaccsu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -144187,7 +144187,7 @@ covergroup SsstrictV_vwmaccsu_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144201,7 +144201,7 @@ covergroup SsstrictV_vwmaccsu_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144215,7 +144215,7 @@ covergroup SsstrictV_vwmaccsu_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144238,7 +144238,7 @@ covergroup SsstrictV_vwmaccsu_vv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144267,7 +144267,7 @@ covergroup SsstrictV_vwmaccsu_vv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144279,7 +144279,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwmaccsu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -144353,7 +144353,7 @@ covergroup SsstrictV_vwmaccsu_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144367,7 +144367,7 @@ covergroup SsstrictV_vwmaccsu_vx_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144381,7 +144381,7 @@ covergroup SsstrictV_vwmaccsu_vx_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144404,7 +144404,7 @@ covergroup SsstrictV_vwmaccsu_vx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144433,7 +144433,7 @@ covergroup SsstrictV_vwmaccsu_vx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144445,7 +144445,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwmaccu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -144483,7 +144483,7 @@ covergroup SsstrictV_vwmaccu_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144497,7 +144497,7 @@ covergroup SsstrictV_vwmaccu_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144511,7 +144511,7 @@ covergroup SsstrictV_vwmaccu_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144534,7 +144534,7 @@ covergroup SsstrictV_vwmaccu_vv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144563,7 +144563,7 @@ covergroup SsstrictV_vwmaccu_vv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144575,7 +144575,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwmaccu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -144649,7 +144649,7 @@ covergroup SsstrictV_vwmaccu_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144663,7 +144663,7 @@ covergroup SsstrictV_vwmaccu_vx_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144677,7 +144677,7 @@ covergroup SsstrictV_vwmaccu_vx_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144700,7 +144700,7 @@ covergroup SsstrictV_vwmaccu_vx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144729,7 +144729,7 @@ covergroup SsstrictV_vwmaccu_vx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144741,7 +144741,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwmaccus_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -144815,7 +144815,7 @@ covergroup SsstrictV_vwmaccus_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144829,7 +144829,7 @@ covergroup SsstrictV_vwmaccus_vx_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144843,7 +144843,7 @@ covergroup SsstrictV_vwmaccus_vx_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144866,7 +144866,7 @@ covergroup SsstrictV_vwmaccus_vx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144895,7 +144895,7 @@ covergroup SsstrictV_vwmaccus_vx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144907,7 +144907,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwmul_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -144981,7 +144981,7 @@ covergroup SsstrictV_vwmul_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -144995,7 +144995,7 @@ covergroup SsstrictV_vwmul_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145009,7 +145009,7 @@ covergroup SsstrictV_vwmul_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145032,7 +145032,7 @@ covergroup SsstrictV_vwmul_vv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145061,7 +145061,7 @@ covergroup SsstrictV_vwmul_vv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145073,7 +145073,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwmul_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145147,7 +145147,7 @@ covergroup SsstrictV_vwmul_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145161,7 +145161,7 @@ covergroup SsstrictV_vwmul_vx_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145175,7 +145175,7 @@ covergroup SsstrictV_vwmul_vx_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145198,7 +145198,7 @@ covergroup SsstrictV_vwmul_vx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145227,7 +145227,7 @@ covergroup SsstrictV_vwmul_vx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145239,7 +145239,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwmulsu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145313,7 +145313,7 @@ covergroup SsstrictV_vwmulsu_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145327,7 +145327,7 @@ covergroup SsstrictV_vwmulsu_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145341,7 +145341,7 @@ covergroup SsstrictV_vwmulsu_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145364,7 +145364,7 @@ covergroup SsstrictV_vwmulsu_vv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145393,7 +145393,7 @@ covergroup SsstrictV_vwmulsu_vv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145405,7 +145405,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwmulsu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145479,7 +145479,7 @@ covergroup SsstrictV_vwmulsu_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145493,7 +145493,7 @@ covergroup SsstrictV_vwmulsu_vx_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145507,7 +145507,7 @@ covergroup SsstrictV_vwmulsu_vx_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145530,7 +145530,7 @@ covergroup SsstrictV_vwmulsu_vx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145559,7 +145559,7 @@ covergroup SsstrictV_vwmulsu_vx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145571,7 +145571,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwmulu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145645,7 +145645,7 @@ covergroup SsstrictV_vwmulu_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145659,7 +145659,7 @@ covergroup SsstrictV_vwmulu_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145673,7 +145673,7 @@ covergroup SsstrictV_vwmulu_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145696,7 +145696,7 @@ covergroup SsstrictV_vwmulu_vv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145725,7 +145725,7 @@ covergroup SsstrictV_vwmulu_vv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145737,7 +145737,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwmulu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145811,7 +145811,7 @@ covergroup SsstrictV_vwmulu_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145825,7 +145825,7 @@ covergroup SsstrictV_vwmulu_vx_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145839,7 +145839,7 @@ covergroup SsstrictV_vwmulu_vx_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145862,7 +145862,7 @@ covergroup SsstrictV_vwmulu_vx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145891,7 +145891,7 @@ covergroup SsstrictV_vwmulu_vx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -145903,7 +145903,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwredsum_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145977,7 +145977,7 @@ covergroup SsstrictV_vwredsum_vs_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146000,7 +146000,7 @@ covergroup SsstrictV_vwredsum_vs_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146020,7 +146020,7 @@ covergroup SsstrictV_vwredsum_vs_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146032,7 +146032,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwredsumu_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146106,7 +146106,7 @@ covergroup SsstrictV_vwredsumu_vs_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146129,7 +146129,7 @@ covergroup SsstrictV_vwredsumu_vs_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146149,7 +146149,7 @@ covergroup SsstrictV_vwredsumu_vs_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146161,7 +146161,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwsub_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146235,7 +146235,7 @@ covergroup SsstrictV_vwsub_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146249,7 +146249,7 @@ covergroup SsstrictV_vwsub_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146263,7 +146263,7 @@ covergroup SsstrictV_vwsub_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146286,7 +146286,7 @@ covergroup SsstrictV_vwsub_vv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146315,7 +146315,7 @@ covergroup SsstrictV_vwsub_vv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146327,7 +146327,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwsub_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146401,7 +146401,7 @@ covergroup SsstrictV_vwsub_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146415,7 +146415,7 @@ covergroup SsstrictV_vwsub_vx_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146429,7 +146429,7 @@ covergroup SsstrictV_vwsub_vx_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146452,7 +146452,7 @@ covergroup SsstrictV_vwsub_vx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146481,7 +146481,7 @@ covergroup SsstrictV_vwsub_vx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146493,7 +146493,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwsub_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146567,7 +146567,7 @@ covergroup SsstrictV_vwsub_wv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146581,7 +146581,7 @@ covergroup SsstrictV_vwsub_wv_cg with function sample(ins_t ins);
 
 
     // Widening .w with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_71b3d0: coverpoint ins.trap {
+    trap_occurred_71b3d0: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146604,7 +146604,7 @@ covergroup SsstrictV_vwsub_wv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146625,7 +146625,7 @@ covergroup SsstrictV_vwsub_wv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_9b660f: coverpoint ins.trap {
+    trap_occurred_9b660f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146654,7 +146654,7 @@ covergroup SsstrictV_vwsub_wv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146666,7 +146666,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwsub_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146740,7 +146740,7 @@ covergroup SsstrictV_vwsub_wx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146754,7 +146754,7 @@ covergroup SsstrictV_vwsub_wx_cg with function sample(ins_t ins);
 
 
     // Widening .w with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_71b3d0: coverpoint ins.trap {
+    trap_occurred_71b3d0: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146777,7 +146777,7 @@ covergroup SsstrictV_vwsub_wx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146798,7 +146798,7 @@ covergroup SsstrictV_vwsub_wx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_9b660f: coverpoint ins.trap {
+    trap_occurred_9b660f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146827,7 +146827,7 @@ covergroup SsstrictV_vwsub_wx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146839,7 +146839,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwsubu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146913,7 +146913,7 @@ covergroup SsstrictV_vwsubu_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146927,7 +146927,7 @@ covergroup SsstrictV_vwsubu_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146941,7 +146941,7 @@ covergroup SsstrictV_vwsubu_vv_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146964,7 +146964,7 @@ covergroup SsstrictV_vwsubu_vv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -146993,7 +146993,7 @@ covergroup SsstrictV_vwsubu_vv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -147005,7 +147005,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwsubu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147079,7 +147079,7 @@ covergroup SsstrictV_vwsubu_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -147093,7 +147093,7 @@ covergroup SsstrictV_vwsubu_vx_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_5c476c: coverpoint ins.trap {
+    trap_occurred_5c476c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -147107,7 +147107,7 @@ covergroup SsstrictV_vwsubu_vx_cg with function sample(ins_t ins);
 
 
     // Widening with LMUL=1: vs2 = vd overlaps destination group, must trap
-    trap_occurred_5c5a36: coverpoint ins.trap {
+    trap_occurred_5c5a36: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -147130,7 +147130,7 @@ covergroup SsstrictV_vwsubu_vx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -147159,7 +147159,7 @@ covergroup SsstrictV_vwsubu_vx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -147171,7 +147171,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwsubu_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147245,7 +147245,7 @@ covergroup SsstrictV_vwsubu_wv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -147259,7 +147259,7 @@ covergroup SsstrictV_vwsubu_wv_cg with function sample(ins_t ins);
 
 
     // Widening .w with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_71b3d0: coverpoint ins.trap {
+    trap_occurred_71b3d0: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -147282,7 +147282,7 @@ covergroup SsstrictV_vwsubu_wv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -147303,7 +147303,7 @@ covergroup SsstrictV_vwsubu_wv_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_9b660f: coverpoint ins.trap {
+    trap_occurred_9b660f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -147332,7 +147332,7 @@ covergroup SsstrictV_vwsubu_wv_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -147344,7 +147344,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vwsubu_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147418,7 +147418,7 @@ covergroup SsstrictV_vwsubu_wx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -147432,7 +147432,7 @@ covergroup SsstrictV_vwsubu_wx_cg with function sample(ins_t ins);
 
 
     // Widening .w with LMUL=1: vs1 = vd overlaps low part of destination group, must trap
-    trap_occurred_71b3d0: coverpoint ins.trap {
+    trap_occurred_71b3d0: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -147455,7 +147455,7 @@ covergroup SsstrictV_vwsubu_wx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint ins.trap {
+    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -147476,7 +147476,7 @@ covergroup SsstrictV_vwsubu_wx_cg with function sample(ins_t ins);
         bins four = {2};
     }
 
-    trap_occurred_9b660f: coverpoint ins.trap {
+    trap_occurred_9b660f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -147505,7 +147505,7 @@ covergroup SsstrictV_vwsubu_wx_cg with function sample(ins_t ins);
         bins one = {0};
     }
 
-    trap_occurred_4b6be4: coverpoint ins.trap {
+    trap_occurred_4b6be4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -147517,7 +147517,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vxor_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147591,7 +147591,7 @@ covergroup SsstrictV_vxor_vi_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -147603,7 +147603,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vxor_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147677,7 +147677,7 @@ covergroup SsstrictV_vxor_vv_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -147689,7 +147689,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vxor_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147763,7 +147763,7 @@ covergroup SsstrictV_vxor_vx_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -147775,7 +147775,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vzext_vf2_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_ext_emul_lt1_overlap
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147783,7 +147783,7 @@ covergroup SsstrictV_vzext_vf2_cg with function sample(ins_t ins);
 
     // vzext/vsext overlap with source EMUL < 1 must trap (overlap rule requires src EMUL >= 1)
 
-    trap_occurred_96b595: coverpoint ins.trap {
+    trap_occurred_96b595: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -147871,7 +147871,7 @@ covergroup SsstrictV_vzext_vf2_cg with function sample(ins_t ins);
 
 
     // vf2 widening with LMUL=2: vs2 overlaps bottom half of vd group (vs2 == vd), must trap
-    trap_occurred_7e859f: coverpoint ins.trap {
+    trap_occurred_7e859f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -147894,7 +147894,7 @@ covergroup SsstrictV_vzext_vf2_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -147909,7 +147909,7 @@ covergroup SsstrictV_vzext_vf2_cg with function sample(ins_t ins);
 
     // vzext source EEW not supported or source EMUL below minimum legal LMUL (1/8)
 
-    trap_occurred_97e21f: coverpoint ins.trap {
+    trap_occurred_97e21f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -148006,7 +148006,7 @@ covergroup SsstrictV_vzext_vf2_cg with function sample(ins_t ins);
         bins mf8 = {5};
     }
 
-    trap_occurred_392142: coverpoint ins.trap {
+    trap_occurred_392142: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -148020,7 +148020,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vzext_vf4_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_ext_emul_lt1_overlap
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -148028,7 +148028,7 @@ covergroup SsstrictV_vzext_vf4_cg with function sample(ins_t ins);
 
     // vzext/vsext overlap with source EMUL < 1 must trap (overlap rule requires src EMUL >= 1)
 
-    trap_occurred_96b595: coverpoint ins.trap {
+    trap_occurred_96b595: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -148116,7 +148116,7 @@ covergroup SsstrictV_vzext_vf4_cg with function sample(ins_t ins);
 
 
     // vf4 extending with LMUL=4: vs2 overlaps bottom 3/4 of vd group, must trap
-    trap_occurred_ad8d7e: coverpoint ins.trap {
+    trap_occurred_ad8d7e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -148144,7 +148144,7 @@ covergroup SsstrictV_vzext_vf4_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -148159,7 +148159,7 @@ covergroup SsstrictV_vzext_vf4_cg with function sample(ins_t ins);
 
     // vzext source EEW not supported or source EMUL below minimum legal LMUL (1/8)
 
-    trap_occurred_97e21f: coverpoint ins.trap {
+    trap_occurred_97e21f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -148258,7 +148258,7 @@ covergroup SsstrictV_vzext_vf4_cg with function sample(ins_t ins);
         bins mf4 = {6};
     }
 
-    trap_occurred_f5e54c: coverpoint ins.trap {
+    trap_occurred_f5e54c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -148272,7 +148272,7 @@ endgroup
 // ---------------------
 covergroup SsstrictV_vzext_vf8_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_ssstrictv_helpers.svh"
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_ext_emul_lt1_overlap
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -148280,7 +148280,7 @@ covergroup SsstrictV_vzext_vf8_cg with function sample(ins_t ins);
 
     // vzext/vsext overlap with source EMUL < 1 must trap (overlap rule requires src EMUL >= 1)
 
-    trap_occurred_96b595: coverpoint ins.trap {
+    trap_occurred_96b595: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -148368,7 +148368,7 @@ covergroup SsstrictV_vzext_vf8_cg with function sample(ins_t ins);
 
 
     // vf8 extending with LMUL=8: vs2 overlaps bottom 7/8 of vd group, must trap
-    trap_occurred_74ee6e: coverpoint ins.trap {
+    trap_occurred_74ee6e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -148396,7 +148396,7 @@ covergroup SsstrictV_vzext_vf8_cg with function sample(ins_t ins);
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint ins.trap {
+    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -148411,7 +148411,7 @@ covergroup SsstrictV_vzext_vf8_cg with function sample(ins_t ins);
 
     // vzext source EEW not supported or source EMUL below minimum legal LMUL (1/8)
 
-    trap_occurred_97e21f: coverpoint ins.trap {
+    trap_occurred_97e21f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 
@@ -148512,7 +148512,7 @@ covergroup SsstrictV_vzext_vf8_cg with function sample(ins_t ins);
         bins mf2 = {7};
     }
 
-    trap_occurred_3a7b53: coverpoint ins.trap {
+    trap_occurred_3a7b53: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
         bins trapped = {1'b1};
     }
 

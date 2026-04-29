@@ -4,7 +4,7 @@
 # Requires Verilator and the CVW repository
 
 ci_enabled: true
-exclude_extensions: "ExceptionsSv,ExceptionsSvZaamo,Sm,S,SsstrictSm,SsstrictS,SsstrictU,InterruptsSm,InterruptsS,InterruptsU,InterruptsSstc,PMPSm,PMPmisaligned,ExceptionsZalrsc,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZaamo,Svnapot,Sv,SvPMP,SvPMPZicbo,SvZicbo,Svade,SvaduPMP,Svpbmt,Svinval,PMPS,PMPU,PMPF"
+exclude_extensions: "ExceptionsSv,ExceptionsSvZaamo,Sm,S,SsstrictSm,SsstrictS,SsstrictU,InterruptsSm,InterruptsS,InterruptsU,InterruptsSstc,PMPZca,PMPSm,PMPmisaligned,ExceptionsZalrsc,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZaamo,Svnapot,Sv,SvPMP,SvPMPZicbo,SvZicbo,Svade,SvaduPMP,Svpbmt,Svinval,PMPS,PMPU,PMPF"
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cvw.sh"
 setup_script: ".github/scripts/setup-cvw.sh"

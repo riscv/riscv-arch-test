@@ -24,7 +24,7 @@
 // ---------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','Zca']
+# REQUIRED_EXTENSIONS:  ['Zca','Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
@@ -36,9 +36,6 @@
 #define TEST_FILE "pmpzca_cret_napot.S"
 #define SIGUPD_COUNT 50
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 
@@ -75,7 +72,7 @@ main:
 #define PMP0CFG                 ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NA4  ) &0xFF)   << PMP0_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL   -1                          // All memory region
-#define REGIONSTART             TEST_FOR_EXECUTION_1        // In this test, TEST_FOR_EXECUTION_1 is at 0x80001000 which is also regionstart.
+#define REGIONSTART             TEST_FOR_EXECUTION_1
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw    pmpaddr15, x4
@@ -108,8 +105,18 @@ main:
 
     j exit                                                  // Verification Complete, exit the test
 
+
+exit:
+
+RVTEST_CODE_END
+RVTEST_DATA_BEGIN
+.align 4
+
+// Test case strings for reporting
+test_1_str: .string "\"test: 1; cp: pmpzca_cret_napot_execute\""
+
 .align 12
-.skip (0x1000 -2)
+.skip (0x1000-2)
 TEST_FOR_EXECUTION_0:
     ret                                                         // Compressed return just before the start of region
 
@@ -126,15 +133,6 @@ RETURN_INSTRUCTION:
     nop
     nop
     jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
-
-RVTEST_CODE_END
-RVTEST_DATA_BEGIN
-.align 4
-
-// Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: pmpzca_cret_napot_execute\""
 
 RVTEST_DATA_END
 

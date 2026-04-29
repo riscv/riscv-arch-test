@@ -151,6 +151,13 @@
 #endif
 #define VDSEWWIDTH (VDSEW>>3)  // in units of #bytes
 
+#ifndef VLEN
+  #define VLEN 0
+#endif
+#define VLEN_BYTES (VLEN>>3)   // in units of #bytes
+#define VLEN_WORDS (VLEN_BYTES>>2) // in units of words
+#define VECREG_REGION_WORDS (VLEN_WORDS * 32) // number of words occupied by all 32 vector registers
+
 // Max data size alignment for signature and data region.
 // Keyed on TEST_FLEN because the generated .data section and the signature
 // reservation were laid out at testgen time with that width.
@@ -220,25 +227,6 @@
 #define RVTEST_TESTDATA_LOAD_FLOAT_QUAD(_DATA_PTR, _DEST_REG)  \
   flq _DEST_REG, 0(_DATA_PTR)                          ;\
   addi _DATA_PTR, _DATA_PTR, SIG_STRIDE
-
-
-// RVTEST_FP_ENABLE enables the floating-point unit
-// - Sets mstatus.fs to INITIAL
-// - Clears fcsr
-#define RVTEST_FP_ENABLE(HELPER_GPR)                 \
-  LI(HELPER_GPR, (MSTATUS_FS & (MSTATUS_FS >> 1)))  ;\
-  csrs mstatus, HELPER_GPR                          ;\
-  csrwi fcsr, 0
-
-// RVTEST_V_ENABLE enables the vector unit
-// Perform the following steps:
-// - Set mstatus.vs to INITIAL
-// - Read out vlenb and store in VLENB_CACHE
-#define RVTEST_V_ENABLE(VLENB_CACHE, HELPER_GPR)       \
-    LI(HELPER_GPR, (MSTATUS_VS & (MSTATUS_VS >> 1)))  ;\
-    csrs mstatus, HELPER_GPR                          ;\
-    csrr VLENB_CACHE, vlenb
-
 
 //-----------------------------------------------------------------------
 //Fixed length la, li macros; # of ops is ADDR_SZ dependent, not data dependent

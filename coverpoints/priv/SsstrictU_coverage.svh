@@ -21,10 +21,10 @@ covergroup SsstrictU_ucsr_cg with function sample(ins_t ins);
         bins nonzero = { [1:$] }; // rd != 0
     }
     csrr: coverpoint ins.current.insn  {
-        wildcard bins csrr = {32'b????????????_00000_010_?????_1110011};
+        wildcard bins csrr = {CSRR};
     }
     csrrw: coverpoint ins.current.insn {
-        wildcard bins csrrw = {32'b????????????_?????_001_?????_1110011};
+        wildcard bins csrrw = {CSRRW};
     }
     // Similar to SsstrictSm/S, but exercises all CSRs except user custom.
     csr: coverpoint ins.current.insn[31:20]  {

@@ -23,7 +23,7 @@
 // ---------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','Zca']
+# REQUIRED_EXTENSIONS: ['I','Zca','Sm']
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
@@ -34,9 +34,6 @@
 #define TEST_FILE "pmpzca_aligned_napot.S"
 #define SIGUPD_COUNT 50
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 
@@ -139,6 +136,16 @@ main:
 
     j exit                                                      // Verification Complete, exit the test
 
+
+exit:
+
+RVTEST_CODE_END
+
+RVTEST_DATA_BEGIN
+
+// Test case strings for reporting
+test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
+
 .align 13
 TEST_FOR_EXECUTION_1:
     jalr x0, x1, 0                                              // Uncompressed return inside the first region
@@ -162,15 +169,6 @@ RETURN_INSTRUCTION:
     nop
     jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
 
-exit:
-
-RVTEST_CODE_END
-
-RVTEST_DATA_BEGIN
-.align 4
-
-// Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
 
 RVTEST_DATA_END
 

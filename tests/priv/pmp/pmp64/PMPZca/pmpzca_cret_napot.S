@@ -22,7 +22,7 @@
 //               Attempt jalr to each c.ret.
 // ---------------------------------------------------------------------------
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','Zca']
+# REQUIRED_EXTENSIONS:  ['Zca','Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
@@ -33,9 +33,6 @@
 #define TEST_FILE "pmpzca_cret_napot.S"
 #define SIGUPD_COUNT 50
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 
@@ -76,9 +73,11 @@ main:
 #if RVMODEL_PMP_GRAIN != 0
     #define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
     #define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)) - 1
+    #define SIZE (1<<(RVMODEL_PMP_GRAIN+2)
 #else
     #define PMP_MASK            ~0
     #define PMP_REGION_SIZE     0
+    #define SIZE (1<<(RVMODEL_PMP_GRAIN+3)
 #endif
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
@@ -114,14 +113,25 @@ main:
 
     j exit                                                      // Verification Complete, exit the test
 
+
+exit:
+
+RVTEST_CODE_END
+
+RVTEST_DATA_BEGIN
+
+
+// Test case strings for reporting
+test_1_str: .string "\"test: 1; cp: pmpzca_cret_napot_execute\""
+
 .align 12
-.skip (0x1000 -2)
+.skip (0x1000-2)
 TEST_FOR_EXECUTION_0:
     ret                                                         // Compressed return just before the start of region
 
 TEST_FOR_EXECUTION_1:
     ret                                                         // Compressed return inside the region
-    .rept (((1<<(RVMODEL_PMP_GRAIN+2)) -4 ) /2)                     // (size of region - size of 2 returns) / size of nop
+    .rept ((SIZE) -4 ) /2)                     // (size of region - size of 2 returns) / size of nop
     nop
     .endr
 
@@ -137,15 +147,6 @@ RETURN_INSTRUCTION:
     nop
     jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
 
-exit:
-
-RVTEST_CODE_END
-
-RVTEST_DATA_BEGIN
-.align 4
-
-// Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: pmpzca_cret_napot_execute\""
 
 RVTEST_DATA_END
 

@@ -1,3 +1,6 @@
+#define CONFORMING_SM_SUPPORTED
+#define S_SUPPORTED
+#define U_SUPPORTED
 #define RVMODEL_PMP_GRAIN 8
 #define RVMODEL_NUM_PMPS 64
 
@@ -20,7 +23,7 @@
 #define C_SUPPORTED
 #define D_SUPPORTED
 #define F_SUPPORTED
-#define H_SUPPORTED
+// #define H_SUPPORTED // H not yet turned on in yaml file
 #define I_SUPPORTED
 #define M_SUPPORTED
 #define N_SUPPORTED
@@ -113,7 +116,7 @@
 // Vector configuration
 #define SEWMIN 8
 #define ELEN 64
-#define MAXINDEXEEW 32
+#define MAXINDEXEEW 64
 
 // Supported fractional LMULs for vector
 // all supported now should be generated based on config

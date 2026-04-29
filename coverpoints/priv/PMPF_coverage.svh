@@ -15,19 +15,19 @@ covergroup PMPF_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logi
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
   addr_in_region: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_region = {`REGIONSTART};
+    bins at_region = {`PMP_REGION_START};
   }
 
   read_fp_instr: coverpoint ins.current.insn {
-    wildcard bins flh = {32'b????????????_?????_001_?????_0000111};
-    wildcard bins flw = {32'b????????????_?????_010_?????_0000111};
-    wildcard bins fld = {32'b????????????_?????_011_?????_0000111};
+    wildcard bins flh = {FLH};
+    wildcard bins flw = {FLW};
+    wildcard bins fld = {FLD};
   }
 
   write_fp_instr: coverpoint ins.current.insn {
-    wildcard bins fsh = {32'b???????_?????_?????_001_?????_0100111};
-    wildcard bins fsw = {32'b???????_?????_?????_010_?????_0100111};
-    wildcard bins fsd = {32'b???????_?????_?????_011_?????_0100111};
+    wildcard bins fsh = {FSH};
+    wildcard bins fsw = {FSW};
+    wildcard bins fsd = {FSD};
   }
 
   legal_lxwr: coverpoint {pmpcfg[0],pmpcfg[1],pmpcfg[2],pmpcfg[3],pmpcfg[4],pmpcfg[5],pmp_hit[5:0]} {
@@ -39,7 +39,7 @@ covergroup PMPF_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logi
     wildcard bins cfg_l111 = {54'b10011111????????????????????????????????????????_?????1};
   }
 
-  fs_mstatus: coverpoint (ins.current.csr[12'h300][14:13]!=0) {
+  fs_mstatus: coverpoint (ins.current.csr[CSR_MSTATUS][14:13]!=0) {
     bins non_zero = {1};
   }
 
@@ -57,7 +57,7 @@ function void pmpf_sample(int hart, int issue, ins_t ins);
   `ifdef XLEN32
     // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
     for (int i = 0; i < 16; i++) begin
-      logic [31:0] cfg_word = ins.current.csr[12'h3A0 + i];
+      logic [31:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + i];
       pmpcfg[i*4 + 0] = cfg_word[7:0];
       pmpcfg[i*4 + 1] = cfg_word[15:8];
       pmpcfg[i*4 + 2] = cfg_word[23:16];
@@ -66,7 +66,7 @@ function void pmpf_sample(int hart, int issue, ins_t ins);
   `elsif XLEN64
     // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
-      logic [63:0] cfg_word = ins.current.csr[12'h3A0 + 2*i];
+      logic [63:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + 2*i];
       pmpcfg[i*8 + 0] = cfg_word[7:0];
       pmpcfg[i*8 + 1] = cfg_word[15:8];
       pmpcfg[i*8 + 2] = cfg_word[23:16];
@@ -79,7 +79,7 @@ function void pmpf_sample(int hart, int issue, ins_t ins);
   `endif
 
   for (int j = 0; j < 63; j++) begin
-    pmpaddr[j] = ins.current.csr[12'h3B0 + j];
+    pmpaddr[j] = ins.current.csr[CSR_PMPADDR0 + j];
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions

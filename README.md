@@ -142,19 +142,22 @@ For more information or if you have issues installing the RISC-V toolchain, refe
 
 #### 4. RISC-V Sail Reference Model
 
-The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.10 of the model.
+The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.11 of the model.
 
 To install the sail model:
 
 ```bash
-curl --location https://github.com/riscv/sail-riscv/releases/download/0.10/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
+curl --location https://github.com/riscv/sail-riscv/releases/download/0.11/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
 ```
+
+> [!NOTE]
+> Replace `/path/to/install` with your desired directory location.
+> This is simpler if it matches the directory used for the `riscv-gnu-toolchain` so both tools share the same `bin` folder.
 
 Add `/path/to/install/bin` to your `PATH` if you used a different directory than for the `riscv-gnu-toolchain`.
 
 > [!NOTE]
-> If you don't have `sudo` access, you can extract the Sail model into your home directory by specifying a local path:
-> `curl --location <url> | tar xvz --directory=$HOME/riscv/--strip-components=1`
+> If you don't have sudo access, you can extract the Sail model into your home directory by specifying a local path: `curl --location <url> | tar xvz --directory=$HOME/riscv/ --strip-components=1`
 
 Verify the installation:
 

@@ -1496,10 +1496,22 @@ sv_\__MODE__\()epc:
 #endif
 
 
-adj_\__MODE__\()epc_rtn:                // adj mepc so there is at least 4B of padding after op
-        andi    T3, T3, ~WDBYTMSK       // adjust mepc to prev 4B alignment (if 2B aligned)
-        addi    T3, T3,  2*WDBYTSZ      // adjust mepc so it skips past op, has padding & 4B aligned
-        csrw    CSR_XEPC, T3            // restore adjusted value, w/ 2,4 or 6B of padding
+adj_\__MODE__\()epc_rtn:
+        // Determine trapped instruction size from mepc encoding bits[1:0].
+        // mtval may be 0 (CSR illegals on Sail), so read from memory at mepc.
+        csrr    T3, CSR_XEPC            // T3 = faulting PC
+        lhu     T4, 0(T3)               // T4 = lower 16 bits of instruction at mepc
+        andi    T4, T4, 3               // T4 = bits[1:0]
+        addi    T4, T4, -3              // T4==0 iff 32-bit (bits[1:0]==11)
+        beqz    T4, adv32_\__MODE__\()epc
+        // 16-bit compressed instruction — advance mepc+2
+        addi    T3, T3, 2
+        j       write_\__MODE__\()epc
+adv32_\__MODE__\()epc:
+        // 32-bit uncompressed instruction — advance mepc+4
+        addi    T3, T3, 4
+write_\__MODE__\()epc:
+        csrw    CSR_XEPC, T3
 
 skp_adj_\__MODE__\()epc:
 

@@ -226,7 +226,7 @@ normative_rule_definitions:
   - name: LMUL
     coverpoint:
       [
-        "VlsCustom16_vl1re16_v_cg/cp_custom_vwholeRegLS_lmul",
+        "Vls16_vl1re16_v_cg/cp_custom_vwholeRegLS_lmul",
         "Vx16_vsext_vf2_cg/cp_custom_vext2_overlapping_vd_vs2_lmul8",
         "Vx16_vwadd_vv_cg/cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2",
         "Vx16_vnclip_wi_cg/cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4",
@@ -239,6 +239,8 @@ normative_rule_definitions:
     coverpoint:
       [
         "Vx16_vmadc_vi_cg/cp_custom_vmask_write_lmulge1",
+        "Vx16_vrgather_vv_cg/cp_custom_vindexCorners_index_ge_vlmax",
+        "Vx16_vrgather_vv_cg/cp_custom_vindexCorners_index_gt_vl_lt_vlmax",
         "Vf16_vfadd_vf_cg/cp_masking_edges",
         "Vx16_vaadd_vv_cg/cp_vs2_edges",
       ]
@@ -282,7 +284,7 @@ normative_rule_definitions:
   - name: vreg_mask_LMUL_indp
     coverpoint:
       [
-        "VlsCustom16_vlm_v_cg/cp_custom_maskLS_emul_ge_16",
+        "Vls16_vlm_v_cg/cp_custom_maskLS_emul_ge_16",
         "Vx16_vmadc_vi_cg/cp_custom_vmask_write_lmulge1",
         "Vf16_vfadd_vf_cg/cp_vd",
         "Vx16_vaadd_vv_cg/cp_vs1_edges",
@@ -346,7 +348,7 @@ normative_rule_definitions:
   # The XLEN-bit-wide read-only vl CSR can only be updated by the vset{i}vl{i}
   # instructions, and the fault-only-first vector load instruction variants.
   - name: vl_acc
-    coverpoint: ["VlsCustom16_vle16ff_v_cg/cp_custom_ffLS_update_vl"]
+    coverpoint: ["Vls16_vle16ff_v_cg/cp_custom_ffLS_update_vl"]
 
   # The vl register holds an unsigned integer specifying the number of elements to
   # be updated with results from a vector instruction, as further detailed in .
@@ -470,7 +472,7 @@ normative_rule_definitions:
   - name: vreg_mask_vtype_indp
     coverpoint:
       [
-        "VlsCustom16_vlm_v_cg/cp_custom_maskLS_emul_ge_16",
+        "Vls16_vlm_v_cg/cp_custom_maskLS_emul_ge_16",
         "Vx16_vmadc_vi_cg/cp_custom_vmask_write_lmulge1",
       ]
 
@@ -507,7 +509,7 @@ normative_rule_definitions:
   - name: EEW
     coverpoint:
       [
-        "VlsCustom16_vlm_v_cg/cp_custom_maskLS_emul_ge_16",
+        "Vls16_vlm_v_cg/cp_custom_maskLS_emul_ge_16",
         "Vx16_vsext_vf2_cg/cp_custom_vext2_overlapping_vd_vs2_lmul2",
         "Vx16_vsext_vf2_cg/cp_custom_vext2_overlapping_vd_vs2_lmul4",
         "Vx16_vsext_vf2_cg/cp_custom_vext2_overlapping_vd_vs2_lmul8",
@@ -530,7 +532,7 @@ normative_rule_definitions:
   - name: EMUL
     coverpoint:
       [
-        "VlsCustom16_vlm_v_cg/cp_custom_maskLS_emul_ge_16",
+        "Vls16_vlm_v_cg/cp_custom_maskLS_emul_ge_16",
         "Vx16_vsext_vf2_cg/cp_custom_vext2_overlapping_vd_vs2_lmul2",
         "Vx16_vsext_vf2_cg/cp_custom_vext2_overlapping_vd_vs2_lmul4",
         "Vx16_vsext_vf2_cg/cp_custom_vext2_overlapping_vd_vs2_lmul8",
@@ -551,7 +553,7 @@ normative_rule_definitions:
   - name: EMUL_SEW_LMUL_dep
     coverpoint:
       [
-        "VlsCustom16_vlm_v_cg/cp_custom_maskLS_emul_ge_16",
+        "Vls16_vlm_v_cg/cp_custom_maskLS_emul_ge_16",
         "Vx16_vsext_vf2_cg/cp_custom_vext2_overlapping_vd_vs2_lmul2",
         "Vx16_vsext_vf2_cg/cp_custom_vext2_overlapping_vd_vs2_lmul4",
         "Vx16_vsext_vf2_cg/cp_custom_vext2_overlapping_vd_vs2_lmul8",
@@ -567,7 +569,7 @@ normative_rule_definitions:
   - name: EEW_SEW_LMUL_dep
     coverpoint:
       [
-        "VlsCustom16_vlm_v_cg/cp_custom_maskLS_emul_ge_16",
+        "Vls16_vlm_v_cg/cp_custom_maskLS_emul_ge_16",
         "Vx16_vsext_vf2_cg/cp_custom_vext2_overlapping_vd_vs2_lmul2",
         "Vx16_vsext_vf2_cg/cp_custom_vext2_overlapping_vd_vs2_lmul4",
         "Vx16_vsext_vf2_cg/cp_custom_vext2_overlapping_vd_vs2_lmul8",
@@ -585,6 +587,9 @@ normative_rule_definitions:
         "Vx16_vnclip_wi_cg/cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1",
         "Vx16_vnclip_wi_cg/cp_custom_vdOverlapBtmVs2_vd_vs2_lmul2",
         "Vx16_vnclip_wi_cg/cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4",
+        "Vx16_vnclip_wi_cg/cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul1",
+        "Vx16_vnclip_wi_cg/cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul2",
+        "Vx16_vnclip_wi_cg/cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul4",
         "Vx16_vaadd_vx_cg/cr_vxrm_vs2_rs1_edges",
         "Vx16_vssra_vi_cg/cr_vxrm_vs2_imm_edges",
       ]
@@ -598,6 +603,9 @@ normative_rule_definitions:
         "Vx16_vnclip_wi_cg/cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1",
         "Vx16_vnclip_wi_cg/cp_custom_vdOverlapBtmVs2_vd_vs2_lmul2",
         "Vx16_vnclip_wi_cg/cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4",
+        "Vx16_vnclip_wi_cg/cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul1",
+        "Vx16_vnclip_wi_cg/cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul2",
+        "Vx16_vnclip_wi_cg/cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul4",
         "Vx16_vaadd_vx_cg/cr_vxrm_vs2_rs1_edges",
         "Vx16_vssra_vi_cg/cr_vxrm_vs2_imm_edges",
       ]
@@ -648,6 +656,9 @@ normative_rule_definitions:
         "Vx16_vnclip_wi_cg/cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1",
         "Vx16_vnclip_wi_cg/cp_custom_vdOverlapBtmVs2_vd_vs2_lmul2",
         "Vx16_vnclip_wi_cg/cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4",
+        "Vx16_vnclip_wi_cg/cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul1",
+        "Vx16_vnclip_wi_cg/cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul2",
+        "Vx16_vnclip_wi_cg/cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul4",
         "Vf16_vfadd_vf_cg/cmp_vd_vs2",
         "Vf16_vfadd_vv_cg/cmp_vd_vs1",
         "Vf16_vfadd_vv_cg/cmp_vs1_vs2",
@@ -728,8 +739,7 @@ normative_rule_definitions:
   - name: vreg_vmask
     coverpoint:
       [
-        "VlsCustom16_vle16_v_cg/cp_custom_masked_vs1_v0",
-        "VlsCustom16_vle16_v_cg/cp_custom_masked_vs2_v0",
+        "Vls16_vloxei16_v_cg/cp_custom_masked_vs2_v0",
         "Vf16_vfadd_vf_cg/cp_masking_edges",
       ]
 
@@ -740,8 +750,7 @@ normative_rule_definitions:
   - name: vreg_vmask_rsv
     coverpoint:
       [
-        "VlsCustom16_vle16_v_cg/cp_custom_masked_vs1_v0",
-        "VlsCustom16_vle16_v_cg/cp_custom_masked_vs2_v0",
+        "Vls16_vloxei16_v_cg/cp_custom_masked_vs2_v0",
         "Vx16_vmadc_vim_cg/cp_custom_vmask_write_v0_masked",
         "Vf16_vfadd_vf_cg/cp_vd",
         "Vf16_vfadd_vv_cg/cmp_vd_vs1",
@@ -822,7 +831,7 @@ normative_rule_definitions:
   # supported. An unsupported value in any location within the vtype value must
   # result in vill being set.
   - name: vtype_vill_set
-    coverpoint: ["VlsCustom16_vl1re16_v_cg/cp_custom_vwholeRegLS_vill"]
+    coverpoint: ["Vls16_vl1re16_v_cg/cp_custom_vwholeRegLS_vill"]
 
   # When rs1 is not x0, the AVL is an unsigned integer held in the x register
   # specified by rs1, and the new vl value is also written to the x register
@@ -870,8 +879,8 @@ normative_rule_definitions:
   - name: vector_ls_base
     coverpoint:
       [
-        "VlsCustom16_vloxei16_v_cg/cp_custom_ls_indexed_zero_extended_sew8",
-        "VlsCustom16_vloxei16_v_cg/cp_custom_ls_indexed_zero_extended_sew16",
+        "Vls16_vloxei16_v_cg/cp_custom_ls_indexed_zero_extended_sew8",
+        "Vls16_vloxei16_v_cg/cp_custom_ls_indexed_zero_extended_sew16",
         "D_fcvt_d_w_cg/cp_rs1",
       ]
 
@@ -918,7 +927,7 @@ normative_rule_definitions:
   # the vector length vl is reduced to the index of the element that would have
   # raised an exception.
   - name: vector_ff_op
-    coverpoint: ["VlsCustom16_vle16ff_v_cg/cp_custom_ffLS_update_vl"]
+    coverpoint: ["Vls16_vle16ff_v_cg/cp_custom_ffLS_update_vl"]
 
   # Vector indexed operations add the contents of each element of the vector offset
   # operand specified by vs2 to the base effective address to give the effective
@@ -928,9 +937,9 @@ normative_rule_definitions:
   - name: vector_ls_indexed_op
     coverpoint:
       [
-        "VlsCustom16_vloxei16_v_cg/cp_custom_ls_indexed_zero_extended_sew8",
-        "VlsCustom16_vloxei16_v_cg/cp_custom_ls_indexed_zero_extended_sew16",
-        "VlsCustom16_vloxei16_v_cg/cp_custom_ls_indexed_truncated",
+        "Vls16_vloxei16_v_cg/cp_custom_ls_indexed_zero_extended_sew8",
+        "Vls16_vloxei16_v_cg/cp_custom_ls_indexed_zero_extended_sew16",
+        "Vls16_vloxei16_v_cg/cp_custom_ls_indexed_truncated",
         "Vx16_vaadd_vv_cg/cp_vs2_edges",
         "Vls16_vsoxei16_v_cg/cmp_vs3_vs2",
       ]
@@ -960,9 +969,9 @@ normative_rule_definitions:
   - name: vector_ls_XLEN_dep
     coverpoint:
       [
-        "VlsCustom16_vloxei16_v_cg/cp_custom_ls_indexed_zero_extended_sew8",
-        "VlsCustom16_vloxei16_v_cg/cp_custom_ls_indexed_zero_extended_sew16",
-        "VlsCustom16_vloxei16_v_cg/cp_custom_ls_indexed_truncated",
+        "Vls16_vloxei16_v_cg/cp_custom_ls_indexed_zero_extended_sew8",
+        "Vls16_vloxei16_v_cg/cp_custom_ls_indexed_zero_extended_sew16",
+        "Vls16_vloxei16_v_cg/cp_custom_ls_indexed_truncated",
         "Vx16_vaadd_vv_cg/cp_vs2_edges",
       ]
 
@@ -1002,19 +1011,19 @@ normative_rule_definitions:
   - name: vector_wholels_nf_op
     coverpoint:
       [
-        "VlsCustom16_vl1re16_v_cg/cp_custom_vwholeRegLS_vill",
-        "VlsCustom16_vl1re16_v_cg/cp_custom_vwholeRegLS_lmul",
+        "Vls16_vl1re16_v_cg/cp_custom_vwholeRegLS_vill",
+        "Vls16_vl1re16_v_cg/cp_custom_vwholeRegLS_lmul",
       ]
 
   # Vector loads and stores have an EEW encoded directly in the instruction. The
   # corresponding EMUL is calculated as EMUL = (EEW/SEW)*LMUL.
   - name: vector_ls_EEW
-    coverpoint: ["VlsCustom16_vlm_v_cg/cp_custom_maskLS_emul_ge_16"]
+    coverpoint: ["Vls16_vlm_v_cg/cp_custom_maskLS_emul_ge_16"]
 
   # Vector loads and stores have an EEW encoded directly in the instruction. The
   # corresponding EMUL is calculated as EMUL = (EEW/SEW)*LMUL.
   - name: vector_ls_EMUL
-    coverpoint: ["VlsCustom16_vlm_v_cg/cp_custom_maskLS_emul_ge_16"]
+    coverpoint: ["Vls16_vlm_v_cg/cp_custom_maskLS_emul_ge_16"]
 
   # If the EMUL would be out of range (EMUL&gt;8 or EMUL&lt;1/8), the instruction
   # encoding is reserved.
@@ -1044,7 +1053,7 @@ normative_rule_definitions:
   # EMUL=1), and the destination register is always written with a tail-agnostic
   # policy.
   - name: vector_ls_unit_stride_mask
-    coverpoint: ["VlsCustom16_vlm_v_cg/cp_custom_maskLS_emul_ge_16"]
+    coverpoint: ["Vls16_vlm_v_cg/cp_custom_maskLS_emul_ge_16"]
 
   # Negative and zero strides are supported.
   - name: vector_ls_neg_stride
@@ -1083,7 +1092,7 @@ normative_rule_definitions:
   # as a regular load except that they will only take a trap caused by a synchronous
   # exception on element 0.
   - name: vector_ff_trigger
-    coverpoint: ["VlsCustom16_vle16ff_v_cg/cp_custom_ffLS_update_vl"]
+    coverpoint: ["Vls16_vle16ff_v_cg/cp_custom_ffLS_update_vl"]
 
   # Load instructions may overwrite active destination vector register group
   # elements past the element index at which the trap is reported.
@@ -1104,12 +1113,12 @@ normative_rule_definitions:
   # fewer than vl elements and reduce vl accordingly, but if vstart=0 and vl&gt;0,
   # then at least one element must be processed.
   - name: vector_ff_no_exception
-    coverpoint: ["VlsCustom16_vle16ff_v_cg/cp_custom_ffLS_update_vl"]
+    coverpoint: ["Vls16_vle16ff_v_cg/cp_custom_ffLS_update_vl"]
 
   # When the fault-only-first instruction takes a trap due to an interrupt,
   # implementations should not reduce vl and should instead set a vstart value.
   - name: vector_ff_interrupt_behavior
-    coverpoint: ["VlsCustom16_vle16ff_v_cg/cp_custom_ffLS_update_vl"]
+    coverpoint: ["Vls16_vle16ff_v_cg/cp_custom_ffLS_update_vl"]
 
   # The three-bit nf field in the vector instruction encoding is an unsigned integer
   # that contains one less than the number of fields per segment, NFIELDS. Each
@@ -1226,8 +1235,8 @@ normative_rule_definitions:
   - name: vector_ls_seg_wholereg_op
     coverpoint:
       [
-        "VlsCustom16_vl1re16_v_cg/cp_custom_vwholeRegLS_vill",
-        "VlsCustom16_vl1re16_v_cg/cp_custom_vwholeRegLS_lmul",
+        "Vls16_vl1re16_v_cg/cp_custom_vwholeRegLS_vill",
+        "Vls16_vl1re16_v_cg/cp_custom_vwholeRegLS_lmul",
         "Vls16_vs1r_v_cg/cp_vs3",
       ]
 
@@ -1235,7 +1244,7 @@ normative_rule_definitions:
   - name: vector_ls_seg_wholereg_nf_rsv
     coverpoint:
       [
-        "VlsCustom16_vl1re16_v_cg/cp_custom_vwholeRegLS_lmul",
+        "Vls16_vl1re16_v_cg/cp_custom_vwholeRegLS_lmul",
         "Vls16_vs1r_v_cg/cp_vs3",
       ]
 
@@ -1243,7 +1252,7 @@ normative_rule_definitions:
   # held in the lowest-numbered memory addresses and successive vector register
   # numbers are placed contiguously in memory.
   - name: vector_ls_seg_wholereg_op_cont
-    coverpoint: ["VlsCustom16_vl1re16_v_cg/cp_custom_vwholeRegLS_lmul"]
+    coverpoint: ["Vls16_vl1re16_v_cg/cp_custom_vwholeRegLS_lmul"]
 
   # The instructions operate with an effective vector length, evl=NFIELDS*VLEN/EEW,
   # regardless of current settings in vtype and vl. The usual property that no
@@ -1254,8 +1263,8 @@ normative_rule_definitions:
   - name: vector_ls_seg_wholereg_evl
     coverpoint:
       [
-        "VlsCustom16_vl1re16_v_cg/cp_custom_vwholeRegLS_vill",
-        "VlsCustom16_vl1re16_v_cg/cp_custom_vwholeRegLS_lmul",
+        "Vls16_vl1re16_v_cg/cp_custom_vwholeRegLS_vill",
+        "Vls16_vl1re16_v_cg/cp_custom_vwholeRegLS_lmul",
       ]
 
   # Implementations are allowed to raise a misaligned address exception on whole
@@ -1300,8 +1309,7 @@ normative_rule_definitions:
   - name: vmask_control_dependency
     coverpoint:
       [
-        "VlsCustom16_vle16_v_cg/cp_custom_masked_vs1_v0",
-        "VlsCustom16_vle16_v_cg/cp_custom_masked_vs2_v0",
+        "Vls16_vloxei16_v_cg/cp_custom_masked_vs2_v0",
         "Vf16_vfadd_vf_cg/cp_masking_edges",
       ]
 
@@ -1327,8 +1335,7 @@ normative_rule_definitions:
   - name: vop-vv_vreg_vs2_vs1
     coverpoint:
       [
-        "VlsCustom16_vle16_v_cg/cp_custom_masked_vs1_v0",
-        "VlsCustom16_vle16_v_cg/cp_custom_masked_vs2_v0",
+        "Vls16_vloxei16_v_cg/cp_custom_masked_vs2_v0",
         "Vf16_vfadd_vv_cg/cp_vs1",
         "Vf16_vfadd_vv_cg/cmp_vs1_vs2",
         "Vf16_vfadd_vv_cg/cmp_vd_vs1_vs2",
@@ -1433,8 +1440,7 @@ normative_rule_definitions:
   - name: V_masked
     coverpoint:
       [
-        "VlsCustom16_vle16_v_cg/cp_custom_masked_vs1_v0",
-        "VlsCustom16_vle16_v_cg/cp_custom_masked_vs2_v0",
+        "Vls16_vloxei16_v_cg/cp_custom_masked_vs2_v0",
         "Vx16_vredand_vs_cg/cp_custom_element0Masked",
         "Vf16_vfadd_vf_cg/cp_masking_edges",
         "Vf16_vfadd_vf_cg/cp_vs2",
@@ -1462,6 +1468,9 @@ normative_rule_definitions:
       [
         "Vx16_vnclip_wi_cg/cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1",
         "Vx16_vnclip_wi_cg/cp_custom_vdOverlapBtmVs2_vd_vs2_lmul2",
+        "Vx16_vnclip_wi_cg/cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul1",
+        "Vx16_vnclip_wi_cg/cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul2",
+        "Vx16_vnclip_wi_cg/cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul4",
         "Vf16_vfadd_vf_cg/cp_vd",
         "Vx16_vaadd_vv_cg/cp_vs2_edges",
         "Vx16_vaadd_vx_cg/cr_vxrm_vs2_rs1_edges",
@@ -3040,11 +3049,19 @@ normative_rule_definitions:
 
   # The index values in the second vector are treated as unsigned integers.
   - names: [vrgather_vs2_uint, vrgatherei16_vs2_uint]
-    coverpoint: ["Vx16_vaadd_vv_cg/cp_vs2_edges"]
+    coverpoint:
+      [
+        "Vx16_vrgather_vv_cg/cp_custom_vindexCorners_index_gt_vl_lt_vlmax",
+        "Vx16_vaadd_vv_cg/cp_vs2_edges",
+      ]
 
   # The source vector can be read at any index &lt; VLMAX regardless of vl.
   - names: [vrgather_vs_ignore_vl, vrgatherei16_vs_ignore_vl]
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Vx16_vrgather_vv_cg/cp_custom_vindexCorners_index_gt_vl_lt_vlmax",
+        "Vx16_vrgather_vv_cg/cp_custom_vindexCorners_index_ge_vlmax",
+      ]
 
   # The maximum number of elements to write to the destination register is given by
   # vl,
@@ -3077,6 +3094,7 @@ normative_rule_definitions:
   - names: [vrgather_id_ge_VLMAX, vrgatherei16_id_ge_VLMAX]
     coverpoint:
       [
+        "Vx16_vrgather_vv_cg/cp_custom_vindexCorners_index_ge_vlmax",
         "Vx16_vrgather_vx_cg/cp_custom_vindexVX_rs1_not_truncated_32",
         "Vx16_vrgather_vx_cg/cp_custom_vindexVX_rs1_not_truncated_64",
       ]
@@ -3349,7 +3367,7 @@ normative_rule_definitions:
   - name: vector_active_element
     coverpoint:
       [
-        "VlsCustom16_vle16ff_v_cg/cp_custom_ffLS_update_vl",
+        "Vls16_vle16ff_v_cg/cp_custom_ffLS_update_vl",
         "Vf16_vfadd_vf_cg/cp_masking_edges",
         "Vx16_vaadd_vv_cg/cp_vs2_edges",
       ]
@@ -3394,4 +3412,5 @@ normative_rule_definitions:
   # vrgatherei16.vv vd, vs2, vs1, vm # vd[i] = (vs1[i] &gt;= VLMAX) ? 0 :
   # vs2[vs1[i]];
   - name: vrgather-vv_op_vrgatherei16-vv_op
-    coverpoint: [""]
+    coverpoint:
+      ["Vx16_vrgather_vv_cg/cp_custom_vindexCorners_index_gt_vl_lt_vlmax"]

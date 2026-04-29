@@ -412,22 +412,22 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
     for cmt, tmpl in [
         ("cp_upperreg_rs1_add", "0000000000011EEEE000000010110011"),
         ("cp_upperreg_rs2_add", "00000001EEEE00001000001100110011"),
-        ("cp_upperreg_rd_add",  "000000000001000010001EEEE0110011"),
+        ("cp_upperreg_rd_add", "000000000001000010001EEEE0110011"),
         ("cp_upperreg_rs1_mul", "0000001000011EEEE000000010110011"),
         ("cp_upperreg_rs2_mul", "00000011EEEE00001000001100110011"),
-        ("cp_upperreg_rd_mul",  "000000100001000010001EEEE0110011"),
+        ("cp_upperreg_rd_mul", "000000100001000010001EEEE0110011"),
         ("cp_upperreg_rs1_fadd-s", "0000000000011EEEE000000011010011"),
         ("cp_upperreg_rs2_fadd-s", "00000001EEEE00001000000101010011"),
-        ("cp_upperreg_rd_fadd-s",  "000000000001000010001EEEE1010011"),
+        ("cp_upperreg_rd_fadd-s", "000000000001000010001EEEE1010011"),
         ("cp_upperreg_imm_rs1_addi0", "0000000000001EEEE000000010010011"),
         ("cp_upperreg_imm_rs1_addi1", "1111111111111EEEE000000010010011"),
         ("cp_upperreg_imm_rd_addi0", "000000000000000010001EEEE0010011"),
         ("cp_upperreg_imm_rd_addi1", "111111111111000010001EEEE0010011"),
         ("cp_upperreg_fmv_x_w_rs1", "1110000000001EEEE000000011010011"),
-        ("cp_upperreg_fmv_x_w_rd",  "111000000000000010001EEEE1010011"),
+        ("cp_upperreg_fmv_x_w_rd", "111000000000000010001EEEE1010011"),
         ("cp_upperreg_fmv_w_x_rs1", "1111000000001EEEE000000011010011"),
-        ("cp_upperreg_fmv_w_x_rd",  "111100000000000010001EEEE1010011"),
-        ("cp_amocas_odd",           "00101RRRRRRRRRRREEEE0100E0101111"),
+        ("cp_upperreg_fmv_w_x_rd", "111100000000000010001EEEE1010011"),
+        ("cp_amocas_odd", "00101RRRRRRRRRRREEEE0100E0101111"),
     ]:
         _emit_raw_words(lines, cmt, tmpl)
 
@@ -459,7 +459,7 @@ def _generate_compressed_instr(test_data: TestData) -> list[str]:
             "10000XXXXXXXXX00",  # c.lbu , c.lh, c.lhu
             "10010XXXXXXXXX00",  # c.sb: bits[15:11]=10010, bit10=imm[5] varies
             "10011XXXXXXXXX00",  # c.sh: bits[15:11]=10011, bit10 varies
-            "XXXX00010XXXXX00",   # rd = x2
+            "XXXX00010XXXXX00",  # rd = x2
             "011XXXXXXXXXXX00",  # c.ld — garbage in regs + random mtval on fault
             "111XXXXXXXXXXX00",  # c.sd — store from uninitialised reg, bad address
         ],
@@ -473,7 +473,7 @@ def _generate_compressed_instr(test_data: TestData) -> list[str]:
             "101XXXXXXXXXXX01",  # c.j — random jump
             "11XXXXXXXXXXXX01",  # c.beqz/c.bnez — random branch
             "001XXXXXXXXXXX01",  # c.jr
-            "XXXX00010XXXXX01",   # rd = x2
+            "XXXX00010XXXXX01",  # rd = x2
         ],
     )
     _emit_raw_words(
@@ -488,7 +488,7 @@ def _generate_compressed_instr(test_data: TestData) -> list[str]:
             "X10XXXXXXXXXXX10",  # c.lwsp/c.swsp — bad address
             "1001000000000010",  # c.ebreak
             "XXXX00010XXXXX10",  # rd = x2 (sp)
-            "1100XXXXXXXXXX10",   # c.swsp with rs2=x2 (corrupts via store of sp)
+            "1100XXXXXXXXXX10",  # c.swsp with rs2=x2 (corrupts via store of sp)
             "1110XXXXXXXXXX10",  # c.lwsp rd=x2 alternate encoding guard
             "1010XXXXXXXXXX10",  # zero-length / nop-like edge in quadrant 2
         ],
@@ -496,6 +496,7 @@ def _generate_compressed_instr(test_data: TestData) -> list[str]:
     lines.append("")
 
     return lines
+
 
 # ── Entry point ───────────────────────────────────────────────────────────
 

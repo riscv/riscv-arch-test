@@ -648,7 +648,7 @@
 
 #ifndef CAUSE_SPCL_GO2MMODE_OP // make sure this default can be overwritten (e.g. to illegal fetch addr)
     #define ALT_GOTO_M_CAUSE CAUSE_ILLEGAL_INSTRUCTION
-    #define ALT_GOTO_M_OP    .insn 0
+    #define ALT_GOTO_M_OP    .word 0
 #endif
 
 .macro  RVTEST_GOTO_MMODE
@@ -1401,7 +1401,7 @@ common_\__MODE__\()excpt_handler:
         srli    T2, T2, MODE_LSB
         LI(     T4, 3*sv_area_sz)               // VS/VU mode sv_area
         add     T4, T4, sp
-        bnez    T2, skp_adj_\__MODE__\()epc     // mode is bare, fall through to force reloc
+        bnez    T2, sv_\__MODE__\()epc          // mode is bare, fall through to force reloc
   #endif   /* end of Smode_implemented handling */
 .endif     /* end of MMode epc reloc handler    */
 
@@ -1409,7 +1409,7 @@ common_\__MODE__\()excpt_handler:
  //  extract and test curr level satp.MODE; if !=bare, VA, skip reloc */
         csrr    T2, CSR_HGATP
         srli    T2, T2, MODE_LSB
-        bnez    T2, skp_adj_\__MODE__\()epc     // its a VA, skip adj
+        bnez    T2, sv_\__MODE__\()epc          // its a VA, skip adj
  // extract and test hstatus.SPV; if 0, no lower mode, so bare mode, force reloc
         csrr    T2, CSR_HSTATUS
         slli    T2, T2, XLEN-MPV_LSB-1
@@ -1419,7 +1419,7 @@ common_\__MODE__\()excpt_handler:
         srli    T2, T2, MODE_LSB
         LI(     T4, 2*sv_area_sz)
         add     T4, T4, sp                      // T4 points to VS/VU mode sv_area
-        bnez    T2, skp_adj_\__MODE__\()epc
+        bnez    T2, sv_\__MODE__\()epc
  // mode is bare, fall through to force reloc
 .endif
 
@@ -1427,7 +1427,7 @@ common_\__MODE__\()excpt_handler:
 //  extract and test curr level satp.MODE!=bare; if so, skip reloc */
         csrr    T2, CSR_SATP
         srli    T2, T2, MODE_LSB
-        bnez    T2, skp_adj_\__MODE__\()epc
+        bnez    T2, sv_\__MODE__\()epc
 // mode is bare, fall through to force reloc
 .endif
 
@@ -1435,11 +1435,11 @@ common_\__MODE__\()excpt_handler:
  //  extract and test curr level satp.MODE!=bare; if so, skip reloc
         csrr    T2, CSR_SATP
         srli    T2, T2, MODE_LSB
-        bnez    T2, skp_adj_\__MODE__\()epc
+        bnez    T2, sv_\__MODE__\()epc
  // extract and test higher level satp.mode!=bare
         LREG    T2, sved_hgatp_off(sp)     /*saved when HS chgs its SATP */
         srli    T2, T2, MODE_LSB
-        bnez    T2, skp_adj_\__MODE__\()epc
+        bnez    T2, sv_\__MODE__\()epc
  // mode is bare, fall through to force reloc
   .endif
 
@@ -1452,10 +1452,13 @@ common_\__MODE__\()excpt_handler:
 
 vmem_adj_\__MODE__\()epc:                       // see if epc is in the vmem area
 #ifdef SKIP_MEPC
-        LI(     T2, RVMODEL_ACCESS_FAULT_ADDRESS)
-        beq     T3, T2, sv_\__MODE__\()epc      // Skip checks if XEPC = RVMODEL_ACCESS_FAULT_ADDRESS
-        addi    T2, T2, 2
-        beq     T3, T2, sv_\__MODE__\()epc      // Skip checks if XEPC = RVMODEL_ACCESS_FAULT_ADDRESS+2
+        // skip checking if there are no access faults
+        #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+                LI(     T2, RVMODEL_ACCESS_FAULT_ADDRESS)
+                beq     T3, T2, sv_\__MODE__\()epc      // Skip checks if XEPC = RVMODEL_ACCESS_FAULT_ADDRESS
+                addi    T2, T2, 2
+                beq     T3, T2, sv_\__MODE__\()epc      // Skip checks if XEPC = RVMODEL_ACCESS_FAULT_ADDRESS+2
+        #endif
 #endif
         LREG    T2, vmem_bgn_off(T4)            // T4 points to trapping mode sv_area
         LREG    T6, vmem_seg_siz(T4)
@@ -1705,7 +1708,10 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 // **FIXME** : the spec needs to be updated with the per/mode versions, not just one
 // do these need per/mode versions? presumably they are written so the lowest
 // priv mode that is it delegated to will work
-// **FIXME**: move these outside the handler so it can copied per mode using INSTANTIATE_MODE_MACRO
+// Move interrupt handler stubs to .text.rvmodel so that RVMODEL macro size
+// differences between DUT and reference don't affect .text.rvtest size (which
+// would shift .data addresses and break page table setups).
+.pushsection .text.rvmodel, "ax"
 
 //------------- MMode----------------
 \__MODE__\()clr_Msw_int:                // int 3 default to just return if not defined
@@ -1714,8 +1720,11 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 
 \__MODE__\()clr_Mtmr_int:               // int 7 default to just return
         li T5, -1
-        la T2, RVMODEL_MTIMECMP_ADDRESS
-        SREG T5, 0(T2)
+        # skip if RVMODEL_MTIMECMP_ADDRESS is not defined
+        #ifdef RVMODEL_MTIMECMP_ADDRESS
+                la T2, RVMODEL_MTIMECMP_ADDRESS
+                SREG T5, 0(T2)
+        #endif
         #if __riscv_xlen == 32
                 sw T5, 4(T2)
         #endif
@@ -1728,13 +1737,19 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 
 //------------- [H]SMode----------------
 \__MODE__\()clr_Ssw_int:                // int 1 default to just return if not defined
-                                        // S-mode software interrupts need to be reset differently when raised in M or S mode
-        .ifc \__MODE__ , M              // Select the interrupt handler function based on current privilege mode
+                                        // SSIP can be set via CSR write or external controller; clear both
+        .ifc \__MODE__ , M              // M-mode: mideleg.SSIP=0 so sip.SSIP is read-only; clear via mip
+            li T2, 2
+            csrc mip, T2
             RVMODEL_CLR_SSW_INT(T2, T5)
         .else
-                .ifc \__MODE__ , S
+                .ifc \__MODE__ , S      // S-mode: mideleg.SSIP=1 so sip.SSIP mirrors mip and is writable
+                        li T2, 2
+                        csrc sip, T2
                         RVMODEL_CLR_SSW_INT(T2, T5)
                 .else
+                        li T2, 2
+                        csrc sip, T2
                         RVMODEL_CLR_SSW_INT(T2, T5)
                 .endif
         .endif
@@ -1772,6 +1787,8 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
         RVMODEL_CLR_VEXT_INT
         TRAP_SIGUPD(T4, T3, 3, \__MODE__\()clr_Vext_int, \__MODE__\()clr_Vext_int_str)  // Save intID
         j       resto_\__MODE__\()rtn
+
+.popsection
 
 .ifc \__MODE__ , M
 

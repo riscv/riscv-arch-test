@@ -1,4 +1,3 @@
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
 #define RVMODEL_PMP_GRAIN 0
 #define RVMODEL_NUM_PMPS 16
 #define D_SUPPORTED
@@ -19,6 +18,7 @@
 #define ZCB_SUPPORTED
 #define ZCD_SUPPORTED
 #define S_SUPPORTED
+#define U_SUPPORTED
 #define SV39_SUPPORTED
 #define SV48_SUPPORTED
 #define SV57_SUPPORTED
@@ -26,6 +26,7 @@
 #define TIME_CSR_IMPLEMENTED 1
 
 // Vector configuration
+#define VLEN 128
 #define SEWMIN 8
 #define ELEN 64
 #define MAXINDEXEEW 64

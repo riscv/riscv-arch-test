@@ -44,6 +44,8 @@ def _compiler_cmd(config: Config, xlen: int, tests_dir: Path) -> list[str]:
             f"-I{tests_dir}/env",
         ]
     )
+    if config.compiler_type == CompilerType.GCC:
+        cmd.extend(["-Wl,--no-warn-rwx-segments"])
     return cmd
 
 
@@ -138,7 +140,7 @@ def gen_compile_tasks(
     # 2. sig – run Sail reference model
     sail_cmd = [str(config.ref_model_exe)]
     if debug:
-        sail_cmd.append("--trace-all")
+        sail_cmd.append("--trace")
         sail_cmd.extend(["--trace-output", str(sig_trace_file)])
     sail_cmd.extend(["--config", str(sail_config_path)])
     sail_cmd.extend(config.ref_model_type.signature_flags(sig_file, xlen // 8))
@@ -252,7 +254,7 @@ def gen_rvvi_tasks(
     # Run Sail with trace
     sail_cmd = [
         str(config.ref_model_exe),
-        "--trace-all",
+        "--trace",
         "--trace-output",
         str(sail_trace),
         "--config",
@@ -287,7 +289,6 @@ def gen_coverage_tasks(
     config_report_dir: Path,
     dut_header_dir: Path,
     coverage_simulator: CoverageSimulator,
-    config_name: str = "",
 ) -> list[BuildTask]:
     """Generate BuildTasks for coverage UCDB generation, reports, and summary merging."""
     tasks: list[BuildTask] = []
@@ -483,7 +484,6 @@ def generate_build_plan(
                 config_report_dir,
                 config.dut_include_dir,
                 coverage_simulator,
-                config.name,
             )
         )
 

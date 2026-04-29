@@ -27,20 +27,20 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
 
     // building blocks for the main coverpoints
     csrrw: coverpoint ins.current.insn {
-        wildcard bins csrrw = {32'b????????????_?????_001_?????_1110011};
+        wildcard bins csrrw = {CSRRW};
     }
     csrop: coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b1110011) {
         bins csrrs = {3'b010};
         bins csrrc = {3'b011};
     }
     fcsr: coverpoint ins.current.insn[31:20] {
-        bins fcsr = {12'h003};
+        bins fcsr = {CSR_FCSR};
     }
     frm: coverpoint ins.current.insn[31:20] {
-        bins frm = {12'h002};
+        bins frm = {CSR_FRM};
     }
     fflags: coverpoint ins.current.insn[31:20] {
-        bins fflags = {12'h001};
+        bins fflags = {CSR_FFLAGS};
     }
     fcsr_frm_edges: coverpoint ins.current.rs1_val[7:5] {
         // auto fills 0 through 7
@@ -56,17 +56,17 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
     }
 
     fadd: coverpoint ins.current.insn {
-        wildcard bins fadd = {32'b00000_00_?????_?????_???_?????_1010011};
+        wildcard bins fadd = {FADD_S};
     }//                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ assumes single precision since there isn't a good
     //                                                                      way to specify the fs1 and fs2 values otherwise
     fsub: coverpoint ins.current.insn {
-        wildcard bins fsub = {32'b00001_00_?????_?????_???_?????_1010011};
+        wildcard bins fsub = {FSUB_S};
     }
     fdiv: coverpoint ins.current.insn {
-        wildcard bins fdiv = {32'b00011_00_?????_?????_???_?????_1010011};
+        wildcard bins fdiv = {FDIV_S};
     }
     fmul: coverpoint ins.current.insn {
-        wildcard bins fmul = {32'b00010_00_?????_?????_???_?????_1010011};
+        wildcard bins fmul = {FMUL_S};
     }
     fs2_zero: coverpoint ins.current.fs2_val[31:0] {
         bins zero = {32'h00000000};

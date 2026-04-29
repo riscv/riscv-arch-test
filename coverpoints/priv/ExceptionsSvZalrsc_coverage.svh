@@ -25,20 +25,11 @@ covergroup ExceptionsSvZalrsc_cg with function sample(ins_t ins);
     d_page_table_entry_invalid: coverpoint ins.current.pte_d[0] {
         // auto fill valid bit 0/1
     }
-    `ifdef XLEN64 // Number of physical address bits is different by XLEN, either 34 or 56
-        d_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
-            // auto fill 1/0 for the physical address being valid
-        }
-    `else
-        d_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
-            // auto fill 1/0 for the physical address being valid
-        }
-    `endif
     lrscops: coverpoint ins.current.insn {
-        wildcard bins lr_w     = {32'b000100000000_?????_010_?????_0101111};
-        wildcard bins sc_w     = {32'b0001100_?????_?????_010_?????_0101111};
+        wildcard bins lr_w     = {LR_W};
+        wildcard bins sc_w     = {SC_W};
     }
-    medeleg_walk: coverpoint ins.current.csr[12'h302] {
+    medeleg_walk: coverpoint ins.current.csr[CSR_MEDELEG] {
         bins zeros                    = {16'b0000_0000_0000_0000};
         `ifndef COVER_ZCA
             bins instrmisaligned_enabled  = {16'b0000_0000_0000_0001};
@@ -63,13 +54,26 @@ covergroup ExceptionsSvZalrsc_cg with function sample(ins_t ins);
     }
 
     // main coverpoints
-    cp_misaligned_priority_m:        cross priv_mode_m, lrscops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent;
     cp_medeleg_m:                    cross priv_mode_m, lrscops,  d_page_table_entry_invalid, medeleg_walk;
-    cp_misaligned_priority_s:        cross priv_mode_s, lrscops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent;
     cp_medeleg_s:                    cross priv_mode_s, lrscops, d_page_table_entry_invalid, medeleg_walk;
-    cp_misaligned_priority_u:        cross priv_mode_u, lrscops,  d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent;
     cp_medeleg_u:                    cross priv_mode_u, lrscops,  d_page_table_entry_invalid, medeleg_walk;
 
+
+    // access fault coverpoints
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        `ifdef XLEN64 // Number of physical address bits is different by XLEN, either 34 or 56
+            d_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+                // auto fill 1/0 for the physical address being valid
+            }
+        `else
+            d_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+                // auto fill 1/0 for the physical address being valid
+            }
+        `endif
+        cp_misaligned_priority_m:        cross priv_mode_m, lrscops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent;
+        cp_misaligned_priority_s:        cross priv_mode_s, lrscops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent;
+        cp_misaligned_priority_u:        cross priv_mode_u, lrscops,  d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent;
+    `endif
 endgroup
 
 function void exceptionssvzalrsc_sample(int hart, int issue, ins_t ins);

@@ -7,6 +7,8 @@
 # Parse YAML comment header from test files
 ##################################
 
+from __future__ import annotations
+
 from pathlib import Path
 
 from pydantic import BaseModel, Field, FilePath, ValidationError

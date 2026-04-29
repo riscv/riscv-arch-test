@@ -9,8 +9,10 @@
 
 ##### STARTUP #####
 
-# Perform boot operations. Can be empty.
-#define RVMODEL_BOOT
+# Perform boot operations. Can be empty or left undefined unless needed for
+# DUT-specific behavior such as turning on a memory controller or
+# initializing custom state.
+//#define RVMODEL_BOOT
 
 ##### TERMINATION #####
 
@@ -41,7 +43,8 @@
 # Initialization steps needed prior to writing to the console
 # _R1, _R2, and _R3 can be used as temporary registers if needed.
 # Do not modify any other registers (or make sure to restore them).
-#define RVMODEL_IO_INIT(_R1, _R2, _R3)
+# Can be empty or left undefined if no initialization is needed.
+ //#define RVMODEL_IO_INIT(_R1, _R2, _R3)
 
 # Prints a null-terminated string using a DUT specific mechanism.
 # A pointer to the string is passed in _STR_PTR.
@@ -81,11 +84,11 @@
 
 #define RVMODEL_SET_MSW_INT(_R1, _R2) \
   li _R1, 1; \
-  li _R2, MSIP_ADDRESS; \
+  li _R2, RVMODEL_MSIP_ADDRESS; \
   sw _R1, 0(_R2);
 
 #define RVMODEL_CLR_MSW_INT(_R1, _R2) \
-  li _R2, MSIP_ADDRESS; \
+  li _R2, RVMODEL_MSIP_ADDRESS; \
   sw zero, 0(_R2);
 
 ##### Supervisor Interrupts #####

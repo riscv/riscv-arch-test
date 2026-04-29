@@ -14,45 +14,45 @@ covergroup PMPZicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0]
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    cfg_for_menvcfg: coverpoint ins.current.csr[12'h30A][7:4] {
+    cfg_for_menvcfg: coverpoint ins.current.csr[CSR_MENVCFG][7:4] {
         bins configuration = {4'b1111}; //menvcfg.CBIE, CBCFE, CBZE = 1
     }
 
-    pmpaddr_region: coverpoint  ((pmpaddr[0] == (`REGIONSTART>>2)) &&
-                                 (pmpaddr[1] == ((`REGIONSTART + 16'h1000) >>2))) {
+    pmpaddr_region: coverpoint  ((pmpaddr[0] == (`PMP_REGION_START>>2)) &&
+                                 (pmpaddr[1] == ((`PMP_REGION_START + 16'h1000) >>2))) {
         bins region = {1};
     }
 
     addr_in_region: coverpoint ins.current.rs1_val {
-        bins address = {`REGIONSTART};
+        bins address = {`PMP_REGION_START};
     }
 
     cbo_clean_instr: coverpoint ins.current.insn {
-        wildcard bins cbo_clean = {32'b000000000001_?????_010_00000_0001111};
+        wildcard bins cbo_clean = {CBO_CLEAN};
     }
 
     cbo_flush_instr: coverpoint ins.current.insn {
-        wildcard bins cbo_flush = {32'b000000000010_?????_010_00000_0001111};
+        wildcard bins cbo_flush = {CBO_FLUSH};
     }
 
     cbo_inval_instr: coverpoint ins.current.insn {
-        wildcard bins cbo_inval = {32'b000000000000_?????_010_00000_0001111};
+        wildcard bins cbo_inval = {CBO_INVAL};
     }
 
     cbo_zero_instr: coverpoint ins.current.insn {
-        wildcard bins cbo_zero = {32'b000000000100_?????_010_00000_0001111};
+        wildcard bins cbo_zero = {CBO_ZERO};
     }
 
     prefetch_i_instr: coverpoint ins.current.insn {
-        wildcard bins prefetch_i_instr = {32'b???????_00000_?????_110_00000_0010011};
+        wildcard bins prefetch_i_instr = {PREFETCH_I};
     }
 
     prefetch_r_instr: coverpoint ins.current.insn {
-        wildcard bins prefetch_i_instr = {32'b???????_00001_?????_110_00000_0010011};
+        wildcard bins prefetch_r_instr = {PREFETCH_R};
     }
 
     prefetch_w_instr: coverpoint ins.current.insn {
-        wildcard bins prefetch_i_instr = {32'b???????_00011_?????_110_00000_0010011};
+        wildcard bins prefetch_w_instr = {PREFETCH_W};
     }
 
     // TOR Regions ((6,5),(5,4),(4,3),(3,2),(2,1),(1,0))
@@ -91,7 +91,7 @@ function void pmpzicbo_sample(int hart, int issue, ins_t ins);
   `ifdef XLEN32
     // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
     for (int i = 0; i < 16; i++) begin
-      logic [31:0] cfg_word = ins.current.csr[12'h3A0 + i];
+      logic [31:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + i];
       pmpcfg[i*4 + 0] = cfg_word[7:0];
       pmpcfg[i*4 + 1] = cfg_word[15:8];
       pmpcfg[i*4 + 2] = cfg_word[23:16];
@@ -100,7 +100,7 @@ function void pmpzicbo_sample(int hart, int issue, ins_t ins);
   `elsif XLEN64
     // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
-      logic [63:0] cfg_word = ins.current.csr[12'h3A0 + 2*i];
+      logic [63:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + 2*i];
       pmpcfg[i*8 + 0] = cfg_word[7:0];
       pmpcfg[i*8 + 1] = cfg_word[15:8];
       pmpcfg[i*8 + 2] = cfg_word[23:16];
@@ -113,7 +113,7 @@ function void pmpzicbo_sample(int hart, int issue, ins_t ins);
   `endif
 
   for (int j = 0; j < 63; j++) begin
-    pmpaddr[j] = ins.current.csr[12'h3B0 + j];
+    pmpaddr[j] = ins.current.csr[CSR_PMPADDR0 + j];
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions

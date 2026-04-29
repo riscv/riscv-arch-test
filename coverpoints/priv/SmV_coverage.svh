@@ -21,19 +21,19 @@ covergroup SmV_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     vcsrs: coverpoint ins.current.insn[31:20] {
-        bins vstart = {12'h008};
-        bins vxsat  = {12'h009};
-        bins vxrm   = {12'h00A};
-        bins vcsr   = {12'h00F};
-        bins vl     = {12'hC20};
-        bins vtype  = {12'hC21};
-        bins vlenb  = {12'hC22};
+        bins vstart = {CSR_VSTART};
+        bins vxsat  = {CSR_VXSAT};
+        bins vxrm   = {CSR_VXRM};
+        bins vcsr   = {CSR_VCSR};
+        bins vl     = {CSR_VL};
+        bins vtype  = {CSR_VTYPE};
+        bins vlenb  = {CSR_VLENB};
     }
 
     csrops: coverpoint ins.current.insn {
-        wildcard bins csrrs     = {32'b????????????_?????_010_?????_1110011};
-        wildcard bins csrrc     = {32'b????????????_?????_011_?????_1110011};
-        wildcard bins csrrw     = {32'b????????????_?????_001_?????_1110011};
+        wildcard bins csrrs     = {CSRRS};
+        wildcard bins csrrc     = {CSRRC};
+        wildcard bins csrrw     = {CSRRW};
     }
 
     cp_vcsrrswc: cross vcsrs, csrops;
@@ -43,14 +43,14 @@ covergroup SmV_cg with function sample(ins_t ins);
     // attempt to set all the writable CSR bit fields by writing all XLEN 1-hot
     //////////////////////////////////////////////////////////////////////////////////
     writable_vcsrs : coverpoint ins.current.insn[31:20] {
-        bins vstart = {12'h008};
-        bins vxsat  = {12'h009};
-        bins vxrm   = {12'h00A};
-        bins vcsr   = {12'h00F};
+        bins vstart = {CSR_VSTART};
+        bins vxsat  = {CSR_VXSAT};
+        bins vxrm   = {CSR_VXRM};
+        bins vcsr   = {CSR_VCSR};
     }
 
     csrw : coverpoint ins.current.insn {
-        wildcard bins csrrw     = {32'b????????????_?????_001_?????_1110011};
+        wildcard bins csrrw     = {CSRRW};
     }
 
     walking_ones_rs1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
@@ -112,12 +112,12 @@ covergroup SmV_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     misa_csr: coverpoint ins.current.insn[31:20] {
-        bins misa = {12'h301};
+        bins misa = {CSR_MISA};
     }
 
     csr_set_clear: coverpoint ins.current.insn {
-        wildcard bins csrrs     = {32'b????????????_?????_010_?????_1110011};
-        wildcard bins csrrc     = {32'b????????????_?????_011_?????_1110011};
+        wildcard bins csrrs     = {CSRRS};
+        wildcard bins csrrc     = {CSRRC};
     }
 
     rs1_misa_v_active : coverpoint ins.current.rs1_val[21] {
@@ -137,7 +137,7 @@ covergroup SmV_cg with function sample(ins_t ins);
     }
 
     vsetvl_instruction: coverpoint ins.current.insn {
-        wildcard bins vsetvl    =   {32'b1000000_?????_?????_111_?????_1010111};
+        wildcard bins vsetvl    =   {VSETVL};
     }
 
     // attempt to set lmul to all values
@@ -261,7 +261,7 @@ covergroup SmV_cg with function sample(ins_t ins);
 
     vsetvl_i_instructions: coverpoint ins.current.insn {
         wildcard bins vsetvli   =   {32'b0000_?_?_???_???_?????_111_?????_1010111};
-        wildcard bins vsetvl    =   {32'b1000000_?????_?????_111_?????_1010111};
+        wildcard bins vsetvl    =   {VSETVL};
     }
 
     vl_not_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") ==
@@ -357,11 +357,11 @@ covergroup SmV_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     vstart_csr: coverpoint ins.current.insn[31:20] {
-        bins vstart = {12'h008};
+        bins vstart = {CSR_VSTART};
     }
 
     csr_write: coverpoint ins.current.insn {
-        wildcard bins csrrw     = {32'b????????????_?????_001_?????_1110011};
+        wildcard bins csrrw     = {CSRRW};
     }
 
     rs1_2_to_16 : coverpoint (ins.current.rs1_val == 2 ** 16) {
@@ -376,11 +376,11 @@ covergroup SmV_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     csrrw: coverpoint ins.current.insn {
-        wildcard bins csrrw = {32'b????????????_?????_001_?????_1110011};
+        wildcard bins csrrw = {CSRRW};
     }
 
     csr_vl: coverpoint ins.current.insn[31:20]  {
-        bins user_std0[] = {[12'hC20]};
+        bins user_std0[] = {[CSR_VL]};
 
     }
 

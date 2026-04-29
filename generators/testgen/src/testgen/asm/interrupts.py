@@ -7,6 +7,8 @@
 ##################################
 
 
+from __future__ import annotations
+
 from testgen.constants import INDENT
 
 
@@ -64,7 +66,13 @@ def clr_mtimer_int(r_temp: int, r_mtimecmp: int) -> list[str]:
 
 
 def set_mtimer_int_soon(
-    r_mtime: int, r_mtimecmp: int, r_temp1: int, r_temp2: int, r_temp3: int, r_temp4: int
+    r_mtime: int,
+    r_mtimecmp: int,
+    r_temp1: int,
+    r_temp2: int,
+    r_temp3: int,
+    r_temp4: int,
+    delay: int | None = None,
 ) -> list[str]:
     """Generate assembly to set timer to fire soon (mtimecmp = mtime + DELAY).
 
@@ -74,7 +82,9 @@ def set_mtimer_int_soon(
         r_mtime: Register for MTIME address
         r_mtimecmp: Register for MTIMECMP address
         r_temp1, r_temp2, r_temp3, r_temp4: Temp registers for calculations
+        delay: Delay in mtime ticks. Defaults to RVMODEL_TIMER_INT_SOON_DELAY macro.
     """
+    delay_val = str(delay) if delay is not None else "RVMODEL_TIMER_INT_SOON_DELAY"
     return [
         f"{INDENT}# Cause machine timer interrupt soon if supported",
         "#ifdef RVMODEL_MTIME_ADDRESS",
@@ -82,12 +92,12 @@ def set_mtimer_int_soon(
         f"LA(x{r_mtimecmp}, RVMODEL_MTIMECMP_ADDRESS)",
         "#if __riscv_xlen == 64",
         "# Read current time and add delay",
-        f"LI(x{r_temp2}, RVMODEL_TIMER_INT_SOON_DELAY)",
+        f"LI(x{r_temp2}, {delay_val})",
         f"LREG x{r_temp1}, 0(x{r_mtime})",  # Use LREG macro
         f"add x{r_temp1}, x{r_temp1}, x{r_temp2}",
         f"SREG x{r_temp1}, 0(x{r_mtimecmp})",  # Use SREG macro
         "#elif __riscv_xlen == 32",
-        f"LI(x{r_temp4}, RVMODEL_TIMER_INT_SOON_DELAY)",
+        f"LI(x{r_temp4}, {delay_val})",
         "# Read current time (64-bit on RV32)",
         f"lw x{r_temp1}, 0(x{r_mtime})",
         f"lw x{r_temp2}, 4(x{r_mtime})",
@@ -358,8 +368,10 @@ def set_stimecmp_zero() -> list[str]:
     ]
 
 
-def set_stimecmp_soon(r_scratch: int, r_time: int, r_hi: int) -> list[str]:
-    """Write stimecmp = TIME + 500 from M-mode so the interrupt fires after entering U-mode.
+def set_stimecmp_soon(r_scratch: int, r_time: int, r_hi: int, time: int = 500) -> list[str]:
+    """Write stimecmp = TIME + 500 from M-mode.
+
+    For example, this may be used to delay an interrupt firing until after switching to U-mode.
 
     Disables stimecmp first (-1) to prevent a spurious interrupt during
     the read-modify-write sequence.  Falls back to stimecmp=0 if
@@ -367,24 +379,26 @@ def set_stimecmp_soon(r_scratch: int, r_time: int, r_hi: int) -> list[str]:
 
     Args:
         r_scratch: scratch register (clobbered)
-        r_time:    scratch for MTIME address / RV32 new_lo (clobbered)
+        r_time:    scratch for MTIME address / RV32 delay value (clobbered)
         r_hi:      scratch for RV32 old_hi / new_hi (clobbered; unused on RV64)
     """
     return [
-        f"{INDENT}# stimecmp = TIME + 500: interrupt fires after entering U-mode",
+        f"{INDENT}# stimecmp = TIME + {time}",
         *set_stimecmp_max(r_scratch),
         "#ifdef RVMODEL_MTIME_ADDRESS",
         "    #if __riscv_xlen == 64",
         f"        LA(x{r_time}, RVMODEL_MTIME_ADDRESS)",
         f"        LREG x{r_scratch}, 0(x{r_time})",
-        f"        addi x{r_scratch}, x{r_scratch}, 500",
+        f"        LI(x{r_time}, {time})",
+        f"        add x{r_scratch}, x{r_scratch}, x{r_time}",
         f"        CSRW(stimecmp, x{r_scratch})",
         "    #else",
         f"        LA(x{r_time}, RVMODEL_MTIME_ADDRESS)",
         f"        lw x{r_scratch}, 0(x{r_time})",  # old_lo
-        f"        lw x{r_hi}, 4(x{r_time})",  # old_hi
-        f"        addi x{r_time}, x{r_scratch}, 500",  # new_lo (reuse r_time)
-        f"        sltu x{r_scratch}, x{r_time}, x{r_scratch}",  # carry
+        f"        lw x{r_hi}, 4(x{r_time})",  # old_hi; r_time address no longer needed after this
+        f"        LI(x{r_time}, {time})",  # reuse r_time for delay
+        f"        add x{r_time}, x{r_scratch}, x{r_time}",  # new_lo; r_scratch still = old_lo for carry
+        f"        sltu x{r_scratch}, x{r_time}, x{r_scratch}",  # carry = (new_lo < old_lo)
         f"        add x{r_hi}, x{r_hi}, x{r_scratch}",  # new_hi
         f"        CSRW(stimecmph, x{r_hi})",
         f"        CSRW(stimecmp, x{r_time})",

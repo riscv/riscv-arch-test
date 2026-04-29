@@ -197,15 +197,6 @@ def _generate_trigger_ssi_mip_tests(test_data: TestData) -> list[str]:
             lines.extend(clr_stimer_mmode(r_scratch))
             lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
 
-            # Prevent machine timer from firing during test
-            lines.extend(
-                [
-                    f"LA(x{r_temp}, RVMODEL_MTIMECMP_ADDRESS)",
-                    f"LI(x{r_scratch}, -1)",
-                    f"SREG x{r_scratch}, 0(x{r_temp})",
-                ]
-            )
-
             # 4. Set mideleg
             if mideleg_val:
                 lines.extend(
@@ -216,14 +207,6 @@ def _generate_trigger_ssi_mip_tests(test_data: TestData) -> list[str]:
                 )
             else:
                 lines.append("CSRW(mideleg, zero)")
-
-            # 5. Enable all interrupts in mie (but MIE still 0)
-            lines.extend(
-                [
-                    f"LI(x{r_scratch}, -1)",
-                    f"CSRW(mie, x{r_scratch})",
-                ]
-            )
 
             # 6. Set SIE (delegated) or MIE (not delegated)
             if mideleg_val == 1:
@@ -238,6 +221,14 @@ def _generate_trigger_ssi_mip_tests(test_data: TestData) -> list[str]:
                 # Not delegated: set MIE
                 if int_enable_val:
                     lines.append("csrsi mstatus, 8")
+
+            # 5. Enable all interrupts in mie (but MIE still 0)
+            lines.extend(
+                [
+                    f"LI(x{r_scratch}, -1)",
+                    f"CSRW(mie, x{r_scratch})",
+                ]
+            )
 
             # 7. Set SSIP
             lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
@@ -347,109 +338,118 @@ def _generate_trigger_ssi_sip_tests(test_data: TestData) -> list[str]:
 def _generate_trigger_sei_tests(test_data: TestData) -> list[str]:
     """Generate SEIP trigger tests.
 
-    With mstatus.MIE = 0, mstatus.SIE = {0/1}, mideleg = {STI+SEI+SSI},
+    With mstatus.MIE = 0, mstatus.SIE = {0/1}, mideleg = {0/STI+SEI+SSI},
     and mie = 1s, trigger SEIP via PLIC/EIC and change to supervisor mode.
-    Cross: SIE (2 bins - only delegated case since coverpoint has mideleg_ones)
+    Cross: mideleg x SIE (2x2 = 4 bins)
     """
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_trigger_sei"
 
-    r_scratch = test_data.int_regs.get_registers(1, exclude_regs=[])[0]
+    r_scratch, r_temp, r_stimecmp = test_data.int_regs.get_registers(3, exclude_regs=[])
 
     lines = [
         comment_banner(
             "cp_trigger_sei",
             "Trigger SEIP (supervisor external interrupt)\n"
-            "Cross: mstatus.SIE={0/1}\n"
-            "With mstatus.MIE=0, mideleg=STI+SEI+SSI, mie=all 1s",
+            "Cross: mideleg={0/STI+SEI+SSI} x mstatus.SIE={0/1}\n"
+            "With mstatus.MIE=0, mie=all 1s",
         ),
         "",
     ]
 
-    # Only delegated case (coverpoint has mideleg_ones)
-    for sie_val in [0, 1]:
-        sie_name = f"sie_{sie_val}"
-        binname = f"deleg_{sie_name}"
+    for mideleg_val in [0, 1]:
+        for sie_val in [0, 1]:
+            mideleg_name = ["nodeleg", "deleg"][mideleg_val]
+            sie_name = f"sie_{sie_val}"
+            binname = f"{mideleg_name}_{sie_name}"
 
-        # === M-MODE SETUP ===
-        lines.extend(
-            [
-                "",
-                "# M-mode setup",
-                "CSRW(mie, zero)",  # Disable all interrupts
-                "csrci mstatus, 8",  # MIE=0
-                "csrci mstatus, 2",  # SIE=0
-            ]
-        )
+            # === M-MODE SETUP ===
+            lines.extend(
+                [
+                    "",
+                    "# M-mode setup",
+                    "RVTEST_GOTO_MMODE",
+                    "CSRW(mie, zero)",  # Disable all interrupts
+                    "csrci mstatus, 8",  # MIE=0
+                    "csrci mstatus, 2",  # SIE=0
+                ]
+            )
 
-        # Clear SEIP
-        lines.append("RVTEST_CLR_SEXT_INT")
+            # Clear interrupts
+            lines.extend(clr_stimer_mmode(r_scratch))
+            lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
 
-        # Set mideleg (delegate STI+SEI+SSI)
-        lines.extend(
-            [
-                f"LI(x{r_scratch}, 0x222)",
-                f"CSRW(mideleg, x{r_scratch})",
-            ]
-        )
+            # Clear SEIP
+            lines.append("RVTEST_CLR_SEXT_INT")
 
-        # Enable all interrupts in mie
-        lines.extend(
-            [
-                f"LI(x{r_scratch}, -1)",
-                f"CSRW(mie, x{r_scratch})",
-            ]
-        )
+            # Set mideleg
+            if mideleg_val:
+                lines.extend(
+                    [
+                        f"LI(x{r_scratch}, 0x222)",
+                        f"CSRW(mideleg, x{r_scratch})",
+                    ]
+                )
+            else:
+                lines.append("CSRW(mideleg, zero)")
 
-        # Set SIE in mstatus
-        lines.extend(
-            [
-                f"LI(x{r_scratch}, 0x02)",  # SIE bit
-                f"{'CSRS' if sie_val else 'CSRC'}(mstatus, x{r_scratch})",
-            ]
-        )
+            # Enable all interrupts in mie
+            lines.extend(
+                [
+                    f"LI(x{r_scratch}, -1)",
+                    f"CSRW(mie, x{r_scratch})",
+                ]
+            )
 
-        # Set SEIP in M-mode using macro
-        lines.extend(
-            [
-                test_data.add_testcase(binname, coverpoint, covergroup),
-                "RVTEST_SET_SEXT_INT",
-                "nop",
-            ]
-        )
+            # Set SIE in mstatus
+            lines.extend(
+                [
+                    f"LI(x{r_scratch}, 0x02)",  # SIE bit
+                    f"{'CSRS' if sie_val else 'CSRC'}(mstatus, x{r_scratch})",
+                ]
+            )
 
-        # Enter S-mode (SEIP already pending)
-        lines.extend(
-            [
-                "RVTEST_GOTO_LOWER_MODE Smode",
-            ]
-        )
+            # Set SEIP in M-mode using macro
+            lines.extend(
+                [
+                    test_data.add_testcase(binname, coverpoint, covergroup),
+                    "RVTEST_SET_SEXT_INT",
+                    "nop",
+                ]
+            )
 
-        # NOPs in S-mode for SEIP=1 coverage
-        lines.extend(
-            [
-                f"    LI(x{r_scratch}, 5000)",
-                f"1:  addi x{r_scratch}, x{r_scratch}, -1",
-                f"    bnez x{r_scratch}, 1b",
-            ]
-        )
+            # Enter S-mode (SEIP already pending)
+            lines.extend(
+                [
+                    "RVTEST_GOTO_LOWER_MODE Smode",
+                ]
+            )
 
-        # Return and cleanup
-        lines.extend(
-            [
-                "RVTEST_GOTO_MMODE",
-                "# Complete state cleanup",
-                "csrci mstatus, 8",  # Clear MIE
-                "csrci mstatus, 2",  # Clear SIE
-                "CSRW(mideleg, zero)",  # Clear delegation
-                "CSRW(mie, zero)",  # Clear all interrupt enables
-            ]
-        )
+            # NOPs in S-mode for SEIP=1 coverage
+            lines.extend(
+                [
+                    f"    LI(x{r_scratch}, 5000)",
+                    f"1:  addi x{r_scratch}, x{r_scratch}, -1",
+                    f"    bnez x{r_scratch}, 1b",
+                ]
+            )
 
-        # Clear SEIP
-        lines.append("RVTEST_CLR_SEXT_INT")
+            # Return and cleanup
+            lines.extend(
+                [
+                    "RVTEST_GOTO_MMODE",
+                    "# Complete state cleanup",
+                    "csrci mstatus, 8",  # Clear MIE
+                    "csrci mstatus, 2",  # Clear SIE
+                    "CSRW(mideleg, zero)",  # Clear delegation
+                    "CSRW(mie, zero)",  # Clear all interrupt enables
+                ]
+            )
 
-    test_data.int_regs.return_registers([r_scratch])
+            # Clear SEIP
+            lines.append("RVTEST_CLR_SEXT_INT")
+
+    test_data.int_regs.return_registers([r_scratch, r_temp, r_stimecmp])
     return lines
 
 
@@ -1200,6 +1200,7 @@ def _generate_priority_mip_s_tests(test_data: TestData) -> list[str]:
                 [
                     f"LI(x{r_scratch}, 0x2)",
                     f"CSRC(mip, x{r_scratch})",
+                    "RVTEST_CLR_SSW_INT",
                     "RVTEST_CLR_MSW_INT",
                     "RVTEST_CLR_SEXT_INT",
                     "RVTEST_CLR_MEXT_INT",
@@ -1237,6 +1238,23 @@ def _generate_priority_mip_s_tests(test_data: TestData) -> list[str]:
                 ]
             )
 
+            # Set each interrupt according to the pattern
+            if ssip_set:
+                lines.append("RVTEST_SET_SSW_INT")
+            if msip_set:
+                lines.append("RVTEST_SET_MSW_INT")
+            if stip_set:
+                lines.extend(set_stimer_mmode(r_mtime))
+            if mtip_set:
+                lines.extend(set_mtimer_int(r_mtime, r_stimecmp, r_temp, r_temp2))
+            if seip_set:
+                lines.append("RVTEST_SET_SEXT_INT")
+            if meip_set:
+                lines.append("RVTEST_SET_MEXT_INT")
+
+            # Set the interrupt pattern
+            lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
+
             # Set SIE=1
             lines.extend(
                 [
@@ -1245,40 +1263,7 @@ def _generate_priority_mip_s_tests(test_data: TestData) -> list[str]:
                 ]
             )
 
-            # Set the interrupt pattern
-            lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
-
-            # Set each interrupt according to the pattern
-            if ssip_set:
-                lines.extend(
-                    [
-                        f"LI(x{r_scratch}, 0x2)",
-                        f"CSRS(mip, x{r_scratch})",
-                    ]
-                )
-            if msip_set:
-                lines.append("RVTEST_SET_MSW_INT")
-            if stip_set:
-                lines.extend(
-                    [
-                        f"CSRR x{r_stce}, menvcfg",
-                        "#if __riscv_xlen == 64",
-                        f"    srli x{r_stce}, x{r_stce}, 63",
-                        "#else",
-                        f"    srli x{r_stce}, x{r_stce}, 31",
-                        "#endif",
-                        f"andi x{r_stce}, x{r_stce}, 0x1",
-                    ]
-                )
-                lines.extend(set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce))
-            if mtip_set:
-                lines.extend(set_mtimer_int(r_mtime, r_stimecmp, r_temp, r_temp2))
-            if seip_set:
-                lines.append("RVTEST_SET_SEXT_INT")
-            if meip_set:
-                lines.append("RVTEST_SET_MEXT_INT")
-
-            lines.append("nop")
+            # lines.append("nop")
 
             # Enter S-mode (highest priority interrupt will fire)
             lines.append("RVTEST_GOTO_LOWER_MODE Smode")
@@ -1305,16 +1290,11 @@ def _generate_priority_mip_s_tests(test_data: TestData) -> list[str]:
 
             # Clear all interrupts that were set
             if ssip_set:
-                lines.extend(
-                    [
-                        f"LI(x{r_scratch}, 0x2)",
-                        f"CSRC(mip, x{r_scratch})",
-                    ]
-                )
+                lines.append("RVTEST_CLR_SSW_INT")
             if msip_set:
                 lines.append("RVTEST_CLR_MSW_INT")
             if stip_set:
-                lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
+                lines.extend(clr_stimer_mmode(r_temp))
             if mtip_set:
                 lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
             if seip_set:
@@ -1326,45 +1306,241 @@ def _generate_priority_mip_s_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+# def _generate_priority_mie_s_tests(test_data: TestData) -> list[str]:
+#     """Generate interrupt priority tests varying mie.
+
+#     Set ALL mip bits, vary mie through all 2^6 combinations.
+#     Cross: mideleg={0/STI+SEI+SSI} x 64 mie patterns = 128 tests.
+#     mstatus.MIE=0, mstatus.SIE=1, mip=all 1s.
+#     """
+#     covergroup = "InterruptsS_S_cg"
+#     coverpoint_s = "cp_priority_mie_s"
+
+#     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+
+#     lines = [
+#         comment_banner(
+#             "cp_priority_mie_s",
+#             "Test interrupt priority with all mie combinations\n"
+#             "mip=all 1s, vary mie through all 64 combinations, mideleg={0/STI+SEI+SSI}",
+#         ),
+#         "",
+#     ]
+
+#     for mideleg_val in [0, 1]:
+#         mideleg_name = ["nodeleg", "deleg"][mideleg_val]
+
+#         for mie_pattern in range(64):
+#             ssie = (mie_pattern >> 0) & 1
+#             msie = (mie_pattern >> 1) & 1
+#             stie = (mie_pattern >> 2) & 1
+#             mtie = (mie_pattern >> 3) & 1
+#             seie = (mie_pattern >> 4) & 1
+#             meie = (mie_pattern >> 5) & 1
+
+#             mie_val = (ssie << 1) | (msie << 3) | (stie << 5) | (mtie << 7) | (seie << 9) | (meie << 11)
+
+#             binname = f"{mideleg_name}_mie_{mie_pattern:02x}"
+
+#             lines.extend([
+#                 "",
+#                 f"# Test: mideleg={mideleg_name}, mie_pattern=0x{mie_pattern:02x} "
+#                 f"(MEIE={meie} SEIE={seie} MTIE={mtie} STIE={stie} MSIE={msie} SSIE={ssie})",
+#                 "RVTEST_GOTO_MMODE",
+#                 "CSRW(mie, zero)",
+#                 "csrci mstatus, 8",   # MIE=0
+#                 "csrci mstatus, 2",   # SIE=0
+#             ])
+
+#             # Clear all interrupts
+#             lines.extend([
+#                 f"LI(x{r_scratch}, 0x2)",
+#                 f"CSRC(mip, x{r_scratch})",
+#                 "RVTEST_CLR_MSW_INT",
+#                 "RVTEST_CLR_SEXT_INT",
+#                 "RVTEST_CLR_MEXT_INT",
+#             ])
+#             lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
+#             lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
+
+#             # Set mtvec.MODE = 0 (direct)
+#             lines.extend(
+#                 [
+#                     f"CSRR x{r_scratch}, mtvec",
+#                     f"SRLI x{r_scratch}, x{r_scratch}, 2",
+#                     f"SLLI x{r_scratch}, x{r_scratch}, 2",
+#                     f"CSRW(mtvec, x{r_scratch})",
+#                 ]
+#             )
+
+#             # Set mideleg
+#             if mideleg_val:
+#                 lines.extend([
+#                     f"LI(x{r_scratch}, 0x222)",
+#                     f"CSRW(mideleg, x{r_scratch})",
+#                 ])
+#             else:
+#                 lines.append("CSRW(mideleg, zero)")
+
+#             # Set specific mie pattern
+#             lines.extend([
+#                 f"LI(x{r_scratch}, {hex(mie_val)})",
+#                 f"CSRW(mie, x{r_scratch})",
+#             ])
+
+#             # Set ALL mip bits (fixed)
+#             lines.extend([
+#                 f"LI(x{r_scratch}, 0x2)",
+#                 f"CSRS(mip, x{r_scratch})",   # SSIP
+#             ])
+#             lines.extend(
+#                 [
+#                     f"    LI(x{r_scratch}, 100)",
+#                     f"1:  addi x{r_scratch}, x{r_scratch}, -1",
+#                     f"    bnez x{r_scratch}, 1b",
+#                 ]
+#             )
+
+#             lines.append("RVTEST_SET_MSW_INT")  # MSIP
+#             lines.extend(
+#                 [
+#                     f"    LI(x{r_scratch}, 100)",
+#                     f"1:  addi x{r_scratch}, x{r_scratch}, -1",
+#                     f"    bnez x{r_scratch}, 1b",
+#                 ]
+#             )
+
+#             lines.extend([
+#                 f"CSRR x{r_stce}, menvcfg",
+#                 "#if __riscv_xlen == 64",
+#                 f"    srli x{r_stce}, x{r_stce}, 63",
+#                 "#else",
+#                 f"    srli x{r_stce}, x{r_stce}, 31",
+#                 "#endif",
+#                 f"andi x{r_stce}, x{r_stce}, 0x1",
+#             ])
+#             lines.extend(set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce))  # STIP
+#             lines.extend(
+#                 [
+#                     f"    LI(x{r_scratch}, 100)",
+#                     f"1:  addi x{r_scratch}, x{r_scratch}, -1",
+#                     f"    bnez x{r_scratch}, 1b",
+#                 ]
+#             )
+
+#             lines.extend(set_mtimer_int(r_mtime, r_stimecmp, r_temp, r_temp2))          # MTIP
+#             lines.extend(
+#                 [
+#                     f"    LI(x{r_scratch}, 100)",
+#                     f"1:  addi x{r_scratch}, x{r_scratch}, -1",
+#                     f"    bnez x{r_scratch}, 1b",
+#                 ]
+#             )
+
+#             lines.append("RVTEST_SET_SEXT_INT")                                          # SEIP
+#             lines.extend(
+#                 [
+#                     f"    LI(x{r_scratch}, 100)",
+#                     f"1:  addi x{r_scratch}, x{r_scratch}, -1",
+#                     f"    bnez x{r_scratch}, 1b",
+#                 ]
+#             )
+
+#             lines.append("RVTEST_SET_MEXT_INT")                                          # MEIP
+#             lines.extend(
+#                 [
+#                     f"    LI(x{r_scratch}, 100)",
+#                     f"1:  addi x{r_scratch}, x{r_scratch}, -1",
+#                     f"    bnez x{r_scratch}, 1b",
+#                 ]
+#             )
+
+#             lines.append(test_data.add_testcase(binname, coverpoint_s, covergroup))
+
+#             # SIE=1, MIE stays 0
+#             lines.extend([
+#                 f"LI(x{r_scratch}, 0x02)",
+#                 f"CSRS(mstatus, x{r_scratch})",  # SIE=1
+#             ])
+
+#             # Enter S-mode
+#             lines.append("RVTEST_GOTO_LOWER_MODE Smode")
+
+#             # Countdown loop
+#             lines.extend([
+#                 f"    LI(x{r_scratch}, 100)",
+#                 f"1:  addi x{r_scratch}, x{r_scratch}, -1",
+#                 f"    bnez x{r_scratch}, 1b",
+#             ])
+
+#             # Cleanup
+#             lines.extend([
+#                 "RVTEST_GOTO_MMODE",
+#                 "csrci mstatus, 8",
+#                 "csrci mstatus, 2",
+#                 "CSRW(mideleg, zero)",
+#                 "CSRW(mie, zero)",
+#                 f"LI(x{r_scratch}, 0x2)",
+#                 f"CSRC(mip, x{r_scratch})",
+#                 "RVTEST_CLR_MSW_INT",
+#             ])
+#             lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
+#             lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
+#             lines.append("RVTEST_CLR_SEXT_INT")
+#             lines.append("RVTEST_CLR_MEXT_INT")
+
+#     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
+#     return lines
+
+
 def _generate_priority_mie_s_tests(test_data: TestData) -> list[str]:
     """Generate interrupt priority tests varying mie.
 
-    Set ALL mip bits, vary mie through all combinations.
-    Test both S-mode (8 combinations) and M-mode (7 combinations, excluding 000).
+    Test all 2^6 = 64 combinations of mie with mip=all 1s.
+    Cross: mideleg={0, 0x222} × 64 mie patterns = 128 tests
+    Highest priority enabled interrupt should fire.
     """
     covergroup = "InterruptsS_S_cg"
-    coverpoint_s = "cp_priority_mie_s"
-    coverpoint_m = "cp_priority_mie_s_m"
+    coverpoint = "cp_priority_mie_s"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
 
     lines = [
         comment_banner(
             "cp_priority_mie_s",
-            "Test interrupt priority with all mie combinations\nAll mip bits set, vary mie",
+            "Test interrupt priority with all mie combinations\n2^6 mie patterns × 2 mideleg values = 128 tests",
         ),
         "",
     ]
 
-    # Test both mideleg values
     for mideleg_val in [0, 1]:
         mideleg_name = ["nodeleg", "deleg"][mideleg_val]
 
-        # S-mode combinations: 8 patterns (including 000)
-        for mie_pattern_s in range(8):
-            ssie = (mie_pattern_s >> 0) & 1
-            stie = (mie_pattern_s >> 1) & 1
-            seie = (mie_pattern_s >> 2) & 1
+        for mie_pattern in range(64):
+            # Extract which interrupts are enabled in this pattern
+            ssie_set = (mie_pattern >> 0) & 1
+            msie_set = (mie_pattern >> 1) & 1
+            stie_set = (mie_pattern >> 2) & 1
+            mtie_set = (mie_pattern >> 3) & 1
+            seie_set = (mie_pattern >> 4) & 1
+            meie_set = (mie_pattern >> 5) & 1
 
-            # Build mie value with S-mode bits
-            mie_val = (ssie << 1) | (stie << 5) | (seie << 9)
+            mie_val = (
+                (ssie_set << 1)
+                | (msie_set << 3)
+                | (stie_set << 5)
+                | (mtie_set << 7)
+                | (seie_set << 9)
+                | (meie_set << 11)
+            )
 
-            binname = f"{mideleg_name}_s_mie_{mie_pattern_s:03b}"
+            binname = f"{mideleg_name}_mie_{mie_pattern:02x}"
 
+            # === M-MODE SETUP ===
             lines.extend(
                 [
                     "",
-                    f"# Test: mideleg={mideleg_name}, S-mode mie pattern={mie_pattern_s:03b}",
+                    f"# Test: mideleg={mideleg_name}, mie_pattern=0x{mie_pattern:02x}",
                     "CSRW(mie, zero)",
                     "csrci mstatus, 8",  # MIE=0
                     "csrci mstatus, 2",  # SIE=0
@@ -1376,6 +1552,7 @@ def _generate_priority_mie_s_tests(test_data: TestData) -> list[str]:
                 [
                     f"LI(x{r_scratch}, 0x2)",
                     f"CSRC(mip, x{r_scratch})",
+                    "RVTEST_CLR_SSW_INT",
                     "RVTEST_CLR_MSW_INT",
                     "RVTEST_CLR_SEXT_INT",
                     "RVTEST_CLR_MEXT_INT",
@@ -1384,7 +1561,7 @@ def _generate_priority_mie_s_tests(test_data: TestData) -> list[str]:
             lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
             lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
 
-            # Set mtvec.MODE = 0
+            # Set mtvec.MODE = 0 (direct)
             lines.extend(
                 [
                     f"CSRR x{r_scratch}, mtvec",
@@ -1413,34 +1590,21 @@ def _generate_priority_mie_s_tests(test_data: TestData) -> list[str]:
                 ]
             )
 
+            # Set ALL mip bits (fixed — mip=all 1s)
+            lines.append("RVTEST_SET_MSW_INT")  # MSIP
+            lines.append("RVTEST_SET_SSW_INT")  # SSIP
+            lines.extend(set_stimer_mmode(r_mtime))  # STIP
+            lines.extend(set_mtimer_int(r_mtime, r_stimecmp, r_temp, r_temp2))  # MTIP
+            lines.append("RVTEST_SET_SEXT_INT")  # SEIP
+            lines.append("RVTEST_SET_MEXT_INT")  # MEIP
+
+            lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
+
             # Set SIE=1
             lines.extend(
                 [
                     f"LI(x{r_scratch}, 0x02)",
                     f"CSRS(mstatus, x{r_scratch})",
-                ]
-            )
-
-            # Set ALL S-mode interrupts
-            lines.append(test_data.add_testcase(binname, coverpoint_s, covergroup))
-            lines.extend(
-                [
-                    f"LI(x{r_scratch}, 0x2)",
-                    f"CSRS(mip, x{r_scratch})",
-                    f"CSRR x{r_stce}, menvcfg",
-                    "#if __riscv_xlen == 64",
-                    f"    srli x{r_stce}, x{r_stce}, 63",
-                    "#else",
-                    f"    srli x{r_stce}, x{r_stce}, 31",
-                    "#endif",
-                    f"andi x{r_stce}, x{r_stce}, 0x1",
-                ]
-            )
-            lines.extend(set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce))
-            lines.extend(
-                [
-                    "RVTEST_SET_SEXT_INT",
-                    "nop",
                 ]
             )
 
@@ -1465,122 +1629,14 @@ def _generate_priority_mie_s_tests(test_data: TestData) -> list[str]:
                     "CSRW(mideleg, zero)",
                     "CSRW(mie, zero)",
                     f"LI(x{r_scratch}, 0x2)",
-                    f"CSRC(mip, x{r_scratch})",
+                    f"CSRC(mip, x{r_scratch})",  # SSIP
                 ]
             )
+            lines.append("RVTEST_CLR_MSW_INT")
+            lines.append("RVTEST_CLR_SSW_INT")
             lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
+            lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
             lines.append("RVTEST_CLR_SEXT_INT")
-
-        # M-mode combinations: 7 patterns (excluding 000)
-        for mie_pattern_m in range(1, 8):  # Skip 0 (combo_000)
-            msie = (mie_pattern_m >> 0) & 1
-            mtie = (mie_pattern_m >> 1) & 1
-            meie = (mie_pattern_m >> 2) & 1
-
-            # Build mie value with M-mode bits
-            mie_val = (msie << 3) | (mtie << 7) | (meie << 11)
-
-            binname = f"{mideleg_name}_m_mie_{mie_pattern_m:03b}"
-
-            lines.extend(
-                [
-                    "",
-                    f"# Test: mideleg={mideleg_name}, M-mode mie pattern={mie_pattern_m:03b}",
-                    "CSRW(mie, zero)",
-                    "csrci mstatus, 8",
-                    "csrci mstatus, 2",
-                ]
-            )
-
-            # Clear all interrupts
-            lines.extend(
-                [
-                    f"LI(x{r_scratch}, 0x2)",
-                    f"CSRC(mip, x{r_scratch})",
-                    "RVTEST_CLR_MSW_INT",
-                    "RVTEST_CLR_SEXT_INT",
-                    "RVTEST_CLR_MEXT_INT",
-                ]
-            )
-            lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
-            lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
-
-            # Set mtvec.MODE = 0
-            lines.extend(
-                [
-                    f"CSRR x{r_scratch}, mtvec",
-                    f"SRLI x{r_scratch}, x{r_scratch}, 2",
-                    f"SLLI x{r_scratch}, x{r_scratch}, 2",
-                    f"CSRW(mtvec, x{r_scratch})",
-                ]
-            )
-
-            # Set mideleg
-            if mideleg_val:
-                lines.extend(
-                    [
-                        f"LI(x{r_scratch}, 0x222)",
-                        f"CSRW(mideleg, x{r_scratch})",
-                    ]
-                )
-            else:
-                lines.append("CSRW(mideleg, zero)")
-
-            # Set specific mie pattern
-            lines.extend(
-                [
-                    f"LI(x{r_scratch}, {hex(mie_val)})",
-                    f"CSRW(mie, x{r_scratch})",
-                ]
-            )
-
-            # Set SIE=1
-            lines.extend(
-                [
-                    f"LI(x{r_scratch}, 0x02)",
-                    f"CSRS(mstatus, x{r_scratch})",
-                ]
-            )
-
-            # Set ALL M-mode interrupts
-            lines.append(test_data.add_testcase(binname, coverpoint_m, covergroup))
-            lines.extend(
-                [
-                    "RVTEST_SET_MSW_INT",
-                ]
-            )
-            lines.extend(set_mtimer_int(r_mtime, r_stimecmp, r_temp, r_temp2))
-            lines.extend(
-                [
-                    "RVTEST_SET_MEXT_INT",
-                    "nop",
-                ]
-            )
-
-            # Enter S-mode (M-interrupt will fire immediately)
-            lines.append("RVTEST_GOTO_LOWER_MODE Smode")
-
-            # Wait
-            lines.extend(
-                [
-                    f"    LI(x{r_scratch}, 100)",
-                    f"1:  addi x{r_scratch}, x{r_scratch}, -1",
-                    f"    bnez x{r_scratch}, 1b",
-                ]
-            )
-
-            # Cleanup
-            lines.extend(
-                [
-                    "RVTEST_GOTO_MMODE",
-                    "csrci mstatus, 8",
-                    "csrci mstatus, 2",
-                    "CSRW(mideleg, zero)",
-                    "CSRW(mie, zero)",
-                    "RVTEST_CLR_MSW_INT",
-                ]
-            )
-            lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
             lines.append("RVTEST_CLR_MEXT_INT")
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
@@ -1590,45 +1646,56 @@ def _generate_priority_mie_s_tests(test_data: TestData) -> list[str]:
 def _generate_priority_both_s_tests(test_data: TestData) -> list[str]:
     """Generate interrupt priority tests with mip == mie.
 
-    For each pattern, set the same bits in both mip and mie.
+    Test all 2^6 = 64 combinations with same bits in both mip and mie.
+    Cross: mideleg={0, 0x222} × 64 patterns = 128 tests.
     Tests priority when multiple interrupts are both pending and enabled.
     """
     covergroup = "InterruptsS_S_cg"
-    coverpoint_s = "cp_priority_both_s"
-    coverpoint_m = "cp_priority_both_s_m"
+    coverpoint = "cp_priority_both_s"
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
 
     lines = [
         comment_banner(
             "cp_priority_both_s",
-            "Test interrupt priority with mip == mie\nSame pattern in both mip and mie for priority testing",
+            "Test interrupt priority with mip == mie\n2^6 patterns × 2 mideleg values = 128 tests",
         ),
         "",
     ]
 
-    # Test both mideleg values
     for mideleg_val in [0, 1]:
         mideleg_name = ["nodeleg", "deleg"][mideleg_val]
 
-        # S-mode: all 8 patterns (including 000)
-        for pattern in range(8):
-            ssip = (pattern >> 0) & 1
-            stip = (pattern >> 1) & 1
-            seip = (pattern >> 2) & 1
+        for pattern in range(64):
+            ssip_set = (pattern >> 0) & 1
+            msip_set = (pattern >> 1) & 1
+            stip_set = (pattern >> 2) & 1
+            mtip_set = (pattern >> 3) & 1
+            seip_set = (pattern >> 4) & 1
+            meip_set = (pattern >> 5) & 1
 
-            # Set same pattern in both mip and mie
-            mie_val = (ssip << 1) | (stip << 5) | (seip << 9)
+            # mip == mie: same bits set in both
+            mie_val = (
+                (ssip_set << 1)
+                | (msip_set << 3)
+                | (stip_set << 5)
+                | (mtip_set << 7)
+                | (seip_set << 9)
+                | (meip_set << 11)
+            )
 
-            binname = f"{mideleg_name}_s_both_{pattern:03b}"
+            binname = f"{mideleg_name}_both_{pattern:02x}"
 
+            # === M-MODE SETUP ===
             lines.extend(
                 [
                     "",
-                    f"# Test: mideleg={mideleg_name}, S-mode pattern={pattern:03b} (mip==mie)",
+                    f"# Test: mideleg={mideleg_name}, pattern=0x{pattern:02x} ",
+                    f"(MEIP={meip_set} SEIP={seip_set} MTIP={mtip_set} STIP={stip_set} MSIP={msip_set} SSIP={ssip_set})",
+                    "RVTEST_GOTO_MMODE",
                     "CSRW(mie, zero)",
-                    "csrci mstatus, 8",
-                    "csrci mstatus, 2",
+                    "csrci mstatus, 8",  # MIE=0
+                    "csrci mstatus, 2",  # SIE=0
                 ]
             )
 
@@ -1637,139 +1704,13 @@ def _generate_priority_both_s_tests(test_data: TestData) -> list[str]:
                 [
                     f"LI(x{r_scratch}, 0x2)",
                     f"CSRC(mip, x{r_scratch})",
-                    "RVTEST_CLR_SEXT_INT",
-                ]
-            )
-            lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
-
-            # Set mtvec.MODE = 0
-            lines.extend(
-                [
-                    f"CSRR x{r_scratch}, mtvec",
-                    f"SRLI x{r_scratch}, x{r_scratch}, 2",
-                    f"SLLI x{r_scratch}, x{r_scratch}, 2",
-                    f"CSRW(mtvec, x{r_scratch})",
-                ]
-            )
-
-            # Set mideleg
-            if mideleg_val:
-                lines.extend(
-                    [
-                        f"LI(x{r_scratch}, 0x222)",
-                        f"CSRW(mideleg, x{r_scratch})",
-                    ]
-                )
-            else:
-                lines.append("CSRW(mideleg, zero)")
-
-            # Set mie pattern
-            lines.extend(
-                [
-                    f"LI(x{r_scratch}, {hex(mie_val)})",
-                    f"CSRW(mie, x{r_scratch})",
-                ]
-            )
-
-            # Set SIE=1
-            lines.extend(
-                [
-                    f"LI(x{r_scratch}, 0x02)",
-                    f"CSRS(mstatus, x{r_scratch})",
-                ]
-            )
-
-            # Set matching mip pattern
-            lines.append(test_data.add_testcase(binname, coverpoint_s, covergroup))
-
-            if ssip:
-                lines.extend(
-                    [
-                        f"LI(x{r_scratch}, 0x2)",
-                        f"CSRS(mip, x{r_scratch})",
-                    ]
-                )
-            if stip:
-                lines.extend(
-                    [
-                        f"CSRR x{r_stce}, menvcfg",
-                        "#if __riscv_xlen == 64",
-                        f"    srli x{r_stce}, x{r_stce}, 63",
-                        "#else",
-                        f"    srli x{r_stce}, x{r_stce}, 31",
-                        "#endif",
-                        f"andi x{r_stce}, x{r_stce}, 0x1",
-                    ]
-                )
-                lines.extend(set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce))
-            if seip:
-                lines.append("RVTEST_SET_SEXT_INT")
-
-            lines.append("nop")
-
-            # Enter S-mode
-            lines.append("RVTEST_GOTO_LOWER_MODE Smode")
-
-            # Wait
-            lines.extend(
-                [
-                    f"    LI(x{r_scratch}, 100)",
-                    f"1:  addi x{r_scratch}, x{r_scratch}, -1",
-                    f"    bnez x{r_scratch}, 1b",
-                ]
-            )
-
-            # Cleanup
-            lines.extend(
-                [
-                    "RVTEST_GOTO_MMODE",
-                    "csrci mstatus, 8",
-                    "csrci mstatus, 2",
-                    "CSRW(mideleg, zero)",
-                    "CSRW(mie, zero)",
-                ]
-            )
-
-            if ssip:
-                lines.extend(
-                    [
-                        f"LI(x{r_scratch}, 0x2)",
-                        f"CSRC(mip, x{r_scratch})",
-                    ]
-                )
-            if stip:
-                lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
-            if seip:
-                lines.append("RVTEST_CLR_SEXT_INT")
-
-        # M-mode: patterns 1-7 (skip 0, no interrupt = no MRET)
-        for pattern in range(1, 8):
-            msip = (pattern >> 0) & 1
-            mtip = (pattern >> 1) & 1
-            meip = (pattern >> 2) & 1
-
-            # Set same pattern in both mip and mie
-            mie_val = (msip << 3) | (mtip << 7) | (meip << 11)
-
-            binname = f"{mideleg_name}_m_both_{pattern:03b}"
-
-            lines.extend(
-                [
-                    "",
-                    f"# Test: mideleg={mideleg_name}, M-mode pattern={pattern:03b} (mip==mie)",
-                    "CSRW(mie, zero)",
-                    "csrci mstatus, 8",
-                    "csrci mstatus, 2",
-                ]
-            )
-
-            # Clear all interrupts
-            lines.extend(
-                [
+                    "RVTEST_CLR_SSW_INT",
                     "RVTEST_CLR_MSW_INT",
+                    "RVTEST_CLR_SEXT_INT",
                     "RVTEST_CLR_MEXT_INT",
                 ]
             )
+            lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
             lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
 
             # Set mtvec.MODE = 0
@@ -1793,13 +1734,29 @@ def _generate_priority_both_s_tests(test_data: TestData) -> list[str]:
             else:
                 lines.append("CSRW(mideleg, zero)")
 
-            # Set mie pattern
+            # Set mie == pattern
             lines.extend(
                 [
                     f"LI(x{r_scratch}, {hex(mie_val)})",
                     f"CSRW(mie, x{r_scratch})",
                 ]
             )
+
+            # Set mip == pattern (same bits as mie)
+            if ssip_set:
+                lines.append("RVTEST_SET_SSW_INT")
+            if msip_set:
+                lines.append("RVTEST_SET_MSW_INT")
+            if stip_set:
+                lines.extend(set_stimer_mmode(r_mtime))
+            if mtip_set:
+                lines.extend(set_mtimer_int(r_mtime, r_stimecmp, r_temp, r_temp2))
+            if seip_set:
+                lines.append("RVTEST_SET_SEXT_INT")
+            if meip_set:
+                lines.append("RVTEST_SET_MEXT_INT")
+
+            lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
 
             # Set SIE=1
             lines.extend(
@@ -1809,22 +1766,10 @@ def _generate_priority_both_s_tests(test_data: TestData) -> list[str]:
                 ]
             )
 
-            # Set matching mip pattern
-            lines.append(test_data.add_testcase(binname, coverpoint_m, covergroup))
-
-            if msip:
-                lines.append("RVTEST_SET_MSW_INT")
-            if mtip:
-                lines.extend(set_mtimer_int(r_mtime, r_stimecmp, r_temp, r_temp2))
-            if meip:
-                lines.append("RVTEST_SET_MEXT_INT")
-
-            lines.append("nop")
-
             # Enter S-mode
             lines.append("RVTEST_GOTO_LOWER_MODE Smode")
 
-            # Wait
+            # Wait for coverage
             lines.extend(
                 [
                     f"    LI(x{r_scratch}, 100)",
@@ -1843,24 +1788,23 @@ def _generate_priority_both_s_tests(test_data: TestData) -> list[str]:
                     "CSRW(mie, zero)",
                 ]
             )
-
-            if msip:
-                lines.append("RVTEST_CLR_MSW_INT")
-            if mtip:
-                lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
-            if meip:
-                lines.append("RVTEST_CLR_MEXT_INT")
+            lines.append("RVTEST_CLR_SSW_INT")
+            lines.append("RVTEST_CLR_MSW_INT")
+            lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
+            lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
+            lines.append("RVTEST_CLR_SEXT_INT")
+            lines.append("RVTEST_CLR_MEXT_INT")
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
     return lines
 
 
-def _generate_priority_mideleg_m_tests(test_data: TestData) -> list[str]:
-    """Generate mideleg priority tests.
+def _generate_priority_mideleg_tests(test_data: TestData) -> list[str]:
+    """Generate mideleg priority tests (combined M + S behavior).
 
-    Test all 8 mideleg patterns (2^3) with all S-interrupts set.
-    mip = SSIP+STIP+SEIP, mie = all 1s, MIE=0, SIE=1.
-    Verifies undelegated interrupts take priority over delegated.
+    Covers:
+    - M-mode priority vs delegation (all 8 patterns)
+    - S-mode priority within delegated interrupts (patterns 1–7, mie=mideleg)
     """
     covergroup = "InterruptsS_S_cg"
 
@@ -1868,14 +1812,15 @@ def _generate_priority_mideleg_m_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(
-            "cp_priority_mideleg_m",
-            "Test interrupt priority with varying mideleg patterns\n"
-            "All S-interrupts set, vary delegation to test priority",
+            "cp_priority_mideleg_combined",
+            "Combined mideleg priority tests\nIncludes M-mode (delegation priority) + S-mode (delegated priority)",
         ),
         "",
     ]
 
-    # Test all 8 mideleg patterns
+    # ============================================================
+    # PASS 1: M-MODE PRIORITY (original _m_tests)
+    # ============================================================
     for mideleg_pattern in range(8):
         ssie = (mideleg_pattern >> 0) & 1
         stie = (mideleg_pattern >> 1) & 1
@@ -1883,23 +1828,21 @@ def _generate_priority_mideleg_m_tests(test_data: TestData) -> list[str]:
 
         mideleg_val = (ssie << 1) | (stie << 5) | (seie << 9)
 
-        # S-mode coverage: only combo_111 (all delegated)
-        # M-mode coverage: all combos with at least one undelegated
         coverpoint = "cp_priority_mideleg_s/cp_priority_mideleg_m" if mideleg_pattern == 7 else "cp_priority_mideleg_m"
 
-        binname = f"mideleg_{mideleg_pattern:03b}"
+        binname = f"mideleg_m_{mideleg_pattern:03b}"
 
         lines.extend(
             [
                 "",
-                f"# Test: mideleg pattern={mideleg_pattern:03b}",
+                f"# M-test: mideleg={mideleg_pattern:03b}",
                 "CSRW(mie, zero)",
-                "csrci mstatus, 8",  # MIE=0
-                "csrci mstatus, 2",  # SIE=0
+                "csrci mstatus, 8",
+                "csrci mstatus, 2",
             ]
         )
 
-        # Clear all interrupts
+        # Clear
         lines.extend(
             [
                 f"LI(x{r_scratch}, 0x2)",
@@ -1908,8 +1851,9 @@ def _generate_priority_mideleg_m_tests(test_data: TestData) -> list[str]:
             ]
         )
         lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
+        lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
 
-        # Set mtvec.MODE = 0
+        # mtvec direct
         lines.extend(
             [
                 f"CSRR x{r_scratch}, mtvec",
@@ -1919,7 +1863,7 @@ def _generate_priority_mideleg_m_tests(test_data: TestData) -> list[str]:
             ]
         )
 
-        # Set mideleg pattern
+        # mideleg
         lines.extend(
             [
                 f"LI(x{r_scratch}, {hex(mideleg_val)})",
@@ -1927,7 +1871,7 @@ def _generate_priority_mideleg_m_tests(test_data: TestData) -> list[str]:
             ]
         )
 
-        # Enable ALL interrupts in mie (mie = 1s)
+        # mie = all
         lines.extend(
             [
                 f"LI(x{r_scratch}, -1)",
@@ -1935,7 +1879,14 @@ def _generate_priority_mideleg_m_tests(test_data: TestData) -> list[str]:
             ]
         )
 
-        # Set SIE=1
+        lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
+
+        # set all S interrupts
+        lines.append("RVTEST_SET_SEXT_INT")
+        lines.append("RVTEST_SET_SSW_INT")
+        lines.extend(set_stimer_mmode(r_mtime))
+
+        # enable SIE
         lines.extend(
             [
                 f"LI(x{r_scratch}, 0x02)",
@@ -1943,42 +1894,18 @@ def _generate_priority_mideleg_m_tests(test_data: TestData) -> list[str]:
             ]
         )
 
-        # Set ALL S-mode interrupts (mip = SSIP+STIP+SEIP)
-        lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
-        lines.extend(
-            [
-                f"LI(x{r_scratch}, 0x2)",
-                f"CSRS(mip, x{r_scratch})",
-                f"CSRR x{r_stce}, menvcfg",
-                "#if __riscv_xlen == 64",
-                f"    srli x{r_stce}, x{r_stce}, 63",
-                "#else",
-                f"    srli x{r_stce}, x{r_stce}, 31",
-                "#endif",
-                f"andi x{r_stce}, x{r_stce}, 0x1",
-            ]
-        )
-        lines.extend(set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce))
-        lines.extend(
-            [
-                "RVTEST_SET_SEXT_INT",
-                "nop",
-            ]
-        )
-
-        # Enter S-mode
         lines.append("RVTEST_GOTO_LOWER_MODE Smode")
 
-        # Wait for highest priority interrupt to fire
+        # wait
         lines.extend(
             [
                 f"    LI(x{r_scratch}, 100)",
-                f"1:  addi x{r_scratch}, x{r_scratch}, -1",
-                f"    bnez x{r_scratch}, 1b",
+                f"1: addi x{r_scratch}, x{r_scratch}, -1",
+                f"   bnez x{r_scratch}, 1b",
             ]
         )
 
-        # Cleanup
+        # cleanup
         lines.extend(
             [
                 "RVTEST_GOTO_MMODE",
@@ -1993,52 +1920,29 @@ def _generate_priority_mideleg_m_tests(test_data: TestData) -> list[str]:
         lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
         lines.append("RVTEST_CLR_SEXT_INT")
 
-    test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
-
-
-def _generate_priority_mideleg_s_tests(test_data: TestData) -> list[str]:
-    """Generate priority among delegated interrupts test.
-
-    Set all S-interrupts (mip=all), but mie=mideleg (matching).
-    Only delegated+enabled interrupts fire, testing priority within delegated interrupts.
-    """
-    covergroup = "InterruptsS_S_cg"
-    coverpoint = "cp_priority_mideleg_s"
-
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
-
-    lines = [
-        comment_banner(
-            "cp_priority_mideleg_s",
-            "Test priority among delegated interrupts\nmip=all S-interrupts, mie=mideleg (matching)",
-        ),
-        "",
-    ]
-
-    # Test patterns 1-7 (skip 0 = nothing enabled)
+    # ============================================================
+    # PASS 2: S-MODE PRIORITY (original _s_tests)
+    # ============================================================
     for mideleg_pattern in range(1, 8):
         ssie = (mideleg_pattern >> 0) & 1
         stie = (mideleg_pattern >> 1) & 1
         seie = (mideleg_pattern >> 2) & 1
 
-        # mie = mideleg (same pattern)
         mideleg_val = (ssie << 1) | (stie << 5) | (seie << 9)
-        mie_val = mideleg_val  # MATCHING
 
-        binname = f"delegated_priority_{mideleg_pattern:03b}"
+        binname = f"mideleg_s_{mideleg_pattern:03b}"
 
         lines.extend(
             [
                 "",
-                f"# Test: mideleg=mie pattern={mideleg_pattern:03b}",
+                f"# S-test: mideleg=mie={mideleg_pattern:03b}",
                 "CSRW(mie, zero)",
-                "csrci mstatus, 8",  # MIE=0
-                "csrci mstatus, 2",  # SIE=0
+                "csrci mstatus, 8",
+                "csrci mstatus, 2",
             ]
         )
 
-        # Clear all interrupts
+        # Clear
         lines.extend(
             [
                 f"LI(x{r_scratch}, 0x2)",
@@ -2048,7 +1952,7 @@ def _generate_priority_mideleg_s_tests(test_data: TestData) -> list[str]:
         )
         lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
 
-        # Set mtvec.MODE = 0
+        # mtvec
         lines.extend(
             [
                 f"CSRR x{r_scratch}, mtvec",
@@ -2058,23 +1962,21 @@ def _generate_priority_mideleg_s_tests(test_data: TestData) -> list[str]:
             ]
         )
 
-        # Set mideleg
+        # mideleg + mie (matching)
         lines.extend(
             [
                 f"LI(x{r_scratch}, {hex(mideleg_val)})",
                 f"CSRW(mideleg, x{r_scratch})",
-            ]
-        )
-
-        # Set mie = mideleg (MATCHING)
-        lines.extend(
-            [
-                f"LI(x{r_scratch}, {hex(mie_val)})",
                 f"CSRW(mie, x{r_scratch})",
             ]
         )
 
-        # Set SIE=1
+        # set all S interrupts
+        lines.append("RVTEST_SET_SEXT_INT")
+        lines.append("RVTEST_SET_SSW_INT")
+        lines.extend(set_stimer_mmode(r_mtime))
+
+        # enable SIE
         lines.extend(
             [
                 f"LI(x{r_scratch}, 0x02)",
@@ -2082,42 +1984,21 @@ def _generate_priority_mideleg_s_tests(test_data: TestData) -> list[str]:
             ]
         )
 
-        # Set ALL S-mode interrupts (mip = all)
-        lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
-        lines.extend(
-            [
-                f"LI(x{r_scratch}, 0x2)",
-                f"CSRS(mip, x{r_scratch})",
-                f"CSRR x{r_stce}, menvcfg",
-                "#if __riscv_xlen == 64",
-                f"    srli x{r_stce}, x{r_stce}, 63",
-                "#else",
-                f"    srli x{r_stce}, x{r_stce}, 31",
-                "#endif",
-                f"andi x{r_stce}, x{r_stce}, 0x1",
-            ]
-        )
-        lines.extend(set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce))
-        lines.extend(
-            [
-                "RVTEST_SET_SEXT_INT",
-                "nop",
-            ]
-        )
-
-        # Enter S-mode (only delegated+enabled interrupts fire)
         lines.append("RVTEST_GOTO_LOWER_MODE Smode")
 
-        # Wait for highest priority delegated interrupt
+        # sample in S-mode
+        lines.append(f"    {test_data.add_testcase(binname, 'cp_priority_mideleg_s', covergroup)}")
+
+        # wait
         lines.extend(
             [
                 f"    LI(x{r_scratch}, 100)",
-                f"1:  addi x{r_scratch}, x{r_scratch}, -1",
-                f"    bnez x{r_scratch}, 1b",
+                f"1: addi x{r_scratch}, x{r_scratch}, -1",
+                f"   bnez x{r_scratch}, 1b",
             ]
         )
 
-        # Cleanup
+        # cleanup
         lines.extend(
             [
                 "RVTEST_GOTO_MMODE",
@@ -2133,6 +2014,7 @@ def _generate_priority_mideleg_s_tests(test_data: TestData) -> list[str]:
         lines.append("RVTEST_CLR_SEXT_INT")
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
+
     return lines
 
 
@@ -2195,6 +2077,14 @@ def _generate_wfi_s_tests(test_data: TestData) -> list[str]:
                     else:
                         lines.append("CSRW(mideleg, zero)")
 
+                    # Enable MTIE
+                    lines.extend(
+                        [
+                            f"LI(x{r_scratch}, 0x80)",  # MTIE
+                            f"CSRW(mie, x{r_scratch})",
+                        ]
+                    )
+
                     # Set TW bit
                     if tw_val:
                         lines.extend(
@@ -2210,14 +2100,6 @@ def _generate_wfi_s_tests(test_data: TestData) -> list[str]:
                                 f"CSRC(mstatus, x{r_scratch})",
                             ]
                         )
-
-                    # Enable MTIE
-                    lines.extend(
-                        [
-                            f"LI(x{r_scratch}, 0x80)",  # MTIE
-                            f"CSRW(mie, x{r_scratch})",
-                        ]
-                    )
 
                     # Set MIE
                     if mie_val:
@@ -2240,7 +2122,7 @@ def _generate_wfi_s_tests(test_data: TestData) -> list[str]:
                         lines.append("csrsi mstatus, 2")
 
                     # Set timer to fire soon (delayed)
-                    lines.extend(set_mtimer_int_soon(r_mtime, r_stimecmp, r_temp, r_temp2, r_scratch, r_stce))
+                    lines.extend(set_mtimer_int_soon(r_mtime, r_stimecmp, r_temp, r_temp2, r_scratch, r_stce, 100))
 
                     lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
 
@@ -3848,6 +3730,7 @@ def _generate_sei_interaction_tests(test_data: TestData) -> list[str]:
             "csrci mstatus, 8",
             "CSRW(mideleg, zero)",
             "CSRW(mip, zero)",  # Clear software SEIP
+            "RVTEST_CLR_SEXT_INT",
             test_data.add_testcase("plic_set", "cp_sei3", covergroup),
             "RVTEST_SET_SEXT_INT",  # PLIC sets SEIP
             "nop",
@@ -4427,10 +4310,16 @@ def _generate_user_mei_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_user_sei_tests(test_data: TestData) -> list[str]:
-    """Generate U-mode SEIP tests.
+    """Generate SEIP tests for cp_sei_handled_m and cp_sei_handled_s.
 
-    cp_user_sei: MIE=0, enters U-mode
-    cp_user_sei_m: MIE=1, stays in M-mode
+    Cross: MIE={0,1} x SIE={0,1} x stvec.MODE={0,1} x mideleg.SEI={0,1}
+
+    MIE=0: set SEIP in M-mode + wait, then enter U-mode → SEIP fires from U-mode (MPP=U).
+    MIE=1: enter U-mode first, set SEIP from U-mode → fires from U-mode (MPP=U).
+           Writing to SIG_ADDRESS in M-mode with MIE=1 traps in M-mode (MPP=M) instead.
+
+    Part 2: S-mode entry with SIE=1 before SEIP fires covers cp_sei_handled_s
+            SIE=1+SEIP=0 bins (sampled while in S-mode before the trap arrives).
     """
     covergroup = "InterruptsS_S_cg"
 
@@ -4438,22 +4327,18 @@ def _generate_user_sei_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(
-            "cp_user_sei",
-            "Test SEIP from U-mode with delegation",
+            "cp_sei_handled",
+            "Test cp_sei_handled_m and cp_sei_handled_s\nCross: MIE={0,1} x SIE={0,1} x stvec.MODE={0,1} x mideleg.SEI={0,1}",
         ),
         "",
     ]
 
-    # Cross: MIE × SIE × stvec.MODE × mideleg.SEI
     for mie_val in [0, 1]:
         for sie_val in [0, 1]:
             for stvec_mode in [0, 1]:
                 for mideleg_sei in [0, 1]:
                     deleg_name = "deleg" if mideleg_sei else "nodeleg"
-
-                    # Select coverpoint based on MIE
-                    coverpoint = "cp_user_sei" if mie_val == 0 else "cp_user_sei_m"
-
+                    coverpoint = "cp_sei_handled_m" if not mideleg_sei else "cp_sei_handled_s"
                     binname = f"mie{mie_val}_sie{sie_val}_vec{stvec_mode}_{deleg_name}"
 
                     lines.extend(
@@ -4464,13 +4349,10 @@ def _generate_user_sei_tests(test_data: TestData) -> list[str]:
                             "CSRW(mie, zero)",
                             "csrci mstatus, 8",
                             "csrci mstatus, 2",
+                            "RVTEST_CLR_SEXT_INT",
                         ]
                     )
 
-                    # Clear SEIP
-                    lines.append("RVTEST_CLR_SEXT_INT")
-
-                    # Set mideleg
                     if mideleg_sei:
                         lines.extend(
                             [
@@ -4497,7 +4379,7 @@ def _generate_user_sei_tests(test_data: TestData) -> list[str]:
                         ]
                     )
 
-                    # Enable SEIE
+                    # Enable SEIE; MPP=U here (from prior GOTO_MMODE via ecall) → fires SEIP=0 bins
                     lines.extend(
                         [
                             f"LI(x{r_scratch}, 0x200)",
@@ -4505,47 +4387,52 @@ def _generate_user_sei_tests(test_data: TestData) -> list[str]:
                         ]
                     )
 
-                    # Set SIE
                     if sie_val:
                         lines.append("csrsi mstatus, 2")
 
-                    # Set MIE
+                    # Set MIE+MPIE so MIE=1 persists through MRET into U-mode
                     if mie_val:
-                        lines.append("csrsi mstatus, 8")
+                        lines.extend(
+                            [
+                                f"LI(x{r_scratch}, 0x88)",
+                                f"CSRS(mstatus, x{r_scratch})",
+                            ]
+                        )
+                    else:
+                        lines.extend(
+                            [
+                                f"LI(x{r_scratch}, 0x88)",
+                                f"CSRC(mstatus, x{r_scratch})",
+                            ]
+                        )
 
                     lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
 
-                    # Try to set SEIP (not implemented)
-                    lines.extend(
-                        [
-                            "RVTEST_SET_SEXT_INT",
-                        ]
-                    )
-                    lines.extend(
-                        [
-                            f"    LI(x{r_scratch}, 2500)",
-                            f"1:  addi x{r_scratch}, x{r_scratch}, -1",
-                            f"    bnez x{r_scratch}, 1b",
-                        ]
-                    )
+                    if mie_val == 0:
+                        # MIE=0: set SEIP in M-mode and wait; no trap since MIE=0,
+                        # SEIP stays pending when we enter U-mode
+                        lines.append("RVTEST_SET_SEXT_INT")
+                        lines.extend(
+                            [
+                                f"    LI(x{r_scratch}, 2500)",
+                                f"1:  addi x{r_scratch}, x{r_scratch}, -1",
+                                f"    bnez x{r_scratch}, 1b",
+                            ]
+                        )
+                        lines.extend(["RVTEST_GOTO_LOWER_MODE Umode", "    nop", "    nop"])
+                    else:
+                        # MIE=1: enter U-mode first, then set SEIP from U-mode so
+                        # the Sail latency expires in U-mode → trap fires with MPP=U
+                        lines.append("RVTEST_GOTO_LOWER_MODE Umode")
+                        lines.extend(
+                            [
+                                "    RVTEST_SET_SEXT_INT",
+                                f"    LI(x{r_scratch}, 2500)",
+                                f"1:  addi x{r_scratch}, x{r_scratch}, -1",
+                                f"    bnez x{r_scratch}, 1b",
+                            ]
+                        )
 
-                    # Enter U-mode (for both MIE=0 and MIE=1)
-                    lines.extend(
-                        [
-                            "RVTEST_GOTO_LOWER_MODE Umode",
-                            "    nop",
-                            "    nop",
-                        ]
-                    )
-                    lines.extend(
-                        [
-                            f"    LI(x{r_scratch}, 2500)",
-                            f"1:  addi x{r_scratch}, x{r_scratch}, -1",
-                            f"    bnez x{r_scratch}, 1b",
-                        ]
-                    )
-
-                    # Cleanup
                     lines.extend(
                         [
                             "RVTEST_GOTO_MMODE",
@@ -4557,8 +4444,162 @@ def _generate_user_sei_tests(test_data: TestData) -> list[str]:
                         ]
                     )
 
+    # Part 2: S-mode entry with SIE=1 before SEIP fires covers
+    # cp_sei_handled_s SIE=1+SEIP=0 bins (sampled while in S-mode before trap)
+    for stvec_mode in [0, 1]:
+        binname = f"smode_sie1_vec{stvec_mode}_deleg"
+        lines.extend(
+            [
+                "",
+                f"# S-mode SIE=1+SEIP=0 bins, stvec.MODE={stvec_mode}",
+                "RVTEST_GOTO_MMODE",
+                "CSRW(mie, zero)",
+                "csrci mstatus, 8",
+                "csrci mstatus, 2",
+                "RVTEST_CLR_SEXT_INT",
+                f"LI(x{r_scratch}, 0x200)",
+                f"CSRW(mideleg, x{r_scratch})",
+                f"CSRR x{r_scratch}, mtvec",
+                f"SRLI x{r_scratch}, x{r_scratch}, 2",
+                f"SLLI x{r_scratch}, x{r_scratch}, 2",
+                f"ADDI x{r_scratch}, x{r_scratch}, {stvec_mode}",
+                f"CSRW(mtvec, x{r_scratch})",
+                f"CSRR x{r_scratch}, stvec",
+                f"SRLI x{r_scratch}, x{r_scratch}, 2",
+                f"SLLI x{r_scratch}, x{r_scratch}, 2",
+                f"ADDI x{r_scratch}, x{r_scratch}, {stvec_mode}",
+                f"CSRW(stvec, x{r_scratch})",
+                f"LI(x{r_scratch}, 0x200)",
+                f"CSRW(mie, x{r_scratch})",
+                "csrsi mstatus, 2",
+                f"LI(x{r_scratch}, 0x88)",
+                f"CSRC(mstatus, x{r_scratch})",
+            ]
+        )
+        lines.append(test_data.add_testcase(binname, "cp_sei_handled_s", covergroup))
+        lines.extend(
+            [
+                "RVTEST_SET_SEXT_INT",
+                "RVTEST_GOTO_LOWER_MODE Smode",
+                f"    LI(x{r_scratch}, 2500)",
+                f"1:  addi x{r_scratch}, x{r_scratch}, -1",
+                f"    bnez x{r_scratch}, 1b",
+                "RVTEST_GOTO_MMODE",
+                "csrci mstatus, 8",
+                "csrci mstatus, 2",
+                "CSRW(mideleg, zero)",
+                "CSRW(mie, zero)",
+                "RVTEST_CLR_SEXT_INT",
+            ]
+        )
+
     test_data.int_regs.return_registers([r_scratch])
     return lines
+
+
+# def _generate_user_sei_tests(test_data: TestData) -> list[str]:
+#     """Generate U-mode SEIP delegation tests (fixed).
+
+#     Covers:
+#       - MIE={0,1}, SIE={0,1}, stvec.MODE={0,1}, mideleg.SEI={0,1}
+#     """
+#     covergroup = "InterruptsS_S_cg"
+
+#     r_scratch = test_data.int_regs.get_register(exclude_regs=[])
+
+#     lines = [
+#         comment_banner(
+#             "cp_user_sei",
+#             "Test SEIP delegation from U-mode (fixed behavior)",
+#         ),
+#         "",
+#     ]
+
+#     for mie_val in [0, 1]:
+#         for sie_val in [0, 1]:
+#             for stvec_mode in [0, 1]:
+#                 for mideleg_sei in [0, 1]:
+
+#                     deleg_name = "deleg" if mideleg_sei else "nodeleg"
+#                     binname = f"mie{mie_val}_sie{sie_val}_vec{stvec_mode}_{deleg_name}"
+
+#                     lines.extend([
+#                         "",
+#                         f"# Test: MIE={mie_val}, SIE={sie_val}, stvec={stvec_mode}, mideleg.SEI={mideleg_sei}",
+#                         "RVTEST_GOTO_MMODE",
+#                         "CSRW(mie, zero)",
+#                         "csrci mstatus, 8",
+#                         "csrci mstatus, 2",
+#                         "RVTEST_CLR_SEXT_INT",
+#                     ])
+
+#                     # mideleg
+#                     if mideleg_sei:
+#                         lines.extend([
+#                             f"LI(x{r_scratch}, 0x200)",
+#                             f"CSRW(mideleg, x{r_scratch})",
+#                         ])
+#                     else:
+#                         lines.append("CSRW(mideleg, zero)")
+
+#                     # mtvec/stvec mode
+#                     lines.extend([
+#                         f"CSRR x{r_scratch}, mtvec",
+#                         f"SRLI x{r_scratch}, x{r_scratch}, 2",
+#                         f"SLLI x{r_scratch}, x{r_scratch}, 2",
+#                         f"ADDI x{r_scratch}, x{r_scratch}, {stvec_mode}",
+#                         f"CSRW(mtvec, x{r_scratch})",
+#                         f"CSRR x{r_scratch}, stvec",
+#                         f"SRLI x{r_scratch}, x{r_scratch}, 2",
+#                         f"SLLI x{r_scratch}, x{r_scratch}, 2",
+#                         f"ADDI x{r_scratch}, x{r_scratch}, {stvec_mode}",
+#                         f"CSRW(stvec, x{r_scratch})",
+#                     ])
+
+#                     # Enable SEIE
+#                     lines.extend([
+#                         f"LI(x{r_scratch}, 0x200)",
+#                         f"CSRW(mie, x{r_scratch})",
+#                     ])
+
+#                     # MIE
+#                     if mie_val:
+#                         lines.append("csrsi mstatus, 8")
+
+#                     if mideleg_sei:
+#                         coverpoint = "cp_user_sei_s"
+#                     else:
+#                         coverpoint = "cp_user_sei_m"
+
+#                     # SIE
+#                     if sie_val:
+#                         lines.append("csrsi mstatus, 2")
+
+
+#                     # Interrupt
+#                     lines.append("RVTEST_SET_SEXT_INT")
+
+#                     lines.append("RVTEST_GOTO_LOWER_MODE Umode")
+
+#                     # Wait
+#                     lines.extend([
+#                         f"    LI(x{r_scratch}, 200)",
+#                         f"1:  addi x{r_scratch}, x{r_scratch}, -1",
+#                         f"    bnez x{r_scratch}, 1b",
+#                     ])
+
+#                     # Cleanup
+#                     lines.extend([
+#                         "RVTEST_GOTO_MMODE",
+#                         "csrci mstatus, 8",
+#                         "csrci mstatus, 2",
+#                         "CSRW(mideleg, zero)",
+#                         "CSRW(mie, zero)",
+#                         "RVTEST_CLR_SEXT_INT",
+#                     ])
+
+#     test_data.int_regs.return_registers([r_scratch])
+#     return lines
 
 
 def _generate_wfi_u_tests(test_data: TestData) -> list[str]:
@@ -4843,8 +4884,7 @@ def make_interruptss_s(test_data: TestData) -> list[str]:
     lines.extend(_generate_priority_mip_s_tests(test_data))
     lines.extend(_generate_priority_mie_s_tests(test_data))
     lines.extend(_generate_priority_both_s_tests(test_data))
-    lines.extend(_generate_priority_mideleg_m_tests(test_data))
-    lines.extend(_generate_priority_mideleg_s_tests(test_data))
+    lines.extend(_generate_priority_mideleg_tests(test_data))
     lines.extend(_generate_wfi_s_tests(test_data))
     lines.extend(_generate_wfi_timeout_s_tests(test_data))
 

@@ -434,7 +434,6 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
             )
 
     test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3, r_scratch])
-    test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3, r_scratch])
     return lines
 
 

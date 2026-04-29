@@ -422,9 +422,6 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     wfi: coverpoint ins.current.insn {
         bins wfi = {WFI};
     }
-    timeout: coverpoint ins.current.csr[CSR_MIP][7] iff (ins.trap == 1) {
-        bins no_timer_int = {0};
-    }
     mstatus_tw_zero: coverpoint ins.current.csr[CSR_MSTATUS][21] {
         bins zero = {0};
     }
@@ -434,14 +431,16 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     mideleg_sei_one: coverpoint ins.current.csr[CSR_MIDELEG][9] {
         bins one = {1};
     }
-    s_ext_intr: coverpoint ins.current.s_ext_intr {
-        // autofill 0/1
-    }
-    s_ext_intr_high: coverpoint ins.current.s_ext_intr {
-        bins sei = {1};
-    }
     s_ext_intr_low: coverpoint ins.current.s_ext_intr {
         bins no_sei = {0};
+    }
+    priv_mode_s_after: coverpoint {ins.current.mode_virt, ins.current.mode} {
+        type_option.weight = 0;
+        bins S_mode = {3'b001};
+    }
+    priv_mode_m_after: coverpoint {ins.current.mode_virt, ins.current.mode} {
+        type_option.weight = 0;
+        bins M_mode = {3'b011};
     }
 
     // main coverpoints
@@ -449,10 +448,10 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     // S-mode tests
     cp_trigger_sti_s:            cross priv_mode_s, mstatus_mie_zero, mstatus_sie, mie_ones, mideleg_ones, mip_stip_one;
     cp_trigger_sti_m:            cross priv_mode_m, mret_insn, mstatus_mpp_s, mstatus_mie_zero, mstatus_sie, mie_ones, mideleg_zeros, mip_stip_one;
-    cp_trigger_ssi_mip:          cross priv_mode_s, mstatus_mie_zero, mstatus_sie, mie_ones, mideleg_ones, mip_ssip_one;
+    cp_trigger_sip_mip:          cross priv_mode_s_after, mstatus_mie_zero, mstatus_sie, mie_ones, mideleg_ones, mip_ssip_one;
     cp_trigger_ssi_mip_m:        cross priv_mode_m, mret_insn, mstatus_mpp_s, mstatus_mie_zero, mie_ones, mideleg_zeros, mip_ssip_one;
     cp_trigger_ssi_sip:          cross priv_mode_s, mstatus_mie_zero, mstatus_sie, mie_ones, mideleg_ones, sip_ssip_one, csrrs, write_sip_ssip;
-    cp_trigger_sei:              cross priv_mode_s, mstatus_mie_zero, mstatus_sie, mie_ones, mideleg_ones, mip_seip_one;
+    cp_trigger_sei:              cross priv_mode_s_after, mstatus_mie_zero, mstatus_sie, mie_ones, mideleg_ones, mip_seip_one;
     cp_trigger_sei_m:            cross priv_mode_m, mret_insn, mstatus_mpp_s, mstatus_mie_zero, mstatus_sie, mie_ones, mideleg_zeros, mip_seip_one;
     cp_trigger_sei_seip:         cross priv_mode_s, mstatus_mie_zero, mstatus_sie, mie_ones, mideleg_ones, sip_seip_one;
     cp_trigger_changingtos_sti:  cross priv_mode_s, mstatus_mie_zero, prev_mstatus_sie_zero, mie_ones, mideleg_ones, mip_stip_one, sstatus_sie;
@@ -460,19 +459,18 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     cp_trigger_changingtos_sei:  cross priv_mode_s, mstatus_mie_zero, prev_mstatus_sie_zero, mie_ones, mideleg_ones, mip_seip_one, sstatus_sie;
     cp_interrupts_s:             cross priv_mode_s, mstatus_mie_zero, mideleg_ones, mtvec_direct, mip_walking_s, mie_walking_s;
     cp_interrupts_s_m:           cross priv_mode_m, mret_insn, mstatus_mpp_s, mstatus_mie_zero, mideleg_zeros, mtvec_direct, mip_mie_matched_m;
-    cp_vectored_s:               cross priv_mode_s, mstatus_mie_zero, prev_mstatus_sie_one, mie_ones, mideleg_ones, stvec_mode, mip_walking_s;
+    cp_vectored_s:               cross priv_mode_s_after, mstatus_mie_zero, prev_mstatus_sie_one, mie_ones, mideleg_ones, stvec_mode, mip_walking_s;
     cp_vectored_s_m:             cross priv_mode_m, mret_insn, mstatus_mpp_s, mstatus_mie_zero, prev_mstatus_sie_one, mie_ones, mideleg_ones, stvec_mode, mip_walking_m;
 
     // S-mode priority tests
-    cp_priority_mip_s:           cross priv_mode_s, mstatus_mie_zero, prev_mstatus_sie_one, mip_combinations_s, mie_ones, mideleg_ones;
+    cp_priority_mip_s:           cross priv_mode_s_after, mstatus_mie_zero, prev_mstatus_sie_one, mip_combinations_s, mie_ones, mideleg_ones;
     cp_priority_mip_s_m:         cross priv_mode_m, mret_insn, mstatus_mpp_s, mstatus_mie_zero, prev_mstatus_sie_one, mip_combinations_m, mie_ones, mideleg_zeros;
-    cp_priority_mie_s:           cross priv_mode_s, mstatus_mie_zero, prev_mstatus_sie_one, mie_combinations_s, mip_ones_s, mideleg_ones;
+    cp_priority_mie_s:           cross priv_mode_s_after, mstatus_mie_zero, prev_mstatus_sie_one, mie_combinations_s, mip_ones_s, mideleg_ones;
     cp_priority_mie_s_m:         cross priv_mode_m, mret_insn, mstatus_mpp_s, mstatus_mie_zero, prev_mstatus_sie_one, mie_combinations_m, mip_ones_m, mideleg_zeros;
-    cp_priority_both_s:          cross priv_mode_s, mstatus_mie_zero, prev_mstatus_sie_one, mie_combinations_s, mip_mie_eq_s, mideleg_ones;
+    cp_priority_both_s:          cross priv_mode_s_after, mstatus_mie_zero, prev_mstatus_sie_one, mie_combinations_s, mip_mie_eq_s, mideleg_ones;
     cp_priority_both_m:          cross priv_mode_m, mret_insn, mstatus_mpp_s, mstatus_mie_zero, prev_mstatus_sie_one, mie_combinations_m, mip_mie_eq_m, mideleg_zeros;
     cp_priority_mideleg_m:       cross priv_mode_m, mret_insn, mstatus_mpp_s, mstatus_mie_zero, prev_mstatus_sie_one, mideleg_combinations_m, mip_ones_s, mie_ones;
-    cp_priority_mideleg_s:       cross priv_mode_s, mstatus_mie_zero, prev_mstatus_sie_one, mideleg_combinations_s, mip_ones_s, mie_ones;
-    cp_priority_mideleg_s_eq:    cross priv_mode_s, mstatus_mie_zero, prev_mstatus_sie_one, mideleg_combinations_delegated, mip_ones_s, mideleg_mie_eq_s;
+    cp_priority_mideleg_s:       cross priv_mode_s_after, mstatus_mie_zero, prev_mstatus_sie_one, mideleg_combinations_s, mip_ones_s, mideleg_mie_eq_s;
     cp_wfi_s:                    cross priv_mode_s, wfi, mstatus_mie, mstatus_sie, mideleg_ones_zeros_real, mstatus_tw, mie_mtie_one;
     cp_wfi_timeout_s:            cross priv_mode_m, mstatus_mie, mstatus_sie, mideleg_ones_zeros_real, mstatus_tw_one, mie_mtie;
 
@@ -486,15 +484,15 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     cp_trigger_ssi_sip_m:       cross priv_mode_m, mstatus_mie, mie_ones, mideleg_ssi, csrrs, write_sip_ssip;
     cp_trigger_msi_m:           cross priv_mode_m, mideleg_zeros, mie_ones, mip_msip_one, csrrs, write_mstatus_mie;
     cp_trigger_mei_m:           cross priv_mode_m, mideleg_zeros, mie_ones, mip_meip_one, csrrs, write_mstatus_mie;
-    cp_trigger_sti_M_m:           cross priv_mode_m, mideleg_zeros, mie_ones, mip_stip_one, csrrs, write_mstatus_mie;
-    cp_trigger_ssi_M_m:           cross priv_mode_m, mideleg_zeros, mie_ones, mip_ssip_one, csrrs, write_mstatus_mie;
-    cp_trigger_sei_M_m:           cross priv_mode_m, mideleg_zeros, mie_ones, mip_seip_one, csrrs, write_mstatus_mie;
+    cp_trigger_sti_M_m:         cross priv_mode_m, mideleg_zeros, mie_ones, mip_stip_one, csrrs, write_mstatus_mie;
+    cp_trigger_ssi_M_m:         cross priv_mode_m, mideleg_zeros, mie_ones, mip_ssip_one, csrrs, write_mstatus_mie;
+    cp_trigger_sei_M_m:         cross priv_mode_m, mideleg_zeros, mie_ones, mip_seip_one, csrrs, write_mstatus_mie;
     cp_sei1:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, s_ext_intr_low, csrrw, write_mip_seip;
     cp_sei2:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, s_ext_intr_low, csrrs, write_mip_seip;
-    cp_sei3:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, s_ext_intr_high;
+    cp_sei3:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, mip_seip_one;
     cp_sei4:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, prev_mip_seip_one, s_ext_intr_low,  csrrc, write_mip_seip;
-    cp_sei5:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, prev_mip_seip_one, s_ext_intr_high, csrrc, write_mip_seip;
-    cp_sei6_7:                  cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, s_ext_intr, mip_seip;
+    cp_sei5:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, prev_mip_seip_one, mip_seip_one, csrrc, write_mip_seip;
+    cp_sei6_7:                  cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, mip_seip, mip_seip;
     cp_global_ie:               cross priv_mode_m, mstatus_mie, mstatus_sie, mip_walking_m, mip_mie_eq;
 
     // U-mode tests
@@ -504,15 +502,10 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     cp_user_msi_m:              cross priv_mode_m, mstatus_mie_one, mstatus_sie, stvec_mode, mideleg_msi_zero, mie_msie_one, mip_msip;
     cp_user_mei:                cross priv_mode_m, mret_insn, mstatus_mpp_u, mstatus_mie_zero, mstatus_sie, stvec_mode, mideleg_mei_zero, mie_meie_one, mip_meip;
     cp_user_mei_m:              cross priv_mode_m, mstatus_mie_one, mstatus_sie, stvec_mode, mideleg_mei_zero, mie_meie_one, mip_meip;
-    // Need to split into S-mode for delegated and M-mode when not
-    // Not delegated: Trap to M-mode from U-mode
-    cp_user_sei_m_nd: cross priv_mode_m, mret_insn, mstatus_mpp_u, mstatus_mie_zero, mstatus_sie, stvec_mode, mideleg_sei_zero, mie_seie_one, mip_seip;
-    // Delegated: Trap to S-mode from U-mode
-    cp_user_sei_s_d: cross priv_mode_s, sret_insn, sstatus_spp_u, mstatus_mie_zero, mstatus_sie, stvec_mode, mideleg_sei_one, mie_seie_one, mip_seip;
-    // MIE=1, not delegated: M-mode
-    cp_user_sei_m: cross priv_mode_m, mstatus_mie_one, mstatus_sie, stvec_mode, mideleg_sei_zero, mie_seie_one, mip_seip;
-    // MIE=1, delegated: S-mode
-    cp_user_sei_s: cross priv_mode_s, sret_insn, sstatus_spp_u, mstatus_mie_one, mstatus_sie, stvec_mode, mideleg_sei_one, mie_seie_one, mip_seip;
+    // 1. M-Mode Handled: SEI is NOT delegated, OR we are in M-mode with MIE=1
+    cp_user_sei_handled_m: cross priv_mode_m_after, mstatus_mpp_u, mstatus_mie, mideleg_sei_zero, stvec_mode, mie_seie_one, mip_seip;
+    // 2. S-Mode Handled: SEI IS delegated AND we were in U or S mode
+    cp_user_sei_handled_s: cross priv_mode_s_after, mstatus_sie, mideleg_sei_one, stvec_mode, mie_seie_one, mip_seip;
     cp_wfi_u: cross priv_mode_m, mstatus_mie, mstatus_sie, mideleg_ones_zeros_real, mstatus_tw, mie_mtie_one;
     cp_wfi_timeout_u: cross priv_mode_m, mstatus_mie, mstatus_sie, mideleg_ones, mstatus_tw_one, mie_mtie_one;
 
@@ -521,50 +514,50 @@ endgroup
 function void interruptss_sample(int hart, int issue, ins_t ins);
     InterruptsS_cg.sample(ins);
 
-    // $display("PC: %h Instr: %s\n  priv_mode=%b, mstatus.mie=%b mstatus.sie=%b mie=%h mideleg=%h mip=%h",
-    //         ins.current.pc_rdata, ins.current.disass,
-    //         ins.prev.mode, ins.current.csr[CSR_MSTATUS][3], ins.current.csr[CSR_MSTATUS][1],
-    //         ins.current.csr[CSR_MIE][11:0], ins.current.csr[CSR_MIDELEG][11:0], ins.current.csr[CSR_MIP][11:0]);
-    // $display("  priv_mode_s: %b wfi = %b, mstatus_mie %b (prev %b) mstatus_sie %b mideleg %h mstatus_tw %b mie %h mip %h",
-    //             ins.prev.mode == 2'b01,
-    //             ins.current.insn == WFI,
-    //             ins.current.csr[CSR_MSTATUS][3],
-    //             ins.prev.csr[CSR_MSTATUS][3],
-    //             ins.current.csr[CSR_MSTATUS][1],
-    //             ins.current.csr[CSR_MIDELEG][15:0],
-    //             ins.current.csr[CSR_MSTATUS][21],
-    //             ins.current.csr[CSR_MIE][15:0],
-    //             ins.current.csr[CSR_MIP][15:0]
-    //         );
+    $display("PC: %h Instr: %s\n  priv_mode=%b, mstatus.mie=%b mstatus.sie=%b mie=%h mideleg=%h mip=%h",
+            ins.current.pc_rdata, ins.current.disass,
+            ins.prev.mode, ins.current.csr[CSR_MSTATUS][3], ins.current.csr[CSR_MSTATUS][1],
+            ins.current.csr[CSR_MIE][11:0], ins.current.csr[CSR_MIDELEG][11:0], ins.current.csr[CSR_MIP][11:0]);
+    $display("  priv_mode_s: %b wfi = %b, mstatus_mie %b (prev %b) mstatus_sie %b mideleg %h mstatus_tw %b mie %h mip %h",
+                ins.prev.mode == 2'b01,
+                ins.current.insn == WFI,
+                ins.current.csr[CSR_MSTATUS][3],
+                ins.prev.csr[CSR_MSTATUS][3],
+                ins.current.csr[CSR_MSTATUS][1],
+                ins.current.csr[CSR_MIDELEG][15:0],
+                ins.current.csr[CSR_MSTATUS][21],
+                ins.current.csr[CSR_MIE][15:0],
+                ins.current.csr[CSR_MIP][15:0]
+            );
 
-    // $display("=== InterruptsS Debug ===");
-    // $display("PC: %h Instr: %s priv_mode=%b", ins.current.pc_rdata, ins.current.disass, ins.prev.mode);
-    // $display("  mstatus: MIE=%b SIE=%b TW=%b mode: %b",
-    //             ins.prev.csr[CSR_MSTATUS][3], ins.prev.csr[CSR_MSTATUS][1],
-    //             ins.current.csr[CSR_MSTATUS][21], {ins.prev.mode_virt, ins.prev.mode});
-    // $display(" NEW mstatus: MIE=%b SPIE=%b SIE=%b TW=%b mode: %b",
-    //         ins.current.csr[CSR_MSTATUS][3], ins.current.csr[CSR_MSTATUS][5],
-    //         ins.current.csr[CSR_MSTATUS][1],
-    //         ins.current.csr[CSR_MSTATUS][21], {ins.prev.mode_virt, ins.prev.mode});
-    // $display("  mideleg: SEIE=%b STIE=%b SSIE=%b (full=%h)",
-    //             ins.current.csr[CSR_MIDELEG][9], ins.current.csr[CSR_MIDELEG][5],
-    //             ins.current.csr[CSR_MIDELEG][1], ins.current.csr[CSR_MIDELEG][15:0]);
-    // $display("  mie: MEIE=%b SEIE=%b MTIE=%b STIE=%b MSIE=%b SSIE=%b (full=%h)",
-    //             ins.current.csr[CSR_MIE][11], ins.current.csr[CSR_MIE][9],
-    //             ins.current.csr[CSR_MIE][7], ins.current.csr[CSR_MIE][5],
-    //             ins.current.csr[CSR_MIE][3], ins.current.csr[CSR_MIE][1],
-    //             ins.current.csr[CSR_MIE][15:0]);
-    // $display("  mip: MEIP=%b SEIP=%b MTIP=%b STIP=%b MSIP=%b SSIP=%b (full=%h)",
-    //             ins.current.csr[CSR_MIP][11], ins.current.csr[CSR_MIP][9],
-    //             ins.current.csr[CSR_MIP][7], ins.current.csr[CSR_MIP][5],
-    //             ins.current.csr[CSR_MIP][3], ins.current.csr[CSR_MIP][1],
-    //             ins.current.csr[CSR_MIP][15:0]);
-    // $display("  sip: SEIP=%b STIP=%b SSIP=%b (full=%h)",
-    //             ins.current.csr[CSR_SIP][9], ins.current.csr[CSR_SIP][5],
-    //             ins.current.csr[CSR_SIP][1], ins.current.csr[CSR_SIP][15:0]);
-    // $display("  mtvec.MODE=%b stvec.MODE=%b",
-    //             ins.current.csr[CSR_MTVEC][1:0], ins.current.csr[CSR_STVEC][1:0]);
-    // if (ins.current.trap)
-    //     $display("  TRAP! mcause=%h scause=%h", ins.current.csr[CSR_MCAUSE], ins.current.csr[CSR_SCAUSE]);
-    // $display("");
+    $display("=== InterruptsS Debug ===");
+    $display("PC: %h Instr: %s priv_mode=%b", ins.current.pc_rdata, ins.current.disass, ins.prev.mode);
+    $display("  mstatus: MIE=%b SIE=%b TW=%b mode: %b",
+                ins.prev.csr[CSR_MSTATUS][3], ins.prev.csr[CSR_MSTATUS][1],
+                ins.current.csr[CSR_MSTATUS][21], {ins.prev.mode_virt, ins.prev.mode});
+    $display(" NEW mstatus: MIE=%b SPIE=%b SIE=%b TW=%b mode: %b",
+            ins.current.csr[CSR_MSTATUS][3], ins.current.csr[CSR_MSTATUS][5],
+            ins.current.csr[CSR_MSTATUS][1],
+            ins.current.csr[CSR_MSTATUS][21], {ins.prev.mode_virt, ins.prev.mode});
+    $display("  mideleg: SEIE=%b STIE=%b SSIE=%b (full=%h)",
+                ins.current.csr[CSR_MIDELEG][9], ins.current.csr[CSR_MIDELEG][5],
+                ins.current.csr[CSR_MIDELEG][1], ins.current.csr[CSR_MIDELEG][15:0]);
+    $display("  mie: MEIE=%b SEIE=%b MTIE=%b STIE=%b MSIE=%b SSIE=%b (full=%h)",
+                ins.current.csr[CSR_MIE][11], ins.current.csr[CSR_MIE][9],
+                ins.current.csr[CSR_MIE][7], ins.current.csr[CSR_MIE][5],
+                ins.current.csr[CSR_MIE][3], ins.current.csr[CSR_MIE][1],
+                ins.current.csr[CSR_MIE][15:0]);
+    $display("  mip: MEIP=%b SEIP=%b MTIP=%b STIP=%b MSIP=%b SSIP=%b (full=%h)",
+                ins.current.csr[CSR_MIP][11], ins.current.csr[CSR_MIP][9],
+                ins.current.csr[CSR_MIP][7], ins.current.csr[CSR_MIP][5],
+                ins.current.csr[CSR_MIP][3], ins.current.csr[CSR_MIP][1],
+                ins.current.csr[CSR_MIP][15:0]);
+    $display("  sip: SEIP=%b STIP=%b SSIP=%b (full=%h)",
+                ins.current.csr[CSR_SIP][9], ins.current.csr[CSR_SIP][5],
+                ins.current.csr[CSR_SIP][1], ins.current.csr[CSR_SIP][15:0]);
+    $display("  mtvec.MODE=%b stvec.MODE=%b",
+                ins.current.csr[CSR_MTVEC][1:0], ins.current.csr[CSR_STVEC][1:0]);
+    if (ins.current.trap)
+        $display("  TRAP! mcause=%h scause=%h", ins.current.csr[CSR_MCAUSE], ins.current.csr[CSR_SCAUSE]);
+    $display("");
 endfunction

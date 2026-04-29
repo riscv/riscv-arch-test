@@ -8,6 +8,7 @@
 
 from testgen.asm.helpers import comment_banner
 from testgen.asm.interrupts import (
+    clr_mtimer_int,
     mmode_sti_cleanup,
     mmode_sti_setup,
     set_menvcfg_stce,
@@ -57,6 +58,7 @@ def _generate_machine_sti_tests(test_data: TestData) -> list[str]:
                 f"    bnez x{r_scratch}, 1b",
                 # --- cleanup: restore stimecmp=-1, STCE=0, mideleg=0, mie=0 ---
                 *mmode_sti_cleanup(r_scratch, r_stce),
+                *clr_mtimer_int(r_scratch, r_stce),
             ]
 
     test_data.int_regs.return_registers([r_scratch, r_stce])
@@ -230,6 +232,7 @@ def _generate_supervisor_sti_tests(test_data: TestData) -> list[str]:
 
                             # --- cleanup: restore stimecmp=-1, STCE=0, mideleg=0, mie=0 ---
                             lines += mmode_sti_cleanup(r_scratch, r_stce)
+                            lines += clr_mtimer_int(r_scratch, r_stce)
 
     test_data.int_regs.return_registers([r_scratch, r_stce])
     return lines
@@ -417,7 +420,7 @@ def _generate_user_sti_tests(test_data: TestData) -> list[str]:
                         else:
                             lines += [
                                 "# Set stimecmp=TIME+500 (interrupt fires after sample when STCE=1)",
-                                *set_stimecmp_soon(r_scratch, r_stce, r_hi),
+                                *set_stimecmp_soon(r_scratch, r_stce, r_hi, time=500),
                             ]
 
                         # ---- mstatus.SIE — set before mret so it's live in U-mode ----
@@ -558,7 +561,7 @@ def _generate_user_stce_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator("InterruptsSstc", required_extensions=["Sm", "S", "Sstc"])
 def make_interruptss_s(test_data: TestData) -> list[str]:
     """Generate all Sstc interrupt tests (machine, supervisor, user modes)."""
-    r_temp = test_data.int_regs.get_register(exclude_regs=[0])
+    r_temp, r_mtcmp = test_data.int_regs.get_registers(2, exclude_regs=[0])
 
     lines = [
         comment_banner(
@@ -567,6 +570,11 @@ def make_interruptss_s(test_data: TestData) -> list[str]:
             "Covers M-mode, S-mode, and U-mode scenarios for stimecmp-based STI.",
         ),
         "",
+        # Initialize mtimecmp=-1 so MTIP is not spuriously set during Sstc tests.
+        # SAIL initializes mtimecmp=0, which makes MTIP permanently set. Without
+        # this, mip reads during Sstc traps see STIP+MTIP, but whisper (which
+        # initializes mtimecmp to a large default) only sees STIP, causing a mismatch.
+        *clr_mtimer_int(r_temp, r_mtcmp),
         # global init: no delegation, clear TW so WFI doesn't trap in lower modes
         "CSRW(mideleg, zero)",
         f"LI(x{r_temp}, 0x200000)",
@@ -584,5 +592,5 @@ def make_interruptss_s(test_data: TestData) -> list[str]:
     lines += _generate_user_tm_tests(test_data)
     lines += _generate_user_stce_tests(test_data)
 
-    test_data.int_regs.return_registers([r_temp])
+    test_data.int_regs.return_registers([r_temp, r_mtcmp])
     return lines

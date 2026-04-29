@@ -50,6 +50,9 @@ override EXCLUDE_EXTENSIONS := $(subst $(space),$(empty),$(EXCLUDE_EXTENSIONS))
 # Setting to 1 is helpful for debugging test hangs so that only a single test runs at a time.
 JOBS ?= $(or $(patsubst -j%,%,$(filter -j%,$(MAKEFLAGS))),0)
 
+# Suppress "make[1]: Entering/Leaving directory ..." from recursive sub-makes
+MAKEFLAGS += --no-print-directory
+
 
 
 ########## Directories ##########
@@ -110,6 +113,54 @@ endif
 
 
 
+########## Help ##########
+.PHONY: help
+help:
+	@printf '\033[1mRISC-V Architectural Certification Tests — Make Targets\033[0m\n\n'
+	@printf '\033[1mUsage:\033[0m\n'
+	@printf '  make <target> [VAR=value ...]\n\n'
+	@printf '\033[1mCommon targets:\033[0m\n'
+	@printf '  \033[36m%-20s\033[0m %s\n' \
+	  'elfs (default)'      'Generate tests and compile self-checking ELFs for $$(CONFIG_FILES)' \
+	  'tests'               'Generate assembly test sources only (no toolchain needed)' \
+	  'vector-tests'        'Generate vector test sources' \
+	  'coverage'            'Build with coverage instrumentation for $$(COVERAGE_CONFIG_FILES)' \
+	  'regression'          'Clean, run coverage, then every config with a run_cmd.txt' \
+	  'clean'               'Remove build artifacts (preserves extensions.txt)' \
+	  'clean-tests'         'Remove generated test sources'
+	@printf '\n\033[1mGenerators:\033[0m\n'
+	@printf '  \033[36m%-20s\033[0m %s\n' \
+	  'testgen'             'Run testgen only' \
+	  'covergroupgen'       'Run covergroup generator only' \
+	  'vector-testgen'      'Run the standalone vector test generator'
+	@printf '\n\033[1mLinting / formatting:\033[0m\n'
+	@printf '  \033[36m%-20s\033[0m %s\n' \
+	  'lint'                'ruff check + pyright' \
+	  'lint-fix'            'ruff check --fix' \
+	  'format'              'ruff format'
+	@printf '\n\033[1mRun targets (auto-discovered from config/**/run_cmd.txt):\033[0m\n'
+	@printf '  Each directory name in a config path becomes a target that builds ELFs and\n'
+	@printf '  runs every config beneath it. Available targets:\n'
+	@printf '    %s\n' $(ALL_RUN_TARGETS) | fold -s -w 76 | sed 's/^/  /'
+	@printf '\n\033[1mCommon variables:\033[0m\n'
+	@printf '  \033[36m%-20s\033[0m %s\n' \
+	  'CONFIG_FILES'        'Configs for the default elfs target' \
+	  'EXTENSIONS'          'Comma-separated extensions to generate (default: all)' \
+	  'EXCLUDE_EXTENSIONS'  'Comma-separated extensions to skip' \
+	  'JOBS'                'Parallel build jobs (0 = auto, also honors -j)' \
+	  'DEBUG'               'Emit objdump/trace/trap reports (slower)' \
+	  'FAST'                'Skip objdump for faster ELF builds' \
+	  'VERBOSE'             'Implies DEBUG, JOBS=1, prints each command' \
+	  'COVERAGE_SIMULATOR'  'questa or vcs (used with make coverage)'
+	@printf '\n\033[1mExamples:\033[0m\n'
+	@printf '  make                                 # default: spike rv32+rv64\n'
+	@printf '  make spike-rv64-max                  # build & run a single config\n'
+	@printf '  make tests EXTENSIONS=I,M            # generate just I and M tests\n'
+	@printf '  make EXCLUDE_EXTENSIONS=ExceptionsSm # skip an extension\n'
+	@printf '  make coverage                        # coverage build\n'
+
+
+
 ########## Test compilation ##########
 .DEFAULT_GOAL := elfs
 .PHONY: elfs
@@ -151,8 +202,8 @@ $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
 .PHONY: vector-testgen
 vector-testgen: $(STAMP_DIR)/vector-testgen-unpriv.stamp
 $(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/testgen/scripts/vector-testgen-unpriv.py generators/testgen/scripts/vector_testgen_common.py Makefile | $(STAMP_DIR)
-	$(UV_RUN) generators/testgen/scripts/vector-testgen-unpriv.py $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
-	touch $@
+	@$(UV_RUN) generators/testgen/scripts/vector-testgen-unpriv.py $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
+	@touch $@
 
 .PHONY: tests
 tests: covergroupgen testgen
@@ -219,7 +270,7 @@ ALL_RUN_TARGETS := $(sort $(foreach f,$(RUN_CMD_FILES),\
 
 define run-target
 $(1): tests
-	CONFIG_FILES="$(patsubst %/run_cmd.txt,%/test_config.yaml,$(_TARGETS_$(1)))" \
+	@CONFIG_FILES="$(patsubst %/run_cmd.txt,%/test_config.yaml,$(_TARGETS_$(1)))" \
 	$$(MAKE) elfs
 	@exit_code=0; \
 	$(foreach f,$(_TARGETS_$(1)),\

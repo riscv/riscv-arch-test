@@ -98,6 +98,7 @@
 #define ZMMUL_SUPPORTED
 #define ZVABD_SUPPORTED
 #define ZVBB_SUPPORTED
+#define ZVBC_SUPPORTED
 #define ZVFBFMIN_SUPPORTED
 #define ZVFBFWMA_SUPPORTED
 #define ZVFH_SUPPORTED
@@ -106,6 +107,7 @@
 #define ZVKG_SUPPORTED
 #define ZVKNED_SUPPORTED
 #define ZVKNHA_SUPPORTED
+#define ZVKNHB_SUPPORTED
 #define ZVKSED_SUPPORTED
 #define ZVKSH_SUPPORTED
 #define ZVQDOT_SUPPORTED
@@ -117,10 +119,11 @@
 
 // Vector configuration
 #define SEWMIN 8
-#define ELEN 32
-#define MAXINDEXEEW 32
+#define ELEN 64
+#define MAXINDEXEEW 64
 
 // Supported fractional LMULs for vector
 // all supported now should be generated based on config
+#define LMULf8_SUPPORTED
 #define LMULf4_SUPPORTED
 #define LMULf2_SUPPORTED

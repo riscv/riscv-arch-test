@@ -11,7 +11,7 @@
 `define VLEN256
 
 // Maximum supported index EEW for indexed load/store
-`define MAXINDEXEEW32
+`define MAXINDEXEEW64
 
 // Virtual Memory Modes
 `define SV39_SUPPORTED
@@ -118,6 +118,7 @@
 `define ZMMUL_SUPPORTED
 `define ZVABD_SUPPORTED
 `define ZVBB_SUPPORTED
+`define ZVBC_SUPPORTED
 `define ZVFBFMIN_SUPPORTED
 `define ZVFBFWMA_SUPPORTED
 `define ZVFH_SUPPORTED
@@ -126,6 +127,7 @@
 `define ZVKG_SUPPORTED
 `define ZVKNED_SUPPORTED
 `define ZVKNHA_SUPPORTED
+`define ZVKNHB_SUPPORTED
 `define ZVKSED_SUPPORTED
 `define ZVKSH_SUPPORTED
 `define ZVQDOT_SUPPORTED
@@ -143,8 +145,10 @@
 `define SEW8_SUPPORTED
 `define SEW16_SUPPORTED
 `define SEW32_SUPPORTED
+`define SEW64_SUPPORTED
 
 // Supported fractional LMULs for vector
 // all supported now should be generated based on config (SEWMIN and ELEN)
+`define LMULf8_SUPPORTED
 `define LMULf4_SUPPORTED
 `define LMULf2_SUPPORTED

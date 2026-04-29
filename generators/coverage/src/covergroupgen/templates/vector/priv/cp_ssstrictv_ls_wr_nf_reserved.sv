@@ -2,7 +2,6 @@
 // cp_ssstrictv_ls_wr_nf_reserved
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // Whole register load/store: nf+1 must be power of 2 and vd aligned to nf+1
 

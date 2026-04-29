@@ -2,7 +2,6 @@
 // cp_ssstrictv_mask_logical_vm0_reserved
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // Vector mask logical instructions with vm=0 (reserved masked encoding)
     mask_logical_funct6: coverpoint ins.current.insn[31:26] {

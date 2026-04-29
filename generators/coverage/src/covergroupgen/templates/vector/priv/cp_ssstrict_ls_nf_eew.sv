@@ -2,7 +2,6 @@
 // cp_ssstrict_ls_nf_eew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // EMUL = (EEW/SEW) * LMUL = 8 from (vlmul, vsew, width) tuples
     emul_8_ls : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],

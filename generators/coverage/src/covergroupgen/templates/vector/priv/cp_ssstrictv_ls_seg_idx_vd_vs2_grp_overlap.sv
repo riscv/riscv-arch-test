@@ -2,7 +2,6 @@
 // cp_ssstrictv_ls_seg_idx_vd_vs2_grp_overlap
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // Indexed segment load dest groups (EMUL=2) cannot overlap vs2 index group
     vd_vs2_grp_overlap_lmul2 : coverpoint {ins.current.insn[11:7],

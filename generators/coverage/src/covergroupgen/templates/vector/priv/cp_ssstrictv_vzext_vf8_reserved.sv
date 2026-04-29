@@ -2,7 +2,6 @@
 // cp_ssstrictv_vzext_vf8_reserved
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // vzext.vf8: source EEW = SEW/8, source EMUL = LMUL/8
     // Reserved when source EEW < 8 (SEW<=32) or source EMUL < 1/8 (LMUL<=mf2)
@@ -19,8 +18,12 @@
         bins mf2 = {7};
     }
 
-    cp_ssstrictv_vzext_vf8_bad_eew: cross std_trap_vec, sew_reserved_vf8, trap_occurred;
+    trap_occurred_3a7b53: coverpoint ins.trap {
+        bins trapped = {1'b1};
+    }
 
-    cp_ssstrictv_vzext_vf8_bad_emul: cross std_trap_vec, lmul_reserved_vf8, trap_occurred;
+    cp_ssstrictv_vzext_vf8_bad_eew: cross std_trap_vec, sew_reserved_vf8, trap_occurred_3a7b53;
+
+    cp_ssstrictv_vzext_vf8_bad_emul: cross std_trap_vec, lmul_reserved_vf8, trap_occurred_3a7b53;
 
 //// end cp_ssstrictv_vzext_vf8_reserved ///////////////////////////////////////////////////////////

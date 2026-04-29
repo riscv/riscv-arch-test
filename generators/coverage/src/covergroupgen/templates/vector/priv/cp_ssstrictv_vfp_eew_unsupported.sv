@@ -2,7 +2,6 @@
 // cp_ssstrictv_vfp_eew_unsupported
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // Vector FP operand EEW (=SEW) not a supported FP type width (includes FLEN < SEW)
 
@@ -15,25 +14,29 @@
         `endif
     }
 
-    cp_ssstrictv_vfp_eew_unsupported: cross std_trap_vec, sew_unsupported_fp, trap_occurred;
+    trap_occurred_196c2e: coverpoint ins.trap {
+        bins trapped = {1'b1};
+    }
+
+    cp_ssstrictv_vfp_eew_unsupported: cross std_trap_vec, sew_unsupported_fp, trap_occurred_196c2e;
 
     // Edge case: still reserved when vl=0
-    vl_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    vl_zero_196c2e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
         bins zero = {0};
     }
 
-    mstatus_vs_active: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+    mstatus_vs_active_196c2e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
         bins active[] = {[1:3]};
     }
 
-    cp_ssstrictv_vfp_eew_unsupported_vl0: cross vtype_prev_vill_clear, vl_zero, mstatus_vs_active, sew_unsupported_fp, trap_occurred;
+    cp_ssstrictv_vfp_eew_unsupported_vl0: cross vtype_prev_vill_clear, vl_zero_196c2e, mstatus_vs_active_196c2e, sew_unsupported_fp, trap_occurred_196c2e;
 
     // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+    vstart_ge_vl_196c2e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
                               get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
         bins true = {1'b1};
     }
 
-    cp_ssstrictv_vfp_eew_unsupported_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active, vstart_ge_vl, sew_unsupported_fp, trap_occurred;
+    cp_ssstrictv_vfp_eew_unsupported_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_196c2e, vstart_ge_vl_196c2e, sew_unsupported_fp, trap_occurred_196c2e;
 
 //// end cp_ssstrictv_vfp_eew_unsupported ///////////////////////////////////////////////////////////

@@ -2,7 +2,6 @@
 // cp_ssstrictv_ls_emul_nfields_16
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // EMUL * NFIELDS = 16 (reserved) for segment loads/stores where EEW = SEW (EMUL = LMUL)
     vtype_lmul_nf_emul_nfields_16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],

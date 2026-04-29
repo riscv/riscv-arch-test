@@ -8,18 +8,17 @@
 // architecturally valid, so this coverpoint samples only the occurrence of a
 // misaligned base with a valid vtype.
 
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_42737e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
     // Non-zero low bits of the base address indicate misalignment relative to
     // elements of width >= 2 bytes. All seven non-aligned offsets are covered.
-    base_misalign : coverpoint ins.current.rs1_val[2:0] {
+    base_misalign_42737e : coverpoint ins.current.rs1_val[2:0] {
         bins offsets[] = {[3'b001:3'b111]};
     }
 
-    cp_ssstrictv_ls_element_misaligned : cross vtype_valid, base_misalign;
+    cp_ssstrictv_ls_element_misaligned : cross vtype_valid_42737e, base_misalign_42737e;
 
 //// end cp_ssstrictv_ls_element_misaligned ///////////////////////////////////////////////////////////////////

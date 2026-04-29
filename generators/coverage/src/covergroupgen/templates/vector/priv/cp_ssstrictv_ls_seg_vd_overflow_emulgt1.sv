@@ -2,7 +2,6 @@
 // cp_ssstrictv_ls_seg_vd_overflow_emulgt1
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // Segment load/store where vd + NFIELDS * LMUL > 32 with LMUL > 1
     vd_nf_lmul_overflow : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],

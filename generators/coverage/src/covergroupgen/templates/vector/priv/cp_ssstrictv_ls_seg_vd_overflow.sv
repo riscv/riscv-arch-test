@@ -2,7 +2,6 @@
 // cp_ssstrictv_ls_seg_vd_overflow
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // Segment load/store where vd + NFIELDS > 32 (register numbers past 31)
     vd_nf_overflow : coverpoint {ins.current.insn[11:7],

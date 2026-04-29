@@ -2,7 +2,6 @@
 // cp_ssstrictv_ls_seg_idx_vd_vs2_overlap
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // Verify indexed segment load destination groups cannot overlap vs2 source index register
     vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],

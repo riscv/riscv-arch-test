@@ -19,8 +19,11 @@ WORKDIR     ?= work
 # Default exclusion reasons:
 #  - Sm, S: Insufficient WARL configuration options.
 #  - InterruptsSm,InterruptsS,InterruptsU,PMPSm,PMPZca,SvaduPMP,SvPMP,SvPMPZicbo: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
-EXTENSIONS  ?=
+EXTENSIONS  ?= SsstrictV
 EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,InterruptsS,InterruptsU,ExceptionsZalrsc,ExceptionsZaamo,PMPF,PMPS,PMPSm,PMPU,PMPZaamo,PMPZalrsc,PMPZca,PMPZicbo,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo,SvPMPZicbo
+#ExceptionsV* currently omitted as sail doesn't support non-zero vstart
+#ExceptionsVls currently omitted as qemu does not have x0-4096 address space as illegal
+#UV currently omitted as qemu implements vxrm incorrectly
 
 # Strip spaces from comma-separated lists so shell word-splitting doesn't break CLI arguments
 empty :=
@@ -150,9 +153,16 @@ $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
 	@touch $@
 
 .PHONY: vector-testgen
-vector-testgen: $(STAMP_DIR)/vector-testgen-unpriv.stamp
+vector-testgen: $(STAMP_DIR)/vector-testgen-unpriv.stamp $(STAMP_DIR)/vector-testgen-priv.stamp
+
 $(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/testgen/scripts/vector-testgen-unpriv.py generators/testgen/scripts/vector_testgen_common.py Makefile | $(STAMP_DIR)
 	$(UV_RUN) generators/testgen/scripts/vector-testgen-unpriv.py $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
+	touch $@
+# Note: EXTENSIONS / EXCLUDE_EXTENSIONS only filter unpriv generation and
+# run-time test selection. The priv vector generator does not accept these
+# flags; priv vector tests are always generated.
+$(STAMP_DIR)/vector-testgen-priv.stamp: generators/testgen/scripts/vector-testgen-priv.py generators/testgen/scripts/vector_testgen_common.py Makefile | $(STAMP_DIR)
+	$(UV_RUN) generators/testgen/scripts/vector-testgen-priv.py
 	touch $@
 
 .PHONY: tests

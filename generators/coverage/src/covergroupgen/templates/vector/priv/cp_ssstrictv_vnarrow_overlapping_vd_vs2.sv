@@ -2,9 +2,12 @@
 // cp_ssstrictv_vnarrow_overlapping_vd_vs2
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // Narrowing with LMUL=1: vd = vs2 overlaps source group, must trap
-    cp_ssstrictv_vnarrow_overlapping_vd_vs2: cross std_trap_vec, vtype_lmul_1, vs2_reg_aligned_lmul_2, vd_eq_vs2, trap_occurred;
+    trap_occurred_eb4360: coverpoint ins.trap {
+        bins trapped = {1'b1};
+    }
+
+    cp_ssstrictv_vnarrow_overlapping_vd_vs2: cross std_trap_vec, vtype_lmul_1, vs2_reg_aligned_lmul_2, vd_eq_vs2, trap_occurred_eb4360;
 
 //// end cp_ssstrictv_vnarrow_overlapping_vd_vs2 /////////////////////////////////////////////////////////

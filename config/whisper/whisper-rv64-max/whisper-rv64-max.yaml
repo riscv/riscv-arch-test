@@ -13,15 +13,16 @@ implemented_extensions:
   - { name: D, version: "= 2.2.0" }
   - { name: C, version: "= 2.0" }
   - { name: B, version: "= 1.0.0" }
-  - { name: V, version: "= 1.0.0" }
+  # - { name: V, version: "= 1.0.0" }
   - { name: Zve32f, version: "= 1.0.0" }
   - { name: Zve32x, version: "= 1.0.0" }
-  - { name: Zve64d, version: "= 1.0.0" }
-  - { name: Zve64f, version: "= 1.0.0" }
-  - { name: Zve64x, version: "= 1.0.0" }
+  # - { name: Zve64d, version: "= 1.0.0" }
+  # - { name: Zve64f, version: "= 1.0.0" }
+  # - { name: Zve64x, version: "= 1.0.0" }
   - { name: Zvl32b, version: "= 1.0.0" }
   - { name: Zvl64b, version: "= 1.0.0" }
   - { name: Zvl128b, version: "= 1.0.0" }
+  - { name: Zvl256b, version: "= 1.0.0" }
   - { name: Zic64b, version: "= 1.0.0" }
   - { name: Zicbom, version: "= 1.0.0" }
   - { name: Zicbop, version: "= 1.0.0" }
@@ -109,9 +110,9 @@ params:
   # B params
   MUTABLE_MISA_B: true
   # V params
-  MUTABLE_MISA_V: true
-  VLEN: 512
-  ELEN: 64
+  # MUTABLE_MISA_V: true
+  VLEN: 256
+  ELEN: 32
   FOLLOW_VTYPE_RESET_RECOMMENDATION: true
   HW_MSTATUS_VS_DIRTY_UPDATE: precise
   RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX: VLMAX

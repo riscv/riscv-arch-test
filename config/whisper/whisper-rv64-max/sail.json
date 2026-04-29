@@ -296,9 +296,9 @@
       // For e.g. Zve32x and Zve32f require `elen_exp` >= 5,
       // Zve64x, Zve64f, and Zve64d require `elen_exp` >= 6,
       // and V requires `elen_exp` >= 6 and `vlen_exp` >= 7.
-      "support_level": "Full",
+      "support_level": "Float_single",
       "vlen_exp": 8,
-      "elen_exp": 6,
+      "elen_exp": 5,
       "vl_use_ceil": false
     },
     "B": {
@@ -501,7 +501,7 @@
       "supported": true
     },
     "Zvbc": {
-      "supported": true
+      "supported": false
     },
     "Zvkb": {
       "supported": true
@@ -516,7 +516,7 @@
       "supported": true
     },
     "Zvknhb": {
-      "supported": true
+      "supported": false
     },
     "Zvksed": {
       "supported": true

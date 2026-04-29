@@ -34,7 +34,7 @@ def _vector_setup(temp_reg: int) -> list[str]:
     ]
 
 
-def _load_v_zero_one(temp_reg: int, fs_dirty_before: bool = True) -> list[str]:
+def _load_v_zero_one(temp_reg: int) -> list[str]:
     """Load v1=ones (1.0f), v2=zeros, v4=ones, v5=ones — under FS=Dirty before any FS state change."""
     lines = []
     lines.append(f"LI(x{temp_reg}, 0x3f800000)  # 1.0f")

@@ -2201,7 +2201,7 @@ def prepVstart(vstartval, lmul = 1, scratch = 8, scratch2 = 28):
   else: # random vstart
     randvstart = randint(3, maxVLEN)  # TODO: check logic for this
     writeLine(f"vsetvli x{vstart_reg}, x0, SEWSIZE, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
-    writeLine(f"la x{scratch2}, {randvstart}")
+    writeLine(f"li x{scratch2}, {randvstart}")
     writeLine(f"remu x{scratch2}, x{scratch2}, x{vstart_reg}",           f"# x{scratch2} = randvstart % VLMAX (< VLMAX)")
     vstart_reg = scratch2  # randomized vstart value lives in scratch2 from here on
   writeLine(f"csrw vstart, x{vstart_reg}",                               f"# Write desired vstart value to the CSR")

@@ -6,14 +6,17 @@ resulting trap is attributable to MAXINDEXEEW gating the index EEW. The
 instruction may or may not trap depending on the configured MAXINDEXEEW.
 
 Dual-signature design (vector-priv specific):
-  - The vd SIGUPD_V always fires (no skip_sigupd), capturing the data path
-    when the instruction does not trap.
-  - The framework trap handler writes the trap signature to mtrap_sigptr
-    when a trap does fire.
+  - For loads, the vd SIGUPD_V always fires (no skip_sigupd), capturing the
+    data path when the instruction does not trap.
+  - For stores, there is no architectural vd to compare, and the vd used for
+    SIGUPD here is a random unused vector register whose value would fail
+    comparison non-deterministically. We therefore pass skip_sigupd=True
+    for stores.
+  - In all cases, the framework trap handler writes the trap signature to
+    mtrap_sigptr when a trap does fire.
   Both DUT and the reference simulator run the same code under the same
   config, so whichever path fires is observed identically on both sides
-  and the signatures match. Do NOT pass skip_sigupd=True here -- that
-  would discard the no-trap data check.
+  and the signatures match.
 """
 
 from __future__ import annotations

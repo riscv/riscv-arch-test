@@ -27,18 +27,10 @@ normative_rule_definitions:
   - name: trap_horiz
     coverpoint: ["ExceptionsS_cg/cp_medeleg_msu"]
 
-  # Delegated interrupts result in the interrupt being masked at the delegator
-  # privilege level. For example, if the supervisor timer interrupt (STI) is
-  # delegated to S-mode by setting mideleg[5], STIs will not be taken when executing
-  # in M-mode. By contrast, if mideleg[5] is clear, STIs can be taken in any mode
-  # and regardless of current mode will transfer control to M-mode.
-  - name: trap_del_intr_priv_lvl
-    coverpoint: ["TODO"]
-
   # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to
   # the value of xIE; xIE is set to 0; and xPP is set to y.
   - names: [mstatus_xpie_trap_op, mstatus_xie_trap_op, mstatus_xpp_trap_op]
-    coverpoint: [""]
+    coverpoint: ["ExceptionsS_cg/cp_medeleg_msu_ecall"]
 
   # The SPP bit indicates the privilege level at which a hart was executing before
   # entering supervisor mode. When a trap is taken, SPP is set to 0 if the trap
@@ -47,4 +39,4 @@ normative_rule_definitions:
   # mode if the SPP bit is 0, or supervisor mode if the SPP bit is 1; SPP is then
   # set to 0.
   - names: [sstatus_spp_sz, sstatus_spp_acc, sstatus_spp_op]
-    coverpoint: [""]
+    coverpoint: ["ExceptionsS_cg/cp_medeleg_msu_ecall"]

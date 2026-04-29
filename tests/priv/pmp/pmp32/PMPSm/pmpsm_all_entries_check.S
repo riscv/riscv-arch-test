@@ -35,9 +35,6 @@
 #define TEST_FILE "pmpsm_all_entries_check.S"
 #define SIGUPD_COUNT 120
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 

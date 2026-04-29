@@ -31,6 +31,8 @@ implemented_extensions:
   - { name: Zihpm, version: "= 2.0.0" }
   - { name: Zaamo, version: "= 1.0.0" }
   - { name: Zalrsc, version: "= 1.0.0" }
+  - { name: Zacas, version: "= 1.0.0" }
+  - { name: Zabha, version: "= 1.0.0" }
   - { name: Za64rs, version: "= 1.0.0" }
   - { name: Za128rs, version: "= 1.0.0" }
   - { name: Zfa, version: "= 1.0.0" }
@@ -55,6 +57,7 @@ implemented_extensions:
   - { name: Zksed, version: "= 1.0.0" }
   - { name: Zksh, version: "= 1.0.0" }
   - { name: Zkt, version: "= 1.0.0" }
+  - { name: Zkr, version: "= 1.0.0" }
   - { name: Zmmul, version: "= 1.0.0" }
   - { name: U, version: "= 1.0.0" }
   - { name: S, version: "= 1.12.0" }
@@ -73,7 +76,6 @@ implemented_extensions:
   - { name: Sm, version: "= 1.12.0" }
   - { name: Zimop, version: "= 1.0.0" }
   - { name: Zcmop, version: "= 1.0.0" }
-  - { name: Zabha, version: "= 1.0.0" }
 
 params:
   # A params

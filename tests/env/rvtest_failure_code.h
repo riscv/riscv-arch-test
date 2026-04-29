@@ -40,7 +40,6 @@
         # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
         j failedtest_saveregs
 
-#ifdef rvtest_mtrap_routine
     # Log failure. x7 contains return address of jal from the failure and x9 is a vacant temporary register
     failedtest_trap_x7_x9:
         la x9, begin_failure_scratch
@@ -54,9 +53,8 @@
         mv DEFAULT_LINK_REG, x7        # move return address into DEFAULT_LINK_REG
         # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
         j failedtest_saveregs
-#endif
 
-#ifdef RVTEST_FP
+#ifdef F_SUPPORTED
     # FP failure entry points (failure_type = 1)
     failedtest_fp_x5_x4:
         la DEFAULT_TEMP_REG, begin_failure_scratch
@@ -122,9 +120,9 @@
         mv DEFAULT_TEMP_REG, x12
         mv DEFAULT_LINK_REG, x13
         j failedtest_saveregs
-#endif // RVTEST_FP
+#endif // F_SUPPORTED
 
-#ifdef RVTEST_VECTOR
+#ifdef RVTEST_VECTOR // *** TODO: change all RVTEST_VECTOR to ZVL32B_SUPPORTED
 
     # -------- ACTIVE --------
     failedtest_vec_active_x5_x4:
@@ -377,13 +375,13 @@
     failedtest_saveresults:
         # Dispatch based on failure type
         lw x9, failure_type
-#ifdef RVTEST_FP
+#if defined(F_SUPPORTED) || defined(ZFINX_SUPPORTED)
         li x10, 1
         beq x9, x10, failedtest_saveresults_fp
         li x10, 2
         beq x9, x10, failedtest_saveresults_fflags
-#endif // RVTEST_FP
-#ifdef RVTEST_VECTOR
+#endif // F_SUPPORTED
+#ifdef RVTEST_VECTOR  // *** TODO: change to ZVL32B_SUPPORTED
         li x10, 4
         beq x9, x10, failedtest_saveresults_vector
 #endif // RVTEST_VECTOR
@@ -427,7 +425,7 @@
         SREG x6, 280(DEFAULT_TEMP_REG)    # record expected value
         j failedtest_saveresults_common
 
-#ifdef RVTEST_FP
+  #if defined(F_SUPPORTED) || defined(ZFINX_SUPPORTED)
     failedtest_saveresults_fflags:
         # Re-read fcsr for bad value (hasn't changed since failure)
         csrr x6, fcsr
@@ -493,7 +491,7 @@
         SREG x7, 0(x8)                    # expected_value upper half
     #endif
         j failedtest_saveresults_common
-#endif // RVTEST_FP
+#endif // F_SUPPORTED
 
 #ifdef RVTEST_VECTOR
 
@@ -997,7 +995,7 @@
         lw a0, failure_type
         li a1, 1
         bne a0, a1, failedtest_report_badval_not_fp
-    #if defined(RVTEST_FP) && CONFIG_FLEN > XLEN
+    #if defined(F_SUPPORTED) && CONFIG_FLEN > XLEN
         # FP with CONFIG_FLEN > XLEN: combined hex "0xUPPER_LOWER"
         LREG a0, failing_value_upper
         LREG a1, failing_value
@@ -1024,7 +1022,7 @@
         lw a0, failure_type
         li a1, 1
         bne a0, a1, failedtest_report_expval_not_fp
-    #if defined(RVTEST_FP) && CONFIG_FLEN > XLEN
+    #if defined(F_SUPPORTED) && CONFIG_FLEN > XLEN
         # FP with CONFIG_FLEN > XLEN: combined hex "0xUPPER_LOWER"
         LREG a0, expected_value_upper
         LREG a1, expected_value
@@ -1045,7 +1043,6 @@
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
 
-#ifdef rvtest_mtrap_routine
     failedtest_report_traphandler:
         lw a0, failure_type
         li a1, 3            # Failed in trap handler
@@ -1085,7 +1082,6 @@
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
-#endif
 
     failedtest_report_end:
         # Print end string
@@ -1158,7 +1154,7 @@
         ret
 
 
-#if defined(RVTEST_FP) && CONFIG_FLEN > XLEN || defined(RVTEST_VECTOR)
+#if defined(F_SUPPORTED) && CONFIG_FLEN > XLEN || defined(RVTEST_VECTOR)
     # Convert two XLEN-wide values to combined hex string: "0xUPPER_LOWER\n\0"
     # a0: upper XLEN-bit value
     # a1: lower XLEN-bit value
@@ -1230,7 +1226,7 @@
         .fill 2, 4, 0xfeedf00dbaaaaaad
     failure_string_ptr:
         .fill 2, 4, 0xfeedf00dbaaaaaad
-#if defined(RVTEST_FP) && CONFIG_FLEN > XLEN
+#if defined(F_SUPPORTED) && CONFIG_FLEN > XLEN
     failing_value_upper:
         .fill 2, 4, 0xfeedf00dbaaaaaad
     expected_value_upper:
@@ -1281,7 +1277,8 @@
         .string "\n"
     inststr:
         .string "RVCP: Instruction: "
-#ifdef RVTEST_PRIV_TEST
+
+    // Failure strings for privileged tests
     addrstr:
         .string "RVCP: Approximate address (failure may be slightly after this): "
     xepcstr:
@@ -1358,10 +1355,6 @@
         .string "\"Mismatch in supervisor external interrupt ID! Trap was being handled in VS-Mode.\"";
     Vclr_Vext_int_str:
         .string "\"Mismatch in virtual supervisor external interrupt ID! Trap was being handled in VS-Mode.\"";
-#else
-    addrstr:
-        .string "RVCP: Address: "
-#endif
 #ifdef RVTEST_VECTOR
     regionstr:
         .string "RVCP: Region: "

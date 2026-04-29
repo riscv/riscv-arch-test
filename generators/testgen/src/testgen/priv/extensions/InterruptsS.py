@@ -1691,7 +1691,7 @@ def _generate_priority_both_s_tests(test_data: TestData) -> list[str]:
                 [
                     "",
                     f"# Test: mideleg={mideleg_name}, pattern=0x{pattern:02x} ",
-                    f"(MEIP={meip_set} SEIP={seip_set} MTIP={mtip_set} STIP={stip_set} MSIP={msip_set} SSIP={ssip_set})",
+                    f"# (MEIP={meip_set} SEIP={seip_set} MTIP={mtip_set} STIP={stip_set} MSIP={msip_set} SSIP={ssip_set})",
                     "RVTEST_GOTO_MMODE",
                     "CSRW(mie, zero)",
                     "csrci mstatus, 8",  # MIE=0

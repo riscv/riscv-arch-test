@@ -328,48 +328,53 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
     for cmt, tmpl in [
         ("Reserved op7", "RRRRRRRRRRRRRRRRRRRRRRRRR0011111"),
         ("Reserved op15", "RRRRRRRRRRRRRRRRRRRRRRRRR0111111"),
+        ("Reserved op21", "RRRRRRRRRRRRRRRRRRRRRRRRR1010111"),
         ("Reserved op23", "RRRRRRRRRRRRRRRRRRRRRRRRR1011111"),
         ("Reserved op26", "RRRRRRRRRRRRRRRRRRRRRRRRR1101011"),
+        ("Reserved op29", "RRRRRRRRRRRRRRRRRRRRRRRRR1110111"),
         ("Reserved op31", "RRRRRRRRRRRRRRRRRRRRRRRRR1111111"),
     ]:
         _emit_raw_words(lines, cmt, tmpl)
 
-    _emit_raw_words(lines, "cp_load funct3", "RRRRRRRRRRRR00000111001110000011")
-    _emit_raw_words(lines, "cp_fload funct3", "RRRRRRRRRRRR00000001001110000111")
-    _emit_raw_words(lines, "cp_fence_cbo funct3", "RRRRRRRRRRRRRRRRREEERRRRR0001111")
-    _emit_raw_words(lines, "cp_cbo_immediate (rs1=0)", "EEEEEEEEEEEE00000010000000001111")
+    _emit_raw_words(lines, "cp_load", "RRRRRRRRRRRRRRRRREEE010010000011")
+    _emit_raw_words(lines, "cp_fload", "RRRRRRRRRRRRRRRRREEE010010000111")
+    _emit_raw_words(lines, "cp_fence_cbo", "RRRRRRRRRRRRRRRRREEE010010001111")
+    _emit_raw_words(lines, "cp_cbo_immediate", "EEEEEEEEEEEE00000010000000001111")
     _emit_raw_words(lines, "cp_cbo_rd", "00000000000RRRRRR010EEEEE0001111")
-    _emit_raw_words(lines, "cp_store funct3 (rs1=0)", "RRRRRRRRRRRR00000100RRRRR0100011")
-    _emit_raw_words(lines, "cp_fstore funct3 (rs1=0)", "RRRRRRRRRRRR00000001RRRRR0100111")
-    _emit_raw_words(lines, "cp_Itype funct3[2:1]=01", "EEEEEEEEEEEERRRRRE01001110010011")
-    _emit_raw_words(lines, "cp_Itypef3", "RRRRRRRRRRRRRRRRREEE001110010011")
-    _emit_raw_words(lines, "cp_aes64ks1i rnum", "0011000EEEEERRRRR001001110010011")
-    _emit_raw_words(lines, "cp_IWtype funct3", "RRRRRRRRRRRRRRRRREEE001110011011")
-    _emit_raw_words(lines, "cp_IWshift", "EEEEEEERRRRRRRRRRE01001110011011")
-    _emit_raw_words(lines, "cp_atomic_funct3 (rs1=0)", "00110RRRRRRR00000EEE001110101111")
-    _emit_raw_words(lines, "cp_atomic_funct7 (rs1=0)", "00110RRRRRRR00000000001110101111")
-    _emit_raw_words(lines, "cp_lrsc", "00110RREEEEE00000000001110101111")
-    _emit_raw_words(lines, "cp_rtype", "EEEEEEERRRRRRRRRREEE001110110011")
-    _emit_raw_words(lines, "cp_rwtype", "EEEEEEERRRRRRRRRREEE001110111011")
-    _emit_raw_words(lines, "cp_ftype", "EEEEERRRRRRRRRRRREEE001111010011")
-    _emit_raw_words(lines, "cp_fsqrt", "0101100EEEEERRRRR000011111010011")
-    _emit_raw_words(lines, "cp_fclass", "1110000EEEEERRRRR001001111010011")
-    _emit_raw_words(lines, "cp_fcvtif", "1100000EEE00RRRRR000001111010011")
-    _emit_raw_words(lines, "cp_fcvtif_fmt", "11000EE000EERRRRR000001111010011")
-    _emit_raw_words(lines, "cp_fcvtfi", "1101000EEER00RRRR000001111010011")
-    _emit_raw_words(lines, "cp_fcvtfi_fmt", "11010EE000EERRRRR000001111010011")
-    _emit_raw_words(lines, "cp_fcvtff", "0100000EEER00RRRR000001111010011")
-    _emit_raw_words(lines, "cp_fcvtff_fmt", "01000EEEEEEERRRRR000001111010011")
-    _emit_raw_words(lines, "cp_fmvif", "11100EEEEEEERRRRR000001111010011")
-    _emit_raw_words(lines, "cp_fmvfi", "11110EEEEEEERRRRR000001111010011")
-    _emit_raw_words(lines, "cp_fmvp", "10110EERRRRRRRRRR000001111010011")
-    _emit_raw_words(lines, "cp_fcvtmodwdfrm", "110000101000RRRRREEE001111010011")
-    _emit_raw_words(lines, "cp_branch2", "RRRRRRRRRRRRRRRRR010RRRRR1100011")
-    _emit_raw_words(lines, "cp_branch3", "RRRRRRRRRRRRRRRRR011RRRRR1100011")
-    _emit_raw_words(lines, "cp_jalr0", "RRRRRRRRRRRRRRRRREE1001111100111")
-    _emit_raw_words(lines, "cp_jalr1", "RRRRRRRRRRRRRRRRR010001111100111")
-    _emit_raw_words(lines, "cp_jalr2", "RRRRRRRRRRRRRRRRR100001111100111")
-    _emit_raw_words(lines, "cp_jalr3", "RRRRRRRRRRRRRRRRR110001111100111")
+    _emit_raw_words(lines, "cp_store", "RRRRRRRRRRRR00000EEERRRRR0100011")
+    _emit_raw_words(lines, "cp_fstore", "RRRRRRRRRRRR00000EEERRRRR0100111")
+    _emit_raw_words(lines, "cp_Itype", "EEEEEEEEEEEERRRRRE01010010010011")
+    _emit_raw_words(lines, "cp_llAItype", "RRRRRRRRRRRRRRRRREEE010010010011")
+    _emit_raw_words(lines, "cp_aes64ks1i", "0011000EEEEERRRRR001010010010011")
+    _emit_raw_words(lines, "cp_IWtype", "RRRRRRRRRRRRRRRRREEE010010011011")
+    _emit_raw_words(lines, "cp_IWshift", "EEEEEEERRRRRRRRRRE01010010011011")
+    _emit_raw_words(lines, "cp_atomic_funct3", "RRRRRRRRRRRR00000EEE010010101111")
+    _emit_raw_words(lines, "cp_atomic_funct7", "EEEEERRRRRRR0000001E010010101111")
+    _emit_raw_words(lines, "cp_lrsc", "00010RREEEEE0000001E010010101111")
+    _emit_raw_words(lines, "cp_rtype", "EEEEEEE0011100111EEE001110110011")
+    _emit_raw_words(lines, "cp_rwtype", "EEEEEEE0011100111EEE001110111011")
+    _emit_raw_words(lines, "cp_ftype", "EEEEERR0011100111EEE001111010011")
+    _emit_raw_words(lines, "cp_fsqrt", "0101100EEEEE00111000011111010011")
+    _emit_raw_words(lines, "cp_fclass", "1110000EEEEE00111001001111010011")
+    _emit_raw_words(lines, "cp_fcvtif", "1100000EEE0000111000001111010011")
+    _emit_raw_words(lines, "cp_fcvtif_fmt", "11000EE000EE00111000001111010011")
+    _emit_raw_words(lines, "cp_fcvtfi", "1101000EEE1000111000001111010011")
+    _emit_raw_words(lines, "cp_fcvtfi_fmt", "11010EE000EE00111000001111010011")
+    _emit_raw_words(lines, "cp_fcvtff", "0100000EEE1000111000001111010011")
+    _emit_raw_words(lines, "cp_fcvtff_fmt", "01000EEEEEEE00111000001111010011")
+    _emit_raw_words(lines, "cp_fmvif", "11100EEEEEEE00111000001111010011")
+    _emit_raw_words(lines, "cp_fli", "11110EEEEEEERRRRR000010011010011")
+    _emit_raw_words(lines, "cp_fmvfi", "11110EEEEEEE00111000001111010011")
+    _emit_raw_words(lines, "cp_fmvh", "11100EEEEEEERRRRR000010011010011")
+    _emit_raw_words(lines, "cp_fmvp", "11100EE0011100111000001111010011")
+    _emit_raw_words(lines, "cp_cvtmodwd", "11000EEEEEEE00111001001111010011")
+    _emit_raw_words(lines, "cp_fcvtmodwdfrm", "11000010100000111EEE001111010011")
+    _emit_raw_words(lines, "cp_branch2", "RRRRRRR0011100111010001111100011")
+    _emit_raw_words(lines, "cp_branch3", "RRRRRRR0011100111011001111100011")
+    _emit_raw_words(lines, "cp_jalr0", "RRRRRRR0011100111EE1001111100111")
+    _emit_raw_words(lines, "cp_jalr1", "RRRRRRR0011100111010001111100111")
+    _emit_raw_words(lines, "cp_jalr2", "RRRRRRR0011100111100001111100111")
+    _emit_raw_words(lines, "cp_jalr3", "RRRRRRR0011100111110001111100111")
     _emit_raw_words(lines, "cp_privileged_f3", "00000000000100000EEE000001110011")
     _emit_raw_words(
         lines,
@@ -380,8 +385,9 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
             "00X10000001000000000000001110011",  # mret/sret
             "00000000000000000000000001110011",  # ecall
             "00010000010100000000000001110011",  # wfi
-            # Valid privileged instructions that execute without trapping:
-            "0001001XXXXXXXXXX000000001110011",  # SFENCE.VMA
+            # Valid privileged instructions that execute without trapping
+            # on implementations with Sv39/Svinval/H-extension:
+            "0001001XXXXXXXXXX000000001110011",  # SFENCE.VMA (any rs1,rs2)
             "0001011XXXXXXXXXX000000001110011",  # SINVAL.VMA (Svinval)
             "00011000000000000000000001110011",  # SFENCE.W.INVAL
             "00011000000100000000000001110011",  # SFENCE.INVAL.IR
@@ -392,16 +398,10 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
         ],
     )
     _emit_raw_words(
-        lines,
-        "cp_privileged_rd",
-        "00000000000000000000EEEEE1110011",
-        exclusion=["00000000000000000000000001110011"],
+        lines, "cp_privileged_rd", "00000000000000000000EEEEE1110011", exclusion=["00000000000000000000000001110011"]
     )
     _emit_raw_words(
-        lines,
-        "cp_privileged_rs2",
-        "000000000000EEEEE000000001110011",
-        exclusion=["00000000000000000000000001110011"],
+        lines, "cp_privileged_rs2", "000000000000EEEEE000000001110011", exclusion=["00000000000000000000000001110011"]
     )
     _emit_raw_words(lines, "cp_reserved_fma", "RRRRRRRRRRRRRRRRREEERRRRR100EE11")
     _emit_raw_words(lines, "cp_reserved_fence_fm", "EEEE00000000RRRRR000RRRRR0001111")
@@ -410,23 +410,24 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
 
     lines.append(comment_banner("cp_upperreg", "x16-x31 — trap when E extension active"))
     for cmt, tmpl in [
-        ("upperreg_rs1_add", "0000000000011EEEE000001111010011"),
-        ("upperreg_rs2_add", "00000001EEEE00001000001111010011"),
-        ("upperreg_rd_add", "000000000001000010001EEEE0110011"),
-        ("upperreg_rs1_mul", "0000001000011EEEE000001111010011"),
-        ("upperreg_rs2_mul", "00000011EEEE00001000001111010011"),
-        ("upperreg_rd_mul", "000000100001000010001EEEE0110011"),
-        ("upperreg_rs1_fadd-s", "0000000000011EEEE000001111010011"),
-        ("upperreg_rs2_fadd-s", "00000001EEEE00001000001111010011"),
-        ("upperreg_rd_fadd-s", "000000000001000010001EEEE1010011"),
-        ("upperreg_imm_rs1_addi0", "0000000000001EEEE000001111010011"),
-        ("upperreg_imm_rs1_addi1", "1111111111111EEEE000001111010011"),
-        ("upperreg_imm_rd_addi0", "000000000000000010001EEEE0010011"),
-        ("upperreg_imm_rd_addi1", "111111111111000010001EEEE0010011"),
-        ("upperreg_fmv_x_w_rs1", "1110000000001EEEE000001111010011"),
-        ("upperreg_fmv_x_w_rd", "111000000000000010001EEEE1010011"),
-        ("upperreg_fmv_w_x_rs1", "1111000000001EEEE000001111010011"),
-        ("upperreg_fmv_w_x_rd", "111100000000000010001EEEE1010011"),
+        ("cp_upperreg_rs1_add", "0000000000011EEEE000000010110011"),
+        ("cp_upperreg_rs2_add", "00000001EEEE00001000001100110011"),
+        ("cp_upperreg_rd_add",  "000000000001000010001EEEE0110011"),
+        ("cp_upperreg_rs1_mul", "0000001000011EEEE000000010110011"),
+        ("cp_upperreg_rs2_mul", "00000011EEEE00001000001100110011"),
+        ("cp_upperreg_rd_mul",  "000000100001000010001EEEE0110011"),
+        ("cp_upperreg_rs1_fadd-s", "0000000000011EEEE000000011010011"),
+        ("cp_upperreg_rs2_fadd-s", "00000001EEEE00001000000101010011"),
+        ("cp_upperreg_rd_fadd-s",  "000000000001000010001EEEE1010011"),
+        ("cp_upperreg_imm_rs1_addi0", "0000000000001EEEE000000010010011"),
+        ("cp_upperreg_imm_rs1_addi1", "1111111111111EEEE000000010010011"),
+        ("cp_upperreg_imm_rd_addi0", "000000000000000010001EEEE0010011"),
+        ("cp_upperreg_imm_rd_addi1", "111111111111000010001EEEE0010011"),
+        ("cp_upperreg_fmv_x_w_rs1", "1110000000001EEEE000000011010011"),
+        ("cp_upperreg_fmv_x_w_rd",  "111000000000000010001EEEE1010011"),
+        ("cp_upperreg_fmv_w_x_rs1", "1111000000001EEEE000000011010011"),
+        ("cp_upperreg_fmv_w_x_rd",  "111100000000000010001EEEE1010011"),
+        ("cp_amocas_odd",           "00101RRRRRRRRRRREEEE0100E0101111"),
     ]:
         _emit_raw_words(lines, cmt, tmpl)
 
@@ -439,7 +440,7 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
 
 def _generate_compressed_instr(test_data: TestData) -> list[str]:
     """cp_illegal_compressed_instruction — all 16-bit quadrant sweeps."""
-    covergroup = "SsstrictS_comp_instr_cg"
+    covergroup = "SsstrictSm_comp_instr_cg"
     coverpoint = "cp_illegal_compressed_instruction"
     lines: list[str] = []
 
@@ -455,13 +456,12 @@ def _generate_compressed_instr(test_data: TestData) -> list[str]:
         exclusion=[
             "X01XXXXXXXXXXX00",  # c.fld/c.fsd — bad address
             "X10XXXXXXXXXXX00",  # c.lw/c.sw — bad address
-            "011XXXXXXXXXXX00",  # c.ld (RV64) — base holds garbage → load fault
-            "111XXXXXXXXXXX00",  # c.sd (RV64) — same → store fault
-            "10000XXXXXXXXX00",  # c.lbu
-            "100010XXXXXXXX00",  # c.lh
-            "100011XXX0XXXX00",  # c.lhu
-            "10010XXXXXXXXX00",  # c.sb
-            "10011XXXXXXXXX00",  # c.sh
+            "10000XXXXXXXXX00",  # c.lbu , c.lh, c.lhu
+            "10010XXXXXXXXX00",  # c.sb: bits[15:11]=10010, bit10=imm[5] varies
+            "10011XXXXXXXXX00",  # c.sh: bits[15:11]=10011, bit10 varies
+            "XXXX00010XXXXX00",   # rd = x2
+            "011XXXXXXXXXXX00",  # c.ld — garbage in regs + random mtval on fault
+            "111XXXXXXXXXXX00",  # c.sd — store from uninitialised reg, bad address
         ],
     )
     _emit_raw_words(
@@ -472,62 +472,29 @@ def _generate_compressed_instr(test_data: TestData) -> list[str]:
         exclusion=[
             "101XXXXXXXXXXX01",  # c.j — random jump
             "11XXXXXXXXXXXX01",  # c.beqz/c.bnez — random branch
-            "001XXXXXXXXXXX01",  # c.jal (RV32 only) / reserved
-            "010X00001XXXXX01",  # c.li x1 (ra)
-            "010X00010XXXXX01",  # c.li x2 (sp) — FATAL
-            "010X00011XXXXX01",  # c.li x3 (gp)
-            "010X00100XXXXX01",  # c.li x4 (tp)
-            "010X00101XXXXX01",  # c.li x5 (t0)
-            "010X00110XXXXX01",  # c.li x6 (t1)
-            "011X00010XXXXX01",  # c.addi16sp
-            "011X00001XXXXX01",  # c.lui x1
-            "011X00011XXXXX01",  # c.lui x3
-            "011X00100XXXXX01",  # c.lui x4
-            "011X00101XXXXX01",  # c.lui x5
-            "011X00110XXXXX01",  # c.lui x6
-            "000X00001XXXXX01",  # c.addi x1
-            "000X00010XXXXX01",  # c.addi x2
-            "000X00011XXXXX01",  # c.addi x3
-            "000X00100XXXXX01",  # c.addi x4
-            "000X00101XXXXX01",  # c.addi x5
-            "000X00110XXXXX01",  # c.addi x6
+            "001XXXXXXXXXXX01",  # c.jr
+            "XXXX00010XXXXX01",   # rd = x2
         ],
     )
     _emit_raw_words(
         lines,
         "compressed10",
-        "EEEEEEEEEEEEEE10",
+        "1EEEEEEEEEEEEE10",
         length=16,
         exclusion=[
-            "1000XXXXX0000010",  # c.jr rs1!=0 — random jump
-            "1001XXXXX0000010",  # c.jalr/c.ebreak space
-            "X01XXXXXXXXXXX10",  # c.fldsp/c.fsdsp — bad address
+            "1000XXXXX0000010",  # c.jr rs1!=0
+            "1001XXXXX0000010",  # c.jalr/c.ebreak
+            "X01XXXXXXXXXXX10",  # c.fldsp/c.fsdsp
             "X10XXXXXXXXXXX10",  # c.lwsp/c.swsp — bad address
             "1001000000000010",  # c.ebreak
-            "011XXXXXXXXXXX10",  # c.ldsp — legal load via sp
-            "111XXXXXXXXXXX10",  # c.sdsp — store fault
-            "100100001XXXXX10",  # c.add x1
-            "100100010XXXXX10",  # c.add x2 (sp) — FATAL
-            "100100011XXXXX10",  # c.add x3
-            "100100100XXXXX10",  # c.add x4
-            "100100101XXXXX10",  # c.add x5
-            "100100110XXXXX10",  # c.add x6
-            "100000001XXXXX10",  # c.mv x1
-            "100000010XXXXX10",  # c.mv x2 (sp) — FATAL
-            "100000011XXXXX10",  # c.mv x3
-            "100000100XXXXX10",  # c.mv x4
-            "100000101XXXXX10",  # c.mv x5
-            "100000110XXXXX10",  # c.mv x6
-            "000X00001XXXXX10",  # c.slli x1
-            "000X00010XXXXX10",  # c.slli x2 (sp) — FATAL
-            "000X00011XXXXX10",  # c.slli x3
-            "000X00100XXXXX10",  # c.slli x4
-            "000X00101XXXXX10",  # c.slli x5
-            "000X00110XXXXX10",  # c.slli x6
+            "XXXX00010XXXXX10",  # rd = x2 (sp)
+            "1100XXXXXXXXXX10",   # c.swsp with rs2=x2 (corrupts via store of sp)
+            "1110XXXXXXXXXX10",  # c.lwsp rd=x2 alternate encoding guard
+            "1010XXXXXXXXXX10",  # zero-length / nop-like edge in quadrant 2
         ],
     )
-
     lines.append("")
+
     return lines
 
 # ── Entry point ───────────────────────────────────────────────────────────

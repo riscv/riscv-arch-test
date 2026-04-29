@@ -84,17 +84,7 @@ covergroup SsstrictSm_instr_cg with function sample(ins_t ins);
     `include "priv/RISCV_coverage_instr.svh"
 
     // main coverpoints
-    cp_illegal : coverpoint ins.current.insn { // illegal in RVA22S64; will trap if not in an implemented extension
-        // wildcard bins op2  = {32'b?????????????????????????_0001011}; // unused ops custom-0
-        wildcard bins op7  = {32'b?????????????????????????_0011111}; // unused ops, reserved for 48-bit
-        // wildcard bins op10 = {32'b?????????????????????????_0101011}; // unused ops custom-1
-        wildcard bins op15 = {32'b?????????????????????????_0111111}; // unused ops, reserved for 64-bit
-        // wildcard bins op22 = {32'b?????????????????????????_1011011}; // unused ops custom-2/rv128
-        wildcard bins op23 = {32'b?????????????????????????_1011111}; // unused ops, reserved for 48-bit
-        wildcard bins op26 = {32'b?????????????????????????_1101011}; // reserved
-        // wildcard bins op30 = {32'b?????????????????????????_1111011}; // unused ops custom-2/rv128
-        wildcard bins op31 = {32'b?????????????????????????_1111111}; // unused ops, reserved for 80+ bit
-    }
+    cp_illegal:           cross priv_mode_m, illegal;
     cp_load:              cross priv_mode_m, load;
     cp_fload:             cross priv_mode_m, fload;
     cp_fence_cbo:         cross priv_mode_m, fence_cbo;
@@ -109,10 +99,10 @@ covergroup SsstrictSm_instr_cg with function sample(ins_t ins);
     cp_fstore:            cross priv_mode_m, fstore;
     cp_atomic_funct3:     cross priv_mode_m, atomic_funct3;
     cp_atomic_funct7:     cross priv_mode_m, atomic_funct7;
-    // cp_lrsc:              cross priv_mode_m, lrsc;
+    cp_lrsc:              cross priv_mode_m, lrsc;
     cp_Rtype:             cross priv_mode_m, Rtype;
     cp_RWtype:            cross priv_mode_m, RWtype;
-    // cp_Ftype:             cross priv_mode_m, Ftype;
+    cp_Ftype:             cross priv_mode_m, Ftype;
     cp_fsqrt:             cross priv_mode_m, fsqrt;
     cp_fclass:            cross priv_mode_m, fclass;
     cp_fcvtif:            cross priv_mode_m, fcvtif;
@@ -120,13 +110,13 @@ covergroup SsstrictSm_instr_cg with function sample(ins_t ins);
     cp_fcvtfi:            cross priv_mode_m, fcvtfi;
     cp_fcvtfi_fmt:        cross priv_mode_m, fcvtfi_fmt;
     cp_fcvtff:            cross priv_mode_m, fcvtff;
-    // cp_fcvtff_fmt:        cross priv_mode_m, fcvtff_fmt;
-    // cp_fmvif:             cross priv_mode_m, fmvif;
-    // cp_fmvfi:             cross priv_mode_m, fmvfi;
+    cp_fcvtff_fmt:        cross priv_mode_m, fcvtff_fmt;
+    cp_fmvif:             cross priv_mode_m, fmvif;
+    cp_fmvfi:             cross priv_mode_m, fmvfi;
     cp_fli:               cross priv_mode_m, fli;
     cp_fmvh:              cross priv_mode_m, fmvh;
     cp_fmvp:              cross priv_mode_m, fmvp;
-    // cp_cvtmodwd:          cross priv_mode_m, cvtmodwd;
+    cp_cvtmodwd:          cross priv_mode_m, cvtmodwd;
     cp_cvtmodwdfrm:       cross priv_mode_m, cvtmodwdfrm;
     cp_branch:            cross priv_mode_m, branch;
     cp_jalr:              cross priv_mode_m, jalr;
@@ -135,9 +125,9 @@ covergroup SsstrictSm_instr_cg with function sample(ins_t ins);
     cp_privileged_rd:     cross priv_mode_m, privileged_rd;
     cp_privileged_rs2:    cross priv_mode_m, privileged_rs2;
     cp_reserved:          cross priv_mode_m, reserved;
-    cp_upperreg_rs1:      cross priv_mode_m, upperreg_rs1;
-    cp_upperreg_rs2:      cross priv_mode_m, upperreg_rs2;
-    cp_upperreg_rd:       cross priv_mode_m, upperreg_rd;
+    cp_upperreg_rs1:      cross priv_mode_m, upper_reg_instrs, rs1_16_31;
+    cp_upperreg_rs2:      cross priv_mode_m, upper_reg_instrs, rs2_16_31;
+    cp_upperreg_rd:       cross priv_mode_m, upper_reg_instrs, rd_16_31;
     cp_upperreg_imm_rd:   cross priv_mode_m, upperreg_imm_rd;
     cp_upperreg_imm_rs1:  cross priv_mode_m, upperreg_imm_rs1;
     cp_upperreg_fmv_rs1 : cross priv_mode_m, upperreg_fmv_rs1;

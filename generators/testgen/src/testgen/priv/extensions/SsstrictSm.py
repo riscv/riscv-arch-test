@@ -218,31 +218,32 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
     for cmt, tmpl in [
         ("Reserved op7", "RRRRRRRRRRRRRRRRRRRRRRRRR0011111"),
         ("Reserved op15", "RRRRRRRRRRRRRRRRRRRRRRRRR0111111"),
+        ("Reserved op21", "RRRRRRRRRRRRRRRRRRRRRRRRR1010111"),
         ("Reserved op23", "RRRRRRRRRRRRRRRRRRRRRRRRR1011111"),
         ("Reserved op26", "RRRRRRRRRRRRRRRRRRRRRRRRR1101011"),
+        ("Reserved op29", "RRRRRRRRRRRRRRRRRRRRRRRRR1110111"),
         ("Reserved op31", "RRRRRRRRRRRRRRRRRRRRRRRRR1111111"),
     ]:
         _emit_raw_words(lines, cmt, tmpl)
 
-    _emit_raw_words(lines, "cp_load funct3", "RRRRRRR0011100000EEE001110000011")
-    _emit_raw_words(lines, "cp_fload funct3", "RRRRRRR0011100000EEE001110000111")
-    _emit_raw_words(lines, "cp_cbo_rd", "00000000000100111010EEEEE0001111")
-    _emit_raw_words(lines, "cp_store funct3 (rs1=0)", "RRRRRRR0011100000EEE001110100011")
-    _emit_raw_words(lines, "cp_fstore funct3 (rs1=0)", "RRRRRRR0011100000EEE001110100111")
-    _emit_raw_words(lines, "cp_Itype funct3[2:1]=01", "EEEEEEEEEEEE00111E01001110010011")
-    _emit_raw_words(lines, "cp_Itypef3", "RRRRRRR0011100111EEE001110010011")
-    _emit_raw_words(lines, "cp_aes64ks1i rnum", "0011000EEEEE00111001001110010011")
-    _emit_raw_words(lines, "cp_IWtype funct3", "RRRRRRR0011100111EEE001110011011")
-    _emit_raw_words(lines, "cp_IWshift", "EEEEEEE0011100111E01001110011011")
-
-    _emit_raw_words(lines, "cp_atomic_funct3 (rs1=0)", "00110RR0011100000EEE001110101111")
-    _emit_raw_words(lines, "cp_atomic_funct7 (rs1=0)", "EEEEERR001110000001E001110101111")
-    # _emit_raw_words(lines, "cp_lrsc", "00010RREEEEE0011101E001110101111")
-
+    _emit_raw_words(lines, "cp_load", "RRRRRRRRRRRRRRRRREEE010010000011")
+    _emit_raw_words(lines, "cp_fload", "RRRRRRRRRRRRRRRRREEE010010000111")
+    _emit_raw_words(lines, "cp_fence_cbo", "RRRRRRRRRRRRRRRRREEE010010001111")
+    _emit_raw_words(lines, "cp_cbo_immediate", "EEEEEEEEEEEE00000010000000001111")
+    _emit_raw_words(lines, "cp_cbo_rd", "00000000000RRRRRR010EEEEE0001111")
+    _emit_raw_words(lines, "cp_store", "RRRRRRRRRRRR00000EEERRRRR0100011")
+    _emit_raw_words(lines, "cp_fstore", "RRRRRRRRRRRR00000EEERRRRR0100111")
+    _emit_raw_words(lines, "cp_Itype", "EEEEEEEEEEEERRRRRE01010010010011")
+    _emit_raw_words(lines, "cp_llAItype", "RRRRRRRRRRRRRRRRREEE010010010011")
+    _emit_raw_words(lines, "cp_aes64ks1i", "0011000EEEEERRRRR001010010010011")
+    _emit_raw_words(lines, "cp_IWtype", "RRRRRRRRRRRRRRRRREEE010010011011")
+    _emit_raw_words(lines, "cp_IWshift", "EEEEEEERRRRRRRRRRE01010010011011")
+    _emit_raw_words(lines, "cp_atomic_funct3", "RRRRRRRRRRRR00000EEE010010101111")
+    _emit_raw_words(lines, "cp_atomic_funct7", "EEEEERRRRRRR0000001E010010101111")
+    _emit_raw_words(lines, "cp_lrsc", "00010RREEEEE0000001E010010101111")
     _emit_raw_words(lines, "cp_rtype", "EEEEEEE0011100111EEE001110110011")
     _emit_raw_words(lines, "cp_rwtype", "EEEEEEE0011100111EEE001110111011")
-    # _emit_raw_words(lines, "cp_ftype", "EEEEERR0011100111EEE001111010011")
-
+    _emit_raw_words(lines, "cp_ftype", "EEEEERR0011100111EEE001111010011")
     _emit_raw_words(lines, "cp_fsqrt", "0101100EEEEE00111000011111010011")
     _emit_raw_words(lines, "cp_fclass", "1110000EEEEE00111001001111010011")
     _emit_raw_words(lines, "cp_fcvtif", "1100000EEE0000111000001111010011")
@@ -250,14 +251,13 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
     _emit_raw_words(lines, "cp_fcvtfi", "1101000EEE1000111000001111010011")
     _emit_raw_words(lines, "cp_fcvtfi_fmt", "11010EE000EE00111000001111010011")
     _emit_raw_words(lines, "cp_fcvtff", "0100000EEE1000111000001111010011")
-
-    # _emit_raw_words(lines, "cp_fcvtff_fmt", "01000EEEEEEE00111000001111010011")
-    # _emit_raw_words(lines, "cp_fmvif", "11100EEEEEEE00111000001111010011")
-    # _emit_raw_words(lines, "cp_fmvfi", "11110EEEEEEE00111000001111010011")
-
+    _emit_raw_words(lines, "cp_fcvtff_fmt", "01000EEEEEEE00111000001111010011")
+    _emit_raw_words(lines, "cp_fmvif", "11100EEEEEEE00111000001111010011")
+    _emit_raw_words(lines, "cp_fli", "11110EEEEEEERRRRR000010011010011")
+    _emit_raw_words(lines, "cp_fmvfi", "11110EEEEEEE00111000001111010011")
+    _emit_raw_words(lines, "cp_fmvh", "11100EEEEEEERRRRR000010011010011")
     _emit_raw_words(lines, "cp_fmvp", "11100EE0011100111000001111010011")
-    # _emit_raw_words(lines, "cp_cvtmodwd", "11000EEEEEEE00111001001111010011")
-
+    _emit_raw_words(lines, "cp_cvtmodwd", "11000EEEEEEE00111001001111010011")
     _emit_raw_words(lines, "cp_fcvtmodwdfrm", "11000010100000111EEE001111010011")
     _emit_raw_words(lines, "cp_branch2", "RRRRRRR0011100111010001111100011")
     _emit_raw_words(lines, "cp_branch3", "RRRRRRR0011100111011001111100011")
@@ -300,23 +300,24 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
 
     lines.append(comment_banner("cp_upperreg", "x16-x31 — trap when E extension active"))
     for cmt, tmpl in [
-        ("upperreg_rs1_add", "0000000000011EEEE000001111010011"),
-        ("upperreg_rs2_add", "00000001EEEE00001000001111010011"),
-        ("upperreg_rd_add", "000000000001000010001EEEE0110011"),
-        ("upperreg_rs1_mul", "0000001000011EEEE000001111010011"),
-        ("upperreg_rs2_mul", "00000011EEEE00001000001111010011"),
-        ("upperreg_rd_mul", "000000100001000010001EEEE0110011"),
-        ("upperreg_rs1_fadd-s", "0000000000011EEEE000001111010011"),
-        ("upperreg_rs2_fadd-s", "00000001EEEE00001000001111010011"),
-        ("upperreg_rd_fadd-s", "000000000001000010001EEEE1010011"),
-        ("upperreg_imm_rs1_addi0", "0000000000001EEEE000001111010011"),
-        ("upperreg_imm_rs1_addi1", "1111111111111EEEE000001111010011"),
-        ("upperreg_imm_rd_addi0", "000000000000000010001EEEE0010011"),
-        ("upperreg_imm_rd_addi1", "111111111111000010001EEEE0010011"),
-        ("upperreg_fmv_x_w_rs1", "1110000000001EEEE000001111010011"),
-        ("upperreg_fmv_x_w_rd", "111000000000000010001EEEE1010011"),
-        ("upperreg_fmv_w_x_rs1", "1111000000001EEEE000001111010011"),
-        ("upperreg_fmv_w_x_rd", "111100000000000010001EEEE1010011"),
+        ("cp_upperreg_rs1_add", "0000000000011EEEE000000010110011"),
+        ("cp_upperreg_rs2_add", "00000001EEEE00001000001100110011"),
+        ("cp_upperreg_rd_add",  "000000000001000010001EEEE0110011"),
+        ("cp_upperreg_rs1_mul", "0000001000011EEEE000000010110011"),
+        ("cp_upperreg_rs2_mul", "00000011EEEE00001000001100110011"),
+        ("cp_upperreg_rd_mul",  "000000100001000010001EEEE0110011"),
+        ("cp_upperreg_rs1_fadd-s", "0000000000011EEEE000000011010011"),
+        ("cp_upperreg_rs2_fadd-s", "00000001EEEE00001000000101010011"),
+        ("cp_upperreg_rd_fadd-s",  "000000000001000010001EEEE1010011"),
+        ("cp_upperreg_imm_rs1_addi0", "0000000000001EEEE000000010010011"),
+        ("cp_upperreg_imm_rs1_addi1", "1111111111111EEEE000000010010011"),
+        ("cp_upperreg_imm_rd_addi0", "000000000000000010001EEEE0010011"),
+        ("cp_upperreg_imm_rd_addi1", "111111111111000010001EEEE0010011"),
+        ("cp_upperreg_fmv_x_w_rs1", "1110000000001EEEE000000011010011"),
+        ("cp_upperreg_fmv_x_w_rd",  "111000000000000010001EEEE1010011"),
+        ("cp_upperreg_fmv_w_x_rs1", "1111000000001EEEE000000011010011"),
+        ("cp_upperreg_fmv_w_x_rd",  "111100000000000010001EEEE1010011"),
+        ("cp_amocas_odd",           "00101RRRRRRRRRRREEEE0100E0101111"),
     ]:
         _emit_raw_words(lines, cmt, tmpl)
 
@@ -345,14 +346,12 @@ def _generate_compressed_instr(test_data: TestData) -> list[str]:
         exclusion=[
             "X01XXXXXXXXXXX00",  # c.fld/c.fsd — bad address
             "X10XXXXXXXXXXX00",  # c.lw/c.sw — bad address
-            "011XXXXXXXXXXX00",  # c.ld (RV64) — loads from x8-x15+offset; base holds garbage → load fault
-            "111XXXXXXXXXXX00",  # c.sd (RV64) — stores to x8-x15+offset; same → store fault
-            # Zcb load/store ops — all use x8-x15 as base (garbage after INIT_REGS → fault)
-            "10000XXXXXXXXX00",  # c.lbu
-            "100010XXXXXXXX00",  # c.lh
-            "100011XXX0XXXX00",  # c.lhu
+            "10000XXXXXXXXX00",  # c.lbu , c.lh, c.lhu
             "10010XXXXXXXXX00",  # c.sb: bits[15:11]=10010, bit10=imm[5] varies
             "10011XXXXXXXXX00",  # c.sh: bits[15:11]=10011, bit10 varies
+            "XXXX00010XXXXX00",   # rd = x2
+            "011XXXXXXXXXXX00",  # c.ld — garbage in regs + random mtval on fault
+            "111XXXXXXXXXXX00",  # c.sd — store from uninitialised reg, bad address
         ],
     )
     _emit_raw_words(
@@ -363,102 +362,29 @@ def _generate_compressed_instr(test_data: TestData) -> list[str]:
         exclusion=[
             "101XXXXXXXXXXX01",  # c.j — random jump
             "11XXXXXXXXXXXX01",  # c.beqz/c.bnez — random branch
-            "001XXXXXXXXXXX01",  # c.jal (RV32 only) / reserved
-            # c.li rd, imm — legal instruction writing imm to rd.
-            # For rd=x1-x6 (critical regs), corrupts framework state.
-            "010X00001XXXXX01",  # c.li x1 (ra)
-            "010X00010XXXXX01",  # c.li x2 (sp) — FATAL: sp = small_imm
-            "010X00011XXXXX01",  # c.li x3 (gp)
-            "010X00100XXXXX01",  # c.li x4 (tp)
-            "010X00101XXXXX01",  # c.li x5 (t0, fast handler)
-            "010X00110XXXXX01",  # c.li x6 (t1, fast handler)
-            # c.addi16sp (funct3=011, rd=x2) — modifies sp by offset
-            "011X00010XXXXX01",  # c.addi16sp
-            # c.lui (funct3=011, rd=x1-x6) — loads shifted imm to critical reg
-            "011X00001XXXXX01",  # c.lui x1
-            "011X00011XXXXX01",  # c.lui x3
-            "011X00100XXXXX01",  # c.lui x4
-            "011X00101XXXXX01",  # c.lui x5
-            "011X00110XXXXX01",  # c.lui x6
-            # c.addi (funct3=000, rd=x1-x6) — modifies critical reg
-            "000X00001XXXXX01",  # c.addi x1
-            "000X00010XXXXX01",  # c.addi x2 (sp += nzimm)
-            "000X00011XXXXX01",  # c.addi x3
-            "000X00100XXXXX01",  # c.addi x4
-            "000X00101XXXXX01",  # c.addi x5
-            "000X00110XXXXX01",  # c.addi x6
+            "001XXXXXXXXXXX01",  # c.jr
+            "XXXX00010XXXXX01",   # rd = x2
         ],
     )
     _emit_raw_words(
         lines,
         "compressed10",
-        "EEEEEEEEEEEEEE10",
+        "1EEEEEEEEEEEEE10",
         length=16,
         exclusion=[
-            "1000XXXXX0000010",  # c.jr rs1!=0 — random jump
-            "1001XXXXX0000010",  # c.jalr/c.ebreak space
-            "X01XXXXXXXXXXX10",  # c.fldsp/c.fsdsp — bad address
+            "1000XXXXX0000010",  # c.jr rs1!=0
+            "1001XXXXX0000010",  # c.jalr/c.ebreak
+            "X01XXXXXXXXXXX10",  # c.fldsp/c.fsdsp
             "X10XXXXXXXXXXX10",  # c.lwsp/c.swsp — bad address
             "1001000000000010",  # c.ebreak
-            "011XXXXXXXXXXX10",  # c.ldsp — legal RV64 load via sp; corrupts regs
-            "111XXXXXXXXXXX10",  # c.sdsp — legal RV64 store via sp; store fault
-            # c.add rd,rs2 with rd = critical framework register:
-            # All regs are 0xF0E1D2C3B4A59687 after RVTEST_INIT_REGS,
-            # adding that to sp/gp/etc corrupts it and breaks the epilog.
-            "100100001XXXXX10",  # c.add x1 (ra)
-            "100100010XXXXX10",  # c.add x2 (sp / DEFAULT_SIG_REG) — FATAL
-            "100100011XXXXX10",  # c.add x3 (gp / DEFAULT_DATA_REG)
-            "100100100XXXXX10",  # c.add x4 (tp / DEFAULT_TEMP_REG)
-            "100100101XXXXX10",  # c.add x5 (t0 / DEFAULT_LINK_REG, fast handler)
-            "100100110XXXXX10",  # c.add x6 (t1, fast handler scratch)
-            # c.mv rd, rs2 (legal move) with rd = critical register:
-            # After RVTEST_INIT_REGS, rs2 holds garbage values.
-            # c.mv x2, rs2: sp = garbage -> epilog faults.
-            "100000001XXXXX10",  # c.mv x1 (ra)
-            "100000010XXXXX10",  # c.mv x2 (sp) — FATAL
-            "100000011XXXXX10",  # c.mv x3 (gp)
-            "100000100XXXXX10",  # c.mv x4 (tp)
-            "100000101XXXXX10",  # c.mv x5 (t0, fast handler)
-            "100000110XXXXX10",  # c.mv x6 (t1, fast handler)
-            # c.slli rd,shamt where rd = critical framework register:
-            # c.slli x2 shifts sp left by shamt → sp becomes garbage.
-            "000X00001XXXXX10",  # c.slli x1 (ra)
-            "000X00010XXXXX10",  # c.slli x2 (sp) — FATAL, shifts stack pointer
-            "000X00011XXXXX10",  # c.slli x3 (gp)
-            "000X00100XXXXX10",  # c.slli x4 (tp)
-            "000X00101XXXXX10",  # c.slli x5 (t0, fast handler scratch)
-            "000X00110XXXXX10",  # c.slli x6 (t1, fast handler scratch)
+            "XXXX00010XXXXX10",  # rd = x2 (sp)
+            "1100XXXXXXXXXX10",   # c.swsp with rs2=x2 (corrupts via store of sp)
+            "1110XXXXXXXXXX10",  # c.lwsp rd=x2 alternate encoding guard
+            "1010XXXXXXXXXX10",  # zero-length / nop-like edge in quadrant 2
         ],
     )
-
     lines.append("")
 
-    return lines
-
-
-# ── Reserved FP rounding modes ─────────────────────────────────────────────
-
-
-def _generate_reserved_frm(test_data: TestData) -> list[str]:
-    """cp_reserved_frm — FRM 0-7 with FADD.S dynamic rounding."""
-    covergroup = "SsstrictSm_instr_cg"
-    coverpoint = "cp_reserved_frm"
-    lines: list[str] = []
-
-    lines.append(comment_banner(coverpoint, "FRM=0-4 legal; FRM=5,6 reserved; FRM=7+DYN raises invalid FP exception."))
-
-    for frm in range(8):
-        lines.extend(
-            [
-                "",
-                f"// FRM = {frm}",
-                f"\t{test_data.add_testcase(f'frm_{frm}', coverpoint, covergroup)}",
-                f"\tcsrwi frm, {frm}",
-                "\tfadd.s f0, f1, f2",
-            ]
-        )
-
-    lines.append("")
     return lines
 
 # ── Entry point ────────────────────────────────────────────────────────────
@@ -493,7 +419,4 @@ def make_ssstrictsm(test_data: TestData) -> list[str]:
     lines.extend(_generate_csr_tests_m(test_data))
     lines.extend(_generate_illegal_instr(test_data))
     lines.extend(_generate_compressed_instr(test_data))
-    # _generate_reserved_frm removed: FRM=5/6/7+fadd.s behavior is
-    # implementation-defined (spec §11.2), causing cross-config signature
-    # mismatches. The CSR sweep already covers frm read/write via CSR 0x002.
     return lines

@@ -32,10 +32,10 @@ from testgen.priv.registry import (
 _SPLIT_TESTSUITES: frozenset[str] = frozenset({"SsstrictSm", "SsstrictS", "SsstrictU"})
 
 # Maximum body lines per generated .S file for split testsuites.
-# 5000 lines keeps file count low (~15 files) which minimises per-file startup
+# 2000 lines keeps file count low (~15 files) which minimises per-file startup
 # overhead on slower simulators (spike, QEMU).  Each file still completes in
 # well under one second on Sail even when every instruction traps.
-_LINES_PER_FILE: int = 1000
+_LINES_PER_FILE: int = 2000
 
 # Fast illegal-instruction trap handler, prepended to every split file.
 #
@@ -82,37 +82,32 @@ _FAST_HANDLER_PREFIX: list[str] = [
     "",
     "\t.align 4",
     "trap_handler_fastuncompressedillegalinstr:",
-    "    // Check mcause FIRST — non-illegal traps go to Mtrampoline with clean CPU state.",
-    "\tcsrr    t0, mcause",
-    "\taddi    t0, t0, -2             // t0=0 iff mcause==2 (illegal instruction)",
-    "\tbnez    t0, Mtrampoline        // not illegal: real handler manages it",
-    "    // Illegal instruction: check encoding size via mtval bits[1:0]",
-    "    // bits[1:0]==11 -> 32-bit encoding -> advance mepc+4",
-    "    // bits[1:0]!=11 -> 16-bit encoding -> advance mepc+2",
-    "\tcsrr    t0, mtval",
-    "\tandi    t0, t0, 3",
-    "\taddi    t0, t0, -3             // t0=0 iff bits[1:0]==11 (32-bit uncompressed)",
-    "\tbeqz    t0, .Lillegal32",
-    "    // 16-bit compressed illegal instruction — advance mepc+2 and return fast.",
-    "\tcsrr    t0, mepc",
-    "\taddi    t0, t0, 2",
-    "\tcsrw    mepc, t0",
-    "\tmret",
-    ".Lillegal32:",
-    "    // 32-bit uncompressed illegal instruction — advance mepc+4 and return fast.",
-    "\tcsrr    t0, mepc",
-    "\taddi    t0, t0, 4",
-    "\tcsrw    mepc, t0",
+    "\tcsrr t0, mcause         # Check the cause",
+    "\tli t1, 2                # Illegal Instruction cause = 2",
+    "\tbne t0, t1, othertrap   # not illegal instruction, use regular handler",
+    "illegalinstruction:",
+    "\tcsrr t0, mtval          # get the faulting instruction encoding",
+    "\tandi t0, t0, 3          # extract bits[1:0] into t0",
+    "\tli t1, 3                # uncompressed marker = 0b11",
+    "\tbeq t0, t1, uncompressedillegalinstructionreturn  # bits[1:0]==11 → uncompressed",
+    "compressedillegalinstructionreturn:",
+    "\tcsrr t0, mepc",
+    "\taddi t0, t0, 2          # compressed: skip 2 bytes",
+    "\tj doneillegalinstructionreturn",
+    "uncompressedillegalinstructionreturn:",
+    "\tcsrr t0, mepc",
+    "\taddi t0, t0, 4          # uncompressed: skip 4 bytes",
+    "doneillegalinstructionreturn:",
+    "\tcsrw mepc, t0",
     "\tmret",
     "",
-    "ssstrict_test_body:",
+    "othertrap:",
+    "\tcsrr t1, mtval",
+    "\tbgez t0, Mtrampoline    # msb clear = exception, jump to full handler",
+    "",    "ssstrict_test_body:",
     "\tLA(t0, trap_handler_fastuncompressedillegalinstr)",
     "\tCSRW(mtvec, t0)",
-    "// Disable all M-mode interrupts so timer/external interrupts cannot",
-    "// fire between test encodings and accidentally trigger Mtrampoline.",
-    "// Required when rvtest_strap_routine is defined (SsstrictS/U), which",
-    "// causes RVTEST_BEGIN to enable MIE as part of S-mode trap setup.",
-    "\tcsrw    mie, x0",
+    "\t.align 4",
     "",
 ]
 

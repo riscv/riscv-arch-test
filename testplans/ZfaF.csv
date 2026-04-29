@@ -1,8 +1,8 @@
-Instruction,Type,RV32,RV64,cp_asm_count,cp_rs1,cp_rd,cp_fs1,cp_fs2,cp_fd,cp_fs1_edges,cp_fs2_edges,cmp_fd_fs1,cmp_fd_fs2,cp_frm,cp_csr_fflags,cp_csr_frm,cr_fs1_fs2_edges
-fleq.s,FC,x,x,x,,x,x,x,,x,x,,,,v,,x
-fli.s,FLI,x,x,x,fli,,,,x,,,,,,,,
-fltq.s,FC,x,x,x,,x,x,x,,x,x,,,,v,,x
-fmaxm.s,FR,x,x,x,,,x,x,x,x,x,x,x,,v,,x
-fminm.s,FR,x,x,x,,,x,x,x,x,x,x,x,,v,,x
-fround.s,FI,x,x,x,,,x,,x,x,,x,,2,v,x,
-froundnx.s,FI,x,x,x,,,x,,x,x,,x,,2,vn,x,
+Instruction,Type,RV32,RV64,cp_asm_count,cp_rs1,cp_rd,cp_fs1,cp_fs2,cp_fd,cp_fs1_edges,cp_fs2_edges,cmp_fd_fs1,cmp_fd_fs2,cp_frm,cp_csr_fflags,cp_csr_frm,cr_fs1_fs2_edges,cp_ibm
+fleq.s,FC,x,x,x,,x,x,x,,x,x,,,,v,,x,
+fli.s,FLI,x,x,x,fli,,,,x,,,,,,,,,
+fltq.s,FC,x,x,x,,x,x,x,,x,x,,,,v,,x,
+fmaxm.s,FR,x,x,x,,,x,x,x,x,x,x,x,,v,,x,
+fminm.s,FR,x,x,x,,,x,x,x,x,x,x,x,,v,,x,
+fround.s,FI,x,x,x,,,x,,x,x,,x,,2,v,x,,
+froundnx.s,FI,x,x,x,,,x,,x,x,,x,,2,vn,x,,x

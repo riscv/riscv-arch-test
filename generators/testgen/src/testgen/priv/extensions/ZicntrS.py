@@ -388,7 +388,7 @@ def _generate_mscounteren_access_u_tests(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "ZicntrS",
-    required_extensions=["I", "Zicsr", "Sm", "S", "Zicntr"],
+    required_extensions=["S", "Zicntr"],
     march_extensions=["Zicsr", "Zicntr", "I", "Zihpm"],
 )
 def make_zicntrs(test_data: TestData) -> list[str]:

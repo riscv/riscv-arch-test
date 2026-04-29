@@ -64,7 +64,7 @@ def _generate_mstatus_ie_tests(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "ExceptionsSm",
-    required_extensions=["I", "Zicsr", "Sm"],
+    required_extensions=["Sm"],
     extra_defines=["#define SKIP_MEPC"],
 )
 def make_exceptionssm(test_data: TestData) -> list[str]:

@@ -40,7 +40,7 @@
 `define C_SUPPORTED
 `define D_SUPPORTED
 `define F_SUPPORTED
-`define H_SUPPORTED
+// `define H_SUPPORTED // H not yet turned on in yaml file
 `define I_SUPPORTED
 `define M_SUPPORTED
 `define N_SUPPORTED

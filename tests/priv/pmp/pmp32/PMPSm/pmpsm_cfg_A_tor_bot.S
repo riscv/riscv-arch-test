@@ -38,9 +38,6 @@
 #define TEST_FILE "pmpsm_cfg_A_tor_bot.S"
 #define SIGUPD_COUNT 50
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 

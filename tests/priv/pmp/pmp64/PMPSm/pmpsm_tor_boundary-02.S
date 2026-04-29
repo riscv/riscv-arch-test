@@ -37,9 +37,6 @@
 #define TEST_FILE "pmpsm_tor_boundary-02.S"
 #define SIGUPD_COUNT 50
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 // Include framework macros
 #include "riscv_arch_test.h"

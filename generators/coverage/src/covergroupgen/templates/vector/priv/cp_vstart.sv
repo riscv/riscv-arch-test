@@ -1,0 +1,12 @@
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vstart: coverpoint vstart_check(ins.hart, ins.issue) {
+        bins vstart_one     = {vstart_one};
+        bins vstart_vlmaxm1 = {vstart_vlmaxm1};
+        bins vstart_vlmaxd2 = {vstart_vlmaxd2};
+        bins vstart_legal   = {vstart_legal};   // random vstart
+    }
+
+    //// end cp_vstart////////////////////////////////////////////////

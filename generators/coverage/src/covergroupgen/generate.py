@@ -61,7 +61,9 @@ def _write_readonly(path: Path, content: str) -> None:
 ##################################
 
 
-def read_testplans(testplan_dir: Path) -> dict[str, dict[tuple[str, str], list[str]]]:
+def read_testplans(
+    testplan_dir: Path,
+) -> tuple[dict[str, dict[tuple[str, str], list[str]]], set[str]]:
     """Read all CSV testplan files and return a dict mapping extension name to testplan.
 
     Each CSV file produces one testplan entry keyed by the file's stem (e.g. "I", "Zba").
@@ -69,11 +71,16 @@ def read_testplans(testplan_dir: Path) -> dict[str, dict[tuple[str, str], list[s
       - "I" is duplicated as "E"
       - Vector extensions (Vx, Vls, Zvkb) are expanded to per-SEW variants (Vx8, Vx16, ...)
       - Floating-point vector extensions (Vf) are expanded to SEW 16/32/64
+
+    Returns (testplans_dict, priv_arches_set). priv_arches_set lists the post-expansion
+    extension names whose source CSV lives under a ``priv/`` subdirectory of testplan_dir.
     """
     testplans: dict[str, dict[tuple[str, str], list[str]]] = {}
+    priv_arches: set[str] = set()
 
     for csv_path in testplan_dir.rglob("*.csv"):
         arch = csv_path.stem
+        is_priv = "priv" in csv_path.relative_to(testplan_dir).parts
 
         # Parse the CSV into a dict of (instruction, type) -> coverpoints
         tp: dict[tuple[str, str], list[str]] = {}
@@ -105,6 +112,8 @@ def read_testplans(testplan_dir: Path) -> dict[str, dict[tuple[str, str], list[s
                 tp[(instr, instr_type)] = cps
 
         testplans[arch] = tp
+        if is_priv:
+            priv_arches.add(arch)
 
         # Duplicate I testplan for E
         if arch == "I":
@@ -119,9 +128,12 @@ def read_testplans(testplan_dir: Path) -> dict[str, dict[tuple[str, str], list[s
         if sew_variants is not None:
             for sew in sew_variants:
                 testplans[f"{arch}{sew}"] = tp
+                if is_priv:
+                    priv_arches.add(f"{arch}{sew}")
             del testplans[arch]
+            priv_arches.discard(arch)
 
-    return testplans
+    return testplans, priv_arches
 
 
 def _filter_testplans(
@@ -161,6 +173,56 @@ def read_covergroup_templates(package: str = "covergroupgen.templates") -> dict[
 ##################################
 # Template helpers
 ##################################
+
+
+def _dedupe_includes(text: str, seen: set[str]) -> str:
+    """Strip duplicate `include lines (within a covergroup) so the same header
+    is not re-included multiple times."""
+    out_lines: list[str] = []
+    for line in text.splitlines(keepends=True):
+        m = re.match(r'\s*`include\s+"([^"]+)"', line)
+        if m:
+            path = m.group(1)
+            if path in seen:
+                continue
+            seen.add(path)
+        out_lines.append(line)
+    return "".join(out_lines)
+
+
+def _dedupe_template(text: str, seen_includes: set[str], seen_decls: set[str]) -> str:
+    """Strip duplicate `include lines and duplicate `name : coverpoint|cross ...;`
+    declarations within a single covergroup. Necessary because multiple SsstrictV
+    templates may declare the same helper coverpoint name."""
+    text = _dedupe_includes(text, seen_includes)
+    out_lines: list[str] = []
+    lines = text.splitlines(keepends=True)
+    i = 0
+    decl_re = re.compile(r"^\s*(\w+)\s*:\s*(coverpoint|cross)\b")
+    while i < len(lines):
+        m = decl_re.match(lines[i])
+        if m:
+            name = m.group(1)
+            # Collect lines until the statement ends (line terminating with ';' at top-level).
+            block: list[str] = []
+            depth = 0
+            while i < len(lines):
+                line = lines[i]
+                block.append(line)
+                depth += line.count("{") - line.count("}")
+                stripped = re.sub(r"//.*$", "", line).rstrip()
+                if depth <= 0 and stripped.endswith((";", "}")):
+                    i += 1
+                    break
+                i += 1
+            if name in seen_decls:
+                continue
+            seen_decls.add(name)
+            out_lines.extend(block)
+        else:
+            out_lines.append(lines[i])
+            i += 1
+    return "".join(out_lines)
 
 
 def customize_template(templates: dict[str, str], name: str, arch: str = "", instr: str = "", effew: str = "") -> str:
@@ -312,6 +374,9 @@ def _gen_instrs(
             covergroup_lines.append(customize_template(templates, "instruction", arch, instr))
             init_lines.append(customize_template(templates, "init", arch, instr))
 
+        seen_includes: set[str] = set()
+        seen_decls: set[str] = set()
+
         # Coverpoint entries (skip metadata columns: sample_*, RV32, RV64, EFFEW*)
         # VCS requires coverpoints to be declared before they are referenced by cross coverpoints.
         # Some templates embed cross definitions (for example, *_frm templates), so prioritize
@@ -348,9 +413,14 @@ def _gen_instrs(
                     max_sew = int(match.group(1))
                     if int(effew) <= max_sew:
                         cp = re.sub(r"_sew_lte_\d+", "", cp)
-                        covergroup_lines.append(customize_template(templates, cp, arch, instr) + "\n")
+                        covergroup_lines.append(
+                            _dedupe_template(customize_template(templates, cp, arch, instr), seen_includes, seen_decls)
+                            + "\n"
+                        )
             else:
-                covergroup_lines.append(customize_template(templates, cp, arch, instr) + "\n")
+                covergroup_lines.append(
+                    _dedupe_template(customize_template(templates, cp, arch, instr), seen_includes, seen_decls) + "\n"
+                )
 
         # Instruction footer
         if vectorwiden:
@@ -427,10 +497,14 @@ def write_covergroups(
     test_plans: dict[str, dict[tuple[str, str], list[str]]],
     templates: dict[str, str],
     output_dir: Path,
+    priv_arches: set[str] | None = None,
 ) -> None:
     """Generate and write per-extension _coverage.svh and _coverage_init.svh files."""
+    priv_arches = priv_arches or set()
     unpriv_dir = output_dir / "unpriv"
     unpriv_dir.mkdir(parents=True, exist_ok=True)
+    priv_dir = output_dir / "priv"
+    priv_dir.mkdir(parents=True, exist_ok=True)
 
     for arch, tp in track(test_plans.items(), description="[cyan]Generating covergroups...", total=len(test_plans)):
         vector = _is_vector(arch)
@@ -482,9 +556,10 @@ def write_covergroups(
         sample_end = "covergroup_sample_end_vector" if vector else "covergroup_sample_end"
         lines.append(customize_template(templates, sample_end, arch))
 
-        # Write both files
-        _write_readonly(unpriv_dir / f"{arch}_coverage.svh", "".join(lines))
-        _write_readonly(unpriv_dir / f"{arch}_coverage_init.svh", "".join(init_lines))
+        # Write both files (priv-sourced testplans go to coverpoints/priv/)
+        target_dir = priv_dir if arch in priv_arches else unpriv_dir
+        _write_readonly(target_dir / f"{arch}_coverage.svh", "".join(lines))
+        _write_readonly(target_dir / f"{arch}_coverage_init.svh", "".join(init_lines))
 
 
 def write_coverage_headers(
@@ -582,13 +657,13 @@ def write_instruction_sample_file(
 
 def generate_covergroups(testplan_dir: Path, output_dir: Path, extensions: str = "all", exclude: str = "") -> None:
     """Main entry point: read testplans, generate all coverage files."""
-    all_test_plans = read_testplans(testplan_dir)
+    all_test_plans, priv_arches = read_testplans(testplan_dir)
     if extensions != "all" or exclude != "":
         test_plans = _filter_testplans(all_test_plans, extensions, exclude)
     else:
         test_plans = all_test_plans
 
     templates = read_covergroup_templates()
-    write_covergroups(test_plans, templates, output_dir)
+    write_covergroups(test_plans, templates, output_dir, priv_arches)
     write_coverage_headers(all_test_plans, output_dir, templates)
     write_instruction_sample_file(all_test_plans, templates, output_dir)

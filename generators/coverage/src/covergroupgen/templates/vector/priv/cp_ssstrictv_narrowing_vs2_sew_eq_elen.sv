@@ -1,0 +1,12 @@
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_narrowing_vs2_sew_eq_elen
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
+
+    // Narrowing with SEW=ELEN: source EEW = 2*SEW > ELEN, must trap
+    // LMUL=1, registers chosen to avoid overlap traps (vd=8, vs2=10, vs1=12)
+
+    cp_ssstrictv_narrowing_vs2_sew_eq_elen: cross std_trap_vec, vtype_all_sew_supported, vtype_lmul_1, trap_occurred;
+
+//// end cp_ssstrictv_narrowing_vs2_sew_eq_elen ////////////////////////////////////////////////////////////////

@@ -20,6 +20,11 @@
     // Standard vector coverpoints
     //////////////////////////////////////////////////////////////////////////////////
 
+    trap_occurred: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") {
+        bins trapped = {0};
+        TODO Pretty sure this implementation is wrong, why would mcause = 0 mean a trap occurred after an instruction retires
+    }
+
     vtype_prev_vill_clear: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins vill_not_set = {0};
     }
@@ -252,7 +257,7 @@
         `endif
 
         // Make sure bin is always hit if the sew isn't supported
-        `ifndef SEW64
+        `ifndef SEW64_SUPPORTED
         bins sew_not_supported  = {111:000};
         `endif
     }
@@ -508,59 +513,59 @@
     // Vector fp coverpoints
     //////////////////////////////////////////////////////////////////////////////////
 
-    vs2_element0_qNAN : get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_qNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef SEW16_SUPPORTED
-        bins canonicalQNaN          = {16'h7E00};
+        bins canonicalQNaN_16          = {16'h7E00};
         `endif
         `ifdef SEW32_SUPPORTED
-        bins canonicalQNaN          = {32'h7FC00000};   // quiet NaN, canonical payload
+        bins canonicalQNaN_32          = {32'h7FC00000};   // quiet NaN, canonical payload
         `endif
         `ifdef SEW64_SUPPORTED
-        bins canonicalQNaN          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
+        bins canonicalQNaN_64          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
         `endif
     }
 
-    vs2_element0_sNAN : get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef SEW16_SUPPORTED
-        bins sNaN_payload1          = {16'h7D01};                // Signaling NaN with payload 1
+        bins sNaN_payload1_16          = {16'h7D01};                // Signaling NaN with payload 1
         `endif
         `ifdef SEW32_SUPPORTED
-        bins sNaN_payload1          = {32'h7F800001};   // signaling NaN with payload 1
+        bins sNaN_payload1_32          = {32'h7F800001};   // signaling NaN with payload 1
         `endif
         `ifdef SEW64_SUPPORTED
-        bins sNaN_payload1          = {64'h7FF0000000000001};   // signaling NaN with payload 1
+        bins sNaN_payload1_64          = {64'h7FF0000000000001};   // signaling NaN with payload 1
         `endif
     }
 
-    vs2_element0_qNAN : get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_qNAN_alt : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef SEW16_SUPPORTED
-        bins canonicalQNaN          = {16'h7E00};
+        bins canonicalQNaN_16          = {16'h7E00};
         `endif
         `ifdef SEW32_SUPPORTED
-        bins canonicalQNaN          = {32'h7FC00000};   // quiet NaN, canonical payload
+        bins canonicalQNaN_32          = {32'h7FC00000};   // quiet NaN, canonical payload
         `endif
         `ifdef SEW64_SUPPORTED
-        bins canonicalQNaN          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
+        bins canonicalQNaN_64          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
         `endif
     }
 
-    vs2_element0_sqNAN : get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef SEW16_SUPPORTED
-        bins sNaN_payload1          = {16'h7D01};                // Signaling NaN with payload 1
+        bins sNaN_payload1_16          = {16'h7D01};                // Signaling NaN with payload 1
         `endif
         `ifdef SEW32_SUPPORTED
-        bins sNaN_payload1          = {32'h7F800001};   // signaling NaN with payload 1
+        bins sNaN_payload1_32          = {32'h7F800001};   // signaling NaN with payload 1
         `endif
         `ifdef SEW64_SUPPORTED
-        bins sNaN_payload1          = {64'h7FF0000000000001};   // signaling NaN with payload 1
+        bins sNaN_payload1_64          = {64'h7FF0000000000001};   // signaling NaN with payload 1
         `endif
         `ifdef SEW16_SUPPORTED
-        bins canonicalQNaN          = {16'h7E00};
+        bins canonicalQNaN_16          = {16'h7E00};
         `endif
         `ifdef SEW32_SUPPORTED
-        bins canonicalQNaN          = {32'h7FC00000};   // quiet NaN, canonical payload
+        bins canonicalQNaN_32          = {32'h7FC00000};   // quiet NaN, canonical payload
         `endif
         `ifdef SEW64_SUPPORTED
-        bins canonicalQNaN          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
+        bins canonicalQNaN_64          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
         `endif
     }

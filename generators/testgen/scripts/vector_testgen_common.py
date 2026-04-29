@@ -1252,6 +1252,9 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
 
     if (test == "ExceptionsV"):
       march = f"rv{xlen}i_m_v_zicsr"
+    elif test.startswith("SsstrictV"):
+      march = f"rv{xlen}i_m_v_zicsr"
+      ext_parts_no_I = ['M', 'V', 'Zicsr']
     else:
       # Split extension into components based on capital letters
       ext_parts = re.findall(r'Z[a-z]+|[A-Z]', extension)
@@ -2956,7 +2959,7 @@ def readTestplans(priv=False):
     for file in os.listdir(coverplanDir):
         if file.endswith(".csv"):
             arch = re.search("(.*).csv", file).group(1)
-            if (arch == "ExceptionsV" or arch.startswith("V") or arch.startswith("Zv")):
+            if (arch == "ExceptionsV" or arch.startswith("V") or arch.startswith("Zv") or arch.startswith("SsstrictV")):
                 with open(os.path.join(coverplanDir, file)) as csvfile:
                     reader = csv.DictReader(csvfile)
                     tp = dict()
@@ -2978,7 +2981,7 @@ def readTestplans(priv=False):
                                     cps.append(key)
                         tp[instr] = cps
                 testplans[arch] = tp
-                if ("Vx" in arch and not arch.startswith("Exceptions") and not arch.startswith("Ssstric")):
+                if ("Vx" in arch and not arch.startswith("Exceptions") and not arch.startswith("Ssstrict")):
                     for effew in ["8", "16", "32", "64"]:
                         testplans["Vx" + effew] = tp
                     del testplans["Vx"]

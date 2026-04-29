@@ -8,10 +8,6 @@
     }
 
     // Main condition: instruction trapped
-    trap_occurred: coverpoint ins.trap {
-        bins trapped = {1'b1};
-    }
-
     // Cross: valid vtype AND trap occurred
     cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
 

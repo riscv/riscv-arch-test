@@ -141,8 +141,11 @@ RUN cd /act4 \
   && mise exec -- bundle install \
   && mise exec -- uv sync
 
+# Fix permissions so that any user can use it
+RUN chmod -R 777 /act4 /home/shared
+
 # Stage 3: final runtime image
-FROM ubuntu:24.04@sha256:c4a8d5503dfb2a3eb8ab5f807da5bc69a85730fb49b5cfca2330194ebcc41c7b
+FROM ubuntu:24.04@sha256:c4a8d5503dfb2a3eb8ab5f807da5bc69a85730fb49b5cfca2330194ebcc41c7b AS act4-build
 
 LABEL description="RISC-V Architectural Certification Tests (ACT4) build env"
 LABEL org.opencontainers.image.source="https://github.com/riscv/riscv-arch-test"
@@ -176,11 +179,7 @@ RUN SAIL_OS="$(uname -s)" \
   | tar xz --directory="${SAIL_PREFIX}" --strip-components=1
 
 COPY --from=toolchain-builder "${RISCV_TOOLCHAIN_PREFIX}" "${RISCV_TOOLCHAIN_PREFIX}"
-COPY --from=mise-fetcher      /act4/.venv                 /act4/.venv
 COPY --from=mise-fetcher      /home/shared                /home/shared
-
-# Fix home ownership so that any user can use it
-RUN chmod -R 777 /act4 /home/shared
 
 # Smoke-test: verify all the binaries landed correctly (runs as root during build, before USER switch)
 RUN riscv64-unknown-elf-gcc --version \
@@ -194,4 +193,7 @@ WORKDIR /act4
 
 CMD ["/bin/bash"]
 
+FROM act4-build AS act4
+
+COPY --from=mise-fetcher /act4/.venv /act4/.venv
 COPY --chmod=777 . /act4

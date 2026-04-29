@@ -107,11 +107,9 @@
     check_trap_sig_offset:
       LA(     T1, Mtrap_sig)
       LREG    T1, 0(T1)               // Trap signature pointer
-      LA(     T2, mtrap_sigptr)       // Base address of trap signature region
+      LA(     T2, trap_sigptr)       // Base address of trap signature region
       sub     T1, T1, T2              // Calculate offset
-      // *** the following code uses x2 as a pointer.
-      // *** x2 has been modified by unpriv tests and thus causes a store access fault
-      // RVTEST_SIGUPD(x2, x5, x4, T1, check_trap_sig_offset, trap_sig_offset_mismatch)
+      RVTEST_SIGUPD(x2, x5, x4, T1, check_trap_sig_offset, trap_sig_offset_mismatch)
   #endif
 
   // Terminate test
@@ -352,7 +350,7 @@
       tsig_begin_canary:
         TRAP_CANARY
 
-      mtrap_sigptr:
+      trap_sigptr:
           .fill TRAP_SIGUPD_COUNT*(SIG_STRIDE>>2),4,0xdeadbeef
 
       // Create canary at end of signature region to detect overwrites
@@ -373,23 +371,14 @@
 .endm
 /*********************************** end of RVTEST_SIG_SETUP *********************************/
 
-/*****************************************************************/
-/**** initialize regs, just to make sure you catch any errors ****/
-/*****************************************************************/
-
-.macro DBLSHIFTR dstreg,     oldreg,    tmpreg, shamt       //this is just a rotate  using xtmp as a tmp
-        slli    \tmpreg\(), \oldreg\(),   XLEN-\shamt
-        srli    \dstreg\(), \oldreg\(),        \shamt
-        or      \dstreg\(), \dstreg\(), \tmpreg\()
-.endm
 
 /************************************ RVTEST_BOOT_TO_M_MODE ********************************/
 /**** Set up M-mode trap handler and initialize M-mode CSRs                             ****/
 /**** Can be overridden by DUT-specific RVMODEL_BOOT_TO_MMODE if no conforming M-mode   ****/
 /*******************************************************************************************/
 .macro RVTEST_BOOT_TO_MMODE
-  // Run custom RVMODEL flavor if the DUT provides it to override this default boot
   #ifdef RVMODEL_BOOT_TO_MMODE
+    // Run custom RVMODEL flavor if the DUT provides it to override this default boot
     RVMODEL_BOOT_TO_MMODE
   #else
     rvtest_boot_to_mmode:
@@ -399,12 +388,12 @@
     // Do setup that requires a conforming M-mode
     #ifdef CONFORMING_SM_SUPPORTED
 
-    // Disable interrupts
+      // Disable interrupts
       csrw mie, zero
       csrw mip, zero
 
       // disable trap delegation
-      #ifdef U_SUPPORTED
+      #ifdef S_SUPPORTED
         csrw mideleg, zero  // don't delegate interrupts (until S-mode handler is set up)
         csrw medeleg, zero  // don't delegate exceptions (until S-mode handler is set up)
       #endif
@@ -620,6 +609,7 @@
     #endif // CONFORMING_M_MODE
 
   #endif // !RVMODEL_BOOT_TO_MMODE
+
   // Init floating-point and vector state if necessary, even if the rest of M-mode is not implemented
   INIT_FLOAT_VECTOR_STATE
 .endm
@@ -693,7 +683,7 @@
     // sstateen0.FCSR = 1: Enable fcsr access for Zfinx only if supported ZFINX_SUPPORTED (to avoid conflicts with F)
     // sstateen0.C = 0: Disable custom state
 
-    #ifdef MSTATEEN_SUPPORTED
+    #ifdef SMSTATEEN_SUPPORTED
       #if __riscv_xlen == 64
         li t0, MSTATEEN_HSTATEEN | MSTATEEN0_HENVCFG
         csrs mstateen0, t0  // Set these fields
@@ -702,7 +692,7 @@
         csrs mstateen0h, t0 // Set these fields
       #endif
     #endif
-    #ifdef SSTATEEN_SUPPORTED
+    #ifdef SSSTATEEN_SUPPORTED
       li t0, SMSTATEEN0_JVT | SMSTATEEN0_FCSR
       csrs sstateen0, t0 // enable access from lower privilege mode
     #endif
@@ -772,6 +762,16 @@
       li t0, MSTATUS_VS
       csrs mstatus, t0 // Set VS to dirty to enable vector
     #endif
+.endm
+
+/*****************************************************************/
+/**** helper macro to initialize regs, just to make sure you catch any errors ****/
+/*****************************************************************/
+
+.macro DBLSHIFTR dstreg,     oldreg,    tmpreg, shamt       //this is just a rotate  using xtmp as a tmp
+        slli    \tmpreg\(), \oldreg\(),   XLEN-\shamt
+        srli    \dstreg\(), \oldreg\(),        \shamt
+        or      \dstreg\(), \dstreg\(), \tmpreg\()
 .endm
 
 /************************************ RVTEST_INIT_REGS ********************************/

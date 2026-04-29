@@ -94,7 +94,7 @@
 //
 //****************************************************************
 // RVTEST_TSIG_BEGIN                                             *
-////    mtrap_sigptr:                                            *
+////    trap_sigptr:                                            *
 //****************************************************************
 //
 //    *********************************************
@@ -133,7 +133,7 @@
         rvtest_Sroot_pg_tbl: defined inside RVTEST_DATA_BEGIN if Smode implemented
         rvtest_Hroot_pg_tbl: defined inside RVTEST_DATA_BEGIN if HSmode implemented
         rvtest_Vroot_pg_tbl: defined inside RVTEST_DATA_BEGIN if VSmode implemented
-        mtrap_sigptr:        defined by test if traps are possible, else is defaulted
+        trap_sigptr:         defined by test if traps are possible, else is defaulted
 */
 //****WARNING****don't put C-style macros (#define xxx) inside assembly macros; C-style is evaluated before assembly
 
@@ -884,8 +884,6 @@
   //NOTE: this is run in M-mode, so can't use aliased S,V CSR names
 
 .global \__MODE__\()trampoline
-//.global mtrap_sigptr
-
         XCSR_RENAME \__MODE__          //retarget XCSR names to this modes CSRs, separate V/S copies
 
         LA(     T1, \__MODE__\()tramptbl_sv)    // get  ptr to save area (will be stored in xSCRATCH)
@@ -1171,7 +1169,7 @@ spcl_\__MODE__\()chk4ecall:
 
 \__MODE__\()trap_sig_sv:
         // This replaces an LA(rvtest_trap_sig) calculating initial_Xtrap_sigptr +
-        //                                    (Mtrap_sigptr-initial_Mtrap-sigptr)
+        //                                    (trap_sigptr-initial_Mtrap-sigptr)
         // The delta between Mmode_sigptr and Xmode_sigptr are constants
         // Xtrap_sigptr (current priv mode) are in the save area ponted to by sp
         // ****FIXME - this breaks if the signature area cross a page boundary and the mapping isn't contiguous
@@ -1200,7 +1198,7 @@ spcl_\__MODE__\()chk4ecall:
         SREG    T4, trapsig_ptr_off+sv_area_off(sp)
 
 //------end atomic------------------------------------------------
-//  convert mtrap_sigptr to curr_mode trap_sigptr
+//  convert trap_sigptr to curr_mode trap_sigptr
         LREG    T3, sig_bgn_off+sv_area_off(sp) // load     Mmode sig begin addr
         sub     T1, T1, T3                      // cvt sigptr to offset from Mmode sig begin
         addi    sp, sp, 1*sv_area_sz            // undo the sp offset
@@ -1993,7 +1991,7 @@ rvtest_\__MODE__\()end:
 \__MODE__\()vmem_bgn_ptr:  .dword rvtest_code_begin // dflt to code bgn area  w/  this mode's mapping trampsvend+6*8
 \__MODE__\()vmem_seg_sz:   .dword rvtest_code_end-rvtest_code_begin      // vmem seg size in any mode trampsvend+7*8
 
-\__MODE__\()trap_sig:      .dword  mtrap_sigptr // ptr to next trapsig  ***GLBL(only Mmode ver. used) trampsvend+8*8
+\__MODE__\()trap_sig:      .dword  trap_sigptr  // ptr to next trapsig  (applies to all modes)        trampsvend+8*8
 \__MODE__\()satp_sv:       .dword 0             // sv area for incoming xsatp                         trampsvend+9*8
 \__MODE__\()sved_misa:                          // sved when misa.h changes               ***only Mmode sv area vers
 \__MODE__\()sved_hgatp:                         // sved when hgatp.mode chgs              ***only Hmode sv area vers

@@ -21,50 +21,13 @@ Fundamental design considerations are:
 
 * To reduce the risk of bugs from uninitialized state and the burden on test developers, the boot process places known values in all applicable GPRs and CSRs.
 
-The REQUIRED_EXTENSIONS list in each test implies the privilege mode into which the test boots.  If REQUIRED_EXTENSIONS includes ConformingSm, the test boots into M-mode. Otherwise, if REQUIRED_EXTENSIONS includes S, the test boots into S-mode.  This is the case even for hypervisor tests, which require S and boot into S (effectively HS)-mode, and then are responsible for setting up and switching to VS/VU mode if desired.  Otherwise, the test boots into U-mode if the DUT supports it, and M-mode (possibly nonconforming) if the DUT lacks U-mode.
+The boot sequence boots to the lowest available privilege mode sufficient to run the tests.  Tests may define the BOOT_TO_MMODE or BOOT_TO_SMODE symbols to force booting to M-mode or S-mode, respectively, if the DUT supports those modes.  If neither symbol is defined, the boot sequence boots to U-mode if supported, and M-mode (possibly nonconforming) otherwise. Note that hypervisor tests should define BOOT_TO_SMODE to boot into S (effectively HS)-mode and then are responsible for setting up and switching to VS/VU mode if desired.
 
-The implication of these rules is that privileged tests that specify ConformingSm, S, or U will boot into those modes, respectively, and unprivileged tests will run in U-mode if supported and M-mode (possibly nonconforming) otherwise.
-
-*** signpost trap, sbi, rvmodel, memory map
-
-testgen/src/testgen/io/templates.py format_params needs to accept CONFORMING_SM_SUPPORTED parameter when available.  How to deal with UDB?
-
-DONE: remove RVTEST_PRIV_TEST
-
-DONE: replace rvtest_mtrap_routine with CONFORMING_SM_SUPPORTED or many places it gets deleted
-    replace rvtest_strap_routine with S_SUPPORTED if needed
-    replace rvtest_htrap_routine with H_SUPPORTED if needed
-
-Test generator:
-    Any test that lists Sm in REQUIRED_EXTENSIONS adds CONFORMING_SM_SUPPORTED as a parameter
-    DONE Any test that lists S in REQUIRED_EXTENSIONS adds #define BOOT_TO_SMODE
-    DONE else any test that lists Sm in REQUIRED_EXTENSIONS adds #define BOOT_TO_MMODE
-    DONE *** edit generators/testgen/src/testgen/io/templates.py/generate_defines_from_extensions to define these boot_TO_*.  DONE Drop RVTEST_FP and tweak where it was used (hopefully removed)
-        if any(ext in ext_components for ext in ["H", "S"]):
-            extra_defines.append("#define BOOT_TO_SMODE")
-        elif any(ext in ext_components for ext in ["Sm"]):
-            extra_defines.append("#define BOOT_TO_MMODE")
-
-
-    DONE delete mcountinhibt init from OpenHW core
-    *** Need zicsr in march string (generate_march_string)
-
-    TODO: restore sigupd in rvtest_setup.h check_trap_sig_offset
-        that relied on x2 containing a signature pointer, which
-        is not preserved by unpriv tests.  This causes the sigupd
-        to throw a store access fault on unpriv tests in
-        make coverage.
-
-    TODO: provide a routine to goto UMODE from SMODE
-        provide a SBI way to get back to M-mode from U-mode when ecall from U is delegated
-        needed  for cleanup after tests.  See UF as an example.
-        BOOT_TO_M/S/U mode not showing up in file yet
+In the ACT framework, BOOT_TO_MMODE is defined when REQUIRED_EXTENSIONS contains Sm.  BOOT_TO_SMODE is defined when REQUIRED_EXTENSIONS contains S. Otherwise, neither symbol is defined.  Hence, privileged tests that specify Sm, S, or U will boot into these modes, respectively.  Unprivileged tests run in U-mode if supported, and in M-mode (possibly nonconforming) otherwise.  Another consequence is that if the UDB contains CONFORMING_SM_SUPPORTED, then the trap handler is enabled even for unprivileged tests, helping produce graceful error messages for illegal instructions.  However, a simple core such as an RV32I microcontroller may not enable CONFORMING_SM_SUPPORTED and will not set up a trap handler.
 
 === Controlling Parameters
 
-Every DUT has `S_SUPPORTED`, `U_SUPPORTED`, and `H_SUPPORTED` parameters from the UDB that indicate which privilege modes are supported.  All DUT UDB configs support `Sm`, but not necessarily a conforming M-mode (and possibly no CSRs at all).  This section introduces `CONFORMING_SM_SUPPORTED`, which is true when the DUT implements mandatory portions of the M-mode spec.
-
-*** discuss how to name these in UDB.  Where does _SUPPORTED come into play?
+Every DUT has `S_SUPPORTED`, `U_SUPPORTED`, and `H_SUPPORTED` parameters from the UDB that indicate which privilege modes are supported.  All DUT UDB configs support `Sm`, but not necessarily a conforming M-mode (and possibly no CSRs at all). Therefore, UDB also provides the `CONFORMING_SM_SUPPORTED` parameter, which is true when the DUT implements mandatory portions of the M-mode spec.
 
 === Boot Sequence
 
@@ -82,7 +45,7 @@ CSR initialization includes
 
 * mie/mip = 0 (disable all interrupts)
 * mideleg/medeleg = 0 (don't delegate traps unless turned on during S-mode boot)
-* mstatus
+* mstatus (SXLEN/UXLEN = MXLEN, SBE/UBE = MBE, other features off)
 * menvcfg (enable unpriv features if U supported)
 * mstateen0 (enable unpriv features if SMSTATEN_SUPPORTED)
 * mcountinhibit = 0 *** if exists
@@ -92,7 +55,7 @@ CSR initialization includes
 * pmpaddr0/pmpcfg0 if PMP_ENTRIES > 0
 * turn off virtual memory and perform sfence.vma to synchronize MMU if SV32_SUPPORTED or SV39_SUPPORTED
 
-Even if conforming M-mode is not supported or RVMODEL_BOOT_TO_MMODE is defined, the boot code still attempts to turn on mstatus.FS/VS if float or vector is supported, because these are needed for unprivileged tests, even on a RVI32 DUT that has no other M-mode features.
+Even if conforming M-mode is not supported or RVMODEL_BOOT_TO_MMODE is defined, the boot code still attempts to turn on mstatus.FS/VS if float or vector is supported, because these are needed for unprivileged tests, even on a RV32I DUT that has no other M-mode features.
 
 The boot process ends in M-mode if the BOOT_TO_MMODE symbol is defined in the test (for tests intended to run in machine mode), or if no lower privilege mode is supported.
 
@@ -213,3 +176,32 @@ Standard macros are defined in `tests/env`.  DUT-specific macros are defined in 
 Standard framework macros begin with `RVTEST`.  They include `rvtest_setup.h` for boot macros and `rvtest_trap_handler.h` for standard trap handlers, and `rvtest_failure_code.h` for error reporting. Other macros are defined in ***util.h, ... describe further
 
 DUT-specific macros begin with `RVMODEL`.  Some `RVTEST` macros check if corresponding `RVMODEL` macros are defined and invoke the `RVMODEL` macro instead for nonconforming DUTs when defined.
+
+=== Test Supervisor Binary Interface (T-SBI)
+
+The test must implement a custom _Test Supervisor Binary Interface_ (T-SBI) providing an abstraction layer to facilitate S and U-mode tests requesting services from a possibly non-conforming M-mode. These services include ***.
+
+
+TODO: Flush out
+
+TODO:
+
+testgen/src/testgen/io/templates.py format_params needs to accept CONFORMING_SM_SUPPORTED parameter when available.  How to deal with UDB?
+
+remove mention of RVTEST_VECTOR  from vector code
+
+DONE: replace rvtest_mtrap_routine with CONFORMING_SM_SUPPORTED or many places it gets deleted
+    replace rvtest_strap_routine with S_SUPPORTED if needed
+    replace rvtest_htrap_routine with H_SUPPORTED if needed
+
+Test generator:
+    Any test that lists Sm in REQUIRED_EXTENSIONS adds CONFORMING_SM_SUPPORTED as a parameter
+    DONE *** edit generators/testgen/src/testgen/io/templates.py/generate_defines_from_extensions to define these boot_TO_*.  DONE Drop RVTEST_FP and tweak where it was used (hopefully removed)
+        if any(ext in ext_components for ext in ["H", "S"]):
+            extra_defines.append("#define BOOT_TO_SMODE")
+        elif any(ext in ext_components for ext in ["Sm"]):
+            extra_defines.append("#define BOOT_TO_MMODE")
+
+    TODO: provide a routine to goto UMODE from SMODE
+        provide a SBI way to get back to M-mode from U-mode when ecall from U is delegated
+        needed  for cleanup after tests.  See UF as an example.

@@ -375,8 +375,8 @@
     failedtest_saveresults:
         # Dispatch based on failure type
         lw x9, failure_type
-  #if defined(F_SUPPORTED) || defined(ZFINX_SUPPORTED)
-          li x10, 1
+#if defined(F_SUPPORTED) || defined(ZFINX_SUPPORTED)
+        li x10, 1
         beq x9, x10, failedtest_saveresults_fp
         li x10, 2
         beq x9, x10, failedtest_saveresults_fflags
@@ -485,7 +485,7 @@
         # Load full expected FP value from signature
         LREG x7, 0(x6)
         SREG x7, 280(DEFAULT_TEMP_REG)    # expected_value (lower/only)
-    #if FLEN > XLEN
+    #if CONFIG_FLEN > XLEN
         LREG x7, SIG_STRIDE(x6)
         la x8, expected_value_upper
         SREG x7, 0(x8)                    # expected_value upper half

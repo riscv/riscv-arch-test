@@ -14,8 +14,10 @@
 
 ##### STARTUP #####
 
-# Perform boot operations. Can be empty.
-#define RVMODEL_BOOT
+# Perform boot operations. Can be empty or left undefined unless needed for
+# DUT-specific behavior such as turning on a memory controller or
+# initializing custom state.
+//#define RVMODEL_BOOT
 
 ##### TERMINATION #####
 
@@ -52,6 +54,7 @@
 # Initialization steps needed prior to writing to the console
 # _R1, _R2, and _R3 can be used as temporary registers if needed.
 # Do not modify any other registers (or make sure to restore them).
+# Can be empty or left undefined if no initialization is needed.
 #define RVMODEL_IO_INIT(_R1, _R2, _R3)    \
   uart_init:                ;\
     li _R1, UART_LCR         ; /* Load address of UART LCR */    \
@@ -96,7 +99,7 @@
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
 #define CLINT_BASE_ADDRESS 0x02000000
-#define MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
+#define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)
 
@@ -104,11 +107,11 @@
 
 #define RVMODEL_SET_MSW_INT(_R1, _R2) \
   li _R1, 1; \
-  li _R2, MSIP_ADDRESS; \
+  li _R2, RVMODEL_MSIP_ADDRESS; \
   sw _R1, 0(_R2);
 
 #define RVMODEL_CLR_MSW_INT(_R1, _R2) \
-  li _R2, MSIP_ADDRESS; \
+  li _R2, RVMODEL_MSIP_ADDRESS; \
   sw zero, 0(_R2);
 
 ##### Supervisor Interrupts #####

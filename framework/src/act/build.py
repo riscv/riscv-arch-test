@@ -365,7 +365,12 @@ def _print_failure(console: Console, task: BuildTask, error: BuildError) -> None
         output_lines = _strip_noise(error.output).strip().splitlines()
         if len(output_lines) > max_output_lines:
             omitted = len(output_lines) - max_output_lines
-            console.print(f"    [dim]... {omitted} earlier line(s) omitted; see log file ...[/]")
+            if error.log_file is not None:
+                console.print(f"    [dim]... {omitted} earlier line(s) omitted; see log file ...[/]")
+            else:
+                console.print(
+                    f"    [dim]... {omitted} earlier line(s) omitted; re-run with --verbose to see full output ...[/]"
+                )
             output_lines = output_lines[-max_output_lines:]
         for line in output_lines:
             console.print(f"    {line}", soft_wrap=True, highlight=False)

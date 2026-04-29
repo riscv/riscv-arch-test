@@ -150,7 +150,6 @@ def run_act(
     summary = ", ".join(parts)
 
     if result.errors:
-        # Route everything through stderr in the failure path so output is ordered correctly when redirected
         rprint(f"\n[bold red]✗ Build failed:[/] {summary}", file=sys.stderr)
         if len(result.errors) > 1:
             rprint(f"  [red]{len(result.errors)} task(s) failed (see details above):[/]", file=sys.stderr)

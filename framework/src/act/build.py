@@ -330,7 +330,7 @@ def build(
                     result.failed += 1
                     result.errors.append(error)
                     failed_tasks.add(key)
-                    _print_failure(live.console, task_map[key], error)
+                    _print_failure(live.console, task_map[key], error, verbose=verbose)
                     if not keep_going:
                         # Cancel remaining tasks
                         executor.shutdown(wait=False, cancel_futures=True)
@@ -345,7 +345,7 @@ def build(
     return result
 
 
-def _print_failure(console: Console, task: BuildTask, error: BuildError) -> None:
+def _print_failure(console: Console, task: BuildTask, error: BuildError, verbose: bool) -> None:
     """Print a clear, actionable failure block for a failed build task.
 
     Layout: header (short test name) -> output path -> error output (tail) ->
@@ -363,7 +363,7 @@ def _print_failure(console: Console, task: BuildTask, error: BuildError) -> None
     if error.output:
         console.print("[bold red]  Error output:[/]")
         output_lines = _strip_noise(error.output).strip().splitlines()
-        if len(output_lines) > max_output_lines:
+        if not verbose and len(output_lines) > max_output_lines:
             omitted = len(output_lines) - max_output_lines
             if error.log_file is not None:
                 console.print(f"    [dim]... {omitted} earlier line(s) omitted; see log file ...[/]")

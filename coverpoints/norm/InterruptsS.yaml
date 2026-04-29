@@ -50,7 +50,7 @@ normative_rule_definitions:
   # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to
   # the value of xIE; xIE is set to 0; and xPP is set to y.
   - names: [mstatus_xpie_trap_op, mstatus_xie_trap_op, mstatus_xpp_trap_op]
-    coverpoint: [""]
+    coverpoint: ["InterruptsS_cg/cp_priority_mideleg_{m, s}"]
 
   # When TW=0, the WFI instruction may execute in modes less privileged than M when
   # not prevented for some other reason. When TW=1, then if WFI is executed in any
@@ -224,3 +224,12 @@ normative_rule_definitions:
   # controller.
   - name: mip_ssip_intr_ctrl
     coverpoint: [""]
+
+  # The SPP bit indicates the privilege level at which a hart was executing before
+  # entering supervisor mode. When a trap is taken, SPP is set to 0 if the trap
+  # originated from user mode, or 1 otherwise. When an SRET instruction (see ) is
+  # executed to return from the trap handler, the privilege level is set to user
+  # mode if the SPP bit is 0, or supervisor mode if the SPP bit is 1; SPP is then
+  # set to 0.
+  - names: [sstatus_spp_sz, sstatus_spp_acc, sstatus_spp_op]
+    coverpoint: ["TODO"]

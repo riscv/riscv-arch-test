@@ -1,1 +1,1 @@
-../sail-rv64-max/rvmodel_macros.h
+../sail-RVI20U64/rvmodel_macros.h

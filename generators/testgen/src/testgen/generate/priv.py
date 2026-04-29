@@ -185,7 +185,9 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     tc.code = "\n".join(body_lines)
     test_data.end_test_chunk()
 
-    extra_defines = [*get_priv_test_defines(testsuite), "#define RVTEST_PRIV_TEST"]
+    # Produce actual test file
+    extra_defines = [*get_priv_test_defines(testsuite)]
+    write_test_file(test_config, None, [tc], output_path, extra_defines=extra_defines)
 
     if testsuite not in _SPLIT_TESTSUITES:
         # ── Standard single-file output (original behaviour) ──────────────────

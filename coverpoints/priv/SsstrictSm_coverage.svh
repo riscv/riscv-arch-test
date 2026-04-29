@@ -32,7 +32,6 @@ covergroup SsstrictSm_mcsr_cg with function sample(ins_t ins);
         bins super_std0[] = {[12'h100:12'h1FF]};
         bins hyper_std0[] = {[12'h200:12'h2FF]};
         bins mach_std0[] = {[12'h300:12'h3FF]};
-        ignore_bins PMP_regs = {[12'h3A0:12'h3EF]}; // Exclude PMP registers
         bins user_std1[] = {[12'h400:12'h4FF]};
         bins super_std1[] = {[12'h500:12'h5BF]};
         ignore_bins super_custom1 = {[12'h5C0:12'h5FF]};

@@ -49,8 +49,13 @@ _WRITABLE_MODE = 0o644
 
 
 def _write_readonly(path: Path, content: str) -> None:
-    """Write content to a generated file and mark it read-only to deter manual edits."""
+    """Write content to a generated file and mark it read-only to deter manual edits.
+
+    Skips the write if the existing file already matches to avoid unnecessary rebuilds.
+    """
     if path.exists():
+        if path.read_text() == content:
+            return
         path.chmod(_WRITABLE_MODE)
     path.write_text(content)
     path.chmod(_READONLY_MODE)

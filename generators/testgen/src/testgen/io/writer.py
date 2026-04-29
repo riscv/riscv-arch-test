@@ -125,6 +125,3 @@ def write_test_file(
     # Write test file if different from existing file. This avoids unnecessary rebuilds.
     if not test_file.exists() or test_file.read_text() != test_string:
         _write_readonly(test_file, test_string)
-    else:
-        # Content unchanged; still ensure the file is marked read-only in case it isn't already.
-        test_file.chmod(_READONLY_MODE)

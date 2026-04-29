@@ -39,6 +39,7 @@ from rich.progress import (
 import vector_testgen_common as common
 from vector_testgen_common import (
   ARCH_VERIF,
+  getSigReg,
   fedges,
   fedgesD,
   fedgesH,
@@ -1383,6 +1384,8 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
     test_data = genVtestdata(test, sew)
 
     signatureWords = getSigSpace(xlen, flen)
+    sigReg = getSigReg()
+    f.write(f"mv x2, x{sigReg} # restore signature pointer to default register for teardown\n")
     insertTemplate(test, signatureWords, "testgen_footer.S", test_data=test_data)
 
     f.close()

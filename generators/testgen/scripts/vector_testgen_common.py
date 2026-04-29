@@ -1985,7 +1985,7 @@ def finalizeSigupdCount(filename, xlen, flen):
   with open(filename, "w") as fh:
     fh.write(content)
 
-def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, test=None, rd=None, fd=None, vl=1, sig_lmul = None, sig_whole_register_store = False, load_testline = None, reload_pre_init: list[str] | None = None, priv = False, testtype="base", masked=False, lmul=1, force_vill=False, pre_instruction_lines=None, skip_sigupd=False):
+def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, test=None, rd=None, fd=None, vl=1, sig_lmul = None, sig_whole_register_store = False, load_testline = None, reload_pre_init: list[str] | None = None, priv = False, testtype="base", masked=False, lmul=1, force_vill=False, pre_instruction_lines=None, post_instruction_lines=None, skip_sigupd=False):
     scalar_registers_used = list(scalar_registers_used)
 
     # record testcase string (_INST_PTR)
@@ -2023,6 +2023,14 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
       # follows). Clear it explicitly so the signature ops always run cleanly.
       writeLine("csrw vstart, x0",                               "# reset vstart so SIGUPD vector ops are not reserved/trapping")
       writeLine(f"vsetivli x0, 1, SEWSIZE, m{sig_lmul}, tu, mu",  f"# re-initialize vl = 1, LMUL = {sig_lmul}, SEW = SEWMIN for signature")
+
+    if post_instruction_lines:
+      # Caller-provided cleanup lines that must run after the test instruction
+      # but before the per-test SIGUPD/fcsr-save block (e.g. restore mstatus.FS
+      # so a follow-up `csrr fcsr` does not itself trap when the test forced
+      # FS=Off and trapped).
+      for line in post_instruction_lines:
+        writeLine(line)
 
     if load_testline is not None:
       if reload_pre_init:

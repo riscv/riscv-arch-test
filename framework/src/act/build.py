@@ -145,7 +145,7 @@ def execute_task(task: BuildTask, *, verbose: bool = False) -> BuildError | None
                 cwd=action.cwd,
             )
             if action.stdout_file is not None:
-                action.stdout_file.write_text(result.stdout + result.stderr)
+                action.stdout_file.write_text(result.stderr + result.stdout)
             if result.returncode != 0:
                 return BuildError(
                     task_name=task.name,

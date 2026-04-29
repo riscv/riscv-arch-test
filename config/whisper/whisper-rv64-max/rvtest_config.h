@@ -118,6 +118,7 @@
 
 #define COUNTINHIBIT_EN_0
 #define COUNTINHIBIT_EN_2
+#define ZVL32B_SUPPORTED
 #define TIME_CSR_IMPLEMENTED 1
 
 // Vector configuration

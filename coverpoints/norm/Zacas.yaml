@@ -51,7 +51,7 @@ normative_rule_definitions:
     coverpoint: ["Zacas_amocas_q_cg/{cp_rd}"]
 
   - name: Zacas_amocas_rs1_addr_alignment
-    coverpoint: ["cp_align"]
+    coverpoint: ["ExceptionsZaamo_cg/{cp_amo_address_misaligned}"]
 
   - name: Zacas_amocas_mem_op_success_aq_rl
     coverpoint: [""]

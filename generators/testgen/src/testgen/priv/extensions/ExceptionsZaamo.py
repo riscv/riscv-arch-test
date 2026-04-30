@@ -94,6 +94,59 @@ def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
             )
         lines.append("#endif")
 
+        # Zacas
+        lines.append("#ifdef ZACAS_SUPPORTED")
+
+        zacas_even_regs = []
+        zacas_odd_regs = []
+
+        while len(zacas_even_regs) < 2:
+            reg = test_data.int_regs.get_registers(1)[0]
+            if reg % 2 == 0:
+                zacas_even_regs.append(reg)
+            else:
+                zacas_odd_regs.append(reg)
+
+        even_dest = zacas_even_regs[0]
+        even_source = zacas_even_regs[1]
+
+        lines.extend(
+            [
+                f"LI(x{even_dest}, 0xBAD)",
+                test_data.add_testcase(f"amocas_w_offset_{offset}", coverpoint, covergroup),
+                f"amocas.w x{even_dest}, x{even_source}, (x{addr_reg})",
+                "nop",
+                write_sigupd(even_dest, test_data),
+            ]
+        )
+
+        lines.extend(
+            [
+                f"LI(x{even_dest}, 0xBAD)",
+                test_data.add_testcase(f"amocas_d_offset_{offset}", coverpoint, covergroup),
+                f"amocas.d x{even_dest}, x{even_source}, (x{addr_reg})",
+                "nop",
+                write_sigupd(even_dest, test_data),
+            ]
+        )
+
+        lines.append("#if __riscv_xlen == 64")
+        lines.extend(
+            [
+                f"LI(x{even_dest}, 0xBAD)",
+                test_data.add_testcase(f"amocas_q_offset_{offset}", coverpoint, covergroup),
+                f"amocas.q x{even_dest}, x{even_source}, (x{addr_reg})",
+                "nop",
+                write_sigupd(even_dest, test_data),
+            ]
+        )
+        lines.append("#endif")
+        lines.append("#endif")
+
+        test_data.int_regs.return_registers(zacas_even_regs)
+        if zacas_odd_regs:
+            test_data.int_regs.return_registers(zacas_odd_regs)
+
     test_data.int_regs.return_registers([addr_reg, limit_reg, dest_reg, source_reg])
 
     return lines
@@ -163,14 +216,65 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
         )
     lines.append("#endif")
 
+    # Zacas
+    lines.append("#ifdef ZACAS_SUPPORTED")
+    zacas_even_regs = []
+    zacas_odd_regs = []
+
+    while len(zacas_even_regs) < 2:
+        reg = test_data.int_regs.get_registers(1)[0]
+        if reg % 2 == 0:
+            zacas_even_regs.append(reg)
+        else:
+            zacas_odd_regs.append(reg)
+
+    even_dest = zacas_even_regs[0]
+    even_source = zacas_even_regs[1]
+
+    lines.extend(
+        [
+            f"LI(x{even_dest}, 0xBAD)",
+            test_data.add_testcase(f"amo_access_fault_amocas_w", coverpoint, covergroup),
+            f"amocas.w x{even_dest}, x{even_source}, (x{addr_reg})",
+            "nop",
+            write_sigupd(even_dest, test_data),
+        ]
+    )
+    lines.extend(
+        [
+            f"LI(x{even_dest}, 0xBAD)",
+            test_data.add_testcase(f"amo_access_fault_amocas_d", coverpoint, covergroup),
+            f"amocas.d x{even_dest}, x{even_source}, (x{addr_reg})",
+            "nop",
+            write_sigupd(even_dest, test_data),
+        ]
+    )
+    lines.append("#if __riscv_xlen == 64")
+    lines.extend(
+        [
+            f"LI(x{even_dest}, 0xBAD)",
+            test_data.add_testcase(f"amo_access_fault_amocas_q", coverpoint, covergroup),
+            f"amocas.q x{even_dest}, x{even_source}, (x{addr_reg})",
+            "nop",
+            write_sigupd(even_dest, test_data),
+        ]
+    )
+    lines.append("#endif")
+    lines.append("#endif")
+
+    test_data.int_regs.return_registers(zacas_even_regs)
+    if zacas_odd_regs:
+        test_data.int_regs.return_registers(zacas_odd_regs)
+
+    lines.append("#endif")
     test_data.int_regs.return_registers([addr_reg, dest_reg, source_reg])
     return lines
 
 
 @add_priv_test_generator(
     "ExceptionsZaamo",
-    required_extensions=["I", "Zicsr", "Zaamo", "Sm"],
-    march_extensions=["I", "Zicsr", "Zaamo", "Zabha"],
+    required_extensions=["Zaamo", "Sm"],
+    march_extensions=["I", "Zicsr", "Zaamo", "Zabha", "Zacas"],
 )
 def make_exceptionszaamo(test_data: TestData) -> list[str]:
     """Main entry point for Zaamo exception test generation."""

@@ -201,6 +201,14 @@ def newInstruction():
   # reset testcase strings for the new instruction file
   reset_testcase_strings()
 
+def getSigReg():
+  global sigReg
+  return sigReg
+
+def getFlen():
+  global flen
+  return flen
+
 def setXlen(new_xlen):
     global xlen, formatstr
     xlen = new_xlen

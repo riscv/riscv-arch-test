@@ -179,14 +179,50 @@ DUT-specific macros begin with `RVMODEL`.  Some `RVTEST` macros check if corresp
 
 === Test Supervisor Binary Interface (T-SBI)
 
-The test must implement a custom _Test Supervisor Binary Interface_ (T-SBI) providing an abstraction layer to facilitate S and U-mode tests requesting services from a possibly non-conforming M-mode. These services include ***.
+The test must implement a custom _Test Supervisor Binary Interface_ (T-SBI) providing an abstraction layer to facilitate S and U-mode tests requesting services from a possibly non-conforming M-mode. These services include testing ECALL to the execution environment and accessing CSRs.
 
+The ratified SBI compiles into a ~1MB OpenSBI firmware binary, which is unnecessarily large to load with every test.  Moreover, the SBI calling convention uses `a7` and `a6`, which are not available on RV32E.  Therefore,  T-SBI is a lighter-weight implementation with a custom calling convention that is incompatible with the ratified SBI.
 
-TODO: Flush out
+The SBI is invoked with the `ecall` instruction.  The operation is passed in `a0`.  An additional argument could be passed in `a1` and a result could be returned in `a0` if needed, but the present SBI calls do not require this.
+
+[[t-tsbi]]
+.T-SBI Calls
+[options=header]
+[cols="1, 1, 2", options=header]
+[%AUTOWIDTH]
+|===
+|Function Name|Operation(`a0`)|Description
+|ECALL_TEST|0x00000073|Test `ecall` to the execution environment.  Returns xEPC in `a0` to indicate that the trap handler was entered.
+|CSR_SET|0x<CSR>5a073>|Performs CSRS instruction specified by the opcode in `a0`.  `rs1` must be `a1` containing the value to write. `rd` must be 0. <CSR> is the 12-bit CSR encoding.
+|CSR_CLEAR|0x<CSR>5b073|Performs CSRC instruction specified by the opcode.  `rs1` must be `a1` containing the value to write. `rd` must be 0.
+|CSR_WRITE|0x<CSR>59073|Performs CSRW instruction specified by the opcode in `a0`.  `rs1` must be `a1` containing the value to write. `rd` must be 0.
+|CSR_READ|0x<CSR>02573|Performs CSRR instruction specified by the opcode.  `rd` must be `a0` with the return result.  `rs1` must be 0.
+|RESERVED|Others|Return with -1 in `a0` to indicate an invalid operation.
+|===
+
+For example, an S-mode program can request setting `mstatus.TVM` with a CSR_SET call corresponding to `csrrs x0, mstatus, a1` (`a0` = 0x3005a073) with `a1` containing a 1 in bit 20 (the `TVM` bit) and all other bits 0.  A possible implementation with conforming M-mode is for the trap handler to write this value to memory, perform `fence.i` to synchronize the instruction stream, execute the instruction, and return to the test.  If a non-conforming M-mode does not support `mstatus.TVM`, it must emulate the behavior in some other way. Similarly, S-mode can read `mip` to `a0` with a CSR_READ call corresponding to `csrrs a0, mip, x0` (`a0` = 0x34402573).
+
+The ACT trap handlers implement an additional set of convenience calls changing between privilege modes in a standard fashion.  This includes changing to M-mode.  The behavior in M-mode is only predictable if CONFORMING_SM_SUPPORTED is true. Another suite with different trap handlers might not support these calls.
+
+[[t-syscalls]]
+.Additional ACT System Calls
+[options=header]
+[cols="1, 1, 2", options=header]
+[%AUTOWIDTH]
+|===
+|Function Name|Operation(`a0`)|Description
+|GOTO_MMODE|0xf0001001|Switches to M-mode from any privilege mode.  Behavior may be unpredictable if CONFORMING_SM_SUPPORTED is false.
+|GOTO_SMODE|0xf0001002|Switches to S/HS-mode from any privilege mode.
+|GOTO_UMODE|0xf0001003|Switches to U-mode from any privilege mode.
+|GOTO_VSMODE|0xf0001004|Switches to VS-mode from any privilege mode.
+|GOTO_VUMODE|0xf0001005|Switches to VU-mode from any privilege mode.
+|===
+
+NOTE: The ACT S/HS and VS-mode trap handlers implement the same calls.  Each trap handler performs the request if possible at the current privilege level, or else makes another `ecall` to pass the request up the privilege chain if necessary.  For example, RVTEST_GOTO_MMODE is always passed up the chain.  A CSR access to S-mode CSRs is handled by the S-mode handler, while a CSR access to M-mode received by the S-mode handler is passed up to the M-mode handler by an `ecall` with unchanged arguments.
 
 TODO:
 
-testgen/src/testgen/io/templates.py format_params needs to accept CONFORMING_SM_SUPPORTED parameter when available.  How to deal with UDB?
+testgen/src/testgen/io/templates.py format_params needs to accept CONFORMING_SM_SUPPORTED parameter when available.  How to deal with UDB? (Released in UDB 4/29/26).
 
 remove mention of RVTEST_VECTOR  from vector code
 

@@ -7,6 +7,8 @@
 
 """Test configuration for RISC-V test generation."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 
 

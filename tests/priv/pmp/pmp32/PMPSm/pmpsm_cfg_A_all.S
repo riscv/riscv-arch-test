@@ -22,7 +22,7 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I']
+# REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
@@ -33,9 +33,6 @@
 #define TEST_FILE "pmpsm_cfg_A_all.S"
 #define SIGUPD_COUNT 100
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 
@@ -339,17 +336,6 @@ main:
 
 // ---------------------------------------------------------------------------
 
-    j exit                                                      // Verification Complete, exit the test
-
-.align 12
-.align (RVMODEL_PMP_GRAIN+2)
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
@@ -420,6 +406,18 @@ test_61_str: .string "\"test: 61; cp: cp_cfg_A_all_test_61\""
 test_62_str: .string "\"test: 62; cp: cp_cfg_A_all_test_62\""
 test_63_str: .string "\"test: 63; cp: cp_cfg_A_all_test_63\""
 test_64_str: .string "\"test: 64; cp: cp_cfg_A_all_test_64\""
+
+.align 13
+.align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION:
+    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

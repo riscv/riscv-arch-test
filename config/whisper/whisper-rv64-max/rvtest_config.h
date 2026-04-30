@@ -1,3 +1,6 @@
+#define CONFORMING_SM_SUPPORTED
+#define S_SUPPORTED
+#define U_SUPPORTED
 #define RVMODEL_PMP_GRAIN 8
 #define RVMODEL_NUM_PMPS 64
 
@@ -13,9 +16,8 @@
 #define RAM_BASE_ADDR       0x80000000
 #define LARGEST_PROGRAM     0x00010000
 
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
 #define CLINT_BASE_ADDRESS 0x02000000
-#define MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
+#define  RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 
 
 #define A_SUPPORTED
@@ -23,7 +25,7 @@
 #define C_SUPPORTED
 #define D_SUPPORTED
 #define F_SUPPORTED
-#define H_SUPPORTED
+// #define H_SUPPORTED // H not yet turned on in YAML
 #define I_SUPPORTED
 #define M_SUPPORTED
 #define N_SUPPORTED
@@ -116,4 +118,16 @@
 
 #define COUNTINHIBIT_EN_0
 #define COUNTINHIBIT_EN_2
+#define ZVL32B_SUPPORTED
 #define TIME_CSR_IMPLEMENTED 1
+
+// Vector configuration
+#define SEWMIN 8
+#define ELEN 64
+#define MAXINDEXEEW 64
+
+// Supported fractional LMULs for vector
+// all supported now should be generated based on config
+#define LMULf8_SUPPORTED
+#define LMULf4_SUPPORTED
+#define LMULf2_SUPPORTED

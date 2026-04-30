@@ -8,21 +8,19 @@
 #define RVMODEL_DATA_SECTION
 
 ##### STARTUP #####
-/*
- * Perform boot operations.
- * CV32E40P resets mcountinhibit=0xd (all counters inhibited). Clear it so
- * cycle/instret increment as Zicntr tests expect.
- * .option arch, +zicsr is needed because I tests compile with -march=rv32i
- * which does not include Zicsr (binutils >= 2.38).
- */
-#define RVMODEL_BOOT \
-  .option push           ;\
-  .option arch, +zicsr   ;\
-  csrwi mcountinhibit, 0 ;\
-  .option pop            ;
+//#define RVMODEL_BOOT \
+
+// Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
+// if defined.  For most DUTs, the default should work and this macro
+// should not be defined.  If no M-mode or CSRs are implemented, define this
+// macro as blank to bypass the boot process.  If a nonconforming
+// M-mode is implemented, define this macro to set up the necessary
+// state in a fashion similar to RVTEST_BOOT_TO_MMODE.
+//#define RVMODEL_BOOT_TO_MMODE
 
 # Address to use for load/store fault tests that should cause an access fault on the DUT.
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
+// This DUT does not generate access faults.  Comment out RVMODEL_ACCESS_FAULT_ADDRESS to prevent testing them.
+//#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
 
 ##### TERMINATION #####
 
@@ -79,8 +77,9 @@
  * workaround), refer to the instructions here:
  * https://github.com/riscv/riscv-arch-test/issues/1135#issuecomment-4140522435
  */
-#define RVMODEL_MTIME_ADDRESS
-#define RVMODEL_MTIMECMP_ADDRESS
+// MTIME is not implemented on this DUT. Comment out to prevent testing them.
+//#define RVMODEL_MTIME_ADDRESS
+//#define RVMODEL_MTIMECMP_ADDRESS
 
 ##### Machine Interrupts #####
 

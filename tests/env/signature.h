@@ -111,10 +111,18 @@
 // RVTEST_SIGUPD_F(sigptr, linkreg, tempreg, ftempreg, sigreg, instptr, strptr)
 // Checks both a floating point result register and fflags against the signature.
 // Compares the float value in sigreg with the value in memory at 0(sigptr),
-// then uses RVTEST_SIGUPD_FFLAGS to check fflags. When FLEN > XLEN, the float
-// value requires 2 signature entries (low and high words), plus 1 for fflags
-// (total 3*SIG_STRIDE). When FLEN == XLEN, uses 1 entry for the float value
-// plus 1 for fflags (total 2*SIG_STRIDE).
+// then uses RVTEST_SIGUPD_FFLAGS to check fflags. When CONFIG_FLEN > XLEN, the
+// float value requires 2 signature entries (low and high words), plus 1 for
+// fflags (total 3*SIG_STRIDE). When CONFIG_FLEN <= XLEN, uses 1 entry for the
+// float value plus 1 for fflags (total 2*SIG_STRIDE).
+//
+// On an F-only DUT with TEST_FLEN=64, CONFIG_FLEN is 32 so we take the single-
+// store path. Each slot is still SIG_STRIDE (=TEST_FLEN/8) bytes wide, leaving
+// 4 bytes of unused padding — harmless because the .fill reservation driven by
+// SIGUPD_COUNT is already an upper bound. The scratch load uses FP_LREG so only
+// the CONFIG_FLEN bits actually written by FSREG are read back.
+// See tests/env/utils.h for an explanation of CONFIG_FLEN and TEST_FLEN.
+//
 //  _SIG_PTR - Base register for signature region
 //  _LINK_REG - Link register to use for failure jump
 //  _TEMP_REG - Temporary register to use for loading signature
@@ -122,13 +130,14 @@
 //  _FR - Floating point register containing value to store/compare
 //  _INST_PTR - label on instruction being tested (for PC reporting)
 //  _STR_PTR - label to string describing the test
+//
 // Floating point values are stored to memory and then loaded back into integer registers
 // for comparison, to avoid issues with NaN that arise from using feq. There is no way to
 // directly transfer a floating point value to an integer register without Zfa when FLEN > XLEN.
-#if FLEN == 128 && XLEN == 32
+#if CONFIG_FLEN == 128 && XLEN == 32
   #error "Q on RV32 is not supported yet."
 #endif
-#if FLEN > XLEN
+#if CONFIG_FLEN > XLEN
   #ifdef RVTEST_SELFCHECK
     #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _INST_PTR, _STR_PTR)  \
       .option push                                           ;\
@@ -187,7 +196,7 @@
       .option norvc                                          ;\
       LA(_LINK_REG, scratch)                                 ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
-      LREG _LINK_REG, 0(_LINK_REG)                           ;\
+      FP_LREG _LINK_REG, 0(_LINK_REG)                        ;\
       LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
       beq _TEMP_REG, _LINK_REG, 1f                           ;\
       jal _LINK_REG, failedtest_fp_##_LINK_REG##_##_TEMP_REG ;\
@@ -203,7 +212,7 @@
       .option norvc                                          ;\
       LA(_LINK_REG, scratch)                                 ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
-      LREG _LINK_REG, 0(_LINK_REG)                           ;\
+      FP_LREG _LINK_REG, 0(_LINK_REG)                        ;\
       SREG _LINK_REG, 0(_SIG_PTR)                            ;\
       beq x0, x0, 1f                                         ;\
       jal _LINK_REG, failedtest_fp_##_LINK_REG##_##_TEMP_REG ;\
@@ -216,7 +225,20 @@
   #endif
 #endif
 
-
+// Advance _SIG_PTR by the signature stride computed from the current vl and vtype.
+// The caller must set vtype.vsew appropriately before invoking this macro
+// (for example via vsetvli), since the stride is derived from the runtime CSR state.
+// Clobbers _TEMP_REG and _LINK_REG (both are free here after the compare).
+// bytes = vl << ((vtype >> 3) & 7)  ;  bytes = (bytes + 4 + 7) & ~7
+#define RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)  \
+    csrr _TEMP_REG, vl                                                   ;\
+    csrr _LINK_REG, vtype                                                ;\
+    srli _LINK_REG, _LINK_REG, 3                                         ;\
+    andi _LINK_REG, _LINK_REG, 7                                         ;\
+    sll  _TEMP_REG, _TEMP_REG, _LINK_REG                                 ;\
+    addi _TEMP_REG, _TEMP_REG, 11                                        ;\
+    andi _TEMP_REG, _TEMP_REG, -8                                        ;\
+    add  _SIG_PTR, _SIG_PTR, _TEMP_REG
 
 // RVTEST_SIGUPD_V(cmp, sigptr, linkreg, tempreg,
 //                 vtmp, mtmp, sew, offset, vreg, instptr, strptr)
@@ -248,16 +270,19 @@
 //        address and descriptive string can be recovered.
 //
 //   5. On success:
-//      - sigptr is advanced by offset.
+//      - sigptr is advanced by the calculated offset determined by vl and vtype.
 //
 // In non-SELFCHECK mode:
 //   - The macro simply stores the vector register vreg to memory at
 //     0(sigptr) using vse{sew}.v.
 //   - No comparisons are performed.
-//   - sigptr is advanced by offset.
+//   - sigptr is advanced by the calculated offset.
 //
-// offset is calculated in vector-testgen.py due to the complexity of
-// computing the correct signature stride for different SEW/LMUL settings.
+// The signature stride is computed inside the macro from the current vl and
+// vtype (SEW field): bytes = vl << vsew, then +4 padding, then rounded up to
+// a multiple of 8.  For base suite callers vl=1; for length suite callers
+// (handled by the _LEN macro below) vl is first set to VLMAX via vsetvli so
+// the same formula yields VLEN*LMUL/8 bytes.
 //
 // Assumptions:
 //   - For mask producing instructions, the default SEW is 8.
@@ -273,47 +298,46 @@
 //   _TEMP_REG   - Temporary scalar register
 //   _VTMP       - Temporary vector register used to load reference data
 //   _MTMP       - Mask register holding mismatch results
-//   _SEW        - Element width
-//   _OFFSET     - Signature stride (computed in vector-testgen.py)
+//   _VD_EEW     - Destination element width (for widening, 2*SEW)
 //   _VREG       - Vector register under test
 //   _INST_PTR   - Label of instruction under test
 //   _STR_PTR    - Label to descriptive string
 
 #ifdef RVTEST_SELFCHECK
     #define RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG,    \
-        _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _INST_PTR, _STR_PTR)     \
+        _VTMP, _MTMP, _VD_EEW, _VREG, _INST_PTR, _STR_PTR)           \
         .option push                                                ;\
         .option norvc                                               ;\
-        vle##_SEW.v _VTMP, 0(_SIG_PTR)                              ;\
+        vle##_VD_EEW.v _VTMP, 0(_SIG_PTR)                           ;\
         _CMP _MTMP, _VREG, _VTMP                                    ;\
         vfirst.m _TEMP_REG, _MTMP                                   ;\
         blt _TEMP_REG, x0, 2f                                       ;\
         LREG _TEMP_REG, 0(_SIG_PTR)        /* dummy instr for failed_test macro for now */ ;\
         beq  _TEMP_REG, _TEMP_REG, 1f      /* dummy instr for failed_test macro for now */ ;\
     1:                                                              ;\
-        jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG         ;\
+        jal _LINK_REG, failedtest_vec_base_##_LINK_REG##_##_TEMP_REG         ;\
         RVTEST_WORD_PTR _INST_PTR                                   ;\
         RVTEST_WORD_PTR _STR_PTR                                    ;\
     2:                                                              ;\
-        addi _SIG_PTR, _SIG_PTR, _OFFSET                            ;\
+        RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)     ;\
         .option pop
 #else
     #define RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG,    \
-        _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _INST_PTR, _STR_PTR)     \
+        _VTMP, _MTMP, _VD_EEW, _VREG, _INST_PTR, _STR_PTR)           \
         .option push                                                ;\
         .option norvc                                               ;\
-        vse##_SEW.v _VREG, 0(_SIG_PTR)                              ;\
+        vse##_VD_EEW.v _VREG, 0(_SIG_PTR)                           ;\
         nop                                                         ;\
         nop                                                         ;\
         beq x0, x0, 2f                                              ;\
         LREG _TEMP_REG, 0(_SIG_PTR)        /* dummy instr for failed_test macro for now */ ;\
         beq  _TEMP_REG, _TEMP_REG, 1f      /* dummy instr for failed_test macro for now */ ;\
     1:                                                              ;\
-        jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG         ;\
+        jal _LINK_REG, failedtest_vec_base_##_LINK_REG##_##_TEMP_REG         ;\
         RVTEST_WORD_PTR _INST_PTR                                   ;\
         RVTEST_WORD_PTR _STR_PTR                                    ;\
     2:                                                              ;\
-        addi _SIG_PTR, _SIG_PTR, _OFFSET                            ;\
+        RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)     ;\
         .option pop
 #endif
 
@@ -344,8 +368,9 @@
 // linkreg and tempreg. instptr and strptr are emitted as .word/.dword so that
 // the failing instruction address and descriptive string can be retrieved.
 //
-// On success, sigptr is incremented by offset, which is calculated in vector-testgen.py
-// due to the complexity of the calculations.
+// On success, sigptr is incremented by a stride computed inside the macro
+// from the current vl (which has been set to VLMAX for this SEW/LMUL) and the
+// vtype SEW field, so no offset operand is required from vector-testgen.
 //
 // In non-SELFCHECK mode, the macro should only update the signature and advance
 // sigptr, without performing comparisons.
@@ -366,23 +391,22 @@
 //   _VR            - Vector register under test
 //   _MASKPROD_FLAG - Immediate flag indicating whether the instruction under test is mask-producing (1) or not (0)
 //   _MASKED_FLAG   - Immediate flag indicating whether the instruction under test is masked (1) or unmasked (0)
-//   _SEW           - Element width
+//   _VD_EEW        - Destination element width (for widening, 2*SEW)
 //   _LMUL          - LMUL setting
-//   _OFFSET        - Signature stride, calculated in vector-testgen.py (function writeSIGUPD_V)
 //   _INST_PTR      - Label of instruction under test
 //   _STR_PTR       - Label to descriptive string
 //   Note: _VTMP, _MTMP, _MTMP2 cannot be v0 since v0 should be saved to preserve its mask value (in case the instruction under test is masked)
 
 #ifdef RVTEST_SELFCHECK
     #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _VTMP, _MTMP2, _MTMP, _VR,              \
-        _MASKPROD_FLAG, _MASKED_FLAG, _SEW, _LMUL, _OFFSET, _INST_PTR, _STR_PTR)                                    \
+        _MASKPROD_FLAG, _MASKED_FLAG, _VD_EEW, _LMUL, _INST_PTR, _STR_PTR)                                          \
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
         /* Save architecture state of instruction under test (vl and vtype) */                                      \
         csrr        _TEMP_REG, vl            ;                                                                      \
         csrr        _TEMP_REG2, vtype        ;                                                                      \
         /* Set vl = VLMAX for full-register comparison*/                                                            \
-        vsetvli     _LINK_REG, x0, e##_SEW, m##_LMUL, ta, ma ;                                                      \
+        vsetvli     _LINK_REG, x0, e##_VD_EEW, m##_LMUL, ta, ma ;                                                   \
         /* Load reference from signature and compute mismatch mask */                                               \
         LI(_LINK_REG, _MASKPROD_FLAG)        ;   /* Load whether instr is a mask-producing instruction */           \
         beqz        _LINK_REG, 1f            ;   /* If not mask-producing, skip to data vector comparison */        \
@@ -392,7 +416,7 @@
         j           2f                       ;   /* Unconditional skip data vector comparison to active check */    \
     1:                                                                                                              \
         /* Data vector comparison: Load reference from signature and compute mismatch mask */                       \
-        vle##_SEW##.v _VTMP, 0(_SIG_PTR)     ;                                                                      \
+        vle##_VD_EEW##.v _VTMP, 0(_SIG_PTR)  ;                                                                      \
         vmsne.vv    _MTMP, _VR, _VTMP        ;   /* _MTMP[i] = 1 if result != reference */                          \
     2:                                                                                                              \
         /* Build active element mask (i < vl && v0[i] == 1) */                                                      \
@@ -434,7 +458,7 @@
         vmand.mm    _VTMP, _VTMP, _MTMP2     ;   /* VTMP[i] = signature mismatch && all 1s mismatch */              \
     6:                                                                                                              \
         vfirst.m    _LINK_REG, _VTMP         ;   /* Find first active mismatch index; -1 if none */                 \
-        bge         _LINK_REG, x0, 10f       ;   /* If >=0, mismatch found → FAIL */                                \
+        bge         _LINK_REG, x0, 20f       ;   /* If >=0, mismatch found → FAIL */                                \
         /* Build mask inactive mask */                                                                              \
         LI(_LINK_REG, _MASKED_FLAG)          ;   /* Load whether instr was masked (0 = unmasked) */                 \
         beqz        _LINK_REG, 12f           ;   /* If unmasked, no mask inactive → all checks have passed */       \
@@ -466,28 +490,62 @@
     9:                                                                                                              \
         vfirst.m    _LINK_REG, _VTMP         ;   /* Find first active mismatch index; -1 if none */                 \
         blt         _LINK_REG, x0, 12f       ;   /* If no mismatch found → PASS ALL */                              \
-    10:                                                                                                             \
-        /* FAIL path */                                                                                             \
+    30:                                                                                                             \
+        /* mask region FAIL path, has to come right after mask region checks */                                     \
+        vsetvli     _LINK_REG, x0, e##_VD_EEW, m1, ta, ma ;  /* Set LMUL=1 to prevent vmv.v.v trapping */           \
+        vmv.v.v     _VTMP, _VTMP             ;   /* Copy mismatch mask: keep fail path depth constant for debug */  \
+        vsetvli     _LINK_REG, x0, e##_VD_EEW, m##_LMUL, ta, ma ;  /* Restore original LMUL */                      \
+        vfirst.m    _LINK_REG, _VTMP         ;   /* Find first active mismatch index again for failure reporting */ \
+        vsetvl      _TEMP_REG, _TEMP_REG, _TEMP_REG2 ;  /* Restore original vl and vtype for failure reporting */   \
+        mv          _TEMP_REG2, _LINK_REG    ;   /* Copy mismatch index: keep fail path depth constant for debug */ \
         LREG        _TEMP_REG, 0(_SIG_PTR)   ;   /* Load first reference word (for debug context) */                \
-        beq         _TEMP_REG, _TEMP_REG, 11f;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
+        j           31f                      ;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
+    31:                                                                                                             \
+        jal         _LINK_REG, failedtest_vec_mask_##_LINK_REG##_##_TEMP_REG ;                                      \
+        RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
+        RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
+    10:                                                                                                             \
+        /* active region FAIL path */                                                                               \
+        vsetvli     _LINK_REG, x0, e##_VD_EEW, m1, ta, ma ;  /* Set LMUL=1 to prevent vmv.v.v trapping */           \
+        vmv.v.v     _MTMP2, _MTMP2           ;   /* Copy mismatch mask: keep fail path depth constant for debug */  \
+        vsetvli     _LINK_REG, x0, e##_VD_EEW, m##_LMUL, ta, ma ;  /* Restore original LMUL */                      \
+        vfirst.m    _LINK_REG, _MTMP2        ;   /* Find first active mismatch index again for failure reporting */ \
+        vsetvl      _TEMP_REG, _TEMP_REG, _TEMP_REG2 ;  /* Restore original vl and vtype for failure reporting */   \
+        mv          _TEMP_REG2, _LINK_REG    ;   /* Copy mismatch index: keep fail path depth constant for debug */ \
+        LREG        _TEMP_REG, 0(_SIG_PTR)   ;   /* Load first reference word (for debug context) */                \
+        j           11f                      ;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
     11:                                                                                                             \
-        jal         _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG ;                                               \
+        jal         _LINK_REG, failedtest_vec_active_##_LINK_REG##_##_TEMP_REG ;                                    \
+        RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
+        RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
+    20:                                                                                                             \
+        /* tail region FAIL path */                                                                                 \
+        vsetvli     _LINK_REG, x0, e##_VD_EEW, m1, ta, ma ;  /* Set LMUL=1 to prevent vmv.v.v trapping */           \
+        vmv.v.v     _VTMP, _VTMP             ;   /* Copy mismatch mask: keep fail path depth constant for debug */  \
+        vsetvli     _LINK_REG, x0, e##_VD_EEW, m##_LMUL, ta, ma ;  /* Restore original LMUL */                      \
+        vfirst.m    _LINK_REG, _VTMP         ;   /* Find first active mismatch index again for failure reporting */ \
+        vsetvl      _TEMP_REG, _TEMP_REG, _TEMP_REG2 ;  /* Restore original vl and vtype for failure reporting */   \
+        mv          _TEMP_REG2, _LINK_REG    ;   /* Copy mismatch index: keep fail path depth constant for debug */ \
+        LREG        _TEMP_REG, 0(_SIG_PTR)   ;   /* Load first reference word (for debug context) */                \
+        j           21f                      ;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
+    21:                                                                                                             \
+        jal         _LINK_REG, failedtest_vec_tail_##_LINK_REG##_##_TEMP_REG ;                                      \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
     12:                                                                                                             \
         /* PASS */                                                                                                  \
-        addi        _SIG_PTR, _SIG_PTR, _OFFSET;                                                                    \
+        RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)                                                    ;\
         .option pop
 #else
     #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _VTMP, _MTMP2, _MTMP, _VR,              \
-        _MASKPROD_FLAG, _MASKED_FLAG, _SEW, _LMUL, _OFFSET, _INST_PTR, _STR_PTR)                                    \
+        _MASKPROD_FLAG, _MASKED_FLAG, _VD_EEW, _LMUL, _INST_PTR, _STR_PTR)                                          \
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
         /* Save architecture state of instruction under test (vl and vtype) */                                      \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         /* Set vl = VLMAX for full-register comparison*/                                                            \
-        vsetvli     _LINK_REG, x0, e ##_SEW, m ##_LMUL, ta, ma ;                                                    \
+        vsetvli     _LINK_REG, x0, e ##_VD_EEW, m ##_LMUL, ta, ma ;                                                 \
         /* Load reference from signature and compute mismatch mask */                                               \
         LI(_LINK_REG, _MASKPROD_FLAG)        ;   /* Load whether instr is a mask-producing instruction */           \
         beqz        _LINK_REG, 1f            ;   /* If not mask-producing, skip to data vector comparison */        \
@@ -497,7 +555,7 @@
         j           2f                       ;   /* Unconditional skip data vector comparison to active check */    \
     1:                                                                                                              \
         /* Data vector comparison: Load reference from signature and compute mismatch mask */                       \
-        vse##_SEW##.v _VR, 0(_SIG_PTR)       ;                                                                      \
+        vse##_VD_EEW##.v _VR, 0(_SIG_PTR)    ;                                                                      \
         nop                                  ;                                                                      \
     2:                                                                                                              \
         /* Build active element mask (i < vl && v0[i] == 1) */                                                      \
@@ -571,17 +629,51 @@
     9:                                                                                                              \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
-    10:                                                                                                             \
-        /* FAIL path */                                                                                             \
+    30:                                                                                                             \
+        /* mask region FAIL path, has to come right after mask region checks */                                     \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
         LREG        _TEMP_REG, 0(_SIG_PTR)   ;   /* Load first reference word (for debug context) */                \
-        beq         _TEMP_REG, _TEMP_REG, 11f;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
+        j           31f                      ;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
+    31:                                                                                                             \
+        jal         _LINK_REG, failedtest_vec_mask_##_LINK_REG##_##_TEMP_REG ;                                      \
+        RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
+        RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
+    10:                                                                                                             \
+        /* active region FAIL path */                                                                               \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        LREG        _TEMP_REG, 0(_SIG_PTR)   ;   /* Load first reference word (for debug context) */                \
+        j           11f                      ;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
     11:                                                                                                             \
-        jal         _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG ;                                               \
+        jal         _LINK_REG, failedtest_vec_active_##_LINK_REG##_##_TEMP_REG ;                                    \
+        RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
+        RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
+    20:                                                                                                             \
+        /* tail region FAIL path */                                                                                 \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        LREG        _TEMP_REG, 0(_SIG_PTR)   ;   /* Load first reference word (for debug context) */                \
+        j           21f                      ;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
+    21:                                                                                                             \
+        jal         _LINK_REG, failedtest_vec_tail_##_LINK_REG##_##_TEMP_REG ;                                      \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
     12:                                                                                                             \
         /* PASS */                                                                                                  \
-        addi        _SIG_PTR, _SIG_PTR, _OFFSET;                                                                    \
+        RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)                                                    ;\
         .option pop
 #endif
 

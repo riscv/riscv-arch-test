@@ -12,8 +12,7 @@
 #ifndef _SAIL_MACROS_H
 #define _SAIL_MACROS_H
 
-#undef CLINT_BASE_ADDRESS
-#define CLINT_BASE_ADDRESS 0x02000000
+#define SAIL_CLINT_BASE_ADDRESS 0x02000000
 
 #undef RVMODEL_DATA_SECTION
 #define RVMODEL_DATA_SECTION \
@@ -24,9 +23,11 @@
 
 ##### STARTUP #####
 
-# Perform boot operations. Can be empty.
+# Perform boot operations. Can be empty or left undefined unless needed for
+# DUT-specific behavior such as turning on a memory controller or
+# initializing custom state.
 #undef RVMODEL_BOOT
-#define RVMODEL_BOOT
+// #define RVMODEL_BOOT
 
 ##### TERMINATION #####
 
@@ -62,8 +63,9 @@
 # Initialization steps needed prior to writing to the console
 # _R1, _R2, and _R3 can be used as temporary registers if needed.
 # Do not modify any other registers (or make sure to restore them).
+# Can be empty or left undefined if no initialization is needed.
 #undef RVMODEL_IO_INIT
-#define RVMODEL_IO_INIT(_R1, _R2, _R3)
+// #define RVMODEL_IO_INIT(_R1, _R2, _R3)
 
 
 # Prints a null-terminated string using a DUT specific mechanism.
@@ -102,70 +104,58 @@
 #undef RVMODEL_TIMER_INT_SOON_DELAY
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
-// TODO: need to implement external interrupts in SAIL
-#undef RVMODEL_MEXT_ADDRESS
-#define RVMODEL_MEXT_ADDRESS  0x80000000  /* Address of a memory mapped machine external interrupt generator */
+#define SAIL_SIG_ADDRESS  (0xC000000 + 0x4)  /* Address of memory mapped simple interrupt generator */
 #undef RVMODEL_SET_MEXT_INT
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)        \
-  li _R1, 1;               \
-  li _R2, RVMODEL_MEXT_ADDRESS; \
+  li _R1, (1 << 31) | (1 << 11);               \
+  li _R2, SAIL_SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Set MEXT interrupt */ \
 
 
 #undef RVMODEL_CLR_MEXT_INT
 #define RVMODEL_CLR_MEXT_INT(_R1, _R2)        \
-  li _R2, RVMODEL_MEXT_ADDRESS; \
-  sw zero, 0(_R2)            ; /* Clear MEXT interrupt */ \
+  li _R1, (1 << 11);               \
+  li _R2, SAIL_SIG_ADDRESS;    \
+  sw _R1, 0(_R2)            ; /* Clear MEXT interrupt */ \
 
-
-#undef MSIP_ADDRESS
-#define MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
-
+#define SAIL_MSIP_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0x0)
 #undef RVMODEL_SET_MSW_INT
 #define RVMODEL_SET_MSW_INT(_R1, _R2)        \
   li _R1, 1;                 \
-  li _R2, MSIP_ADDRESS;              \
+  li _R2, SAIL_MSIP_ADDRESS;              \
   sw _R1, 0(_R2);
 
 
 #undef RVMODEL_CLR_MSW_INT
 #define RVMODEL_CLR_MSW_INT(_R1, _R2)        \
-  li _R2, MSIP_ADDRESS;              \
+  li _R2, SAIL_MSIP_ADDRESS;              \
   sw zero, 0(_R2);
 
 
 
 ##### Supervisor Interrupts #####
-
-// TODO: change this when Jordan implements the SAIL SEXT interrupt generator
-#undef RVMODEL_SEXT_ADDRESS
-#define RVMODEL_SEXT_ADDRESS  0x80000004  /* Address of a memory mapped supervisor external interrupt generator */
 #undef RVMODEL_SET_SEXT_INT
 #define RVMODEL_SET_SEXT_INT(_R1, _R2)        \
-  li _R1, 1;               \
-  li _R2, RVMODEL_SEXT_ADDRESS; \
+  li _R1, (1 << 31) | (1 << 9);               \
+  li _R2, SAIL_SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Set SEXT interrupt */ \
-
 
 #undef RVMODEL_CLR_SEXT_INT
 #define RVMODEL_CLR_SEXT_INT(_R1, _R2)        \
-  li _R2, RVMODEL_SEXT_ADDRESS; \
-  sw zero, 0(_R2)            ; /* Clear SEXT interrupt */
+  li _R1, (1 << 9);               \
+  li _R2, SAIL_SIG_ADDRESS;    \
+  sw _R1, 0(_R2)            ; /* Clear SEXT interrupt */ \
 
-
-// TODO: check to see if SAIL support this, and we may want to implement this in WALLY
-#undef CLINT_SSIP_ADDRESS
-#define CLINT_SSIP_ADDRESS (CLINT_BASE_ADDRESS + 0xC000)
 #undef RVMODEL_SET_SSW_INT
 #define RVMODEL_SET_SSW_INT(_R1, _R2)        \
-  li _R1, 1;                 \
-  li _R2, CLINT_SSIP_ADDRESS;              \
-  sw _R1, 0(_R2);
-
+  li _R1, (1 << 31) | (1 << 1);               \
+  li _R2, SAIL_SIG_ADDRESS;    \
+  sw _R1, 0(_R2)            ; /* Set SSW interrupt */ \
 
 #undef RVMODEL_CLR_SSW_INT
 #define RVMODEL_CLR_SSW_INT(_R1, _R2)        \
-  li _R2, CLINT_SSIP_ADDRESS;              \
-  sw zero, 0(_R2);
+  li _R1, (1 << 1);               \
+  li _R2, SAIL_SIG_ADDRESS;    \
+  sw _R1, 0(_R2)            ; /* Clear SSW interrupt */ \
 
 #endif // _SAIL_MACROS_H

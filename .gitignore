@@ -1,3 +1,6 @@
+# Ignore Claude file
+CLAUDE.md
+
 # Ignore editor backup files
 *~
 *.swp
@@ -27,16 +30,14 @@ __pycache__
 # Work directories
 work/
 
-### Don't check in generated files for now
-# coverpoints
-coverpoints/unpriv
-coverpoints/coverage
-# tests
+# vector tests
+tests/rv32i/V*
+tests/rv32i/Zv*
+tests/rv64i/V*
+tests/rv64i/Zv*
+
+# priv tests
 tests/priv/headers
-tests/rv32i
-tests/rv32e
-tests/rv64i
-tests/rv64e
 tests/priv/**/*.S
 # docs
 docs/ctp/mismatch_report.txt

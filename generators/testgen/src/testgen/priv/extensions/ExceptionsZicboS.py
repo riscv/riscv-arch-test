@@ -187,6 +187,7 @@ def _generate_cbo_access_fault_tests(test_data: TestData) -> list[str]:
     addr_reg, envcfg_reg = test_data.int_regs.get_registers(2)
 
     lines = [
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(
             coverpoint,
             "For each supported cbo op {inval, clean, flush, zero, prefetch.{i/w/r}} Execute op to RVMODEL_ACCESS_FAULT_ADDRESS with menvcfg and senvcfg enabled",
@@ -252,6 +253,7 @@ def _generate_cbo_access_fault_tests(test_data: TestData) -> list[str]:
                     "nop",
                 ]
             )
+    lines.append("#endif")
     test_data.int_regs.return_registers([addr_reg, envcfg_reg])
     return lines
 
@@ -336,7 +338,7 @@ def _generate_cbo_misaligned_tests(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "ExceptionsZicboS",
-    required_extensions=["Zicsr", "Sm", "U", "S"],
+    required_extensions=["S"],
     march_extensions=["Zicsr", "Zicbom", "Zicboz", "Zicbop"],
 )
 def make_exceptionszicbos(test_data: TestData) -> list[str]:

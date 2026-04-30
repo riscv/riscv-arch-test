@@ -44,13 +44,18 @@ from testgen.priv.registry import add_priv_test_generator
 
 BLANK_INTERVAL = 50
 
-_SAFE_REGS: list[int] = list(range(7, 32))  # x7 .. x31
+# x0-x6 excluded: framework-reserved (x0=zero, x1=ra, x2=sp/trap-count, x3=data-ptr,
+# x4=temp, x5=link, x6=T1).  x2 in particular must never be used as rd: it holds the
+# stack pointer and trap-count metadata written by the trap handler.
+_SAFE_REGS: list[int] = list(range(7, 32))  # x7..x31 only
 
 
 # ── CSR skip set (S-mode) ─────────────────────────────────────────────────
 
 _S_CSR_SKIP: frozenset[int] = frozenset(
-    [0x180]  # satp — skip: TLB flush / address-translation mode change
+    [0x180]        # satp  — skip: TLB flush / address-translation mode change
+    + [0x104]      # sie   — skip: all-ones write enables S-mode interrupts; covered in shadow test
+    + [0x144]      # sip   — skip: all-ones write asserts SSIP software interrupt; covered in shadow test
     + list(range(0x200, 0x300))  # H-mode std0 — skip: accessible from HS-mode
     + list(range(0x600, 0x700))  # H-mode std1 — skip: HS-mode ambiguity
     + list(range(0xA00, 0xB00))  # H-mode std2 — skip: HS-mode ambiguity
@@ -223,10 +228,18 @@ def _generate_csr_tests_s(test_data: TestData) -> list[str]:
 def _generate_shadow_csr(test_data: TestData) -> list[str]:
     """cp_shadow_m / cp_shadow_s — mstatus/mie/mip shadow relationship.
 
-    Writes all-ones and all-zeros to mstatus/mie/mip from M-mode, then
-    reads the S-mode shadow registers sstatus/sie/sip from S-mode.
-    Only writes the S-mode-visible bitfields to avoid DUT matching issues
-    with implementation-specific M-mode-only fields.
+    Writes all-ones and all-zeros to mstatus/mie from M-mode (mip skipped —
+    writing MSIP/SSIP with MIE potentially enabled can fire spurious interrupts),
+    then reads the S-mode shadow registers sstatus/sie/sip from S-mode.
+
+    Safety invariants:
+      M-mode: mie is cleared before any mstatus write so a transient MIE=1
+              in mstatus cannot cause interrupt delivery.  Originals for both
+              mstatus and mie are saved via csrr and fully restored afterward.
+      S-mode: each shadow CSR is saved (csrr), corner-tested, then restored
+              (csrw) before the next CSR is touched.  Ordering sstatus → sie →
+              sip ensures sstatus.SIE=original(0) whenever sie or sip carry a
+              transient all-ones value, so no interrupt can be delivered.
     """
     covergroup = "SsstrictS_scsr_cg"
     lines: list[str] = []
@@ -234,44 +247,87 @@ def _generate_shadow_csr(test_data: TestData) -> list[str]:
     lines.append(
         comment_banner(
             "cp_shadow_m / cp_shadow_s",
-            "Write mstatus/mie/mip from M-mode (all 0s / all 1s),\n"
-            "then read sstatus/sie/sip from S-mode to cover the shadow relationship.",
+            "Write mstatus/mie from M-mode (all 0s / all 1s),\n"
+            "then read sstatus/sie/sip from S-mode to cover the shadow relationship.\n"
+            "mip skipped in M-mode section (MSIP/SSIP write unsafe while MIE may be 1).",
         )
     )
 
-    # Write to M-mode shadow CSRs from M-mode
-    lines.append("")
-    lines.append("# cp_shadow_m: write mstatus/mie/mip from M-mode")
-    for csr_name, csr_addr in [("mstatus", "0x300"), ("mie", "0x304"), ("mip", "0x344")]:
-        r1 = _SAFE_REGS[0]  # x7, always safe
-        lines.extend(
-            [
-                f"\t{test_data.add_testcase(f'{csr_name}_ones', 'cp_shadow_m', covergroup)}",
-                f"\tli x{r1}, -1",
-                f"\tcsrrw x0, {csr_addr}, x{r1}",  # write all-ones
-                f"\t{test_data.add_testcase(f'{csr_name}_zeros', 'cp_shadow_m', covergroup)}",
-                f"\tcsrrw x0, {csr_addr}, x0",  # write all-zeros
-            ]
-        )
+    # Fixed registers for M-mode section (no random sampling — we need specific slots).
+    r_sv_mstatus = _SAFE_REGS[0]  # x7 — saved mstatus original
+    r_sv_mie = _SAFE_REGS[1]      # x8 — saved mie original
+    r_scratch = _SAFE_REGS[2]     # x9 — scratch: li -1, csrrw discard destination
 
-    # Switch to S-mode to read shadow registers
     lines.extend(
         [
             "",
-            "# cp_shadow_s: read sstatus/sie/sip from S-mode",
-            "\tRVTEST_GOTO_LOWER_MODE Smode",
+            "# cp_shadow_m: write mstatus/mie from M-mode (originals saved and restored)",
+            f"\tcsrr x{r_sv_mstatus}, 0x300",   # save mstatus original
+            f"\tcsrr x{r_sv_mie}, 0x304",        # save mie original
+            # Disable M-mode interrupts before any mstatus write.  A transient
+            # MIE=1 written into mstatus is harmless when mie=0 (no source enabled).
+            f"\tcsrw 0x304, x0",                 # mie = 0
         ]
     )
+
+    # Test mstatus corner values (mie=0 throughout).
+    # After writing all-zeros to mstatus, mstatus.MIE=0 — exploit this to make
+    # the mie all-ones write safe: do NOT restore mstatus until after mie tests.
+    lines.extend(
+        [
+            f"\t{test_data.add_testcase('mstatus_ones', 'cp_shadow_m', covergroup)}",
+            f"\tli x{r_scratch}, -1",
+            f"\tcsrrw x{r_scratch}, 0x300, x{r_scratch}",  # write all-ones (mie=0, safe)
+            f"\t{test_data.add_testcase('mstatus_zeros', 'cp_shadow_m', covergroup)}",
+            f"\tcsrrw x{r_scratch}, 0x300, x0",             # write all-zeros → mstatus.MIE=0
+        ]
+    )
+
+    # Test mie corner values while mstatus.MIE=0 (mstatus still holds all-zeros
+    # from the line above).  Writing all-ones to mie (MTIE=1) with MIE=0 in
+    # mstatus cannot deliver a machine-timer interrupt even if MTIP=1.
+    lines.extend(
+        [
+            f"\t{test_data.add_testcase('mie_ones', 'cp_shadow_m', covergroup)}",
+            f"\tli x{r_scratch}, -1",
+            f"\tcsrrw x{r_scratch}, 0x304, x{r_scratch}",  # write all-ones (MIE=0, safe)
+            f"\t{test_data.add_testcase('mie_zeros', 'cp_shadow_m', covergroup)}",
+            f"\tcsrrw x{r_scratch}, 0x304, x0",             # write all-zeros
+            # Restore mie first (mstatus.MIE still 0 → no interrupt during restore).
+            # Then restore mstatus (mie is now original → safe even if MIE=1 restored).
+            f"\tcsrw 0x304, x{r_sv_mie}",                   # restore mie original
+            f"\tcsrw 0x300, x{r_sv_mstatus}",               # restore mstatus original
+        ]
+    )
+
+    # Fixed registers for S-mode section.
+    r_sv = _SAFE_REGS[0]    # x7 — saved CSR original for current iteration
+    r_ones = _SAFE_REGS[1]  # x8 — all-ones constant, loaded once
+    r_rd = _SAFE_REGS[2]    # x9 — csrrw destination (result discarded)
+
+    lines.extend(
+        [
+            "",
+            "# cp_shadow_s: write/read sstatus/sie/sip from S-mode",
+            "# Each CSR is saved (csrr), corner-tested, then fully restored (csrw)",
+            "# before the next CSR is touched — prevents spurious interrupt delivery.",
+            "\tRVTEST_GOTO_LOWER_MODE Smode",
+            f"\tli x{r_ones}, -1",  # load -1 once, reuse for all three CSRs
+        ]
+    )
+
+    # Ordering: sstatus → sie → sip.
+    # When writing all-ones to sie, sstatus.SIE=original(0) → no delivery.
+    # When writing all-ones to sip, sstatus.SIE=original(0) → no delivery.
     for csr_name, csr_addr in [("sstatus", "0x100"), ("sie", "0x104"), ("sip", "0x144")]:
-        r1, r2, r3 = sample(_SAFE_REGS, 3)
         lines.extend(
             [
+                f"\tcsrr x{r_sv}, {csr_addr}",                         # save original
                 f"\t{test_data.add_testcase(f'{csr_name}_ones', 'cp_shadow_s', covergroup)}",
-                f"\tli x{r2}, -1",
-                f"\tcsrrw x{r3}, {csr_addr}, x{r2}",  # write all-ones
+                f"\tcsrrw x{r_rd}, {csr_addr}, x{r_ones}",             # write all-ones
                 f"\t{test_data.add_testcase(f'{csr_name}_zeros', 'cp_shadow_s', covergroup)}",
-                f"\tcsrrw x{r3}, {csr_addr}, x0",  # write all-zeros
-                f"\tcsrrw x0, {csr_addr}, x{r1}",  # restore (r1=0 after INIT_REGS)
+                f"\tcsrrw x{r_rd}, {csr_addr}, x0",                    # write all-zeros
+                f"\tcsrw {csr_addr}, x{r_sv}",                         # restore original
             ]
         )
 

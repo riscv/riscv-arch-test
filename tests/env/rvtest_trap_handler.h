@@ -645,35 +645,15 @@
     #define GOTO_S_OP   ecall  // default; this must be called with x3=0
 #endif
 
-#ifndef CAUSE_SPCL_GO2MMODE_OP // make sure this default can be overwritten (e.g. to illegal fetch addr)
-    #define ALT_GOTO_M_CAUSE CAUSE_ILLEGAL_INSTRUCTION
-    #define ALT_GOTO_M_OP    .word 0
-#endif
-
 .macro  RVTEST_GOTO_MMODE
   .option push
   .option norvc
   mv   t0, x3                 // FIXME: Hacky way to preserve x3 by trashing t0 instead
   li   x3, 0                  // Ecall w/x3=0 is handled specially to rtn here
-  // Note that if ecalls are delegated, this may infinite loop
-  // The solution is to use RVTEST_GOTO_DELEGATED_MMODE instead
-
-  GOTO_M_OP                   /* ECALL: traps always, but returns immediately to
+  // S-mode ecall (cause 9) is not delegated (medeleg[9]=0), so this always
+  // reaches the M-mode handler regardless of other ecall delegation settings.
+  GOTO_M_OP                   /* ECALL: traps to M-mode, returns immediately to
                                 the next op if x3=0, else handles trap normally */
-  mv   x3, t0
-  .option pop
-.endm
-
-.macro  RVTEST_GOTO_DELEGATED_MMODE
-  .option push
-  .option norvc
-  // Note that this must be called with ecall traps delegated, else it could infinite loop
-
-  mv   t0, x3                 // FIXME: Hacky way to preserve x3 by trashing t0 instead
-  li   x3, 0                  // Ecall w/x3=0 is handled specially to rtn here
-
-  ALT_GOTO_M_OP               /* It will trap and if ecalls are delegated, it will simply
-                                  return to op after illegal op, else handles trap normally */
   mv   x3, t0
   .option pop
 .endm
@@ -1106,30 +1086,18 @@ common_\__MODE__\()entry:
 //**** If delegated to any other mode then test is buggy since you can't get to Mmode
 //**** FIXME: should we abort test if go2Mmode is branched to in any other mode?
 
-  .ifc \__MODE__ ,  M   //spcl case handling for ECALL in GOTO_MMODE mode,)
-                        // ****tests can't use ECALL w/ x3=0; rsvd for GOTO_MMODE ****/
+  // GOTO_MMODE is always issued as an ecall (causes 8-11). x3==0 is the sentinel
+  // that distinguishes it from a normal ecall trap that should be recorded.
+  .ifc \__MODE__ ,  M
 spcl_\__MODE__\()2mmode_test:
-        LI(T4,(1<<(XLEN-1))+((1<<12)-1))        // make a mask of int bit and cause(11:0).
-        and     T4, T4, T5                      // Keep only int bit and cause[11:0], fixing CLIC incompatibility
-spcl_\__MODE__\()chk4alt:
-        addi    T3,T4, -ALT_GOTO_M_CAUSE        // check for special handling to see if it might be alternate go2mmode
-        bnez    T3, spcl_\__MODE__\()chk4ecall  // not the alt gto_m_op, check for std ECALL
-spcl_\__MODE__\()param_chk:
-        beqz    x3, \__MODE__\()rtn2mmode       // return in mmode if its alt op & x3==0
-        j           \__MODE__\()trapsig_ptr_upd // else handle normally
+        LI(T4,(1<<(XLEN-1))+((1<<12)-1))        // mask: int bit + cause[11:0] (CLIC compat)
+        and     T4, T4, T5
 spcl_\__MODE__\()chk4ecall:
-        addi    T3, T4, -CAUSE_USER_ECALL       // map cause 8..11 to 0..3,  Mmode should avoid ECALL 0
-        srli    T3, T3, 2                       // map cause 0..3 -> 0 (some ecall)
-        bnez    T3, \__MODE__\()trapsig_ptr_upd // no, not an ecall either, store normal trap signature
-   .endif
-                                                // fall thru to chk for selftest fail or rtn2mmode
-
-//****FIXME: what is the correct parameter register? x3=0?
-
-.ifc \__MODE__ ,  M                             // If ecall is delegated, can't go to Mmode
-\__MODE__\()goto_mchk:                          // is ECALL, but not failure type; see if its goto_m_mode
-        beqz    x3, \__MODE__\()rtn2mmode       // return in mmode if it is, else fall thru to normal trap signature
-.endif
+        addi    T3, T4, -CAUSE_USER_ECALL       // map causes 8..11 → 0..3
+        srli    T3, T3, 2                       // any ecall → 0
+        bnez    T3, \__MODE__\()trapsig_ptr_upd // not an ecall, record normally
+        beqz    x3, \__MODE__\()rtn2mmode       // ecall + x3==0 → GOTO_MMODE
+  .endif
 
 .ifc \__MODE__ ,  S                             // RVTEST_GOTO_SMODE U-mode ecall w/ x3=0 returns in S-mode
 \__MODE__\()goto_schk:

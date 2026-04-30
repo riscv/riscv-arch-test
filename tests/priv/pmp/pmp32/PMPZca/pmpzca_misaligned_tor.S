@@ -133,7 +133,10 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpzca_misaligned_tor_start\""
 
-.align 13
+.align 12
+TEST_FOR_EXECUTION_0:
+    jalr x0, x1, 0
+
 TEST_FOR_EXECUTION_1:
     .rept (((1<<(RVMODEL_PMP_GRAIN+2)) / 2) -1)
     nop

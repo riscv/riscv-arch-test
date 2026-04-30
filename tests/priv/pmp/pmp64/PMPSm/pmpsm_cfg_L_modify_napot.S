@@ -183,9 +183,7 @@ test_14_str: .string "\"test: 14; cp: cp_cfg_L_modify_test_14\""
 .align 12
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION_0:
-    .rept 1024
-    nop
-    .endr
+    jr ra
 
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

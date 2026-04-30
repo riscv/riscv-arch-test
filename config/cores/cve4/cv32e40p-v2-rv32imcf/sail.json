@@ -6,13 +6,17 @@
     "xlen": 32,
     "E": false,
     "writable_misa": false,
+    // cv32e40p has no menvcfg register (M-mode only, no S/U-mode).
+    // SCHEMA-REQUIRED: no RTL counterpart; value has no effect on DUT comparison.
     "writable_fiom": true,
     "writable_hpm_counters": {
       "len": 32,
-      // Only HPM counter 3 is active (NUM_MHPMCOUNTERS=1 default)
+      // Only HPM counter 3 is active (NUM_MHPMCOUNTERS=1 default, cv32e40p_core.sv:40).
+      // Bit 3 set = mhpmcounter3/mhpmevent3 writable; counters 4-31 read-only zero.
       "value": "0x00000008"
     },
-    // CV32E40P has no S-mode, so scounteren bits are read-only zero.
+    // cv32e40p has no S-mode so scounteren does not exist.
+    // SCHEMA-REQUIRED: no RTL counterpart.
     "scounteren_writable_bits": {
       "len": 32,
       "value": "0x0"
@@ -21,7 +25,7 @@
     // cause information to be written into the appropriate
     // `xtval` registers.
     "xtval_nonzero": {
-      // mtval is hardwired to 0 in cv32e40p — all REPORT_VA_IN_MTVAL_* = false
+      // mtval is hardwired to 0 in cv32e40p — cv32e40p_cs_registers.sv:346,516.
       "illegal_instruction": false,
       "software_breakpoint": false,
       "hardware_breakpoint": false,
@@ -38,23 +42,32 @@
       "reserved_exceptions": false
     },
     "reserved_behavior": {
+      // SCHEMA-REQUIRED: cv32e40p has no Zacas extension; AMO instructions decode as
+      // illegal (cv32e40p_decoder.sv:450). Value has no effect on DUT comparison.
       "amocas_odd_register": "AMOCAS_Illegal",
+      // F extension present: illegal rm value (0b101-0b110) in fcsr raises illegal instruction.
       "fcsr_rm": "Fcsr_RM_Illegal",
+      // SCHEMA-REQUIRED: cv32e40p has no PMP (USE_PMP=0, cv32e40p_core.sv:108).
+      // Value has no effect on DUT comparison.
       "pmpcfg_write_only": "PMP_ClearPermissions",
+      // SCHEMA-REQUIRED: cv32e40p has no Zicbom. Value has no effect on DUT comparison.
       "xenvcfg_cbie": "Xenvcfg_ClearPermissions",
-      // The configuration option determines how to handle the reserved behavior `xtvec[Mode] >= 2`.
-      // "Xtvec_Fatal"  – raise a Sail exception, stopping execution.
-      // "Xtvec_Ignore" – use old Mode of xtvec.
+      // mtvec[1:0] mode field: cv32e40p supports modes 0 (direct) and 1 (vectored).
+      // Writes of mode >= 2 are ignored and old mode is retained — cv32e40p_cs_registers.sv:144.
       "xtvec_mode": "Xtvec_Ignore",
+      // SCHEMA-REQUIRED: cv32e40p has no Zdinx. Value has no effect on DUT comparison.
       "rv32zdinx_odd_register": "Zdinx_Illegal"
     }
   },
   "memory": {
     "pmp": {
       "grain": 0,
-      // cv32e40p default configuration: NUM_PMP_ENTRIES=0
+      // cv32e40p has no PMP (USE_PMP=0, cv32e40p_core.sv:108; NUM_PMP_ENTRIES instantiated
+      // but gated — cv32e40p_core.sv:1074). PMP CSRs read as zero.
       "count": 0,
       "usable_count": 0,
+      // SCHEMA-REQUIRED: PMP type fields below are irrelevant with count=0.
+      // No RTL counterpart for any PMP address matching modes.
       "tor_supported": true,
       "na4_supported": true,
       "napot_supported": true
@@ -63,12 +76,18 @@
     // checked before address translation. `misaligned_exceptions` in
     // `regions` is checked after address translation.
     "misaligned": {
-      // CV32E40P LSU handles misaligned loads/stores in hardware (splits into two
-      // aligned transactions). No alignment exception is ever raised.
       "exceptions": {
+        // cv32e40p LSU handles misaligned loads/stores in hardware (splits into two
+        // aligned transactions) — cv32e40p_load_store_unit.sv:325-343. No exception raised.
         "load_store": { "None": null },
+        // SCHEMA-REQUIRED: cv32e40p has no V extension. No RTL counterpart.
         "vector": { "None": null },
+        // SCHEMA-REQUIRED: cv32e40p has no Zalrsc (A: false, extensions section).
+        // LR/SC opcodes decode as illegal instructions. Value has no effect on DUT comparison.
         "lrsc": "AccessFault",
+        // SCHEMA-REQUIRED: cv32e40p has no Zaamo/A extension (A: false, extensions section).
+        // AMO opcodes decode as illegal instructions — cv32e40p_decoder.sv:450.
+        // Value has no effect on DUT comparison. See: https://github.com/riscv/sail-riscv/issues
         "amo": "AccessFault"
       },
       "allowed_within_exp": 0,
@@ -76,6 +95,7 @@
       "order_decreasing": false
     },
     "translation": {
+      // cv32e40p has no MMU (S: false, no virtual memory).
       "dirty_update": false
     },
     // Address to write DTB to (if provided).
@@ -83,6 +103,8 @@
       "len": 64,
       "value": "0x1000"
     },
+    // cv32e40p has no PMA hardware. Memory regions below are required by the Sail
+    // config schema to define the address map seen by the Sail reference model.
     "regions": [
       // Main memory: code and data. Tests link from 0x80 (see link.ld).
       {
@@ -103,14 +125,20 @@
           "writable": true,
           "read_idempotent": true,
           "write_idempotent": true,
-          // CV32E40P handles misaligned loads/stores in hardware; no per-region fault.
           "misaligned_exceptions": {
+            // cv32e40p handles misaligned loads/stores in hardware; no per-region fault.
             "load_store": { "None": null },
+            // SCHEMA-REQUIRED: no V extension. No RTL counterpart.
             "vector": { "None": null },
+            // SCHEMA-REQUIRED: no A extension. No RTL counterpart.
+            // Value has no effect on DUT comparison.
             "amo": "AccessFault"
           },
+          // cv32e40p has no A extension; atomic instructions are not supported.
           "atomic_support": "AMONone",
           "reservability": "RsrvNone",
+          // SCHEMA-REQUIRED fields below: cv32e40p has no cache management (Zicbom/Zicboz)
+          // and no MMU page table support. Values have no effect on DUT comparison.
           "supports_cbo_zero": false,
           "supports_pte_read": false,
           "supports_pte_write": false
@@ -139,12 +167,18 @@
           "read_idempotent": false,
           "write_idempotent": false,
           "misaligned_exceptions": {
+            // cv32e40p handles misaligned loads/stores in hardware; no per-region fault.
             "load_store": { "None": null },
+            // SCHEMA-REQUIRED: no V extension. No RTL counterpart.
             "vector": { "None": null },
+            // SCHEMA-REQUIRED: no A extension. No RTL counterpart.
+            // Value has no effect on DUT comparison.
             "amo": "AccessFault"
           },
+          // cv32e40p has no A extension; atomic instructions are not supported.
           "atomic_support": "AMONone",
           "reservability": "RsrvNone",
+          // SCHEMA-REQUIRED fields below: no RTL counterpart.
           "supports_cbo_zero": false,
           "supports_pte_read": false,
           "supports_pte_write": false
@@ -161,12 +195,13 @@
     // mimpid=0x1 for FPU=1 on v1.8.3 — verified cs_registers.sv:511-513
     "impid": 1,
     "hartid": 0,
-    // Cache block size, specified as a power of 2.
+    // SCHEMA-REQUIRED: cv32e40p has no cache (no Zicbom/Zicboz). 64-byte (2^6) is the
+    // standard default. Value has no effect on DUT comparison.
     "cache_block_size_exp": 6,
     "reservation": {
-      // Reservation set size/alignment as a power of 2. Minimum 2 on RV32.
+      // SCHEMA-REQUIRED: cv32e40p has no A extension; LR/SC is never executed.
+      // Values below have no effect on DUT comparison.
       "reservation_set_size_exp": 3,
-      // CV32E40P has no A extension so LR/SC is never executed.
       "require_exact_reservation_addr": false
     },
     "clint": {
@@ -181,6 +216,7 @@
     },
     "clock_frequency": 1000000000,
     "instructions_per_tick": 2,
+    // cv32e40p implements WFI as a real sleep instruction (cv32e40p_sleep_unit.sv).
     "wfi_is_nop": false,
     // Maximum time before a WFI instruction expires.
     "max_time_to_wait": 10

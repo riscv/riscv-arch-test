@@ -38,9 +38,10 @@
 
 /*          To align with the starting address of a PMP region used in testing, the address is hardcoded here.
             Since the Sail data region begins at 0x80004000, we simply add the size of the test strings,
-            which has been fixed at 4 KB.
+            which has been fixed at 4 KB. PMP region starts at 80005004, because there is a return instruction at
+            80005000, which is there to make sure we fetch a proper inrtuction from the background region.
  */
-`define PMP_REGION_START   32'h80006000
+`define PMP_REGION_START   32'h80005004
 
 // Calculate region size g in bytes.
 `define g_tor       (2 ** (`G + 2))

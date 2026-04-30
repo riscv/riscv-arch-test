@@ -234,7 +234,7 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{even_dest}, 0xBAD)",
-            test_data.add_testcase(f"amo_access_fault_amocas_w", coverpoint, covergroup),
+            test_data.add_testcase("amo_access_fault_amocas_w", coverpoint, covergroup),
             f"amocas.w x{even_dest}, x{even_source}, (x{addr_reg})",
             "nop",
             write_sigupd(even_dest, test_data),
@@ -243,7 +243,7 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{even_dest}, 0xBAD)",
-            test_data.add_testcase(f"amo_access_fault_amocas_d", coverpoint, covergroup),
+            test_data.add_testcase("amo_access_fault_amocas_d", coverpoint, covergroup),
             f"amocas.d x{even_dest}, x{even_source}, (x{addr_reg})",
             "nop",
             write_sigupd(even_dest, test_data),
@@ -253,7 +253,7 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{even_dest}, 0xBAD)",
-            test_data.add_testcase(f"amo_access_fault_amocas_q", coverpoint, covergroup),
+            test_data.add_testcase("amo_access_fault_amocas_q", coverpoint, covergroup),
             f"amocas.q x{even_dest}, x{even_source}, (x{addr_reg})",
             "nop",
             write_sigupd(even_dest, test_data),

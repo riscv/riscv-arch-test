@@ -39,10 +39,11 @@ from rich.progress import (
 import vector_testgen_common as common
 from vector_testgen_common import (
   ARCH_VERIF,
+  getSigReg,
+  getFlen,
   fedges,
   fedgesD,
   fedgesH,
-  flen,
   freg_count,
   frmList,
   clearCustomData,
@@ -1268,6 +1269,7 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
   global f, legalvlmuls, redgesv, redges_ls_e8, redges_ls_e16, redges_ls_e32, redges_ls_e64
   global immedgesv, NaNBox_tests, test, xlen, extension
 
+  flen = getFlen()
   xlen = xlen_arg
   extension = extension_arg
 
@@ -1383,6 +1385,8 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
     test_data = genVtestdata(test, sew)
 
     signatureWords = getSigSpace(xlen, flen)
+    sigReg = getSigReg()
+    f.write(f"mv x2, x{sigReg} # restore signature pointer to default register for teardown\n")
     insertTemplate(test, signatureWords, "testgen_footer.S", test_data=test_data)
 
     f.close()

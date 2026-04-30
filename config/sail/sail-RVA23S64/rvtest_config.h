@@ -21,6 +21,7 @@
 #define U_SUPPORTED
 #define SV39_SUPPORTED
 
+#define ZVL32B_SUPPORTED
 #define TIME_CSR_IMPLEMENTED 1
 
 // Vector configuration

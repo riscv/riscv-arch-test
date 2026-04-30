@@ -645,15 +645,35 @@
     #define GOTO_S_OP   ecall  // default; this must be called with x3=0
 #endif
 
+#ifndef CAUSE_SPCL_GO2MMODE_OP // make sure this default can be overwritten (e.g. to illegal fetch addr)
+    #define ALT_GOTO_M_CAUSE CAUSE_ILLEGAL_INSTRUCTION
+    #define ALT_GOTO_M_OP    .word 0
+#endif
+
 .macro  RVTEST_GOTO_MMODE
   .option push
   .option norvc
   mv   t0, x3                 // FIXME: Hacky way to preserve x3 by trashing t0 instead
   li   x3, 0                  // Ecall w/x3=0 is handled specially to rtn here
-  // S-mode ecall (cause 9) is not delegated (medeleg[9]=0), so this always
-  // reaches the M-mode handler regardless of other ecall delegation settings.
-  GOTO_M_OP                   /* ECALL: traps to M-mode, returns immediately to
+  // Note that if ecalls are delegated, this may infinite loop
+  // The solution is to use RVTEST_GOTO_DELEGATED_MMODE instead
+
+  GOTO_M_OP                   /* ECALL: traps always, but returns immediately to
                                 the next op if x3=0, else handles trap normally */
+  mv   x3, t0
+  .option pop
+.endm
+
+.macro  RVTEST_GOTO_DELEGATED_MMODE
+  .option push
+  .option norvc
+  // Note that this must be called with ecall traps delegated, else it could infinite loop
+
+  mv   t0, x3                 // FIXME: Hacky way to preserve x3 by trashing t0 instead
+  li   x3, 0                  // Ecall w/x3=0 is handled specially to rtn here
+
+  ALT_GOTO_M_OP               /* It will trap and if ecalls are delegated, it will simply
+                                  return to op after illegal op, else handles trap normally */
   mv   x3, t0
   .option pop
 .endm
@@ -1086,18 +1106,30 @@ common_\__MODE__\()entry:
 //**** If delegated to any other mode then test is buggy since you can't get to Mmode
 //**** FIXME: should we abort test if go2Mmode is branched to in any other mode?
 
-  // GOTO_MMODE is always issued as an ecall (causes 8-11). x3==0 is the sentinel
-  // that distinguishes it from a normal ecall trap that should be recorded.
-  .ifc \__MODE__ ,  M
+  .ifc \__MODE__ ,  M   //spcl case handling for ECALL in GOTO_MMODE mode,)
+                        // ****tests can't use ECALL w/ x3=0; rsvd for GOTO_MMODE ****/
 spcl_\__MODE__\()2mmode_test:
-        LI(T4,(1<<(XLEN-1))+((1<<12)-1))        // mask: int bit + cause[11:0] (CLIC compat)
-        and     T4, T4, T5
+        LI(T4,(1<<(XLEN-1))+((1<<12)-1))        // make a mask of int bit and cause(11:0).
+        and     T4, T4, T5                      // Keep only int bit and cause[11:0], fixing CLIC incompatibility
+spcl_\__MODE__\()chk4alt:
+        addi    T3,T4, -ALT_GOTO_M_CAUSE        // check for special handling to see if it might be alternate go2mmode
+        bnez    T3, spcl_\__MODE__\()chk4ecall  // not the alt gto_m_op, check for std ECALL
+spcl_\__MODE__\()param_chk:
+        beqz    x3, \__MODE__\()rtn2mmode       // return in mmode if its alt op & x3==0
+        j           \__MODE__\()trapsig_ptr_upd // else handle normally
 spcl_\__MODE__\()chk4ecall:
-        addi    T3, T4, -CAUSE_USER_ECALL       // map causes 8..11 → 0..3
-        srli    T3, T3, 2                       // any ecall → 0
-        bnez    T3, \__MODE__\()trapsig_ptr_upd // not an ecall, record normally
-        beqz    x3, \__MODE__\()rtn2mmode       // ecall + x3==0 → GOTO_MMODE
-  .endif
+        addi    T3, T4, -CAUSE_USER_ECALL       // map cause 8..11 to 0..3,  Mmode should avoid ECALL 0
+        srli    T3, T3, 2                       // map cause 0..3 -> 0 (some ecall)
+        bnez    T3, \__MODE__\()trapsig_ptr_upd // no, not an ecall either, store normal trap signature
+   .endif
+                                                // fall thru to chk for selftest fail or rtn2mmode
+
+//****FIXME: what is the correct parameter register? x3=0?
+
+.ifc \__MODE__ ,  M                             // If ecall is delegated, can't go to Mmode
+\__MODE__\()goto_mchk:                          // is ECALL, but not failure type; see if its goto_m_mode
+        beqz    x3, \__MODE__\()rtn2mmode       // return in mmode if it is, else fall thru to normal trap signature
+.endif
 
 .ifc \__MODE__ ,  S                             // RVTEST_GOTO_SMODE U-mode ecall w/ x3=0 returns in S-mode
 \__MODE__\()goto_schk:
@@ -1464,22 +1496,10 @@ sv_\__MODE__\()epc:
 #endif
 
 
-adj_\__MODE__\()epc_rtn:
-        // Determine trapped instruction size from mepc encoding bits[1:0].
-        // mtval may be 0 (CSR illegals on Sail), so read from memory at mepc.
-        csrr    T3, CSR_XEPC            // T3 = faulting PC
-        lhu     T4, 0(T3)               // T4 = lower 16 bits of instruction at mepc
-        andi    T4, T4, 3               // T4 = bits[1:0]
-        addi    T4, T4, -3              // T4==0 iff 32-bit (bits[1:0]==11)
-        beqz    T4, adv32_\__MODE__\()epc
-        // 16-bit compressed instruction — advance mepc+2
-        addi    T3, T3, 2
-        j       write_\__MODE__\()epc
-adv32_\__MODE__\()epc:
-        // 32-bit uncompressed instruction — advance mepc+4
-        addi    T3, T3, 4
-write_\__MODE__\()epc:
-        csrw    CSR_XEPC, T3
+adj_\__MODE__\()epc_rtn:                // adj mepc so there is at least 4B of padding after op
+        andi    T3, T3, ~WDBYTMSK       // adjust mepc to prev 4B alignment (if 2B aligned)
+        addi    T3, T3,  2*WDBYTSZ      // adjust mepc so it skips past op, has padding & 4B aligned
+        csrw    CSR_XEPC, T3            // restore adjusted value, w/ 2,4 or 6B of padding
 
 skp_adj_\__MODE__\()epc:
 

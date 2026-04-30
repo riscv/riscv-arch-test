@@ -53,9 +53,9 @@ _SAFE_REGS: list[int] = list(range(7, 32))  # x7..x31 only
 # ── CSR skip set (S-mode) ─────────────────────────────────────────────────
 
 _S_CSR_SKIP: frozenset[int] = frozenset(
-    [0x180]        # satp  — skip: TLB flush / address-translation mode change
-    + [0x104]      # sie   — skip: all-ones write enables S-mode interrupts; covered in shadow test
-    + [0x144]      # sip   — skip: all-ones write asserts SSIP software interrupt; covered in shadow test
+    [0x180]  # satp  — skip: TLB flush / address-translation mode change
+    + [0x104]  # sie   — skip: all-ones write enables S-mode interrupts; covered in shadow test
+    + [0x144]  # sip   — skip: all-ones write asserts SSIP software interrupt; covered in shadow test
     + list(range(0x200, 0x300))  # H-mode std0 — skip: accessible from HS-mode
     + list(range(0x600, 0x700))  # H-mode std1 — skip: HS-mode ambiguity
     + list(range(0xA00, 0xB00))  # H-mode std2 — skip: HS-mode ambiguity
@@ -255,18 +255,18 @@ def _generate_shadow_csr(test_data: TestData) -> list[str]:
 
     # Fixed registers for M-mode section (no random sampling — we need specific slots).
     r_sv_mstatus = _SAFE_REGS[0]  # x7 — saved mstatus original
-    r_sv_mie = _SAFE_REGS[1]      # x8 — saved mie original
-    r_scratch = _SAFE_REGS[2]     # x9 — scratch: li -1, csrrw discard destination
+    r_sv_mie = _SAFE_REGS[1]  # x8 — saved mie original
+    r_scratch = _SAFE_REGS[2]  # x9 — scratch: li -1, csrrw discard destination
 
     lines.extend(
         [
             "",
             "# cp_shadow_m: write mstatus/mie from M-mode (originals saved and restored)",
-            f"\tcsrr x{r_sv_mstatus}, 0x300",   # save mstatus original
-            f"\tcsrr x{r_sv_mie}, 0x304",        # save mie original
+            f"\tcsrr x{r_sv_mstatus}, 0x300",  # save mstatus original
+            f"\tcsrr x{r_sv_mie}, 0x304",  # save mie original
             # Disable M-mode interrupts before any mstatus write.  A transient
             # MIE=1 written into mstatus is harmless when mie=0 (no source enabled).
-            f"\tcsrw 0x304, x0",                 # mie = 0
+            "\tcsrw 0x304, x0",  # mie = 0
         ]
     )
 
@@ -279,7 +279,7 @@ def _generate_shadow_csr(test_data: TestData) -> list[str]:
             f"\tli x{r_scratch}, -1",
             f"\tcsrrw x{r_scratch}, 0x300, x{r_scratch}",  # write all-ones (mie=0, safe)
             f"\t{test_data.add_testcase('mstatus_zeros', 'cp_shadow_m', covergroup)}",
-            f"\tcsrrw x{r_scratch}, 0x300, x0",             # write all-zeros → mstatus.MIE=0
+            f"\tcsrrw x{r_scratch}, 0x300, x0",  # write all-zeros → mstatus.MIE=0
         ]
     )
 
@@ -292,18 +292,18 @@ def _generate_shadow_csr(test_data: TestData) -> list[str]:
             f"\tli x{r_scratch}, -1",
             f"\tcsrrw x{r_scratch}, 0x304, x{r_scratch}",  # write all-ones (MIE=0, safe)
             f"\t{test_data.add_testcase('mie_zeros', 'cp_shadow_m', covergroup)}",
-            f"\tcsrrw x{r_scratch}, 0x304, x0",             # write all-zeros
+            f"\tcsrrw x{r_scratch}, 0x304, x0",  # write all-zeros
             # Restore mie first (mstatus.MIE still 0 → no interrupt during restore).
             # Then restore mstatus (mie is now original → safe even if MIE=1 restored).
-            f"\tcsrw 0x304, x{r_sv_mie}",                   # restore mie original
-            f"\tcsrw 0x300, x{r_sv_mstatus}",               # restore mstatus original
+            f"\tcsrw 0x304, x{r_sv_mie}",  # restore mie original
+            f"\tcsrw 0x300, x{r_sv_mstatus}",  # restore mstatus original
         ]
     )
 
     # Fixed registers for S-mode section.
-    r_sv = _SAFE_REGS[0]    # x7 — saved CSR original for current iteration
+    r_sv = _SAFE_REGS[0]  # x7 — saved CSR original for current iteration
     r_ones = _SAFE_REGS[1]  # x8 — all-ones constant, loaded once
-    r_rd = _SAFE_REGS[2]    # x9 — csrrw destination (result discarded)
+    r_rd = _SAFE_REGS[2]  # x9 — csrrw destination (result discarded)
 
     lines.extend(
         [
@@ -322,12 +322,12 @@ def _generate_shadow_csr(test_data: TestData) -> list[str]:
     for csr_name, csr_addr in [("sstatus", "0x100"), ("sie", "0x104"), ("sip", "0x144")]:
         lines.extend(
             [
-                f"\tcsrr x{r_sv}, {csr_addr}",                         # save original
+                f"\tcsrr x{r_sv}, {csr_addr}",  # save original
                 f"\t{test_data.add_testcase(f'{csr_name}_ones', 'cp_shadow_s', covergroup)}",
-                f"\tcsrrw x{r_rd}, {csr_addr}, x{r_ones}",             # write all-ones
+                f"\tcsrrw x{r_rd}, {csr_addr}, x{r_ones}",  # write all-ones
                 f"\t{test_data.add_testcase(f'{csr_name}_zeros', 'cp_shadow_s', covergroup)}",
-                f"\tcsrrw x{r_rd}, {csr_addr}, x0",                    # write all-zeros
-                f"\tcsrw {csr_addr}, x{r_sv}",                         # restore original
+                f"\tcsrrw x{r_rd}, {csr_addr}, x0",  # write all-zeros
+                f"\tcsrw {csr_addr}, x{r_sv}",  # restore original
             ]
         )
 

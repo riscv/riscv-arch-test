@@ -33,13 +33,12 @@ git clone --branch "$CVE4_DV_BRANCH" "$CVE4_DV_REPO" "$INSTALL_DIR/cv32e40p-dv"
   git checkout "$CVE4_DV_COMMIT"                                                                                                                         
 )
 
-for CFG in rv32imc rv32imcf; do
-    make -C "$INSTALL_DIR/cv32e40p-dv/sim/core"
+# 3. Build the Verilator binary for rv32imcf (only one in CI matrix for now).                                                                               
+make -C "$INSTALL_DIR/cv32e40p-dv/sim/core" \                                                                                                               
     verilate \
-    CV_CORE_CONFIG="$CFG" \
-    TEST="certification_${CFG}" \
-    -j"$(nproc)"
-done
+    CV_CORE_CONFIG=rv32imcf \                                                                                                                              
+    TEST=certification_rv32imcf \
+    -j"$(nproc)" 
 
 # 4. Drop the per-test warapper into $INSTALL_DIR/bin for easy invocation from CI
 install -m 0755 "$INSTALL_DIR/cv32e40p-dv/.github/scripts/run-cve4.sh" \ 

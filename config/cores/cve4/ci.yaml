@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for CV32E40P (cve4)
+
+ci_enabled: true
+exclude_extensions: "ExceptionsSm,InterruptsSm,Sm,ExceptionsZc"

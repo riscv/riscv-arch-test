@@ -226,8 +226,10 @@ test_4_str:  .string "\"test: 4;  cp: pmpzcb_cfg_wr_c.lhu\""
 test_5_str:  .string "\"test: 5;  cp: pmpzcb_cfg_wr_c.sh\""
 test_6_str:  .string "\"test: 6;  cp: pmpzcb_cfg_wr_c.shu\""
 
-.align 13
-.align (RVMODEL_PMP_GRAIN+2)
+.align 12
+TEST_FOR_EXECUTION_X:
+    jalr x0, x1, 0
+
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

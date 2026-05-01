@@ -420,7 +420,7 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
 
 @add_priv_test_generator(
     "ExceptionsS",
-    required_extensions=["I", "S", "Zicsr", "Sm"],
+    required_extensions=["S"],
     extra_defines=["#define SKIP_MEPC"],
 )
 def make_exceptionss(test_data: TestData) -> list[str]:

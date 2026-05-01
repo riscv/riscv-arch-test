@@ -27,9 +27,6 @@
 #define TEST_FILE "sv32_nleaf_pte_level0_Smode.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 30
-#define rvtest_mtrap_routine
-#define rvtest_strap_routine
-#define RVTEST_PRIV_TEST
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"

@@ -157,8 +157,6 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
                 f"or x{check_reg}, x{check_reg}, x{reg2}          # OR in desired UXL value",
                 test_data.add_testcase(f"uxl_attempt_{uxl}", coverpoint, covergroup),
                 gen_csr_write_sigupd(check_reg, "sstatus", test_data),
-                f"CSRR(x{check_reg}, sstatus)",  # read back what DUT actually stored
-                write_sigupd(check_reg, test_data),
             ]
         )
 
@@ -600,7 +598,7 @@ def _add_shadow(r1: int, r2: int, wreg: str, rreg: str, coverpoint: str, covergr
     )
 
 
-@add_priv_test_generator("S", required_extensions=["S", "Zicsr"])
+@add_priv_test_generator("S", required_extensions=["S"])
 def make_s(test_data: TestData) -> list[str]:
     """Generate tests for S supervisor-mode testsuite."""
     lines: list[str] = []

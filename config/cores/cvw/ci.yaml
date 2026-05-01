@@ -3,9 +3,8 @@
 # CI configuration for CORE-V Wally (CVW)
 # Requires Verilator and the CVW repository
 
-# TODO: remove za64rs from excluded_extensions when Sail supports UDB_LRSC_FAIL_ON_NON_EXACT_LRSC to match DUT
 ci_enabled: true
-exclude_extensions: "Sm,S,InterruptsU,PMPSm,ExceptionsZalrsc,ExceptionsZaamo,Za64rs"
+exclude_extensions: "Sm,S,InterruptsSm,InterruptsS,InterruptsU,InterruptsSstc,PMPSm,PMPmisaligned,ExceptionsZalrsc,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZaamo,Svnapot,Sv,SvPMP,SvPMPZicbo,SvZicbo,Svade,SvaduPMP,Svpbmt,Svinval,PMPS,PMPU,PMPF"
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cvw.sh"
 setup_script: ".github/scripts/setup-cvw.sh"

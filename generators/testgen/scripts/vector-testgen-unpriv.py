@@ -12,7 +12,6 @@
 ##################################
 # libraries
 ##################################
-import argparse
 import filecmp
 import math
 import os
@@ -20,19 +19,31 @@ import re
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 from random import randint, seed
+from typing import Annotated
 
 import custom # custom coverpoint generator scripts
+import typer
 from coverpoint_registry import import_all_modules
 from coverpoint_registry import REGISTRY
-from rich.progress import track
+from rich import print as rprint
+from rich.progress import (
+  BarColumn,
+  MofNCompleteColumn,
+  Progress,
+  SpinnerColumn,
+  TaskProgressColumn,
+  TextColumn,
+  TimeElapsedColumn,
+)
 
 import vector_testgen_common as common
 from vector_testgen_common import (
   ARCH_VERIF,
+  getSigReg,
+  getFlen,
   fedges,
   fedgesD,
   fedgesH,
-  flen,
   freg_count,
   frmList,
   clearCustomData,
@@ -43,6 +54,7 @@ from vector_testgen_common import (
   getLegalVlmul,
   getLengthLmul,
   getLengthSuiteTestCount,
+  finalizeSigupdCount,
   getSigSpace,
   imm_31,
   incrementBasetestCount,
@@ -1257,6 +1269,7 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
   global f, legalvlmuls, redgesv, redges_ls_e8, redges_ls_e16, redges_ls_e32, redges_ls_e64
   global immedgesv, NaNBox_tests, test, xlen, extension
 
+  flen = getFlen()
   xlen = xlen_arg
   extension = extension_arg
 
@@ -1372,9 +1385,12 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
     test_data = genVtestdata(test, sew)
 
     signatureWords = getSigSpace(xlen, flen)
+    sigReg = getSigReg()
+    f.write(f"mv x2, x{sigReg} # restore signature pointer to default register for teardown\n")
     insertTemplate(test, signatureWords, "testgen_footer.S", test_data=test_data)
 
     f.close()
+    finalizeSigupdCount(tempfname, xlen, flen)
     fname_p = Path(fname)
     tempfname_p = Path(tempfname)
     if fname_p.exists():
@@ -1404,34 +1420,63 @@ def _list_tasks(include_set: set[str], exclude_set: set[str]) -> list[tuple[int,
   return tasks
 
 
-def main() -> None:
-  parser = argparse.ArgumentParser(description="Generate directed vector tests for functional coverage")
-  parser.add_argument("--extensions", "-e", type=str, default="",
-                      help="Comma-separated list of extensions to generate tests for (default: all)")
-  parser.add_argument("--exclude", "-x", type=str, default="",
-                      help="Comma-separated list of extensions to exclude from generation")
-  parser.add_argument("--jobs", "-j", type=int, default=0,
-                      help="Parallel worker processes (0 = auto-detect CPU count, 1 = serial)")
-  args = parser.parse_args()
+vector_testgen_app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]}, add_completion=False)
 
-  include_set = set(filter(None, (s.strip() for s in args.extensions.split(",")))) if args.extensions else set()
-  exclude_set = set(filter(None, (s.strip() for s in args.exclude.split(",")))) if args.exclude else set()
 
-  jobs = args.jobs if args.jobs > 0 else (os.cpu_count() or 1)
+@vector_testgen_app.command()
+def run(
+  extensions: Annotated[
+    str, typer.Option("--extensions", "-e", help="Comma-separated extensions to generate tests for")
+  ] = "",
+  exclude: Annotated[
+    str, typer.Option("--exclude", "-x", help="Comma-separated extensions to exclude from generation")
+  ] = "",
+  jobs: Annotated[
+    int, typer.Option("--jobs", "-j", help="Parallel worker processes (0 = auto-detect, 1 = serial)")
+  ] = 0,
+) -> None:
+  """Generate directed vector tests for functional coverage."""
+  include_set = set(filter(None, (s.strip() for s in extensions.split(",")))) if extensions else set()
+  exclude_set = set(filter(None, (s.strip() for s in exclude.split(",")))) if exclude else set()
+
+  worker_count = jobs if jobs > 0 else (os.cpu_count() or 1)
 
   tasks = _list_tasks(include_set, exclude_set)
   if not tasks:
     return
 
-  if jobs == 1 or len(tasks) == 1:
+  progress = Progress(
+    SpinnerColumn(),
+    TextColumn("[cyan]Generating vector tests..."),
+    BarColumn(),
+    MofNCompleteColumn(),
+    TaskProgressColumn(),
+    TextColumn("elapsed:"),
+    TimeElapsedColumn(),
+    transient=True,
+  )
+
+  if worker_count == 1 or len(tasks) == 1:
     _setup_worker()
-    for xlen, extension in track(tasks, description="[cyan]Generating vector tests...", total=len(tasks)):
-      generate_extension(xlen, extension)
+    with progress:
+      task_id = progress.add_task("generate", total=len(tasks))
+      for xlen, extension in tasks:
+        generate_extension(xlen, extension)
+        progress.advance(task_id)
   else:
-    with ProcessPoolExecutor(max_workers=jobs, initializer=_setup_worker) as executor:
+    with ProcessPoolExecutor(max_workers=worker_count, initializer=_setup_worker) as executor:
       futures = [executor.submit(generate_extension, xlen, extension) for xlen, extension in tasks]
-      for future in track(as_completed(futures), description="[cyan]Generating vector tests...", total=len(futures)):
-        future.result()
+      with progress:
+        task_id = progress.add_task("generate", total=len(futures))
+        for future in as_completed(futures):
+          future.result()
+          progress.advance(task_id)
+
+  rprint(f"[bold green]✓ Generated {len(tasks)} vector test suite(s)[/]")
+
+
+def main() -> None:
+  vector_testgen_app()
 
 
 if __name__ == '__main__':

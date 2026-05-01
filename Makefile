@@ -31,7 +31,7 @@ override EXCLUDE_EXTENSIONS := $(subst $(space),$(empty),$(EXCLUDE_EXTENSIONS))
 # DEBUG enables debug output (signature objdump, trace files, and trap report). This will slow down ELF generation significantly.
 # FAST disables objdump generation for faster builds. This speeds up ELF generation significantly, but makes debugging mismatches harder.
 # VERBOSE implies DEBUG, serializes all commands (JOBS=1), and prints each command as it is issued.
-DEBUG       ?= True
+DEBUG       ?=
 FAST        ?=
 VERBOSE     ?=
 

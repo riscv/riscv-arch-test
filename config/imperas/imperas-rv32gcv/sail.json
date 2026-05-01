@@ -1,7 +1,7 @@
 {
   "$schema": "/opt/riscv/share/sail-riscv/sail_riscv_config_schema.json",
   "base": {
-    "xlen": 64,
+    "xlen": 32,
     "E": false,
     "writable_misa": true,
     "writable_fiom": true,
@@ -12,7 +12,7 @@
     // (writable_hpm_counters[2 .. 0]) are ignored.
     "writable_hpm_counters": {
       "len": 32,
-      "value": "0x0000_0007"
+      "value": "0xFFFF_FFFF"
     },
     // The top 29 bits in this value control whether the
     // corresponding bits of the `scounteren` CSR that control HPM
@@ -23,7 +23,7 @@
     // `writable_hpm_counters`.
     "scounteren_writable_bits": {
       "len": 32,
-      "value": "0x0000_0007"
+      "value": "0xFFFF_FFFF"
     },
     // These settings control whether the specified exceptions
     // cause information to be written into the appropriate
@@ -72,25 +72,24 @@
       // The configuration option determines how to handle the reserved behavior: Odd-numbered registers for RV32Zdinx.
       // "Zdinx_Fatal"  – raise a Sail exception, stopping execution.
       // "Zdinx_Illegal" – treat it as an illegal instruction.
-      "rv32zdinx_odd_register": "Zdinx_Illegal",
-      "xtvec_mode": "Xtvec_Ignore"
+      "rv32zdinx_odd_register": "Zdinx_Illegal"
     }
   },
   "memory": {
     "pmp": {
-      "grain": 4,
+      "grain": 0,
       // This specifies the number of PMP entries present.
       // The value must be one of 0, 16, or 64.
-      "count": 64,
+      "count": 16,
       // This specifies the number of usable PMP entries.
       // Entries higher than this are read-only-zero.
       // The value must be less than or equal to `count`.
-      "usable_count": 64,
+      "usable_count": 16,
       "tor_supported": true,
-      "na4_supported": false,
+      "na4_supported": true,
       "napot_supported": true
     },
-    // This controls global support for misaligned access so it is
+    // These settings control global support for misaligned access so they are
     // checked before address translation. `misaligned_fault` in
     // `regions` is checked after address translation.
     "misaligned": {
@@ -272,12 +271,12 @@
       // This specifies both the size and alignment of the reservation set, specified as a power of 2.
       // It must be at least 2 on RV32 and 3 on RV64 to support Zalrsc.  It must not be more than
       // 6 for Za64rs and 7 for Za128rs.  In all cases, it must be less than or equal to 12.
-      "reservation_set_size_exp": 3,
+      "reservation_set_size_exp": 2,
       // Some implementations (e.g. Spike) require the Store-Conditional to provide the same
       // address as the matching Load-Reserve in order to succeed, regardless of the
       // configured reservation set size.  This controls whether such an exact address
       // match is required for a Store-Conditional to succeed.
-      "require_exact_reservation_addr": false
+      "require_exact_reservation_addr": true
     },
     "clint": {
       // This must be in a suitable IO memory region (see `memory.regions`).
@@ -333,7 +332,7 @@
       // Zve64x, Zve64f, and Zve64d require `elen_exp` >= 6,
       // and V requires `elen_exp` >= 6 and `vlen_exp` >= 7.
       "support_level": "Full",
-      "vlen_exp": 9,
+      "vlen_exp": 8,
       "elen_exp": 6,
       "vl_use_ceil": false
     },
@@ -410,10 +409,10 @@
       "supported": true
     },
     "Zmmul": {
-      "supported": true
+      "supported": false
     },
     "Zaamo": {
-      "supported": true
+      "supported": false
     },
     "Zabha": {
       "supported": true
@@ -455,7 +454,7 @@
       "supported": true
     },
     "Zcf": {
-      "supported": false
+      "supported": true
     },
     "Zcd": {
       "supported": true
@@ -479,38 +478,38 @@
       "supported": true
     },
     "Zbkb": {
-      "supported": true
+      "supported": false
     },
     "Zbkc": {
-      "supported": true
+      "supported": false
     },
     "Zbkx": {
-      "supported": true
+      "supported": false
     },
     "Zknd": {
-      "supported": true
+      "supported": false
     },
     "Zkne": {
-      "supported": true
+      "supported": false
     },
     "Zknh": {
-      "supported": true
+      "supported": false
     },
     "Zkr": {
-      "supported": true,
+      "supported": false,
       "sseed_reset_value": false,
       "useed_reset_value": false,
       "sseed_read_only_zero": false,
       "useed_read_only_zero": false
     },
     "Zksed": {
-      "supported": true
+      "supported": false
     },
     "Zksh": {
-      "supported": true
+      "supported": false
     },
     "Zkt": {
-      "supported": true
+      "supported": false
     },
     "Zhinx": {
       "supported": false
@@ -590,10 +589,10 @@
       "supported": true
     },
     "Svrsw60t59b": {
-      "supported": true
+      "supported": false
     },
     "Svnapot": {
-      "supported": true
+      "supported": false
     },
     "Smcntrpmf": {
       "supported": true
@@ -603,16 +602,16 @@
       "sfence_vma_illegal_if_svbare_only": true
     },
     "Sv32": {
-      "supported": false
+      "supported": true
     },
     "Sv39": {
-      "supported": true
+      "supported": false
     },
     "Sv48": {
-      "supported": true
+      "supported": false
     },
     "Sv57": {
-      "supported": true
+      "supported": false
     },
     "Stateen": {
       "Smstateen": {
@@ -630,7 +629,7 @@
       "mcid_length": 12
     },
     "Svpbmt": {
-      "supported": true
+      "supported": false
     },
     "Svvptc": {
       "supported": true

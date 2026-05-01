@@ -161,10 +161,11 @@
 `ifdef SMNPMU_COVERAGE
   `include "SmnpmU_coverage.svh"
 `endif
-`ifdef SSNPM_COVERAGE
-  `include "Ssnpm_coverage.svh"
 `ifdef SSCOUNTERENW_COVERAGE
   `include "Sscounterenw_coverage.svh"
+`endif
+`ifdef SSNPM_COVERAGE
+  `include "Ssnpm_coverage.svh"
 `endif
 `ifdef SSSTRICTS_COVERAGE
   `include "SsstrictS_coverage.svh"

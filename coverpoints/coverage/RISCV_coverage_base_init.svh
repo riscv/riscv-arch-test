@@ -210,12 +210,13 @@
         `cover_info("//      SmnpmU - Enabled");
         `include "SmnpmU_coverage_init.svh"
     `endif
-    `ifdef COVER_SSNPM
-        `cover_info("//      Ssnpm - Enabled");
-        `include "Ssnpm_coverage_init.svh"
     `ifdef COVER_SSCOUNTERENW
         `cover_info("//      Sscounterenw - Enabled");
         `include "Sscounterenw_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSNPM
+        `cover_info("//      Ssnpm - Enabled");
+        `include "Ssnpm_coverage_init.svh"
     `endif
     `ifdef COVER_SSSTRICTS
         `cover_info("//      SsstrictS - Enabled");

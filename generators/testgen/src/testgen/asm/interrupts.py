@@ -368,8 +368,8 @@ def set_stimecmp_zero() -> list[str]:
     ]
 
 
-def set_stimecmp_soon(r_scratch: int, r_time: int, r_hi: int, time: int = 500) -> list[str]:
-    """Write stimecmp = TIME + 500 from M-mode.
+def set_stimecmp_soon(r_scratch: int, r_time: int, r_hi: int, time: int | None = None) -> list[str]:
+    """Write stimecmp = TIME + delay from M-mode.
 
     For example, this may be used to delay an interrupt firing until after switching to U-mode.
 
@@ -381,22 +381,24 @@ def set_stimecmp_soon(r_scratch: int, r_time: int, r_hi: int, time: int = 500) -
         r_scratch: scratch register (clobbered)
         r_time:    scratch for MTIME address / RV32 delay value (clobbered)
         r_hi:      scratch for RV32 old_hi / new_hi (clobbered; unused on RV64)
+        time:      timer-tick offset; defaults to RVMODEL_TIMER_INT_SOON_DELAY
     """
+    time_val = str(time) if time is not None else "RVMODEL_TIMER_INT_SOON_DELAY"
     return [
-        f"{INDENT}# stimecmp = TIME + {time}",
+        f"{INDENT}# stimecmp = TIME + {time_val}",
         *set_stimecmp_max(r_scratch),
         "#ifdef RVMODEL_MTIME_ADDRESS",
         "    #if __riscv_xlen == 64",
         f"        LA(x{r_time}, RVMODEL_MTIME_ADDRESS)",
         f"        LREG x{r_scratch}, 0(x{r_time})",
-        f"        LI(x{r_time}, {time})",
+        f"        LI(x{r_time}, {time_val})",
         f"        add x{r_scratch}, x{r_scratch}, x{r_time}",
         f"        CSRW(stimecmp, x{r_scratch})",
         "    #else",
         f"        LA(x{r_time}, RVMODEL_MTIME_ADDRESS)",
         f"        lw x{r_scratch}, 0(x{r_time})",  # old_lo
         f"        lw x{r_hi}, 4(x{r_time})",  # old_hi; r_time address no longer needed after this
-        f"        LI(x{r_time}, {time})",  # reuse r_time for delay
+        f"        LI(x{r_time}, {time_val})",  # reuse r_time for delay
         f"        add x{r_time}, x{r_scratch}, x{r_time}",  # new_lo; r_scratch still = old_lo for carry
         f"        sltu x{r_scratch}, x{r_time}, x{r_scratch}",  # carry = (new_lo < old_lo)
         f"        add x{r_hi}, x{r_hi}, x{r_scratch}",  # new_hi

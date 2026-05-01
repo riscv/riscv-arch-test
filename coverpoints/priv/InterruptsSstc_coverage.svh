@@ -2,7 +2,7 @@
 //
 // RISC-V Architectural Functional Coverage Covergroups
 //
-// Written: Corey Hickson chickson@hmc.edu 4 Mar 2025
+// Written: Corey Hickson chickson@hmc.edu, Sadhvi Narayanan sanarayanan@hmcedu April 2026
 //
 // Copyright (C) 2024 Harvey Mudd College, 10x Engineers, UET Lahore, Habib University
 //
@@ -90,16 +90,7 @@ covergroup InterruptsSstc_cg with function sample(ins_t ins);
    cp_machine_stce:    cross priv_mode_m, csrr, read_stimecmp, menvcfg_stce;
 
 
-    cp_supervisor_sti_deleg: cross priv_mode_s, menvcfg_stce, mstatus_mie, mstatus_sie, mideleg_sti, mie_stie, stimecmp_zero {
-        // When STCE=1, mideleg.STI=0, and STIE=1: stimecmp=0 asserts STIP, and because
-        // mideleg.STI=0 the interrupt routes to M-mode. M-mode interrupts preempt S-mode
-        // unconditionally (regardless of MIE), so S-mode never reaches the sample instruction
-        // with stimecmp=0. When STCE=0 this ignore does not apply because STCE=0 prevents
-        // STIP from asserting even when stimecmp=0, allowing S-mode to run normally.
-        ignore_bins stce1_nodeleg_stie1 = binsof(menvcfg_stce) intersect {1} &&
-                                          binsof(mideleg_sti) intersect {0} &&
-                                          binsof(mie_stie) intersect {1};
-    }
+    cp_supervisor_sti_deleg: cross priv_mode_s, menvcfg_stce, mstatus_mie, mstatus_sie, mideleg_sti, mie_stie, stimecmp_zero;
     cp_supervisor_tm:   cross priv_mode_s, csrr, read_stimecmp, mcounteren_tm;
     cp_supervisor_stce: cross priv_mode_s, csrr, read_stimecmp, menvcfg_stce;
 

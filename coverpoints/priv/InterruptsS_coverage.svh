@@ -2,7 +2,7 @@
 //
 // RISC-V Architectural Functional Coverage Covergroups
 //
-// Written: Corey Hickson chickson@hmc.edu 18 Feb 2025
+// Written: Sadhvi Narayanan sanarayanan@hmc.edu April 2026
 //
 // Copyright (C) 2024 Harvey Mudd College, 10x Engineers, UET Lahore, Habib University
 //
@@ -134,9 +134,6 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     }
     prev_mip_seip_one: coverpoint ins.prev.csr[CSR_MIP][9] {
         bins one = {1};
-    }
-    mip_seip_rise: coverpoint ins.current.csr[CSR_MIP][9] {
-        bins rise = (0 => 1);
     }
     mip_meip_one: coverpoint ins.current.csr[CSR_MIP][11] {
         bins one = {1};
@@ -514,50 +511,50 @@ endgroup
 function void interruptss_sample(int hart, int issue, ins_t ins);
     InterruptsS_cg.sample(ins);
 
-    $display("PC: %h Instr: %s\n  priv_mode=%b, mstatus.mie=%b mstatus.sie=%b mie=%h mideleg=%h mip=%h",
-            ins.current.pc_rdata, ins.current.disass,
-            ins.prev.mode, ins.current.csr[CSR_MSTATUS][3], ins.current.csr[CSR_MSTATUS][1],
-            ins.current.csr[CSR_MIE][11:0], ins.current.csr[CSR_MIDELEG][11:0], ins.current.csr[CSR_MIP][11:0]);
-    $display("  priv_mode_s: %b wfi = %b, mstatus_mie %b (prev %b) mstatus_sie %b mideleg %h mstatus_tw %b mie %h mip %h",
-                ins.prev.mode == 2'b01,
-                ins.current.insn == WFI,
-                ins.current.csr[CSR_MSTATUS][3],
-                ins.prev.csr[CSR_MSTATUS][3],
-                ins.current.csr[CSR_MSTATUS][1],
-                ins.current.csr[CSR_MIDELEG][15:0],
-                ins.current.csr[CSR_MSTATUS][21],
-                ins.current.csr[CSR_MIE][15:0],
-                ins.current.csr[CSR_MIP][15:0]
-            );
+    // $display("PC: %h Instr: %s\n  priv_mode=%b, mstatus.mie=%b mstatus.sie=%b mie=%h mideleg=%h mip=%h",
+    //         ins.current.pc_rdata, ins.current.disass,
+    //         ins.prev.mode, ins.current.csr[CSR_MSTATUS][3], ins.current.csr[CSR_MSTATUS][1],
+    //         ins.current.csr[CSR_MIE][11:0], ins.current.csr[CSR_MIDELEG][11:0], ins.current.csr[CSR_MIP][11:0]);
+    // $display("  priv_mode_s: %b wfi = %b, mstatus_mie %b (prev %b) mstatus_sie %b mideleg %h mstatus_tw %b mie %h mip %h",
+    //             ins.prev.mode == 2'b01,
+    //             ins.current.insn == WFI,
+    //             ins.current.csr[CSR_MSTATUS][3],
+    //             ins.prev.csr[CSR_MSTATUS][3],
+    //             ins.current.csr[CSR_MSTATUS][1],
+    //             ins.current.csr[CSR_MIDELEG][15:0],
+    //             ins.current.csr[CSR_MSTATUS][21],
+    //             ins.current.csr[CSR_MIE][15:0],
+    //             ins.current.csr[CSR_MIP][15:0]
+    //         );
 
-    $display("=== InterruptsS Debug ===");
-    $display("PC: %h Instr: %s priv_mode=%b", ins.current.pc_rdata, ins.current.disass, ins.prev.mode);
-    $display("  mstatus: MIE=%b SIE=%b TW=%b mode: %b",
-                ins.prev.csr[CSR_MSTATUS][3], ins.prev.csr[CSR_MSTATUS][1],
-                ins.current.csr[CSR_MSTATUS][21], {ins.prev.mode_virt, ins.prev.mode});
-    $display(" NEW mstatus: MIE=%b SPIE=%b SIE=%b TW=%b mode: %b",
-            ins.current.csr[CSR_MSTATUS][3], ins.current.csr[CSR_MSTATUS][5],
-            ins.current.csr[CSR_MSTATUS][1],
-            ins.current.csr[CSR_MSTATUS][21], {ins.prev.mode_virt, ins.prev.mode});
-    $display("  mideleg: SEIE=%b STIE=%b SSIE=%b (full=%h)",
-                ins.current.csr[CSR_MIDELEG][9], ins.current.csr[CSR_MIDELEG][5],
-                ins.current.csr[CSR_MIDELEG][1], ins.current.csr[CSR_MIDELEG][15:0]);
-    $display("  mie: MEIE=%b SEIE=%b MTIE=%b STIE=%b MSIE=%b SSIE=%b (full=%h)",
-                ins.current.csr[CSR_MIE][11], ins.current.csr[CSR_MIE][9],
-                ins.current.csr[CSR_MIE][7], ins.current.csr[CSR_MIE][5],
-                ins.current.csr[CSR_MIE][3], ins.current.csr[CSR_MIE][1],
-                ins.current.csr[CSR_MIE][15:0]);
-    $display("  mip: MEIP=%b SEIP=%b MTIP=%b STIP=%b MSIP=%b SSIP=%b (full=%h)",
-                ins.current.csr[CSR_MIP][11], ins.current.csr[CSR_MIP][9],
-                ins.current.csr[CSR_MIP][7], ins.current.csr[CSR_MIP][5],
-                ins.current.csr[CSR_MIP][3], ins.current.csr[CSR_MIP][1],
-                ins.current.csr[CSR_MIP][15:0]);
-    $display("  sip: SEIP=%b STIP=%b SSIP=%b (full=%h)",
-                ins.current.csr[CSR_SIP][9], ins.current.csr[CSR_SIP][5],
-                ins.current.csr[CSR_SIP][1], ins.current.csr[CSR_SIP][15:0]);
-    $display("  mtvec.MODE=%b stvec.MODE=%b",
-                ins.current.csr[CSR_MTVEC][1:0], ins.current.csr[CSR_STVEC][1:0]);
-    if (ins.current.trap)
-        $display("  TRAP! mcause=%h scause=%h", ins.current.csr[CSR_MCAUSE], ins.current.csr[CSR_SCAUSE]);
-    $display("");
+    // $display("=== InterruptsS Debug ===");
+    // $display("PC: %h Instr: %s priv_mode=%b", ins.current.pc_rdata, ins.current.disass, ins.prev.mode);
+    // $display("  mstatus: MIE=%b SIE=%b TW=%b mode: %b",
+    //             ins.prev.csr[CSR_MSTATUS][3], ins.prev.csr[CSR_MSTATUS][1],
+    //             ins.current.csr[CSR_MSTATUS][21], {ins.prev.mode_virt, ins.prev.mode});
+    // $display(" NEW mstatus: MIE=%b SPIE=%b SIE=%b TW=%b mode: %b",
+    //         ins.current.csr[CSR_MSTATUS][3], ins.current.csr[CSR_MSTATUS][5],
+    //         ins.current.csr[CSR_MSTATUS][1],
+    //         ins.current.csr[CSR_MSTATUS][21], {ins.prev.mode_virt, ins.prev.mode});
+    // $display("  mideleg: SEIE=%b STIE=%b SSIE=%b (full=%h)",
+    //             ins.current.csr[CSR_MIDELEG][9], ins.current.csr[CSR_MIDELEG][5],
+    //             ins.current.csr[CSR_MIDELEG][1], ins.current.csr[CSR_MIDELEG][15:0]);
+    // $display("  mie: MEIE=%b SEIE=%b MTIE=%b STIE=%b MSIE=%b SSIE=%b (full=%h)",
+    //             ins.current.csr[CSR_MIE][11], ins.current.csr[CSR_MIE][9],
+    //             ins.current.csr[CSR_MIE][7], ins.current.csr[CSR_MIE][5],
+    //             ins.current.csr[CSR_MIE][3], ins.current.csr[CSR_MIE][1],
+    //             ins.current.csr[CSR_MIE][15:0]);
+    // $display("  mip: MEIP=%b SEIP=%b MTIP=%b STIP=%b MSIP=%b SSIP=%b (full=%h)",
+    //             ins.current.csr[CSR_MIP][11], ins.current.csr[CSR_MIP][9],
+    //             ins.current.csr[CSR_MIP][7], ins.current.csr[CSR_MIP][5],
+    //             ins.current.csr[CSR_MIP][3], ins.current.csr[CSR_MIP][1],
+    //             ins.current.csr[CSR_MIP][15:0]);
+    // $display("  sip: SEIP=%b STIP=%b SSIP=%b (full=%h)",
+    //             ins.current.csr[CSR_SIP][9], ins.current.csr[CSR_SIP][5],
+    //             ins.current.csr[CSR_SIP][1], ins.current.csr[CSR_SIP][15:0]);
+    // $display("  mtvec.MODE=%b stvec.MODE=%b",
+    //             ins.current.csr[CSR_MTVEC][1:0], ins.current.csr[CSR_STVEC][1:0]);
+    // if (ins.current.trap)
+    //     $display("  TRAP! mcause=%h scause=%h", ins.current.csr[CSR_MCAUSE], ins.current.csr[CSR_SCAUSE]);
+    // $display("");
 endfunction

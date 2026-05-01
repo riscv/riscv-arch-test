@@ -44,7 +44,7 @@ def _generate_trigger_mti_tests(test_data: TestData) -> list[str]:
             test_data.add_testcase("mie_0", coverpoint, covergroup),
             "CSRCI mstatus, 8    # mstatus.MIE = 0",
             *set_mtimer_int(r_mtime, r_mtimecmp, r_temp, r_temp2),
-            "RVTEST_IDLE_FOR_INTERRUPT",
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
             *clr_mtimer_int(r_temp, r_mtimecmp),
             "",
         ]
@@ -56,7 +56,7 @@ def _generate_trigger_mti_tests(test_data: TestData) -> list[str]:
             test_data.add_testcase("mie_1", coverpoint, covergroup),
             "CSRRSI zero, mstatus, 8    # mstatus.MIE = 1",
             *set_mtimer_int(r_mtime, r_mtimecmp, r_temp, r_temp2),
-            "RVTEST_IDLE_FOR_INTERRUPT",
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
         ]
     )
 
@@ -91,7 +91,7 @@ def _generate_trigger_msi_tests(test_data: TestData) -> list[str]:
             test_data.add_testcase("mie_0", coverpoint, covergroup),
             "CSRCI mstatus, 8    # mstatus.MIE = 0",
             "RVTEST_SET_MSW_INT     # Trigger software interrupt",
-            "RVTEST_IDLE_FOR_INTERRUPT",
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
             "RVTEST_CLR_MSW_INT     # Clear interrupt",
             "",
         ]
@@ -103,7 +103,7 @@ def _generate_trigger_msi_tests(test_data: TestData) -> list[str]:
             test_data.add_testcase("mie_1", coverpoint, covergroup),
             "CSRRSI zero, mstatus, 8    # mstatus.MIE = 1",
             "RVTEST_SET_MSW_INT     # Interrupt fires",
-            "RVTEST_IDLE_FOR_INTERRUPT",
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
         ]
     )
 
@@ -138,7 +138,7 @@ def _generate_trigger_mei_tests(test_data: TestData) -> list[str]:
             test_data.add_testcase("mie_0", coverpoint, covergroup),
             "CSRCI mstatus, 8",
             "RVTEST_SET_MEXT_INT",
-            "RVTEST_IDLE_FOR_INTERRUPT",
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
             "RVTEST_CLR_MEXT_INT",
             "",
         ]
@@ -150,7 +150,7 @@ def _generate_trigger_mei_tests(test_data: TestData) -> list[str]:
             test_data.add_testcase("mie_1", coverpoint, covergroup),
             "CSRRSI zero, mstatus, 8",
             "RVTEST_SET_MEXT_INT",
-            "RVTEST_IDLE_FOR_INTERRUPT",
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
             "",
         ]
     )
@@ -222,7 +222,7 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
                     lines.append("RVTEST_SET_MSW_INT")
 
                 # More settling
-                lines.extend([f"CSRW(mie, x{r_mie_val})", "RVTEST_IDLE_FOR_INTERRUPT"])
+                lines.extend([f"CSRW(mie, x{r_mie_val})", f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})"])
 
                 # Clear to prevent leakage
                 if int_pending == "meip":
@@ -293,7 +293,7 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"CSRW mie, x{r_mie_save}",
-                    "RVTEST_IDLE_FOR_INTERRUPT",
+                    f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
                 ]
             )
 
@@ -363,7 +363,7 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"CSRW mie, x{r_mie_mask}",
-                    "RVTEST_IDLE_FOR_INTERRUPT",
+                    f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
                     "# Clear and disable interrupts to reset for next testcase",
                     "RVTEST_CLR_MEXT_INT",
                     *clr_mtimer_int(r_temp, r_mtimecmp),
@@ -403,9 +403,6 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
                     "# Clear TW (bit 21, 0x200000) and MIE (bit 3, 0x8)",
                     f"LI(x{r_scratch}, 0x200008)",
                     f"CSRC(mstatus, x{r_scratch})",
-                    "# Set MIE if needed",
-                    f"LI(x{r_scratch}, 0x8)",
-                    f"{'CSRS' if mie_val else 'CSRC'}(mstatus, x{r_scratch})",
                 ]
             )
 
@@ -420,11 +417,29 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
 
             lines.extend(
                 [
-                    "# Enable MTIE",
+                    "# Enable MTIE, spin with MIE=0 until timer fires (mip.MTIP=1)",
                     f"LI(x{r_scratch}, 0x80)",
                     f"CSRW(mie, x{r_scratch})",
-                    # Set timer
                     *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3),
+                    f"RVTEST_IDLE_FOR_TIMER_INTERRUPT(x{r_scratch})",
+                ]
+            )
+
+            if mie_val:
+                lines.extend(
+                    [
+                        # Clear the timer so MTIP=0, then set MIE=1 with no pending
+                        # interrupt. Re-arm the timer so WFI wakes with MTIP=1 and
+                        # ins.prev.mstatus.MIE=1 (no trap between MIE=1 and WFI).
+                        *clr_mtimer_int(r_t0, r_mtimecmp),
+                        f"LI(x{r_scratch}, 0x8)",
+                        f"CSRS(mstatus, x{r_scratch})",
+                        *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3),
+                    ]
+                )
+
+            lines.extend(
+                [
                     test_data.add_testcase(binname, coverpoint, covergroup),
                     "wfi",
                     "nop",

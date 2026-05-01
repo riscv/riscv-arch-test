@@ -99,10 +99,10 @@
 
 // Interrupt latency configuration
 #undef RVMODEL_INTERRUPT_LATENCY
-#define RVMODEL_INTERRUPT_LATENCY 100
+#define RVMODEL_INTERRUPT_LATENCY 1
 
 #undef RVMODEL_TIMER_INT_SOON_DELAY
-#define RVMODEL_TIMER_INT_SOON_DELAY 10
+#define RVMODEL_TIMER_INT_SOON_DELAY 100
 
 #define SAIL_SIG_ADDRESS  (0xC000000 + 0x4)  /* Address of memory mapped simple interrupt generator */
 #undef RVMODEL_SET_MEXT_INT

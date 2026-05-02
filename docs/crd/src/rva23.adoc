@@ -1,0 +1,299 @@
+= RVA23 Certification Requirements Document (rev 0.1
+:description: RVA23 CRD (Certificate Requirements Document)
+include::../../common/adoc_common.adoc[]
+
+_Contributors to all versions of the spec in alphabetical order_
+
+* Ken Dockser
+* David Harris
+
+_This document is released under a Creative Commons Attribution 4.0 International License._
+
+[Preface]
+== CRD Revision History
+
+History of documentation changes that eventually lead to releases.
+
+[cols="1,1,5"]
+|===
+| Date | Revision | Changes
+
+| April 29, 2026
+| 0.1
+a| * Initial draft
+
+|===
+
+// include::glossary.adoc[]
+
+== Introduction
+
+The RVA23 processor certificate is based on the https://riscv.github.io/riscv-isa-manual/snapshot/spec/#_rva23s64_profile[RVA23S64] profile. To
+qualify for a certificate, the processor must implement the RV64I base instruction set and all of the mandatory
+extensions of the profile.  It may implement any of the optional features of
+the profile.  It may implement ratified extensions that not part of the profile. It may implement other unratified extensions, but must not implement
+extensions outside the custom encoding spaces if the optional Ssstrict extension is implemented.  Certain processors might comply with the profile but are impractical to test and therefore cannot be certified. ***is that true <<Restrictions>> lists restrictions on the platform and parameters to make a processor certifiable.
+
+// include::crd_common.adoc[]
+// include::csr_field_types.adoc[]
+
+=== Related Specifications
+
+* https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html[Unprivileged ISA Specification] - Latest version
+* https://riscv.github.io/riscv-isa-manual/snapshot/privileged/index.html[Privileged ISA Specification] - Latest version
+
+== Discussion
+
+The RVA23S64 profile implies requirements that might not be immediately
+obvious.  This section explains them in detail.
+
+=== Nonconforming M-mode
+
+The RVA23S64 profile purposefully excludes Machine mode (M-mode).  It does not require a _conforming M-mode_ consistent with the ratified M-mode specification.  Therefore, certification does not run M-mode code directly.
+
+Nonconforming M-mode is an execution environment that deviates from the M-mode specification.  For example, it might have a bug that affects M-mode behavior but is invisible from S-mode.  The firmware could work around this bug by not running M-mode instructions affected by the bug.  Alternatively, M-mode might have some custom security features that break compatibility with ratified M-mode.
+*** circle back to this
+
+=== Execution Environment and Supervisor Binary Interface (SBI)
+
+Nevertheless, RVA23S64 runs within a supervisor execution environment.  For example, an `ECALL` from supervisor mode causes a requested trap to this execution environment. Similarly, the profile indicates that Sspm requires an execution environment providing a means to select PMLEN.
+
+RVA23 requires that the execution environment boot to a state that allows software to run in S-mode, to handle traps to the execution environment  that implements a test SBI (described below), and to put the supervisor execution environment into a deterministic state (*** see CTP).
+
+The execution environment must provide a Supervisor Binary Interface (SBI) that allows S-mode software to make requests of the execution environment.  These requests are made by placing commands in registers and performing an `ECALL`.
+
+=== SBI Control of M-mode CSRs
+
+RVA23 certification requires that the SBI provide methods of controlling every writable M-mode CSR field that affects the behavior of lower privilege modes.  With a conforming M-mode, the SBI may just write bitfields in the M-mode registers.  With nonconforming M-mode, the SBI must make it appear to S-mode software that the field holds the value written by the SBI, even though the implementation might be different.
+
+Write down why mstatus.TSR and medeleg are in scope and PMP is out of scope.
+
+TSR is talking about what is going to happen on an S-mode instruction sret, whether it traps to execution.  Same thing for medeleg.  But PMP is talking about whether a lw to a address traps.
+
+Another possibility Allen raises is that TSR is not tested.  If the execution environment sets TSR, then it is responsible for emulating sret and returning in a way that is invisible to the S-mode software so there is nothing that needs to be tested and the tests don't care whether it trapped to M-mode or not.
+
+
+
+*** give an example. Hard to come up with one that is not stupid.  For example, if TSR were hardwired to 0 in the DUT, the SBI could force every instruction in S-mode to trap to M-mode (by temporarily replacing it with an illegal instruction), then check if the instruction was a `sret`, and if so, modulate its behavior by the virtual TSR bit.
+
+These CSRs are:
+
+[options=header]
+[cols="1,5"]
+|===
+| CSR | Notes
+| `mstatus` | TSR, TW, TVM
+
+Note: XS, SDT, SBE, UBE OUT-OF-SCOPE of RVA23
+Note: SD, SPELP, MXR, SUM, FS, VS, SPP, SPIE, SPP are accessible from `sstatus` and should not be tested through `mstatus` for RVA23 certification.  GVA and MPV do not affect the behavior of lower privilege modes.
+*** check the rest of these
+| `medeleg` | All standard fields must be controllable except that except `ecall` from S and M-mode must not be delegatable because the SBI must trap to M-mode.
+| `mideleg` | All supervisor interrupts must be delegatable including SEI, SSI, STI, VSEI, VSSI, VSTI, LCOFI, SGEI.  Machine interrupts MEI, MSI, MTI are OUT-OF_SCOPE.
+| `mip` | SEIP, STIP, SSIP must be writable (if the DUT supports them) to send interrupts to S-mode.  MEIP, MSIP, MTIP are OUT-OF-SCOPE.  LCOFIP is accessible from `sip` and SGEIP is controlled by `hgeip` and `hgeie`.
+| `mie` | No fields are used for RVA23 certification because all relevant fields are accessible from `sie` or `hie`.
+| `mcounteren` | All fields not hardwired to 0 must be controllable to allow testing of counter access from lower privilege modes.
+| `mcountinhibit` | All fields not hardwired to 0 must be controllable to allow testing of counter behavior from lower privilege modes.
+| `menvcfg` | All writable fields must be controllable to allow testing of the behavior of lower privilege modes when certain features are disabled.
+| `mseccfg` | PMM, SSEED, and USEED must be controllable to allow testing of the behavior of lower privilege modes when certain features are disabled.  MLPE, RLB, MMWP, MML are OUT-OF-SCOPE of RVA23.
+| `mstateen` | SE0, ENVCFG, CONTEXT must be writable to allow testing of the behavior of lower privilege modes when certain features are disabled. Other fields are OUT-OF-SCOPE because they do not relate to RVA23 features. check this is all
+| `mtime` | *** unclear if it needs to be readable.  Might be sufficient to read `time` instead.  But what if the dut hardwires mcounteren.TM to be 0? Should this be forbidden in the profile?  https://github.com/riscv/riscv-isa-manual/pull/3006
+| `mhartid` | Must be readable to influence the behavior of multicore tests.
+|===
+
+*** which counters must be readable via SBI?
+
+The following M-mode CSRs are OUT-OF-SCOPE.
+
+[options=header]
+[cols="1,5"]
+|===
+| CSR | Notes
+| `misa` | Not tested because the contents do not have a predictable effect on behavior.
+| `mvendorid` | Does not affect the behavior of lower privilege modes.
+| `marchid` | Does not affect the behavior of lower privilege modes.
+| `mimpid` | Does not affect the behavior of lower privilege modes.
+| `mconfigptr` | Does not affect the behavior of lower privilege modes.
+| `mtvec` | Trap vector must be set up during boot but is not modified through SBI.
+| `mepc` | Does not affect the behavior of lower privilege modes.
+| `mcause` | Does not affect the behavior of lower privilege modes.
+| `mscratch` | Does not affect the behavior of lower privilege modes.
+| `mtval` | Does not affect the behavior of lower privilege modes.
+| `mtinst` | Does not affect the behavior of lower privilege modes.
+| `mtval2` | Does not affect the behavior of lower privilege modes.
+|===
+
+Although PMP affects the behavior of lower privilege modes, *** has declared that it is OUT-OF-SCOPE for RVA23 certification. *** explain why this is different from CSRs listed above.
+
+=== Interrupts
+
+Supervisor, virtual supervisor, and counter overflow interrupts are IN-SCOPE and are tested.  Machine interrupts are OUT-OF-SCOPE and are not tested.
+
+== Difficult cases
+
+The Privileged spec 2.3.3 states:
+
+```
+Implementations can return any legal value on the read of a WARL field when the last write was of an illegal value, but the legal value returned should deterministically depend on the illegal written value and the architectural state of the hart.
+```
+
+```
+If a write to one CSR changes the set of legal values allowed for a field of a second CSR, then unless specified otherwise, the second CSR’s field immediately gets an UNSPECIFIED value from among its new legal values. This is true even if the field’s value before the write remains legal after the write; the value of the field may be changed in consequence of the write to the controlling CSR.
+```
+
+The architectural state of the hart includes `mtime`.  Hence, the legal value in a WARL field may depend on the time.  In other words, any WARL field may behave differently on Thursdays, or during a blue moon.  This implies that no reference model can predict the behavior of the DUT with a reasonable set of parameters.  Hence, WARL fields cannot be tested by writing them, reading them back, and comparing against a reference model.  Instead, they can only be tested by checking if they hold values considered legal in the specification.
+
+Moreover, every WARL field might change to UNSPECIFIED any time a second CSR changes. Hence, the
+https://github.com/riscv/riscv-isa-manual/issues/3007
+
+*** make a list of registers and their restrictions
+
+== Restrictions
+
+*** add some of these to the profile?
+
+Certification requires a M-mode trap handler that implements a Test Supervisor Binary Interface (T-SBI) defined in the Certification Test Plan (CTP).  It also expects M-mode CSRs to be initialized in certain ways to allow testing of features at lower privilege modes. For example, floating-point and vector must be turned in in `mstatus` to test these mandatory extensions.  Therefore, the DUT must have the ability to run M-mode boot code that installs the trap handler and initializes CSRs.  A DUT that runs M-mode firmware in ROM and transfers control to S-mode before allowing software to run would not be certifiable because it could not install the trap handler or initialize CSRs.
+
+`mtvec` is a WARL field whose behavior is theoretically unpredictable.
+
+*** Suggest changing sstc to require mcounteren.TM not be Read-only zero. Affects architecture manual.
+https://github.com/riscv/riscv-isa-manual/pull/3006
+`mcounteren.TM` must not be read-only 0 or there is no way to access the current time and to set stimecmp to a reasonable value.
+
+
+Restrictions on CSR WARL field modulation.
+
+*** can mstatus.FS allow clean only on Thursdays.
+
+Do we allow restrictions that the behavior of most features can be predicted with a reasonable set of parameters?
+
+To Discuss later:
+Testing of Sstateen for unimplemented extensions.  Handling mstateen for ratified extensions that aren't part of the required and optional profile list.
+
+== Ignore beyond here
+
+.Base ISA Requirements
+[cols="1,4"]
+|===
+| Requirement ID | Description
+
+| REQ32-BASE | Uses the RV32I base integer ISA
+| REQ64-BASE | Uses the RV64I base integer ISA
+| REQ-ENDIANNESS | Only little-endian is supported
+|===
+
+=== Exclusions
+
+None
+
+<<<
+== Extensions
+
+include::exts_intro.adoc[]
+
+=== Mandatory Extensions
+
+.Mandatory Extensions
+[%autowidth]
+|===
+| Requirement ID | Extension | Version
+
+| REQ-EXT-C | <<extension:C,C>> | ~> 2.0
+| REQ-EXT-Zicsr | <<extension:Zicsr,Zicsr>> | ~> 2.0
+| REQ-EXT-Sm | <<extension:Sm,Minimal Machine Mode>> | ~> 1.13
+
+|===
+
+=== Optional Extensions
+
+.Optional Extensions
+[%autowidth]
+|===
+| Requirement ID | Extension | Version
+
+| REQ-EXT-A | <<extension:A,A>> | ~> 2.1
+| REQ-EXT-M | <<extension:M,M>> | ~> 2.0
+| REQ-EXT-Zicntr | <<extension:Zicntr,Zicntr>> | ~> 2.0
+| REQ-EXT-Zifencei | <<extension:Zifencei,Zifencei>> | ~> 2.0
+| REQ-EXT-Zihpm | <<extension:Zihpm,Zihpm>> | ~> 2.0
+
+|===
+
+<<<
+== Parameter Values
+
+This section lists the parameters that are IN-SCOPE and OUT-OF-SCOPE for the RVA23 certificate.
+
+Please refer to the <<parameter_defs,Parameter Definitions>> appendix for more information about the parameters listed in this section or click on the parameter names in the table below to jump to their definitions.
+
+include::in_scope_param_intro.adoc[]
+
+.IN-SCOPE Parameters
+[%autowidth]
+|===
+| Parameter | Allowed Value(s) | Impact on Certificate Scope
+
+| <<param:HPM_COUNTER_SZ,HPM_COUNTER_SZ>>
+| Any
+| Only counters with a size of 0 are IN-SCOPE since the behavior of HPM counters is implementation-specific.
+
+| <<param:LRSC_RESERVATION_STRATEGY,LRSC_RESERVATION_STRATEGY>>
+| Any
+| The load-reserved/store-conditional instructions are only IN-SCOPE if this parameter is not "Other"
+
+| <<param:MISALIGNED_LDST_HW_SUPPORT,MISALIGNED_LDST_HW_SUPPORT>>
+| Any
+| Misaligned load/store instructions are only IN-SCOPE if this parameter is true
+and if any restrictions on misaligned load/store instructions expressed by other parameters are met.
+
+| <<param:MISALIGNED_ATOMICITY_GRANULE_SIZE,MISALIGNED_ATOMICITY_GRANULE_SIZE>>
+| Any
+a|
+Zero:: Misaligned AMO instructions are OUT-OF-SCOPE.
+Non-zero:: Misaligned AMO atomic instructions and
+misaligned load/store instructions are IN-SCOPE if within the NAPOT byte region assuming that
+any restrictions on misaligned supported expressed by other parameters are met.
+
+| <<param:TIME_CSR_HW_SUPPORT,TIME_CSR_HW_SUPPORT>>
+| Any
+| Reading time-related CSRs is only IN-SCOPE if this parameter is true
+
+|===
+
+include::out_of_scope_param_intro.adoc[]
+
+.OUT-OF-SCOPE Parameters
+[%autowidth]
+|===
+| Parameter
+
+| TBD
+
+|===
+
+== CSR WARL Fields
+
+TBD
+
+== CSR WLRL Fields
+
+TBD
+
+include::ext_appendix.adoc[]
+include::ext_defs/A.adoc[]
+include::ext_defs/C.adoc[]
+include::ext_defs/D.adoc[]
+include::ext_defs/F.adoc[]
+include::ext_defs/M.adoc[]
+include::ext_defs/Sm.adoc[]
+include::ext_defs/Zicntr.adoc[]
+include::ext_defs/Zicsr.adoc[]
+include::ext_defs/Zifencei.adoc[]
+include::ext_defs/Zihpm.adoc[]
+
+include::param_appendix.adoc[]
+include::param_defs/HPM_COUNTER_SZ.adoc[]
+include::param_defs/LRSC_RESERVATION_STRATEGY.adoc[]
+include::param_defs/MISALIGNED_LDST_HW_SUPPORT.adoc[]
+include::param_defs/MISALIGNED_ATOMICITY_GRANULE_SIZE.adoc[]
+include::param_defs/TIME_CSR_HW_SUPPORT.adoc[]
+|===

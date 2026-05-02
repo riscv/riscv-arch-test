@@ -3,8 +3,8 @@
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
-name: imperas-rv64-max
-description: rv64 with all non-conflicting extensions enabled
+name: imperas-rv32gck
+description: rv32 with all non-conflicting extensions enabled
 implemented_extensions:
   - { name: A, version: "= 2.1.0" }
   - { name: B, version: "= 1.0.0" }
@@ -33,8 +33,6 @@ implemented_extensions:
   - { name: Smctr, version: "= 1.0.0" }
   - { name: Smdbltrp, version: "= 1.0.0" }
   - { name: Smepmp, version: "= 1.0.0" }
-  - { name: Smmpm, version: "= 1.0.0" }
-  - { name: Smnpm, version: "= 1.0.0" }
   - { name: Smrnmi, version: "= 1.0.0" }
   - { name: Smstateen, version: "= 1.0.0" }
   - { name: Ssaia, version: "= 1.0.0" }
@@ -45,8 +43,6 @@ implemented_extensions:
   - { name: Sscsrind, version: "= 1.0.0" }
   - { name: Ssctr, version: "= 1.0.0" }
   - { name: Ssdbltrp, version: "= 1.0.0" }
-  - { name: Ssnpm, version: "= 1.0.0" }
-  - { name: Sspm, version: "= 1.0.0" }
   - { name: Ssqosid, version: "= 1.0.0" }
   - { name: Ssstateen, version: "= 1.0.0" }
   - { name: Ssstrict, version: "= 1.0.0" }
@@ -54,22 +50,15 @@ implemented_extensions:
   - { name: Sstvala, version: "= 1.0.0" }
   - { name: Sstvecd, version: "= 1.0.0" }
   - { name: Sstvecv, version: "= 1.0.0" }
-  - { name: Ssu64xl, version: "= 1.0.0" }
+  - { name: Ssu32xl, version: "= 1.0.0" }
   - { name: Ssube, version: "= 1.0.0" }
-  - { name: Supm, version: "= 1.0.0" }
-  - { name: Sv39, version: "= 1.13.0" }
-  - { name: Sv48, version: "= 1.13.0" }
-  - { name: Sv57, version: "= 1.13.0" }
+  - { name: Sv32, version: "= 1.13.0" }
   - { name: Svade, version: "= 1.0.0" }
   - { name: Svadu, version: "= 1.0.0" }
   - { name: Svbare, version: "= 1.0.0" }
   - { name: Svinval, version: "= 1.0.0" }
-  - { name: Svnapot, version: "= 1.0.0" }
-  - { name: Svpbmt, version: "= 1.0.0" }
-  - { name: Svrsw60t59b, version: "= 1.0.0" }
   - { name: Svvptc, version: "= 1.0.0" }
   - { name: U, version: "= 1.0.0" }
-  - { name: V, version: "= 1.0.0" }
   - { name: Za128rs, version: "= 1.0.0" }
   - { name: Za64rs, version: "= 1.0.0" }
   - { name: Zaamo, version: "= 1.0.0" }
@@ -88,6 +77,7 @@ implemented_extensions:
   - { name: Zbs, version: "= 1.0.0" }
   - { name: Zca, version: "= 1.0.0" }
   - { name: Zcb, version: "= 1.0.0" }
+  - { name: Zcf, version: "= 1.0.0" }
   - { name: Zcd, version: "= 1.0.0" }
   - { name: Zcmop, version: "= 1.0.0" }
   - { name: Zfa, version: "= 1.0.0" }
@@ -112,6 +102,7 @@ implemented_extensions:
   - { name: Zihintntl, version: "= 1.0.0" }
   - { name: Zihintpause, version: "= 2.0.0" }
   - { name: Zihpm, version: "= 2.0.0" }
+  - { name: Zilsd, version: "= 1.0.0" }
   - { name: Zimop, version: "= 1.0.0" }
   - { name: Zk, version: "= 1.0.0" }
   - { name: Zkn, version: "= 1.0.0" }
@@ -124,37 +115,6 @@ implemented_extensions:
   - { name: Zksh, version: "= 1.0.0" }
   - { name: Zkt, version: "= 1.0.0" }
   - { name: Zmmul, version: "= 1.0.0" }
-  - { name: Zvbb, version: "= 1.0.0" }
-  - { name: Zvbc, version: "= 1.0.0" }
-  - { name: Zve32f, version: "= 1.0.0" }
-  - { name: Zve32x, version: "= 1.0.0" }
-  - { name: Zve64d, version: "= 1.0.0" }
-  - { name: Zve64f, version: "= 1.0.0" }
-  - { name: Zve64x, version: "= 1.0.0" }
-  - { name: Zvfbfmin, version: "= 1.0.0" }
-  - { name: Zvfbfwma, version: "= 1.0.0" }
-  - { name: Zvfh, version: "= 1.0.0" }
-  - { name: Zvfhmin, version: "= 1.0.0" }
-  - { name: Zvkb, version: "= 1.0.0" }
-  - { name: Zvkg, version: "= 1.0.0" }
-  - { name: Zvkn, version: "= 1.0.0" }
-  - { name: Zvknc, version: "= 1.0.0" }
-  - { name: Zvkned, version: "= 1.0.0" }
-  - { name: Zvkng, version: "= 1.0.0" }
-  - { name: Zvknha, version: "= 1.0.0" }
-  - { name: Zvknhb, version: "= 1.0.0" }
-  - { name: Zvks, version: "= 1.0.0" }
-  - { name: Zvksc, version: "= 1.0.0" }
-  - { name: Zvksed, version: "= 1.0.0" }
-  - { name: Zvksg, version: "= 1.0.0" }
-  - { name: Zvksh, version: "= 1.0.0" }
-  - { name: Zvkt, version: "= 1.0.0" }
-  - { name: Zvl32b, version: "= 1.0.0" }
-  - { name: Zvl64b, version: "= 1.0.0" }
-  - { name: Zvl128b, version: "= 1.0.0" }
-  - { name: Zvl256b, version: "= 1.0.0" }
-  - { name: Zvl512b, version: "= 1.0.0" }
-  - { name: Zvl1024b, version: "= 1.0.0" }
 
 params:
   # A params
@@ -162,7 +122,7 @@ params:
   LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
   LRSC_FAIL_ON_VA_SYNONYM: false
   LRSC_MISALIGNED_BEHAVIOR: "always raise access fault"
-  LRSC_FAIL_ON_NON_EXACT_LRSC: false
+  LRSC_FAIL_ON_NON_EXACT_LRSC: true
   MUTABLE_MISA_A: false
   # M params
   MUTABLE_MISA_M: false
@@ -189,13 +149,13 @@ params:
   # U params
   MUTABLE_MISA_U: false
   U_MODE_ENDIANNESS: dynamic
-  UXLEN: [64]
+  UXLEN: [32]
   TRAP_ON_ECALL_FROM_U: true
   # S params
   MUTABLE_MISA_S: false
-  ASID_WIDTH: 16
+  ASID_WIDTH: 9
   S_MODE_ENDIANNESS: dynamic
-  SXLEN: [64]
+  SXLEN: [32]
   REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT: true
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT: true
   REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT: true
@@ -210,7 +170,7 @@ params:
   REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT: true
   REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT: true
   REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION: true
-  STVAL_WIDTH: 64
+  STVAL_WIDTH: 32
   SCOUNTENABLE_EN:
     [
       true,
@@ -253,7 +213,7 @@ params:
   MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
   MSTATUS_TVM_IMPLEMENTED: true
   # Sm params
-  MXLEN: 64
+  MXLEN: 32
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
   TRAP_ON_EBREAK: true
@@ -279,10 +239,10 @@ params:
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
   REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
   REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
-  MTVAL_WIDTH: 64
+  MTVAL_WIDTH: 32
   CONFIG_PTR_ADDRESS: 0
   PMA_GRANULARITY: 3
-  PHYS_ADDR_WIDTH: 56
+  PHYS_ADDR_WIDTH: 34
   M_MODE_ENDIANNESS: dynamic
   MISA_CSR_IMPLEMENTED: true
   MTVEC_ACCESS: rw
@@ -291,7 +251,7 @@ params:
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   NUM_PMP_ENTRIES: 16
-  PMP_GRANULARITY: 6
+  PMP_GRANULARITY: 2
   HPM_COUNTER_EN:
     [
       false,
@@ -398,39 +358,11 @@ params:
       true,
       true,
     ]
-  # Vector params
-  MUTABLE_MISA_V: false
-  VLEN: 1024
-  ELEN: 64
-  FOLLOW_VTYPE_RESET_RECOMMENDATION: true
-  HW_MSTATUS_VS_DIRTY_UPDATE: precise
-  RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX: VLMAX
-  SEW_MIN: 8
-  SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED: "no_unrequired_supported"
-  VILL_SET_ON_RESERVED_VTYPE: true
-  RESERVED_VSET_X0X0_VILL_SET: "always"
-  RESERVED_VSET_X0X0_VLMAX_CHANGE: "always"
-  VECTOR_LS_INDEX_MAX_EEW: "XLEN"
-  VECTOR_FF_UPDATE_PAST_TRIM: "update_none"
-  VECTOR_FF_SEG_EXCEPTION_PARTIAL_LOAD: "no_subsegment_loaded"
-  VECTOR_LS_MISALIGNED_LEGAL: true
-  VECTOR_LOAD_PAST_TRAP: false
-  VECTOR_LOAD_SEG_FF_OVERWRITE_ELEMENTS_AFTER_FAULT: "no_overwrite"
-  VECTOR_LS_SEG_PARTIAL_ACCESS: false
-  LEGAL_VSTART: "1_stride"
-  VECTOR_LS_WHOLEREG_MISALIGNED_LEGAL: true
-  VSSTATUS_VS_EXISTS: true
-  VECTOR_FF_NO_EXCEPTION_TRIM: false
-  VFREDUSUM_NAN: "no_change"
-  VFREDUSUM_NODE_ROUNDING_BEHAVIOR: "SEW_precision"
-  VFREDUSUM_INACTIVE_NODE_ELEMENT_BEHAVIOR: "additive_identity"
-  VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR: "additive_identity"
-  IMPRECISE_VECTOR_TRAP_SETTABLE: false
   # H params
   MUTABLE_MISA_H: false
-  VSXLEN: [64]
-  VUXLEN: [64]
-  VMID_WIDTH: 14
+  VSXLEN: [32]
+  VUXLEN: [32]
+  VMID_WIDTH: 7
   VS_MODE_ENDIANNESS: little
   VU_MODE_ENDIANNESS: little
   GSTAGE_MODE_BARE: true
@@ -439,7 +371,7 @@ params:
   VSTVEC_MODE_VECTORED: true
   HSTATEEN_ENVCFG_TYPE: rw
   IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
-  NUM_EXTERNAL_GUEST_INTERRUPTS: 63
+  NUM_EXTERNAL_GUEST_INTERRUPTS: 31
   REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION: true
   REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION: true
   REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT: true
@@ -457,12 +389,8 @@ params:
   REPORT_VA_IN_VSTVAL_ON_STORE_AMO_ACCESS_FAULT: true
   REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED: true
   REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT: true
-  SV39_VSMODE_TRANSLATION: true
-  SV39X4_TRANSLATION: true
-  SV48_VSMODE_TRANSLATION: true
-  SV48X4_TRANSLATION: true
-  SV57_VSMODE_TRANSLATION: true
-  SV57X4_TRANSLATION: true
+  SV32_VSMODE_TRANSLATION: true
+  SV32X4_TRANSLATION: true
   TINST_VALUE_ON_BREAKPOINT: "always zero"
   TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT: "always zero"
   TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT: "always zero"
@@ -533,8 +461,6 @@ params:
   HCONTEXT_AVAILABLE: true
   HSTATEEN_CONTEXT_TYPE: rw
   MCONTEXT_AVAILABLE: true
-  # Pointer masking params
-  PMLEN: 17
   # Ssqosid params
   MCID_WIDTH: 12
   RCID_WIDTH: 12

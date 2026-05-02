@@ -3,7 +3,7 @@
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
-name: imperas-rv32-max
+name: imperas-rv32gcv
 description: rv32 with all non-conflicting extensions enabled
 implemented_extensions:
   - { name: A, version: "= 2.1.0" }
@@ -72,9 +72,6 @@ implemented_extensions:
   - { name: Zba, version: "= 1.0.0" }
   - { name: Zbb, version: "= 1.0.0" }
   - { name: Zbc, version: "= 1.0.0" }
-  - { name: Zbkb, version: "= 1.0.0" }
-  - { name: Zbkc, version: "= 1.0.0" }
-  - { name: Zbkx, version: "= 1.0.0" }
   - { name: Zbs, version: "= 1.0.0" }
   - { name: Zca, version: "= 1.0.0" }
   - { name: Zcb, version: "= 1.0.0" }
@@ -105,16 +102,6 @@ implemented_extensions:
   - { name: Zihpm, version: "= 2.0.0" }
   - { name: Zilsd, version: "= 1.0.0" }
   - { name: Zimop, version: "= 1.0.0" }
-  - { name: Zk, version: "= 1.0.0" }
-  - { name: Zkn, version: "= 1.0.0" }
-  - { name: Zknd, version: "= 1.0.0" }
-  - { name: Zkne, version: "= 1.0.0" }
-  - { name: Zknh, version: "= 1.0.0" }
-  - { name: Zkr, version: "= 1.0.0" }
-  - { name: Zks, version: "= 1.0.0" }
-  - { name: Zksed, version: "= 1.0.0" }
-  - { name: Zksh, version: "= 1.0.0" }
-  - { name: Zkt, version: "= 1.0.0" }
   - { name: Zmmul, version: "= 1.0.0" }
   - { name: Zvbb, version: "= 1.0.0" }
   - { name: Zvbc, version: "= 1.0.0" }

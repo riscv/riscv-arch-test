@@ -198,10 +198,6 @@
         `cover_info("//      SmV - Enabled");
         `include "SmV_coverage_init.svh"
     `endif
-    `ifdef COVER_SSCCPTR
-        `cover_info("//      Ssccptr - Enabled");
-        `include "Ssccptr_coverage_init.svh"
-    `endif
     `ifdef COVER_SSCOUNTERENW
         `cover_info("//      Sscounterenw - Enabled");
         `include "Sscounterenw_coverage_init.svh"

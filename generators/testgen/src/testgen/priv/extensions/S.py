@@ -291,6 +291,8 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
         f"LI(x{reg2}, 0x420122)          # x{reg2} has all MPRV, SPP, SPIE, SIE, TSR bits set (bits [17], [8], [5], [1], [22] respectively)",
         f"not x{reg2}, x{reg2}              # x{reg2} has all but MPRV, SPP, SPIE, SIE, TSR bits set",
         f"and x{reg1}, x{save_reg}, x{reg2}          # clear MPRV, SPP, SPIE, SIE, TSR bits",
+        f"LI x{reg1}, 1 << 2",
+        f"CSRC medeleg, x{reg1}          # turn off delegating illegal instruction exceptions so TSR won't cause a trap loop on sret",
     ]
 
     for spp in (0, 1):
@@ -322,7 +324,12 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
                             ]
                         )
 
-    lines.append(f"\nCSRW(mstatus, x{save_reg})    # restore CSR")
+    lines.extend(
+        [
+            "// leave medeleg of illegal instruction off because it will be needed in the upcoming srets tests",
+            f"\nCSRW(mstatus, x{save_reg})    # restore CSR",
+        ]
+    )
     test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
     return lines
 
@@ -396,7 +403,16 @@ def _generate_srets_tests(test_data: TestData) -> list[str]:
                         ]
                     )
 
-    lines.append(f"\nCSRW(sstatus, x{save_reg})    # restore CSR")
+    lines.extend(
+        [
+            f"LI x{reg1}, 1 << 2",
+            f"CSRS medeleg, x{reg1}           # restore delegating illegal instructions",
+            f"\nCSRW(sstatus, x{save_reg})    # restore CSR",
+            "RVTEST_GOTO_MMODE                # return to M-mode to re-enable illegal instruction delegation",
+            f"LI x{reg1}, 1 << 2",
+            f"CSRS medeleg, x{reg1}           # restore delegating illegal instructions",
+        ]
+    )
     test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
     return lines
 

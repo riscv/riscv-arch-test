@@ -211,10 +211,6 @@
 #ifdef RVTEST_FP
     failedtest_saveresults_fflags:
         # Re-read fflags for bad value (hasn't changed since failure).
-        # Must read fflags (5 bits) — NOT fcsr — because the signature stores
-        # only fflags. Reading fcsr would mix in frm[2:0], producing a
-        # "Bad Value" that disagrees with "Expected Value" in bits the
-        # comparison never checked, masking the true mismatch.
         csrr x6, fflags
         SREG x6, 272(DEFAULT_TEMP_REG)    # failing_value
 

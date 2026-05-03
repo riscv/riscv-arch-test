@@ -39,6 +39,12 @@ def make_fs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
             bin_name = f"b{edge_val:#x}{f'_{frm_mode}' if frm_mode is not None else ''}"
             desc = f"{coverpoint} (Test source fs1 value = {test_data.flen_format_str.format(edge_val)}{f', frm = {frm_mode}' if frm_mode is not None else ''})"
             tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+            if frm_mode == "dyn":
+                # Set fcsr.frm to a non-default value (RDN=2) so that rm=111 (dyn) is
+                # forced to read a non-RNE frm from the CSR. Without this, fcsr.frm=0
+                # at test time, making the dyn test identical to the rne test and
+                # allowing a DUT that hard-wires dyn=RNE to produce a false PASS.
+                tc.code = "fsrmi 0x2 # set fcsr.frm to RDN before dyn test\n" + tc.code + "\nfsrmi 0x0 # restore fcsr.frm to RNE"
             test_chunks.append(tc)
             return_test_regs(test_data, params)
 

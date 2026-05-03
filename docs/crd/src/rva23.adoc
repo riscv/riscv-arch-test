@@ -31,8 +31,10 @@ a| * Initial draft
 The RVA23 processor certificate is based on the https://riscv.github.io/riscv-isa-manual/snapshot/spec/#_rva23s64_profile[RVA23S64] profile. To
 qualify for a certificate, the processor must implement the RV64I base instruction set and all of the mandatory
 extensions of the profile.  It may implement any of the optional features of
-the profile.  It may implement ratified extensions that not part of the profile. It may implement other unratified extensions, but must not implement
-extensions outside the custom encoding spaces if the optional Ssstrict extension is implemented.  Certain processors might comply with the profile but are impractical to test and therefore cannot be certified. ***is that true <<Restrictions>> lists restrictions on the platform and parameters to make a processor certifiable.
+the profile.  It may implement ratified extensions that are not part of the profile. It may implement other unratified extensions, but must not implement
+extensions outside the custom encoding spaces if the optional Ssstrict extension is implemented, and those extensions are not tested during
+certification.  Certain processors might comply with the profile but are impractical to test and therefore cannot be certified.
+***is that true <<Restrictions>> lists restrictions on the platform and parameters to make a processor certifiable.
 
 // include::crd_common.adoc[]
 // include::csr_field_types.adoc[]
@@ -70,7 +72,7 @@ RVA23 certification requires that the SBI provide methods of controlling every w
 
 Write down why mstatus.TSR and medeleg are in scope and PMP is out of scope.
 
-TSR is talking about what is going to happen on an S-mode instruction sret, whether it traps to execution.  Same thing for medeleg.  But PMP is talking about whether a lw to a address traps.
+TSR is talking about what is going to happen on an S-mode instruction sret, whether it traps to execution.  Same thing for medeleg.  But PMP is talking about whether a lw to an address traps.
 
 Another possibility Allen raises is that TSR is not tested.  If the execution environment sets TSR, then it is responsible for emulating sret and returning in a way that is invisible to the S-mode software so there is nothing that needs to be tested and the tests don't care whether it trapped to M-mode or not.
 
@@ -89,7 +91,7 @@ These CSRs are:
 Note: XS, SDT, SBE, UBE OUT-OF-SCOPE of RVA23
 Note: SD, SPELP, MXR, SUM, FS, VS, SPP, SPIE, SPP are accessible from `sstatus` and should not be tested through `mstatus` for RVA23 certification.  GVA and MPV do not affect the behavior of lower privilege modes.
 *** check the rest of these
-| `medeleg` | All standard fields must be controllable except that except `ecall` from S and M-mode must not be delegatable because the SBI must trap to M-mode.
+| `medeleg` | All standard fields must be controllable except that `ecall` from S and M-mode must not be delegatable because the SBI must trap to M-mode.
 | `mideleg` | All supervisor interrupts must be delegatable including SEI, SSI, STI, VSEI, VSSI, VSTI, LCOFI, SGEI.  Machine interrupts MEI, MSI, MTI are OUT-OF_SCOPE.
 | `mip` | SEIP, STIP, SSIP must be writable (if the DUT supports them) to send interrupts to S-mode.  MEIP, MSIP, MTIP are OUT-OF-SCOPE.  LCOFIP is accessible from `sip` and SGEIP is controlled by `hgeip` and `hgeie`.
 | `mie` | No fields are used for RVA23 certification because all relevant fields are accessible from `sie` or `hie`.
@@ -134,13 +136,13 @@ Supervisor, virtual supervisor, and counter overflow interrupts are IN-SCOPE and
 
 The Privileged spec 2.3.3 states:
 
-```
+....
 Implementations can return any legal value on the read of a WARL field when the last write was of an illegal value, but the legal value returned should deterministically depend on the illegal written value and the architectural state of the hart.
-```
+....
 
-```
+....
 If a write to one CSR changes the set of legal values allowed for a field of a second CSR, then unless specified otherwise, the second CSR’s field immediately gets an UNSPECIFIED value from among its new legal values. This is true even if the field’s value before the write remains legal after the write; the value of the field may be changed in consequence of the write to the controlling CSR.
-```
+....
 
 The architectural state of the hart includes `mtime`.  Hence, the legal value in a WARL field may depend on the time.  In other words, any WARL field may behave differently on Thursdays, or during a blue moon.  This implies that no reference model can predict the behavior of the DUT with a reasonable set of parameters.  Hence, WARL fields cannot be tested by writing them, reading them back, and comparing against a reference model.  Instead, they can only be tested by checking if they hold values considered legal in the specification.
 
@@ -223,41 +225,6 @@ include::exts_intro.adoc[]
 <<<
 == Parameter Values
 
-This section lists the parameters that are IN-SCOPE and OUT-OF-SCOPE for the RVA23 certificate.
-
-Please refer to the <<parameter_defs,Parameter Definitions>> appendix for more information about the parameters listed in this section or click on the parameter names in the table below to jump to their definitions.
-
-include::in_scope_param_intro.adoc[]
-
-.IN-SCOPE Parameters
-[%autowidth]
-|===
-| Parameter | Allowed Value(s) | Impact on Certificate Scope
-
-| <<param:HPM_COUNTER_SZ,HPM_COUNTER_SZ>>
-| Any
-| Only counters with a size of 0 are IN-SCOPE since the behavior of HPM counters is implementation-specific.
-
-| <<param:LRSC_RESERVATION_STRATEGY,LRSC_RESERVATION_STRATEGY>>
-| Any
-| The load-reserved/store-conditional instructions are only IN-SCOPE if this parameter is not "Other"
-
-| <<param:MISALIGNED_LDST_HW_SUPPORT,MISALIGNED_LDST_HW_SUPPORT>>
-| Any
-| Misaligned load/store instructions are only IN-SCOPE if this parameter is true
-and if any restrictions on misaligned load/store instructions expressed by other parameters are met.
-
-| <<param:MISALIGNED_ATOMICITY_GRANULE_SIZE,MISALIGNED_ATOMICITY_GRANULE_SIZE>>
-| Any
-a|
-Zero:: Misaligned AMO instructions are OUT-OF-SCOPE.
-Non-zero:: Misaligned AMO atomic instructions and
-misaligned load/store instructions are IN-SCOPE if within the NAPOT byte region assuming that
-any restrictions on misaligned supported expressed by other parameters are met.
-
-| <<param:TIME_CSR_HW_SUPPORT,TIME_CSR_HW_SUPPORT>>
-| Any
-| Reading time-related CSRs is only IN-SCOPE if this parameter is true
 
 |===
 
@@ -279,23 +246,3 @@ TBD
 == CSR WLRL Fields
 
 TBD
-
-include::ext_appendix.adoc[]
-include::ext_defs/A.adoc[]
-include::ext_defs/C.adoc[]
-include::ext_defs/D.adoc[]
-include::ext_defs/F.adoc[]
-include::ext_defs/M.adoc[]
-include::ext_defs/Sm.adoc[]
-include::ext_defs/Zicntr.adoc[]
-include::ext_defs/Zicsr.adoc[]
-include::ext_defs/Zifencei.adoc[]
-include::ext_defs/Zihpm.adoc[]
-
-include::param_appendix.adoc[]
-include::param_defs/HPM_COUNTER_SZ.adoc[]
-include::param_defs/LRSC_RESERVATION_STRATEGY.adoc[]
-include::param_defs/MISALIGNED_LDST_HW_SUPPORT.adoc[]
-include::param_defs/MISALIGNED_ATOMICITY_GRANULE_SIZE.adoc[]
-include::param_defs/TIME_CSR_HW_SUPPORT.adoc[]
-|===

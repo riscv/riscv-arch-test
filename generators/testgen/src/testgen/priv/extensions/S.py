@@ -416,10 +416,10 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     # Standard S-mode CSRs
     # Format: (CSR Name, IgnoreMask).  IgnoreMask specifies a set of bits to ignore
     csrs = [
-        ("sstatus", None),
+        ("sstatus", 0x100000000),  # bug in QEMU allows writing 11 to xstatus.UXLEN (bit 32); mask off until it is fixed
         ("scause", None),
         ("sie", None),
-        ("stvec", 0b11),
+        ("stvec", 0b1),  # stvec.MODE[0] can be 0 or 1 and is hard to predict with a reference model
         ("scounteren", None),
         ("senvcfg", None),
         ("sscratch", None),

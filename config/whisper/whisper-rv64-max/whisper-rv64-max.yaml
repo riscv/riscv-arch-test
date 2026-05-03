@@ -70,6 +70,8 @@ implemented_extensions:
   - { name: U, version: "= 1.0.0" }
   - { name: S, version: "= 1.12.0" }
   #  - { name: H, version: "= 1.0.0" } # this should be on but needs many associated parameters
+  - { name: Smstateen, version: "= 1.0.0" }
+  - { name: Ssstateen, version: "= 1.0.0" }
   - { name: Ssccptr, version: "= 1.0.0" }
   - { name: Sscounterenw, version: "= 1.0.0" }
   - { name: Ssstrict, version: "= 1.0.0" }

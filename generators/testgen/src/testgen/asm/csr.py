@@ -99,7 +99,7 @@ def csr_access_test(test_data: TestData, csr: tuple, covergroup: str, coverpoint
         "",
         f"# CSR Access Tests for {csr_name}",
         f"CSRR(x{save_reg}, {csr_name})    # Save CSR",
-        f"li x{temp_reg}, -1           # x{temp_reg} = all 1s",
+        f"LI(x{temp_reg}, -1)          # x{temp_reg} = all 1s",
     ]
     if mask is not None:
         lines.append(f"LI(x{mask_reg}, {~mask})    # Load complement of mask ({mask:#x})")

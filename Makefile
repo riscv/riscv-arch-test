@@ -15,13 +15,7 @@ COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/
 #  - Sm, S: Insufficient WARL configuration options.
 #  - InterruptsSm,InterruptsS,InterruptsU,PMPSm,PMPZca,SvaduPMP,SvPMP,SvPMPZicbo: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
 EXTENSIONS  ?=
-EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,InterruptsS,InterruptsU,InterruptsSstc,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo,SvPMPZicbo
-
-# Strip spaces from comma-separated lists so shell word-splitting doesn't break CLI arguments
-empty :=
-space := $(empty) $(empty)
-override EXTENSIONS := $(subst $(space),$(empty),$(EXTENSIONS))
-override EXCLUDE_EXTENSIONS := $(subst $(space),$(empty),$(EXCLUDE_EXTENSIONS))
+EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,InterruptsS,InterruptsU,InterruptsSstc,Sv,SvaduPMP,SvPMP,SvPMPZicbo,Svade,Svadu,Svinval,SvZicbo,Svnapot,Svpbmt,ExceptionsSvZalrsc,ExceptionsSvZaamo,ExceptionsZalrsc,ExceptionsZaamo,PMPS,PMPU,PMPSm
 
 # DEBUG, FAST, and VERBOSE are runtime options for controlling build output. DEBUG and FAST are mutually exclusive.
 # Set to True to enable, or leave blank to disable.

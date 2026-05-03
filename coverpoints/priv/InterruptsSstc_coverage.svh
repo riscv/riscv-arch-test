@@ -19,7 +19,7 @@ covergroup InterruptsSstc_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
 
-   // building blocks for the main coverpoints
+    // building blocks for the main coverpoints
 
     stimecmp_zero: coverpoint ins.current.csr[CSR_STIMECMP] {
         bins zero = {0};
@@ -107,5 +107,5 @@ endgroup
 
 
 function void interruptssstc_sample(int hart, int issue, ins_t ins);
-   InterruptsSstc_cg.sample(ins);
+    InterruptsSstc_cg.sample(ins);
 endfunction

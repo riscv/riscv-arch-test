@@ -166,6 +166,9 @@
     `ifdef COVER_SSSTRICTV
         ssstrictv_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SSTVALA
+        sstvala_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SSTVECD
         sstvecd_sample(hart, issue, ins);
     `endif

@@ -218,6 +218,10 @@
         `cover_info("//      SsstrictV - Enabled");
         `include "SsstrictV_coverage_init.svh"
     `endif
+    `ifdef COVER_SSTVALA
+        `cover_info("//      Sstvala - Enabled");
+        `include "Sstvala_coverage_init.svh"
+    `endif
     `ifdef COVER_SSTVECD
         `cover_info("//      Sstvecd - Enabled");
         `include "Sstvecd_coverage_init.svh"

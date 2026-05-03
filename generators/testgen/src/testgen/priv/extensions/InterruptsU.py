@@ -20,7 +20,7 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsU_cg"
     coverpoint = "cp_user_mti"
 
-    r_mtime, r_mtimecmp, r_temp, r_temp2, r_scratch = test_data.int_regs.get_registers(5)
+    r_mtime, r_mtimecmp, r_temp, r_temp2, r_scratch = test_data.int_regs.get_registers(5, exclude_regs=[])
 
     lines = [
         comment_banner(
@@ -72,6 +72,7 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
 
             lines.extend(
                 [
+                    "RVTEST_IDLE_FOR_INTERRUPT",
                     "RVTEST_GOTO_MMODE",
                     "nop",
                     *clr_mtimer_int(r_temp, r_mtimecmp),
@@ -87,7 +88,7 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsU_cg"
     coverpoint = "cp_user_msi"
 
-    r_scratch = test_data.int_regs.get_register()
+    r_scratch = test_data.int_regs.get_register(exclude_regs=[])
 
     lines = [
         comment_banner(
@@ -138,6 +139,7 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
 
             lines.extend(
                 [
+                    "RVTEST_IDLE_FOR_INTERRUPT",
                     "RVTEST_GOTO_MMODE",
                     "nop",
                     "RVTEST_CLR_MSW_INT",
@@ -153,7 +155,7 @@ def _generate_user_mei_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsU_cg"
     coverpoint = "cp_user_mei"
 
-    r_scratch = test_data.int_regs.get_register()
+    r_scratch = test_data.int_regs.get_register(exclude_regs=[])
 
     lines = [
         comment_banner(
@@ -207,7 +209,7 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsU_cg"
     coverpoint = "cp_wfi"
 
-    r_mtime, r_mtimecmp, r_temp, r_temp2, r_t1, r_t2, r_scratch = test_data.int_regs.get_registers(7)
+    r_mtime, r_mtimecmp, r_temp, r_temp2, r_t1, r_t2, r_scratch = test_data.int_regs.get_registers(7, exclude_regs=[])
 
     lines = [
         comment_banner(
@@ -257,9 +259,9 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
                 [
                     *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_temp2),  # Set timer to fire soon
                     test_data.add_testcase(binname, coverpoint, covergroup),
-                    "wfi",
-                    "nop",
-                    "RVTEST_GOTO_MMODE",
+                    "    wfi",
+                    "    nop",
+                    "    RVTEST_GOTO_MMODE",
                     *clr_mtimer_int(r_temp, r_mtimecmp),
                 ]
             )
@@ -273,7 +275,7 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsU_cg"
     coverpoint = "cp_wfi_timeout"
 
-    r_temp, r_mtimecmp, r_scratch = test_data.int_regs.get_registers(3)
+    r_temp, r_mtimecmp, r_scratch = test_data.int_regs.get_registers(3, exclude_regs=[])
 
     lines = [
         comment_banner(
@@ -332,13 +334,13 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("InterruptsU", required_extensions=["Sm", "U", "I", "Zicsr"])
+@add_priv_test_generator("InterruptsU", required_extensions=["U"])
 def make_interruptsu(test_data: TestData) -> list[str]:
     """Generate tests for InterruptsU user-mode interrupt behavior."""
 
     lines: list[str] = []
 
-    r_temp, r_mtimecmp = test_data.int_regs.get_registers(2)
+    r_temp, r_mtimecmp = test_data.int_regs.get_registers(2, exclude_regs=[])
 
     # Initial setup - clear any pending timer
     lines.append("CSRW(mideleg, zero)")

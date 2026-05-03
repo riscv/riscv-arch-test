@@ -20,7 +20,7 @@
 #define SIGUPD_COUNT 202
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define RVTEST_FP
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -1190,6 +1190,8 @@ Zcf_c_fswsp_cg_cp_imm_mul_4sp_b0xfc:
   FLREG f9, 0(sp) # load stored value for checking
   # Check if f9 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x21, x5, x4, f7, f9, Zcf_c_fswsp_cg_cp_imm_mul_4sp_b0xfc, Zcf_c_fswsp_cg_cp_imm_mul_4sp_b0xfc_str)
+
+  mv x2, x21 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

@@ -127,6 +127,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
             lines.append("RVTEST_GOTO_MMODE")
 
         # Instruction misaligned
+        lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
         lines.extend(
             [
                 test_data.add_testcase(f"instrmisaligned_{tag}", coverpoint, covergroup),
@@ -143,15 +144,18 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
                 )
             )
         lines.append("nop")
+        lines.append("#endif")
 
         # Instruction access fault
         lines.extend(
             [
+                "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
                 test_data.add_testcase(f"instraccessfault_{tag}", coverpoint, covergroup),
                 f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
                 "LI(x4, 0xACCE)",
                 f"jalr x1, 0(x{addr_reg})",
                 "nop",
+                "#endif",
             ]
         )
 
@@ -204,6 +208,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         lines.append("nop")
 
         # Load access fault
+        lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
         lines.extend(
             [
                 test_data.add_testcase(f"loadaccessfault_{tag}", coverpoint, covergroup),
@@ -221,6 +226,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
                 " nop",
                 "#endif",
                 "nop",
+                "#endif",
             ]
         )
 
@@ -246,6 +252,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         lines.append("nop")
 
         # Store access fault
+        lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
         lines.extend(
             [
                 test_data.add_testcase(f"storeaccessfault_{tag}", coverpoint, covergroup),
@@ -262,6 +269,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
                 " nop",
                 "#endif",
                 "nop",
+                "#endif",
             ]
         )
 
@@ -305,6 +313,7 @@ def _generate_stvec_tests(test_data: TestData, mode_tag: str, priv_mode: int) ->
     addr_reg = test_data.int_regs.get_register(exclude_regs=[0])
 
     lines = [
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(coverpoint, "delegated instr access fault in S/U mode goes to stvec"),
         "RVTEST_GOTO_MMODE",
         "# Delegate instr access fault (medeleg bit 1) to S-mode",
@@ -335,6 +344,7 @@ def _generate_stvec_tests(test_data: TestData, mode_tag: str, priv_mode: int) ->
         ]
     )
 
+    lines.append("#endif")
     test_data.int_regs.return_registers([addr_reg])
     return lines
 
@@ -410,7 +420,7 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
 
 @add_priv_test_generator(
     "ExceptionsS",
-    required_extensions=["I", "S", "Zicsr", "Sm"],
+    required_extensions=["S"],
     extra_defines=["#define SKIP_MEPC"],
 )
 def make_exceptionss(test_data: TestData) -> list[str]:

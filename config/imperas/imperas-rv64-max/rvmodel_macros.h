@@ -21,6 +21,14 @@
 # initializing custom state.
 //#define RVMODEL_BOOT
 
+// Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
+// if defined.  For most DUTs, the default should work and this macro
+// should not be defined.  If no M-mode or CSRs are implemented, define this
+// macro as blank to bypass the boot process.  If a nonconforming
+// M-mode is implemented, define this macro to set up the necessary
+// state in a fashion similar to RVTEST_BOOT_TO_MMODE.
+//#define RVMODEL_BOOT_TO_MMODE
+
 ##### TERMINATION #####
 
 // HTIF (Host-Target Interface) to terminate simulation.
@@ -100,16 +108,16 @@
   sw zero, 0(_R2)            ; /* Clear MEXT interrupt */ \
 
 
-#define MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
+#define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 
 #define RVMODEL_SET_MSW_INT(_R1, _R2)        \
   li _R1, 1;                 \
-  li _R2, MSIP_ADDRESS;              \
+  li _R2, RVMODEL_MSIP_ADDRESS;              \
   sw _R1, 0(_R2);
 
 
 #define RVMODEL_CLR_MSW_INT(_R1, _R2)        \
-  li _R2, MSIP_ADDRESS;              \
+  li _R2, RVMODEL_MSIP_ADDRESS;              \
   sw zero, 0(_R2);
 
 

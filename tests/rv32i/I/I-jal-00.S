@@ -825,6 +825,8 @@ cp_imm_edges_jal_done_b_m8192:
   RVTEST_SIGUPD(x27, x8, x7, x10, I_jal_cg_cp_imm_edges_jal_b_m13, I_jal_cg_cp_imm_edges_jal_b_m13_str)
 
 
+  mv x2, x27 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

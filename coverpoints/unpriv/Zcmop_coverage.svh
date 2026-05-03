@@ -18,6 +18,7 @@ covergroup Zcmop_c_mop_1_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
 endgroup
 // ---------------------
 covergroup Zcmop_c_mop_11_cg with function sample(ins_t ins);
@@ -26,6 +27,7 @@ covergroup Zcmop_c_mop_11_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
 endgroup
 // ---------------------
 covergroup Zcmop_c_mop_13_cg with function sample(ins_t ins);
@@ -34,6 +36,7 @@ covergroup Zcmop_c_mop_13_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
 endgroup
 // ---------------------
 covergroup Zcmop_c_mop_15_cg with function sample(ins_t ins);
@@ -42,6 +45,7 @@ covergroup Zcmop_c_mop_15_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
 endgroup
 // ---------------------
 covergroup Zcmop_c_mop_3_cg with function sample(ins_t ins);
@@ -50,6 +54,7 @@ covergroup Zcmop_c_mop_3_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
 endgroup
 // ---------------------
 covergroup Zcmop_c_mop_5_cg with function sample(ins_t ins);
@@ -58,6 +63,7 @@ covergroup Zcmop_c_mop_5_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
 endgroup
 // ---------------------
 covergroup Zcmop_c_mop_7_cg with function sample(ins_t ins);
@@ -66,6 +72,7 @@ covergroup Zcmop_c_mop_7_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
 endgroup
 // ---------------------
 covergroup Zcmop_c_mop_9_cg with function sample(ins_t ins);
@@ -74,6 +81,7 @@ covergroup Zcmop_c_mop_9_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
 endgroup
 // ---------------------
 function void zcmop_sample(int hart, int issue, ins_t ins);

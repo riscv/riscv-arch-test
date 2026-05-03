@@ -26,9 +26,9 @@ covergroup ExceptionsSvZaamo_cg with function sample(ins_t ins);
         // auto fill valid bit 0/1
     }
     amemops: coverpoint ins.current.insn {
-        wildcard bins amoadd_w = {32'b0000000_?????_?????_010_?????_0101111};
+        wildcard bins amoadd_w = {AMOADD_W};
     }
-    medeleg_walk: coverpoint ins.current.csr[12'h302] {
+    medeleg_walk: coverpoint ins.current.csr[CSR_MEDELEG] {
         bins zeros                    = {16'b0000_0000_0000_0000};
         `ifndef COVER_ZCA
             bins instrmisaligned_enabled  = {16'b0000_0000_0000_0001};

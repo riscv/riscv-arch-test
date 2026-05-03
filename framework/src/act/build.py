@@ -7,7 +7,10 @@
 # Python-native DAG build executor using graphlib.TopologicalSorter
 ##################################
 
+from __future__ import annotations
+
 import os
+import re
 import subprocess
 from collections.abc import Callable
 from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
@@ -16,7 +19,7 @@ from graphlib import TopologicalSorter
 from pathlib import Path
 from typing import Any
 
-from rich.console import Group
+from rich.console import Console, Group
 from rich.live import Live
 from rich.progress import (
     BarColumn,
@@ -55,7 +58,7 @@ class SymlinkAction:
     dst: Path
 
 
-type BuildAction = SubprocessAction | PythonAction | SymlinkAction
+BuildAction = SubprocessAction | PythonAction | SymlinkAction
 
 
 @dataclass(frozen=True)
@@ -87,6 +90,7 @@ class BuildError:
     command: str
     returncode: int
     output: str
+    log_file: Path | None = None  # path to log file (for SubprocessAction with stdout_file)
 
 
 @dataclass
@@ -141,13 +145,14 @@ def execute_task(task: BuildTask, *, verbose: bool = False) -> BuildError | None
                 cwd=action.cwd,
             )
             if action.stdout_file is not None:
-                action.stdout_file.write_text(result.stdout + result.stderr)
+                action.stdout_file.write_text(result.stderr + result.stdout)
             if result.returncode != 0:
                 return BuildError(
                     task_name=task.name,
                     command=_task_str(task),
                     returncode=result.returncode,
-                    output=result.stderr or result.stdout,
+                    output=result.stderr + result.stdout,
+                    log_file=action.stdout_file,
                 )
         except OSError as e:
             return BuildError(
@@ -268,7 +273,7 @@ def build(
     progress_task = progress.add_task("Building", total=len(tasks))
 
     with (
-        Live(Group(progress, status_text), console=progress.console) as live,
+        Live(Group(progress, status_text), console=progress.console, transient=True) as live,
         ThreadPoolExecutor(max_workers=jobs) as executor,
     ):
         in_flight: dict[Path, Future[BuildError | None]] = {}
@@ -325,11 +330,7 @@ def build(
                     result.failed += 1
                     result.errors.append(error)
                     failed_tasks.add(key)
-                    live.console.print(f"[red]FAILED: {key}", highlight=False)
-                    live.console.print(f"  Command: {error.command}", highlight=False)
-                    if error.output:
-                        for line in error.output.strip().splitlines()[:20]:
-                            live.console.print(f"  {line}", highlight=False)
+                    _print_failure(live.console, task_map[key], error, verbose=verbose)
                     if not keep_going:
                         # Cancel remaining tasks
                         executor.shutdown(wait=False, cancel_futures=True)
@@ -342,6 +343,96 @@ def build(
             _update_status(in_flight)
 
     return result
+
+
+def _print_failure(console: Console, task: BuildTask, error: BuildError, verbose: bool) -> None:
+    """Print a clear, actionable failure block for a failed build task.
+
+    Layout: header (short test name) -> output path -> error output (tail) ->
+    optional hint -> log file -> reproduce command. Paths are shown relative
+    to CWD when possible. soft_wrap=True keeps long paths intact.
+    """
+    max_output_lines = 30
+    primary = task.outputs[0]
+    short_name = primary.stem  # e.g., "I-add-00.sig" -> "I-add-00"
+
+    console.print()  # blank line separator
+    console.print(f"[bold red]✗ FAILED:[/] [bold]{short_name}[/]", soft_wrap=True, highlight=False)
+    console.print(f"  [dim]Output: {_short_path(primary)}[/]", soft_wrap=True, highlight=False)
+
+    if error.output:
+        console.print("[bold red]  Error output:[/]")
+        output_lines = _strip_noise(error.output).strip().splitlines()
+        if not verbose and len(output_lines) > max_output_lines:
+            omitted = len(output_lines) - max_output_lines
+            if error.log_file is not None:
+                console.print(f"    [dim]... {omitted} earlier line(s) omitted; see log file ...[/]")
+            else:
+                console.print(
+                    f"    [dim]... {omitted} earlier line(s) omitted; re-run with --verbose to see full output ...[/]"
+                )
+            output_lines = output_lines[-max_output_lines:]
+        for line in output_lines:
+            console.print(f"    {line}", soft_wrap=True, highlight=False)
+    else:
+        console.print(f"  [dim](no output captured; exit status {error.returncode})[/]")
+
+    if error.log_file is not None:
+        console.print(f"[bold]  Log file:[/] {_short_path(error.log_file)}", soft_wrap=True, highlight=False)
+
+    action = task.action
+    if isinstance(action, SubprocessAction):
+        console.print("[bold]  Reproduce with:[/]")
+        lines = _format_cmd_lines(action.cmd)
+        last = len(lines) - 1
+        for i, line in enumerate(lines):
+            suffix = "" if i == last else " \\"
+            indent = "    " if i == 0 else "      "
+            console.print(f"{indent}{line}{suffix}", soft_wrap=True, highlight=False)
+    else:
+        console.print(f"[bold]  Action:[/] {error.command}", soft_wrap=True, highlight=False)
+
+
+def _short_path(path: Path) -> str:
+    """Return path relative to CWD when reasonable, otherwise absolute."""
+    try:
+        rel = path.resolve().relative_to(Path.cwd().resolve())
+    except ValueError:
+        return str(path)
+    return str(rel)
+
+
+# Lines matching these patterns are boilerplate from third-party tools.
+# Stripped from the FAILED block so the actual error stands out; full output is
+# still written to the log file.
+_NOISE_PATTERNS: tuple[re.Pattern[str], ...] = (
+    re.compile(r"^\s*using .+ for test-signature output\.\s*$"),
+    re.compile(r"^\s*setting signature-granularity to \d+ bytes\s*$"),
+)
+
+
+def _strip_noise(output: str) -> str:
+    """Drop boilerplate lines that obscure real errors."""
+    if not output:
+        return output
+    return "\n".join(line for line in output.splitlines() if not any(p.match(line) for p in _NOISE_PATTERNS))
+
+
+def _format_cmd_lines(cmd: list[str]) -> list[str]:
+    """Split a command into readable lines, keeping `--flag value` pairs on one line."""
+    lines: list[str] = []
+    i = 0
+    while i < len(cmd):
+        arg = cmd[i]
+        # Pair a flag with its value: only if next arg exists, current starts with '-',
+        # and current is not already in --flag=value form.
+        if arg.startswith("-") and "=" not in arg and i + 1 < len(cmd) and not cmd[i + 1].startswith("-"):
+            lines.append(f"{arg} {cmd[i + 1]}")
+            i += 2
+        else:
+            lines.append(arg)
+            i += 1
+    return lines
 
 
 def _task_str(task: BuildTask) -> str:

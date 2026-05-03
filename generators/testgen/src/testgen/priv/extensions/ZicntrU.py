@@ -234,7 +234,7 @@ def _generate_mcounteren_access_m_tests(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "ZicntrU",
-    required_extensions=["I", "Zicsr", "Sm", "U", "Zicntr"],
+    required_extensions=["U", "Zicntr"],
     march_extensions=["Zicsr", "Zicntr", "I", "Zihpm"],
 )
 def make_zicntru(test_data: TestData) -> list[str]:

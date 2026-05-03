@@ -27,42 +27,41 @@ covergroup Sstvala_cg with function sample(ins_t ins);
             bins match = {1'b1};
     }
 
-    stval_illegal_instr_encoding: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval")[31:0] {
-            bins all_ones  = {32'hFFFFFFFF};
-            bins all_zeros = {32'h00000000};
+    stval_equals_insn: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval")[31:0] == ins.current.insn[31:0] {
+           bins match = {1'b1};
+}
+
+    medeleg_instr_ma: coverpoint ins.current.csr[CSR_MEDELEG][0] {
+            bins delegated = {1'b1};
+    }
+    medeleg_load_ma: coverpoint ins.current.csr[CSR_MEDELEG][4] {
+            bins delegated = {1'b1};
+    }
+    medeleg_store_ma: coverpoint ins.current.csr[CSR_MEDELEG][6] {
+            bins delegated = {1'b1};
+    }
+    medeleg_illegal: coverpoint ins.current.csr[CSR_MEDELEG][2] {
+            bins delegated = {1'b1};
     }
 
-    medeleg_instr_ma: coverpoint ins.current.csr[12'h302][0] {
+    medeleg_instr_pf: coverpoint ins.current.csr[CSR_MEDELEG][12] {
             bins delegated = {1'b1};
     }
-    medeleg_load_ma: coverpoint ins.current.csr[12'h302][4] {
+    medeleg_load_pf: coverpoint ins.current.csr[CSR_MEDELEG][13] {
             bins delegated = {1'b1};
     }
-    medeleg_store_ma: coverpoint ins.current.csr[12'h302][6] {
-            bins delegated = {1'b1};
-    }
-    medeleg_illegal: coverpoint ins.current.csr[12'h302][2] {
-            bins delegated = {1'b1};
-    }
-
-    medeleg_instr_pf: coverpoint ins.current.csr[12'h302][12] {
-            bins delegated = {1'b1};
-    }
-    medeleg_load_pf: coverpoint ins.current.csr[12'h302][13] {
-            bins delegated = {1'b1};
-    }
-    medeleg_store_pf: coverpoint ins.current.csr[12'h302][15] {
+    medeleg_store_pf: coverpoint ins.current.csr[CSR_MEDELEG][15] {
             bins delegated = {1'b1};
     }
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-    medeleg_instr_af: coverpoint ins.current.csr[12'h302][1] {
+    medeleg_instr_af: coverpoint ins.current.csr[CSR_MEDELEG][1] {
             bins delegated = {1'b1};
     }
-    medeleg_load_af: coverpoint ins.current.csr[12'h302][5] {
+    medeleg_load_af: coverpoint ins.current.csr[CSR_MEDELEG][5] {
             bins delegated = {1'b1};
     }
-    medeleg_store_af: coverpoint ins.current.csr[12'h302][7] {
+    medeleg_store_af: coverpoint ins.current.csr[CSR_MEDELEG][7] {
             bins delegated = {1'b1};
     }
     `endif
@@ -91,8 +90,6 @@ covergroup Sstvala_cg with function sample(ins_t ins);
 
     vaddr_d_misaligned: coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] {
     }
-    vaddr_i_misaligned: coverpoint {ins.prev.rs1_val + ins.prev.imm}[1:0] {
-    }
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
     illegal_data_address: coverpoint ins.current.rs1_val + ins.current.imm {
@@ -103,59 +100,41 @@ covergroup Sstvala_cg with function sample(ins_t ins);
     }
     `endif
 
+    pf_stval: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") {
     `ifdef XLEN64
-    pf_stval_rv64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") {
             bins sv39_page = {64'h0000000140300000};
-    }
-    `endif
-
-    `ifdef XLEN32
-    pf_stval_rv32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") {
+    `else
             bins sv32_page = {32'hC0300000};
-    }
     `endif
+}
 
-    // -----------------------------------------------------------------------
-    // Access-fault crosses
-    // -----------------------------------------------------------------------
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-    cp_stval_load_access_fault: cross priv_mode_s, illegal_data_address, stval_equals_vaddr_d, medeleg_load_af, lw_insn;
-    cp_stval_store_access_fault: cross priv_mode_s, illegal_data_address, stval_equals_vaddr_d, medeleg_store_af, sw_insn;
-    cp_stval_instr_access_fault: cross priv_mode_s, jalr_insn_curr, illegal_instr_address, stval_equals_vaddr_i, medeleg_instr_af;
+    cp_load_access_fault:  cross priv_mode_s, illegal_data_address,  stval_equals_vaddr_d, medeleg_load_af,  lw_insn;
+    cp_store_access_fault: cross priv_mode_s, illegal_data_address,  stval_equals_vaddr_d, medeleg_store_af, sw_insn;
+    cp_instr_access_fault: cross priv_mode_s, illegal_instr_address, stval_equals_vaddr_i, medeleg_instr_af, jalr_insn_curr;
     `endif
 
-    // -----------------------------------------------------------------------
-    // Misaligned crosses
-    // -----------------------------------------------------------------------
-
-    cp_stval_load_misaligned: cross priv_mode_s,  lw_insn, vaddr_d_misaligned, medeleg_load_ma;
-    cp_stval_store_misaligned: cross priv_mode_s, sw_insn, vaddr_d_misaligned, medeleg_store_ma;
+    cp_load_address_misaligned:  cross priv_mode_s, lw_insn, stval_equals_vaddr_d, vaddr_d_misaligned, medeleg_load_ma;
+    cp_store_address_misaligned: cross priv_mode_s, sw_insn, stval_equals_vaddr_d, vaddr_d_misaligned, medeleg_store_ma;
 
     `ifndef COVER_ZCA
-    cp_stval_instr_misaligned:       cross priv_mode_s, jalr_insn, vaddr_i_misaligned,    medeleg_instr_ma;
-    cp_stval_instr_misaligned_fault: cross priv_mode_s, jalr_insn, cause_instr_misaligned, stval_equals_vaddr_i, medeleg_instr_ma;
+    cp_instr_adr_misaligned_jalr: cross priv_mode_s, jalr_insn, cause_instr_misaligned, stval_equals_vaddr_i, medeleg_instr_ma;
     `endif
 
     // -----------------------------------------------------------------------
     // Illegal instruction cross
     // -----------------------------------------------------------------------
 
-    cp_stval_illegal_instr: cross priv_mode_s, illegalops, stval_illegal_instr_encoding, medeleg_illegal {
-            ignore_bins impossible_zeros_ones = binsof(illegalops.zeros) && binsof(stval_illegal_instr_encoding.all_ones);
-            ignore_bins impossible_ones_zeros = binsof(illegalops.ones)  && binsof(stval_illegal_instr_encoding.all_zeros);
-    }
-    `ifdef XLEN64
-    cp_stval_load_page_fault_rv64:  cross priv_mode_s, lw_insn,        medeleg_load_pf,  pf_stval_rv64;
-    cp_stval_store_page_fault_rv64: cross priv_mode_s, sw_insn,        medeleg_store_pf, pf_stval_rv64;
-    cp_stval_instr_page_fault_rv64: cross priv_mode_s, jalr_insn_curr, medeleg_instr_pf, pf_stval_rv64;
-    `endif
+    cp_illegal_instruction: cross priv_mode_s, illegalops, stval_equals_insn, medeleg_illegal;
 
-    `ifdef XLEN32
-    cp_stval_load_page_fault_rv32:  cross priv_mode_s, lw_insn,        medeleg_load_pf,  pf_stval_rv32;
-    cp_stval_store_page_fault_rv32: cross priv_mode_s, sw_insn,        medeleg_store_pf, pf_stval_rv32;
-    cp_stval_instr_page_fault_rv32: cross priv_mode_s, jalr_insn_curr, medeleg_instr_pf, pf_stval_rv32;
-    `endif
+    // -----------------------------------------------------------------------
+    // Page-fault crosses
+    // -----------------------------------------------------------------------
+    cp_stval_load_page_fault:  cross priv_mode_s, lw_insn,        medeleg_load_pf,  pf_stval;
+    cp_stval_store_page_fault: cross priv_mode_s, sw_insn,        medeleg_store_pf, pf_stval;
+    cp_stval_instr_page_fault: cross priv_mode_s, jalr_insn_curr, medeleg_instr_pf, pf_stval;
+
 
 endgroup
 

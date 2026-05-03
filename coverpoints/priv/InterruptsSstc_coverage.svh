@@ -2,7 +2,7 @@
 //
 // RISC-V Architectural Functional Coverage Covergroups
 //
-// Written: Corey Hickson chickson@hmc.edu, Sadhvi Narayanan sanarayanan@hmcedu April 2026
+// Written: Corey Hickson chickson@hmc.edu, Sadhvi Narayanan sanarayanan@hmc.edu April 2026
 //
 // Copyright (C) 2024 Harvey Mudd College, 10x Engineers, UET Lahore, Habib University
 //
@@ -15,11 +15,11 @@
 
 
 covergroup InterruptsSstc_cg with function sample(ins_t ins);
-   option.per_instance = 0;
-   `include "general/RISCV_coverage_standard_coverpoints.svh"
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
 
 
-   // building blocks for the main coverpoints
+    // building blocks for the main coverpoints
 
     stimecmp_zero: coverpoint ins.current.csr[CSR_STIMECMP] {
         bins zero = {0};
@@ -84,10 +84,10 @@ covergroup InterruptsSstc_cg with function sample(ins_t ins);
         bins one = {1};
     }
 
-   // main coverpoints
-   cp_machine_sti:     cross priv_mode_m, menvcfg_stce_one, mstatus_mie_one, mideleg_sti, mie_stie, stimecmp_zero;
-   cp_machine_tm:      cross priv_mode_m, csrr, read_stimecmp, mcounteren_tm;
-   cp_machine_stce:    cross priv_mode_m, csrr, read_stimecmp, menvcfg_stce;
+    // main coverpoints
+    cp_machine_sti:     cross priv_mode_m, menvcfg_stce_one, mstatus_mie_one, mideleg_sti, mie_stie, stimecmp_zero;
+    cp_machine_tm:      cross priv_mode_m, csrr, read_stimecmp, mcounteren_tm;
+    cp_machine_stce:    cross priv_mode_m, csrr, read_stimecmp, menvcfg_stce;
 
 
     cp_supervisor_sti_deleg: cross priv_mode_s, menvcfg_stce, mstatus_mie, mstatus_sie, mideleg_sti, mie_stie, stimecmp_zero;
@@ -107,5 +107,5 @@ endgroup
 
 
 function void interruptssstc_sample(int hart, int issue, ins_t ins);
-   InterruptsSstc_cg.sample(ins);
+    InterruptsSstc_cg.sample(ins);
 endfunction

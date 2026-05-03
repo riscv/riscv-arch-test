@@ -340,14 +340,14 @@ def set_menvcfg_stce(r_scratch: int, enable: bool) -> list[str]:
 
 
 def set_stimecmp_max(r_scratch: int) -> list[str]:
-    """Write stimecmp = -1 (max) to disable Sstc timer interrupt. M-mode only."""
+    """Write stimecmp = -1 (max) to disable Sstc timer interrupt."""
     return [
         f"{INDENT}# Disable Sstc timer: stimecmp = -1",
         f"LI(x{r_scratch}, -1)",
-        f"CSRW(stimecmp, x{r_scratch})",
         "#if __riscv_xlen == 32",
         f"    CSRW(stimecmph, x{r_scratch})",
         "#endif",
+        f"CSRW(stimecmp, x{r_scratch})",
     ]
 
 
@@ -368,7 +368,7 @@ def set_stimecmp_zero() -> list[str]:
     ]
 
 
-def set_stimecmp_soon(r_scratch: int, r_time: int, r_hi: int, time: int | None = None) -> list[str]:
+def set_stimecmp_soon(r_scratch: int, r_time: int, r_hi: int, delay: int | None = None) -> list[str]:
     """Write stimecmp = TIME + delay from M-mode.
 
     For example, this may be used to delay an interrupt firing until after switching to U-mode.
@@ -381,9 +381,9 @@ def set_stimecmp_soon(r_scratch: int, r_time: int, r_hi: int, time: int | None =
         r_scratch: scratch register (clobbered)
         r_time:    scratch for MTIME address / RV32 delay value (clobbered)
         r_hi:      scratch for RV32 old_hi / new_hi (clobbered; unused on RV64)
-        time:      timer-tick offset; defaults to RVMODEL_TIMER_INT_SOON_DELAY
+        delay:     timer-tick offset; defaults to RVMODEL_TIMER_INT_SOON_DELAY
     """
-    time_val = str(time) if time is not None else "RVMODEL_TIMER_INT_SOON_DELAY"
+    time_val = str(delay) if delay is not None else "RVMODEL_TIMER_INT_SOON_DELAY"
     return [
         f"{INDENT}# stimecmp = TIME + {time_val}",
         *set_stimecmp_max(r_scratch),
@@ -454,12 +454,14 @@ def mmode_sti_setup(r_scratch: int, r_stce: int, mideleg_sti: int, mie_stie: int
     ]
     # mideleg
     if mideleg_sti:
-        lines += [f"LI(x{r_scratch}, 0x20)", f"CSRW(mideleg, x{r_scratch})"]
+        lines.append(f"LI(x{r_scratch}, 0x20)")
+        lines.append(f"CSRW(mideleg, x{r_scratch})")
     else:
         lines.append("CSRW(mideleg, zero)")
     # mie.STIE
     if mie_stie:
-        lines += [f"LI(x{r_scratch}, 0x20)", f"CSRW(mie, x{r_scratch})"]
+        lines.append(f"LI(x{r_scratch}, 0x20)")
+        lines.append(f"CSRW(mie, x{r_scratch})")
     else:
         lines.append("CSRW(mie, zero)")
     return lines

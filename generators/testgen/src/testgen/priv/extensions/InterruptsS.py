@@ -170,8 +170,8 @@ def _generate_trigger_ssi_mip_tests(test_data: TestData) -> list[str]:
                 coverpoint = "cp_trigger_ssi_mip"
                 enable_name = f"sie_{int_enable_val}"
             else:
-                # Not delegated: cp_trigger_ssi_mip2, vary MIE
-                coverpoint = "cp_trigger_ssi_mip2"
+                # Not delegated: cp_trigger_ssi_mip_m, vary MIE
+                coverpoint = "cp_trigger_ssi_mip_m"
                 enable_name = f"mie_{int_enable_val}"
 
             binname = f"{mideleg_name}_{enable_name}"
@@ -357,6 +357,7 @@ def _generate_trigger_sei_tests(test_data: TestData) -> list[str]:
             mideleg_name = ["nodeleg", "deleg"][mideleg_val]
             sie_name = f"sie_{sie_val}"
             binname = f"{mideleg_name}_{sie_name}"
+            effective_coverpoint = coverpoint if mideleg_val else "cp_trigger_sei_m"
 
             # === M-MODE SETUP ===
             lines.extend(
@@ -407,7 +408,7 @@ def _generate_trigger_sei_tests(test_data: TestData) -> list[str]:
             # Set SEIP in M-mode using macro
             lines.extend(
                 [
-                    test_data.add_testcase(binname, coverpoint, covergroup),
+                    test_data.add_testcase(binname, effective_coverpoint, covergroup),
                     "RVTEST_SET_SEXT_INT",
                     "nop",
                 ]
@@ -3909,7 +3910,7 @@ def _generate_user_sei_tests(test_data: TestData) -> list[str]:
                 f"CSRC(mstatus, x{r_scratch})",
             ]
         )
-        lines.append(test_data.add_testcase(binname, "cp_sei_handled_s", covergroup))
+        lines.append(test_data.add_testcase(binname, "cp_user_sei_handled_s", covergroup))
         lines.extend(
             [
                 "RVTEST_SET_SEXT_INT",

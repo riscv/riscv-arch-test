@@ -489,7 +489,7 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     cp_sei3:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, mip_seip_one;
     cp_sei4:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, prev_mip_seip_one, s_ext_intr_low,  csrrc, write_mip_seip;
     cp_sei5:                    cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, prev_mip_seip_one, mip_seip_one, csrrc, write_mip_seip;
-    cp_sei6_7:                  cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, mip_seip, mip_seip;
+    cp_sei6_7:                  cross priv_mode_m, mideleg_zeros, mstatus_mie_zero, prev_mip_seip_one, mip_seip;
     cp_global_ie:               cross priv_mode_m, mstatus_mie, mstatus_sie, mip_walking_m, mip_mie_eq;
 
     // U-mode tests

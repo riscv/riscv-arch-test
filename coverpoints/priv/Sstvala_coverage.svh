@@ -29,7 +29,7 @@ covergroup Sstvala_cg with function sample(ins_t ins);
 
     stval_equals_insn: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval")[31:0] == ins.current.insn[31:0] {
            bins match = {1'b1};
-}
+    }
 
     medeleg_instr_ma: coverpoint ins.current.csr[CSR_MEDELEG][0] {
             bins delegated = {1'b1};
@@ -90,6 +90,15 @@ covergroup Sstvala_cg with function sample(ins_t ins);
 
     vaddr_d_misaligned: coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] {
     }
+    cause_load_page_fault: coverpoint ins.current.csr[CSR_SCAUSE][5:0] {
+            bins set = {6'd13};
+    }
+    cause_store_page_fault: coverpoint ins.current.csr[CSR_SCAUSE][5:0] {
+            bins set = {6'd15};
+    }
+    cause_instr_page_fault: coverpoint ins.current.csr[CSR_SCAUSE][5:0] {
+            bins set = {6'd12};
+   }
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
     illegal_data_address: coverpoint ins.current.rs1_val + ins.current.imm {
@@ -131,9 +140,9 @@ covergroup Sstvala_cg with function sample(ins_t ins);
     // -----------------------------------------------------------------------
     // Page-fault crosses
     // -----------------------------------------------------------------------
-    cp_stval_load_page_fault:  cross priv_mode_s, lw_insn,        medeleg_load_pf,  pf_stval;
-    cp_stval_store_page_fault: cross priv_mode_s, sw_insn,        medeleg_store_pf, pf_stval;
-    cp_stval_instr_page_fault: cross priv_mode_s, jalr_insn_curr, medeleg_instr_pf, pf_stval;
+    cp_stval_load_page_fault:  cross priv_mode_s, lw_insn,        medeleg_load_pf,  pf_stval, cause_load_page_fault;
+    cp_stval_store_page_fault: cross priv_mode_s, sw_insn,        medeleg_store_pf, pf_stval, cause_store_page_fault;
+    cp_stval_instr_page_fault: cross priv_mode_s, jalr_insn_curr, medeleg_instr_pf, pf_stval, cause_instr_page_fault;
 
 
 endgroup

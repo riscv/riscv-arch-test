@@ -266,10 +266,10 @@
       "supported": false
     },
     "Zmmul": {
-      "supported": false
+      "supported": true
     },
     "Zaamo": {
-      "supported": false
+      "supported": true
     },
     "Zabha": {
       "supported": false
@@ -278,7 +278,7 @@
       "supported": false
     },
     "Zalrsc": {
-      "supported": false
+      "supported": true
     },
     "Zawrs": {
       "supported": false,
@@ -299,7 +299,7 @@
       "supported": true
     },
     "Zfhmin": {
-      "supported": false
+      "supported": true
     },
     "Zfinx": {
       "supported": false
@@ -323,13 +323,13 @@
       "supported": false
     },
     "Zba": {
-      "supported": false
+      "supported": true
     },
     "Zbb": {
-      "supported": false
+      "supported": true
     },
     "Zbs": {
-      "supported": false
+      "supported": true
     },
     "Zbc": {
       "supported": true

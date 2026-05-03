@@ -224,7 +224,7 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
                             write_sigupd(check_reg, test_data),
                             # Test the read value
                             test_data.add_testcase(f"{binname}_rval", coverpoint, covergroup),
-                            gen_csr_read_sigupd(check_reg, "mstatus", test_data),
+                            gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
                         ]
                     )
 
@@ -283,7 +283,7 @@ def _generate_sret_tests(test_data: TestData) -> list[str]:
                                 "RVTEST_GOTO_MMODE       # make sure we return to machine mode",
                                 # Test the read value
                                 test_data.add_testcase(f"{binname}_rval", coverpoint, covergroup),
-                                gen_csr_read_sigupd(check_reg, "mstatus", test_data),
+                                gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
                             ]
                         )
 
@@ -298,53 +298,53 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
 
     # Standard M-mode CSRs
     csrs = [
-        "mstatus",
-        "medeleg",
-        "mideleg",
-        "mie",
-        "mtvec",
-        "mcounteren",
-        "mscratch",
-        "mepc",
-        "mcause",
-        "mtval",
-        "mip",
-        "menvcfg",
-        "mcountinhibit",
-        "mhpmevent3",
-        "mhpmevent4",
-        "mhpmevent5",
-        "mhpmevent6",
-        "mhpmevent7",
-        "mhpmevent8",
-        "mhpmevent9",
-        "mhpmevent10",
-        "mhpmevent11",
-        "mhpmevent12",
-        "mhpmevent13",
-        "mhpmevent14",
-        "mhpmevent15",
-        "mhpmevent16",
-        "mhpmevent17",
-        "mhpmevent18",
-        "mhpmevent19",
-        "mhpmevent20",
-        "mhpmevent21",
-        "mhpmevent22",
-        "mhpmevent23",
-        "mhpmevent24",
-        "mhpmevent25",
-        "mhpmevent26",
-        "mhpmevent27",
-        "mhpmevent28",
-        "mhpmevent29",
-        "mhpmevent30",
-        "mhpmevent31",
+        ("mstatus", None),
+        ("medeleg", None),
+        ("mideleg", None),
+        ("mie", None),
+        ("mtvec", None),
+        ("mcounteren", None),
+        ("mscratch", None),
+        ("mepc", None),
+        ("mcause", None),
+        ("mtval", None),
+        ("mip", None),
+        ("menvcfg", None),
+        ("mcountinhibit", None),
+        ("mhpmevent3", None),
+        ("mhpmevent4", None),
+        ("mhpmevent5", None),
+        ("mhpmevent6", None),
+        ("mhpmevent7", None),
+        ("mhpmevent8", None),
+        ("mhpmevent9", None),
+        ("mhpmevent10", None),
+        ("mhpmevent11", None),
+        ("mhpmevent12", None),
+        ("mhpmevent13", None),
+        ("mhpmevent14", None),
+        ("mhpmevent15", None),
+        ("mhpmevent16", None),
+        ("mhpmevent17", None),
+        ("mhpmevent18", None),
+        ("mhpmevent19", None),
+        ("mhpmevent20", None),
+        ("mhpmevent21", None),
+        ("mhpmevent22", None),
+        ("mhpmevent23", None),
+        ("mhpmevent24", None),
+        ("mhpmevent25", None),
+        ("mhpmevent26", None),
+        ("mhpmevent27", None),
+        ("mhpmevent28", None),
+        ("mhpmevent29", None),
+        ("mhpmevent30", None),
+        ("mhpmevent31", None),
     ]
     # RV32-only high CSRs
-    csrs32 = ["mstatush", "menvcfgh"]
+    csrs32 = [("mstatush", None), ("menvcfgh", None)]
     # Read-only CSRs
-    csrsro = ["mvendorid", "mimpid", "marchid", "mhartid", "mconfigptr"]
+    csrsro = [("mvendorid", None), ("mimpid", None), ("marchid", None), ("mhartid", None), ("mconfigptr", None)]
 
     ######################################
     coverpoint = "cp_mcsr_access"
@@ -360,7 +360,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
 
     lines.append("\n#ifdef MSECCFG_SUPPORTED")
-    lines.extend(csr_access_test(test_data, "mseccfg", covergroup, coverpoint))
+    lines.extend(csr_access_test(test_data, ("mseccfg", None), covergroup, coverpoint))
     lines.append("#endif")
 
     lines.append("\n// Read-Only CSRs")
@@ -378,10 +378,10 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
 
     lines.append("\n#ifdef MSECCFG_SUPPORTED")
-    lines.extend(csr_access_test(test_data, "mseccfgh", covergroup, coverpoint))
+    lines.extend(csr_access_test(test_data, ("mseccfgh", None), covergroup, coverpoint))
     lines.append("#endif // MSECCFG")
     lines.append("\n#ifdef SM1P13_SUPPORTED")
-    lines.extend(csr_access_test(test_data, "medelegh", covergroup, coverpoint))
+    lines.extend(csr_access_test(test_data, ("medelegh", None), covergroup, coverpoint))
     lines.extend(
         [
             "#endif // SM1P13",
@@ -779,71 +779,71 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     )
 
     cntrs = [
-        "mcycle",
-        "minstret",
-        "mhpmcounter3",
-        "mhpmcounter4",
-        "mhpmcounter5",
-        "mhpmcounter6",
-        "mhpmcounter7",
-        "mhpmcounter8",
-        "mhpmcounter9",
-        "mhpmcounter10",
-        "mhpmcounter11",
-        "mhpmcounter12",
-        "mhpmcounter13",
-        "mhpmcounter14",
-        "mhpmcounter15",
-        "mhpmcounter16",
-        "mhpmcounter17",
-        "mhpmcounter18",
-        "mhpmcounter19",
-        "mhpmcounter20",
-        "mhpmcounter21",
-        "mhpmcounter22",
-        "mhpmcounter23",
-        "mhpmcounter24",
-        "mhpmcounter25",
-        "mhpmcounter26",
-        "mhpmcounter27",
-        "mhpmcounter28",
-        "mhpmcounter29",
-        "mhpmcounter30",
-        "mhpmcounter31",
+        ("mcycle", None),
+        ("minstret", None),
+        ("mhpmcounter3", None),
+        ("mhpmcounter4", None),
+        ("mhpmcounter5", None),
+        ("mhpmcounter6", None),
+        ("mhpmcounter7", None),
+        ("mhpmcounter8", None),
+        ("mhpmcounter9", None),
+        ("mhpmcounter10", None),
+        ("mhpmcounter11", None),
+        ("mhpmcounter12", None),
+        ("mhpmcounter13", None),
+        ("mhpmcounter14", None),
+        ("mhpmcounter15", None),
+        ("mhpmcounter16", None),
+        ("mhpmcounter17", None),
+        ("mhpmcounter18", None),
+        ("mhpmcounter19", None),
+        ("mhpmcounter20", None),
+        ("mhpmcounter21", None),
+        ("mhpmcounter22", None),
+        ("mhpmcounter23", None),
+        ("mhpmcounter24", None),
+        ("mhpmcounter25", None),
+        ("mhpmcounter26", None),
+        ("mhpmcounter27", None),
+        ("mhpmcounter28", None),
+        ("mhpmcounter29", None),
+        ("mhpmcounter30", None),
+        ("mhpmcounter31", None),
     ]
     # RV32-only high counters
     cntrsh = [
-        "mcycleh",
-        "minstreth",
-        "mhpmcounter3h",
-        "mhpmcounter4h",
-        "mhpmcounter5h",
-        "mhpmcounter6h",
-        "mhpmcounter7h",
-        "mhpmcounter8h",
-        "mhpmcounter9h",
-        "mhpmcounter10h",
-        "mhpmcounter11h",
-        "mhpmcounter12h",
-        "mhpmcounter13h",
-        "mhpmcounter14h",
-        "mhpmcounter15h",
-        "mhpmcounter16h",
-        "mhpmcounter17h",
-        "mhpmcounter18h",
-        "mhpmcounter19h",
-        "mhpmcounter20h",
-        "mhpmcounter21h",
-        "mhpmcounter22h",
-        "mhpmcounter23h",
-        "mhpmcounter24h",
-        "mhpmcounter25h",
-        "mhpmcounter26h",
-        "mhpmcounter27h",
-        "mhpmcounter28h",
-        "mhpmcounter29h",
-        "mhpmcounter30h",
-        "mhpmcounter31h",
+        ("mcycleh", None),
+        ("minstreth", None),
+        ("mhpmcounter3h", None),
+        ("mhpmcounter4h", None),
+        ("mhpmcounter5h", None),
+        ("mhpmcounter6h", None),
+        ("mhpmcounter7h", None),
+        ("mhpmcounter8h", None),
+        ("mhpmcounter9h", None),
+        ("mhpmcounter10h", None),
+        ("mhpmcounter11h", None),
+        ("mhpmcounter12h", None),
+        ("mhpmcounter13h", None),
+        ("mhpmcounter14h", None),
+        ("mhpmcounter15h", None),
+        ("mhpmcounter16h", None),
+        ("mhpmcounter17h", None),
+        ("mhpmcounter18h", None),
+        ("mhpmcounter19h", None),
+        ("mhpmcounter20h", None),
+        ("mhpmcounter21h", None),
+        ("mhpmcounter22h", None),
+        ("mhpmcounter23h", None),
+        ("mhpmcounter24h", None),
+        ("mhpmcounter25h", None),
+        ("mhpmcounter26h", None),
+        ("mhpmcounter27h", None),
+        ("mhpmcounter28h", None),
+        ("mhpmcounter29h", None),
+        ("mhpmcounter30h", None),
+        ("mhpmcounter31h", None),
     ]
     for csr in cntrs:
         lines.extend(cntr_access_test(test_data, csr, covergroup, coverpoint))

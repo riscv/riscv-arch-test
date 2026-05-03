@@ -35,7 +35,7 @@ def _generate_stvec_walk_tests(test_data: TestData, covergroup: str, coverpoint:
                 f"CSRW({csr_name}, zero)              # clear all bits (CSRRW, not sampled by csrop)",
                 f"CSRS({csr_name}, x{walk_reg})       # SET bit {i} via CSRRS, MODE=0",
                 test_data.add_testcase(f"{csr_name}_set_bit_{i}", coverpoint, covergroup),
-                gen_csr_read_sigupd(check_reg, csr_name, test_data),
+                gen_csr_read_sigupd(check_reg, (csr_name, None), test_data),
                 f"slli x{walk_reg}, x{walk_reg}, 1   # walk the 1",
             ]
         )
@@ -49,7 +49,7 @@ def _generate_stvec_walk_tests(test_data: TestData, covergroup: str, coverpoint:
                 f"CSRW({csr_name}, zero)              # clear all bits (CSRRW, not sampled by csrop)",
                 f"CSRS({csr_name}, x{walk_reg})       # SET bit {i} via CSRRS, MODE=0",
                 test_data.add_testcase(f"{csr_name}_set_bit_{i}", coverpoint, covergroup),
-                gen_csr_read_sigupd(check_reg, csr_name, test_data),
+                gen_csr_read_sigupd(check_reg, (csr_name, None), test_data),
                 f"slli x{walk_reg}, x{walk_reg}, 1   # walk the 1",
             ]
         )

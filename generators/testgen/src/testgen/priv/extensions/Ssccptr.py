@@ -14,6 +14,7 @@ The coverpoint cp_ssccptr verifies that when Sv virtual memory is active
 (satp ≠ 0), the HPTW can successfully read PTEs from main memory and
 translate virtual addresses to physical addresses for both loads and stores.
 
+Test strategy
 -------------
 For both RV64 (Sv39) and RV32 (Sv32):
 
@@ -31,6 +32,11 @@ For both RV64 (Sv39) and RV32 (Sv32):
      main memory.
   4. Return to M-mode and disable VM.
 
+Page-table infrastructure
+-------------------------
+Same labels as Sstvala — rvtest_Sroot_pg_tbl (emitted by framework via
+rvtest_strap_routine) plus rvtest_slvl1_pg_tbl / rvtest_slvl0_pg_tbl
+injected via .pushsection into .data.
 """
 
 from testgen.asm.helpers import comment_banner, write_sigupd
@@ -74,35 +80,57 @@ def _generate_page_table_data_section() -> list[str]:
 
 def _setup_sv39_identity_map() -> list[str]:
     """
-    Set up a minimal Sv39 identity map covering the 1 GiB region at
-    0x80000000 (code + data + page tables) using a LEVEL2 superpage.
+    Set up a minimal Sv39 identity map using a LEVEL2 superpage (1 GiB).
 
-    Mirrors Sstvala's ordering exactly: SATP_SETUP first so the root
-    page-table pointer is committed, then SUPERPAGE_PTE_SETUP wires the
-    identity-map entry, then sfence.vma flushes the TLB.
+    Uses AUIPC to find where the program actually loaded (portable, not
+    hardcoded to 0x80000000), computes the 1 GiB-aligned superpage base,
+    then manually wires the root page table entry.
     """
     return [
-        "# RV64/Sv39: enable VM then identity-map 1 GiB at 0x80000000 via LEVEL2 superpage",
-        "SATP_SETUP_RV64(sv39)",
-        "sfence.vma",
-        "SUPERPAGE_PTE_SETUP_SV39(rvtest_code_begin, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V), 0x80000000, LEVEL2)",
+        "# RV64/Sv39: AUIPC-based superpage identity map — portable to any load address",
+        "auipc t0, 0",  # t0 = current PC
+        "li t1, ~((1 << 30) - 1)",  # 1 GiB alignment mask
+        "and t0, t0, t1",  # t0 = 1 GiB-aligned superpage base PA
+        "srli t0, t0, 12",  # t0 = PPN
+        "slli t0, t0, 10",  # t0 = PPN in PTE field position
+        "li t1, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V)",
+        "or t0, t0, t1",  # t0 = leaf PTE value
+        "LA(t2, rvtest_Sroot_pg_tbl)",  # t2 = root page table base
+        "# Compute VPN[2] index = (rvtest_code_begin >> 30) & 0x1FF, scaled by 8",
+        "LA(t1, rvtest_code_begin)",  # t1 = rvtest_code_begin address
+        "srli t1, t1, 30",  # t1 = VPN[2]
+        "andi t1, t1, 0x1FF",  # t1 = VPN[2] masked
+        "slli t1, t1, 3",  # t1 = byte offset (8 bytes per entry)
+        "add t2, t2, t1",  # t2 = address of PTE slot
+        "sd t0, 0(t2)",  # write the leaf PTE
         "sfence.vma",
     ]
 
 
 def _setup_sv32_identity_map() -> list[str]:
     """
-    Set up a minimal Sv32 identity map covering the 4 MiB region at
-    0x80000000 using a LEVEL1 superpage.
+    Set up a minimal Sv32 identity map using a LEVEL1 superpage (4 MiB).
 
-    Mirrors Sstvala's ordering exactly: SATP_SETUP first, then
-    SUPERPAGE_PTE_SETUP, then sfence.vma.
+    Same AUIPC-based approach as Sv39 but for Sv32/RV32.
+    Root table index = VPN[1] = VA[31:22], 4 bytes per entry.
     """
     return [
-        "# RV32/Sv32: enable VM then identity-map 4 MiB at 0x80000000 via LEVEL1 superpage",
-        "SATP_SETUP_SV32",
-        "sfence.vma",
-        "SUPERPAGE_PTE_SETUP_SV32(rvtest_code_begin, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V), 0x80000000, LEVEL1)",
+        "# RV32/Sv32: AUIPC-based superpage identity map — portable to any load address",
+        "auipc t0, 0",  # t0 = current PC
+        "li t1, ~((1 << 22) - 1)",  # 4 MiB alignment mask
+        "and t0, t0, t1",  # t0 = 4 MiB-aligned superpage base PA
+        "srli t0, t0, 12",  # t0 = PPN
+        "slli t0, t0, 10",  # t0 = PPN in PTE field position
+        "li t1, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V)",
+        "or t0, t0, t1",  # t0 = leaf PTE value
+        "LA(t2, rvtest_Sroot_pg_tbl)",  # t2 = root page table base
+        "# Compute VPN[1] index = (rvtest_code_begin >> 22) & 0x3FF, scaled by 4",
+        "LA(t1, rvtest_code_begin)",  # t1 = rvtest_code_begin address
+        "srli t1, t1, 22",  # t1 = VPN[1]
+        "andi t1, t1, 0x3FF",  # t1 = VPN[1] masked
+        "slli t1, t1, 2",  # t1 = byte offset (4 bytes per entry)
+        "add t2, t2, t1",  # t2 = address of PTE slot
+        "sw t0, 0(t2)",  # write the leaf PTE
         "sfence.vma",
     ]
 
@@ -275,6 +303,16 @@ def _generate_ssccptr_tests_rv64(test_data: TestData, covergroup: str) -> list[s
     ]
     lines.extend(_setup_sv39_identity_map())
     lines.append("RVTEST_GOTO_LOWER_MODE Smode")
+    lines.extend(
+        [
+            "# Write satp directly from S-mode: MODE=8 (Sv39) in bits [63:60],",
+            "# ASID=0, PPN = physical address of rvtest_Sroot_pg_tbl >> 12.",
+            "# Using SATP_SETUP_RV64 macro from S-mode so the coverage model",
+            "# sees satp != 0 at every subsequent load/store instruction.",
+            "SATP_SETUP_RV64(sv39)",
+            "sfence.vma",
+        ]
+    )
     lines.extend(_generate_load_tests_under_vm(test_data, covergroup, coverpoint, addr_reg, data_reg, "rv64"))
     lines.extend(
         _generate_store_tests_under_vm(test_data, covergroup, coverpoint, addr_reg, data_reg, check_reg, "rv64")
@@ -302,6 +340,14 @@ def _generate_ssccptr_tests_rv32(test_data: TestData, covergroup: str) -> list[s
     ]
     lines.extend(_setup_sv32_identity_map())
     lines.append("RVTEST_GOTO_LOWER_MODE Smode")
+    lines.extend(
+        [
+            "# Write satp directly from S-mode so the coverage model sees",
+            "# satp != 0 at every subsequent load/store instruction.",
+            "SATP_SETUP_SV32",
+            "sfence.vma",
+        ]
+    )
     lines.extend(_generate_load_tests_under_vm(test_data, covergroup, coverpoint, addr_reg, data_reg, "rv32"))
     lines.extend(
         _generate_store_tests_under_vm(test_data, covergroup, coverpoint, addr_reg, data_reg, check_reg, "rv32")

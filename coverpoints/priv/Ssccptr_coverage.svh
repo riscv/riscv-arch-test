@@ -3,7 +3,7 @@
 // RISC-V Architectural Functional Coverage Covergroups
 //
 // Written: Based on Ssccptr Extension Test Plan
-// Written by : Ayesha Anwar ayesha.anwaar2005@gmail.com
+//
 // Copyright (C) 2024 Harvey Mudd College, 10x Engineers, UET Lahore, Habib University
 //
 // SPDX-License-Identifier: Apache-2.0
@@ -28,12 +28,21 @@ covergroup Ssccptr_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     // -----------------------------------------------------------------------
-    // Virtual memory active — satp ≠ 0 means a VM scheme is enabled.
+    // Virtual memory active — check the MODE field of satp, not the whole
+    // register.  The MODE field position differs by XLEN:
+    //   RV64: satp[63:60] — non-zero means Sv39/Sv48/Sv57 is active
+    //   RV32: satp[31]    — 1 means Sv32 is active
     // -----------------------------------------------------------------------
 
-    satp_active: coverpoint ins.current.csr[12'h180] {
-            bins vm_on = {[1:$]};
+    `ifdef XLEN64
+    satp_active: coverpoint ins.current.csr[ CSR_SATP][63:60] {
+            bins vm_on = {[1:$]};   // any non-zero MODE = VM active
     }
+    `else
+    satp_active: coverpoint ins.current.csr[ CSR_SATP][31] {
+            bins vm_on = {1'b1};    // bit 31 set = Sv32 active
+    }
+    `endif
 
     // -----------------------------------------------------------------------
     // Instruction type bins — one per load/store width tested
@@ -60,7 +69,7 @@ covergroup Ssccptr_cg with function sample(ins_t ins);
     // -----------------------------------------------------------------------
 
     load_result_sentinel: coverpoint ins.current.rd_val[31:0] {
-        bins sentinel = {32'hDEADBEEF};
+            bins sentinel = {32'hDEADBEEF};
     }
 
     // -----------------------------------------------------------------------
@@ -75,20 +84,20 @@ covergroup Ssccptr_cg with function sample(ins_t ins);
     // -----------------------------------------------------------------------
 
     sw_loadback_correct: coverpoint ins.current.rd_val[31:0] {
-        bins sw_written = {32'hC0FFEE00};
+            bins sw_written = {32'hC0FFEE00};
     }
 
     sh_loadback_correct: coverpoint ins.current.rd_val[15:0] {
-        bins sh_written = {16'hBEEF};
+            bins sh_written = {16'hBEEF};
     }
 
     sb_loadback_correct: coverpoint ins.current.rd_val[7:0] {
-        bins sb_written = {8'hAB};
+            bins sb_written = {8'hAB};
     }
 
     `ifdef XLEN64
     sd_loadback_correct: coverpoint ins.current.rd_val {
-        bins sd_written = {64'hC0FFEE00DEADBEEF};
+            bins sd_written = {64'hC0FFEE00DEADBEEF};
     }
     `endif
 
@@ -115,10 +124,8 @@ covergroup Ssccptr_cg with function sample(ins_t ins);
 
     // Primary load coverpoint — lw with sentinel check
     cp_ssccptr_load: cross priv_mode_s, satp_active, lw_insn, load_result_sentinel;
-
     // Primary store coverpoint — sampled at the lw load-back after sw
     cp_ssccptr_store: cross priv_mode_s, satp_active, lw_insn, prev_sw_insn, sw_loadback_correct;
-
     // Load width coverage
     cp_ssccptr_lh:  cross priv_mode_s, satp_active, lh_insn,  sh_loadback_correct;
     cp_ssccptr_lb:  cross priv_mode_s, satp_active, lb_insn,  sb_loadback_correct;

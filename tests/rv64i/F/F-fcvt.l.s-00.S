@@ -694,6 +694,7 @@ F_fcvt_l_s_cg_cp_fs1_b31:
 // cp_fs1_edges_frm
 /////////////////////////////////
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x00000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f26) # load fs1: f26 = 0x00000000
   fsflagsi 0b00000 # clear all fflags
@@ -703,6 +704,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x0_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x3, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x0_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x0_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x0_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x0_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x00000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f6) # load fs1: f6 = 0x00000000
@@ -754,6 +756,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x0_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x0_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x0_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x80000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f30) # load fs1: f30 = 0x80000000
   fsflagsi 0b00000 # clear all fflags
@@ -763,6 +766,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80000000_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x31, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80000000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80000000_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80000000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80000000_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x80000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f19) # load fs1: f19 = 0x80000000
@@ -814,6 +818,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80000000_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80000000_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80000000_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x3f800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f9) # load fs1: f9 = 0x3f800000
   fsflagsi 0b00000 # clear all fflags
@@ -823,6 +828,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x3f800000_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x10, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x3f800000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x3f800000_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x3f800000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x3f800000_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x3f800000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f21) # load fs1: f21 = 0x3f800000
@@ -874,6 +880,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x3f800000_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x3f800000_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x3f800000_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0xbf800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f16) # load fs1: f16 = 0xbf800000
   fsflagsi 0b00000 # clear all fflags
@@ -883,6 +890,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xbf800000_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x3, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xbf800000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xbf800000_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xbf800000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xbf800000_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0xbf800000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f18) # load fs1: f18 = 0xbf800000
@@ -934,6 +942,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xbf800000_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xbf800000_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xbf800000_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x3fc00000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f29) # load fs1: f29 = 0x3fc00000
   fsflagsi 0b00000 # clear all fflags
@@ -943,6 +952,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x3fc00000_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x14, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x3fc00000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x3fc00000_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x3fc00000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x3fc00000_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x3fc00000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f24) # load fs1: f24 = 0x3fc00000
@@ -994,6 +1004,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x3fc00000_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x3fc00000_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x3fc00000_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0xbfc00000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f5) # load fs1: f5 = 0xbfc00000
   fsflagsi 0b00000 # clear all fflags
@@ -1003,6 +1014,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xbfc00000_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x5, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xbfc00000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xbfc00000_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xbfc00000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xbfc00000_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0xbfc00000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f31) # load fs1: f31 = 0xbfc00000
@@ -1054,6 +1066,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xbfc00000_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xbfc00000_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xbfc00000_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x40000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f13) # load fs1: f13 = 0x40000000
   fsflagsi 0b00000 # clear all fflags
@@ -1063,6 +1076,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x40000000_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x1, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x40000000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x40000000_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x40000000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x40000000_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x40000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f8) # load fs1: f8 = 0x40000000
@@ -1114,6 +1128,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x40000000_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x40000000_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x40000000_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0xc0000000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f9) # load fs1: f9 = 0xc0000000
   fsflagsi 0b00000 # clear all fflags
@@ -1123,6 +1138,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xc0000000_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x30, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xc0000000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xc0000000_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xc0000000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xc0000000_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0xc0000000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f1) # load fs1: f1 = 0xc0000000
@@ -1174,6 +1190,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xc0000000_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xc0000000_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xc0000000_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x00800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f5) # load fs1: f5 = 0x00800000
   fsflagsi 0b00000 # clear all fflags
@@ -1183,6 +1200,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x800000_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x16, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x800000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x800000_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x800000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x800000_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x00800000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f10) # load fs1: f10 = 0x00800000
@@ -1234,6 +1252,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x800000_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x800000_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x800000_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x80800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f9) # load fs1: f9 = 0x80800000
   fsflagsi 0b00000 # clear all fflags
@@ -1243,6 +1262,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80800000_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x1, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80800000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80800000_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80800000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80800000_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x80800000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f31) # load fs1: f31 = 0x80800000
@@ -1294,6 +1314,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80800000_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80800000_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80800000_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x7f7fffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f28) # load fs1: f28 = 0x7f7fffff
   fsflagsi 0b00000 # clear all fflags
@@ -1303,6 +1324,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f7fffff_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x5, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f7fffff_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f7fffff_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f7fffff_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f7fffff_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x7f7fffff, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f10) # load fs1: f10 = 0x7f7fffff
@@ -1354,6 +1376,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f7fffff_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f7fffff_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f7fffff_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0xff7fffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f9) # load fs1: f9 = 0xff7fffff
   fsflagsi 0b00000 # clear all fflags
@@ -1363,6 +1386,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xff7fffff_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x29, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xff7fffff_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xff7fffff_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xff7fffff_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xff7fffff_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0xff7fffff, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f23) # load fs1: f23 = 0xff7fffff
@@ -1414,6 +1438,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xff7fffff_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xff7fffff_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xff7fffff_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x007fffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f31) # load fs1: f31 = 0x007fffff
   fsflagsi 0b00000 # clear all fflags
@@ -1423,6 +1448,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fffff_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x15, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fffff_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fffff_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fffff_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fffff_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x007fffff, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f6) # load fs1: f6 = 0x007fffff
@@ -1474,6 +1500,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fffff_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fffff_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fffff_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x807fffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f19) # load fs1: f19 = 0x807fffff
   fsflagsi 0b00000 # clear all fflags
@@ -1483,6 +1510,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x807fffff_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x18, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x807fffff_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x807fffff_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x807fffff_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x807fffff_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x807fffff, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f18) # load fs1: f18 = 0x807fffff
@@ -1534,6 +1562,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x807fffff_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x807fffff_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x807fffff_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x00400000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f9) # load fs1: f9 = 0x00400000
   fsflagsi 0b00000 # clear all fflags
@@ -1543,6 +1572,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x400000_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x17, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x400000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x400000_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x400000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x400000_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x00400000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f1) # load fs1: f1 = 0x00400000
@@ -1594,6 +1624,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x400000_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x400000_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x400000_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x80400000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f5) # load fs1: f5 = 0x80400000
   fsflagsi 0b00000 # clear all fflags
@@ -1603,6 +1634,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80400000_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x30, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80400000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80400000_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80400000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80400000_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x80400000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f16) # load fs1: f16 = 0x80400000
@@ -1654,6 +1686,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80400000_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80400000_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80400000_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x00000001, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f10) # load fs1: f10 = 0x00000001
   fsflagsi 0b00000 # clear all fflags
@@ -1663,6 +1696,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x1_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x31, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x1_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x1_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x1_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x1_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x00000001, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f29) # load fs1: f29 = 0x00000001
@@ -1714,6 +1748,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x1_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x1_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x1_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x80000001, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f18) # load fs1: f18 = 0x80000001
   fsflagsi 0b00000 # clear all fflags
@@ -1723,6 +1758,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80000001_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x26, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80000001_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80000001_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80000001_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80000001_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x80000001, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f26) # load fs1: f26 = 0x80000001
@@ -1774,6 +1810,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80000001_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80000001_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x80000001_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x7f800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f23) # load fs1: f23 = 0x7f800000
   fsflagsi 0b00000 # clear all fflags
@@ -1783,6 +1820,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f800000_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x26, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f800000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f800000_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f800000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f800000_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x7f800000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f15) # load fs1: f15 = 0x7f800000
@@ -1834,6 +1872,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f800000_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f800000_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f800000_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0xff800000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f18) # load fs1: f18 = 0xff800000
   fsflagsi 0b00000 # clear all fflags
@@ -1843,6 +1882,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xff800000_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x5, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xff800000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xff800000_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xff800000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xff800000_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0xff800000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f8) # load fs1: f8 = 0xff800000
@@ -1894,6 +1934,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xff800000_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xff800000_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xff800000_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x7fc00000, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f21) # load fs1: f21 = 0x7fc00000
   fsflagsi 0b00000 # clear all fflags
@@ -1903,6 +1944,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fc00000_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x18, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fc00000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fc00000_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fc00000_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fc00000_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x7fc00000, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f23) # load fs1: f23 = 0x7fc00000
@@ -1954,6 +1996,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fc00000_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fc00000_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fc00000_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x7fffffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f16) # load fs1: f16 = 0x7fffffff
   fsflagsi 0b00000 # clear all fflags
@@ -1963,6 +2006,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fffffff_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x2, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fffffff_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fffffff_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fffffff_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fffffff_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x7fffffff, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f7) # load fs1: f7 = 0x7fffffff
@@ -2014,6 +2058,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fffffff_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fffffff_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fffffff_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0xffffffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f3) # load fs1: f3 = 0xffffffff
   fsflagsi 0b00000 # clear all fflags
@@ -2023,6 +2068,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xffffffff_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x30, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xffffffff_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xffffffff_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xffffffff_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xffffffff_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0xffffffff, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f9) # load fs1: f9 = 0xffffffff
@@ -2074,6 +2120,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xffffffff_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xffffffff_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xffffffff_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x7f800001, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f27) # load fs1: f27 = 0x7f800001
   fsflagsi 0b00000 # clear all fflags
@@ -2083,6 +2130,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f800001_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x21, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f800001_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f800001_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f800001_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f800001_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x7f800001, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f8) # load fs1: f8 = 0x7f800001
@@ -2134,6 +2182,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f800001_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f800001_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7f800001_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x7fbfffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f5) # load fs1: f5 = 0x7fbfffff
   fsflagsi 0b00000 # clear all fflags
@@ -2143,6 +2192,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fbfffff_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x18, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fbfffff_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fbfffff_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fbfffff_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fbfffff_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x7fbfffff, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f17) # load fs1: f17 = 0x7fbfffff
@@ -2194,6 +2244,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fbfffff_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fbfffff_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7fbfffff_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0xffbfffff, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f19) # load fs1: f19 = 0xffbfffff
   fsflagsi 0b00000 # clear all fflags
@@ -2203,6 +2254,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xffbfffff_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x2, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xffbfffff_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xffbfffff_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xffbfffff_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xffbfffff_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0xffbfffff, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f8) # load fs1: f8 = 0xffbfffff
@@ -2254,6 +2306,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xffbfffff_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xffbfffff_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0xffbfffff_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x7ef8654f, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f16) # load fs1: f16 = 0x7ef8654f
   fsflagsi 0b00000 # clear all fflags
@@ -2263,6 +2316,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7ef8654f_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x22, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7ef8654f_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7ef8654f_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7ef8654f_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7ef8654f_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x7ef8654f, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f25) # load fs1: f25 = 0x7ef8654f
@@ -2314,6 +2368,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7ef8654f_rup:
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7ef8654f_rup, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x7ef8654f_rup_str)
 
+  fsrmi 0x2 # set fcsr.frm to RDN before dyn test
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x813d9ab0, frm = dyn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f28) # load fs1: f28 = 0x813d9ab0
   fsflagsi 0b00000 # clear all fflags
@@ -2323,6 +2378,7 @@ F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x813d9ab0_dyn:
   RVTEST_SIGUPD(x9, x8, x7, x10, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x813d9ab0_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x813d9ab0_dyn_str)
   # Check fflags. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x8, x7, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x813d9ab0_dyn, F_fcvt_l_s_cg_cp_fs1_edges_frm_b0x813d9ab0_dyn_str)
+  fsrmi 0x0 # restore fcsr.frm to RNE
 
 # Testcase cp_fs1_edges_frm (Test source fs1 value = 0x813d9ab0, frm = rdn)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x11, f15) # load fs1: f15 = 0x813d9ab0

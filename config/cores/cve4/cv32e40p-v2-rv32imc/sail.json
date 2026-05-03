@@ -87,7 +87,7 @@
         "lrsc": "AccessFault",
         // SCHEMA-REQUIRED: cv32e40p has no Zaamo/A extension (A: false, extensions section).
         // AMO opcodes decode as illegal instructions — cv32e40p_decoder.sv:450.
-        // Value has no effect on DUT comparison. See: https://github.com/riscv/sail-riscv/issues
+        // Value has no effect on DUT comparison.
         "amo": "AccessFault"
       },
       "allowed_within_exp": 0,

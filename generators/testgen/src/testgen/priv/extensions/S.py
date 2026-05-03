@@ -415,9 +415,13 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
 
     # Standard S-mode CSRs
     # Format: (CSR Name, IgnoreMask).  IgnoreMask specifies a set of bits to ignore
+
     csrs = [
-        ("sstatus", 0x100000000),  # bug in QEMU allows writing 11 to xstatus.UXLEN (bit 32); mask off until it is fixed
-        ("scause", None),
+        (
+            "sstatus",
+            0x100000040,
+        ),  # bug in QEMU allows writing 11 to xstatus.UXLEN (bit 32)-mask off until it is fixed; sail does not yet support UBE
+        ("scause", 0x7FFFFFFFFFFFFFE0),  # mask off all but cause[4:0] and [63]. TODO - only works for RV64 right now
         ("sie", None),
         ("stvec", 0b1),  # stvec.MODE[0] can be 0 or 1 and is hard to predict with a reference model
         ("scounteren", None),

@@ -301,14 +301,14 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         ("mstatus", None),
         ("medeleg", None),
         ("mideleg", None),
-        ("mie", None),
+        ("mie", 0x3FFF),  # limit to implemented interrupt bits
         ("mtvec", None),
         ("mcounteren", None),
         ("mscratch", None),
         ("mepc", None),
         ("mcause", None),
         ("mtval", None),
-        ("mip", None),
+        ("mip", 0x3FFF),  # limit to implemented interrupt bits
         ("menvcfg", None),
         ("mcountinhibit", None),
         ("mhpmevent3", None),

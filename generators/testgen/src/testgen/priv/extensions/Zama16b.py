@@ -17,6 +17,7 @@ from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
 
 _LOAD_OPS = [
+    # Columns: (mnemonic, access_size_bytes, is_fp, is_amo, preprocessor_guard)
     # Integer loads (always present)
     ("lb", 1, False, False, None),
     ("lbu", 1, False, False, None),
@@ -34,6 +35,7 @@ _LOAD_OPS = [
 ]
 
 _STORE_OPS = [
+    # Columns: (mnemonic, access_size_bytes, is_fp, is_amo, preprocessor_guard)
     # Integer stores (always present)
     ("sb", 1, False, False, None),
     ("sh", 2, False, False, None),
@@ -48,6 +50,7 @@ _STORE_OPS = [
 ]
 
 _AMO_OPS = [
+    # Columns: (mnemonic, access_size_bytes, is_fp, is_amo, preprocessor_guard)
     # Word AMOs (always present with Zaamo)
     ("amoswap.w", 4, False, True, None),
     ("amoadd.w", 4, False, True, None),
@@ -94,6 +97,7 @@ _AMO_OPS = [
     ("amocas.q", 16, False, True, "ZACAS_SUPPORTED && __riscv_xlen == 64"),
 ]
 
+# Maps each FP load mnemonic to its corresponding FP store mnemonic (used to write results back to scratch memory).
 _FP_STOREBACK = {
     "flh": "fsh",
     "flw": "fsw",
@@ -125,16 +129,42 @@ def _safe_mnemonic(mnemonic: str) -> str:
     return mnemonic.replace(".", "_")
 
 
+def _emit_scratch_init(base_reg: int, data_reg: int) -> list[str]:
+    """Re-initialize the 16-byte scratch region with a known distinct pattern before each testcase.
+
+    Pattern: 0x01234567_89ABCDEF_00112233_44556677 (matches other misaligned tests).
+    """
+    _INIT_WORDS = [0x44556677, 0x00112233, 0x89ABCDEF, 0x01234567]
+    out = [f"LA(x{base_reg}, scratch)   # reload base — init 16-byte region"]
+    for i, word in enumerate(_INIT_WORDS):
+        out += [
+            f"LI(x{data_reg}, 0x{word:08X})",
+            f"sw x{data_reg}, {i * 4}(x{base_reg})",
+        ]
+    return out
+
+
+def _emit_sig_dump(base_reg: int, check_reg: int, test_data: TestData) -> list[str]:
+    """Dump all 16 bytes of scratch to the signature so modified bytes are visible."""
+    out = []
+    for i in range(0, 16, 4):
+        out += [
+            f"lw x{check_reg}, {i}(x{base_reg})   # read back bytes [{i}:{i + 3}]",
+            write_sigupd(check_reg, test_data),
+        ]
+    return out
+
+
 def _generate_load_tests(test_data: TestData) -> list[str]:
-    """Generate cp_zama16b_load tests."""
+    """Generate per-instruction load tests matching SV coverpoint names (cp_<mnemonic>_load)."""
     covergroup = "Zama16b_cg"
-    coverpoint = "cp_zama16b_load"
 
     addr_reg, dest_reg, sentinel_reg, base_reg = test_data.int_regs.get_registers(4)
+    fp_reg = test_data.float_regs.get_register()  # allocate one FP reg for load result
 
     lines = [
         comment_banner(
-            coverpoint,
+            "cp_zama16b_load",
             "Misaligned loads that stay within a 16-byte aligned window must not fault.\n"
             "Base address is 16-byte aligned; offsets sweep [0, 16 - access_size].",
         ),
@@ -147,6 +177,7 @@ def _generate_load_tests(test_data: TestData) -> list[str]:
     prev_guard = None
     for mnemonic, size, is_fp, _, guard in _LOAD_OPS:
         max_offset = 16 - size  # highest offset that keeps access within the window
+        coverpoint = f"cp_{_safe_mnemonic(mnemonic)}_load"  # e.g. cp_lb_load, cp_flw_load
 
         # Emit guard transitions only when the guard changes
         if guard != prev_guard:
@@ -171,9 +202,9 @@ def _generate_load_tests(test_data: TestData) -> list[str]:
                     [
                         f"mv x{dest_reg}, x{sentinel_reg}       # preset dest with sentinel",
                         test_data.add_testcase(f"{safe_mn}_off{offset}", coverpoint, covergroup),
-                        f"{mnemonic} f8, 0(x{addr_reg})",
+                        f"{mnemonic} f{fp_reg}, 0(x{addr_reg})",
                         "nop",
-                        f"{storeback} f8, 0(x{base_reg})        # store FP result back to scratch",
+                        f"{storeback} f{fp_reg}, 0(x{base_reg})        # store FP result back to scratch",
                         f"lw x{dest_reg}, 0(x{base_reg})        # read back lower word as evidence",
                         write_sigupd(dest_reg, test_data),
                     ]
@@ -192,6 +223,7 @@ def _generate_load_tests(test_data: TestData) -> list[str]:
 
     lines.extend(_close_guard(prev_guard))
     test_data.int_regs.return_registers([addr_reg, dest_reg, sentinel_reg, base_reg])
+    test_data.float_regs.return_register(fp_reg)
     return lines
 
 
@@ -201,34 +233,42 @@ def _generate_load_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_store_tests(test_data: TestData) -> list[str]:
-    """Generate cp_zama16b_store tests.
+    """Generate per-instruction store tests matching SV coverpoint names (cp_<mnemonic>_store).
 
-    For each store instruction, sweep offsets [0, 16 - size].  A known
-    data value is written; the scratch region is read back to confirm
-    no fault diverted execution.
+    For each store instruction, sweep offsets [0, 16 - size]. The scratch region
+    is re-initialized before each store; after each store all 16 bytes are written
+    to the signature so the exact bytes modified by the store are visible.
+    This matches the pattern used in Misalign-sd-00.S.
     """
     covergroup = "Zama16b_cg"
-    coverpoint = "cp_zama16b_store"
 
     addr_reg, data_reg, check_reg, base_reg = test_data.int_regs.get_registers(4)
+    fp_reg = test_data.float_regs.get_register()
+
+    _FP_PRELOAD_INSN = {
+        "ZFH_SUPPORTED": "flh",
+        "F_SUPPORTED": "flw",
+        "D_SUPPORTED": "fld",
+        "Q_SUPPORTED": "flq",
+    }
 
     lines = [
         comment_banner(
-            coverpoint,
+            "cp_zama16b_store",
             "Misaligned stores that stay within a 16-byte aligned window must not fault.\n"
-            "Base address is 16-byte aligned; offsets sweep [0, 16 - access_size].",
+            "Base address is 16-byte aligned; offsets sweep [0, 16 - access_size].\n"
+            "Scratch is re-initialized before each store; all 16 bytes are signed out\n"
+            "so the exact modified bytes are visible in the signature.",
         ),
         "",
-        "# Align base address to 16 bytes",
-        f"LA(x{base_reg}, scratch)          # load address of scratch region",
-        f"LI(x{data_reg}, 0xA5A5A5A5)       # pattern to store",
-        f"sw x{data_reg}, 0(x{base_reg})    # write pattern to scratch memory",
-        f"flw f9, 0(x{base_reg})            # load known pattern into f9 for FP stores",
     ]
 
+    last_fp_preload_guard = None
     prev_guard = None
+
     for mnemonic, size, is_fp, _, guard in _STORE_OPS:
         max_offset = 16 - size
+        coverpoint = f"cp_{_safe_mnemonic(mnemonic)}_store"
 
         if guard != prev_guard:
             lines.extend(_close_guard(prev_guard))
@@ -237,39 +277,53 @@ def _generate_store_tests(test_data: TestData) -> list[str]:
 
         safe_mn = _safe_mnemonic(mnemonic)
 
+        # Emit guarded FP preload once per extension guard block
+        if is_fp and guard != last_fp_preload_guard:
+            preload_insn = _FP_PRELOAD_INSN.get(guard, "flw")
+            lines += [
+                f"# Pre-load FP source register for {guard} stores",
+                f"LA(x{base_reg}, scratch)",
+                f"LI(x{data_reg}, 0xA5A5A5A5)",
+                f"sw x{data_reg}, 0(x{base_reg})",
+                f"{preload_insn} f{fp_reg}, 0(x{base_reg})  # f{fp_reg} holds store pattern",
+            ]
+            last_fp_preload_guard = guard
+
         for offset in range(max_offset + 1):
-            lines.extend(
-                [
-                    "",
-                    f"# {mnemonic} at offset {offset} (access [{offset}, {offset + size - 1}] within 16-byte window)",
-                    f"addi x{addr_reg}, x{base_reg}, {offset}   # effective address = base + {offset}",
-                ]
+            lines.append(
+                f"# {mnemonic} at offset {offset} (access [{offset}, {offset + size - 1}] within 16-byte window)"
             )
 
+            # Re-initialize scratch so each testcase starts from a known state
+            lines.extend(_emit_scratch_init(base_reg, data_reg))
+
+            # Compute effective address after re-init (base_reg is reloaded inside _emit_scratch_init)
+            lines.append(f"addi x{addr_reg}, x{base_reg}, {offset}   # effective address = base + {offset}")
+
             if is_fp:
-                # fp stores: use fp source register f9 (pre-loaded with pattern)
                 lines.extend(
                     [
                         test_data.add_testcase(f"{safe_mn}_off{offset}", coverpoint, covergroup),
-                        f"{mnemonic} f9, 0(x{addr_reg})",
+                        f"{mnemonic} f{fp_reg}, 0(x{addr_reg})",
                         "nop",
-                        f"lw x{check_reg}, 0(x{base_reg})",
-                        write_sigupd(check_reg, test_data),
                     ]
                 )
             else:
                 lines.extend(
                     [
+                        f"LI(x{data_reg}, 0xA5A5A5A5)   # value to store",
                         test_data.add_testcase(f"{safe_mn}_off{offset}", coverpoint, covergroup),
                         f"{mnemonic} x{data_reg}, 0(x{addr_reg})",
                         "nop",
-                        f"lw x{check_reg}, 0(x{base_reg})   # read back to confirm store executed",
-                        write_sigupd(check_reg, test_data),
                     ]
                 )
 
+            # Dump all 16 bytes to signature — shows exactly which bytes the store touched
+            lines.extend(_emit_sig_dump(base_reg, check_reg, test_data))
+
     lines.extend(_close_guard(prev_guard))
     test_data.int_regs.return_registers([addr_reg, data_reg, check_reg, base_reg])
+    test_data.float_regs.return_register(fp_reg)
     return lines
 
 
@@ -279,33 +333,35 @@ def _generate_store_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_amo_tests(test_data: TestData) -> list[str]:
-    """Generate cp_zama16b_amo tests.
+    """Generate per-instruction AMO tests matching SV coverpoint names (cp_<mnemonic>_amo).
 
     AMOs have no immediate offset — the address is in rs1 directly.
     Base address is 16-byte aligned; rs1 is set to base + offset for
-    each offset in [0, 16 - size].
+    each offset in [0, 16 - size]. Scratch is re-initialized before each
+    AMO testcase; all 16 bytes are written to the signature afterward so
+    the exact bytes modified are visible (matches Misalign-sd-00.S pattern).
+    Note: atomicity under concurrent masters is NOT verified here.
     """
     covergroup = "Zama16b_cg"
-    coverpoint = "cp_zama16b_amo"
 
     addr_reg, src_reg, dest_reg, base_reg = test_data.int_regs.get_registers(4)
 
     lines = [
         comment_banner(
-            coverpoint,
+            "cp_zama16b_amo",
             "Misaligned AMOs that stay within a 16-byte aligned window must not fault.\n"
             "Base address is 16-byte aligned; offsets sweep [0, 16 - access_size].\n"
+            "Scratch is re-initialized before each AMO; all 16 bytes are signed out\n"
+            "so the exact bytes modified by the AMO are visible in the signature.\n"
             "Note: atomicity under concurrent masters is NOT verified here.",
         ),
         "",
-        "# Align base address to 16 bytes",
-        f"LA(x{base_reg}, scratch)          # load address of scratch region",
-        f"LI(x{src_reg}, 1)                 # AMO source operand",
     ]
 
     prev_guard = None
     for mnemonic, size, _, _, guard in _AMO_OPS:
         max_offset = 16 - size
+        coverpoint = f"cp_{_safe_mnemonic(mnemonic)}_amo"
 
         if guard != prev_guard:
             lines.extend(_close_guard(prev_guard))
@@ -315,18 +371,26 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
         safe_mn = _safe_mnemonic(mnemonic)
 
         for offset in range(max_offset + 1):
+            lines.append(
+                f"# {mnemonic} at offset {offset} (access [{offset}, {offset + size - 1}] within 16-byte window)"
+            )
+
+            # Re-initialize scratch with known distinct pattern before each AMO
+            lines.extend(_emit_scratch_init(base_reg, src_reg))
+
+            # Compute effective address after re-init
             lines.extend(
                 [
-                    "",
-                    f"# {mnemonic} at offset {offset} (access [{offset}, {offset + size - 1}] within 16-byte window)",
                     f"addi x{addr_reg}, x{base_reg}, {offset}   # effective address = base + {offset}",
-                    f"LI(x{dest_reg}, 0xBAD)            # preset dest with sentinel",
+                    f"LI(x{src_reg}, 0xABC)                      # value AMO will write into memory",
                     test_data.add_testcase(f"{safe_mn}_off{offset}", coverpoint, covergroup),
                     f"{mnemonic} x{dest_reg}, x{src_reg}, (x{addr_reg})",
                     "nop",
-                    write_sigupd(dest_reg, test_data),
                 ]
             )
+
+            # Dump all 16 bytes to signature — shows exactly which bytes the AMO touched
+            lines.extend(_emit_sig_dump(base_reg, dest_reg, test_data))
 
     lines.extend(_close_guard(prev_guard))
     test_data.int_regs.return_registers([addr_reg, src_reg, dest_reg, base_reg])

@@ -1,0 +1,126 @@
+
+=== SPMP
+
+The Sspmp extension provides supervisor-level Physical Memory Protection.  It defines a set of 
+`spmpaddr*` and `spmpcfg*` CSRs that S-mode software programs through the Sscsrind indirect
+access mechanism (`siselect`/`sireg`/`sireg2`).  The single SspmpSm test suite exercises the base
+Sspmp extension together with its two ratified add-ons:
+
+* *Sspmpen* -- adds the `spmpen` CSR to selectively enable/disable individual SPMP entries during
+  context switches.
+* *Smpmpdeleg* -- adds the `mpmpdeleg.pmpnum` field that delegates a contiguous range of PMP
+  entries to SPMP.
+
+Sspmp depends on Sscsrind (for indirect CSR access) and on S-mode (for `sstatus.SUM`/`sstatus.MXR`
+to be writable).
+
+==== SspmpSm
+
+[[t-SspmpSm-coverpoints]]
+.SspmpSm Coverpoints
+
+,===
+https://docs.google.com/spreadsheets/d/1A-WXaAMJItmS6xfvJTAbtvhiR0XQ4AMe1oX2GEr21JM/edit?usp=sharing[Google Sheet Testplan]
+,===
+
+include::norm/SspmpSm_norm_rules.adoc[]
+
+===== Sspmp Base CSRs and Matching
+
+These coverpoints exercise the core CSR layout and matching logic defined in
+rv-spmp-spec sections 2.1-2.6:
+
+* `spmpaddr*` and `spmpcfg*` write/readback (`cp_spmpaddr_write`, `cp_spmpcfg_write`).
+* The L (lock) bit and its TOR side-effect on the previous `spmpaddr` (`cp_spmp_lock`,
+  `cp_spmp_lock_write_ignored`, `cp_spmp_lock_tor_prevaddr`).
+* Address-matching modes A = OFF / TOR / NA4 / NAPOT (`cp_addr_match_off`,
+  `cp_addr_match_tor`, `cp_addr_match_na4`, `cp_addr_match_napot`,
+  `cp_addr_match_tor_entry0`).
+* Permission encodings for the three rule classes -- S-mode rule, U-mode rule, and Shared rule --
+  including the SUM and MXR effects, the EnforceNoX corner case, and the reserved RWX = 010 / 011
+  encodings (`cp_smode_rule`, `cp_umode_rule`, `cp_sum_effect`, `cp_sum_denied`,
+  `cp_enforce_no_x`, `cp_mxr_effect`, `cp_shared_rule`, `cp_reserved_encoding`).
+* First-match-wins priority and the requirement that address matching is independent of the
+  permission bits (`cp_priority_match`, `cp_match_irrespective_perm_bits`,
+  `cp_no_match_deny`).
+* Page-fault delivery for SPMP-induced denials -- instruction (cause 12), load (cause 13),
+  and store/AMO (cause 15) page faults (`cp_spmp_fault_instr`, `cp_spmp_fault_load`,
+  `cp_spmp_fault_store`).
+* Mutual exclusion of paging and SPMP via `satp.MODE = Bare` (`cp_satp_bare_spmp`).
+
+===== Sscsrind Indirect Access
+
+These coverpoints exercise the access path defined in rv-spmp-spec section 2.7.  S-mode
+selects an SPMP entry by writing `siselect` in the range `0x100..0x13F`, and then reads
+or writes `sireg` (mapped to `spmpaddr`) and `sireg2` (mapped to `spmpcfg`):
+
+* `cp_spmp_indirect_access`, `cp_spmpaddr_write`, `cp_spmpcfg_write`.
+* Out-of-bounds `siselect` values (`0x140..0x1FF`) -- reads must return zero and writes
+  must be silently ignored (`cp_spmp_oob_read_zero`, `cp_spmp_oob_write_ignored`).
+* `SFENCE.VMA x0,x0` ordering of subsequent S/U memory accesses against preceding SPMP CSR
+  writes (`cp_sfence_ordering`).
+
+===== Sspmpen Context-Switch Optimization
+
+These coverpoints exercise the `spmpen` CSR (rv-spmp-spec section 3):
+
+* Read/write of all bits of `spmpen` (`cp_spmpen_readwrite`).
+* Activation condition: an entry contributes to permission checks iff
+  `spmpen[i]` is set *and* `spmpcfg[i].A != OFF` (`cp_spmpen_activation`).
+* When an entry is locked (`spmpcfg[i].L = 1`) the corresponding `spmpen[i]` bit is
+  read-only set; clear attempts must be ignored (`cp_spmpen_locked_readonly`).
+
+===== Smpmpdeleg M-Mode Delegation
+
+These coverpoints exercise the `mpmpdeleg` CSR and the M-mode access path
+(rv-spmp-spec section 4):
+
+* M-mode access to the SPMP CSRs via `miselect` / `mireg` / `mireg2`
+  (`cp_mmode_indirect_access`).
+* The `pmpnum` WARL field (bits [6:0]) and the boundary cases
+  `pmpnum = 0` (delegate all PMP entries to SPMP) and
+  `pmpnum = NUM_PMP_ENTRIES` (no delegation, all SPMP CSR reads return zero)
+  (`cp_mpmpdeleg_pmpnum_field`, `cp_mpmpdeleg_pmpnum_zero`,
+  `cp_mpmpdeleg_no_delegation`).
+* Locked-PMP constraint: `pmpnum` cannot be lowered below the lowest locked PMP entry
+  (`cp_mpmpdeleg_locked`).
+* M-mode memory access bypasses SPMP entirely (`cp_mmode_bypass`).
+* M-mode can clear `spmpcfg.L` via `miselect`/`mireg2` (`cp_spmp_lock_clear_mmode`).
+
+===== Tests
+
+The combined regression `tests/priv/Sspmp/Sspmp-00.S` exercises every coverpoint in a
+single ELF.  In addition, the SspmpSm generator
+(`generators/testgen/src/testgen/priv/extensions/SspmpSm.py`) emits a set of standalone
+sub-tests, one ELF per coverpoint family, so that scenarios involving locked PMP/SPMP
+entries are not perturbed by earlier sub-tests in the same hart:
+
+[cols="1, 4" options=header]
+|===
+|Test File|Coverpoints
+|`SspmpSmCsrAccess.S`|Indirect-access path, `spmpaddr`/`spmpcfg` write/readback
+|`SspmpSmAddrMatch.S`|A = OFF / TOR / NA4 / NAPOT, match-irrespective-of-perm-bits
+|`SspmpSmTorEntry0.S`|TOR on entry 0 (implicit lower bound = 0)
+|`SspmpSmPermSmode.S`|S-mode-only rule (SHARED=0, U=0)
+|`SspmpSmPermUmode.S`|U-mode rule (SHARED=0, U=1)
+|`SspmpSmSum.S`|`sstatus.SUM` effects: SUM=0 deny, SUM=1 data allowed, EnforceNoX
+|`SspmpSmMxr.S`|`sstatus.MXR` effect on execute-only regions
+|`SspmpSmShared.S`|Shared-region rule (SHARED=1, U=1)
+|`SspmpSmReserved.S`|Reserved RWX = 010 / 011 encodings
+|`SspmpSmNoMatch.S`|No matching entry => deny in S/U mode
+|`SspmpSmPriority.S`|First-match-wins priority across multiple matching entries
+|`SspmpSmFault.S`|Instruction / load / store page-fault delivery
+|`SspmpSmSatpBare.S`|`satp.MODE = Bare` with Sspmp active
+|`SspmpSmSfence.S`|`SFENCE.VMA x0,x0` ordering after SPMP CSR writes
+|`SspmpSmLock.S`|Lock bit, lock-write-ignored, TOR-prev-addr lock
+|`SspmpSmOobAccess.S`|Out-of-bounds `siselect` read-zero / write-ignored
+|`SspmpSmSpmpen.S`|`spmpen` read/write, activation, locked read-only
+|`SspmpSmMpmpdeleg.S`|`mpmpdeleg.pmpnum` field, delegation boundaries, locked-PMP constraint
+|`SspmpSmMmodeAccess.S`|M-mode access to SPMP via `miselect`, lock clear
+|`SspmpSmMmodeBypass.S`|M-mode memory access bypasses SPMP
+|===
+
+[NOTE]
+Once a PMP entry is locked, the lock can only be cleared by reset; standalone ELFs are
+therefore preferred over a single bundled ELF for any sub-test that locks PMP/SPMP
+entries.

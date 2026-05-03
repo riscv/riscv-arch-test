@@ -1,4 +1,4 @@
-= RVA23 Certification Requirements Document (rev 0.1
+= RVA23 Certification Requirements Document (rev 0.1)
 :description: RVA23 CRD (Certificate Requirements Document)
 include::../../common/adoc_common.adoc[]
 
@@ -46,6 +46,8 @@ extensions outside the custom encoding spaces if the optional Ssstrict extension
 
 The RVA23S64 profile implies requirements that might not be immediately
 obvious.  This section explains them in detail.
+
+***This is a work in progress, for review only.
 
 === Nonconforming M-mode
 
@@ -151,7 +153,7 @@ https://github.com/riscv/riscv-isa-manual/issues/3007
 
 *** add some of these to the profile?
 
-Certification requires a M-mode trap handler that implements a Test Supervisor Binary Interface (T-SBI) defined in the Certification Test Plan (CTP).  It also expects M-mode CSRs to be initialized in certain ways to allow testing of features at lower privilege modes. For example, floating-point and vector must be turned in in `mstatus` to test these mandatory extensions.  Therefore, the DUT must have the ability to run M-mode boot code that installs the trap handler and initializes CSRs.  A DUT that runs M-mode firmware in ROM and transfers control to S-mode before allowing software to run would not be certifiable because it could not install the trap handler or initialize CSRs.
+Certification requires a M-mode trap handler that implements a Test Supervisor Binary Interface (T-SBI) defined in the Certification Test Plan (CTP).  It also expects M-mode CSRs to be initialized in certain ways to allow testing of features at lower privilege modes. For example, floating-point and vector must be turned on in `mstatus` to test these mandatory extensions.  Therefore, the DUT must have the ability to run M-mode boot code that installs the trap handler and initializes CSRs.  A DUT that runs M-mode firmware in ROM and transfers control to S-mode before allowing software to run would not be certifiable because it could not install the trap handler or initialize CSRs.
 
 `mtvec` is a WARL field whose behavior is theoretically unpredictable.
 

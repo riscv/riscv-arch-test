@@ -22,10 +22,10 @@ covergroup SsstrictSm_mcsr_cg with function sample(ins_t ins);
         bins nonzero = { [1:$] }; // rd != 0
     }
     csrr: coverpoint ins.current.insn  {
-        wildcard bins csrr = {32'b????????????_00000_010_?????_1110011};
+        wildcard bins csrr = {CSRR};
     }
     csrrw: coverpoint ins.current.insn {
-        wildcard bins csrrw = {32'b????????????_?????_001_?????_1110011};
+        wildcard bins csrrw = {CSRRW};
     }
     csr: coverpoint ins.current.insn[31:20]  {
         bins user_std0[] = {[12'h000:12'h0FF]};
@@ -152,12 +152,5 @@ function void ssstrictsm_sample(int hart, int issue, ins_t ins);
     SsstrictSm_instr_cg.sample(ins);
     SsstrictSm_comp_instr_cg.sample(ins);
     SsstrictSm_mcsr_cg.sample(ins);
-
-// $display("mode: %b, csr: %h, csrrs: %b, csrrc: %b, walking: %b",
-//          ins.current.mode,
-//          ins.current.insn[31:20],
-//          ((ins.current.insn[14:12] == 3'b010) && (ins.current.insn[6:0] == 7'b1110011)),
-//          ((ins.current.insn[14:12] == 3'b011) && (ins.current.insn[6:0] == 7'b1110011)),
-//          ins.prev.csr[12'h747]);
 
 endfunction

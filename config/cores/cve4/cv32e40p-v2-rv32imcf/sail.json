@@ -45,7 +45,7 @@
       // SCHEMA-REQUIRED: cv32e40p has no Zacas extension; AMO instructions decode as
       // illegal (cv32e40p_decoder.sv:450). Value has no effect on DUT comparison.
       "amocas_odd_register": "AMOCAS_Illegal",
-      // F extension present: illegal rm value (0b101-0b110) in fcsr raises illegal instruction.
+      // F extension present: illegal rm value (0b101, 0b110, 0b111) in fcsr raises illegal instruction.
       "fcsr_rm": "Fcsr_RM_Illegal",
       // SCHEMA-REQUIRED: cv32e40p has no PMP (USE_PMP=0, cv32e40p_core.sv:108).
       // Value has no effect on DUT comparison.
@@ -87,7 +87,7 @@
         "lrsc": "AccessFault",
         // SCHEMA-REQUIRED: cv32e40p has no Zaamo/A extension (A: false, extensions section).
         // AMO opcodes decode as illegal instructions — cv32e40p_decoder.sv:450.
-        // Value has no effect on DUT comparison. See: https://github.com/riscv/sail-riscv/issues
+        // Value has no effect on DUT comparison.
         "amo": "AccessFault"
       },
       "allowed_within_exp": 0,

@@ -262,7 +262,7 @@
   },
   "platform": {
     "vendorid": 0,
-    "archid": 1,
+    "archid": 0,
     "impid": 0,
     "hartid": 0,
     // Cache block size, specified as a power of 2.

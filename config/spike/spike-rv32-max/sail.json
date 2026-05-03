@@ -89,6 +89,11 @@
       "na4_supported": true,
       "napot_supported": true
     },
+    "spmp": {
+      "enabled": false,
+      "count": 0,
+      "grain": 0
+    },
     // These settings control global support for misaligned access so they are
     // checked before address translation. `misaligned_fault` in
     // `regions` is checked after address translation.
@@ -281,14 +286,16 @@
     "clint": {
       // This must be in a suitable IO memory region (see `memory.regions`).
       "base": 33554432,
-      "size": 786432
+      "size": 786432,
+      "supported": true
     },
     // Very simple MMIO device to generate interrupts for testing
     // purposes. See docs/SimpleInterruptGenerator.md for details.
     "simple_interrupt_generator": {
       // This must be in a suitable IO memory region (see `memory.regions`)
       // and 4-byte aligned. The size is always 0x20.
-      "base": 201326592
+      "base": 201326592,
+      "supported": true
     },
     "clock_frequency": 1000000000,
     "instructions_per_tick": 2,

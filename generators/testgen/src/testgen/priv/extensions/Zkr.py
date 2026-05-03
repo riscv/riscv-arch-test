@@ -110,11 +110,11 @@ def _generate_seed_csrrw_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_seed_illegal_csr_op_tests(test_data: TestData) -> list[str]:
-    """Test CSR ops on seed for illegal instruction behavior in every mode."""
+    """Test illegal CSR ops on seed cause illegal instruction in every mode."""
     covergroup = "Zkr_cg"
     coverpoint = "cp_zkr_seed_illegal_csr_op"
 
-    dest_reg, mseccfg_reg, rs1_reg, save_reg = test_data.int_regs.get_registers(4)
+    dest_reg, mseccfg_reg, save_reg = test_data.int_regs.get_registers(3)
 
     lines = [
         comment_banner(
@@ -132,67 +132,54 @@ def _generate_seed_illegal_csr_op_tests(test_data: TestData) -> list[str]:
             f"LI(x{mseccfg_reg}, {sseed_useed_enabled})",
             f"csrw mseccfg, x{mseccfg_reg}",
             "#endif",
-            f"LI(x{rs1_reg}, 0)",
         ]
     )
 
-    # (op, is_immediate) for each CSR op to test on seed
-    csr_ops: list[tuple[str, bool]] = [
-        ("csrrs", False),
-        ("csrrc", False),
-        ("csrrwi", True),
-        ("csrrsi", True),
-        ("csrrci", True),
-        ("csrrw", False),
+    # Each entry: (op, instruction with x0/imm=0, tag)
+    csr_ops: list[tuple[str, str]] = [
+        ("csrrs", f"csrrs x{dest_reg}, seed, x0"),
+        ("csrrc", f"csrrc x{dest_reg}, seed, x0"),
+        ("csrrsi", f"csrrsi x{dest_reg}, seed, 0"),
+        ("csrrci", f"csrrci x{dest_reg}, seed, 0"),
     ]
 
-    for op, is_imm in csr_ops:
-        for rs1_imm_val in (0, 1):
-            tag = f"{op}_rs1imm{rs1_imm_val}"
+    for op, instr in csr_ops:
+        tag = f"{op}_rs1imm0"
 
-            if is_imm:
-                instr_zero = f"{op} x{dest_reg}, seed, 0"
-                instr_nonzero = f"{op} x{dest_reg}, seed, 1"
-            else:
-                instr_zero = f"{op} x{dest_reg}, seed, x0"
-                instr_nonzero = f"{op} x{dest_reg}, seed, x{rs1_reg}"
+        # M-mode
+        lines.extend(
+            [
+                "RVTEST_GOTO_MMODE",
+                test_data.add_testcase(f"M_{tag}", coverpoint, covergroup),
+                instr,
+            ]
+        )
 
-            instr = instr_zero if rs1_imm_val == 0 else instr_nonzero
+        # S-mode
+        lines.extend(
+            [
+                "#ifdef S_SUPPORTED",
+                "RVTEST_GOTO_LOWER_MODE Smode",
+                test_data.add_testcase(f"S_{tag}", coverpoint, covergroup),
+                instr,
+                "nop",
+                "RVTEST_GOTO_MMODE",
+                "#endif",
+            ]
+        )
 
-            # M-mode
-            lines.extend(
-                [
-                    "RVTEST_GOTO_MMODE",
-                    test_data.add_testcase(f"M_{tag}", coverpoint, covergroup),
-                    instr,
-                ]
-            )
-
-            # S-mode
-            lines.extend(
-                [
-                    "#ifdef S_SUPPORTED",
-                    "RVTEST_GOTO_LOWER_MODE Smode",
-                    test_data.add_testcase(f"S_{tag}", coverpoint, covergroup),
-                    instr,
-                    "nop",
-                    "RVTEST_GOTO_MMODE",
-                    "#endif",
-                ]
-            )
-
-            # U-mode
-            lines.extend(
-                [
-                    "#ifdef U_SUPPORTED",
-                    "RVTEST_GOTO_LOWER_MODE Umode",
-                    test_data.add_testcase(f"U_{tag}", coverpoint, covergroup),
-                    instr,
-                    "nop",
-                    "RVTEST_GOTO_MMODE",
-                    "#endif",
-                ]
-            )
+        # U-mode
+        lines.extend(
+            [
+                "#ifdef U_SUPPORTED",
+                "RVTEST_GOTO_LOWER_MODE Umode",
+                test_data.add_testcase(f"U_{tag}", coverpoint, covergroup),
+                instr,
+                "nop",
+                "RVTEST_GOTO_MMODE",
+                "#endif",
+            ]
+        )
 
     # Restore mseccfg
     lines.extend(
@@ -204,7 +191,7 @@ def _generate_seed_illegal_csr_op_tests(test_data: TestData) -> list[str]:
         ]
     )
 
-    test_data.int_regs.return_registers([dest_reg, mseccfg_reg, rs1_reg, save_reg])
+    test_data.int_regs.return_registers([dest_reg, mseccfg_reg, save_reg])
     return lines
 
 

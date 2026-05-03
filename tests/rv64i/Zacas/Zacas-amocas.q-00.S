@@ -2074,6 +2074,8 @@ Zacas_amocas_q_cg_cmp_rd_rs1_rs2_nx0_pair_b30:
   # Check if x30 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x30, Zacas_amocas_q_cg_cmp_rd_rs1_rs2_nx0_pair_b30, Zacas_amocas_q_cg_cmp_rd_rs1_rs2_nx0_pair_b30_str)
 
+  mv x2, x15 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

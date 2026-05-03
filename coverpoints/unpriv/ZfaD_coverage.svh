@@ -18,6 +18,7 @@ covergroup ZfaD_fcvtmod_w_d_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_csr_fflags_vn : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = (5'b0???? => 5'b1????);
@@ -25,9 +26,11 @@ covergroup ZfaD_fcvtmod_w_d_cg with function sample(ins_t ins);
         wildcard bins NX   = (5'b????0 => 5'b????1);
         wildcard bins NX1  = (5'b????1 => 5'b????1);
     }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
+
     cp_fs1_edges_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         // FS1 edges (Double Precision)
         bins pos0             = {64'h0000000000000000};
@@ -57,9 +60,11 @@ covergroup ZfaD_fcvtmod_w_d_cg with function sample(ins_t ins);
         bins posrandom        = {64'h5A392534A57711AD};
         bins negrandom        = {64'hA6E895993737426C};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
 endgroup
 // ---------------------
 covergroup ZfaD_fleq_d_cg with function sample(ins_t ins);
@@ -68,14 +73,17 @@ covergroup ZfaD_fleq_d_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_csr_fflags_v : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
     }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
+
     cp_fs1_edges_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         // FS1 edges (Double Precision)
         bins pos0             = {64'h0000000000000000};
@@ -105,9 +113,11 @@ covergroup ZfaD_fleq_d_cg with function sample(ins_t ins);
         bins posrandom        = {64'h5A392534A57711AD};
         bins negrandom        = {64'hA6E895993737426C};
     }
+
     cp_fs2 : coverpoint ins.get_fpr_reg(ins.current.fs2)  iff (ins.trap == 0 )  {
         // FS2 register assignment
     }
+
     cp_fs2_edges_D : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // FS2 edges (Double Precision)
         bins pos0             = {64'h0000000000000000};
@@ -137,12 +147,15 @@ covergroup ZfaD_fleq_d_cg with function sample(ins_t ins);
         bins posrandom        = {64'h5A392534A57711AD};
         bins negrandom        = {64'hA6E895993737426C};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cr_fs1_fs2_edges_D : cross cp_fs1_edges_D,cp_fs2_edges_D  iff (ins.trap == 0 )  {
         // Cross coverage FS1, FS2 (double precision)
     }
+
 endgroup
 // ---------------------
 covergroup ZfaD_fleq_s_cg with function sample(ins_t ins);
@@ -162,6 +175,7 @@ covergroup ZfaD_fleq_s_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
         bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
     }
+
     cp_fs2_badNB_D_S : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // "FS2 Bad NaNBox edges (single NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffefff_00000000};
@@ -177,6 +191,7 @@ covergroup ZfaD_fleq_s_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
         bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfaD_fli_d_cg with function sample(ins_t ins);
@@ -185,12 +200,15 @@ covergroup ZfaD_fli_d_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
         // FD register assignment
     }
+
     cp_rs1_fli : coverpoint ins.current.insn[19:15]  iff (ins.trap == 0 )  {
         // FLI immediate encoding
     }
+
 endgroup
 // ---------------------
 covergroup ZfaD_fli_s_cg with function sample(ins_t ins);
@@ -199,6 +217,7 @@ covergroup ZfaD_fli_s_cg with function sample(ins_t ins);
         // NaNBoxing (float result in a double register)
         bins NaNBox = {32'hffffffff};
     }
+
 endgroup
 // ---------------------
 covergroup ZfaD_fltq_d_cg with function sample(ins_t ins);
@@ -207,14 +226,17 @@ covergroup ZfaD_fltq_d_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_csr_fflags_v : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
     }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
+
     cp_fs1_edges_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         // FS1 edges (Double Precision)
         bins pos0             = {64'h0000000000000000};
@@ -244,9 +266,11 @@ covergroup ZfaD_fltq_d_cg with function sample(ins_t ins);
         bins posrandom        = {64'h5A392534A57711AD};
         bins negrandom        = {64'hA6E895993737426C};
     }
+
     cp_fs2 : coverpoint ins.get_fpr_reg(ins.current.fs2)  iff (ins.trap == 0 )  {
         // FS2 register assignment
     }
+
     cp_fs2_edges_D : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // FS2 edges (Double Precision)
         bins pos0             = {64'h0000000000000000};
@@ -276,12 +300,15 @@ covergroup ZfaD_fltq_d_cg with function sample(ins_t ins);
         bins posrandom        = {64'h5A392534A57711AD};
         bins negrandom        = {64'hA6E895993737426C};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cr_fs1_fs2_edges_D : cross cp_fs1_edges_D,cp_fs2_edges_D  iff (ins.trap == 0 )  {
         // Cross coverage FS1, FS2 (double precision)
     }
+
 endgroup
 // ---------------------
 covergroup ZfaD_fltq_s_cg with function sample(ins_t ins);
@@ -301,6 +328,7 @@ covergroup ZfaD_fltq_s_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
         bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
     }
+
     cp_fs2_badNB_D_S : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // "FS2 Bad NaNBox edges (single NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffefff_00000000};
@@ -316,6 +344,7 @@ covergroup ZfaD_fltq_s_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
         bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfaD_fmaxm_d_cg with function sample(ins_t ins);
@@ -323,24 +352,30 @@ covergroup ZfaD_fmaxm_d_cg with function sample(ins_t ins);
     cmp_fd_fs1 : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.current.fd == ins.current.fs1 & ins.trap == 0 )  {
         // FD and FS1 register (assignment) WAR Hazard
     }
+
     cmp_fd_fs2 : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.current.fd == ins.current.fs2 & ins.trap == 0 )  {
         // FD and FS1 register (assignment) WAR Hazard
     }
+
     cp_asm_count : coverpoint ins.ins_str == "fmaxm.d"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_csr_fflags_v : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
     }
+
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
         // FD register assignment
     }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
+
     cp_fs1_edges_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         // FS1 edges (Double Precision)
         bins pos0             = {64'h0000000000000000};
@@ -370,9 +405,11 @@ covergroup ZfaD_fmaxm_d_cg with function sample(ins_t ins);
         bins posrandom        = {64'h5A392534A57711AD};
         bins negrandom        = {64'hA6E895993737426C};
     }
+
     cp_fs2 : coverpoint ins.get_fpr_reg(ins.current.fs2)  iff (ins.trap == 0 )  {
         // FS2 register assignment
     }
+
     cp_fs2_edges_D : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // FS2 edges (Double Precision)
         bins pos0             = {64'h0000000000000000};
@@ -402,9 +439,11 @@ covergroup ZfaD_fmaxm_d_cg with function sample(ins_t ins);
         bins posrandom        = {64'h5A392534A57711AD};
         bins negrandom        = {64'hA6E895993737426C};
     }
+
     cr_fs1_fs2_edges_D : cross cp_fs1_edges_D,cp_fs2_edges_D  iff (ins.trap == 0 )  {
         // Cross coverage FS1, FS2 (double precision)
     }
+
 endgroup
 // ---------------------
 covergroup ZfaD_fmaxm_s_cg with function sample(ins_t ins);
@@ -413,6 +452,7 @@ covergroup ZfaD_fmaxm_s_cg with function sample(ins_t ins);
         // NaNBoxing (float result in a double register)
         bins NaNBox = {32'hffffffff};
     }
+
     cp_fs1_badNB_D_S : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         // "FS1 Bad NaNBox edges (single NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffefff_00000000};
@@ -428,6 +468,7 @@ covergroup ZfaD_fmaxm_s_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
         bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
     }
+
     cp_fs2_badNB_D_S : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // "FS2 Bad NaNBox edges (single NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffefff_00000000};
@@ -443,6 +484,7 @@ covergroup ZfaD_fmaxm_s_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
         bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfaD_fminm_d_cg with function sample(ins_t ins);
@@ -450,24 +492,30 @@ covergroup ZfaD_fminm_d_cg with function sample(ins_t ins);
     cmp_fd_fs1 : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.current.fd == ins.current.fs1 & ins.trap == 0 )  {
         // FD and FS1 register (assignment) WAR Hazard
     }
+
     cmp_fd_fs2 : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.current.fd == ins.current.fs2 & ins.trap == 0 )  {
         // FD and FS1 register (assignment) WAR Hazard
     }
+
     cp_asm_count : coverpoint ins.ins_str == "fminm.d"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_csr_fflags_v : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
     }
+
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
         // FD register assignment
     }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
+
     cp_fs1_edges_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         // FS1 edges (Double Precision)
         bins pos0             = {64'h0000000000000000};
@@ -497,9 +545,11 @@ covergroup ZfaD_fminm_d_cg with function sample(ins_t ins);
         bins posrandom        = {64'h5A392534A57711AD};
         bins negrandom        = {64'hA6E895993737426C};
     }
+
     cp_fs2 : coverpoint ins.get_fpr_reg(ins.current.fs2)  iff (ins.trap == 0 )  {
         // FS2 register assignment
     }
+
     cp_fs2_edges_D : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // FS2 edges (Double Precision)
         bins pos0             = {64'h0000000000000000};
@@ -529,9 +579,11 @@ covergroup ZfaD_fminm_d_cg with function sample(ins_t ins);
         bins posrandom        = {64'h5A392534A57711AD};
         bins negrandom        = {64'hA6E895993737426C};
     }
+
     cr_fs1_fs2_edges_D : cross cp_fs1_edges_D,cp_fs2_edges_D  iff (ins.trap == 0 )  {
         // Cross coverage FS1, FS2 (double precision)
     }
+
 endgroup
 // ---------------------
 covergroup ZfaD_fminm_s_cg with function sample(ins_t ins);
@@ -540,6 +592,7 @@ covergroup ZfaD_fminm_s_cg with function sample(ins_t ins);
         // NaNBoxing (float result in a double register)
         bins NaNBox = {32'hffffffff};
     }
+
     cp_fs1_badNB_D_S : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         // "FS1 Bad NaNBox edges (single NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffefff_00000000};
@@ -555,6 +608,7 @@ covergroup ZfaD_fminm_s_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
         bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
     }
+
     cp_fs2_badNB_D_S : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // "FS2 Bad NaNBox edges (single NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffefff_00000000};
@@ -570,6 +624,7 @@ covergroup ZfaD_fminm_s_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
         bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfaD_fround_d_cg with function sample(ins_t ins);
@@ -577,19 +632,23 @@ covergroup ZfaD_fround_d_cg with function sample(ins_t ins);
     cp_frm_2 : coverpoint get_frm(ins.ops[2].val)  iff (ins.trap == 0 )  {
         // Floating-point rounding mode in instruction
     }
+
     cmp_fd_fs1 : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.current.fd == ins.current.fs1 & ins.trap == 0 )  {
         // FD and FS1 register (assignment) WAR Hazard
     }
+
     cp_asm_count : coverpoint ins.ins_str == "fround.d"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_csr_fflags_v : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
     }
-    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
+
+    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
         // Value of FCSR.frm during dynamic rounding
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -598,12 +657,15 @@ covergroup ZfaD_fround_d_cg with function sample(ins_t ins);
         bins rmm  = {3'b100};
         bins illegal  = default;
     }
+
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
         // FD register assignment
     }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
+
     cp_fs1_edges_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         // FS1 edges (Double Precision)
         bins pos0             = {64'h0000000000000000};
@@ -633,6 +695,7 @@ covergroup ZfaD_fround_d_cg with function sample(ins_t ins);
         bins posrandom        = {64'h5A392534A57711AD};
         bins negrandom        = {64'hA6E895993737426C};
     }
+
 endgroup
 // ---------------------
 covergroup ZfaD_fround_s_cg with function sample(ins_t ins);
@@ -641,6 +704,7 @@ covergroup ZfaD_fround_s_cg with function sample(ins_t ins);
         // NaNBoxing (float result in a double register)
         bins NaNBox = {32'hffffffff};
     }
+
     cp_fs1_badNB_D_S : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         // "FS1 Bad NaNBox edges (single NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffefff_00000000};
@@ -656,6 +720,7 @@ covergroup ZfaD_fround_s_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
         bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfaD_froundnx_d_cg with function sample(ins_t ins);
@@ -663,13 +728,16 @@ covergroup ZfaD_froundnx_d_cg with function sample(ins_t ins);
     cp_frm_2 : coverpoint get_frm(ins.ops[2].val)  iff (ins.trap == 0 )  {
         // Floating-point rounding mode in instruction
     }
+
     cmp_fd_fs1 : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.current.fd == ins.current.fs1 & ins.trap == 0 )  {
         // FD and FS1 register (assignment) WAR Hazard
     }
+
     cp_asm_count : coverpoint ins.ins_str == "froundnx.d"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_csr_fflags_vn : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = (5'b0???? => 5'b1????);
@@ -677,7 +745,8 @@ covergroup ZfaD_froundnx_d_cg with function sample(ins_t ins);
         wildcard bins NX   = (5'b????0 => 5'b????1);
         wildcard bins NX1  = (5'b????1 => 5'b????1);
     }
-    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
+
+    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
         // Value of FCSR.frm during dynamic rounding
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -686,12 +755,15 @@ covergroup ZfaD_froundnx_d_cg with function sample(ins_t ins);
         bins rmm  = {3'b100};
         bins illegal  = default;
     }
+
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
         // FD register assignment
     }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
+
     cp_fs1_edges_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         // FS1 edges (Double Precision)
         bins pos0             = {64'h0000000000000000};
@@ -721,6 +793,7 @@ covergroup ZfaD_froundnx_d_cg with function sample(ins_t ins);
         bins posrandom        = {64'h5A392534A57711AD};
         bins negrandom        = {64'hA6E895993737426C};
     }
+
 endgroup
 // ---------------------
 covergroup ZfaD_froundnx_s_cg with function sample(ins_t ins);
@@ -729,6 +802,7 @@ covergroup ZfaD_froundnx_s_cg with function sample(ins_t ins);
         // NaNBoxing (float result in a double register)
         bins NaNBox = {32'hffffffff};
     }
+
     cp_fs1_badNB_D_S : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         // "FS1 Bad NaNBox edges (single NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffefff_00000000};
@@ -744,6 +818,7 @@ covergroup ZfaD_froundnx_s_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
         bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
     }
+
 endgroup
 // ---------------------
 `ifdef XLEN32
@@ -753,9 +828,11 @@ covergroup ZfaD_fmvh_x_d_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
+
     cp_fs1_edges_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         // FS1 edges (Double Precision)
         bins pos0             = {64'h0000000000000000};
@@ -785,9 +862,11 @@ covergroup ZfaD_fmvh_x_d_cg with function sample(ins_t ins);
         bins posrandom        = {64'h5A392534A57711AD};
         bins negrandom        = {64'hA6E895993737426C};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
 endgroup
 // ---------------------
 covergroup ZfaD_fmvp_d_x_cg with function sample(ins_t ins);
@@ -796,12 +875,15 @@ covergroup ZfaD_fmvp_d_x_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
         // FD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -835,9 +917,11 @@ covergroup ZfaD_fmvp_d_x_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -871,6 +955,7 @@ covergroup ZfaD_fmvp_d_x_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
 endgroup
 // ---------------------
 `endif

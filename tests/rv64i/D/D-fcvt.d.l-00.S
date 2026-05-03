@@ -20,7 +20,7 @@
 #define SIGUPD_COUNT 192
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define RVTEST_FP
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -792,6 +792,8 @@ D_fcvt_d_l_cg_cp_csr_frm_rne:
   fcvt.d.l f12, x11 # perform operation
   # Check if f12 contains the expected result. Also checks fflags. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x3, x8, x7, f4, f12, D_fcvt_d_l_cg_cp_csr_frm_rne, D_fcvt_d_l_cg_cp_csr_frm_rne_str)
+
+  mv x2, x3 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

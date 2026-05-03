@@ -1,8 +1,17 @@
 # SPDX-License-Identifier: Apache-2.0
 
 [tools]
+prek = "0.3.11"
 ruby = "3.4.9"
-uv = "0.11.6"
+uv = "0.11.8"
 
 [settings.ruby]
 compile = false
+
+[tasks.prek]
+description = "Run prek hooks on all files"
+run = "prek run --all-files"
+
+[tasks.prek-install]
+description = "Install prek git hooks"
+run = "prek install"

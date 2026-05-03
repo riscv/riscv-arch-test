@@ -1,1 +1,1 @@
-sail_riscv_sim {debug:--trace-all} --config config/sail/sail-RVA23S64-optional/sail.json
+sail_riscv_sim {debug:--trace --trace-output __TRACEFILE__} --config config/sail/sail-RVA23S64-optional/sail.json

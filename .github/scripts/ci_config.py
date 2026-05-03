@@ -3,7 +3,7 @@
 # Jordan Carlin jcarlin@hmc.edu April 2026
 #
 # /// script
-# requires-python = ">=3.12"
+# requires-python = ">=3.10"
 # dependencies = [
 #     "ruamel-yaml>=0.18.16",
 # ]

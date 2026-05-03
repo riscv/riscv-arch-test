@@ -1,3 +1,6 @@
+# Ignore Claude file
+CLAUDE.md
+
 # Ignore editor backup files
 *~
 *.swp
@@ -26,6 +29,12 @@ __pycache__
 
 # Work directories
 work/
+
+# vector tests
+tests/rv32i/V*
+tests/rv32i/Zv*
+tests/rv64i/V*
+tests/rv64i/Zv*
 
 # priv tests
 tests/priv/headers

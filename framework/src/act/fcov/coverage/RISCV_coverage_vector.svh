@@ -346,6 +346,29 @@ function logic[63:0] get_vr_element_zero(int hart, int issue, `VLEN_BITS val);
 
 endfunction
 
+// Like get_vr_element_zero but extracts at 2*SEW for widening instructions
+// where the operand (e.g. vs1 accumulator in vfwredosum) is at double width.
+function logic[63:0] get_vr_element_zero_widen(int hart, int issue, `VLEN_BITS val);
+    `XLEN_BITS vsew = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew");
+
+    case (vsew)
+    `ifdef SEW8_SUPPORTED
+    2'b00:  return {48'b0, val[15:0]};   // 2*SEW = 16
+    `endif
+    `ifdef SEW16_SUPPORTED
+    2'b01:  return {32'b0, val[31:0]};   // 2*SEW = 32
+    `endif
+    `ifdef SEW32_SUPPORTED
+    2'b10:  return val[63:0];            // 2*SEW = 64
+    `endif
+    default: begin
+      $error("ERROR: SystemVerilog Functional Coverage: Unsupported SEW for widening: %s", vsew);
+      $fatal(1);
+    end
+  endcase
+  return 0;
+
+endfunction
 
 typedef enum {
     mask_zero,
@@ -358,12 +381,23 @@ typedef enum {
 // Check for vector operand edge values, assuming vl = 1
 function edge_mask_values_t mask_edges_check(int hart, int issue, `VLEN_BITS mask_val);
   int vlmax = get_vtype_vlmax(hart, issue, `SAMPLE_BEFORE);
+  // Mask v0 only uses the low `vlmax' bits; bits above are don't-care
+  // (mask-producing ops leave them as agnostic-ones per the RVV 1.0 spec
+  // and previous random-mask tests can leave any value there). Discard the
+  // inactive bits before classifying so the edge-value bins are reachable.
+  `VLEN_BITS active_mask;
+  if (vlmax >= $bits(mask_val)) begin
+    active_mask = mask_val;
+  end else begin
+    `VLEN_BITS one = 'b1;
+    active_mask = mask_val & ((one << vlmax) - 1);
+  end
 
-  if      (mask_val == 0)                           return mask_zero;
-  else if (mask_val == ((2 ** (vlmax)) - 1))        return mask_ones;
-  else if (mask_val == ((2 ** (vlmax-1)) - 1))      return mask_vlmaxm1ones;
-  else if (mask_val == ((2 ** (vlmax/2+1)) - 1))    return mask_vlmaxd2p1ones;
-  else                                              return mask_random;
+  if      (active_mask == 0)                           return mask_zero;
+  else if (active_mask == ((2 ** (vlmax)) - 1))        return mask_ones;
+  else if (active_mask == ((2 ** (vlmax-1)) - 1))      return mask_vlmaxm1ones;
+  else if (active_mask == ((2 ** (vlmax/2+1)) - 1))    return mask_vlmaxd2p1ones;
+  else                                                 return mask_random;
 
 endfunction
 

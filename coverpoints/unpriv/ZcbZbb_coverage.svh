@@ -18,6 +18,7 @@ covergroup ZcbZbb_c_sext_b_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -51,9 +52,11 @@ covergroup ZcbZbb_c_sext_b_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
 endgroup
 // ---------------------
 covergroup ZcbZbb_c_sext_h_cg with function sample(ins_t ins);
@@ -62,6 +65,7 @@ covergroup ZcbZbb_c_sext_h_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -95,9 +99,11 @@ covergroup ZcbZbb_c_sext_h_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
 endgroup
 // ---------------------
 covergroup ZcbZbb_c_zext_h_cg with function sample(ins_t ins);
@@ -106,6 +112,7 @@ covergroup ZcbZbb_c_zext_h_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -139,9 +146,11 @@ covergroup ZcbZbb_c_zext_h_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
 endgroup
 // ---------------------
 function void zcbzbb_sample(int hart, int issue, ins_t ins);

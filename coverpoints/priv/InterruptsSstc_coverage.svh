@@ -18,42 +18,42 @@ covergroup InterruptsSstc_cg with function sample(ins_t ins);
 
     // building blocks for the main coverpoints
 
-    sip_stip_one: coverpoint ins.current.csr[12'h144][5]{
+    sip_stip_one: coverpoint ins.current.csr[CSR_SIP][5]{
         bins one = {1};
     }
-    stimecmp_zero: coverpoint ins.current.csr[12'h14D] {
+    stimecmp_zero: coverpoint ins.current.csr[CSR_STIMECMP] {
         bins zero = {0};
     }
-    mstatus_mie: coverpoint ins.current.csr[12'h300][3]  {
+    mstatus_mie: coverpoint ins.current.csr[CSR_MSTATUS][3]  {
         // autofill 0/1
     }
-    mstatus_mie_one: coverpoint ins.current.csr[12'h300][3] {
+    mstatus_mie_one: coverpoint ins.current.csr[CSR_MSTATUS][3] {
         bins one = {1};
     }
-    mstatus_sie: coverpoint ins.current.csr[12'h300][1] {
+    mstatus_sie: coverpoint ins.current.csr[CSR_MSTATUS][1] {
         // autofill 0/1
     }
-    mideleg_sti: coverpoint ins.current.csr[12'h303][5] {
+    mideleg_sti: coverpoint ins.current.csr[CSR_MIDELEG][5] {
         // autofill 0/1
     }
-    mie_stie: coverpoint ins.current.csr[12'h304][5] {
+    mie_stie: coverpoint ins.current.csr[CSR_MIE][5] {
         // autofill 0/1
     }
-    mcounteren_tm: coverpoint ins.current.csr[12'h306][1] {
+    mcounteren_tm: coverpoint ins.current.csr[CSR_MCOUNTEREN][1] {
         // autofill 0/1
     }
     `ifdef XLEN64
-        menvcfg_stce: coverpoint ins.current.csr[12'h30A][63] {
+        menvcfg_stce: coverpoint ins.current.csr[CSR_MENVCFG][63] {
             // autofill 0/1
         }
-        menvcfg_stce_one: coverpoint ins.current.csr[12'h30A][63] {
+        menvcfg_stce_one: coverpoint ins.current.csr[CSR_MENVCFG][63] {
             bins one = {1};
         }
     `else
-        menvcfg_stce: coverpoint ins.current.csr[12'h31A][31] {
+        menvcfg_stce: coverpoint ins.current.csr[CSR_MENVCFGH][31] {
             // autofill 0/1
         }
-        menvcfg_stce_one: coverpoint ins.current.csr[12'h31A][31] {
+        menvcfg_stce_one: coverpoint ins.current.csr[CSR_MENVCFGH][31] {
             bins one = {1};
         }
     `endif
@@ -61,7 +61,7 @@ covergroup InterruptsSstc_cg with function sample(ins_t ins);
         bins csrr = {7'b1110011};
     }
     read_stimecmp: coverpoint ins.current.insn[31:20] {
-        bins read_stimecmp = {12'h14D};
+        bins read_stimecmp = {CSR_STIMECMP};
     }
 
     // main coverpoints

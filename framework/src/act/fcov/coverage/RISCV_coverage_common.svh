@@ -36,8 +36,12 @@
 // Physical Memory Protection (PMP) Specific Macros
 // -----------------------------------------------------------------------------
 
-`define SAFE_REGION_START   (`RAM_BASE_ADDR + `LARGEST_PROGRAM)
-`define REGIONSTART        `SAFE_REGION_START
+/*          To align with the starting address of a PMP region used in testing, the address is hardcoded here.
+            Since the Sail data region begins at 0x80004000, we simply add the size of the test strings,
+            which has been fixed at 4 KB. PMP region starts at 80005004, because there is a return instruction at
+            80005000, which is there to make sure we fetch a proper inrtuction from the background region.
+ */
+`define PMP_REGION_START   32'h80005004
 
 // Calculate region size g in bytes.
 `define g_tor       (2 ** (`G + 2))
@@ -49,10 +53,10 @@
 // Address encodings
 
 // TOR or NA4 region: directly right-shifted
-`define NON_STANDARD_REGION  (`REGIONSTART >> 2)              // TOR/NA4 format: yyyyy...
+`define NON_STANDARD_REGION  (`PMP_REGION_START >> 2)              // TOR/NA4 format: yyyyy...
 
 // NAPOT region: add trailing 1s per `k` to form mask
-`define STANDARD_REGION      ((`REGIONSTART >> 2) | ((2 ** `k) - 1)) // NAPOT format: yyyyy...0111
+`define STANDARD_REGION      ((`PMP_REGION_START >> 2) | ((2 ** `k) - 1)) // NAPOT format: yyyyy...0111
 
 // XLEN64 -> [53:0] & XLEN32 -> [31:0]
 `define EFFECTIVE_PMPADDR (`ifdef XLEN64 53 `else 31 `endif)
@@ -136,68 +140,6 @@
   `endif
 `endif
 
-
-// supported SEWs based on what coverages are enabled
-// `ifdef VX64_COVERAGE
-//   `define SEW64_SUPPORTED
-// `endif
-// `ifdef VX32_COVERAGE
-//   `define SEW32_SUPPORTED
-// `endif
-// `ifdef VX16_COVERAGE
-//   `define SEW16_SUPPORTED
-// `endif
-// `ifdef VX8_COVERAGE
-//   `define SEW8_SUPPORTED
-// `endif
-
-// `ifdef VLS64_COVERAGE
-//   `define SEW64_SUPPORTED
-// `endif
-// `ifdef VLS32_COVERAGE
-//   `define SEW32_SUPPORTED
-// `endif
-// `ifdef VLS16_COVERAGE
-//   `define SEW16_SUPPORTED
-// `endif
-// `ifdef VLS8_COVERAGE
-//   `define SEW8_SUPPORTED
-// `endif
-
-// `define SEW8_SUPPORTED
-// `define SEW16_SUPPORTED
-// `define SEW32_SUPPORTED
-// `define SEW64_SUPPORTED
-
-// ELEN (max SEW) definition
-// `ifdef VX64_COVERAGE
-//   `define ELEN64
-// `else
-//   `ifdef VX32_COVERAGE
-//     `define ELEN32
-//   `else
-//     `ifdef VX16_COVERAGE
-//       `define ELEN16
-//     `else
-//       `define ELEN8
-//     `endif
-//   `endif
-// `endif
-
-// `ifdef VLS64_COVERAGE
-//   `define ELEN64
-// `else
-//   `ifdef VLS32_COVERAGE
-//     `define ELEN32
-//   `else
-//     `ifdef VLS16_COVERAGE
-//       `define ELEN16
-//     `else
-//       `define ELEN8
-//     `endif
-//   `endif
-// `endif
-
 // edge cases
 `ifdef VLEN64
   `ifdef ELEN64
@@ -245,6 +187,28 @@
 //   `endif
 // `endif
 
+
+// MAXINDEXEEW — maximum supported index element width for indexed load/store
+// Config should define one of: MAXINDEXEEW64, MAXINDEXEEW32, MAXINDEXEEW16, MAXINDEXEEW8
+`ifdef MAXINDEXEEW64
+  `define MAXINDEXEEW 64
+  `define MAXINDEXEEW_GE8
+  `define MAXINDEXEEW_GE16
+  `define MAXINDEXEEW_GE32
+  `define MAXINDEXEEW_GE64
+`elsif MAXINDEXEEW32
+  `define MAXINDEXEEW 32
+  `define MAXINDEXEEW_GE8
+  `define MAXINDEXEEW_GE16
+  `define MAXINDEXEEW_GE32
+`elsif MAXINDEXEEW16
+  `define MAXINDEXEEW 16
+  `define MAXINDEXEEW_GE8
+  `define MAXINDEXEEW_GE16
+`elsif MAXINDEXEEW8
+  `define MAXINDEXEEW 8
+  `define MAXINDEXEEW_GE8
+`endif
 
 // Set register type length
 `define XLEN_BITS         bit        [`XLEN-1:0]

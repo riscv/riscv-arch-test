@@ -37,24 +37,98 @@ RVTEST_BEGIN
 # Testcase cp_rs1 (Test source rs1 = x0)
   RVTEST_TESTDATA_LOAD_INT(x3, x0) # load rs1: x0 = 0xd77480e6
   RVTEST_TESTDATA_LOAD_INT(x3, x12) # load temp reg: x12 = 0x2f76bb91
-  csrw mscratch, x12 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x12
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x12
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x12
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x12
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b0:
-  csrrw x11, mscratch, x0 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x11, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrw x11, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrw x11, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x11, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x11, Zicsr_csrrw_cg_cp_rs1_b0, Zicsr_csrrw_cg_cp_rs1_b0_str)
-  csrr x12, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x12, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x12, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x12, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x12, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Zicsr_csrrw_cg_cp_rs1_b0, Zicsr_csrrw_cg_cp_rs1_b0_str)
 
 # Testcase cp_rs1 (Test source rs1 = x1)
   RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0xff37c167
   RVTEST_TESTDATA_LOAD_INT(x3, x6) # load temp reg: x6 = 0x1c028e75
-  csrw mscratch, x6 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x6
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x6
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x6
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x6
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b1:
-  csrrw x14, mscratch, x1 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x14, fflags, x1
+#elif defined(V_SUPPORTED)
+  csrrw x14, vxsat, x1
+#elif !defined(U_SUPPORTED)
+  csrrw x14, mepc, x1
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x14, instret, x1
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b1, Zicsr_csrrw_cg_cp_rs1_b1_str)
-  csrr x6, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x6, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x6, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x6, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x6, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, Zicsr_csrrw_cg_cp_rs1_b1, Zicsr_csrrw_cg_cp_rs1_b1_str)
 
@@ -62,12 +136,49 @@ Zicsr_csrrw_cg_cp_rs1_b1:
 # Testcase cp_rs1 (Test source rs1 = x2)
   RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0xdc05c7db
   RVTEST_TESTDATA_LOAD_INT(x3, x7) # load temp reg: x7 = 0x048dfde6
-  csrw mscratch, x7 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x7
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x7
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x7
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x7
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b2:
-  csrrw x18, mscratch, x2 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x18, fflags, x2
+#elif defined(V_SUPPORTED)
+  csrrw x18, vxsat, x2
+#elif !defined(U_SUPPORTED)
+  csrrw x18, mepc, x2
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x18, instret, x2
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x18 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x18, Zicsr_csrrw_cg_cp_rs1_b2, Zicsr_csrrw_cg_cp_rs1_b2_str)
-  csrr x7, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x7, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x7, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x7, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x7, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x7 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x7, Zicsr_csrrw_cg_cp_rs1_b2, Zicsr_csrrw_cg_cp_rs1_b2_str)
 
@@ -75,12 +186,49 @@ Zicsr_csrrw_cg_cp_rs1_b2:
 # Testcase cp_rs1 (Test source rs1 = x3)
   RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs1: x3 = 0x0d79a993
   RVTEST_TESTDATA_LOAD_INT(x6, x9) # load temp reg: x9 = 0x1f66f479
-  csrw mscratch, x9 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x9
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x9
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x9
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x9
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b3:
-  csrrw x30, mscratch, x3 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x30, fflags, x3
+#elif defined(V_SUPPORTED)
+  csrrw x30, vxsat, x3
+#elif !defined(U_SUPPORTED)
+  csrrw x30, mepc, x3
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x30, instret, x3
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x30 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x30, Zicsr_csrrw_cg_cp_rs1_b3, Zicsr_csrrw_cg_cp_rs1_b3_str)
-  csrr x9, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x9, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x9, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x9, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x9, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x9 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x9, Zicsr_csrrw_cg_cp_rs1_b3, Zicsr_csrrw_cg_cp_rs1_b3_str)
 
@@ -89,24 +237,98 @@ Zicsr_csrrw_cg_cp_rs1_b3:
 # Testcase cp_rs1 (Test source rs1 = x4)
   RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs1: x4 = 0x6f792360
   RVTEST_TESTDATA_LOAD_INT(x6, x17) # load temp reg: x17 = 0xb70f23e7
-  csrw mscratch, x17 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x17
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x17
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x17
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x17
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b4:
-  csrrw x27, mscratch, x4 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x27, fflags, x4
+#elif defined(V_SUPPORTED)
+  csrrw x27, vxsat, x4
+#elif !defined(U_SUPPORTED)
+  csrrw x27, mepc, x4
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x27, instret, x4
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x27 contains the expected result. x21 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x21, x13, x12, x27, Zicsr_csrrw_cg_cp_rs1_b4, Zicsr_csrrw_cg_cp_rs1_b4_str)
-  csrr x17, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x17, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x17, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x17, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x17, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x17 contains the expected result. x21 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x21, x13, x12, x17, Zicsr_csrrw_cg_cp_rs1_b4, Zicsr_csrrw_cg_cp_rs1_b4_str)
 
 # Testcase cp_rs1 (Test source rs1 = x5)
   RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs1: x5 = 0x47677f2a
   RVTEST_TESTDATA_LOAD_INT(x6, x31) # load temp reg: x31 = 0x5a9b8ae7
-  csrw mscratch, x31 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x31
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x31
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x31
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x31
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b5:
-  csrrw x8, mscratch, x5 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x8, fflags, x5
+#elif defined(V_SUPPORTED)
+  csrrw x8, vxsat, x5
+#elif !defined(U_SUPPORTED)
+  csrrw x8, mepc, x5
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x8, instret, x5
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x8 contains the expected result. x21 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x21, x13, x12, x8, Zicsr_csrrw_cg_cp_rs1_b5, Zicsr_csrrw_cg_cp_rs1_b5_str)
-  csrr x31, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x31, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x31, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x31, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x31, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x31 contains the expected result. x21 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x21, x13, x12, x31, Zicsr_csrrw_cg_cp_rs1_b5, Zicsr_csrrw_cg_cp_rs1_b5_str)
 
@@ -114,72 +336,294 @@ Zicsr_csrrw_cg_cp_rs1_b5:
 # Testcase cp_rs1 (Test source rs1 = x6)
   RVTEST_TESTDATA_LOAD_INT(x26, x6) # load rs1: x6 = 0xd72396c2
   RVTEST_TESTDATA_LOAD_INT(x26, x18) # load temp reg: x18 = 0xf6f18f7e
-  csrw mscratch, x18 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x18
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x18
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x18
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x18
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b6:
-  csrrw x15, mscratch, x6 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x15, fflags, x6
+#elif defined(V_SUPPORTED)
+  csrrw x15, vxsat, x6
+#elif !defined(U_SUPPORTED)
+  csrrw x15, mepc, x6
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x15, instret, x6
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x15 contains the expected result. x21 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x21, x13, x12, x15, Zicsr_csrrw_cg_cp_rs1_b6, Zicsr_csrrw_cg_cp_rs1_b6_str)
-  csrr x18, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x18, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x18, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x18, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x18, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x18 contains the expected result. x21 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x21, x13, x12, x18, Zicsr_csrrw_cg_cp_rs1_b6, Zicsr_csrrw_cg_cp_rs1_b6_str)
 
 # Testcase cp_rs1 (Test source rs1 = x7)
   RVTEST_TESTDATA_LOAD_INT(x26, x7) # load rs1: x7 = 0xbef1aab2
   RVTEST_TESTDATA_LOAD_INT(x26, x16) # load temp reg: x16 = 0x0b0c0332
-  csrw mscratch, x16 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x16
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x16
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x16
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x16
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b7:
-  csrrw x11, mscratch, x7 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x11, fflags, x7
+#elif defined(V_SUPPORTED)
+  csrrw x11, vxsat, x7
+#elif !defined(U_SUPPORTED)
+  csrrw x11, mepc, x7
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x11, instret, x7
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x11 contains the expected result. x21 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x21, x13, x12, x11, Zicsr_csrrw_cg_cp_rs1_b7, Zicsr_csrrw_cg_cp_rs1_b7_str)
-  csrr x16, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x16, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x16, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x16, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x16, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x16 contains the expected result. x21 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x21, x13, x12, x16, Zicsr_csrrw_cg_cp_rs1_b7, Zicsr_csrrw_cg_cp_rs1_b7_str)
 
 # Testcase cp_rs1 (Test source rs1 = x8)
   RVTEST_TESTDATA_LOAD_INT(x26, x8) # load rs1: x8 = 0xfdbd2135
   RVTEST_TESTDATA_LOAD_INT(x26, x24) # load temp reg: x24 = 0x6ff14ad4
-  csrw mscratch, x24 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x24
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x24
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x24
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x24
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b8:
-  csrrw x29, mscratch, x8 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x29, fflags, x8
+#elif defined(V_SUPPORTED)
+  csrrw x29, vxsat, x8
+#elif !defined(U_SUPPORTED)
+  csrrw x29, mepc, x8
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x29, instret, x8
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x29 contains the expected result. x21 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x21, x13, x12, x29, Zicsr_csrrw_cg_cp_rs1_b8, Zicsr_csrrw_cg_cp_rs1_b8_str)
-  csrr x24, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x24, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x24, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x24, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x24, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x24 contains the expected result. x21 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x21, x13, x12, x24, Zicsr_csrrw_cg_cp_rs1_b8, Zicsr_csrrw_cg_cp_rs1_b8_str)
 
 # Testcase cp_rs1 (Test source rs1 = x9)
   RVTEST_TESTDATA_LOAD_INT(x26, x9) # load rs1: x9 = 0x77f9ca3e
   RVTEST_TESTDATA_LOAD_INT(x26, x16) # load temp reg: x16 = 0xbe810df3
-  csrw mscratch, x16 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x16
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x16
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x16
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x16
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b9:
-  csrrw x30, mscratch, x9 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x30, fflags, x9
+#elif defined(V_SUPPORTED)
+  csrrw x30, vxsat, x9
+#elif !defined(U_SUPPORTED)
+  csrrw x30, mepc, x9
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x30, instret, x9
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x30 contains the expected result. x21 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x21, x13, x12, x30, Zicsr_csrrw_cg_cp_rs1_b9, Zicsr_csrrw_cg_cp_rs1_b9_str)
-  csrr x16, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x16, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x16, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x16, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x16, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x16 contains the expected result. x21 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x21, x13, x12, x16, Zicsr_csrrw_cg_cp_rs1_b9, Zicsr_csrrw_cg_cp_rs1_b9_str)
 
 # Testcase cp_rs1 (Test source rs1 = x10)
   RVTEST_TESTDATA_LOAD_INT(x26, x10) # load rs1: x10 = 0x3e134e58
   RVTEST_TESTDATA_LOAD_INT(x26, x31) # load temp reg: x31 = 0x19ba1b79
-  csrw mscratch, x31 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x31
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x31
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x31
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x31
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b10:
-  csrrw x18, mscratch, x10 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x18, fflags, x10
+#elif defined(V_SUPPORTED)
+  csrrw x18, vxsat, x10
+#elif !defined(U_SUPPORTED)
+  csrrw x18, mepc, x10
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x18, instret, x10
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x18 contains the expected result. x21 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x21, x13, x12, x18, Zicsr_csrrw_cg_cp_rs1_b10, Zicsr_csrrw_cg_cp_rs1_b10_str)
-  csrr x31, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x31, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x31, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x31, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x31, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x31 contains the expected result. x21 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x21, x13, x12, x31, Zicsr_csrrw_cg_cp_rs1_b10, Zicsr_csrrw_cg_cp_rs1_b10_str)
 
 # Testcase cp_rs1 (Test source rs1 = x11)
   RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs1: x11 = 0x25a84919
   RVTEST_TESTDATA_LOAD_INT(x26, x4) # load temp reg: x4 = 0xbb5be31d
-  csrw mscratch, x4 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x4
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x4
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x4
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x4
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b11:
-  csrrw x14, mscratch, x11 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x14, fflags, x11
+#elif defined(V_SUPPORTED)
+  csrrw x14, vxsat, x11
+#elif !defined(U_SUPPORTED)
+  csrrw x14, mepc, x11
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x14, instret, x11
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x14 contains the expected result. x21 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x21, x13, x12, x14, Zicsr_csrrw_cg_cp_rs1_b11, Zicsr_csrrw_cg_cp_rs1_b11_str)
-  csrr x4, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x4, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x4, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x4, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x4, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x4 contains the expected result. x21 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x21, x13, x12, x4, Zicsr_csrrw_cg_cp_rs1_b11, Zicsr_csrrw_cg_cp_rs1_b11_str)
 
@@ -188,108 +632,441 @@ Zicsr_csrrw_cg_cp_rs1_b11:
 # Testcase cp_rs1 (Test source rs1 = x12)
   RVTEST_TESTDATA_LOAD_INT(x26, x12) # load rs1: x12 = 0xf5587151
   RVTEST_TESTDATA_LOAD_INT(x26, x10) # load temp reg: x10 = 0x4a1767b6
-  csrw mscratch, x10 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x10
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x10
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x10
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x10
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b12:
-  csrrw x13, mscratch, x12 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x13, fflags, x12
+#elif defined(V_SUPPORTED)
+  csrrw x13, vxsat, x12
+#elif !defined(U_SUPPORTED)
+  csrrw x13, mepc, x12
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x13, instret, x12
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x13 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_b12, Zicsr_csrrw_cg_cp_rs1_b12_str)
-  csrr x10, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x10, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x10, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x10, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x10, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x10 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x10, Zicsr_csrrw_cg_cp_rs1_b12, Zicsr_csrrw_cg_cp_rs1_b12_str)
 
 # Testcase cp_rs1 (Test source rs1 = x13)
   RVTEST_TESTDATA_LOAD_INT(x26, x13) # load rs1: x13 = 0x5cac8b6c
   RVTEST_TESTDATA_LOAD_INT(x26, x2) # load temp reg: x2 = 0x9290ec2f
-  csrw mscratch, x2 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x2
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x2
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x2
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x2
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b13:
-  csrrw x19, mscratch, x13 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x19, fflags, x13
+#elif defined(V_SUPPORTED)
+  csrrw x19, vxsat, x13
+#elif !defined(U_SUPPORTED)
+  csrrw x19, mepc, x13
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x19, instret, x13
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x19 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_b13, Zicsr_csrrw_cg_cp_rs1_b13_str)
-  csrr x2, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x2, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x2, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x2, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x2, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x2 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x2, Zicsr_csrrw_cg_cp_rs1_b13, Zicsr_csrrw_cg_cp_rs1_b13_str)
 
 # Testcase cp_rs1 (Test source rs1 = x14)
   RVTEST_TESTDATA_LOAD_INT(x26, x14) # load rs1: x14 = 0x1c2272eb
   RVTEST_TESTDATA_LOAD_INT(x26, x17) # load temp reg: x17 = 0xfce088e4
-  csrw mscratch, x17 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x17
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x17
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x17
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x17
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b14:
-  csrrw x19, mscratch, x14 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x19, fflags, x14
+#elif defined(V_SUPPORTED)
+  csrrw x19, vxsat, x14
+#elif !defined(U_SUPPORTED)
+  csrrw x19, mepc, x14
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x19, instret, x14
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x19 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_b14, Zicsr_csrrw_cg_cp_rs1_b14_str)
-  csrr x17, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x17, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x17, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x17, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x17, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x17 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x17, Zicsr_csrrw_cg_cp_rs1_b14, Zicsr_csrrw_cg_cp_rs1_b14_str)
 
 # Testcase cp_rs1 (Test source rs1 = x15)
   RVTEST_TESTDATA_LOAD_INT(x26, x15) # load rs1: x15 = 0xc40bc1b8
   RVTEST_TESTDATA_LOAD_INT(x26, x19) # load temp reg: x19 = 0xdfe63e1b
-  csrw mscratch, x19 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x19
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x19
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x19
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x19
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b15:
-  csrrw x27, mscratch, x15 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x27, fflags, x15
+#elif defined(V_SUPPORTED)
+  csrrw x27, vxsat, x15
+#elif !defined(U_SUPPORTED)
+  csrrw x27, mepc, x15
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x27, instret, x15
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x27 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x27, Zicsr_csrrw_cg_cp_rs1_b15, Zicsr_csrrw_cg_cp_rs1_b15_str)
-  csrr x19, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x19, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x19, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x19, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x19, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x19 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_b15, Zicsr_csrrw_cg_cp_rs1_b15_str)
 
 # Testcase cp_rs1 (Test source rs1 = x16)
   RVTEST_TESTDATA_LOAD_INT(x26, x16) # load rs1: x16 = 0x2ae66447
   RVTEST_TESTDATA_LOAD_INT(x26, x28) # load temp reg: x28 = 0xc324256f
-  csrw mscratch, x28 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x28
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x28
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x28
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x28
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b16:
-  csrrw x9, mscratch, x16 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x9, fflags, x16
+#elif defined(V_SUPPORTED)
+  csrrw x9, vxsat, x16
+#elif !defined(U_SUPPORTED)
+  csrrw x9, mepc, x16
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x9, instret, x16
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x9 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x9, Zicsr_csrrw_cg_cp_rs1_b16, Zicsr_csrrw_cg_cp_rs1_b16_str)
-  csrr x28, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x28, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x28, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x28, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x28, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x28 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_b16, Zicsr_csrrw_cg_cp_rs1_b16_str)
 
 # Testcase cp_rs1 (Test source rs1 = x17)
   RVTEST_TESTDATA_LOAD_INT(x26, x17) # load rs1: x17 = 0x921cd403
   RVTEST_TESTDATA_LOAD_INT(x26, x10) # load temp reg: x10 = 0x7208c62a
-  csrw mscratch, x10 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x10
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x10
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x10
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x10
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b17:
-  csrrw x11, mscratch, x17 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x11, fflags, x17
+#elif defined(V_SUPPORTED)
+  csrrw x11, vxsat, x17
+#elif !defined(U_SUPPORTED)
+  csrrw x11, mepc, x17
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x11, instret, x17
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x11, Zicsr_csrrw_cg_cp_rs1_b17, Zicsr_csrrw_cg_cp_rs1_b17_str)
-  csrr x10, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x10, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x10, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x10, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x10, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x10 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x10, Zicsr_csrrw_cg_cp_rs1_b17, Zicsr_csrrw_cg_cp_rs1_b17_str)
 
 # Testcase cp_rs1 (Test source rs1 = x18)
   RVTEST_TESTDATA_LOAD_INT(x26, x18) # load rs1: x18 = 0x17d12e7d
   RVTEST_TESTDATA_LOAD_INT(x26, x20) # load temp reg: x20 = 0xff89a8f8
-  csrw mscratch, x20 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x20
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x20
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x20
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x20
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b18:
-  csrrw x22, mscratch, x18 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x22, fflags, x18
+#elif defined(V_SUPPORTED)
+  csrrw x22, vxsat, x18
+#elif !defined(U_SUPPORTED)
+  csrrw x22, mepc, x18
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x22, instret, x18
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x22 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x22, Zicsr_csrrw_cg_cp_rs1_b18, Zicsr_csrrw_cg_cp_rs1_b18_str)
-  csrr x20, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x20, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x20, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x20, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x20, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x20 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x20, Zicsr_csrrw_cg_cp_rs1_b18, Zicsr_csrrw_cg_cp_rs1_b18_str)
 
 # Testcase cp_rs1 (Test source rs1 = x19)
   RVTEST_TESTDATA_LOAD_INT(x26, x19) # load rs1: x19 = 0x52f76c78
   RVTEST_TESTDATA_LOAD_INT(x26, x15) # load temp reg: x15 = 0x1501f789
-  csrw mscratch, x15 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x15
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x15
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x15
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x15
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b19:
-  csrrw x17, mscratch, x19 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x17, fflags, x19
+#elif defined(V_SUPPORTED)
+  csrrw x17, vxsat, x19
+#elif !defined(U_SUPPORTED)
+  csrrw x17, mepc, x19
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x17, instret, x19
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x17 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x17, Zicsr_csrrw_cg_cp_rs1_b19, Zicsr_csrrw_cg_cp_rs1_b19_str)
-  csrr x15, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x15, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x15, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x15, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x15, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x15 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_b19, Zicsr_csrrw_cg_cp_rs1_b19_str)
 
 # Testcase cp_rs1 (Test source rs1 = x20)
   RVTEST_TESTDATA_LOAD_INT(x26, x20) # load rs1: x20 = 0xf03dd475
   RVTEST_TESTDATA_LOAD_INT(x26, x22) # load temp reg: x22 = 0x88b3fe3d
-  csrw mscratch, x22 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x22
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x22
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x22
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x22
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b20:
-  csrrw x10, mscratch, x20 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x10, fflags, x20
+#elif defined(V_SUPPORTED)
+  csrrw x10, vxsat, x20
+#elif !defined(U_SUPPORTED)
+  csrrw x10, mepc, x20
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x10, instret, x20
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x10 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x10, Zicsr_csrrw_cg_cp_rs1_b20, Zicsr_csrrw_cg_cp_rs1_b20_str)
-  csrr x22, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x22, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x22, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x22, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x22, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x22 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x22, Zicsr_csrrw_cg_cp_rs1_b20, Zicsr_csrrw_cg_cp_rs1_b20_str)
 
@@ -297,60 +1074,245 @@ Zicsr_csrrw_cg_cp_rs1_b20:
 # Testcase cp_rs1 (Test source rs1 = x21)
   RVTEST_TESTDATA_LOAD_INT(x26, x21) # load rs1: x21 = 0x9a8e995b
   RVTEST_TESTDATA_LOAD_INT(x26, x16) # load temp reg: x16 = 0x10d37462
-  csrw mscratch, x16 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x16
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x16
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x16
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x16
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b21:
-  csrrw x14, mscratch, x21 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x14, fflags, x21
+#elif defined(V_SUPPORTED)
+  csrrw x14, vxsat, x21
+#elif !defined(U_SUPPORTED)
+  csrrw x14, mepc, x21
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x14, instret, x21
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x14 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b21, Zicsr_csrrw_cg_cp_rs1_b21_str)
-  csrr x16, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x16, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x16, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x16, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x16, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x16 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x16, Zicsr_csrrw_cg_cp_rs1_b21, Zicsr_csrrw_cg_cp_rs1_b21_str)
 
 # Testcase cp_rs1 (Test source rs1 = x22)
   RVTEST_TESTDATA_LOAD_INT(x26, x22) # load rs1: x22 = 0x1864d91b
   RVTEST_TESTDATA_LOAD_INT(x26, x24) # load temp reg: x24 = 0xef3578f1
-  csrw mscratch, x24 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x24
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x24
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x24
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x24
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b22:
-  csrrw x13, mscratch, x22 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x13, fflags, x22
+#elif defined(V_SUPPORTED)
+  csrrw x13, vxsat, x22
+#elif !defined(U_SUPPORTED)
+  csrrw x13, mepc, x22
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x13, instret, x22
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x13 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_b22, Zicsr_csrrw_cg_cp_rs1_b22_str)
-  csrr x24, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x24, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x24, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x24, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x24, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x24 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x24, Zicsr_csrrw_cg_cp_rs1_b22, Zicsr_csrrw_cg_cp_rs1_b22_str)
 
 # Testcase cp_rs1 (Test source rs1 = x23)
   RVTEST_TESTDATA_LOAD_INT(x26, x23) # load rs1: x23 = 0xda90a783
   RVTEST_TESTDATA_LOAD_INT(x26, x27) # load temp reg: x27 = 0x4b48cd58
-  csrw mscratch, x27 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x27
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x27
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x27
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x27
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b23:
-  csrrw x11, mscratch, x23 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x11, fflags, x23
+#elif defined(V_SUPPORTED)
+  csrrw x11, vxsat, x23
+#elif !defined(U_SUPPORTED)
+  csrrw x11, mepc, x23
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x11, instret, x23
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x11 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x11, Zicsr_csrrw_cg_cp_rs1_b23, Zicsr_csrrw_cg_cp_rs1_b23_str)
-  csrr x27, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x27, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x27, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x27, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x27, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x27 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x27, Zicsr_csrrw_cg_cp_rs1_b23, Zicsr_csrrw_cg_cp_rs1_b23_str)
 
 # Testcase cp_rs1 (Test source rs1 = x24)
   RVTEST_TESTDATA_LOAD_INT(x26, x24) # load rs1: x24 = 0x80a84c2b
   RVTEST_TESTDATA_LOAD_INT(x26, x6) # load temp reg: x6 = 0xca811ef1
-  csrw mscratch, x6 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x6
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x6
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x6
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x6
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b24:
-  csrrw x25, mscratch, x24 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x25, fflags, x24
+#elif defined(V_SUPPORTED)
+  csrrw x25, vxsat, x24
+#elif !defined(U_SUPPORTED)
+  csrrw x25, mepc, x24
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x25, instret, x24
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x25 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_b24, Zicsr_csrrw_cg_cp_rs1_b24_str)
-  csrr x6, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x6, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x6, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x6, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x6, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x6 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x6, Zicsr_csrrw_cg_cp_rs1_b24, Zicsr_csrrw_cg_cp_rs1_b24_str)
 
 # Testcase cp_rs1 (Test source rs1 = x25)
   RVTEST_TESTDATA_LOAD_INT(x26, x25) # load rs1: x25 = 0x7e3e5242
   RVTEST_TESTDATA_LOAD_INT(x26, x13) # load temp reg: x13 = 0x8a103f85
-  csrw mscratch, x13 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x13
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x13
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x13
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x13
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b25:
-  csrrw x1, mscratch, x25 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x1, fflags, x25
+#elif defined(V_SUPPORTED)
+  csrrw x1, vxsat, x25
+#elif !defined(U_SUPPORTED)
+  csrrw x1, mepc, x25
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x1, instret, x25
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x1, Zicsr_csrrw_cg_cp_rs1_b25, Zicsr_csrrw_cg_cp_rs1_b25_str)
-  csrr x13, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x13, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x13, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x13, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x13, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x13 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_b25, Zicsr_csrrw_cg_cp_rs1_b25_str)
 
@@ -358,36 +1320,147 @@ Zicsr_csrrw_cg_cp_rs1_b25:
 # Testcase cp_rs1 (Test source rs1 = x26)
   RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs1: x26 = 0xb9b70561
   RVTEST_TESTDATA_LOAD_INT(x3, x14) # load temp reg: x14 = 0x3c0fb178
-  csrw mscratch, x14 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x14
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x14
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x14
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x14
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b26:
-  csrrw x30, mscratch, x26 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x30, fflags, x26
+#elif defined(V_SUPPORTED)
+  csrrw x30, vxsat, x26
+#elif !defined(U_SUPPORTED)
+  csrrw x30, mepc, x26
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x30, instret, x26
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x30 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x30, Zicsr_csrrw_cg_cp_rs1_b26, Zicsr_csrrw_cg_cp_rs1_b26_str)
-  csrr x14, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x14, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x14, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x14, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x14, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x14 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b26, Zicsr_csrrw_cg_cp_rs1_b26_str)
 
 # Testcase cp_rs1 (Test source rs1 = x27)
   RVTEST_TESTDATA_LOAD_INT(x3, x27) # load rs1: x27 = 0xbdf4d350
   RVTEST_TESTDATA_LOAD_INT(x3, x23) # load temp reg: x23 = 0x692cbb80
-  csrw mscratch, x23 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x23
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x23
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x23
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x23
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b27:
-  csrrw x1, mscratch, x27 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x1, fflags, x27
+#elif defined(V_SUPPORTED)
+  csrrw x1, vxsat, x27
+#elif !defined(U_SUPPORTED)
+  csrrw x1, mepc, x27
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x1, instret, x27
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x1, Zicsr_csrrw_cg_cp_rs1_b27, Zicsr_csrrw_cg_cp_rs1_b27_str)
-  csrr x23, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x23, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x23, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x23, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x23, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x23 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_b27, Zicsr_csrrw_cg_cp_rs1_b27_str)
 
 # Testcase cp_rs1 (Test source rs1 = x28)
   RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs1: x28 = 0x4c7accf4
   RVTEST_TESTDATA_LOAD_INT(x3, x2) # load temp reg: x2 = 0x2fec8a94
-  csrw mscratch, x2 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x2
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x2
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x2
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x2
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b28:
-  csrrw x19, mscratch, x28 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x19, fflags, x28
+#elif defined(V_SUPPORTED)
+  csrrw x19, vxsat, x28
+#elif !defined(U_SUPPORTED)
+  csrrw x19, mepc, x28
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x19, instret, x28
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x19 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_b28, Zicsr_csrrw_cg_cp_rs1_b28_str)
-  csrr x2, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x2, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x2, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x2, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x2, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x2 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x2, Zicsr_csrrw_cg_cp_rs1_b28, Zicsr_csrrw_cg_cp_rs1_b28_str)
 
@@ -395,36 +1468,147 @@ Zicsr_csrrw_cg_cp_rs1_b28:
 # Testcase cp_rs1 (Test source rs1 = x29)
   RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs1: x29 = 0x3fd61495
   RVTEST_TESTDATA_LOAD_INT(x3, x0) # load temp reg: x0 = 0x3cd893f1
-  csrw mscratch, x0 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b29:
-  csrrw x16, mscratch, x29 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x16, fflags, x29
+#elif defined(V_SUPPORTED)
+  csrrw x16, vxsat, x29
+#elif !defined(U_SUPPORTED)
+  csrrw x16, mepc, x29
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x16, instret, x29
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x16 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x16, Zicsr_csrrw_cg_cp_rs1_b29, Zicsr_csrrw_cg_cp_rs1_b29_str)
-  csrr x0, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x0, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x0, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x0, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x0 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b29, Zicsr_csrrw_cg_cp_rs1_b29_str)
 
 # Testcase cp_rs1 (Test source rs1 = x30)
   RVTEST_TESTDATA_LOAD_INT(x3, x30) # load rs1: x30 = 0x38502317
   RVTEST_TESTDATA_LOAD_INT(x3, x19) # load temp reg: x19 = 0xa14beae2
-  csrw mscratch, x19 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x19
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x19
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x19
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x19
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b30:
-  csrrw x9, mscratch, x30 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x9, fflags, x30
+#elif defined(V_SUPPORTED)
+  csrrw x9, vxsat, x30
+#elif !defined(U_SUPPORTED)
+  csrrw x9, mepc, x30
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x9, instret, x30
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x9 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x9, Zicsr_csrrw_cg_cp_rs1_b30, Zicsr_csrrw_cg_cp_rs1_b30_str)
-  csrr x19, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x19, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x19, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x19, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x19, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x19 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_b30, Zicsr_csrrw_cg_cp_rs1_b30_str)
 
 # Testcase cp_rs1 (Test source rs1 = x31)
   RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs1: x31 = 0x891132fb
   RVTEST_TESTDATA_LOAD_INT(x3, x19) # load temp reg: x19 = 0x7f24132b
-  csrw mscratch, x19 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x19
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x19
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x19
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x19
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_b31:
-  csrrw x20, mscratch, x31 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x20, fflags, x31
+#elif defined(V_SUPPORTED)
+  csrrw x20, vxsat, x31
+#elif !defined(U_SUPPORTED)
+  csrrw x20, mepc, x31
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x20, instret, x31
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x20 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x20, Zicsr_csrrw_cg_cp_rs1_b31, Zicsr_csrrw_cg_cp_rs1_b31_str)
-  csrr x19, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x19, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x19, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x19, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x19, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x19 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_b31, Zicsr_csrrw_cg_cp_rs1_b31_str)
 
@@ -435,36 +1619,147 @@ Zicsr_csrrw_cg_cp_rs1_b31:
 # Testcase cp_rd (Test destination rd = x0)
   RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs1: x13 = 0x3412800c
   RVTEST_TESTDATA_LOAD_INT(x3, x8) # load temp reg: x8 = 0x896474d2
-  csrw mscratch, x8 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x8
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x8
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x8
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x8
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b0:
-  csrrw x0, mscratch, x13 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x13
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x13
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x13
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x13
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x0 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x0, Zicsr_csrrw_cg_cp_rd_b0, Zicsr_csrrw_cg_cp_rd_b0_str)
-  csrr x8, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x8, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x8, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x8, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x8, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x8 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x8, Zicsr_csrrw_cg_cp_rd_b0, Zicsr_csrrw_cg_cp_rd_b0_str)
 
 # Testcase cp_rd (Test destination rd = x1)
   RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rs1: x9 = 0x4c0c4fca
   RVTEST_TESTDATA_LOAD_INT(x3, x31) # load temp reg: x31 = 0x7db3dfbf
-  csrw mscratch, x31 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x31
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x31
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x31
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x31
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b1:
-  csrrw x1, mscratch, x9 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x1, fflags, x9
+#elif defined(V_SUPPORTED)
+  csrrw x1, vxsat, x9
+#elif !defined(U_SUPPORTED)
+  csrrw x1, mepc, x9
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x1, instret, x9
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x1 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x1, Zicsr_csrrw_cg_cp_rd_b1, Zicsr_csrrw_cg_cp_rd_b1_str)
-  csrr x31, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x31, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x31, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x31, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x31, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x31 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x31, Zicsr_csrrw_cg_cp_rd_b1, Zicsr_csrrw_cg_cp_rd_b1_str)
 
 # Testcase cp_rd (Test destination rd = x2)
   RVTEST_TESTDATA_LOAD_INT(x3, x8) # load rs1: x8 = 0xd0bbab79
   RVTEST_TESTDATA_LOAD_INT(x3, x26) # load temp reg: x26 = 0x0d980693
-  csrw mscratch, x26 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x26
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x26
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x26
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x26
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b2:
-  csrrw x2, mscratch, x8 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x2, fflags, x8
+#elif defined(V_SUPPORTED)
+  csrrw x2, vxsat, x8
+#elif !defined(U_SUPPORTED)
+  csrrw x2, mepc, x8
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x2, instret, x8
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x2 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x2, Zicsr_csrrw_cg_cp_rd_b2, Zicsr_csrrw_cg_cp_rd_b2_str)
-  csrr x26, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x26, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x26, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x26, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x26, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x26 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x26, Zicsr_csrrw_cg_cp_rd_b2, Zicsr_csrrw_cg_cp_rd_b2_str)
 
@@ -472,12 +1767,49 @@ Zicsr_csrrw_cg_cp_rd_b2:
 # Testcase cp_rd (Test destination rd = x3)
   RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs1: x18 = 0xe41f2dba
   RVTEST_TESTDATA_LOAD_INT(x2, x14) # load temp reg: x14 = 0xabc8982c
-  csrw mscratch, x14 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x14
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x14
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x14
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x14
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b3:
-  csrrw x3, mscratch, x18 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x3, fflags, x18
+#elif defined(V_SUPPORTED)
+  csrrw x3, vxsat, x18
+#elif !defined(U_SUPPORTED)
+  csrrw x3, mepc, x18
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x3, instret, x18
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x3 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x3, Zicsr_csrrw_cg_cp_rd_b3, Zicsr_csrrw_cg_cp_rd_b3_str)
-  csrr x14, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x14, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x14, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x14, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x14, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x14 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x14, Zicsr_csrrw_cg_cp_rd_b3, Zicsr_csrrw_cg_cp_rd_b3_str)
 
@@ -486,36 +1818,147 @@ Zicsr_csrrw_cg_cp_rd_b3:
 # Testcase cp_rd (Test destination rd = x4)
   RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs1: x3 = 0xde96ff90
   RVTEST_TESTDATA_LOAD_INT(x2, x6) # load temp reg: x6 = 0x86d53ba3
-  csrw mscratch, x6 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x6
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x6
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x6
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x6
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b4:
-  csrrw x4, mscratch, x3 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x4, fflags, x3
+#elif defined(V_SUPPORTED)
+  csrrw x4, vxsat, x3
+#elif !defined(U_SUPPORTED)
+  csrrw x4, mepc, x3
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x4, instret, x3
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x4 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x4, Zicsr_csrrw_cg_cp_rd_b4, Zicsr_csrrw_cg_cp_rd_b4_str)
-  csrr x6, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x6, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x6, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x6, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x6, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x6 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x6, Zicsr_csrrw_cg_cp_rd_b4, Zicsr_csrrw_cg_cp_rd_b4_str)
 
 # Testcase cp_rd (Test destination rd = x5)
   RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs1: x14 = 0x06e0d43c
   RVTEST_TESTDATA_LOAD_INT(x2, x6) # load temp reg: x6 = 0x77d37ca3
-  csrw mscratch, x6 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x6
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x6
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x6
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x6
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b5:
-  csrrw x5, mscratch, x14 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x5, fflags, x14
+#elif defined(V_SUPPORTED)
+  csrrw x5, vxsat, x14
+#elif !defined(U_SUPPORTED)
+  csrrw x5, mepc, x14
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x5, instret, x14
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x5 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x5, Zicsr_csrrw_cg_cp_rd_b5, Zicsr_csrrw_cg_cp_rd_b5_str)
-  csrr x6, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x6, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x6, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x6, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x6, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x6 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x6, Zicsr_csrrw_cg_cp_rd_b5, Zicsr_csrrw_cg_cp_rd_b5_str)
 
 # Testcase cp_rd (Test destination rd = x6)
   RVTEST_TESTDATA_LOAD_INT(x2, x29) # load rs1: x29 = 0x947a6242
   RVTEST_TESTDATA_LOAD_INT(x2, x14) # load temp reg: x14 = 0x11f660ab
-  csrw mscratch, x14 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x14
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x14
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x14
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x14
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b6:
-  csrrw x6, mscratch, x29 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x6, fflags, x29
+#elif defined(V_SUPPORTED)
+  csrrw x6, vxsat, x29
+#elif !defined(U_SUPPORTED)
+  csrrw x6, mepc, x29
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x6, instret, x29
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x6 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x6, Zicsr_csrrw_cg_cp_rd_b6, Zicsr_csrrw_cg_cp_rd_b6_str)
-  csrr x14, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x14, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x14, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x14, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x14, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x14 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x14, Zicsr_csrrw_cg_cp_rd_b6, Zicsr_csrrw_cg_cp_rd_b6_str)
 
@@ -524,60 +1967,245 @@ Zicsr_csrrw_cg_cp_rd_b6:
 # Testcase cp_rd (Test destination rd = x7)
   RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs1: x1 = 0xc7cc759d
   RVTEST_TESTDATA_LOAD_INT(x2, x3) # load temp reg: x3 = 0x0d39f3a9
-  csrw mscratch, x3 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x3
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x3
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x3
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x3
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b7:
-  csrrw x7, mscratch, x1 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x7, fflags, x1
+#elif defined(V_SUPPORTED)
+  csrrw x7, vxsat, x1
+#elif !defined(U_SUPPORTED)
+  csrrw x7, mepc, x1
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x7, instret, x1
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x7 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x25, x13, x12, x7, Zicsr_csrrw_cg_cp_rd_b7, Zicsr_csrrw_cg_cp_rd_b7_str)
-  csrr x3, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x3, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x3, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x3, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x3, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x3 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x25, x13, x12, x3, Zicsr_csrrw_cg_cp_rd_b7, Zicsr_csrrw_cg_cp_rd_b7_str)
 
 # Testcase cp_rd (Test destination rd = x8)
   RVTEST_TESTDATA_LOAD_INT(x2, x7) # load rs1: x7 = 0x88a649e8
   RVTEST_TESTDATA_LOAD_INT(x2, x15) # load temp reg: x15 = 0xad04c50e
-  csrw mscratch, x15 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x15
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x15
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x15
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x15
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b8:
-  csrrw x8, mscratch, x7 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x8, fflags, x7
+#elif defined(V_SUPPORTED)
+  csrrw x8, vxsat, x7
+#elif !defined(U_SUPPORTED)
+  csrrw x8, mepc, x7
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x8, instret, x7
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x8 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x25, x13, x12, x8, Zicsr_csrrw_cg_cp_rd_b8, Zicsr_csrrw_cg_cp_rd_b8_str)
-  csrr x15, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x15, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x15, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x15, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x15, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x15 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x25, x13, x12, x15, Zicsr_csrrw_cg_cp_rd_b8, Zicsr_csrrw_cg_cp_rd_b8_str)
 
 # Testcase cp_rd (Test destination rd = x9)
   RVTEST_TESTDATA_LOAD_INT(x2, x16) # load rs1: x16 = 0xfd840aff
   RVTEST_TESTDATA_LOAD_INT(x2, x19) # load temp reg: x19 = 0x137c5be9
-  csrw mscratch, x19 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x19
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x19
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x19
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x19
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b9:
-  csrrw x9, mscratch, x16 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x9, fflags, x16
+#elif defined(V_SUPPORTED)
+  csrrw x9, vxsat, x16
+#elif !defined(U_SUPPORTED)
+  csrrw x9, mepc, x16
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x9, instret, x16
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x9 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x25, x13, x12, x9, Zicsr_csrrw_cg_cp_rd_b9, Zicsr_csrrw_cg_cp_rd_b9_str)
-  csrr x19, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x19, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x19, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x19, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x19, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x19 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x25, x13, x12, x19, Zicsr_csrrw_cg_cp_rd_b9, Zicsr_csrrw_cg_cp_rd_b9_str)
 
 # Testcase cp_rd (Test destination rd = x10)
   RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs1: x23 = 0x03d35162
   RVTEST_TESTDATA_LOAD_INT(x2, x22) # load temp reg: x22 = 0xa1382983
-  csrw mscratch, x22 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x22
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x22
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x22
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x22
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b10:
-  csrrw x10, mscratch, x23 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x10, fflags, x23
+#elif defined(V_SUPPORTED)
+  csrrw x10, vxsat, x23
+#elif !defined(U_SUPPORTED)
+  csrrw x10, mepc, x23
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x10, instret, x23
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x10 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x25, x13, x12, x10, Zicsr_csrrw_cg_cp_rd_b10, Zicsr_csrrw_cg_cp_rd_b10_str)
-  csrr x22, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x22, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x22, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x22, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x22, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x22 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x25, x13, x12, x22, Zicsr_csrrw_cg_cp_rd_b10, Zicsr_csrrw_cg_cp_rd_b10_str)
 
 # Testcase cp_rd (Test destination rd = x11)
   RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs1: x24 = 0x78446b7a
   RVTEST_TESTDATA_LOAD_INT(x2, x6) # load temp reg: x6 = 0x3954c1dd
-  csrw mscratch, x6 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x6
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x6
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x6
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x6
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b11:
-  csrrw x11, mscratch, x24 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x11, fflags, x24
+#elif defined(V_SUPPORTED)
+  csrrw x11, vxsat, x24
+#elif !defined(U_SUPPORTED)
+  csrrw x11, mepc, x24
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x11, instret, x24
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x11 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x25, x13, x12, x11, Zicsr_csrrw_cg_cp_rd_b11, Zicsr_csrrw_cg_cp_rd_b11_str)
-  csrr x6, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x6, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x6, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x6, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x6, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x6 contains the expected result. x25 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x25, x13, x12, x6, Zicsr_csrrw_cg_cp_rd_b11, Zicsr_csrrw_cg_cp_rd_b11_str)
 
@@ -586,156 +2214,637 @@ Zicsr_csrrw_cg_cp_rd_b11:
 # Testcase cp_rd (Test destination rd = x12)
   RVTEST_TESTDATA_LOAD_INT(x2, x31) # load rs1: x31 = 0x59f341f4
   RVTEST_TESTDATA_LOAD_INT(x2, x18) # load temp reg: x18 = 0x49848a95
-  csrw mscratch, x18 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x18
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x18
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x18
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x18
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b12:
-  csrrw x12, mscratch, x31 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x12, fflags, x31
+#elif defined(V_SUPPORTED)
+  csrrw x12, vxsat, x31
+#elif !defined(U_SUPPORTED)
+  csrrw x12, mepc, x31
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x12, instret, x31
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x12 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x12, Zicsr_csrrw_cg_cp_rd_b12, Zicsr_csrrw_cg_cp_rd_b12_str)
-  csrr x18, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x18, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x18, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x18, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x18, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x18 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x18, Zicsr_csrrw_cg_cp_rd_b12, Zicsr_csrrw_cg_cp_rd_b12_str)
 
 # Testcase cp_rd (Test destination rd = x13)
   RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs1: x3 = 0x9b3350c6
   RVTEST_TESTDATA_LOAD_INT(x2, x23) # load temp reg: x23 = 0x149f604a
-  csrw mscratch, x23 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x23
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x23
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x23
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x23
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b13:
-  csrrw x13, mscratch, x3 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x13, fflags, x3
+#elif defined(V_SUPPORTED)
+  csrrw x13, vxsat, x3
+#elif !defined(U_SUPPORTED)
+  csrrw x13, mepc, x3
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x13, instret, x3
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x13 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x13, Zicsr_csrrw_cg_cp_rd_b13, Zicsr_csrrw_cg_cp_rd_b13_str)
-  csrr x23, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x23, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x23, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x23, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x23, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x23 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x23, Zicsr_csrrw_cg_cp_rd_b13, Zicsr_csrrw_cg_cp_rd_b13_str)
 
 # Testcase cp_rd (Test destination rd = x14)
   RVTEST_TESTDATA_LOAD_INT(x2, x0) # load rs1: x0 = 0x8cf4e1cb
   RVTEST_TESTDATA_LOAD_INT(x2, x10) # load temp reg: x10 = 0x1a20284f
-  csrw mscratch, x10 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x10
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x10
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x10
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x10
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b14:
-  csrrw x14, mscratch, x0 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x14, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrw x14, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrw x14, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x14, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x14 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x14, Zicsr_csrrw_cg_cp_rd_b14, Zicsr_csrrw_cg_cp_rd_b14_str)
-  csrr x10, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x10, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x10, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x10, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x10, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x10 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x10, Zicsr_csrrw_cg_cp_rd_b14, Zicsr_csrrw_cg_cp_rd_b14_str)
 
 # Testcase cp_rd (Test destination rd = x15)
   RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs1: x10 = 0x14158ff8
   RVTEST_TESTDATA_LOAD_INT(x2, x13) # load temp reg: x13 = 0xc26adee9
-  csrw mscratch, x13 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x13
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x13
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x13
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x13
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b15:
-  csrrw x15, mscratch, x10 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x15, fflags, x10
+#elif defined(V_SUPPORTED)
+  csrrw x15, vxsat, x10
+#elif !defined(U_SUPPORTED)
+  csrrw x15, mepc, x10
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x15, instret, x10
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x15 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x15, Zicsr_csrrw_cg_cp_rd_b15, Zicsr_csrrw_cg_cp_rd_b15_str)
-  csrr x13, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x13, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x13, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x13, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x13, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x13 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x13, Zicsr_csrrw_cg_cp_rd_b15, Zicsr_csrrw_cg_cp_rd_b15_str)
 
 # Testcase cp_rd (Test destination rd = x16)
   RVTEST_TESTDATA_LOAD_INT(x2, x21) # load rs1: x21 = 0x88fcea31
   RVTEST_TESTDATA_LOAD_INT(x2, x15) # load temp reg: x15 = 0xbc793e75
-  csrw mscratch, x15 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x15
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x15
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x15
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x15
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b16:
-  csrrw x16, mscratch, x21 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x16, fflags, x21
+#elif defined(V_SUPPORTED)
+  csrrw x16, vxsat, x21
+#elif !defined(U_SUPPORTED)
+  csrrw x16, mepc, x21
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x16, instret, x21
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x16 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x16, Zicsr_csrrw_cg_cp_rd_b16, Zicsr_csrrw_cg_cp_rd_b16_str)
-  csrr x15, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x15, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x15, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x15, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x15, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x15 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x15, Zicsr_csrrw_cg_cp_rd_b16, Zicsr_csrrw_cg_cp_rd_b16_str)
 
 # Testcase cp_rd (Test destination rd = x17)
   RVTEST_TESTDATA_LOAD_INT(x2, x22) # load rs1: x22 = 0xbeb7e472
   RVTEST_TESTDATA_LOAD_INT(x2, x18) # load temp reg: x18 = 0xf00a4fa4
-  csrw mscratch, x18 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x18
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x18
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x18
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x18
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b17:
-  csrrw x17, mscratch, x22 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x17, fflags, x22
+#elif defined(V_SUPPORTED)
+  csrrw x17, vxsat, x22
+#elif !defined(U_SUPPORTED)
+  csrrw x17, mepc, x22
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x17, instret, x22
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x17 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x17, Zicsr_csrrw_cg_cp_rd_b17, Zicsr_csrrw_cg_cp_rd_b17_str)
-  csrr x18, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x18, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x18, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x18, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x18, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x18 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x18, Zicsr_csrrw_cg_cp_rd_b17, Zicsr_csrrw_cg_cp_rd_b17_str)
 
 # Testcase cp_rd (Test destination rd = x18)
   RVTEST_TESTDATA_LOAD_INT(x2, x4) # load rs1: x4 = 0xd574fe6a
   RVTEST_TESTDATA_LOAD_INT(x2, x20) # load temp reg: x20 = 0x5bfde426
-  csrw mscratch, x20 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x20
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x20
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x20
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x20
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b18:
-  csrrw x18, mscratch, x4 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x18, fflags, x4
+#elif defined(V_SUPPORTED)
+  csrrw x18, vxsat, x4
+#elif !defined(U_SUPPORTED)
+  csrrw x18, mepc, x4
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x18, instret, x4
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x18 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x18, Zicsr_csrrw_cg_cp_rd_b18, Zicsr_csrrw_cg_cp_rd_b18_str)
-  csrr x20, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x20, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x20, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x20, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x20, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x20 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x20, Zicsr_csrrw_cg_cp_rd_b18, Zicsr_csrrw_cg_cp_rd_b18_str)
 
 # Testcase cp_rd (Test destination rd = x19)
   RVTEST_TESTDATA_LOAD_INT(x2, x10) # load rs1: x10 = 0x7f383ee0
   RVTEST_TESTDATA_LOAD_INT(x2, x27) # load temp reg: x27 = 0x444dbbb1
-  csrw mscratch, x27 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x27
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x27
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x27
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x27
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b19:
-  csrrw x19, mscratch, x10 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x19, fflags, x10
+#elif defined(V_SUPPORTED)
+  csrrw x19, vxsat, x10
+#elif !defined(U_SUPPORTED)
+  csrrw x19, mepc, x10
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x19, instret, x10
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x19 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x19, Zicsr_csrrw_cg_cp_rd_b19, Zicsr_csrrw_cg_cp_rd_b19_str)
-  csrr x27, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x27, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x27, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x27, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x27, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x27 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x27, Zicsr_csrrw_cg_cp_rd_b19, Zicsr_csrrw_cg_cp_rd_b19_str)
 
 # Testcase cp_rd (Test destination rd = x20)
   RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs1: x24 = 0xb3a70475
   RVTEST_TESTDATA_LOAD_INT(x2, x26) # load temp reg: x26 = 0xc6ca8f78
-  csrw mscratch, x26 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x26
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x26
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x26
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x26
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b20:
-  csrrw x20, mscratch, x24 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x20, fflags, x24
+#elif defined(V_SUPPORTED)
+  csrrw x20, vxsat, x24
+#elif !defined(U_SUPPORTED)
+  csrrw x20, mepc, x24
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x20, instret, x24
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x20 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x20, Zicsr_csrrw_cg_cp_rd_b20, Zicsr_csrrw_cg_cp_rd_b20_str)
-  csrr x26, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x26, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x26, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x26, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x26, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x26 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x26, Zicsr_csrrw_cg_cp_rd_b20, Zicsr_csrrw_cg_cp_rd_b20_str)
 
 # Testcase cp_rd (Test destination rd = x21)
   RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs1: x6 = 0x6056a723
   RVTEST_TESTDATA_LOAD_INT(x2, x19) # load temp reg: x19 = 0xbdaa8da3
-  csrw mscratch, x19 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x19
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x19
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x19
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x19
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b21:
-  csrrw x21, mscratch, x6 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x21, fflags, x6
+#elif defined(V_SUPPORTED)
+  csrrw x21, vxsat, x6
+#elif !defined(U_SUPPORTED)
+  csrrw x21, mepc, x6
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x21, instret, x6
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x21 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x21, Zicsr_csrrw_cg_cp_rd_b21, Zicsr_csrrw_cg_cp_rd_b21_str)
-  csrr x19, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x19, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x19, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x19, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x19, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x19 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x19, Zicsr_csrrw_cg_cp_rd_b21, Zicsr_csrrw_cg_cp_rd_b21_str)
 
 # Testcase cp_rd (Test destination rd = x22)
   RVTEST_TESTDATA_LOAD_INT(x2, x6) # load rs1: x6 = 0x7af6c466
   RVTEST_TESTDATA_LOAD_INT(x2, x30) # load temp reg: x30 = 0xef76a12c
-  csrw mscratch, x30 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x30
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x30
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x30
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x30
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b22:
-  csrrw x22, mscratch, x6 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x22, fflags, x6
+#elif defined(V_SUPPORTED)
+  csrrw x22, vxsat, x6
+#elif !defined(U_SUPPORTED)
+  csrrw x22, mepc, x6
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x22, instret, x6
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x22 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x22, Zicsr_csrrw_cg_cp_rd_b22, Zicsr_csrrw_cg_cp_rd_b22_str)
-  csrr x30, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x30, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x30, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x30, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x30, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x30 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x30, Zicsr_csrrw_cg_cp_rd_b22, Zicsr_csrrw_cg_cp_rd_b22_str)
 
 # Testcase cp_rd (Test destination rd = x23)
   RVTEST_TESTDATA_LOAD_INT(x2, x20) # load rs1: x20 = 0x7ef2afe9
   RVTEST_TESTDATA_LOAD_INT(x2, x14) # load temp reg: x14 = 0x884efe3d
-  csrw mscratch, x14 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x14
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x14
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x14
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x14
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b23:
-  csrrw x23, mscratch, x20 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x23, fflags, x20
+#elif defined(V_SUPPORTED)
+  csrrw x23, vxsat, x20
+#elif !defined(U_SUPPORTED)
+  csrrw x23, mepc, x20
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x23, instret, x20
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x23 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x23, Zicsr_csrrw_cg_cp_rd_b23, Zicsr_csrrw_cg_cp_rd_b23_str)
-  csrr x14, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x14, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x14, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x14, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x14, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x14 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x14, Zicsr_csrrw_cg_cp_rd_b23, Zicsr_csrrw_cg_cp_rd_b23_str)
 
 # Testcase cp_rd (Test destination rd = x24)
   RVTEST_TESTDATA_LOAD_INT(x2, x30) # load rs1: x30 = 0xd642113a
   RVTEST_TESTDATA_LOAD_INT(x2, x14) # load temp reg: x14 = 0x193df294
-  csrw mscratch, x14 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x14
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x14
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x14
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x14
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b24:
-  csrrw x24, mscratch, x30 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x24, fflags, x30
+#elif defined(V_SUPPORTED)
+  csrrw x24, vxsat, x30
+#elif !defined(U_SUPPORTED)
+  csrrw x24, mepc, x30
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x24, instret, x30
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x24 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x24, Zicsr_csrrw_cg_cp_rd_b24, Zicsr_csrrw_cg_cp_rd_b24_str)
-  csrr x14, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x14, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x14, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x14, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x14, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x14 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x25, x8, x7, x14, Zicsr_csrrw_cg_cp_rd_b24, Zicsr_csrrw_cg_cp_rd_b24_str)
 
@@ -743,84 +2852,343 @@ Zicsr_csrrw_cg_cp_rd_b24:
 # Testcase cp_rd (Test destination rd = x25)
   RVTEST_TESTDATA_LOAD_INT(x2, x15) # load rs1: x15 = 0x6e5ace1d
   RVTEST_TESTDATA_LOAD_INT(x2, x22) # load temp reg: x22 = 0x0c835092
-  csrw mscratch, x22 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x22
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x22
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x22
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x22
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b25:
-  csrrw x25, mscratch, x15 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x25, fflags, x15
+#elif defined(V_SUPPORTED)
+  csrrw x25, vxsat, x15
+#elif !defined(U_SUPPORTED)
+  csrrw x25, mepc, x15
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x25, instret, x15
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x25, Zicsr_csrrw_cg_cp_rd_b25, Zicsr_csrrw_cg_cp_rd_b25_str)
-  csrr x22, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x22, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x22, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x22, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x22, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x22 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x22, Zicsr_csrrw_cg_cp_rd_b25, Zicsr_csrrw_cg_cp_rd_b25_str)
 
 # Testcase cp_rd (Test destination rd = x26)
   RVTEST_TESTDATA_LOAD_INT(x2, x29) # load rs1: x29 = 0xd972ef40
   RVTEST_TESTDATA_LOAD_INT(x2, x28) # load temp reg: x28 = 0xc6f7d0e4
-  csrw mscratch, x28 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x28
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x28
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x28
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x28
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b26:
-  csrrw x26, mscratch, x29 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x26, fflags, x29
+#elif defined(V_SUPPORTED)
+  csrrw x26, vxsat, x29
+#elif !defined(U_SUPPORTED)
+  csrrw x26, mepc, x29
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x26, instret, x29
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x26 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x26, Zicsr_csrrw_cg_cp_rd_b26, Zicsr_csrrw_cg_cp_rd_b26_str)
-  csrr x28, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x28, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x28, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x28, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x28, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x28 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x28, Zicsr_csrrw_cg_cp_rd_b26, Zicsr_csrrw_cg_cp_rd_b26_str)
 
 # Testcase cp_rd (Test destination rd = x27)
   RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs1: x23 = 0x76bfd9a0
   RVTEST_TESTDATA_LOAD_INT(x2, x30) # load temp reg: x30 = 0x618ed460
-  csrw mscratch, x30 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x30
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x30
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x30
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x30
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b27:
-  csrrw x27, mscratch, x23 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x27, fflags, x23
+#elif defined(V_SUPPORTED)
+  csrrw x27, vxsat, x23
+#elif !defined(U_SUPPORTED)
+  csrrw x27, mepc, x23
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x27, instret, x23
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x27 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x27, Zicsr_csrrw_cg_cp_rd_b27, Zicsr_csrrw_cg_cp_rd_b27_str)
-  csrr x30, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x30, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x30, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x30, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x30, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x30 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x30, Zicsr_csrrw_cg_cp_rd_b27, Zicsr_csrrw_cg_cp_rd_b27_str)
 
 # Testcase cp_rd (Test destination rd = x28)
   RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs1: x23 = 0xc35bb154
   RVTEST_TESTDATA_LOAD_INT(x2, x4) # load temp reg: x4 = 0x89f5a641
-  csrw mscratch, x4 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x4
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x4
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x4
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x4
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b28:
-  csrrw x28, mscratch, x23 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x28, fflags, x23
+#elif defined(V_SUPPORTED)
+  csrrw x28, vxsat, x23
+#elif !defined(U_SUPPORTED)
+  csrrw x28, mepc, x23
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x28, instret, x23
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x28 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x28, Zicsr_csrrw_cg_cp_rd_b28, Zicsr_csrrw_cg_cp_rd_b28_str)
-  csrr x4, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x4, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x4, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x4, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x4, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x4 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x4, Zicsr_csrrw_cg_cp_rd_b28, Zicsr_csrrw_cg_cp_rd_b28_str)
 
 # Testcase cp_rd (Test destination rd = x29)
   RVTEST_TESTDATA_LOAD_INT(x2, x5) # load rs1: x5 = 0x7adac6ad
   RVTEST_TESTDATA_LOAD_INT(x2, x0) # load temp reg: x0 = 0x6e5a234b
-  csrw mscratch, x0 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b29:
-  csrrw x29, mscratch, x5 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x29, fflags, x5
+#elif defined(V_SUPPORTED)
+  csrrw x29, vxsat, x5
+#elif !defined(U_SUPPORTED)
+  csrrw x29, mepc, x5
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x29, instret, x5
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x29 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x29, Zicsr_csrrw_cg_cp_rd_b29, Zicsr_csrrw_cg_cp_rd_b29_str)
-  csrr x0, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x0, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x0, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x0, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x0 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x0, Zicsr_csrrw_cg_cp_rd_b29, Zicsr_csrrw_cg_cp_rd_b29_str)
 
 # Testcase cp_rd (Test destination rd = x30)
   RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs1: x17 = 0xc046cb8d
   RVTEST_TESTDATA_LOAD_INT(x2, x4) # load temp reg: x4 = 0xebdc6334
-  csrw mscratch, x4 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x4
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x4
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x4
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x4
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b30:
-  csrrw x30, mscratch, x17 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x30, fflags, x17
+#elif defined(V_SUPPORTED)
+  csrrw x30, vxsat, x17
+#elif !defined(U_SUPPORTED)
+  csrrw x30, mepc, x17
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x30, instret, x17
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x30 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x30, Zicsr_csrrw_cg_cp_rd_b30, Zicsr_csrrw_cg_cp_rd_b30_str)
-  csrr x4, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x4, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x4, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x4, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x4, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x4 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x4, Zicsr_csrrw_cg_cp_rd_b30, Zicsr_csrrw_cg_cp_rd_b30_str)
 
 # Testcase cp_rd (Test destination rd = x31)
   RVTEST_TESTDATA_LOAD_INT(x2, x18) # load rs1: x18 = 0xeaa8354c
   RVTEST_TESTDATA_LOAD_INT(x2, x12) # load temp reg: x12 = 0x9180f44c
-  csrw mscratch, x12 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x12
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x12
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x12
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x12
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rd_b31:
-  csrrw x31, mscratch, x18 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x31, fflags, x18
+#elif defined(V_SUPPORTED)
+  csrrw x31, vxsat, x18
+#elif !defined(U_SUPPORTED)
+  csrrw x31, mepc, x18
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x31, instret, x18
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x31 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x31, Zicsr_csrrw_cg_cp_rd_b31, Zicsr_csrrw_cg_cp_rd_b31_str)
-  csrr x12, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x12, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x12, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x12, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x12, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x12 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x12, Zicsr_csrrw_cg_cp_rd_b31, Zicsr_csrrw_cg_cp_rd_b31_str)
 
@@ -831,144 +3199,588 @@ Zicsr_csrrw_cg_cp_rd_b31:
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000000)
   RVTEST_TESTDATA_LOAD_INT(x2, x17) # load rs1: x17 = 0x00000000
   RVTEST_TESTDATA_LOAD_INT(x2, x21) # load temp reg: x21 = 0xa67e0e93
-  csrw mscratch, x21 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x21
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x21
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x21
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x21
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_edges_0x0:
-  csrrw x15, mscratch, x17 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x15, fflags, x17
+#elif defined(V_SUPPORTED)
+  csrrw x15, vxsat, x17
+#elif !defined(U_SUPPORTED)
+  csrrw x15, mepc, x17
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x15, instret, x17
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x15 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x15, Zicsr_csrrw_cg_cp_rs1_edges_0x0, Zicsr_csrrw_cg_cp_rs1_edges_0x0_str)
-  csrr x21, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x21, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x21, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x21, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x21, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x21 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x21, Zicsr_csrrw_cg_cp_rs1_edges_0x0, Zicsr_csrrw_cg_cp_rs1_edges_0x0_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000001)
   RVTEST_TESTDATA_LOAD_INT(x2, x27) # load rs1: x27 = 0x00000001
   RVTEST_TESTDATA_LOAD_INT(x2, x10) # load temp reg: x10 = 0xf8d3648e
-  csrw mscratch, x10 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x10
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x10
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x10
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x10
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_edges_0x1:
-  csrrw x13, mscratch, x27 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x13, fflags, x27
+#elif defined(V_SUPPORTED)
+  csrrw x13, vxsat, x27
+#elif !defined(U_SUPPORTED)
+  csrrw x13, mepc, x27
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x13, instret, x27
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x13 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x13, Zicsr_csrrw_cg_cp_rs1_edges_0x1, Zicsr_csrrw_cg_cp_rs1_edges_0x1_str)
-  csrr x10, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x10, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x10, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x10, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x10, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x10 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x10, Zicsr_csrrw_cg_cp_rs1_edges_0x1, Zicsr_csrrw_cg_cp_rs1_edges_0x1_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000002)
   RVTEST_TESTDATA_LOAD_INT(x2, x3) # load rs1: x3 = 0x00000002
   RVTEST_TESTDATA_LOAD_INT(x2, x11) # load temp reg: x11 = 0x767f4626
-  csrw mscratch, x11 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x11
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x11
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x11
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x11
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_edges_0x2:
-  csrrw x19, mscratch, x3 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x19, fflags, x3
+#elif defined(V_SUPPORTED)
+  csrrw x19, vxsat, x3
+#elif !defined(U_SUPPORTED)
+  csrrw x19, mepc, x3
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x19, instret, x3
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x19 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x19, Zicsr_csrrw_cg_cp_rs1_edges_0x2, Zicsr_csrrw_cg_cp_rs1_edges_0x2_str)
-  csrr x11, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x11, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x11, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x11, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x11, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x11, Zicsr_csrrw_cg_cp_rs1_edges_0x2, Zicsr_csrrw_cg_cp_rs1_edges_0x2_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x80000000)
   RVTEST_TESTDATA_LOAD_INT(x2, x24) # load rs1: x24 = 0x80000000
   RVTEST_TESTDATA_LOAD_INT(x2, x28) # load temp reg: x28 = 0x86189392
-  csrw mscratch, x28 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x28
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x28
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x28
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x28
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_edges_0x80000000:
-  csrrw x14, mscratch, x24 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x14, fflags, x24
+#elif defined(V_SUPPORTED)
+  csrrw x14, vxsat, x24
+#elif !defined(U_SUPPORTED)
+  csrrw x14, mepc, x24
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x14, instret, x24
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x14 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x14, Zicsr_csrrw_cg_cp_rs1_edges_0x80000000, Zicsr_csrrw_cg_cp_rs1_edges_0x80000000_str)
-  csrr x28, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x28, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x28, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x28, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x28, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x28 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x28, Zicsr_csrrw_cg_cp_rs1_edges_0x80000000, Zicsr_csrrw_cg_cp_rs1_edges_0x80000000_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x80000001)
   RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs1: x23 = 0x80000001
   RVTEST_TESTDATA_LOAD_INT(x2, x13) # load temp reg: x13 = 0xee0d530a
-  csrw mscratch, x13 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x13
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x13
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x13
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x13
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_edges_0x80000001:
-  csrrw x28, mscratch, x23 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x28, fflags, x23
+#elif defined(V_SUPPORTED)
+  csrrw x28, vxsat, x23
+#elif !defined(U_SUPPORTED)
+  csrrw x28, mepc, x23
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x28, instret, x23
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x28 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x28, Zicsr_csrrw_cg_cp_rs1_edges_0x80000001, Zicsr_csrrw_cg_cp_rs1_edges_0x80000001_str)
-  csrr x13, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x13, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x13, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x13, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x13, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x13 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x13, Zicsr_csrrw_cg_cp_rs1_edges_0x80000001, Zicsr_csrrw_cg_cp_rs1_edges_0x80000001_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x7fffffff)
   RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs1: x11 = 0x7fffffff
   RVTEST_TESTDATA_LOAD_INT(x2, x23) # load temp reg: x23 = 0xd1ccf0ae
-  csrw mscratch, x23 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x23
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x23
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x23
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x23
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffff:
-  csrrw x25, mscratch, x11 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x25, fflags, x11
+#elif defined(V_SUPPORTED)
+  csrrw x25, vxsat, x11
+#elif !defined(U_SUPPORTED)
+  csrrw x25, mepc, x11
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x25, instret, x11
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x25, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffff, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffff_str)
-  csrr x23, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x23, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x23, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x23, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x23, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x23 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x23, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffff, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffff_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x7ffffffe)
   RVTEST_TESTDATA_LOAD_INT(x2, x23) # load rs1: x23 = 0x7ffffffe
   RVTEST_TESTDATA_LOAD_INT(x2, x19) # load temp reg: x19 = 0xf7d39b5f
-  csrw mscratch, x19 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x19
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x19
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x19
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x19
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffe:
-  csrrw x30, mscratch, x23 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x30, fflags, x23
+#elif defined(V_SUPPORTED)
+  csrrw x30, vxsat, x23
+#elif !defined(U_SUPPORTED)
+  csrrw x30, mepc, x23
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x30, instret, x23
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x30 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x30, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffe_str)
-  csrr x19, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x19, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x19, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x19, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x19, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x19 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x19, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffe_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xffffffff)
   RVTEST_TESTDATA_LOAD_INT(x2, x25) # load rs1: x25 = 0xffffffff
   RVTEST_TESTDATA_LOAD_INT(x2, x12) # load temp reg: x12 = 0x08f57651
-  csrw mscratch, x12 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x12
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x12
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x12
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x12
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff:
-  csrrw x14, mscratch, x25 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x14, fflags, x25
+#elif defined(V_SUPPORTED)
+  csrrw x14, vxsat, x25
+#elif !defined(U_SUPPORTED)
+  csrrw x14, mepc, x25
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x14, instret, x25
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x14 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x14, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff_str)
-  csrr x12, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x12, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x12, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x12, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x12, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x12 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x12, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xfffffffe)
   RVTEST_TESTDATA_LOAD_INT(x2, x9) # load rs1: x9 = 0xfffffffe
   RVTEST_TESTDATA_LOAD_INT(x2, x27) # load temp reg: x27 = 0xf05ae690
-  csrw mscratch, x27 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x27
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x27
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x27
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x27
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe:
-  csrrw x11, mscratch, x9 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x11, fflags, x9
+#elif defined(V_SUPPORTED)
+  csrrw x11, vxsat, x9
+#elif !defined(U_SUPPORTED)
+  csrrw x11, mepc, x9
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x11, instret, x9
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x11, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe_str)
-  csrr x27, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x27, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x27, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x27, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x27, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x27 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x27, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x5bbc8872)
   RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs1: x11 = 0x5bbc8872
   RVTEST_TESTDATA_LOAD_INT(x2, x1) # load temp reg: x1 = 0xa24964e1
-  csrw mscratch, x1 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x1
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x1
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x1
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x1
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc8872:
-  csrrw x9, mscratch, x11 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x9, fflags, x11
+#elif defined(V_SUPPORTED)
+  csrrw x9, vxsat, x11
+#elif !defined(U_SUPPORTED)
+  csrrw x9, mepc, x11
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x9, instret, x11
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x9 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x9, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc8872, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc8872_str)
-  csrr x1, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x1, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x1, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x1, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x1, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x1 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x1, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc8872, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc8872_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x2, x11) # load rs1: x11 = 0xaaaaaaaa
   RVTEST_TESTDATA_LOAD_INT(x2, x20) # load temp reg: x20 = 0x2e4034c0
-  csrw mscratch, x20 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x20
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x20
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x20
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x20
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaa:
-  csrrw x26, mscratch, x11 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x26, fflags, x11
+#elif defined(V_SUPPORTED)
+  csrrw x26, vxsat, x11
+#elif !defined(U_SUPPORTED)
+  csrrw x26, mepc, x11
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x26, instret, x11
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x26 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x26, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaa, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaa_str)
-  csrr x20, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x20, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x20, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x20, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x20, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x20 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x20, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaa, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaa_str)
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x55555555)
   RVTEST_TESTDATA_LOAD_INT(x2, x14) # load rs1: x14 = 0x55555555
   RVTEST_TESTDATA_LOAD_INT(x2, x12) # load temp reg: x12 = 0x65d77d93
-  csrw mscratch, x12 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x12
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x12
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x12
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x12
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cp_rs1_edges_0x55555555:
-  csrrw x29, mscratch, x14 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x29, fflags, x14
+#elif defined(V_SUPPORTED)
+  csrrw x29, vxsat, x14
+#elif !defined(U_SUPPORTED)
+  csrrw x29, mepc, x14
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x29, instret, x14
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x29 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x29, Zicsr_csrrw_cg_cp_rs1_edges_0x55555555, Zicsr_csrrw_cg_cp_rs1_edges_0x55555555_str)
-  csrr x12, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x12, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x12, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x12, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x12, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x12 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x12, Zicsr_csrrw_cg_cp_rs1_edges_0x55555555, Zicsr_csrrw_cg_cp_rs1_edges_0x55555555_str)
 
@@ -979,24 +3791,98 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x55555555:
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x0)
   RVTEST_TESTDATA_LOAD_INT(x2, x0) # load rs1: x0 = 0x0f1b8e51
   RVTEST_TESTDATA_LOAD_INT(x2, x25) # load temp reg: x25 = 0xb866e9f4
-  csrw mscratch, x25 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x25
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x25
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x25
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x25
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b0:
-  csrrw x0, mscratch, x0 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x0 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x0, Zicsr_csrrw_cg_cmp_rd_rs1_b0, Zicsr_csrrw_cg_cmp_rd_rs1_b0_str)
-  csrr x25, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x25, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x25, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x25, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x25, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x25, Zicsr_csrrw_cg_cmp_rd_rs1_b0, Zicsr_csrrw_cg_cmp_rd_rs1_b0_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x1)
   RVTEST_TESTDATA_LOAD_INT(x2, x1) # load rs1: x1 = 0x0d58d944
   RVTEST_TESTDATA_LOAD_INT(x2, x4) # load temp reg: x4 = 0x504170e1
-  csrw mscratch, x4 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x4
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x4
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x4
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x4
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b1:
-  csrrw x1, mscratch, x1 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x1, fflags, x1
+#elif defined(V_SUPPORTED)
+  csrrw x1, vxsat, x1
+#elif !defined(U_SUPPORTED)
+  csrrw x1, mepc, x1
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x1, instret, x1
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x1 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x1, Zicsr_csrrw_cg_cmp_rd_rs1_b1, Zicsr_csrrw_cg_cmp_rd_rs1_b1_str)
-  csrr x4, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x4, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x4, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x4, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x4, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x4 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x4, Zicsr_csrrw_cg_cmp_rd_rs1_b1, Zicsr_csrrw_cg_cmp_rd_rs1_b1_str)
 
@@ -1004,48 +3890,196 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b1:
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x2)
   RVTEST_TESTDATA_LOAD_INT(x25, x2) # load rs1: x2 = 0x9238906e
   RVTEST_TESTDATA_LOAD_INT(x25, x22) # load temp reg: x22 = 0x254b0dc1
-  csrw mscratch, x22 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x22
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x22
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x22
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x22
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b2:
-  csrrw x2, mscratch, x2 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x2, fflags, x2
+#elif defined(V_SUPPORTED)
+  csrrw x2, vxsat, x2
+#elif !defined(U_SUPPORTED)
+  csrrw x2, mepc, x2
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x2, instret, x2
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x2 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x2, Zicsr_csrrw_cg_cmp_rd_rs1_b2, Zicsr_csrrw_cg_cmp_rd_rs1_b2_str)
-  csrr x22, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x22, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x22, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x22, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x22, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x22 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b2, Zicsr_csrrw_cg_cmp_rd_rs1_b2_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x3)
   RVTEST_TESTDATA_LOAD_INT(x25, x3) # load rs1: x3 = 0xe8a4018b
   RVTEST_TESTDATA_LOAD_INT(x25, x28) # load temp reg: x28 = 0x689ee5be
-  csrw mscratch, x28 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x28
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x28
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x28
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x28
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b3:
-  csrrw x3, mscratch, x3 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x3, fflags, x3
+#elif defined(V_SUPPORTED)
+  csrrw x3, vxsat, x3
+#elif !defined(U_SUPPORTED)
+  csrrw x3, mepc, x3
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x3, instret, x3
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x3 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x3, Zicsr_csrrw_cg_cmp_rd_rs1_b3, Zicsr_csrrw_cg_cmp_rd_rs1_b3_str)
-  csrr x28, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x28, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x28, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x28, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x28, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x28 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b3, Zicsr_csrrw_cg_cmp_rd_rs1_b3_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x4)
   RVTEST_TESTDATA_LOAD_INT(x25, x4) # load rs1: x4 = 0x50689d8c
   RVTEST_TESTDATA_LOAD_INT(x25, x30) # load temp reg: x30 = 0x97141264
-  csrw mscratch, x30 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x30
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x30
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x30
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x30
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b4:
-  csrrw x4, mscratch, x4 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x4, fflags, x4
+#elif defined(V_SUPPORTED)
+  csrrw x4, vxsat, x4
+#elif !defined(U_SUPPORTED)
+  csrrw x4, mepc, x4
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x4, instret, x4
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x4 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x4, Zicsr_csrrw_cg_cmp_rd_rs1_b4, Zicsr_csrrw_cg_cmp_rd_rs1_b4_str)
-  csrr x30, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x30, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x30, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x30, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x30, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x30 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x30, Zicsr_csrrw_cg_cmp_rd_rs1_b4, Zicsr_csrrw_cg_cmp_rd_rs1_b4_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x5)
   RVTEST_TESTDATA_LOAD_INT(x25, x5) # load rs1: x5 = 0xa03709fc
   RVTEST_TESTDATA_LOAD_INT(x25, x15) # load temp reg: x15 = 0x91ad67a6
-  csrw mscratch, x15 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x15
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x15
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x15
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x15
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b5:
-  csrrw x5, mscratch, x5 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x5, fflags, x5
+#elif defined(V_SUPPORTED)
+  csrrw x5, vxsat, x5
+#elif !defined(U_SUPPORTED)
+  csrrw x5, mepc, x5
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x5, instret, x5
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x5 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x5, Zicsr_csrrw_cg_cmp_rd_rs1_b5, Zicsr_csrrw_cg_cmp_rd_rs1_b5_str)
-  csrr x15, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x15, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x15, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x15, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x15, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x15 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b5, Zicsr_csrrw_cg_cmp_rd_rs1_b5_str)
 
@@ -1053,12 +4087,49 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b5:
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x6)
   RVTEST_TESTDATA_LOAD_INT(x25, x6) # load rs1: x6 = 0x7f921710
   RVTEST_TESTDATA_LOAD_INT(x25, x9) # load temp reg: x9 = 0xf65071e5
-  csrw mscratch, x9 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x9
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x9
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x9
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x9
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b6:
-  csrrw x6, mscratch, x6 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x6, fflags, x6
+#elif defined(V_SUPPORTED)
+  csrrw x6, vxsat, x6
+#elif !defined(U_SUPPORTED)
+  csrrw x6, mepc, x6
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x6, instret, x6
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x6 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x11, x8, x7, x6, Zicsr_csrrw_cg_cmp_rd_rs1_b6, Zicsr_csrrw_cg_cmp_rd_rs1_b6_str)
-  csrr x9, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x9, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x9, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x9, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x9, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x9 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x11, x8, x7, x9, Zicsr_csrrw_cg_cmp_rd_rs1_b6, Zicsr_csrrw_cg_cmp_rd_rs1_b6_str)
 
@@ -1067,48 +4138,196 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b6:
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x7)
   RVTEST_TESTDATA_LOAD_INT(x25, x7) # load rs1: x7 = 0x830faa9b
   RVTEST_TESTDATA_LOAD_INT(x25, x27) # load temp reg: x27 = 0xe14fe209
-  csrw mscratch, x27 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x27
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x27
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x27
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x27
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b7:
-  csrrw x7, mscratch, x7 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x7, fflags, x7
+#elif defined(V_SUPPORTED)
+  csrrw x7, vxsat, x7
+#elif !defined(U_SUPPORTED)
+  csrrw x7, mepc, x7
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x7, instret, x7
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x7 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x11, x5, x4, x7, Zicsr_csrrw_cg_cmp_rd_rs1_b7, Zicsr_csrrw_cg_cmp_rd_rs1_b7_str)
-  csrr x27, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x27, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x27, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x27, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x27, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x27 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x11, x5, x4, x27, Zicsr_csrrw_cg_cmp_rd_rs1_b7, Zicsr_csrrw_cg_cmp_rd_rs1_b7_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x8)
   RVTEST_TESTDATA_LOAD_INT(x25, x8) # load rs1: x8 = 0x3eace56a
   RVTEST_TESTDATA_LOAD_INT(x25, x13) # load temp reg: x13 = 0x4282195f
-  csrw mscratch, x13 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x13
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x13
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x13
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x13
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b8:
-  csrrw x8, mscratch, x8 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x8, fflags, x8
+#elif defined(V_SUPPORTED)
+  csrrw x8, vxsat, x8
+#elif !defined(U_SUPPORTED)
+  csrrw x8, mepc, x8
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x8, instret, x8
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x11, x5, x4, x8, Zicsr_csrrw_cg_cmp_rd_rs1_b8, Zicsr_csrrw_cg_cmp_rd_rs1_b8_str)
-  csrr x13, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x13, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x13, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x13, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x13, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x13 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x11, x5, x4, x13, Zicsr_csrrw_cg_cmp_rd_rs1_b8, Zicsr_csrrw_cg_cmp_rd_rs1_b8_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x9)
   RVTEST_TESTDATA_LOAD_INT(x25, x9) # load rs1: x9 = 0x0899f786
   RVTEST_TESTDATA_LOAD_INT(x25, x26) # load temp reg: x26 = 0x7bd008f8
-  csrw mscratch, x26 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x26
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x26
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x26
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x26
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b9:
-  csrrw x9, mscratch, x9 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x9, fflags, x9
+#elif defined(V_SUPPORTED)
+  csrrw x9, vxsat, x9
+#elif !defined(U_SUPPORTED)
+  csrrw x9, mepc, x9
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x9, instret, x9
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x9 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x11, x5, x4, x9, Zicsr_csrrw_cg_cmp_rd_rs1_b9, Zicsr_csrrw_cg_cmp_rd_rs1_b9_str)
-  csrr x26, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x26, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x26, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x26, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x26, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x26 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x11, x5, x4, x26, Zicsr_csrrw_cg_cmp_rd_rs1_b9, Zicsr_csrrw_cg_cmp_rd_rs1_b9_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x10)
   RVTEST_TESTDATA_LOAD_INT(x25, x10) # load rs1: x10 = 0x63bf53b8
   RVTEST_TESTDATA_LOAD_INT(x25, x18) # load temp reg: x18 = 0x56ef99ba
-  csrw mscratch, x18 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x18
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x18
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x18
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x18
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b10:
-  csrrw x10, mscratch, x10 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x10, fflags, x10
+#elif defined(V_SUPPORTED)
+  csrrw x10, vxsat, x10
+#elif !defined(U_SUPPORTED)
+  csrrw x10, mepc, x10
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x10, instret, x10
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x10 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x11, x5, x4, x10, Zicsr_csrrw_cg_cmp_rd_rs1_b10, Zicsr_csrrw_cg_cmp_rd_rs1_b10_str)
-  csrr x18, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x18, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x18, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x18, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x18, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x18 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x11, x5, x4, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b10, Zicsr_csrrw_cg_cmp_rd_rs1_b10_str)
 
@@ -1116,168 +4335,686 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b10:
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x11)
   RVTEST_TESTDATA_LOAD_INT(x25, x11) # load rs1: x11 = 0x442c3644
   RVTEST_TESTDATA_LOAD_INT(x25, x22) # load temp reg: x22 = 0x9f39ddde
-  csrw mscratch, x22 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x22
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x22
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x22
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x22
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b11:
-  csrrw x11, mscratch, x11 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x11, fflags, x11
+#elif defined(V_SUPPORTED)
+  csrrw x11, vxsat, x11
+#elif !defined(U_SUPPORTED)
+  csrrw x11, mepc, x11
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x11, instret, x11
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x11 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x11, Zicsr_csrrw_cg_cmp_rd_rs1_b11, Zicsr_csrrw_cg_cmp_rd_rs1_b11_str)
-  csrr x22, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x22, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x22, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x22, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x22, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x22 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b11, Zicsr_csrrw_cg_cmp_rd_rs1_b11_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x12)
   RVTEST_TESTDATA_LOAD_INT(x25, x12) # load rs1: x12 = 0xc8a0b5ef
   RVTEST_TESTDATA_LOAD_INT(x25, x1) # load temp reg: x1 = 0x6f8d1bb7
-  csrw mscratch, x1 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x1
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x1
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x1
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x1
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b12:
-  csrrw x12, mscratch, x12 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x12, fflags, x12
+#elif defined(V_SUPPORTED)
+  csrrw x12, vxsat, x12
+#elif !defined(U_SUPPORTED)
+  csrrw x12, mepc, x12
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x12, instret, x12
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x12 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x12, Zicsr_csrrw_cg_cmp_rd_rs1_b12, Zicsr_csrrw_cg_cmp_rd_rs1_b12_str)
-  csrr x1, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x1, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x1, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x1, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x1, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x1 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x1, Zicsr_csrrw_cg_cmp_rd_rs1_b12, Zicsr_csrrw_cg_cmp_rd_rs1_b12_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x13)
   RVTEST_TESTDATA_LOAD_INT(x25, x13) # load rs1: x13 = 0x34c350ac
   RVTEST_TESTDATA_LOAD_INT(x25, x19) # load temp reg: x19 = 0xaaef69d3
-  csrw mscratch, x19 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x19
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x19
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x19
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x19
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b13:
-  csrrw x13, mscratch, x13 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x13, fflags, x13
+#elif defined(V_SUPPORTED)
+  csrrw x13, vxsat, x13
+#elif !defined(U_SUPPORTED)
+  csrrw x13, mepc, x13
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x13, instret, x13
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cmp_rd_rs1_b13, Zicsr_csrrw_cg_cmp_rd_rs1_b13_str)
-  csrr x19, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x19, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x19, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x19, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x19, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x19, Zicsr_csrrw_cg_cmp_rd_rs1_b13, Zicsr_csrrw_cg_cmp_rd_rs1_b13_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x14)
   RVTEST_TESTDATA_LOAD_INT(x25, x14) # load rs1: x14 = 0xfc04984b
   RVTEST_TESTDATA_LOAD_INT(x25, x9) # load temp reg: x9 = 0x78a3a8ab
-  csrw mscratch, x9 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x9
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x9
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x9
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x9
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b14:
-  csrrw x14, mscratch, x14 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x14, fflags, x14
+#elif defined(V_SUPPORTED)
+  csrrw x14, vxsat, x14
+#elif !defined(U_SUPPORTED)
+  csrrw x14, mepc, x14
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x14, instret, x14
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b14, Zicsr_csrrw_cg_cmp_rd_rs1_b14_str)
-  csrr x9, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x9, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x9, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x9, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x9, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x9 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x9, Zicsr_csrrw_cg_cmp_rd_rs1_b14, Zicsr_csrrw_cg_cmp_rd_rs1_b14_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x15)
   RVTEST_TESTDATA_LOAD_INT(x25, x15) # load rs1: x15 = 0x625884fd
   RVTEST_TESTDATA_LOAD_INT(x25, x24) # load temp reg: x24 = 0xccc82a15
-  csrw mscratch, x24 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x24
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x24
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x24
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x24
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b15:
-  csrrw x15, mscratch, x15 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x15, fflags, x15
+#elif defined(V_SUPPORTED)
+  csrrw x15, vxsat, x15
+#elif !defined(U_SUPPORTED)
+  csrrw x15, mepc, x15
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x15, instret, x15
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b15, Zicsr_csrrw_cg_cmp_rd_rs1_b15_str)
-  csrr x24, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x24, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x24, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x24, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x24, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x24, Zicsr_csrrw_cg_cmp_rd_rs1_b15, Zicsr_csrrw_cg_cmp_rd_rs1_b15_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x16)
   RVTEST_TESTDATA_LOAD_INT(x25, x16) # load rs1: x16 = 0xec932bac
   RVTEST_TESTDATA_LOAD_INT(x25, x19) # load temp reg: x19 = 0xeee18202
-  csrw mscratch, x19 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x19
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x19
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x19
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x19
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b16:
-  csrrw x16, mscratch, x16 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x16, fflags, x16
+#elif defined(V_SUPPORTED)
+  csrrw x16, vxsat, x16
+#elif !defined(U_SUPPORTED)
+  csrrw x16, mepc, x16
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x16, instret, x16
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x16 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b16, Zicsr_csrrw_cg_cmp_rd_rs1_b16_str)
-  csrr x19, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x19, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x19, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x19, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x19, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x19, Zicsr_csrrw_cg_cmp_rd_rs1_b16, Zicsr_csrrw_cg_cmp_rd_rs1_b16_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x17)
   RVTEST_TESTDATA_LOAD_INT(x25, x17) # load rs1: x17 = 0x365bcac1
   RVTEST_TESTDATA_LOAD_INT(x25, x15) # load temp reg: x15 = 0xf3d520e5
-  csrw mscratch, x15 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x15
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x15
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x15
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x15
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b17:
-  csrrw x17, mscratch, x17 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x17, fflags, x17
+#elif defined(V_SUPPORTED)
+  csrrw x17, vxsat, x17
+#elif !defined(U_SUPPORTED)
+  csrrw x17, mepc, x17
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x17, instret, x17
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x17 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x17, Zicsr_csrrw_cg_cmp_rd_rs1_b17, Zicsr_csrrw_cg_cmp_rd_rs1_b17_str)
-  csrr x15, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x15, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x15, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x15, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x15, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b17, Zicsr_csrrw_cg_cmp_rd_rs1_b17_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x18)
   RVTEST_TESTDATA_LOAD_INT(x25, x18) # load rs1: x18 = 0x70b9ef78
   RVTEST_TESTDATA_LOAD_INT(x25, x12) # load temp reg: x12 = 0x50d909f9
-  csrw mscratch, x12 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x12
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x12
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x12
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x12
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b18:
-  csrrw x18, mscratch, x18 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x18, fflags, x18
+#elif defined(V_SUPPORTED)
+  csrrw x18, vxsat, x18
+#elif !defined(U_SUPPORTED)
+  csrrw x18, mepc, x18
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x18, instret, x18
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x18 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b18, Zicsr_csrrw_cg_cmp_rd_rs1_b18_str)
-  csrr x12, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x12, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x12, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x12, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x12, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x12 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x12, Zicsr_csrrw_cg_cmp_rd_rs1_b18, Zicsr_csrrw_cg_cmp_rd_rs1_b18_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x19)
   RVTEST_TESTDATA_LOAD_INT(x25, x19) # load rs1: x19 = 0x604809aa
   RVTEST_TESTDATA_LOAD_INT(x25, x30) # load temp reg: x30 = 0x9105d7b2
-  csrw mscratch, x30 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x30
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x30
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x30
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x30
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b19:
-  csrrw x19, mscratch, x19 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x19, fflags, x19
+#elif defined(V_SUPPORTED)
+  csrrw x19, vxsat, x19
+#elif !defined(U_SUPPORTED)
+  csrrw x19, mepc, x19
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x19, instret, x19
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x19, Zicsr_csrrw_cg_cmp_rd_rs1_b19, Zicsr_csrrw_cg_cmp_rd_rs1_b19_str)
-  csrr x30, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x30, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x30, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x30, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x30, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x30 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x30, Zicsr_csrrw_cg_cmp_rd_rs1_b19, Zicsr_csrrw_cg_cmp_rd_rs1_b19_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x20)
   RVTEST_TESTDATA_LOAD_INT(x25, x20) # load rs1: x20 = 0xefae060e
   RVTEST_TESTDATA_LOAD_INT(x25, x19) # load temp reg: x19 = 0xc7312da2
-  csrw mscratch, x19 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x19
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x19
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x19
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x19
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b20:
-  csrrw x20, mscratch, x20 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x20, fflags, x20
+#elif defined(V_SUPPORTED)
+  csrrw x20, vxsat, x20
+#elif !defined(U_SUPPORTED)
+  csrrw x20, mepc, x20
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x20, instret, x20
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x20 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x20, Zicsr_csrrw_cg_cmp_rd_rs1_b20, Zicsr_csrrw_cg_cmp_rd_rs1_b20_str)
-  csrr x19, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x19, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x19, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x19, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x19, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x19, Zicsr_csrrw_cg_cmp_rd_rs1_b20, Zicsr_csrrw_cg_cmp_rd_rs1_b20_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x21)
   RVTEST_TESTDATA_LOAD_INT(x25, x21) # load rs1: x21 = 0xa02fd06b
   RVTEST_TESTDATA_LOAD_INT(x25, x24) # load temp reg: x24 = 0xbb8bae50
-  csrw mscratch, x24 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x24
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x24
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x24
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x24
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b21:
-  csrrw x21, mscratch, x21 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x21, fflags, x21
+#elif defined(V_SUPPORTED)
+  csrrw x21, vxsat, x21
+#elif !defined(U_SUPPORTED)
+  csrrw x21, mepc, x21
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x21, instret, x21
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b21, Zicsr_csrrw_cg_cmp_rd_rs1_b21_str)
-  csrr x24, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x24, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x24, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x24, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x24, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x24, Zicsr_csrrw_cg_cmp_rd_rs1_b21, Zicsr_csrrw_cg_cmp_rd_rs1_b21_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x22)
   RVTEST_TESTDATA_LOAD_INT(x25, x22) # load rs1: x22 = 0xe91d1271
   RVTEST_TESTDATA_LOAD_INT(x25, x23) # load temp reg: x23 = 0x4cfc9388
-  csrw mscratch, x23 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x23
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x23
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x23
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x23
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b22:
-  csrrw x22, mscratch, x22 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x22, fflags, x22
+#elif defined(V_SUPPORTED)
+  csrrw x22, vxsat, x22
+#elif !defined(U_SUPPORTED)
+  csrrw x22, mepc, x22
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x22, instret, x22
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x22 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b22, Zicsr_csrrw_cg_cmp_rd_rs1_b22_str)
-  csrr x23, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x23, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x23, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x23, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x23, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x23, Zicsr_csrrw_cg_cmp_rd_rs1_b22, Zicsr_csrrw_cg_cmp_rd_rs1_b22_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x23)
   RVTEST_TESTDATA_LOAD_INT(x25, x23) # load rs1: x23 = 0x37e9baad
   RVTEST_TESTDATA_LOAD_INT(x25, x24) # load temp reg: x24 = 0xedee4d6a
-  csrw mscratch, x24 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x24
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x24
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x24
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x24
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b23:
-  csrrw x23, mscratch, x23 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x23, fflags, x23
+#elif defined(V_SUPPORTED)
+  csrrw x23, vxsat, x23
+#elif !defined(U_SUPPORTED)
+  csrrw x23, mepc, x23
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x23, instret, x23
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x23, Zicsr_csrrw_cg_cmp_rd_rs1_b23, Zicsr_csrrw_cg_cmp_rd_rs1_b23_str)
-  csrr x24, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x24, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x24, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x24, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x24, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x24, Zicsr_csrrw_cg_cmp_rd_rs1_b23, Zicsr_csrrw_cg_cmp_rd_rs1_b23_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x24)
   RVTEST_TESTDATA_LOAD_INT(x25, x24) # load rs1: x24 = 0x1e7385e1
   RVTEST_TESTDATA_LOAD_INT(x25, x14) # load temp reg: x14 = 0xc9e6a2bd
-  csrw mscratch, x14 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x14
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x14
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x14
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x14
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b24:
-  csrrw x24, mscratch, x24 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x24, fflags, x24
+#elif defined(V_SUPPORTED)
+  csrrw x24, vxsat, x24
+#elif !defined(U_SUPPORTED)
+  csrrw x24, mepc, x24
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x24, instret, x24
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x24, Zicsr_csrrw_cg_cmp_rd_rs1_b24, Zicsr_csrrw_cg_cmp_rd_rs1_b24_str)
-  csrr x14, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x14, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x14, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x14, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x14, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b24, Zicsr_csrrw_cg_cmp_rd_rs1_b24_str)
 
@@ -1285,86 +5022,347 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b24:
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x25)
   RVTEST_TESTDATA_LOAD_INT(x11, x25) # load rs1: x25 = 0x12bda2f7
   RVTEST_TESTDATA_LOAD_INT(x11, x28) # load temp reg: x28 = 0x21b3d7bc
-  csrw mscratch, x28 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x28
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x28
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x28
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x28
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b25:
-  csrrw x25, mscratch, x25 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x25, fflags, x25
+#elif defined(V_SUPPORTED)
+  csrrw x25, vxsat, x25
+#elif !defined(U_SUPPORTED)
+  csrrw x25, mepc, x25
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x25, instret, x25
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x25 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x25, Zicsr_csrrw_cg_cmp_rd_rs1_b25, Zicsr_csrrw_cg_cmp_rd_rs1_b25_str)
-  csrr x28, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x28, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x28, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x28, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x28, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x28 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b25, Zicsr_csrrw_cg_cmp_rd_rs1_b25_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x26)
   RVTEST_TESTDATA_LOAD_INT(x11, x26) # load rs1: x26 = 0x8bb5f769
   RVTEST_TESTDATA_LOAD_INT(x11, x1) # load temp reg: x1 = 0xaee3b4a3
-  csrw mscratch, x1 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x1
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x1
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x1
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x1
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b26:
-  csrrw x26, mscratch, x26 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x26, fflags, x26
+#elif defined(V_SUPPORTED)
+  csrrw x26, vxsat, x26
+#elif !defined(U_SUPPORTED)
+  csrrw x26, mepc, x26
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x26, instret, x26
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x26 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x26, Zicsr_csrrw_cg_cmp_rd_rs1_b26, Zicsr_csrrw_cg_cmp_rd_rs1_b26_str)
-  csrr x1, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x1, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x1, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x1, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x1, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x1 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x1, Zicsr_csrrw_cg_cmp_rd_rs1_b26, Zicsr_csrrw_cg_cmp_rd_rs1_b26_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x27)
   RVTEST_TESTDATA_LOAD_INT(x11, x27) # load rs1: x27 = 0x204d4b10
   RVTEST_TESTDATA_LOAD_INT(x11, x14) # load temp reg: x14 = 0x21256c57
-  csrw mscratch, x14 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x14
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x14
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x14
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x14
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b27:
-  csrrw x27, mscratch, x27 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x27, fflags, x27
+#elif defined(V_SUPPORTED)
+  csrrw x27, vxsat, x27
+#elif !defined(U_SUPPORTED)
+  csrrw x27, mepc, x27
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x27, instret, x27
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x27 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x27, Zicsr_csrrw_cg_cmp_rd_rs1_b27, Zicsr_csrrw_cg_cmp_rd_rs1_b27_str)
-  csrr x14, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x14, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x14, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x14, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x14, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b27, Zicsr_csrrw_cg_cmp_rd_rs1_b27_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x28)
   RVTEST_TESTDATA_LOAD_INT(x11, x28) # load rs1: x28 = 0x80c77d8d
   RVTEST_TESTDATA_LOAD_INT(x11, x14) # load temp reg: x14 = 0x063c3a8f
-  csrw mscratch, x14 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x14
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x14
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x14
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x14
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b28:
-  csrrw x28, mscratch, x28 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x28, fflags, x28
+#elif defined(V_SUPPORTED)
+  csrrw x28, vxsat, x28
+#elif !defined(U_SUPPORTED)
+  csrrw x28, mepc, x28
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x28, instret, x28
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x28 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b28, Zicsr_csrrw_cg_cmp_rd_rs1_b28_str)
-  csrr x14, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x14, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x14, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x14, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x14, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b28, Zicsr_csrrw_cg_cmp_rd_rs1_b28_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x29)
   RVTEST_TESTDATA_LOAD_INT(x11, x29) # load rs1: x29 = 0x95b04b2b
   RVTEST_TESTDATA_LOAD_INT(x11, x9) # load temp reg: x9 = 0x533b4182
-  csrw mscratch, x9 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x9
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x9
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x9
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x9
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b29:
-  csrrw x29, mscratch, x29 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x29, fflags, x29
+#elif defined(V_SUPPORTED)
+  csrrw x29, vxsat, x29
+#elif !defined(U_SUPPORTED)
+  csrrw x29, mepc, x29
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x29, instret, x29
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x29 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b29, Zicsr_csrrw_cg_cmp_rd_rs1_b29_str)
-  csrr x9, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x9, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x9, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x9, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x9, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x9 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x9, Zicsr_csrrw_cg_cmp_rd_rs1_b29, Zicsr_csrrw_cg_cmp_rd_rs1_b29_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x30)
   RVTEST_TESTDATA_LOAD_INT(x11, x30) # load rs1: x30 = 0x82fb69c0
   RVTEST_TESTDATA_LOAD_INT(x11, x25) # load temp reg: x25 = 0x3352af2c
-  csrw mscratch, x25 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x25
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x25
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x25
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x25
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b30:
-  csrrw x30, mscratch, x30 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x30, fflags, x30
+#elif defined(V_SUPPORTED)
+  csrrw x30, vxsat, x30
+#elif !defined(U_SUPPORTED)
+  csrrw x30, mepc, x30
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x30, instret, x30
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x30 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x30, Zicsr_csrrw_cg_cmp_rd_rs1_b30, Zicsr_csrrw_cg_cmp_rd_rs1_b30_str)
-  csrr x25, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x25, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x25, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x25, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x25, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x25 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x25, Zicsr_csrrw_cg_cmp_rd_rs1_b30, Zicsr_csrrw_cg_cmp_rd_rs1_b30_str)
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x31)
   RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0x460f3174
   RVTEST_TESTDATA_LOAD_INT(x11, x28) # load temp reg: x28 = 0x8f719b6c
-  csrw mscratch, x28 # setup CSR with random value
+// Initialize CSR with random value
+// Pick most suitable CSR to test based on supported extensions
+#if defined(F_SUPPORTED)
+  csrrw x0, fflags, x28
+#elif defined(V_SUPPORTED)
+  csrrw x0, vxsat, x28
+#elif !defined(U_SUPPORTED)
+  csrrw x0, mepc, x28
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x0, instret, x28
+#else
+  Error: no CSR known for testing
+#endif
+
 Zicsr_csrrw_cg_cmp_rd_rs1_b31:
-  csrrw x31, mscratch, x31 # perform operation
+// perform operation
+#if defined(F_SUPPORTED)
+  csrrw x31, fflags, x31
+#elif defined(V_SUPPORTED)
+  csrrw x31, vxsat, x31
+#elif !defined(U_SUPPORTED)
+  csrrw x31, mepc, x31
+#elif defined(ZICNTR_SUPPORTED)
+  csrrw x31, instret, x31
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x31 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x31, Zicsr_csrrw_cg_cmp_rd_rs1_b31, Zicsr_csrrw_cg_cmp_rd_rs1_b31_str)
-  csrr x28, mscratch # read back CSR to check updated value
+// read back CSR to check updated value
+#if defined(F_SUPPORTED)
+  csrrs x28, fflags, x0
+#elif defined(V_SUPPORTED)
+  csrrs x28, vxsat, x0
+#elif !defined(U_SUPPORTED)
+  csrrs x28, mepc, x0
+#elif defined(ZICNTR_SUPPORTED)
+  csrrs x28, instret, x0
+#else
+  Error: no CSR known for testing
+#endif
+
   # Check if x28 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b31, Zicsr_csrrw_cg_cmp_rd_rs1_b31_str)
+
+  mv x2, x10 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

@@ -18,6 +18,7 @@ covergroup ZfhD_fadd_h_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
     cp_fs1_badNB_D_H : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         //// "FS1 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -33,6 +34,7 @@ covergroup ZfhD_fadd_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
     cp_fs2_badNB_D_H : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // "FS2 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -48,6 +50,7 @@ covergroup ZfhD_fadd_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fclass_h_cg with function sample(ins_t ins);
@@ -67,6 +70,7 @@ covergroup ZfhD_fclass_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fcvt_d_h_cg with function sample(ins_t ins);
@@ -74,21 +78,26 @@ covergroup ZfhD_fcvt_d_h_cg with function sample(ins_t ins);
     cmp_fd_fs1 : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.current.fd == ins.current.fs1 & ins.trap == 0 )  {
         // FD and FS1 register (assignment) WAR Hazard
     }
+
     cp_asm_count : coverpoint ins.ins_str == "fcvt.d.h"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_csr_fflags_v : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
     }
+
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
         // FD register assignment
     }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
+
     cp_fs1_badNB_D_H : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         //// "FS1 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -104,6 +113,7 @@ covergroup ZfhD_fcvt_d_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
     cp_fs1_edges_H : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
         // FS1 edges (Half Precision)
         bins pos0             = {16'h0000};
@@ -133,6 +143,7 @@ covergroup ZfhD_fcvt_d_h_cg with function sample(ins_t ins);
         bins posrandom        = {16'h58B4};
         bins negrandom        = {16'hC93A};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fcvt_h_d_cg with function sample(ins_t ins);
@@ -140,17 +151,21 @@ covergroup ZfhD_fcvt_h_d_cg with function sample(ins_t ins);
     cp_frm_2 : coverpoint get_frm(ins.ops[2].val)  iff (ins.trap == 0 )  {
         // Floating-point rounding mode in instruction
     }
+
     cmp_fd_fs1 : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.current.fd == ins.current.fs1 & ins.trap == 0 )  {
         // FD and FS1 register (assignment) WAR Hazard
     }
+
     cp_NaNBox_D_H : coverpoint unsigned'(ins.current.fd_val[63:16])  iff (ins.trap == 0 )  {
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
     cp_asm_count : coverpoint ins.ins_str == "fcvt.h.d"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_csr_fflags_voun : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = (5'b0???? => 5'b1????);
@@ -162,7 +177,8 @@ covergroup ZfhD_fcvt_h_d_cg with function sample(ins_t ins);
         wildcard bins NX   = (5'b????0 => 5'b????1);
         wildcard bins NX1  = (5'b????1 => 5'b????1);
     }
-    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
+
+    cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
         // Value of FCSR.frm during dynamic rounding
         bins rne  = {3'b000};
         bins rtz  = {3'b001};
@@ -171,12 +187,15 @@ covergroup ZfhD_fcvt_h_d_cg with function sample(ins_t ins);
         bins rmm  = {3'b100};
         bins illegal  = default;
     }
+
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
         // FD register assignment
     }
+
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
     }
+
     cp_fs1_edges_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         // FS1 edges (Double Precision)
         bins pos0             = {64'h0000000000000000};
@@ -210,6 +229,7 @@ covergroup ZfhD_fcvt_h_d_cg with function sample(ins_t ins);
     cr_fs1_edges_frm_D : cross cp_fs1_edges_D,cp_frm_2  iff (ins.trap == 0 )  {
         // Cross coverage FS1 (double precision), FRM
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fcvt_h_s_cg with function sample(ins_t ins);
@@ -218,6 +238,7 @@ covergroup ZfhD_fcvt_h_s_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
     cp_fs1_badNB_D_H : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         //// "FS1 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -233,6 +254,7 @@ covergroup ZfhD_fcvt_h_s_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fcvt_h_w_cg with function sample(ins_t ins);
@@ -241,6 +263,7 @@ covergroup ZfhD_fcvt_h_w_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fcvt_h_wu_cg with function sample(ins_t ins);
@@ -249,6 +272,7 @@ covergroup ZfhD_fcvt_h_wu_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fcvt_s_h_cg with function sample(ins_t ins);
@@ -257,6 +281,7 @@ covergroup ZfhD_fcvt_s_h_cg with function sample(ins_t ins);
         // NaNBoxing (float result in a double register)
         bins NaNBox = {32'hffffffff};
     }
+
     cp_fs1_badNB_D_H : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         //// "FS1 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -272,6 +297,7 @@ covergroup ZfhD_fcvt_s_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fcvt_w_h_cg with function sample(ins_t ins);
@@ -291,6 +317,7 @@ covergroup ZfhD_fcvt_w_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fcvt_wu_h_cg with function sample(ins_t ins);
@@ -310,6 +337,7 @@ covergroup ZfhD_fcvt_wu_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fdiv_h_cg with function sample(ins_t ins);
@@ -318,6 +346,7 @@ covergroup ZfhD_fdiv_h_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
     cp_fs1_badNB_D_H : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         //// "FS1 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -333,6 +362,7 @@ covergroup ZfhD_fdiv_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
     cp_fs2_badNB_D_H : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // "FS2 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -348,6 +378,7 @@ covergroup ZfhD_fdiv_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_feq_h_cg with function sample(ins_t ins);
@@ -367,6 +398,7 @@ covergroup ZfhD_feq_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
     cp_fs2_badNB_D_H : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // "FS2 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -382,6 +414,7 @@ covergroup ZfhD_feq_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fle_h_cg with function sample(ins_t ins);
@@ -401,6 +434,7 @@ covergroup ZfhD_fle_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
     cp_fs2_badNB_D_H : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // "FS2 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -416,6 +450,7 @@ covergroup ZfhD_fle_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_flh_cg with function sample(ins_t ins);
@@ -424,6 +459,7 @@ covergroup ZfhD_flh_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_flt_h_cg with function sample(ins_t ins);
@@ -443,6 +479,7 @@ covergroup ZfhD_flt_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
     cp_fs2_badNB_D_H : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // "FS2 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -458,6 +495,7 @@ covergroup ZfhD_flt_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fmadd_h_cg with function sample(ins_t ins);
@@ -466,6 +504,7 @@ covergroup ZfhD_fmadd_h_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
     cp_fs1_badNB_D_H : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         //// "FS1 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -481,6 +520,7 @@ covergroup ZfhD_fmadd_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
     cp_fs2_badNB_D_H : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // "FS2 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -496,6 +536,7 @@ covergroup ZfhD_fmadd_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
     cp_fs3_badNB_D_H : coverpoint unsigned'(ins.current.fs3_val[63:0])  iff (ins.trap == 0 )  {
         // "FS3 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -511,6 +552,7 @@ covergroup ZfhD_fmadd_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fmax_h_cg with function sample(ins_t ins);
@@ -519,6 +561,7 @@ covergroup ZfhD_fmax_h_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
     cp_fs1_badNB_D_H : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         //// "FS1 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -534,6 +577,7 @@ covergroup ZfhD_fmax_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
     cp_fs2_badNB_D_H : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // "FS2 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -549,6 +593,7 @@ covergroup ZfhD_fmax_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fmin_h_cg with function sample(ins_t ins);
@@ -557,6 +602,7 @@ covergroup ZfhD_fmin_h_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
     cp_fs1_badNB_D_H : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         //// "FS1 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -572,6 +618,7 @@ covergroup ZfhD_fmin_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
     cp_fs2_badNB_D_H : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // "FS2 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -587,6 +634,7 @@ covergroup ZfhD_fmin_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fmsub_h_cg with function sample(ins_t ins);
@@ -595,6 +643,7 @@ covergroup ZfhD_fmsub_h_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
     cp_fs1_badNB_D_H : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         //// "FS1 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -610,6 +659,7 @@ covergroup ZfhD_fmsub_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
     cp_fs2_badNB_D_H : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // "FS2 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -625,6 +675,7 @@ covergroup ZfhD_fmsub_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
     cp_fs3_badNB_D_H : coverpoint unsigned'(ins.current.fs3_val[63:0])  iff (ins.trap == 0 )  {
         // "FS3 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -640,6 +691,7 @@ covergroup ZfhD_fmsub_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fmul_h_cg with function sample(ins_t ins);
@@ -648,6 +700,7 @@ covergroup ZfhD_fmul_h_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
     cp_fs1_badNB_D_H : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         //// "FS1 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -663,6 +716,7 @@ covergroup ZfhD_fmul_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
     cp_fs2_badNB_D_H : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // "FS2 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -678,6 +732,7 @@ covergroup ZfhD_fmul_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fmv_h_x_cg with function sample(ins_t ins);
@@ -686,6 +741,7 @@ covergroup ZfhD_fmv_h_x_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fmv_x_h_cg with function sample(ins_t ins);
@@ -705,6 +761,7 @@ covergroup ZfhD_fmv_x_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fnmadd_h_cg with function sample(ins_t ins);
@@ -713,6 +770,7 @@ covergroup ZfhD_fnmadd_h_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
     cp_fs1_badNB_D_H : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         //// "FS1 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -728,6 +786,7 @@ covergroup ZfhD_fnmadd_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
     cp_fs2_badNB_D_H : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // "FS2 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -743,6 +802,7 @@ covergroup ZfhD_fnmadd_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
     cp_fs3_badNB_D_H : coverpoint unsigned'(ins.current.fs3_val[63:0])  iff (ins.trap == 0 )  {
         // "FS3 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -758,6 +818,7 @@ covergroup ZfhD_fnmadd_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fnmsub_h_cg with function sample(ins_t ins);
@@ -766,6 +827,7 @@ covergroup ZfhD_fnmsub_h_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
     cp_fs1_badNB_D_H : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         //// "FS1 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -781,6 +843,7 @@ covergroup ZfhD_fnmsub_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
     cp_fs2_badNB_D_H : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // "FS2 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -796,6 +859,7 @@ covergroup ZfhD_fnmsub_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
     cp_fs3_badNB_D_H : coverpoint unsigned'(ins.current.fs3_val[63:0])  iff (ins.trap == 0 )  {
         // "FS3 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -811,6 +875,7 @@ covergroup ZfhD_fnmsub_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fsgnj_h_cg with function sample(ins_t ins);
@@ -819,6 +884,7 @@ covergroup ZfhD_fsgnj_h_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
     cp_fs1_badNB_D_H : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         //// "FS1 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -834,6 +900,7 @@ covergroup ZfhD_fsgnj_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
     cp_fs2_badNB_D_H : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // "FS2 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -849,6 +916,7 @@ covergroup ZfhD_fsgnj_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fsgnjn_h_cg with function sample(ins_t ins);
@@ -857,6 +925,7 @@ covergroup ZfhD_fsgnjn_h_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
     cp_fs1_badNB_D_H : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         //// "FS1 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -872,6 +941,7 @@ covergroup ZfhD_fsgnjn_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
     cp_fs2_badNB_D_H : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // "FS2 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -887,6 +957,7 @@ covergroup ZfhD_fsgnjn_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fsgnjx_h_cg with function sample(ins_t ins);
@@ -895,6 +966,7 @@ covergroup ZfhD_fsgnjx_h_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
     cp_fs1_badNB_D_H : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         //// "FS1 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -910,6 +982,7 @@ covergroup ZfhD_fsgnjx_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
     cp_fs2_badNB_D_H : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // "FS2 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -925,6 +998,7 @@ covergroup ZfhD_fsgnjx_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fsh_cg with function sample(ins_t ins);
@@ -944,6 +1018,7 @@ covergroup ZfhD_fsh_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fsqrt_h_cg with function sample(ins_t ins);
@@ -952,6 +1027,7 @@ covergroup ZfhD_fsqrt_h_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
     cp_fs1_badNB_D_H : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         //// "FS1 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -967,6 +1043,7 @@ covergroup ZfhD_fsqrt_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fsub_h_cg with function sample(ins_t ins);
@@ -975,6 +1052,7 @@ covergroup ZfhD_fsub_h_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
     cp_fs1_badNB_D_H : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
         //// "FS1 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -990,6 +1068,7 @@ covergroup ZfhD_fsub_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
     cp_fs2_badNB_D_H : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
         // "FS2 Bad NaNBox edges (half NaNBoxed to 64 bits)";
         bins pos0             = {64'hffffffff0000_0000};
@@ -1005,6 +1084,7 @@ covergroup ZfhD_fsub_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 `ifdef XLEN64
@@ -1014,6 +1094,7 @@ covergroup ZfhD_fcvt_h_l_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fcvt_h_lu_cg with function sample(ins_t ins);
@@ -1022,6 +1103,7 @@ covergroup ZfhD_fcvt_h_lu_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fcvt_l_h_cg with function sample(ins_t ins);
@@ -1041,6 +1123,7 @@ covergroup ZfhD_fcvt_l_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhD_fcvt_lu_h_cg with function sample(ins_t ins);
@@ -1060,6 +1143,7 @@ covergroup ZfhD_fcvt_lu_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 `endif

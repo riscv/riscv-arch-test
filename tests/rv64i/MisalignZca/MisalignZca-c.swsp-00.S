@@ -253,6 +253,8 @@ MisalignZca_c_swsp_cg_cp_misalign_8:
   RVTEST_SIGUPD(x1, x5, x4, x12, MisalignZca_c_swsp_cg_cp_misalign_8, MisalignZca_c_swsp_cg_cp_misalign_8_str)
 
 
+  mv x2, x1 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

@@ -140,140 +140,142 @@ covergroup Zama16b_cg with function sample(ins_t ins);
     // ================================================================
     // cp_zama16b_amo
     // ================================================================
+    `ifdef COVER_ZAAMO
+        // ---- 1-byte AMOs (Zabha): offsets [0:15] ----
+        `ifdef COVER_ZABHA
+            cp_amoswap_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOSWAP_B) {
+                bins offsets[] = {[0:15]};
+            }
+            cp_amoadd_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOADD_B) {
+                bins offsets[] = {[0:15]};
+            }
+            cp_amoand_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOAND_B) {
+                bins offsets[] = {[0:15]};
+            }
+            cp_amoor_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOOR_B) {
+                bins offsets[] = {[0:15]};
+            }
+            cp_amoxor_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOXOR_B) {
+                bins offsets[] = {[0:15]};
+            }
+            cp_amomax_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAX_B) {
+                bins offsets[] = {[0:15]};
+            }
+            cp_amomaxu_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAXU_B) {
+                bins offsets[] = {[0:15]};
+            }
+            cp_amomin_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMIN_B) {
+                bins offsets[] = {[0:15]};
+            }
+            cp_amominu_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMINU_B) {
+                bins offsets[] = {[0:15]};
+            }
 
-    // ---- 1-byte AMOs (Zabha): offsets [0:15] ----
-    `ifdef COVER_ZABHA
-        cp_amoswap_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOSWAP_B) {
-            bins offsets[] = {[0:15]};
-        }
-        cp_amoadd_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOADD_B) {
-            bins offsets[] = {[0:15]};
-        }
-        cp_amoand_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOAND_B) {
-            bins offsets[] = {[0:15]};
-        }
-        cp_amoor_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOOR_B) {
-            bins offsets[] = {[0:15]};
-        }
-        cp_amoxor_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOXOR_B) {
-            bins offsets[] = {[0:15]};
-        }
-        cp_amomax_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAX_B) {
-            bins offsets[] = {[0:15]};
-        }
-        cp_amomaxu_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAXU_B) {
-            bins offsets[] = {[0:15]};
-        }
-        cp_amomin_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMIN_B) {
-            bins offsets[] = {[0:15]};
-        }
-        cp_amominu_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMINU_B) {
-            bins offsets[] = {[0:15]};
-        }
+            // ---- 2-byte AMOs (Zabha): offsets [0:14] ----
+            cp_amoswap_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOSWAP_H) {
+                bins offsets[] = {[0:14]};
+            }
+            cp_amoadd_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOADD_H) {
+                bins offsets[] = {[0:14]};
+            }
+            cp_amoand_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOAND_H) {
+                bins offsets[] = {[0:14]};
+            }
+            cp_amoor_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOOR_H) {
+                bins offsets[] = {[0:14]};
+            }
+            cp_amoxor_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOXOR_H) {
+                bins offsets[] = {[0:14]};
+            }
+            cp_amomax_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAX_H) {
+                bins offsets[] = {[0:14]};
+            }
+            cp_amomaxu_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAXU_H) {
+                bins offsets[] = {[0:14]};
+            }
+            cp_amomin_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMIN_H) {
+                bins offsets[] = {[0:14]};
+            }
+            cp_amominu_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMINU_H) {
+                bins offsets[] = {[0:14]};
+            }
+        `endif // COVER_ZABHA
 
-    // ---- 2-byte AMOs (Zabha): offsets [0:14] ----
-        cp_amoswap_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOSWAP_H) {
-            bins offsets[] = {[0:14]};
-        }
-        cp_amoadd_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOADD_H) {
-            bins offsets[] = {[0:14]};
-        }
-         cp_amoand_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOAND_H) {
-            bins offsets[] = {[0:14]};
-        }
-        cp_amoor_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOOR_H) {
-            bins offsets[] = {[0:14]};
-        }
-        cp_amoxor_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOXOR_H) {
-            bins offsets[] = {[0:14]};
-        }
-        cp_amomax_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAX_H) {
-            bins offsets[] = {[0:14]};
-        }
-        cp_amomaxu_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAXU_H) {
-            bins offsets[] = {[0:14]};
-        }
-        cp_amomin_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMIN_H) {
-            bins offsets[] = {[0:14]};
-        }
-        cp_amominu_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMINU_H) {
-            bins offsets[] = {[0:14]};
-        }
-    `endif // COVER_ZABHA
-
-    // ---- 4-byte AMOs: offsets [0:12] ----
-    cp_amoswap_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOSWAP_W) {
-        bins offsets[] = {[0:12]};
-    }
-    cp_amoadd_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOADD_W) {
-        bins offsets[] = {[0:12]};
-    }
-    cp_amoand_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOAND_W) {
-        bins offsets[] = {[0:12]};
-    }
-    cp_amoor_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOOR_W) {
-        bins offsets[] = {[0:12]};
-    }
-    cp_amoxor_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOXOR_W) {
-        bins offsets[] = {[0:12]};
-    }
-    cp_amomax_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAX_W) {
-        bins offsets[] = {[0:12]};
-    }
-    cp_amomaxu_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAXU_W) {
-        bins offsets[] = {[0:12]};
-    }
-    cp_amomin_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMIN_W) {
-        bins offsets[] = {[0:12]};
-    }
-    cp_amominu_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMINU_W) {
-        bins offsets[] = {[0:12]};
-    }
-    `ifdef COVER_ZACAS
-        cp_amocas_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOCAS_W) {
+        // ---- 4-byte AMOs: offsets [0:12] ----
+        cp_amoswap_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOSWAP_W) {
             bins offsets[] = {[0:12]};
         }
-    `endif
+        cp_amoadd_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOADD_W) {
+            bins offsets[] = {[0:12]};
+        }
+        cp_amoand_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOAND_W) {
+            bins offsets[] = {[0:12]};
+        }
+        cp_amoor_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOOR_W) {
+            bins offsets[] = {[0:12]};
+        }
+        cp_amoxor_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOXOR_W) {
+            bins offsets[] = {[0:12]};
+        }
+        cp_amomax_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAX_W) {
+            bins offsets[] = {[0:12]};
+        }
+        cp_amomaxu_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAXU_W) {
+            bins offsets[] = {[0:12]};
+        }
+        cp_amomin_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMIN_W) {
+            bins offsets[] = {[0:12]};
+        }
+        cp_amominu_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMINU_W) {
+            bins offsets[] = {[0:12]};
+        }
+        `ifdef COVER_ZACAS
+            cp_amocas_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOCAS_W) {
+                bins offsets[] = {[0:12]};
+            }
+        `endif // COVER_ZACAS
 
-    // ---- 8-byte AMOs (RV64): offsets [0:8] ----
-    `ifdef XLEN64
-        cp_amoswap_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOSWAP_D) {
-            bins offsets[] = {[0:8]};
-        }
-        cp_amoadd_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOADD_D) {
-            bins offsets[] = {[0:8]};
-        }
-        cp_amoand_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOAND_D) {
-            bins offsets[] = {[0:8]};
-        }
-        cp_amoor_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOOR_D) {
-            bins offsets[] = {[0:8]};
-        }
-        cp_amoxor_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOXOR_D) {
-            bins offsets[] = {[0:8]};
-        }
-        cp_amomax_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAX_D) {
-            bins offsets[] = {[0:8]};
-        }
-        cp_amomaxu_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAXU_D) {
-            bins offsets[] = {[0:8]};
-        }
-        cp_amomin_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMIN_D) {
-            bins offsets[] = {[0:8]};
-        }
-        cp_amominu_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMINU_D) {
-            bins offsets[] = {[0:8]};
-        }
-    `ifdef COVER_ZACAS
-        cp_amocas_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOCAS_D) {
-            bins offsets[] = {[0:8]};
-        }
-    // ---- 16-byte AMO (Zacas, RV64): offsets [0:0] ----
-        cp_amocas_q_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOCAS_Q) {
-            bins offsets[] = {[0:0]};
-        }
-    `endif // COVER_ZACAS
-    `endif // XLEN64
+        // ---- 8-byte AMOs (RV64): offsets [0:8] ----
+        `ifdef XLEN64
+            cp_amoswap_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOSWAP_D) {
+                bins offsets[] = {[0:8]};
+            }
+            cp_amoadd_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOADD_D) {
+                bins offsets[] = {[0:8]};
+            }
+            cp_amoand_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOAND_D) {
+                bins offsets[] = {[0:8]};
+            }
+            cp_amoor_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOOR_D) {
+                bins offsets[] = {[0:8]};
+            }
+            cp_amoxor_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOXOR_D) {
+                bins offsets[] = {[0:8]};
+            }
+            cp_amomax_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAX_D) {
+                bins offsets[] = {[0:8]};
+            }
+            cp_amomaxu_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMAXU_D) {
+                bins offsets[] = {[0:8]};
+            }
+            cp_amomin_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMIN_D) {
+                bins offsets[] = {[0:8]};
+            }
+            cp_amominu_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMINU_D) {
+                bins offsets[] = {[0:8]};
+            }
+            `ifdef COVER_ZACAS
+                // ---- 16-byte AMO (Zacas, RV64): offsets [0:0] ----
+                cp_amocas_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOCAS_D) {
+                    bins offsets[] = {[0:8]};
+                }
+                cp_amocas_q_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOCAS_Q) {
+                    bins offsets[] = {[0:0]};
+                }
+            `endif // COVER_ZACAS
+        `endif // XLEN64
+    `endif // COVER_ZAAMO
+
 
 endgroup
 

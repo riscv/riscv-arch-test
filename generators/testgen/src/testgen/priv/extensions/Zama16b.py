@@ -51,51 +51,52 @@ _STORE_OPS = [
 
 _AMO_OPS = [
     # Columns: (mnemonic, access_size_bytes, is_fp, is_amo, preprocessor_guard)
-    # Word AMOs (always present with Zaamo)
-    ("amoswap.w", 4, False, True, None),
-    ("amoadd.w", 4, False, True, None),
-    ("amoand.w", 4, False, True, None),
-    ("amoor.w", 4, False, True, None),
-    ("amoxor.w", 4, False, True, None),
-    ("amomax.w", 4, False, True, None),
-    ("amomaxu.w", 4, False, True, None),
-    ("amomin.w", 4, False, True, None),
-    ("amominu.w", 4, False, True, None),
-    # Doubleword AMOs (RV64 only)
-    ("amoswap.d", 8, False, True, "__riscv_xlen == 64"),
-    ("amoadd.d", 8, False, True, "__riscv_xlen == 64"),
-    ("amoand.d", 8, False, True, "__riscv_xlen == 64"),
-    ("amoor.d", 8, False, True, "__riscv_xlen == 64"),
-    ("amoxor.d", 8, False, True, "__riscv_xlen == 64"),
-    ("amomax.d", 8, False, True, "__riscv_xlen == 64"),
-    ("amomaxu.d", 8, False, True, "__riscv_xlen == 64"),
-    ("amomin.d", 8, False, True, "__riscv_xlen == 64"),
-    ("amominu.d", 8, False, True, "__riscv_xlen == 64"),
-    # Zabha: byte AMOs
-    ("amoswap.b", 1, False, True, "ZABHA_SUPPORTED"),
-    ("amoadd.b", 1, False, True, "ZABHA_SUPPORTED"),
-    ("amoand.b", 1, False, True, "ZABHA_SUPPORTED"),
-    ("amoor.b", 1, False, True, "ZABHA_SUPPORTED"),
-    ("amoxor.b", 1, False, True, "ZABHA_SUPPORTED"),
-    ("amomax.b", 1, False, True, "ZABHA_SUPPORTED"),
-    ("amomaxu.b", 1, False, True, "ZABHA_SUPPORTED"),
-    ("amomin.b", 1, False, True, "ZABHA_SUPPORTED"),
-    ("amominu.b", 1, False, True, "ZABHA_SUPPORTED"),
-    # Zabha: halfword AMOs
-    ("amoswap.h", 2, False, True, "ZABHA_SUPPORTED"),
-    ("amoadd.h", 2, False, True, "ZABHA_SUPPORTED"),
-    ("amoand.h", 2, False, True, "ZABHA_SUPPORTED"),
-    ("amoor.h", 2, False, True, "ZABHA_SUPPORTED"),
-    ("amoxor.h", 2, False, True, "ZABHA_SUPPORTED"),
-    ("amomax.h", 2, False, True, "ZABHA_SUPPORTED"),
-    ("amomaxu.h", 2, False, True, "ZABHA_SUPPORTED"),
-    ("amomin.h", 2, False, True, "ZABHA_SUPPORTED"),
-    ("amominu.h", 2, False, True, "ZABHA_SUPPORTED"),
-    # Zacas: compare-and-swap
-    ("amocas.w", 4, False, True, "ZACAS_SUPPORTED"),
-    ("amocas.d", 8, False, True, "ZACAS_SUPPORTED && __riscv_xlen == 64"),
-    ("amocas.q", 16, False, True, "ZACAS_SUPPORTED && __riscv_xlen == 64"),
+    # Word AMOs (requires Zaamo)
+    ("amoswap.w", 4, False, True, "ZAAMO_SUPPORTED"),
+    ("amoadd.w", 4, False, True, "ZAAMO_SUPPORTED"),
+    ("amoand.w", 4, False, True, "ZAAMO_SUPPORTED"),
+    ("amoor.w", 4, False, True, "ZAAMO_SUPPORTED"),
+    ("amoxor.w", 4, False, True, "ZAAMO_SUPPORTED"),
+    ("amomax.w", 4, False, True, "ZAAMO_SUPPORTED"),
+    ("amomaxu.w", 4, False, True, "ZAAMO_SUPPORTED"),
+    ("amomin.w", 4, False, True, "ZAAMO_SUPPORTED"),
+    ("amominu.w", 4, False, True, "ZAAMO_SUPPORTED"),
+    # Doubleword AMOs (requires Zaamo + RV64)
+    ("amoswap.d", 8, False, True, "ZAAMO_SUPPORTED && __riscv_xlen == 64"),
+    ("amoadd.d", 8, False, True, "ZAAMO_SUPPORTED && __riscv_xlen == 64"),
+    ("amoand.d", 8, False, True, "ZAAMO_SUPPORTED && __riscv_xlen == 64"),
+    ("amoor.d", 8, False, True, "ZAAMO_SUPPORTED && __riscv_xlen == 64"),
+    ("amoxor.d", 8, False, True, "ZAAMO_SUPPORTED && __riscv_xlen == 64"),
+    ("amomax.d", 8, False, True, "ZAAMO_SUPPORTED && __riscv_xlen == 64"),
+    ("amomaxu.d", 8, False, True, "ZAAMO_SUPPORTED && __riscv_xlen == 64"),
+    ("amomin.d", 8, False, True, "ZAAMO_SUPPORTED && __riscv_xlen == 64"),
+    ("amominu.d", 8, False, True, "ZAAMO_SUPPORTED && __riscv_xlen == 64"),
+    # Zabha: byte AMOs (requires Zaamo + Zabha)
+    ("amoswap.b", 1, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
+    ("amoadd.b", 1, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
+    ("amoand.b", 1, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
+    ("amoor.b", 1, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
+    ("amoxor.b", 1, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
+    ("amomax.b", 1, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
+    ("amomaxu.b", 1, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
+    ("amomin.b", 1, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
+    ("amominu.b", 1, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
+    # Zabha: halfword AMOs (requires Zaamo + Zabha)
+    ("amoswap.h", 2, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
+    ("amoadd.h", 2, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
+    ("amoand.h", 2, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
+    ("amoor.h", 2, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
+    ("amoxor.h", 2, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
+    ("amomax.h", 2, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
+    ("amomaxu.h", 2, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
+    ("amomin.h", 2, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
+    ("amominu.h", 2, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
+    # Zacas: compare-and-swap (requires Zaamo + Zacas)
+    ("amocas.w", 4, False, True, "ZAAMO_SUPPORTED && ZACAS_SUPPORTED"),
+    ("amocas.d", 8, False, True, "ZAAMO_SUPPORTED && ZACAS_SUPPORTED && __riscv_xlen == 64"),
+    ("amocas.q", 16, False, True, "ZAAMO_SUPPORTED && ZACAS_SUPPORTED && __riscv_xlen == 64"),
 ]
+
 
 # Maps each FP load mnemonic to its corresponding FP store mnemonic (used to write results back to scratch memory).
 _FP_STOREBACK = {
@@ -107,18 +108,26 @@ _FP_STOREBACK = {
 
 
 def _open_guard(guard: str | None) -> list[str]:
-    """Return opening preprocessor guard lines, or empty list if none."""
     if guard is None:
         return []
-    # If guard contains operators, treat it as an expression
-    if any(op in guard for op in ["==", "!=", "<", ">", "&&", "||"]):
-        return [f"#if {guard}"]
-    # Otherwise treat it as a macro
-    return [f"#ifdef {guard}"]
+    tokens = guard.split()
+    processed = []
+    for tok in tokens:
+        if tok in ["&&", "||", "==", "!=", "<", ">", "<=", ">="] or tok.isdigit():
+            processed.append(tok)
+        # ← Key fix: __riscv_xlen is a compiler-defined macro, NOT an identifier
+        # to wrap in defined(). It's a numeric value, so compare it directly.
+        elif tok == "__riscv_xlen":
+            processed.append(tok)  # keep as-is, don't wrap in defined()
+        elif tok.isidentifier():
+            processed.append(f"defined({tok})")
+        else:
+            processed.append(tok)
+    return [f"#if {' '.join(processed)}"]
 
 
 def _close_guard(guard: str | None) -> list[str]:
-    """Return closing preprocessor guard lines, or empty list if none."""
+    """Close a guard block."""
     if guard is None:
         return []
     return [f"#endif // {guard}"]

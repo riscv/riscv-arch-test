@@ -201,9 +201,6 @@ def _generate_ssccptr_lw_rv32(test_data: TestData) -> list[str]:
     "Ssccptr",
     required_extensions=["Ssccptr"],
     march_extensions=["S", "Zicsr"],
-    extra_defines=[
-        "#define SKIP_MEPC",
-    ],
 )
 def _generate_ssccptr_main(test_data: TestData) -> list[str]:
     """Generate all Ssccptr tests running in S-mode."""

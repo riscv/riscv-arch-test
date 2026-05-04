@@ -117,9 +117,11 @@ def csr_walk_test(
         csr_name: Name of the CSR to test
         covergroup: Covergroup name for testcase strings
         coverpoint: Coverpoint name for testcase strings
-        start_bit: First bit position to walk
+        start_bit: First bit position to walk; must be in 0..31 so the initial LI
+            constant is representable on RV32 (bits 32..63 are guarded by #if __riscv_xlen == 64)
         walk_zeros: If True, follow the walking-1s pass with a walking-0s pass
     """
+    assert 0 <= start_bit < 32, f"start_bit must be in 0..31, got {start_bit}"
     save_reg, temp_reg, walk_reg, check_reg = test_data.int_regs.get_registers(4)
 
     lines = [

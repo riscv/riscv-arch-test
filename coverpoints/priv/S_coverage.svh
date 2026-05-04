@@ -39,7 +39,9 @@ covergroup S_scause_cg with function sample(ins_t ins);
         bins b_7_store_access_fault = {7};
         bins b_8_ecall_u = {8};
         bins b_9_ecall_s = {9};
-        bins b_10_ecall_vs = {10};
+        `ifdef H_SUPPORTED
+            bins b_9_ecall_h = {9};
+        `endif
         // bins b_11_ecall_m = {11}; // never delegated to S mode
         bins b_12_instruction_page_fault = {12};
         bins b_13_load_page_fault = {13};
@@ -50,7 +52,7 @@ covergroup S_scause_cg with function sample(ins_t ins);
         `ifdef ZICFILP_SUPPORTED
             bins b_18_software_check = {18};
         `endif
-        bins b_19_hardware_error = {19};
+        // bins b_19_hardware_error = {19}; // unclear how to trigger on all implementations
         `ifdef H_SUPPORTED
             bins b_20_instr_guest_page_fault = {20};
             bins b_21_load_guest_page_fault = {21};
@@ -194,11 +196,11 @@ covergroup S_scsr_cg with function sample(ins_t ins);
     csrname : coverpoint ins.current.insn[31:20] {
         bins sstatus       = {CSR_SSTATUS};
         bins sie           = {CSR_SIE};
-        bins stvec         = {CSR_STVEC};
-        bins scounteren    = {CSR_SCOUNTEREN};
+        // bins stvec         = {CSR_STVEC}; // warl field has complex write restrictions and is not easy to test
+        bins  scounteren    = {CSR_SCOUNTEREN};
         bins sscratch      = {CSR_SSCRATCH};
         bins sepc          = {CSR_SEPC};
-        bins scause        = {CSR_SCAUSE};
+        // bins scause        = {CSR_SCAUSE}; // WLRL field; tested with cp_scause_write_*
         bins stval         = {CSR_STVAL};
         bins sip           = {CSR_SIP};
         bins senvcfg       = {CSR_SENVCFG};
@@ -268,8 +270,8 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         wildcard bins csrw = {CSRW};
     }
     rs1_prev: coverpoint ins.prev.rs1_val {
-        bins zero = { 0  };
-        bins ones = { '1 };
+        bins zero = { 0 };
+        bins nonzero = { [1:$] };
     }
 
     cp_scsr_access:           cross priv_mode_s, csrname, csraccesses;

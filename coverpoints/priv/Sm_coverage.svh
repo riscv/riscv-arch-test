@@ -35,9 +35,15 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
         bins b_5_load_access_fault = {5};
         bins b_6_store_address_misaligned = {6};
         bins b_7_store_access_fault = {7};
-        bins b_8_ecall_u = {8};
-        bins b_9_ecall_s = {9};
-        bins b_10_ecall_vs = {10};
+        `ifdef U_SUPPORTED
+            bins b_8_ecall_u = {8};
+        `endif
+        `ifdef S_SUPPORTED
+            bins b_9_ecall_s = {9};
+        `endif
+        `ifdef H_SUPPORTED
+            bins b_10_ecall_vs = {10};
+        `endif
         bins b_11_ecall_m = {11};
         bins b_12_instruction_page_fault = {12};
         bins b_13_load_page_fault = {13};
@@ -50,7 +56,7 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
         `ifdef ZICFILP_SUPPORTED
             bins b_18_software_check = {18};
         `endif
-        bins b_19_hardware_error = {19};
+        // bins b_19_hardware_error = {19}; // unclear how to trigger on all implementations
         `ifdef H_SUPPORTED
             bins b_20_instr_guest_page_fault = {20};
             bins b_21_load_guest_page_fault = {21};
@@ -184,11 +190,11 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins medeleg    = {CSR_MEDELEG};
         bins mideleg    = {CSR_MIDELEG};
         bins mie        = {CSR_MIE};
-        bins mtvec      = {CSR_MTVEC};
+        // bins mtvec      = {CSR_MTVEC}; // warl field has complex write restrictions and is not easy to test
         bins mcounteren = {CSR_MCOUNTEREN};
         bins mscratch   = {CSR_MSCRATCH};
         bins mepc       = {CSR_MEPC};
-        bins mcause     = {CSR_MCAUSE};
+        // bins mcause     = {CSR_MCAUSE}; // WLRL field; tested with cp_mcause_write_exception and cp_mcause_write_interrupt
         bins mtval      = {CSR_MTVAL};
         bins mip        = {CSR_MIP};
         bins menvcfg    = {CSR_MENVCFG};

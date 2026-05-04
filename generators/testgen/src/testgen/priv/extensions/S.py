@@ -701,9 +701,9 @@ def make_s(test_data: TestData) -> list[str]:
             "RVTEST_GOTO_LOWER_MODE Smode  # Run remaining tests in supervisor mode",
         ]
     )
-    #    lines.extend(_generate_scause_tests(test_data))
-    #    lines.extend(_generate_sstatus_sd_tests(test_data))
-    #    lines.extend(_generate_priv_inst_tests(test_data))
+    lines.extend(_generate_scause_tests(test_data))
+    lines.extend(_generate_sstatus_sd_tests(test_data))
+    lines.extend(_generate_priv_inst_tests(test_data))
     lines.extend(_generate_scsr_tests(test_data))
 
     return lines

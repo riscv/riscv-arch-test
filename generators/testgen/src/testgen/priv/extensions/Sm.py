@@ -74,12 +74,12 @@ def _generate_mcause_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "",
-                    f"`ifdef {gated[1]}",
+                    f"#ifdef {gated[1]}",
                     f"# Testcase: set mcause to exception cause {i}",
                     f"LI(x{check_reg}, {i})",
                     test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
                     gen_csr_write_sigupd(check_reg, "mcause", test_data),
-                    "`endif",
+                    "#endif",
                 ]
             )
         else:
@@ -92,19 +92,6 @@ def _generate_mcause_tests(test_data: TestData) -> list[str]:
                     gen_csr_write_sigupd(check_reg, "mcause", test_data),
                 ]
             )
-
-    for i in range(24):
-        if i in {14, 17}:  # skip reserved causes
-            continue
-        lines.extend(
-            [
-                "",
-                f"# exception cause {i}",
-                f"LI(x{check_reg}, {i})",
-                test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
-                gen_csr_write_sigupd(check_reg, "mcause", test_data),
-            ]
-        )
 
     lines.extend(
         [

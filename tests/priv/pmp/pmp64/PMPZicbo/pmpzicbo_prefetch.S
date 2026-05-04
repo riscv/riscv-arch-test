@@ -208,8 +208,6 @@ test_3_str:  .string "\"test: 3;  cp: pmpzicbo_prefetch_w\""
 
 .align 12
 .align (RVMODEL_PMP_GRAIN+2)
-TEST_FOR_EXECUTION_0:
-    jr ra
 
 TEST_FOR_EXECUTION_1:
     .rept 1024

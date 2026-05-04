@@ -132,8 +132,6 @@ test_4_str:  .string "\"test: 4;  cp: pmpzicbo_cbo_inval\""
 
 .align 12
 .align (RVMODEL_PMP_GRAIN+2)
-TEST_FOR_EXECUTION_0:
-    jr ra
 
 TEST_FOR_EXECUTION_1:
     .rept 1024

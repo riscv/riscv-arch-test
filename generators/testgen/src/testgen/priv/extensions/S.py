@@ -315,7 +315,7 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
         "",
         "# Setup",
         f"CSRR(x{save_reg}, mstatus)        # read and save mstatus",
-        f"LI x{reg1}, 1 << 2",
+        f"LI(x{reg1}, 1 << 2)",
         f"CSRC medeleg, x{reg1}          # turn off delegating illegal instruction exceptions so TSR won't cause a trap loop on sret",
         f"{INDENT}# set up x{reg1} with mstatus except MPRV, SPP, SPIE, SIE, TSR cleared",
         f"LI(x{reg2}, 0x420122)          # x{reg2} has all MPRV, SPP, SPIE, SIE, TSR bits set (bits [17], [8], [5], [1], [22] respectively)",
@@ -672,7 +672,7 @@ def _add_shadow(
         [
             "",
             f"# Testcase: shadow CSR test for writing {wreg} and reading {rreg} with mask 0x{mask:x}",
-            f"LI(x{rmask}, 0x{mask:x}) # mask.  Note that these are bits to keep, instead of the usual bits to ignore",
+            f"LI(x{rmask}, 0x{mask:x}) # mask.  Note that these are bits to keep, instead of the usual bits to ignore.  Comment in sigupd mask is incorrect",
             f"csrr x{rsave}, {wreg}       # save original value of {wreg}",
             f"csrw {wreg}, x{r1}       # write many 1s to {wreg}",
             test_data.add_testcase(f"{wreg}_{rreg}_1s", coverpoint, covergroup),

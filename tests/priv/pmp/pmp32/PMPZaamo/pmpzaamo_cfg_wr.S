@@ -241,8 +241,11 @@ test_7_str:  .string "\"test: 7;  cp: pmpzaamo_cfg_wr_amomin\""
 test_8_str:  .string "\"test: 8;  cp: pmpzaamo_cfg_wr_amominu\""
 test_9_str:  .string "\"test: 9;  cp: pmpzaamo_cfg_wr_amoswap\""
 
-.align 13
+.align 12
 .align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    jr ra
+
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

@@ -329,8 +329,11 @@ test_16_str: .string "\"test: 16; cp: pmpzaamo_cfg_wr_amominu_d\""
 test_17_str: .string "\"test: 17; cp: pmpzaamo_cfg_wr_amoswap_w\""
 test_18_str: .string "\"test: 18; cp: pmpzaamo_cfg_wr_amoswap_d\""
 
-.align 13
+.align 12
 .align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    jr ra
+
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

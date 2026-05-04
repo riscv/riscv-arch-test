@@ -20,6 +20,7 @@ from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from dataclasses import dataclass, field
 from graphlib import TopologicalSorter
 from pathlib import Path
+from types import FrameType
 from typing import Any
 
 from rich.console import Console, Group
@@ -268,7 +269,7 @@ def build(
     _prev_sigint: signal._HANDLER = None
     try:
 
-        def _sigint_handler(signum: int, frame: object) -> None:
+        def _sigint_handler(signum: int, frame: FrameType | None) -> None:
             tracker.kill_all()
             signal.signal(signal.SIGINT, signal.SIG_DFL)
             os.kill(os.getpid(), signal.SIGINT)

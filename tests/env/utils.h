@@ -228,25 +228,6 @@
   flq _DEST_REG, 0(_DATA_PTR)                          ;\
   addi _DATA_PTR, _DATA_PTR, SIG_STRIDE
 
-
-// RVTEST_FP_ENABLE enables the floating-point unit
-// - Sets mstatus.fs to INITIAL
-// - Clears fcsr
-#define RVTEST_FP_ENABLE(HELPER_GPR)                 \
-  LI(HELPER_GPR, (MSTATUS_FS & (MSTATUS_FS >> 1)))  ;\
-  csrs mstatus, HELPER_GPR                          ;\
-  csrwi fcsr, 0
-
-// RVTEST_V_ENABLE enables the vector unit
-// Perform the following steps:
-// - Set mstatus.vs to INITIAL
-// - Read out vlenb and store in VLENB_CACHE
-#define RVTEST_V_ENABLE(VLENB_CACHE, HELPER_GPR)       \
-    LI(HELPER_GPR, (MSTATUS_VS & (MSTATUS_VS >> 1)))  ;\
-    csrs mstatus, HELPER_GPR                          ;\
-    csrr VLENB_CACHE, vlenb
-
-
 //-----------------------------------------------------------------------
 //Fixed length la, li macros; # of ops is ADDR_SZ dependent, not data dependent
 //-----------------------------------------------------------------------
@@ -442,11 +423,15 @@
 
 // Interrupt Macros
 // Idle for interrupt latency
-#define RVTEST_IDLE_FOR_INTERRUPT \
-  .rept RVMODEL_INTERRUPT_LATENCY; \
-      nop; \
-  .endr
+#define RVTEST_IDLE_FOR_INTERRUPT(_R1) \
+    LI(_R1, RVMODEL_INTERRUPT_LATENCY); \
+    99: addi _R1, _R1, -1; \
+        bnez _R1, 99b;
 
+#define RVTEST_IDLE_FOR_TIMER_INTERRUPT(_R1) \
+    LI(_R1, RVMODEL_TIMER_INT_SOON_DELAY); \
+    99: addi _R1, _R1, -1; \
+        bnez _R1, 99b;
 
 // Using generic RVTEST macros that can be invoked by tests, which then jump to the appropriate RVMODEL macros that implement the interrupt setup for the specific target platform.
 // This allows tests to be portable across different platforms with different interrupt implementations.

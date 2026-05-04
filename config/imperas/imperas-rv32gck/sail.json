@@ -80,11 +80,11 @@
       "grain": 0,
       // This specifies the number of PMP entries present.
       // The value must be one of 0, 16, or 64.
-      "count": 64,
+      "count": 16,
       // This specifies the number of usable PMP entries.
       // Entries higher than this are read-only-zero.
       // The value must be less than or equal to `count`.
-      "usable_count": 64,
+      "usable_count": 16,
       "tor_supported": true,
       "na4_supported": true,
       "napot_supported": true
@@ -271,12 +271,12 @@
       // This specifies both the size and alignment of the reservation set, specified as a power of 2.
       // It must be at least 2 on RV32 and 3 on RV64 to support Zalrsc.  It must not be more than
       // 6 for Za64rs and 7 for Za128rs.  In all cases, it must be less than or equal to 12.
-      "reservation_set_size_exp": 3,
+      "reservation_set_size_exp": 2,
       // Some implementations (e.g. Spike) require the Store-Conditional to provide the same
       // address as the matching Load-Reserve in order to succeed, regardless of the
       // configured reservation set size.  This controls whether such an exact address
       // match is required for a Store-Conditional to succeed.
-      "require_exact_reservation_addr": false
+      "require_exact_reservation_addr": true
     },
     "clint": {
       // This must be in a suitable IO memory region (see `memory.regions`).
@@ -331,7 +331,7 @@
       // For e.g. Zve32x and Zve32f require `elen_exp` >= 5,
       // Zve64x, Zve64f, and Zve64d require `elen_exp` >= 6,
       // and V requires `elen_exp` >= 6 and `vlen_exp` >= 7.
-      "support_level": "Full",
+      "support_level": "Disabled",
       "vlen_exp": 8,
       "elen_exp": 6,
       "vl_use_ceil": false
@@ -518,49 +518,49 @@
       "supported": false
     },
     "Zvabd": {
-      "supported": true
+      "supported": false
     },
     "Zvfbfmin": {
-      "supported": true
+      "supported": false
     },
     "Zvfbfwma": {
-      "supported": true
+      "supported": false
     },
     "Zvfh": {
-      "supported": true
+      "supported": false
     },
     "Zvfhmin": {
-      "supported": true
+      "supported": false
     },
     "Zvbb": {
-      "supported": true
+      "supported": false
     },
     "Zvbc": {
-      "supported": true
+      "supported": false
     },
     "Zvkb": {
-      "supported": true
+      "supported": false
     },
     "Zvkg": {
-      "supported": true
+      "supported": false
     },
     "Zvkned": {
-      "supported": true
+      "supported": false
     },
     "Zvknha": {
-      "supported": true
+      "supported": false
     },
     "Zvknhb": {
-      "supported": true
+      "supported": false
     },
     "Zvksed": {
-      "supported": true
+      "supported": false
     },
     "Zvksh": {
-      "supported": true
+      "supported": false
     },
     "Zvkt": {
-      "supported": true
+      "supported": false
     },
     "Ssccptr": {
       "supported": true

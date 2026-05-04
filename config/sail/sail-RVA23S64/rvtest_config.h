@@ -1,3 +1,4 @@
+#define CONFORMING_SM_SUPPORTED
 #define RVMODEL_PMP_GRAIN 4
 #define RVMODEL_NUM_PMPS 16
 #define D_SUPPORTED
@@ -20,6 +21,7 @@
 #define U_SUPPORTED
 #define SV39_SUPPORTED
 
+#define ZVL32B_SUPPORTED
 #define TIME_CSR_IMPLEMENTED 1
 
 // Vector configuration

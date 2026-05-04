@@ -34,9 +34,6 @@
 #define TEST_FILE "pmpzca_misaligned_off.S"
 #define SIGUPD_COUNT 50
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 
@@ -105,7 +102,8 @@ main:
     csrw pmpcfg0, x4
 
     LA(x5, REGIONSTART)
-    addi x5, x5, 2*REGION_SIZE
+    LI(x4, 2*REGION_SIZE)
+    add x5, x5, x4
     srl x5, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_2
     csrw pmpaddr2, x5
 
@@ -130,7 +128,10 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpzca_misaligned_off_execute\""
 
-.align 13
+.align 12
+TEST_FOR_EXECUTION_0:
+    jalr x0, x1, 0
+
 TEST_FOR_EXECUTION_1:
     .rept (((1<<(RVMODEL_PMP_GRAIN+2)) / 2) -1)
     nop

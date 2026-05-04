@@ -732,7 +732,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
             f"LW x{r_msip}, 0(x{r_msipaddr})            # read back memory-mapped msip register",
             f"andi x{r_msip}, x{r_msip}, 1              # isolate bit 0",
             write_sigupd(r_msip, test_data),
-            "RVTEST_IDLE_FOR_INTERRUPT",
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{r_msip})",
             test_data.add_testcase("msip_set", coverpoint, covergroup),
             f"CSRR(x{r_msip}, mip)                     # read mip",
             f"srli x{r_msip}, x{r_msip}, 3            # shift mip.MSIP (bit 3) to bit 0",
@@ -746,7 +746,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
             f"LW x{r_msip}, 0(x{r_msipaddr})            # read back memory-mapped msip register",
             f"andi x{r_msip}, x{r_msip}, 1              # isolate bit 0",
             write_sigupd(r_msip, test_data),
-            "RVTEST_IDLE_FOR_INTERRUPT",
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{r_msip})",
             test_data.add_testcase("msip_clear", coverpoint, covergroup),
             f"CSRR(x{r_msip}, mip)                     # read mip",
             f"srli x{r_msip}, x{r_msip}, 3            # shift mip.MSIP (bit 3) to bit 0",
@@ -945,7 +945,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("Sm", required_extensions=["Sm", "Zicsr"])
+@add_priv_test_generator("Sm", required_extensions=["Sm"])
 def make_sm(test_data: TestData) -> list[str]:
     """Generate tests for Sm machine-mode testsuite."""
     lines: list[str] = []

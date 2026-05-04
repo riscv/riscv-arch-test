@@ -36,9 +36,6 @@
 #define TEST_FILE "pmpsm_cfg_napot_all.S"
 #define SIGUPD_COUNT 50
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -328,9 +325,7 @@ test_3_str: .string "\"test: 3; cp: pmpm_cfg_napot_all_address+4\""
 .align 12
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION_0:
-    .rept 1024
-    nop
-    .endr
+    jr ra
 
 TEST_FOR_EXECUTION:
     .rept (SIZE/4)

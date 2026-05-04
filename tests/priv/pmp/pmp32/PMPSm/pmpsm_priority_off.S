@@ -39,9 +39,6 @@
 #define TEST_FILE "pmpsm_priority_off.S"
 #define SIGUPD_COUNT 50
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -143,8 +140,10 @@ test_1_str: .string "\"test: 1; cp: pmpm_priority_off_sw\""
 test_2_str: .string "\"test: 2; cp: pmpm_priority_off_lw\""
 test_3_str: .string "\"test: 2; cp: pmpm_priority_off_jalr\""
 
-.align 13
-.align (RVMODEL_PMP_GRAIN+2)
+.align 12
+TEST_FOR_EXECUTION_0:
+    jr ra
+
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

@@ -1,5 +1,5 @@
 ##################################
-# priv/extensions/interruptsSstc.py
+# priv/extensions/InterruptsSstc.py
 #
 # InterruptsSstc privileged extension test generator.
 # sanarayanan@hmc.edu April 2026

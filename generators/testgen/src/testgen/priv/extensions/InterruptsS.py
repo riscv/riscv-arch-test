@@ -166,8 +166,8 @@ def _generate_trigger_ssi_mip_tests(test_data: TestData) -> list[str]:
             mideleg_name = ["nodeleg", "deleg"][mideleg_val]
 
             if mideleg_val == 1:
-                # Delegated: cp_trigger_ssi_mip, vary SIE
-                coverpoint = "cp_trigger_ssi_mip"
+                # Delegated: cp_trigger_sip_mip, vary SIE
+                coverpoint = "cp_trigger_sip_mip"
                 enable_name = f"sie_{int_enable_val}"
             else:
                 # Not delegated: cp_trigger_ssi_mip_m, vary MIE
@@ -1428,7 +1428,7 @@ def _generate_priority_mideleg_tests(test_data: TestData) -> list[str]:
 
         mideleg_val = (ssie << 1) | (stie << 5) | (seie << 9)
 
-        coverpoint = "cp_priority_mideleg_s/cp_priority_mideleg_m" if mideleg_pattern == 7 else "cp_priority_mideleg_m"
+        coverpoint = "cp_priority_mideleg_m"
 
         binname = f"mideleg_m_{mideleg_pattern:03b}"
 
@@ -3786,7 +3786,7 @@ def _generate_user_sei_tests(test_data: TestData) -> list[str]:
             for stvec_mode in [0, 1]:
                 for mideleg_sei in [0, 1]:
                     deleg_name = "deleg" if mideleg_sei else "nodeleg"
-                    coverpoint = "cp_sei_handled_m" if not mideleg_sei else "cp_sei_handled_s"
+                    coverpoint = "cp_user_sei_handled_m" if not mideleg_sei else "cp_user_sei_handled_s"
                     binname = f"mie{mie_val}_sie{sie_val}_vec{stvec_mode}_{deleg_name}"
 
                     lines.extend(

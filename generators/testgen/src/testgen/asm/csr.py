@@ -131,10 +131,13 @@ def csr_walk_test(
     if walk_zeros:
         lines.append(f"LI(x{temp_reg}, -1)             # x{temp_reg} = all 1s")
 
+    need_endif = False
+
     # Walking 1s
     for i in range(start_bit, 64):
         if i == 32:
             lines.append("\n#if __riscv_xlen == 64")
+            need_endif = True
         lines.extend(
             [
                 "",
@@ -145,7 +148,9 @@ def csr_walk_test(
                 f"slli x{walk_reg}, x{walk_reg}, 1      # walk the 1",
             ]
         )
-    lines.append("#endif\n")
+    if need_endif:
+        lines.append("#endif\n")
+        need_endif = False
 
     # Walking 0s
     if walk_zeros:
@@ -153,6 +158,7 @@ def csr_walk_test(
         for i in range(start_bit, 64):
             if i == 32:
                 lines.append("\n#if __riscv_xlen == 64")
+                need_endif = True
             lines.extend(
                 [
                     "",
@@ -163,7 +169,9 @@ def csr_walk_test(
                     f"slli x{walk_reg}, x{walk_reg}, 1      # walk the 1",
                 ]
             )
-        lines.append("#endif\n")
+        if need_endif:
+            lines.append("#endif\n")
+            need_endif = False
 
     lines.append(f"CSRW({csr_name}, x{save_reg})            # restore CSR")
     test_data.int_regs.return_registers([save_reg, temp_reg, walk_reg, check_reg])

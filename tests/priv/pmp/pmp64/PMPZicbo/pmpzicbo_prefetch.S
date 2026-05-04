@@ -206,8 +206,9 @@ test_1_str:  .string "\"test: 1;  cp: pmpzicbo_prefetch_i\""
 test_2_str:  .string "\"test: 2;  cp: pmpzicbo_prefetch_r\""
 test_3_str:  .string "\"test: 3;  cp: pmpzicbo_prefetch_w\""
 
-.align 13
+.align 12
 .align (RVMODEL_PMP_GRAIN+2)
+
 TEST_FOR_EXECUTION_1:
     .rept 1024
     nop

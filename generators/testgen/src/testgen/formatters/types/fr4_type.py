@@ -36,7 +36,7 @@ def format_fr4_type(
     ]
     check = [write_sigupd(params.fd, test_data, "float")]
     if params.frm == "dyn":
-        rand_frm = random.choice([1, 2, 3, 4])
-        setup.append(f"fsrmi {rand_frm}")
+        fcsr_frm = params.csr_frm_val if params.csr_frm_val is not None else random.choice([1, 2, 3, 4])
+        setup.append(f"fsrmi {fcsr_frm}")
         check.append("fsrmi 0x0")
     return (setup, test, check)

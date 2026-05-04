@@ -5,6 +5,8 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
+import random
+
 from testgen.asm.helpers import load_float_reg, write_sigupd
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
@@ -38,4 +40,8 @@ def format_f2x_type(
         write_sigupd(params.rd, test_data, "int"),
         write_sigupd(None, test_data, "fflags"),
     ]
+    if params.frm == "dyn":
+        rand_frm = random.choice([1, 2, 3, 4])
+        setup.append(f"fsrmi {rand_frm}")
+        check.append("fsrmi 0x0")
     return (setup, test, check)

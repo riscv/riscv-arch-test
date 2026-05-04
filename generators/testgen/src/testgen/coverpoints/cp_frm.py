@@ -27,12 +27,6 @@ def make_frm(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
         params = generate_random_params(test_data, instr_type, exclude_regs=[0], frm=frm_mode)
         desc = f"{coverpoint} (Test frm, mode = {frm_mode})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{frm_mode}", coverpoint)
-        if frm_mode == "dyn":
-            # Set fcsr.frm to a non-default value (RDN=2) so that rm=111 (dyn) is forced
-            # to read a non-RNE frm from the CSR. Without this, fcsr.frm=0 at test time,
-            # making the dyn test identical to the rne test and allowing a DUT that
-            # hard-wires dyn=RNE to produce a false PASS.
-            tc.code = "fsrmi 0x2 # set fcsr.frm to RDN before dyn test\n" + tc.code + "\nfsrmi 0x0 # restore fcsr.frm to RNE"
         test_chunks.append(tc)
         return_test_regs(test_data, params)
 

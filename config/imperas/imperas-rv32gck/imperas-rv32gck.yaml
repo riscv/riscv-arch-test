@@ -1,9 +1,9 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
+# yaml-language-server: $schema=../../../external/riscv-unified-db/spec/schemas/config_schema.json
 ---
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
-name: spike-rv32-max
+name: imperas-rv32gck
 description: rv32 with all non-conflicting extensions enabled
 implemented_extensions:
   - { name: A, version: "= 2.1.0" }
@@ -59,7 +59,6 @@ implemented_extensions:
   - { name: Svinval, version: "= 1.0.0" }
   - { name: Svvptc, version: "= 1.0.0" }
   - { name: U, version: "= 1.0.0" }
-  - { name: V, version: "= 1.0.0" }
   - { name: Za128rs, version: "= 1.0.0" }
   - { name: Za64rs, version: "= 1.0.0" }
   - { name: Zaamo, version: "= 1.0.0" }
@@ -116,34 +115,7 @@ implemented_extensions:
   - { name: Zksh, version: "= 1.0.0" }
   - { name: Zkt, version: "= 1.0.0" }
   - { name: Zmmul, version: "= 1.0.0" }
-  - { name: Zvbb, version: "= 1.0.0" }
-  - { name: Zvbc, version: "= 1.0.0" }
-  - { name: Zve32f, version: "= 1.0.0" }
-  - { name: Zve32x, version: "= 1.0.0" }
-  - { name: Zve64d, version: "= 1.0.0" }
-  - { name: Zve64f, version: "= 1.0.0" }
-  - { name: Zve64x, version: "= 1.0.0" }
-  - { name: Zvfbfmin, version: "= 1.0.0" }
-  - { name: Zvfbfwma, version: "= 1.0.0" }
-  - { name: Zvfh, version: "= 1.0.0" }
-  - { name: Zvfhmin, version: "= 1.0.0" }
-  - { name: Zvkb, version: "= 1.0.0" }
-  - { name: Zvkg, version: "= 1.0.0" }
-  - { name: Zvkn, version: "= 1.0.0" }
-  - { name: Zvknc, version: "= 1.0.0" }
-  - { name: Zvkned, version: "= 1.0.0" }
-  - { name: Zvkng, version: "= 1.0.0" }
-  - { name: Zvknha, version: "= 1.0.0" }
-  - { name: Zvknhb, version: "= 1.0.0" }
-  - { name: Zvks, version: "= 1.0.0" }
-  - { name: Zvksc, version: "= 1.0.0" }
-  - { name: Zvksed, version: "= 1.0.0" }
-  - { name: Zvksg, version: "= 1.0.0" }
-  - { name: Zvksh, version: "= 1.0.0" }
-  - { name: Zvkt, version: "= 1.0.0" }
-  - { name: Zvl32b, version: "= 1.0.0" }
-  - { name: Zvl64b, version: "= 1.0.0" }
-  - { name: Zvl128b, version: "= 1.0.0" }
+
 params:
   # A params
   MISALIGNED_AMO: false
@@ -246,11 +218,11 @@ params:
   TRAP_ON_ECALL_FROM_M: true
   TRAP_ON_EBREAK: true
   MARCHID_IMPLEMENTED: true
-  ARCH_ID_VALUE: 0x5
+  ARCH_ID_VALUE: 0x24
   MIMPID_IMPLEMENTED: true
-  IMP_ID_VALUE: 0
-  VENDOR_ID_BANK: 0
-  VENDOR_ID_OFFSET: 0
+  IMP_ID_VALUE: 0x100
+  VENDOR_ID_BANK: 0xC
+  VENDOR_ID_OFFSET: 0x2
   MISALIGNED_LDST: true
   MISALIGNED_LDST_EXCEPTION_PRIORITY: low
   MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4096
@@ -279,7 +251,7 @@ params:
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   NUM_PMP_ENTRIES: 16
-  PMP_GRANULARITY: 4
+  PMP_GRANULARITY: 2
   HPM_COUNTER_EN:
     [
       false,
@@ -386,34 +358,6 @@ params:
       true,
       true,
     ]
-  # Vector params
-  MUTABLE_MISA_V: false
-  VLEN: 128
-  ELEN: 64
-  FOLLOW_VTYPE_RESET_RECOMMENDATION: true
-  HW_MSTATUS_VS_DIRTY_UPDATE: precise
-  RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX: VLMAX
-  SEW_MIN: 8
-  SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED: "no_unrequired_supported"
-  VILL_SET_ON_RESERVED_VTYPE: true
-  RESERVED_VSET_X0X0_VILL_SET: "always"
-  RESERVED_VSET_X0X0_VLMAX_CHANGE: "always"
-  VECTOR_LS_INDEX_MAX_EEW: "XLEN"
-  VECTOR_FF_UPDATE_PAST_TRIM: "update_none"
-  VECTOR_FF_SEG_EXCEPTION_PARTIAL_LOAD: "no_subsegment_loaded"
-  VECTOR_LS_MISALIGNED_LEGAL: true
-  VECTOR_LOAD_PAST_TRAP: false
-  VECTOR_LOAD_SEG_FF_OVERWRITE_ELEMENTS_AFTER_FAULT: "no_overwrite"
-  VECTOR_LS_SEG_PARTIAL_ACCESS: false
-  LEGAL_VSTART: "1_stride"
-  VECTOR_LS_WHOLEREG_MISALIGNED_LEGAL: true
-  VSSTATUS_VS_EXISTS: true
-  VECTOR_FF_NO_EXCEPTION_TRIM: false
-  VFREDUSUM_NAN: "no_change"
-  VFREDUSUM_NODE_ROUNDING_BEHAVIOR: "SEW_precision"
-  VFREDUSUM_INACTIVE_NODE_ELEMENT_BEHAVIOR: "additive_identity"
-  VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR: "additive_identity"
-  IMPRECISE_VECTOR_TRAP_SETTABLE: false
   # H params
   MUTABLE_MISA_H: false
   VSXLEN: [32]

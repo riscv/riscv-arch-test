@@ -1006,6 +1006,7 @@ abort\__MODE__\()test:
         jr      T6                              // this branch may be too far away, so longjmp
 
 rvtest_\__MODE__\()prolog_done:
+        nop                                     // keep this label from collapsing with the next
 
 .option pop
 .endm                                           //end of PROLOG

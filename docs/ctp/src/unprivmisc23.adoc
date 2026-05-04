@@ -3,7 +3,25 @@
 
 ==== Zacas Atomic Compare-and-Swap
 
+<<t-Zacas-coverpoints>> summarizes the coverpoints for the Zacas extension.
+
+[[t-Zacas-coverpoints]]
+.Zacas Instruction Coverpoints
 include::{testplansdir}/Zacas.adoc[]
+
+[[t-Zacas-coverpoint-definitions]]
+.Zacas Coverpoint Definitions
+[cols="2, 1, 4" options=header]
+|===
+|Coverpoint|Bins|Definition
+3+^|Zacas Value Comparison Coverpoints
+|cmp_rd_rs1_val_eq|1|rd value equals rs1 value (previous rd value).
+|cmp_rd_rs1_val_lsb|2|Least significant byte of rd and rs1 are equal/not equal.
+|cmp_rd_rs1_val_hw|2|Lowest 16 bits of rd and rs1 are equal/not equal.
+|cmp_rd_rs1_val_w|2|Lowest 32 bits of rd and rs1 are equal/not equal.
+|cmp_rd_rs1_pair_partial_val|2|For register pairs, rd and rs1 have matching high or low halves, but not both.
+|cmp_rd_sign_ext|2|Sign bit of rd (bit 31) is 0 or 1.
+|===
 
 include::norm/Zacas_norm_rules.adoc[]
 

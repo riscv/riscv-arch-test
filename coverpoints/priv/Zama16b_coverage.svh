@@ -127,7 +127,7 @@ covergroup Zama16b_cg with function sample(ins_t ins);
     `ifdef D_SUPPORTED
         cp_fsd_store: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? FSD) {
             bins offsets[] = {[0:8]};
-    }
+        }
     `endif
 
     // ---- 16-byte stores: offsets [0:0] ----
@@ -265,10 +265,11 @@ covergroup Zama16b_cg with function sample(ins_t ins);
                 bins offsets[] = {[0:8]};
             }
             `ifdef ZACAS_SUPPORTED
-                // ---- 16-byte AMO (Zacas, RV64): offsets [0:0] ----
+                // ---- 8-byte AMO CAS (Zacas, RV64): offsets [0:8] ----
                 cp_amocas_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOCAS_D) {
                     bins offsets[] = {[0:8]};
                 }
+                // ---- 16-byte AMO CAS (Zacas, RV64): offset [0:0] ----
                 cp_amocas_q_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOCAS_Q) {
                     bins offsets[] = {[0:0]};
                 }

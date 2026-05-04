@@ -98,7 +98,7 @@ covergroup Sstvala_cg with function sample(ins_t ins);
     }
     cause_instr_page_fault: coverpoint ins.current.csr[CSR_SCAUSE][5:0] {
             bins set = {6'd12};
-   }
+    }
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
     illegal_data_address: coverpoint ins.current.rs1_val + ins.current.imm {
@@ -110,12 +110,12 @@ covergroup Sstvala_cg with function sample(ins_t ins);
     `endif
 
     pf_stval: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") {
-    `ifdef XLEN64
+        `ifdef XLEN64
             bins sv39_page = {64'h0000000140300000};
-    `else
+        `else
             bins sv32_page = {32'hC0300000};
-    `endif
-}
+        `endif
+    }
 
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS

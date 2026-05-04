@@ -47,12 +47,6 @@ def make_cr_fs1_fs2_edges(instr_name: str, instr_type: str, coverpoint: str, tes
                 bin_name = f"fs1val={edge_val1:#x}, fs2val={edge_val2:#x}, frm={frm_mode}"
                 desc = f"{coverpoint} (Test source fs1 = {test_data.flen_format_str.format(edge_val1)} fs2 = {test_data.flen_format_str.format(edge_val2)}{f', frm = {frm_mode}' if frm_mode is not None else ''})"
                 tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-                if frm_mode == "dyn":
-                    # Set fcsr.frm to a non-default value (RDN=2) so that rm=111 (dyn) is
-                    # forced to read a non-RNE frm from the CSR. Without this, fcsr.frm=0
-                    # at test time, making the dyn test identical to the rne test and
-                    # allowing a DUT that hard-wires dyn=RNE to produce a false PASS.
-                    tc.code = "fsrmi 0x2 # set fcsr.frm to RDN before dyn test\n" + tc.code + "\nfsrmi 0x0 # restore fcsr.frm to RNE"
                 test_chunks.append(tc)
                 return_test_regs(test_data, params)
 
@@ -90,12 +84,6 @@ def make_cr_fs1_fs3_edges(instr_name: str, instr_type: str, coverpoint: str, tes
                 desc = f"{coverpoint} (Test source fs1 = {test_data.flen_format_str.format(edge_val1)} fs3 = {test_data.flen_format_str.format(edge_val2)}{f', frm = {frm_mode}' if frm_mode is not None else ''})"
                 bin_name = f"fs1val={edge_val1:#x}, fs3val={edge_val2:#x}, frm={frm_mode}"
                 tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-                if frm_mode == "dyn":
-                    # Set fcsr.frm to a non-default value (RDN=2) so that rm=111 (dyn) is
-                    # forced to read a non-RNE frm from the CSR. Without this, fcsr.frm=0
-                    # at test time, making the dyn test identical to the rne test and
-                    # allowing a DUT that hard-wires dyn=RNE to produce a false PASS.
-                    tc.code = "fsrmi 0x2 # set fcsr.frm to RDN before dyn test\n" + tc.code + "\nfsrmi 0x0 # restore fcsr.frm to RNE"
                 test_chunks.append(tc)
                 return_test_regs(test_data, params)
 

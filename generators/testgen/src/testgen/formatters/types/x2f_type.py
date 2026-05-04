@@ -5,6 +5,8 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
+import random
+
 from testgen.asm.helpers import load_int_reg, write_sigupd
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
@@ -29,4 +31,8 @@ def format_x2f_type(
         f"{instr_name} f{params.fd}, x{params.rs1}{frm} # perform operation",
     ]
     check = [write_sigupd(params.fd, test_data, "float")]
+    if params.frm == "dyn":
+        rand_frm = random.choice([1, 2, 3, 4])
+        setup.append(f"fsrmi {rand_frm}")
+        check.append("fsrmi 0x0")
     return (setup, test, check)

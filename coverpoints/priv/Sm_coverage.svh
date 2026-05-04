@@ -9,6 +9,15 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_SM
+
+// Software check exceptions are supported for both Zicfilp and Zicfiss
+`ifdef ZICFILP_SUPPORTED
+    `define SOFTWARE_CHECK_SUPPORTED
+`endif
+`ifdef ZICFISS_SUPPORTED
+    `define SOFTWARE_CHECK_SUPPORTED
+`endif
+
 covergroup Sm_mcause_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -53,7 +62,7 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
             bins b_16_double_trap = {16}; // never delegated to S mode
         `endif
         //bins b_17_reserved = {17};
-        `ifdef ZICFILP_SUPPORTED
+        `ifdef SOFTWARE_CHECK_SUPPORTED
             bins b_18_software_check = {18};
         `endif
         // bins b_19_hardware_error = {19}; // unclear how to trigger on all implementations

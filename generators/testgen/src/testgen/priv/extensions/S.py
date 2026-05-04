@@ -448,8 +448,8 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     csrs = [
         (
             "sstatus",
-            0x100000040,
-        ),  # bug in QEMU allows writing 11 to xstatus.UXLEN (bit 32)-mask off until it is fixed; sail does not yet support UBE
+            0x000000040,
+        ),  # TODO: sail does not yet support UBE; mask it until available to avoid mismatches.  Delete mask when Sail has UBE support.
         #        ("scause", 0x7FFFFFFFFFFFFFF0),  # WLRL fields can't be managed with masks.  Use cp_scause_* instead
         ("sie", None),
         #        ("stvec", 0b1),  # stvec.MODE[0] can be 0 or 1. BASE is hard to predict with a reference model

@@ -1,6 +1,11 @@
 #define CONFORMING_SM_SUPPORTED
 #define S_SUPPORTED
 #define U_SUPPORTED
+
+// Sail does not trap for seed CSR with nonzero rs1/imm or any csrrwi form.
+// This flag excludes those diverging instructions from the Whisper build so
+// the Sail-generated golden matches what Whisper actually executes.
+#define SAIL_ZKR_PARTIAL_IMPL
 #define RVMODEL_PMP_GRAIN 8
 #define RVMODEL_NUM_PMPS 64
 

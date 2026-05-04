@@ -1,8 +1,7 @@
 // rvtest_trap_handler.h
 // RISC-V Architecture Test Framework — Trap Handler, T-SBI, and Helper Macros
 //
-// Original authors: RISC-V International, Copyright (c) 2020-2023
-// T-SBI additions: Umer Shahid / MEDS Lab, May 2026
+// Copyright (c) 2020-2023. RISC-V International. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 //
 //************************************************************************************

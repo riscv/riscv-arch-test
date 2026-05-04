@@ -7,5 +7,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-Sstvala_cg = new();
-Sstvala_cg.set_inst_name("obj_Sstvala");
+    Sstvala_cg = new();         Sstvala_cg.set_inst_name("obj_Sstvala");

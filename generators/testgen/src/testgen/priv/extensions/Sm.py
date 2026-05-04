@@ -53,6 +53,46 @@ def _generate_mcause_tests(test_data: TestData) -> list[str]:
     ######################################
     coverpoint = "cp_mcause_write_exception"
     ######################################
+
+    gated_exceptions = [
+        (10, "H_SUPPORTED"),  # ecall from VS-mode
+        (14, "RESERVED"),
+        (16, "SMDBLTRP_SUPPORTED"),  # Double trap
+        (17, "RESERVED"),
+        (18, "ZCFILP_SUPPORTED"),  # software check
+        (20, "H_SUPPORTED"),  # instruction guest-page fault
+        (21, "H_SUPPORTED"),  # load guest-page fault
+        (22, "H_SUPPORTED"),  # virtual instruction
+        (23, "H_SUPPORTED"),  # store guest-page fault
+    ]
+
+    for i in range(24):
+        gated = next((g for g in gated_exceptions if g[0] == i), None)
+        if gated is not None and gated[1] == "RESERVED":
+            lines.append(f"\n# Exception cause {i} is reserved")
+        elif gated is not None:
+            lines.extend(
+                [
+                    "",
+                    f"`ifdef {gated[1]}",
+                    f"# Testcase: set mcause to exception cause {i}",
+                    f"LI(x{check_reg}, {i})",
+                    test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
+                    gen_csr_write_sigupd(check_reg, "mcause", test_data),
+                    "`endif",
+                ]
+            )
+        else:
+            lines.extend(
+                [
+                    "",
+                    f"# Testcase: set mcause to exception cause {i}",
+                    f"LI(x{check_reg}, {i})",
+                    test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
+                    gen_csr_write_sigupd(check_reg, "mcause", test_data),
+                ]
+            )
+
     for i in range(24):
         if i in {14, 17}:  # skip reserved causes
             continue
@@ -298,15 +338,15 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
 
     # Standard M-mode CSRs
     csrs = [
-        ("mstatus", None),
+        ("mstatus", None),  # will need a mask for endianness, UXL/SXL until Sail can match all fields
         ("medeleg", None),
         ("mideleg", None),
         ("mie", 0x3FFF),  # limit to implemented interrupt bits
-        ("mtvec", None),
+        #        ("mtvec", 0b1),  # tvec.MODE[0] can be 0 or 1. BASE is hard to predict with a reference model
         ("mcounteren", None),
         ("mscratch", None),
         ("mepc", None),
-        ("mcause", None),
+        #        ("mcause", None), # WLRL fields can't be handled with masks.  Use cp_mcause_* instead
         ("mtval", None),
         ("mip", 0x3FFF),  # limit to implemented interrupt bits
         ("menvcfg", None),

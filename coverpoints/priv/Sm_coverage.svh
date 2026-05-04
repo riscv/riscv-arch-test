@@ -43,14 +43,20 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
         bins b_13_load_page_fault = {13};
         //bins b_14_reserved = {14};
         bins b_15_store_page_fault = {15};
-        bins b_16_double_trap = {16};
+        `ifdef SMDBLTRP_SUPPORTED
+            bins b_16_double_trap = {16}; // never delegated to S mode
+        `endif
         //bins b_17_reserved = {17};
-        bins b_18_software_check = {18};
+        `ifdef ZICFILP_SUPPORTED
+            bins b_18_software_check = {18};
+        `endif
         bins b_19_hardware_error = {19};
-        bins b_20_instr_guest_page_fault = {20};
-        bins b_21_load_guest_page_fault = {21};
-        bins b_22_virtual_instruction = {22};
-        bins b_23_store_guest_page_fault = {23};
+        `ifdef H_SUPPORTED
+            bins b_20_instr_guest_page_fault = {20};
+            bins b_21_load_guest_page_fault = {21};
+            bins b_22_virtual_instruction = {22};
+            bins b_23_store_guest_page_fault = {23};
+        `endif
         //bins b_31_24_custom = {[31:24]};
         //bins b_47_32_reserved = {[47:32]};
         //bins b_63_48_custom = {[63:48]};

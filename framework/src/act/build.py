@@ -271,8 +271,12 @@ def build(
 
         def _sigint_handler(signum: int, frame: FrameType | None) -> None:
             tracker.kill_all()
-            signal.signal(signal.SIGINT, signal.SIG_DFL)
-            os.kill(os.getpid(), signal.SIGINT)
+            if callable(_prev_sigint):
+                _prev_sigint(signum, frame)
+                return
+            if _prev_sigint == signal.SIG_IGN:
+                return
+            signal.default_int_handler(signum, frame)
 
         _prev_sigint = signal.signal(signal.SIGINT, _sigint_handler)
     except ValueError:

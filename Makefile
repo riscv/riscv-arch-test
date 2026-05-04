@@ -13,9 +13,10 @@ COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/
 # EXCLUDE_EXTENSIONS overrides EXTENSIONS to exclude particular extensions from test generation. Applies as a negative filter after EXTENSIONS.
 # Default exclusion reasons:
 #  - Sm: Insufficient WARL configuration options.
-#  - InterruptsSm,InterruptsS,InterruptsU,InterruptsSstc,PMPSm,PMPZca,SvaduPMP,SvPMP,SvPMPZicbo: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
+#  - InterruptsSm: hangs on Imperas
+#  - PMPSm,PMPZca,SvaduPMP,SvPMP,SvPMPZicbo: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
 EXTENSIONS  ?=
-EXCLUDE_EXTENSIONS ?= Sm,InterruptsSm,InterruptsS,InterruptsU,Sv,SvaduPMP,SvPMP,SvPMPZicbo,Svade,Svadu,Svinval,SvZicbo,Svnapot,Svpbmt,ExceptionsSvZalrsc,ExceptionsSvZaamo,ExceptionsZalrsc,ExceptionsZaamo,PMPS,PMPU,PMPSm
+EXCLUDE_EXTENSIONS ?= Sm,Sv,SvaduPMP,SvPMP,SvPMPZicbo,Svade,Svadu,Svinval,SvZicbo,Svnapot,Svpbmt,InterruptsSm,ExceptionsSvZalrsc,ExceptionsSvZaamo,ExceptionsZalrsc,ExceptionsZaamo,PMPS,PMPU,PMPSm
 
 # DEBUG, FAST, and VERBOSE are runtime options for controlling build output. DEBUG and FAST are mutually exclusive.
 # Set to True to enable, or leave blank to disable.

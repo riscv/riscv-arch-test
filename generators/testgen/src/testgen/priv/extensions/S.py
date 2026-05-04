@@ -37,7 +37,7 @@ def _generate_scause_tests(test_data: TestData) -> list[str]:
         (14, "RESERVED"),
         (16, "RESERVED"),  # Double trap never delegated
         (17, "RESERVED"),
-        (18, "ZCFILP_SUPPORTED"),  # software check
+        (18, "ZICFILP_SUPPORTED"),  # software check
         (19, "RESERVED"),  # not all systems may produce hardware-error exceptions
         (20, "H_SUPPORTED"),  # instruction guest-page fault
         (21, "H_SUPPORTED"),  # load guest-page fault
@@ -315,12 +315,12 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
         "",
         "# Setup",
         f"CSRR(x{save_reg}, mstatus)        # read and save mstatus",
+        f"LI x{reg1}, 1 << 2",
+        f"CSRC medeleg, x{reg1}          # turn off delegating illegal instruction exceptions so TSR won't cause a trap loop on sret",
         f"{INDENT}# set up x{reg1} with mstatus except MPRV, SPP, SPIE, SIE, TSR cleared",
         f"LI(x{reg2}, 0x420122)          # x{reg2} has all MPRV, SPP, SPIE, SIE, TSR bits set (bits [17], [8], [5], [1], [22] respectively)",
         f"not x{reg2}, x{reg2}              # x{reg2} has all but MPRV, SPP, SPIE, SIE, TSR bits set",
         f"and x{reg1}, x{save_reg}, x{reg2}          # clear MPRV, SPP, SPIE, SIE, TSR bits",
-        f"LI x{reg1}, 1 << 2",
-        f"CSRC medeleg, x{reg1}          # turn off delegating illegal instruction exceptions so TSR won't cause a trap loop on sret",
     ]
 
     for spp in (0, 1):
@@ -428,8 +428,9 @@ def _generate_srets_tests(test_data: TestData) -> list[str]:
 
     lines.extend(
         [
-            f"\nCSRW(sstatus, x{save_reg})    # restore CSRRVTEST_GOTO_MMODE      # back to M-mode to restore medeleg",
-            f"LI x{reg1}, 1 << 2",
+            f"\nCSRW(sstatus, x{save_reg})    # restore CSR",
+            "RVTEST_GOTO_MMODE      # back to M-mode to restore medeleg",
+            f"LI(x{reg1}, 1 << 2)",
             f"CSRS medeleg, x{reg1}           # restore delegating illegal instructions",
         ]
     )
@@ -636,10 +637,10 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
         [
             f"LI(x{r1}, 0x007FFFBF) # skip UBE, UXL bits which would cause weird behavior",
             _add_shadow(
-                r1, r2, rmask, rsave, "mstatus", "sstatus", 0x300000040, coverpoint, covergroup, test_data
+                r1, r2, rmask, rsave, "mstatus", "sstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data
             ),  # TODO: set mask to 0 when UXL and UBE are supported by Sail
             _add_shadow(
-                r1, r2, rmask, rsave, "sstatus", "mstatus", 0x300000040, coverpoint, covergroup, test_data
+                r1, r2, rmask, rsave, "sstatus", "mstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data
             ),  # TODO: set mask to 0 when UXL and UBE are supported by Sail
             f"LI(x{r1}, 0x3FFF) # all interrupts",
             _add_shadow(r1, r2, rmask, rsave, "mie", "sie", 0x3666, coverpoint, covergroup, test_data),
@@ -671,7 +672,7 @@ def _add_shadow(
         [
             "",
             f"# Testcase: shadow CSR test for writing {wreg} and reading {rreg} with mask 0x{mask:x}",
-            f"LI(x{rmask}, 0x{mask:x}) # mask",
+            f"LI(x{rmask}, 0x{mask:x}) # mask.  Note that these are bits to keep, instead of the usual bits to ignore",
             f"csrr x{rsave}, {wreg}       # save original value of {wreg}",
             f"csrw {wreg}, x{r1}       # write many 1s to {wreg}",
             test_data.add_testcase(f"{wreg}_{rreg}_1s", coverpoint, covergroup),

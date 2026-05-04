@@ -4,7 +4,7 @@
     "xlen": 64,
     "E": false,
     "writable_misa": false,
-    "writable_fiom": false,
+    "writable_fiom": true,
     // The top 29 bits in this value control whether the corresponding
     // HPM counters (hpmcounter31 .. hpmcounter3) are supported
     // (i.e. are not read-only zero). A set bit specifies that the

@@ -40,7 +40,7 @@ covergroup S_scause_cg with function sample(ins_t ins);
         bins b_8_ecall_u = {8};
         bins b_9_ecall_s = {9};
         `ifdef H_SUPPORTED
-            bins b_9_ecall_h = {9};
+            bins b_10_ecall_vs = {10};
         `endif
         // bins b_11_ecall_m = {11}; // never delegated to S mode
         bins b_12_instruction_page_fault = {12};

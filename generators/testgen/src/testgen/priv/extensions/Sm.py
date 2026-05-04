@@ -59,7 +59,7 @@ def _generate_mcause_tests(test_data: TestData) -> list[str]:
         (14, "RESERVED"),
         (16, "SMDBLTRP_SUPPORTED"),  # Double trap
         (17, "RESERVED"),
-        (18, "ZCFILP_SUPPORTED"),  # software check
+        (18, "ZICFILP_SUPPORTED"),  # software check
         (20, "H_SUPPORTED"),  # instruction guest-page fault
         (21, "H_SUPPORTED"),  # load guest-page fault
         (22, "H_SUPPORTED"),  # virtual instruction

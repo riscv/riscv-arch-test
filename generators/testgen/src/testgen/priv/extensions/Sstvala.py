@@ -280,19 +280,6 @@ def _generate_sstvala_tests(test_data: TestData) -> list[str]:
     """Generate all Sstvala tests running in S-mode."""
     lines = []
 
-    lines.extend(
-        [
-            "# Initialize scratch memory with test data",
-            "LA(x10, scratch)",
-            "LI(x11, 0xDEADBEEF)",
-            "sw x11, 0(x10)",
-            "sw x11, 4(x10)",
-            "sw x11, 8(x10)",
-            "sw x11, 12(x10)",
-            "",
-        ]
-    )
-
     lines.extend(_generate_page_table_data_section())
 
     # Delegate exceptions to S-mode via medeleg.

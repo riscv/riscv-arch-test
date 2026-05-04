@@ -15,7 +15,9 @@
     `define SOFTWARE_CHECK_SUPPORTED
 `endif
 `ifdef ZICFISS_SUPPORTED
-    `define SOFTWARE_CHECK_SUPPORTED
+    `ifndef SOFTWARE_CHECK_SUPPORTED
+        `define SOFTWARE_CHECK_SUPPORTED
+    `endif
 `endif
 
 covergroup Sm_mcause_cg with function sample(ins_t ins);

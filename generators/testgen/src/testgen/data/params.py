@@ -61,7 +61,7 @@ class InstructionParams:
 
     # Flags
     frm: str | None = None  # Floating-point rounding mode tests
-    csr_frm_val: int | None = None  # Explicit fcsr.frm value for dyn tests; None means random non-RNE
+    csr_frm_val: int | None = None  # fcsr.frm value to set when frm="dyn"; None means randomly chosen
     aqrl: str | None = None  # Acquire/Release for atomic operations
     fflags: int | None = None  # Floating-point result flags
 

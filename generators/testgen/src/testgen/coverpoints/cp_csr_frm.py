@@ -21,10 +21,7 @@ def make_frm(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     if coverpoint != "cp_csr_frm":
         raise ValueError(f"Unknown cp_csr_frm coverpoint variant: {coverpoint} for {instr_name}")
 
-    # Test each valid fcsr.frm value (0-4) via the dynamic rounding mode path (rm=111).
-    # Passing frm="dyn" encodes rm=111 in the instruction; csr_frm_val tells the formatter
-    # which exact value to write into fcsr.frm before the instruction executes, and the
-    # formatter restores fcsr.frm=0 in check — no ordering dependency needed.
+    # Test each valid fcsr.frm value (0-4) via dynamic rounding mode (rm=111 in the encoding).
     frm_modes = (("rne", 0), ("rtz", 1), ("rdn", 2), ("rup", 3), ("rmm", 4))
     test_chunks: list[TestChunk] = []
     for frm_name, frm_val in frm_modes:

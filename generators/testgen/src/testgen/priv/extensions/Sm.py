@@ -15,7 +15,7 @@ from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
 
 
-def gen_misa_dependencies(
+def _gen_misa_dependencies(
     misa: str, mask: str, cpbin: str, comment: str, coverpoint: str, covergroup: str, test_data: TestData
 ) -> str:
     """Generate tests for misa dependencies."""
@@ -554,7 +554,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
 
     lines.extend(
         [
-            gen_misa_dependencies(
+            _gen_misa_dependencies(
                 "0b00000000000000000100010000",
                 "0b00000000000000000100010000",
                 "i1e1",
@@ -563,7 +563,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
                 covergroup,
                 test_data,
             ),
-            gen_misa_dependencies(
+            _gen_misa_dependencies(
                 "0b00000000000000000000000000",
                 "0b00000000000000000000000000",
                 "i0e0",
@@ -572,7 +572,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
                 covergroup,
                 test_data,
             ),
-            gen_misa_dependencies(
+            _gen_misa_dependencies(
                 "0b00000000000000000000001000",
                 "0b00000000000000000000101000",
                 "f0d1",
@@ -581,7 +581,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
                 covergroup,
                 test_data,
             ),
-            gen_misa_dependencies(
+            _gen_misa_dependencies(
                 "0b00000000010000000000100000",
                 "0b00000000010000000000101000",
                 "f1d0q1",
@@ -590,7 +590,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
                 covergroup,
                 test_data,
             ),
-            gen_misa_dependencies(
+            _gen_misa_dependencies(
                 "0b00000001000000000000000000",
                 "0b00000101000000000000000000",
                 "s1u0",
@@ -599,7 +599,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
                 covergroup,
                 test_data,
             ),
-            gen_misa_dependencies(
+            _gen_misa_dependencies(
                 "0b00000000000000000010000000",
                 "0b00000001000000000010000000",
                 "h1s0",
@@ -608,7 +608,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
                 covergroup,
                 test_data,
             ),
-            gen_misa_dependencies(
+            _gen_misa_dependencies(
                 "0b00000001000000000010000000",
                 "0b00000101000000000010000000",
                 "h1s1u0",

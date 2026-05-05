@@ -14,7 +14,7 @@ from testgen.data.state import TestData
 
 def generate_instr_adr_misaligned_branch_tests(test_data: TestData, covergroup: str) -> list[str]:
     coverpoint = "cp_instr_adr_misaligned_branch"
-    temp_reg = test_data.int_regs.get_register(exclude_regs=[])
+    temp_reg = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(coverpoint, "Instruction Address Misaligned branch (taken)"),
@@ -50,7 +50,7 @@ def generate_instr_adr_misaligned_branch_tests(test_data: TestData, covergroup: 
 
 def generate_instr_adr_misaligned_branch_nottaken(test_data: TestData, covergroup: str) -> list[str]:
     coverpoint = "cp_instr_adr_misaligned_branch_nottaken"
-    temp_reg, check_reg = test_data.int_regs.get_registers(2, exclude_regs=[])
+    temp_reg, check_reg = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(

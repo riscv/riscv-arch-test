@@ -16,136 +16,96 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
 
-_LOAD_OPS = [
-    # Columns: (mnemonic, access_size_bytes, is_fp, is_amo, preprocessor_guard)
+# Each row: (mnemonic, access_size_bytes, is_fp, guard).
+# `guard` is a complete preprocessor directive (e.g. "#ifdef X") or None.
+# Contiguous rows sharing the same guard are wrapped in a single #if/#endif block.
+
+_LOAD_OPS: list[tuple[str, int, bool, str | None]] = [
     # Integer loads (always present)
-    ("lb", 1, False, False, None),
-    ("lbu", 1, False, False, None),
-    ("lh", 2, False, False, None),
-    ("lhu", 2, False, False, None),
-    ("lw", 4, False, False, None),
+    ("lb", 1, False, None),
+    ("lbu", 1, False, None),
+    ("lh", 2, False, None),
+    ("lhu", 2, False, None),
+    ("lw", 4, False, None),
     # RV64-only integer loads
-    ("lwu", 4, False, False, "__riscv_xlen == 64"),
-    ("ld", 8, False, False, "__riscv_xlen == 64"),
+    ("lwu", 4, False, "#if __riscv_xlen == 64"),
+    ("ld", 8, False, "#if __riscv_xlen == 64"),
     # Floating-point loads
-    ("flh", 2, True, False, "ZFH_SUPPORTED"),
-    ("flw", 4, True, False, "F_SUPPORTED"),
-    ("fld", 8, True, False, "D_SUPPORTED"),
-    ("flq", 16, True, False, "Q_SUPPORTED"),
+    ("flh", 2, True, "#ifdef ZFH_SUPPORTED"),
+    ("flw", 4, True, "#ifdef F_SUPPORTED"),
+    ("fld", 8, True, "#ifdef D_SUPPORTED"),
+    ("flq", 16, True, "#ifdef Q_SUPPORTED"),
 ]
 
-_STORE_OPS = [
-    # Columns: (mnemonic, access_size_bytes, is_fp, is_amo, preprocessor_guard)
+_STORE_OPS: list[tuple[str, int, bool, str | None]] = [
     # Integer stores (always present)
-    ("sb", 1, False, False, None),
-    ("sh", 2, False, False, None),
-    ("sw", 4, False, False, None),
+    ("sb", 1, False, None),
+    ("sh", 2, False, None),
+    ("sw", 4, False, None),
     # RV64-only integer store
-    ("sd", 8, False, False, "__riscv_xlen == 64"),
+    ("sd", 8, False, "#if __riscv_xlen == 64"),
     # Floating-point stores
-    ("fsh", 2, True, False, "ZFH_SUPPORTED"),
-    ("fsw", 4, True, False, "F_SUPPORTED"),
-    ("fsd", 8, True, False, "D_SUPPORTED"),
-    ("fsq", 16, True, False, "Q_SUPPORTED"),
+    ("fsh", 2, True, "#ifdef ZFH_SUPPORTED"),
+    ("fsw", 4, True, "#ifdef F_SUPPORTED"),
+    ("fsd", 8, True, "#ifdef D_SUPPORTED"),
+    ("fsq", 16, True, "#ifdef Q_SUPPORTED"),
 ]
 
-_AMO_OPS = [
-    # Columns: (mnemonic, access_size_bytes, is_fp, is_amo, preprocessor_guard)
-    # Word AMOs (requires Zaamo)
-    ("amoswap.w", 4, False, True, "ZAAMO_SUPPORTED"),
-    ("amoadd.w", 4, False, True, "ZAAMO_SUPPORTED"),
-    ("amoand.w", 4, False, True, "ZAAMO_SUPPORTED"),
-    ("amoor.w", 4, False, True, "ZAAMO_SUPPORTED"),
-    ("amoxor.w", 4, False, True, "ZAAMO_SUPPORTED"),
-    ("amomax.w", 4, False, True, "ZAAMO_SUPPORTED"),
-    ("amomaxu.w", 4, False, True, "ZAAMO_SUPPORTED"),
-    ("amomin.w", 4, False, True, "ZAAMO_SUPPORTED"),
-    ("amominu.w", 4, False, True, "ZAAMO_SUPPORTED"),
-    # Doubleword AMOs (requires Zaamo + RV64)
-    ("amoswap.d", 8, False, True, "ZAAMO_SUPPORTED && __riscv_xlen == 64"),
-    ("amoadd.d", 8, False, True, "ZAAMO_SUPPORTED && __riscv_xlen == 64"),
-    ("amoand.d", 8, False, True, "ZAAMO_SUPPORTED && __riscv_xlen == 64"),
-    ("amoor.d", 8, False, True, "ZAAMO_SUPPORTED && __riscv_xlen == 64"),
-    ("amoxor.d", 8, False, True, "ZAAMO_SUPPORTED && __riscv_xlen == 64"),
-    ("amomax.d", 8, False, True, "ZAAMO_SUPPORTED && __riscv_xlen == 64"),
-    ("amomaxu.d", 8, False, True, "ZAAMO_SUPPORTED && __riscv_xlen == 64"),
-    ("amomin.d", 8, False, True, "ZAAMO_SUPPORTED && __riscv_xlen == 64"),
-    ("amominu.d", 8, False, True, "ZAAMO_SUPPORTED && __riscv_xlen == 64"),
-    # Zabha: byte AMOs (requires Zaamo + Zabha)
-    ("amoswap.b", 1, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
-    ("amoadd.b", 1, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
-    ("amoand.b", 1, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
-    ("amoor.b", 1, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
-    ("amoxor.b", 1, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
-    ("amomax.b", 1, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
-    ("amomaxu.b", 1, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
-    ("amomin.b", 1, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
-    ("amominu.b", 1, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
-    # Zabha: halfword AMOs (requires Zaamo + Zabha)
-    ("amoswap.h", 2, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
-    ("amoadd.h", 2, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
-    ("amoand.h", 2, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
-    ("amoor.h", 2, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
-    ("amoxor.h", 2, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
-    ("amomax.h", 2, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
-    ("amomaxu.h", 2, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
-    ("amomin.h", 2, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
-    ("amominu.h", 2, False, True, "ZAAMO_SUPPORTED && ZABHA_SUPPORTED"),
-    # Zacas: compare-and-swap (requires Zaamo + Zacas)
-    ("amocas.w", 4, False, True, "ZAAMO_SUPPORTED && ZACAS_SUPPORTED"),
-    ("amocas.d", 8, False, True, "ZAAMO_SUPPORTED && ZACAS_SUPPORTED && __riscv_xlen == 64"),
-    ("amocas.q", 16, False, True, "ZAAMO_SUPPORTED && ZACAS_SUPPORTED && __riscv_xlen == 64"),
+_AMO_OPS: list[tuple[str, int, str]] = [
+    # Word AMOs (Zaamo)
+    ("amoswap.w", 4, "#ifdef ZAAMO_SUPPORTED"),
+    ("amoadd.w", 4, "#ifdef ZAAMO_SUPPORTED"),
+    ("amoand.w", 4, "#ifdef ZAAMO_SUPPORTED"),
+    ("amoor.w", 4, "#ifdef ZAAMO_SUPPORTED"),
+    ("amoxor.w", 4, "#ifdef ZAAMO_SUPPORTED"),
+    ("amomax.w", 4, "#ifdef ZAAMO_SUPPORTED"),
+    ("amomaxu.w", 4, "#ifdef ZAAMO_SUPPORTED"),
+    ("amomin.w", 4, "#ifdef ZAAMO_SUPPORTED"),
+    ("amominu.w", 4, "#ifdef ZAAMO_SUPPORTED"),
+    # Doubleword AMOs (Zaamo + RV64)
+    ("amoswap.d", 8, "#if defined(ZAAMO_SUPPORTED) && __riscv_xlen == 64"),
+    ("amoadd.d", 8, "#if defined(ZAAMO_SUPPORTED) && __riscv_xlen == 64"),
+    ("amoand.d", 8, "#if defined(ZAAMO_SUPPORTED) && __riscv_xlen == 64"),
+    ("amoor.d", 8, "#if defined(ZAAMO_SUPPORTED) && __riscv_xlen == 64"),
+    ("amoxor.d", 8, "#if defined(ZAAMO_SUPPORTED) && __riscv_xlen == 64"),
+    ("amomax.d", 8, "#if defined(ZAAMO_SUPPORTED) && __riscv_xlen == 64"),
+    ("amomaxu.d", 8, "#if defined(ZAAMO_SUPPORTED) && __riscv_xlen == 64"),
+    ("amomin.d", 8, "#if defined(ZAAMO_SUPPORTED) && __riscv_xlen == 64"),
+    ("amominu.d", 8, "#if defined(ZAAMO_SUPPORTED) && __riscv_xlen == 64"),
+    # Byte AMOs (Zaamo + Zabha)
+    ("amoswap.b", 1, "#if defined(ZAAMO_SUPPORTED) && defined(ZABHA_SUPPORTED)"),
+    ("amoadd.b", 1, "#if defined(ZAAMO_SUPPORTED) && defined(ZABHA_SUPPORTED)"),
+    ("amoand.b", 1, "#if defined(ZAAMO_SUPPORTED) && defined(ZABHA_SUPPORTED)"),
+    ("amoor.b", 1, "#if defined(ZAAMO_SUPPORTED) && defined(ZABHA_SUPPORTED)"),
+    ("amoxor.b", 1, "#if defined(ZAAMO_SUPPORTED) && defined(ZABHA_SUPPORTED)"),
+    ("amomax.b", 1, "#if defined(ZAAMO_SUPPORTED) && defined(ZABHA_SUPPORTED)"),
+    ("amomaxu.b", 1, "#if defined(ZAAMO_SUPPORTED) && defined(ZABHA_SUPPORTED)"),
+    ("amomin.b", 1, "#if defined(ZAAMO_SUPPORTED) && defined(ZABHA_SUPPORTED)"),
+    ("amominu.b", 1, "#if defined(ZAAMO_SUPPORTED) && defined(ZABHA_SUPPORTED)"),
+    # Halfword AMOs (Zaamo + Zabha)
+    ("amoswap.h", 2, "#if defined(ZAAMO_SUPPORTED) && defined(ZABHA_SUPPORTED)"),
+    ("amoadd.h", 2, "#if defined(ZAAMO_SUPPORTED) && defined(ZABHA_SUPPORTED)"),
+    ("amoand.h", 2, "#if defined(ZAAMO_SUPPORTED) && defined(ZABHA_SUPPORTED)"),
+    ("amoor.h", 2, "#if defined(ZAAMO_SUPPORTED) && defined(ZABHA_SUPPORTED)"),
+    ("amoxor.h", 2, "#if defined(ZAAMO_SUPPORTED) && defined(ZABHA_SUPPORTED)"),
+    ("amomax.h", 2, "#if defined(ZAAMO_SUPPORTED) && defined(ZABHA_SUPPORTED)"),
+    ("amomaxu.h", 2, "#if defined(ZAAMO_SUPPORTED) && defined(ZABHA_SUPPORTED)"),
+    ("amomin.h", 2, "#if defined(ZAAMO_SUPPORTED) && defined(ZABHA_SUPPORTED)"),
+    ("amominu.h", 2, "#if defined(ZAAMO_SUPPORTED) && defined(ZABHA_SUPPORTED)"),
+    # Compare-and-swap (Zaamo + Zacas)
+    ("amocas.w", 4, "#if defined(ZAAMO_SUPPORTED) && defined(ZACAS_SUPPORTED)"),
+    ("amocas.d", 8, "#if defined(ZAAMO_SUPPORTED) && defined(ZACAS_SUPPORTED) && __riscv_xlen == 64"),
+    ("amocas.q", 16, "#if defined(ZAAMO_SUPPORTED) && defined(ZACAS_SUPPORTED) && __riscv_xlen == 64"),
 ]
 
 
-# Maps each FP load mnemonic to its corresponding FP store mnemonic (used to write results back to scratch memory).
-_FP_STOREBACK = {
-    "flh": "fsh",
-    "flw": "fsw",
-    "fld": "fsd",
-    "flq": "fsq",
-}
-
-
-def _open_guard(guard: str | None) -> list[str]:
-    if guard is None:
-        return []
-    tokens = guard.split()
-    processed = []
-    for tok in tokens:
-        if tok in ["&&", "||", "==", "!=", "<", ">", "<=", ">="] or tok.isdigit():
-            processed.append(tok)
-        # ← Key fix: __riscv_xlen is a compiler-defined macro, NOT an identifier
-        # to wrap in defined(). It's a numeric value, so compare it directly.
-        elif tok == "__riscv_xlen":
-            processed.append(tok)  # keep as-is, don't wrap in defined()
-        elif tok.isidentifier():
-            processed.append(f"defined({tok})")
-        else:
-            processed.append(tok)
-    return [f"#if {' '.join(processed)}"]
-
-
-def _close_guard(guard: str | None) -> list[str]:
-    """Close a guard block."""
-    if guard is None:
-        return []
-    return [f"#endif // {guard}"]
-
-
-def _safe_mnemonic(mnemonic: str) -> str:
-    """Convert mnemonic to a safe identifier for bin names (dots -> underscores)."""
-    return mnemonic.replace(".", "_")
+_SCRATCH_INIT_WORDS = [0x44556677, 0x00112233, 0x89ABCDEF, 0x01234567]
 
 
 def _emit_scratch_init(base_reg: int, data_reg: int) -> list[str]:
-    """Re-initialize the 16-byte scratch region with a known distinct pattern before each testcase.
-
-    Pattern: 0x01234567_89ABCDEF_00112233_44556677 (matches other misaligned tests).
-    """
-    _INIT_WORDS = [0x44556677, 0x00112233, 0x89ABCDEF, 0x01234567]
+    """Re-initialize the 16-byte scratch region with a known distinct pattern."""
     out = [f"LA(x{base_reg}, scratch)   # reload base — init 16-byte region"]
-    for i, word in enumerate(_INIT_WORDS):
+    for i, word in enumerate(_SCRATCH_INIT_WORDS):
         out += [
             f"LI(x{data_reg}, 0x{word:08X})",
             f"sw x{data_reg}, {i * 4}(x{base_reg})",
@@ -167,7 +127,6 @@ def _emit_sig_dump(base_reg: int, check_reg: int, test_data: TestData) -> list[s
 def _generate_load_tests(test_data: TestData) -> list[str]:
     """Generate per-instruction load tests matching SV coverpoint names (cp_<mnemonic>_load)."""
     covergroup = "Zama16b_cg"
-
     addr_reg, dest_reg, sentinel_reg, base_reg = test_data.int_regs.get_registers(4)
     fp_reg = test_data.float_regs.get_register()  # allocate one FP reg for load result
 
@@ -183,34 +142,32 @@ def _generate_load_tests(test_data: TestData) -> list[str]:
         f"LI(x{sentinel_reg}, 0xDEADBEEF)   # sentinel — overwritten by a successful load",
     ]
 
-    prev_guard = None
-    for mnemonic, size, is_fp, _, guard in _LOAD_OPS:
-        max_offset = 16 - size  # highest offset that keeps access within the window
-        coverpoint = f"cp_{_safe_mnemonic(mnemonic)}_load"  # e.g. cp_lb_load, cp_flw_load
-
-        # Emit guard transitions only when the guard changes
+    prev_guard: str | None = None
+    for mnemonic, size, is_fp, guard in _LOAD_OPS:
         if guard != prev_guard:
-            lines.extend(_close_guard(prev_guard))
-            lines.extend(_open_guard(guard))
+            if prev_guard is not None:
+                lines.append("#endif")
+            if guard is not None:
+                lines.append(guard)
             prev_guard = guard
 
-        safe_mn = _safe_mnemonic(mnemonic)
+        bin_name = mnemonic.replace(".", "_")
+        coverpoint = f"cp_{bin_name}_load"
 
-        for offset in range(max_offset + 1):
+        for offset in range(16 - size + 1):
             lines.extend(
                 [
                     "",
                     f"# {mnemonic} at offset {offset} (access [{offset}, {offset + size - 1}] within 16-byte window)",
                     f"addi x{addr_reg}, x{base_reg}, {offset}   # effective address = base + {offset}",
+                    f"mv x{dest_reg}, x{sentinel_reg}       # preset dest with sentinel",
+                    test_data.add_testcase(f"{bin_name}_off{offset}", coverpoint, covergroup),
                 ]
             )
-
             if is_fp:
-                storeback = _FP_STOREBACK[mnemonic]
+                storeback = mnemonic.replace("fl", "fs", 1)  # fp store instruction
                 lines.extend(
                     [
-                        f"mv x{dest_reg}, x{sentinel_reg}       # preset dest with sentinel",
-                        test_data.add_testcase(f"{safe_mn}_off{offset}", coverpoint, covergroup),
                         f"{mnemonic} f{fp_reg}, 0(x{addr_reg})",
                         "nop",
                         f"{storeback} f{fp_reg}, 0(x{base_reg})        # store FP result back to scratch",
@@ -218,27 +175,21 @@ def _generate_load_tests(test_data: TestData) -> list[str]:
                         write_sigupd(dest_reg, test_data),
                     ]
                 )
-
             else:
                 lines.extend(
                     [
-                        f"mv x{dest_reg}, x{sentinel_reg}       # preset dest with sentinel",
-                        test_data.add_testcase(f"{safe_mn}_off{offset}", coverpoint, covergroup),
                         f"{mnemonic} x{dest_reg}, 0(x{addr_reg})",
                         "nop",
                         write_sigupd(dest_reg, test_data),
                     ]
                 )
 
-    lines.extend(_close_guard(prev_guard))
+    if prev_guard is not None:
+        lines.append("#endif")
+
     test_data.int_regs.return_registers([addr_reg, dest_reg, sentinel_reg, base_reg])
     test_data.float_regs.return_register(fp_reg)
     return lines
-
-
-# ---------------------------------------------------------------------------
-# Store coverpoint
-# ---------------------------------------------------------------------------
 
 
 def _generate_store_tests(test_data: TestData) -> list[str]:
@@ -247,19 +198,10 @@ def _generate_store_tests(test_data: TestData) -> list[str]:
     For each store instruction, sweep offsets [0, 16 - size]. The scratch region
     is re-initialized before each store; after each store all 16 bytes are written
     to the signature so the exact bytes modified by the store are visible.
-    This matches the pattern used in Misalign-sd-00.S.
     """
     covergroup = "Zama16b_cg"
-
     addr_reg, data_reg, check_reg, base_reg = test_data.int_regs.get_registers(4)
     fp_reg = test_data.float_regs.get_register()
-
-    _FP_PRELOAD_INSN = {
-        "ZFH_SUPPORTED": "flh",
-        "F_SUPPORTED": "flw",
-        "D_SUPPORTED": "fld",
-        "Q_SUPPORTED": "flq",
-    }
 
     lines = [
         comment_banner(
@@ -272,33 +214,31 @@ def _generate_store_tests(test_data: TestData) -> list[str]:
         "",
     ]
 
-    last_fp_preload_guard = None
-    prev_guard = None
-
-    for mnemonic, size, is_fp, _, guard in _STORE_OPS:
-        max_offset = 16 - size
-        coverpoint = f"cp_{_safe_mnemonic(mnemonic)}_store"
-
+    prev_guard: str | None = None
+    last_fp_preload_guard: str | None = None
+    for mnemonic, size, is_fp, guard in _STORE_OPS:
         if guard != prev_guard:
-            lines.extend(_close_guard(prev_guard))
-            lines.extend(_open_guard(guard))
+            if prev_guard is not None:
+                lines.append("#endif")
+            if guard is not None:
+                lines.append(guard)
             prev_guard = guard
 
-        safe_mn = _safe_mnemonic(mnemonic)
+        bin_name = mnemonic.replace(".", "_")
+        coverpoint = f"cp_{bin_name}_store"
 
-        # Emit guarded FP preload once per extension guard block
+        # FP needs a value preloaded into f{fp_reg} once per guard block (matches the FP store width).
         if is_fp and guard != last_fp_preload_guard:
-            preload_insn = _FP_PRELOAD_INSN.get(guard, "flw")
+            preload = mnemonic.replace("fs", "fl", 1)
             lines += [
-                f"# Pre-load FP source register for {guard} stores",
                 f"LA(x{base_reg}, scratch)",
                 f"LI(x{data_reg}, 0xA5A5A5A5)",
                 f"sw x{data_reg}, 0(x{base_reg})",
-                f"{preload_insn} f{fp_reg}, 0(x{base_reg})  # f{fp_reg} holds store pattern",
+                f"{preload} f{fp_reg}, 0(x{base_reg})  # f{fp_reg} holds store pattern",
             ]
             last_fp_preload_guard = guard
 
-        for offset in range(max_offset + 1):
+        for offset in range(16 - size + 1):
             lines.append(
                 f"# {mnemonic} at offset {offset} (access [{offset}, {offset + size - 1}] within 16-byte window)"
             )
@@ -312,7 +252,7 @@ def _generate_store_tests(test_data: TestData) -> list[str]:
             if is_fp:
                 lines.extend(
                     [
-                        test_data.add_testcase(f"{safe_mn}_off{offset}", coverpoint, covergroup),
+                        test_data.add_testcase(f"{bin_name}_off{offset}", coverpoint, covergroup),
                         f"{mnemonic} f{fp_reg}, 0(x{addr_reg})",
                         "nop",
                     ]
@@ -321,7 +261,7 @@ def _generate_store_tests(test_data: TestData) -> list[str]:
                 lines.extend(
                     [
                         f"LI(x{data_reg}, 0xA5A5A5A5)   # value to store",
-                        test_data.add_testcase(f"{safe_mn}_off{offset}", coverpoint, covergroup),
+                        test_data.add_testcase(f"{bin_name}_off{offset}", coverpoint, covergroup),
                         f"{mnemonic} x{data_reg}, 0(x{addr_reg})",
                         "nop",
                     ]
@@ -330,15 +270,12 @@ def _generate_store_tests(test_data: TestData) -> list[str]:
             # Dump all 16 bytes to signature — shows exactly which bytes the store touched
             lines.extend(_emit_sig_dump(base_reg, check_reg, test_data))
 
-    lines.extend(_close_guard(prev_guard))
+    if prev_guard is not None:
+        lines.append("#endif")
+
     test_data.int_regs.return_registers([addr_reg, data_reg, check_reg, base_reg])
     test_data.float_regs.return_register(fp_reg)
     return lines
-
-
-# ---------------------------------------------------------------------------
-# AMO coverpoint
-# ---------------------------------------------------------------------------
 
 
 def _generate_amo_tests(test_data: TestData) -> list[str]:
@@ -348,7 +285,7 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
     Base address is 16-byte aligned; rs1 is set to base + offset for
     each offset in [0, 16 - size]. Scratch is re-initialized before each
     AMO testcase; all 16 bytes are written to the signature afterward so
-    the exact bytes modified are visible (matches Misalign-sd-00.S pattern).
+    the exact bytes modified are visible.
     Note: atomicity under concurrent masters is NOT verified here.
     """
     covergroup = "Zama16b_cg"
@@ -367,19 +304,19 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
         "",
     ]
 
-    prev_guard = None
-    for mnemonic, size, _, _, guard in _AMO_OPS:
-        max_offset = 16 - size
-        coverpoint = f"cp_{_safe_mnemonic(mnemonic)}_amo"
-
+    prev_guard: str | None = None
+    for mnemonic, size, guard in _AMO_OPS:
         if guard != prev_guard:
-            lines.extend(_close_guard(prev_guard))
-            lines.extend(_open_guard(guard))
+            if prev_guard is not None:
+                lines.append("#endif")
+            if guard is not None:
+                lines.append(guard)
             prev_guard = guard
 
-        safe_mn = _safe_mnemonic(mnemonic)
+        bin_name = mnemonic.replace(".", "_")
+        coverpoint = f"cp_{bin_name}_amo"
 
-        for offset in range(max_offset + 1):
+        for offset in range(16 - size + 1):
             lines.append(
                 f"# {mnemonic} at offset {offset} (access [{offset}, {offset + size - 1}] within 16-byte window)"
             )
@@ -392,7 +329,7 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
                 [
                     f"addi x{addr_reg}, x{base_reg}, {offset}   # effective address = base + {offset}",
                     f"LI(x{src_reg}, 0xABC)                      # value AMO will write into memory",
-                    test_data.add_testcase(f"{safe_mn}_off{offset}", coverpoint, covergroup),
+                    test_data.add_testcase(f"{bin_name}_off{offset}", coverpoint, covergroup),
                     f"{mnemonic} x{dest_reg}, x{src_reg}, (x{addr_reg})",
                     "nop",
                 ]
@@ -401,7 +338,9 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
             # Dump all 16 bytes to signature — shows exactly which bytes the AMO touched
             lines.extend(_emit_sig_dump(base_reg, dest_reg, test_data))
 
-    lines.extend(_close_guard(prev_guard))
+    if prev_guard is not None:
+        lines.append("#endif")
+
     test_data.int_regs.return_registers([addr_reg, src_reg, dest_reg, base_reg])
     return lines
 
@@ -414,9 +353,7 @@ def _generate_amo_tests(test_data: TestData) -> list[str]:
 def make_zama16b(test_data: TestData) -> list[str]:
     """Generate tests for Zama16b misaligned atomicity granule extension."""
     lines: list[str] = []
-
     lines.extend(_generate_load_tests(test_data))
     lines.extend(_generate_store_tests(test_data))
     lines.extend(_generate_amo_tests(test_data))
-
     return lines

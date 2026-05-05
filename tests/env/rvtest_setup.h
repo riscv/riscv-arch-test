@@ -761,6 +761,7 @@
     #ifdef ZVL32B_SUPPORTED  // this should be defined if there is any vector support whatsoever
       li t0, MSTATUS_VS
       csrs mstatus, t0 // Set VS to dirty to enable vector
+      csrr t0, vlenb   // Read VLENB so coverage trace records VLEN/8 (used by vlmax computation)
     #endif
 .endm
 

@@ -23568,16 +23568,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE16
 covergroup Vx64_vrgatherei16_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs1_vs2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs1_vs2 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.current.vs1 == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers
-    }
-
-    //// eend cmp_vs1_vs2////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vrgatherei16.vv"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};

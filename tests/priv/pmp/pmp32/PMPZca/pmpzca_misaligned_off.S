@@ -24,7 +24,7 @@
 //
 // ---------------------------------------------------------------------------
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','Zca']
+# REQUIRED_EXTENSIONS: ['I','Zca','Sm']
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
@@ -35,9 +35,6 @@
 #define TEST_FILE "pmpzca_misaligned_off.S"
 #define SIGUPD_COUNT 50
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 
@@ -78,7 +75,7 @@ main:
 #define PMP2CFG             ((((PMP_L|PMP_R|PMP_W|PMP_X         )&0xFF) << PMP2_CFG_SHIFT))
 #define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
 
-#define REGIONSTART         TEST_FOR_EXECUTION_1  // RAM_BASE_ADDR + PROGRAM_SIZE
+#define REGIONSTART         TEST_FOR_EXECUTION_1
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw    pmpaddr15, x4
@@ -106,7 +103,8 @@ main:
     csrw pmpcfg0, x4
 
     LA(x5, REGIONSTART)
-    addi x5, x5, 2*REGION_SIZE
+    LI(x4, 2*REGION_SIZE)
+    add x5, x5, x4
     srl x5, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_2
     csrw pmpaddr2, x5
 
@@ -121,7 +119,20 @@ main:
 
     j exit                                                      // Verification Complete, exit the test
 
-.align 13
+
+exit:
+
+RVTEST_CODE_END
+RVTEST_DATA_BEGIN
+.align 4
+
+// Test case strings for reporting
+test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
+
+.align 12
+TEST_FOR_EXECUTION_0:
+    jalr x0, x1, 0
+
 TEST_FOR_EXECUTION_1:
     .rept (((1<<(RVMODEL_PMP_GRAIN+2)) / 2) -1)
     nop
@@ -143,14 +154,6 @@ RETURN_INSTRUCTION:
     nop
     jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
 
-exit:
-
-RVTEST_CODE_END
-RVTEST_DATA_BEGIN
-.align 4
-
-// Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
 
 RVTEST_DATA_END
 

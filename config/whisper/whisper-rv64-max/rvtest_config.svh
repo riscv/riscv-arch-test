@@ -42,7 +42,7 @@
 `define C_SUPPORTED
 `define D_SUPPORTED
 `define F_SUPPORTED
-`define H_SUPPORTED
+// `define H_SUPPORTED // H not yet turned on in YAML
 `define I_SUPPORTED
 `define M_SUPPORTED
 `define N_SUPPORTED
@@ -52,7 +52,6 @@
 `define SMDBLTRP_SUPPORTED
 `define SMMPM_SUPPORTED
 `define SMNPM_SUPPORTED
-`define SMRNMI_SUPPORTED
 `define SMSTATEEN_SUPPORTED
 `define SSAIA_SUPPORTED
 `define SSCOFPMF_SUPPORTED

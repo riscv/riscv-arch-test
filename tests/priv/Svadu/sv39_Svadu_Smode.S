@@ -25,17 +25,13 @@
 // Total Expected Faults :: 0
 // --------------------------------------------------------------------------------------------------------------------------------
 
-// Remove NORUN once Sail supports Svadu
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Sv39, Svadu, NORUN]
+# REQUIRED_EXTENSIONS: [I, Sv39, Svadu]
 # MARCH: rv64i_zicsr
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv39_Svadu_Smode.S"
 #define SIGUPD_COUNT 60
-#define rvtest_mtrap_routine
-#define rvtest_strap_routine
-#define RVTEST_PRIV_TEST
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"

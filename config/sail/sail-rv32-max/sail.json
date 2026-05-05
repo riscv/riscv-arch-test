@@ -304,7 +304,7 @@
     // Note: it is also legal for these instructions to spuriously
     // retire successfully at any point, but there is currently no
     // configuration option for this behaviour.
-    "max_time_to_wait": 10
+    "max_time_to_wait": 200
   },
   "extensions": {
     "M": {
@@ -574,8 +574,6 @@
     "Sstc": {
       "supported": true
     },
-    // Enabling Sstvala requires that the exceptions specified in the extension
-    // have their appropriate settings under `base.xtval_nonzero`.
     "Sstvala": {
       "supported": true
     },

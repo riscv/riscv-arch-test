@@ -9,6 +9,13 @@
       "len": 32,
       "value": "0xFFFF_FFFF"
     },
+    // The top 29 bits control whether the corresponding bits of `scounteren`
+    // that control HPM counters are read-only zero. CV32E20 has no S-mode,
+    // so all bits are read-only zero.
+    "scounteren_writable_bits": {
+      "len": 32,
+      "value": "0x0"
+    },
     // These settings control whether the specified exceptions
     // cause information to be written into the appropriate
     // `xtval` registers.
@@ -49,6 +56,10 @@
       // "Xenvcfg_Fatal"  – raise a Sail exception, stopping execution.
       // "Xenvcfg_ClearPermissions" – convert CBIE with 0b10 to 0b00.
       "xenvcfg_cbie": "Xenvcfg_ClearPermissions",
+      // The configuration option determines how to handle the reserved behavior `xtvec[Mode] >= 2`.
+      // "Xtvec_Fatal"  – raise a Sail exception, stopping execution.
+      // "Xtvec_Ignore" – use old Mode of xtvec.
+      "xtvec_mode": "Xtvec_Ignore",
       // The configuration option determines how to handle the reserved behavior: Odd-numbered registers for RV32Zdinx.
       // "Zdinx_Fatal"  – raise a Sail exception, stopping execution.
       // "Zdinx_Illegal" – treat it as an illegal instruction.
@@ -69,14 +80,21 @@
       "na4_supported": true,
       "napot_supported": true
     },
-    // This controls global support for misaligned access so it is
-    // checked before address translation. `misaligned_fault` in
+    // These settings control global support for misaligned access so they are
+    // checked before address translation. `misaligned_exceptions` in
     // `regions` is checked after address translation.
     "misaligned": {
-      "supported": true,
+      // CV32E20 LSU handles misaligned loads/stores in hardware (splits into two
+      // aligned transactions). No alignment exception is ever raised.
+      "exceptions": {
+        "load_store": { "None": null },
+        "vector": { "None": null },
+        "lrsc": "AccessFault",
+        "amo": "AccessFault"
+      },
+      "allowed_within_exp": 0,
       "byte_by_byte": false,
-      "order_decreasing": false,
-      "allowed_within_exp": 0
+      "order_decreasing": false
     },
     "translation": {
       "dirty_update": false
@@ -87,7 +105,7 @@
       "value": "0x1000"
     },
     "regions": [
-      // Single memory region
+      // Main memory: code and data. Tests link from 0x4000 (see link.ld).
       {
         "base": {
           "len": 64,
@@ -95,9 +113,10 @@
         },
         "size": {
           "len": 64,
-          "value": "0x80000000"
+          "value": "0x2000000"
         },
         "attributes": {
+          "mem_type": "MainMemory",
           "cacheable": true,
           "coherent": true,
           "executable": true,
@@ -105,11 +124,53 @@
           "writable": true,
           "read_idempotent": true,
           "write_idempotent": true,
-          "misaligned_fault": "NoFault",
+          // CV32E20 handles misaligned loads/stores in hardware; no per-region fault.
+          "misaligned_exceptions": {
+            "load_store": { "None": null },
+            "vector": { "None": null },
+            "amo": "AccessFault"
+          },
+          "atomic_support": "AMONone",
           "reservability": "RsrvNone",
-          "supports_cbo_zero": false
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
         },
         "include_in_device_tree": true
+      },
+      // IO memory: CLINT at 0x2000000 and Sail interrupt generator at 0xC000000.
+      // mm_ram testbench peripherals (TESTSTATUS, EXIT, SIG* at 0x2000_0000;
+      // TIMER/DBG at 0x1500_0000; PRINT at 0x1000_0000) are also in this range.
+      {
+        "base": {
+          "len": 64,
+          "value": "0x2000000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0xE000000"
+        },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": false,
+          "coherent": true,
+          "executable": false,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": false,
+          "write_idempotent": false,
+          "misaligned_exceptions": {
+            "load_store": { "None": null },
+            "vector": { "None": null },
+            "amo": "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": false
       }
     ]
   },
@@ -120,18 +181,28 @@
     "hartid": 0,
     // Cache block size, specified as a power of 2.
     "cache_block_size_exp": 6,
-    // This specifies both the size and alignment of the reservation set, specified as a power of 2.
-    // It must be at least 2 on RV32 and 3 on RV64 to support Zalrsc.  It must not be more than
-    // 6 for Za64rs and 7 for Za128rs.  In all cases, it must be less than or equal to 12.
-    "reservation_set_size_exp": 3,
+    "reservation": {
+      // Reservation set size/alignment as a power of 2. Minimum 2 on RV32.
+      "reservation_set_size_exp": 3,
+      // CV32E20 has no A extension so LR/SC is never executed.
+      "require_exact_reservation_addr": false
+    },
     "clint": {
       // This must be in a suitable memory region (see `memory.regions`).
       "base": 33554432,
       "size": 786432
     },
+    // Simple MMIO device to generate interrupts for testing purposes.
+    "simple_interrupt_generator": {
+      // Must be 4-byte aligned and within a memory region. Size is always 0x20.
+      "base": 201326592
+    },
     "clock_frequency": 1000000000,
     "instructions_per_tick": 2,
-    "wfi_is_nop": true
+    "wfi_is_nop": true,
+    // Maximum time before a WFI/WRS instruction expires. CV32E20 treats WFI as NOP
+    // so this field has no effect, but the schema requires it.
+    "max_time_to_wait": 10
   },
   "extensions": {
     "M": {
@@ -190,7 +261,25 @@
     "Zic64b": {
       "supported": false
     },
+    "Ziccamoa": {
+      "supported": false
+    },
+    "Ziccamoc": {
+      "supported": false
+    },
+    "Ziccif": {
+      "supported": false
+    },
+    "Zicclsm": {
+      "supported": false
+    },
+    "Ziccrse": {
+      "supported": false
+    },
     "Zicfilp": {
+      "supported": false
+    },
+    "Zicfiss": {
       "supported": false
     },
     "Zicond": {
@@ -371,7 +460,13 @@
     "Zvkt": {
       "supported": false
     },
+    "Ssccptr": {
+      "supported": false
+    },
     "Sscofpmf": {
+      "supported": false
+    },
+    "Sscounterenw": {
       "supported": false
     },
     "Sstc": {
@@ -382,7 +477,16 @@
     "Sstvala": {
       "supported": false
     },
+    "Svade": {
+      "supported": false
+    },
+    "Svadu": {
+      "supported": false
+    },
     "Svinval": {
+      "supported": false
+    },
+    "Svnapot": {
       "supported": false
     },
     "Svrsw60t59b": {
@@ -421,6 +525,12 @@
       "supported": false,
       "rcid_length": 12,
       "mcid_length": 12
+    },
+    "Svpbmt": {
+      "supported": false
+    },
+    "Svvptc": {
+      "supported": false
     }
   }
 }

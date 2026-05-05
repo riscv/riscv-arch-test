@@ -150,11 +150,14 @@ To install the sail model:
 curl --location https://github.com/riscv/sail-riscv/releases/download/0.11/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
 ```
 
+> [!NOTE]
+> Replace `/path/to/install` with your desired directory location.
+> This is simpler if it matches the directory used for the `riscv-gnu-toolchain` so both tools share the same `bin` folder.
+
 Add `/path/to/install/bin` to your `PATH` if you used a different directory than for the `riscv-gnu-toolchain`.
 
 > [!NOTE]
-> If you don't have `sudo` access, you can extract the Sail model into your home directory by specifying a local path:
-> `curl --location <url> | tar xvz --directory=$HOME/riscv/--strip-components=1`
+> If you don't have sudo access, you can extract the Sail model into your home directory by specifying a local path: `curl --location <url> | tar xvz --directory=$HOME/riscv/ --strip-components=1`
 
 Verify the installation:
 

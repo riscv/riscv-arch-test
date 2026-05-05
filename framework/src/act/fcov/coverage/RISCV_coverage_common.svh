@@ -36,8 +36,13 @@
 // Physical Memory Protection (PMP) Specific Macros
 // -----------------------------------------------------------------------------
 
-`define SAFE_REGION_START   (`RAM_BASE_ADDR + `LARGEST_PROGRAM)
-`define REGIONSTART        `SAFE_REGION_START
+/*          To align with the starting address of a PMP region used in testing, the address is hardcoded here.
+            Since the Sail data region begins at 0x80004000, we simply add the size of the test strings,
+            which has been fixed at 4 KB. PMP region starts at 80005004, because there is a return instruction at
+            80005000, which is there to make sure we fetch a proper inrtuction from the background region.
+ */
+`define PMP_REGION_START   32'h80005004 // generic tests
+`define PMP_SPECIAL_REGION_START 32'h80005000 // Zicbo + Zaamo tests
 
 // Calculate region size g in bytes.
 `define g_tor       (2 ** (`G + 2))
@@ -49,10 +54,12 @@
 // Address encodings
 
 // TOR or NA4 region: directly right-shifted
-`define NON_STANDARD_REGION  (`REGIONSTART >> 2)              // TOR/NA4 format: yyyyy...
+`define NON_STANDARD_REGION  (`PMP_REGION_START >> 2)              // TOR/NA4 format: yyyyy...
+`define SPECIAL_NON_STANDARD_REGION  (`PMP_SPECIAL_REGION_START >> 2)              // TOR/NA4 format: yyyyy...
 
 // NAPOT region: add trailing 1s per `k` to form mask
-`define STANDARD_REGION      ((`REGIONSTART >> 2) | ((2 ** `k) - 1)) // NAPOT format: yyyyy...0111
+`define STANDARD_REGION      ((`PMP_REGION_START >> 2) | ((2 ** `k) - 1)) // NAPOT format: yyyyy...0111
+`define SPECIAL_STANDARD_REGION      ((`PMP_SPECIAL_REGION_START >> 2) | ((2 ** `k) - 1)) // NAPOT format: yyyyy...0111
 
 // XLEN64 -> [53:0] & XLEN32 -> [31:0]
 `define EFFECTIVE_PMPADDR (`ifdef XLEN64 53 `else 31 `endif)

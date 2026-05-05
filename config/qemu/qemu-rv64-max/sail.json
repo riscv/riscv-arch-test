@@ -115,10 +115,10 @@
         // A misaligned LR/SC currently always faults, and this field can specify
         // whether it generates an access fault (use `"AccessFault"`)
         // or a misaligned exception (use `"AlignmentException"`).
-        "lrsc": "AccessFault",
+        "lrsc": "AlignmentException",
         // Similarly, a misaligned AMO currently always faults, and this field
         // can specify either `"AccessFault"` or `"AlignmentException"`.
-        "amo": "AccessFault"
+        "amo": "AlignmentException"
       },
       // If a misaligned access was specified to have no fault in `exceptions` above, the
       // fields below specify how it is handled.
@@ -262,7 +262,7 @@
   },
   "platform": {
     "vendorid": 0,
-    "archid": 1,
+    "archid": 5,
     "impid": 0,
     "hartid": 0,
     // Cache block size, specified as a power of 2.
@@ -276,7 +276,7 @@
       // address as the matching Load-Reserve in order to succeed, regardless of the
       // configured reservation set size.  This controls whether such an exact address
       // match is required for a Store-Conditional to succeed.
-      "require_exact_reservation_addr": false
+      "require_exact_reservation_addr": true
     },
     "clint": {
       // This must be in a suitable IO memory region (see `memory.regions`).

@@ -26,12 +26,12 @@ covergroup ExceptionsSvZalrsc_cg with function sample(ins_t ins);
         // auto fill valid bit 0/1
     }
     lrscops: coverpoint ins.current.insn {
-        wildcard bins lr_w     = {32'b000100000000_?????_010_?????_0101111};
-        wildcard bins sc_w     = {32'b0001100_?????_?????_010_?????_0101111};
+        wildcard bins lr_w     = {LR_W};
+        wildcard bins sc_w     = {SC_W};
     }
-    medeleg_walk: coverpoint ins.current.csr[12'h302] {
+    medeleg_walk: coverpoint ins.current.csr[CSR_MEDELEG] {
         bins zeros                    = {16'b0000_0000_0000_0000};
-        `ifndef COVER_ZCA
+        `ifndef ZCA_SUPPORTED
             bins instrmisaligned_enabled  = {16'b0000_0000_0000_0001};
         `endif
         bins instraccessfault_enabled = {16'b0000_0000_0000_0010};

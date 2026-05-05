@@ -17,7 +17,7 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
 
     // building blocks for the main coverpoints
     ecall: coverpoint ins.current.insn {
-        bins ecall  = {32'h00000073};
+        bins ecall  = {ECALL};
     }
     branch: coverpoint ins.current.insn {
         wildcard bins branch = {32'b???????_?????_?????_???_?????_1100011};
@@ -46,46 +46,46 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
         wildcard bins bgeu_nottaken = {6'b111_?_?_1};
     }
     jal: coverpoint ins.current.insn {
-        wildcard bins jal = {32'b????????????????????_?????_1101111};
+        wildcard bins jal = {JAL};
     }
     jalr: coverpoint ins.current.insn {
-        wildcard bins jalr = {32'b????????????_?????_000_?????_1100111};
+        wildcard bins jalr = {JALR};
     }
     csrops: coverpoint ins.current.insn {
-        wildcard bins csrrs  = {32'b????????????_?????_010_?????_1110011};
-        wildcard bins csrrc  = {32'b????????????_?????_011_?????_1110011};
-        wildcard bins csrrsi = {32'b????????????_?????_110_?????_1110011};
-        wildcard bins csrrci = {32'b????????????_?????_111_?????_1110011};
+        wildcard bins csrrs  = {CSRRS};
+        wildcard bins csrrc  = {CSRRC};
+        wildcard bins csrrsi = {CSRRSI};
+        wildcard bins csrrci = {CSRRCI};
     }
     loadops: coverpoint ins.current.insn {
-        wildcard bins lw  = {32'b????????????_?????_010_?????_0000011};
-        wildcard bins lh  = {32'b????????????_?????_001_?????_0000011};
-        wildcard bins lhu = {32'b????????????_?????_101_?????_0000011};
-        wildcard bins lb  = {32'b????????????_?????_000_?????_0000011};
-        wildcard bins lbu = {32'b????????????_?????_100_?????_0000011};
+        wildcard bins lw  = {LW};
+        wildcard bins lh  = {LH};
+        wildcard bins lhu = {LHU};
+        wildcard bins lb  = {LB};
+        wildcard bins lbu = {LBU};
         `ifdef XLEN64
-            wildcard bins ld  = {32'b????????????_?????_011_?????_0000011};
-            wildcard bins lwu = {32'b????????????_?????_110_?????_0000011};
+            wildcard bins ld  = {LD};
+            wildcard bins lwu = {LWU};
         `endif
     }
     storeops: coverpoint ins.current.insn {
-        wildcard bins sb = {32'b????????????_?????_000_?????_0100011};
-        wildcard bins sh = {32'b????????????_?????_001_?????_0100011};
-        wildcard bins sw = {32'b????????????_?????_010_?????_0100011};
+        wildcard bins sb = {SB};
+        wildcard bins sh = {SH};
+        wildcard bins sw = {SW};
         `ifdef XLEN64
-            wildcard bins sd = {32'b????????????_?????_011_?????_0100011};
+            wildcard bins sd = {SD};
         `endif
     }
     sw_lw: coverpoint ins.current.insn {
-        wildcard bins sw   = {32'b????????????_?????_010_?????_0100011};
-        wildcard bins lw   = {32'b????????????_?????_010_?????_0000011};
+        wildcard bins sw   = {SW};
+        wildcard bins lw   = {LW};
     }
     illegalops: coverpoint ins.current.insn {
         bins zeros = {'0};
         bins ones  = {'1};
     }
     ebreak: coverpoint ins.current.insn {
-        bins ebreak = {32'h00100073};
+        bins ebreak = {EBREAK};
     }
     adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0]  {
         // auto fills 000 through 111
@@ -94,15 +94,15 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
         bins zero = {5'b00000};
     }
     seed: coverpoint ins.current.insn[31:20] {
-        bins seed = {12'h015};
+        bins seed = {CSR_SEED};
     }
     csr_0x000: coverpoint ins.current.insn[31:20] {
         bins zero = {12'h000};
     }
-    mstatus_MIE: coverpoint ins.prev.csr[12'h300][3] {
+    mstatus_MIE: coverpoint ins.prev.csr[CSR_MSTATUS][3] {
         // auto fills 1 and 0
     }
-    mstatus_SIE: coverpoint ins.prev.csr[12'h300][1] {
+    mstatus_SIE: coverpoint ins.prev.csr[CSR_MSTATUS][1] {
         // auto fills 1 and 0
     }
     pc_bit_1: coverpoint ins.current.pc_rdata[1] {
@@ -115,14 +115,14 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
     }
     rs1_1_0: coverpoint ins.current.rs1_val[1:0] {
     }
-    medeleg_illegalinstr_enabled: coverpoint ins.current.csr[12'h302][2] {
+    medeleg_illegalinstr_enabled: coverpoint ins.current.csr[CSR_MEDELEG][2] {
         bins enabled = {1};
     }
-    medeleg_b8: coverpoint ins.current.csr[12'h302][8] {
+    medeleg_b8: coverpoint ins.current.csr[CSR_MEDELEG][8] {
     }
-    medeleg_walk: coverpoint ins.current.csr[12'h302] {
+    medeleg_walk: coverpoint ins.current.csr[CSR_MEDELEG] {
         bins zeros                    = {16'b0000_0000_0000_0000};
-        `ifndef COVER_ZCA
+        `ifndef ZCA_SUPPORTED
             bins instrmisaligned_enabled  = {16'b0000_0000_0000_0001};
         `endif
         bins instraccessfault_enabled = {16'b0000_0000_0000_0010};
@@ -143,7 +143,7 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
         bins storepagefault_enabled   = {16'b1000_0000_0000_0000};
         wildcard bins ones            = {16'b1011_00?1_1111_111?};
     }
-    mtvec_stvec_ne: coverpoint {ins.current.csr[12'h305] != ins.current.csr[12'h105]} {
+    mtvec_stvec_ne: coverpoint {ins.current.csr[CSR_MTVEC] != ins.current.csr[CSR_STVEC]} {
         bins notequal = {1};
     }
 
@@ -192,7 +192,7 @@ function void exceptionss_sample(int hart, int issue, ins_t ins);
 
 // $display("mode: %b, medel: %b, funct3: %b, rs1_1_0: %b, pc_1: %b, offset: %b ",
 //     ins.current.mode,
-//     ins.current.csr[12'h302],
+//     ins.current.csr[CSR_MEDELEG],
 //     ins.current.insn[14:12],
 //     ins.current.rs1_val[1:0],
 //     ins.current.pc_rdata[1],

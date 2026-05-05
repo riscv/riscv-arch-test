@@ -3,35 +3,22 @@
 # Modified April 5, 2026
 # SPDX-License-Identifier: Apache-2.0
 
-
-
 ########## Runtime Options ##########
 # CONFIG_FILES is used as the default input configs when running `make` and will produce elfs in the `work/<config-name>/elfs` directory.
 # COVERAGE_CONFIG_FILES is used as the default input configs when running `make coverage` and will generate coverage reports in addition to the elfs.
 CONFIG_FILES ?= config/spike/spike-rv32-max/test_config.yaml config/spike/spike-rv64-max/test_config.yaml
 COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/sail-rv32-max/test_config.yaml
 
-# WORKDIR is where all of the generated files are created
-WORKDIR     ?= work
-
 # EXTENSIONS is a comma-separated list of extensions to generate tests for. Leave blank to generate for all tests.
 # EXCLUDE_EXTENSIONS overrides EXTENSIONS to exclude particular extensions from test generation. Applies as a negative filter after EXTENSIONS.
 # Default exclusion reasons:
 #  - Sm, S: Insufficient WARL configuration options.
-#  - Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo: sail-riscv missing support for Svade/Svadu causes mismatches. Resolved in upcoming sail-riscv release.
-#  - ExceptionsZalrsc: See sail-riscv issue 1574. Resolved in upcoming sail-riscv release.
-#  - ExceptionsZaamo: Configuration needed between access and misaligned faults
-#  - InterruptsSm,InterruptsS,InterruptsU,PMPSm,PMPZca,PMPmisaligned: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
+#  - InterruptsSm,InterruptsS,InterruptsU,InterruptsSstc,PMPSm,PMPZca,SvaduPMP,SvPMP,SvPMPZicbo: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
 EXTENSIONS  ?=
-EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,InterruptsS,InterruptsU,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo,SvPMPZicbo
-
-# Strip spaces from comma-separated lists so shell word-splitting doesn't break CLI arguments
-empty :=
-space := $(empty) $(empty)
-override EXTENSIONS := $(subst $(space),$(empty),$(EXTENSIONS))
-override EXCLUDE_EXTENSIONS := $(subst $(space),$(empty),$(EXCLUDE_EXTENSIONS))
+EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,InterruptsS,InterruptsU,InterruptsSstc,Sv,SvaduPMP,SvPMP,SvPMPZicbo,Svade,Svadu,Svinval,SvZicbo,Svnapot,Svpbmt,ExceptionsSvZalrsc,ExceptionsSvZaamo,ExceptionsZalrsc,ExceptionsZaamo,PMPS,PMPU,PMPSm
 
 # DEBUG, FAST, and VERBOSE are runtime options for controlling build output. DEBUG and FAST are mutually exclusive.
+# Set to True to enable, or leave blank to disable.
 # DEBUG enables debug output (signature objdump, trace files, and trap report). This will slow down ELF generation significantly.
 # FAST disables objdump generation for faster builds. This speeds up ELF generation significantly, but makes debugging mismatches harder.
 # VERBOSE implies DEBUG, serializes all commands (JOBS=1), and prints each command as it is issued.
@@ -39,20 +26,32 @@ DEBUG       ?=
 FAST        ?=
 VERBOSE     ?=
 
+# COVERAGE_SIMULATOR is only used when collecting coverage (make coverage)
+COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa or vcs
+
+# WORKDIR is where all of the generated files are created
+WORKDIR     ?= work
+
 # VERBOSE implies DEBUG and serializes the build
 ifneq ($(VERBOSE),)
   DEBUG := True
 	JOBS  := 1
 endif
 
-# COVERAGE_SIMULATOR is only used when collecting coverage (make coverage)
-COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa or vcs
+# Strip spaces from comma-separated lists so shell word-splitting doesn't break CLI arguments
+empty :=
+space := $(empty) $(empty)
+override EXTENSIONS := $(subst $(space),$(empty),$(EXTENSIONS))
+override EXCLUDE_EXTENSIONS := $(subst $(space),$(empty),$(EXCLUDE_EXTENSIONS))
 
 # Number of parallel build jobs for test compilation.
 # Automatically derived from make's -j or --jobs flag (e.g., make -j4). Can be overridden with JOBS=N.
 # 0 (default) = auto-detect CPU count.
 # Setting to 1 is helpful for debugging test hangs so that only a single test runs at a time.
 JOBS ?= $(or $(patsubst -j%,%,$(filter -j%,$(MAKEFLAGS))),0)
+
+# Suppress "make[1]: Entering/Leaving directory ..." from recursive sub-makes
+MAKEFLAGS += --no-print-directory
 
 
 
@@ -114,6 +113,54 @@ endif
 
 
 
+########## Help ##########
+.PHONY: help
+help:
+	@printf '\033[1mRISC-V Architectural Certification Tests — Make Targets\033[0m\n\n'
+	@printf '\033[1mUsage:\033[0m\n'
+	@printf '  make <target> [VAR=value ...]\n\n'
+	@printf '\033[1mCommon targets:\033[0m\n'
+	@printf '  \033[36m%-20s\033[0m %s\n' \
+	  'elfs (default)'      'Generate tests and compile self-checking ELFs for $$(CONFIG_FILES)' \
+	  'tests'               'Generate assembly test sources only (no toolchain needed)' \
+	  'vector-tests'        'Generate vector test sources' \
+	  'coverage'            'Build with coverage instrumentation for $$(COVERAGE_CONFIG_FILES)' \
+	  'regression'          'Clean, run coverage, then every config with a run_cmd.txt' \
+	  'clean'               'Remove build artifacts (preserves extensions.txt)' \
+	  'clean-tests'         'Remove generated test sources'
+	@printf '\n\033[1mGenerators:\033[0m\n'
+	@printf '  \033[36m%-20s\033[0m %s\n' \
+	  'testgen'             'Run testgen only' \
+	  'covergroupgen'       'Run covergroup generator only' \
+	  'vector-testgen'      'Run the standalone vector test generator'
+	@printf '\n\033[1mLinting / formatting:\033[0m\n'
+	@printf '  \033[36m%-20s\033[0m %s\n' \
+	  'lint'                'ruff check + pyright' \
+	  'lint-fix'            'ruff check --fix' \
+	  'format'              'ruff format'
+	@printf '\n\033[1mRun targets (auto-discovered from config/**/run_cmd.txt):\033[0m\n'
+	@printf '  Each directory name in a config path becomes a target that builds ELFs and\n'
+	@printf '  runs every config beneath it. Available targets:\n'
+	@printf '    %s\n' $(ALL_RUN_TARGETS) | fold -s -w 76 | sed 's/^/  /'
+	@printf '\n\033[1mCommon variables:\033[0m\n'
+	@printf '  \033[36m%-20s\033[0m %s\n' \
+	  'CONFIG_FILES'        'Configs for the default elfs target' \
+	  'EXTENSIONS'          'Comma-separated extensions to generate (default: all)' \
+	  'EXCLUDE_EXTENSIONS'  'Comma-separated extensions to skip' \
+	  'JOBS'                'Parallel build jobs (0 = auto, also honors -j)' \
+	  'DEBUG'               'Emit objdump/trace/trap reports (slower)' \
+	  'FAST'                'Skip objdump for faster ELF builds' \
+	  'VERBOSE'             'Implies DEBUG, JOBS=1, prints each command' \
+	  'COVERAGE_SIMULATOR'  'questa or vcs (used with make coverage)'
+	@printf '\n\033[1mExamples:\033[0m\n'
+	@printf '  make                                 # default: spike rv32+rv64\n'
+	@printf '  make spike-rv64-max                  # build & run a single config\n'
+	@printf '  make tests EXTENSIONS=I,M            # generate just I and M tests\n'
+	@printf '  make EXCLUDE_EXTENSIONS=ExceptionsSm # skip an extension\n'
+	@printf '  make coverage                        # coverage build\n'
+
+
+
 ########## Test compilation ##########
 .DEFAULT_GOAL := elfs
 .PHONY: elfs
@@ -155,8 +202,8 @@ $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
 .PHONY: vector-testgen
 vector-testgen: $(STAMP_DIR)/vector-testgen-unpriv.stamp
 $(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/testgen/scripts/vector-testgen-unpriv.py generators/testgen/scripts/vector_testgen_common.py Makefile | $(STAMP_DIR)
-	$(UV_RUN) generators/testgen/scripts/vector-testgen-unpriv.py $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
-	touch $@
+	@$(UV_RUN) generators/testgen/scripts/vector-testgen-unpriv.py $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
+	@touch $@
 
 .PHONY: tests
 tests: covergroupgen testgen
@@ -223,7 +270,7 @@ ALL_RUN_TARGETS := $(sort $(foreach f,$(RUN_CMD_FILES),\
 
 define run-target
 $(1): tests
-	CONFIG_FILES="$(patsubst %/run_cmd.txt,%/test_config.yaml,$(_TARGETS_$(1)))" \
+	@CONFIG_FILES="$(patsubst %/run_cmd.txt,%/test_config.yaml,$(_TARGETS_$(1)))" \
 	$$(MAKE) elfs
 	@exit_code=0; \
 	$(foreach f,$(_TARGETS_$(1)),\

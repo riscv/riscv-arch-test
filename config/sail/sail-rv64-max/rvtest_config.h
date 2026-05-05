@@ -1,3 +1,4 @@
+#define CONFORMING_SM_SUPPORTED
 #define RVMODEL_PMP_GRAIN 0
 #define RVMODEL_NUM_PMPS 16
 #define D_SUPPORTED
@@ -23,10 +24,12 @@
 #define SV39_SUPPORTED
 #define SV48_SUPPORTED
 #define SV57_SUPPORTED
+#define ZVL32B_SUPPORTED
 
 #define TIME_CSR_IMPLEMENTED 1
 
 // Vector configuration
+#define VLEN 1024
 #define SEWMIN 8
 #define ELEN 64
 #define MAXINDEXEEW 64

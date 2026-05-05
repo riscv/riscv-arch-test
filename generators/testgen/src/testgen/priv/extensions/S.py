@@ -439,7 +439,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
 
     csrs = [
         # TODO: sail does not yet support sstatus.UBE; mask it until available to avoid mismatches.  Delete mask when Sail has UBE support.
-        ("sstatus", 0xFFFFFFFFFFFFFFBF),
+        ("sstatus", 0xFFFFFFFFFFFFFFBF if test_data.xlen == 64 else 0xFFFFFFBF),
         # WLRL fields can't be managed with masks.  Use cp_scause_* instead
         #        ("scause", 0x7FFFFFFFFFFFFFF0),
         ("sie", None),
@@ -447,7 +447,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
         ("stvec", 0b10),
         ("scounteren", None),
         # Mask off CBIE field because reserved 10 value can become unpredictable, fails on cvw.  TODO: give a better way to map 10 to a legal value in Sail
-        ("senvcfg", 0xFFFFFFFFFFFFFFCF),
+        ("senvcfg", 0xFFFFFFFFFFFFFFCF if test_data.xlen == 64 else 0xFFFFFFCF),
         ("sscratch", None),
         ("sepc", None),
         ("stval", None),

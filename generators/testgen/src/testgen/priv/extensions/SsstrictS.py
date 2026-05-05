@@ -76,6 +76,7 @@ _S_CSR_SKIP: frozenset[int] = frozenset(
 
 SAFE_REGS = list(range(7, 32))  # x7 .. x31
 
+
 def _gen_encodings(
     template: str,
     length: int = 32,
@@ -117,10 +118,7 @@ def _gen_encodings(
                     instr[start + k] = b
 
         instrstr = "".join(instr)
-        if not any(
-            all(p[k] == "X" or p[k] == instrstr[k] for k in range(length))
-            for p in exclusion
-        ):
+        if not any(all(p[k] == "X" or p[k] == instrstr[k] for k in range(length)) for p in exclusion):
             results.append(instrstr)
     return results
 
@@ -403,7 +401,7 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
     )
 
     lines.append("")
-    lines.append("\t.align 4")   # force 4-byte alignment before the sweep
+    lines.append("\t.align 4")  # force 4-byte alignment before the sweep
     lines.append(f"\t{test_data.add_testcase('illegal_instr_sweep', coverpoint, covergroup)}")
     lines.append("")
 

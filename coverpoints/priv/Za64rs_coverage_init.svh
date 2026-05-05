@@ -7,5 +7,4 @@
 //
 ///////////////////////////////////////////////
 
-Za64rs_cg = new();
-Za64rs_cg.set_inst_name("obj_Za64rs");
+    Za64rs_cg = new();         Za64rs_cg.set_inst_name("obj_Za64rs");

@@ -374,6 +374,10 @@
         `cover_info("//      Zalrsc - Enabled");
         `include "Zalrsc_coverage_init.svh"
     `endif
+    `ifdef COVER_ZAMA16B
+        `cover_info("//      Zama16b - Enabled");
+        `include "Zama16b_coverage_init.svh"
+    `endif
     `ifdef COVER_ZBA
         `cover_info("//      Zba - Enabled");
         `include "Zba_coverage_init.svh"

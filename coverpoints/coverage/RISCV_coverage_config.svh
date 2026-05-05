@@ -284,6 +284,9 @@
 `ifdef ZALRSC_COVERAGE
   `include "Zalrsc_coverage.svh"
 `endif
+`ifdef ZAMA16B_COVERAGE
+  `include "Zama16b_coverage.svh"
+`endif
 `ifdef ZBA_COVERAGE
   `include "Zba_coverage.svh"
 `endif

@@ -127,7 +127,7 @@ covergroup Sstvala_cg with function sample(ins_t ins);
     cp_load_address_misaligned:  cross priv_mode_s, lw_insn, stval_equals_vaddr_d, vaddr_d_misaligned, medeleg_load_ma;
     cp_store_address_misaligned: cross priv_mode_s, sw_insn, stval_equals_vaddr_d, vaddr_d_misaligned, medeleg_store_ma;
 
-    `ifndef COVER_ZCA
+    `ifndef ZCA_SUPPORTED
     cp_instr_adr_misaligned_jalr: cross priv_mode_s, jalr_insn, cause_instr_misaligned, stval_equals_vaddr_i, medeleg_instr_ma;
     `endif
 

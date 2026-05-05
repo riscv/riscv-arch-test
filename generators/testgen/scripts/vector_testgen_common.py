@@ -1338,10 +1338,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
         .replace("@TESTCASE_STRINGS@", generate_testcase_string_section())
         .replace("@EXTRA_DEFINES@", (f"#define RVTEST_VECTOR\n"
                                      f"#define RVTEST_SEW {sew}\n"
-                                     f"#define VDSEW {vdsew}\n"
-                                     f"#if (RVTEST_SEW <= ELEN / 2)\n#define TEST_LMULf2_SUPPORTED\n#endif\n"
-                                     f"#if (RVTEST_SEW <= ELEN / 4)\n#define TEST_LMULf4_SUPPORTED\n#endif\n"
-                                     f"#if (RVTEST_SEW <= ELEN / 8)\n#define TEST_LMULf8_SUPPORTED\n#endif"))
+                                     f"#define VDSEW {vdsew}\n"))
     )
     # Strip trailing newlines so writeLine's own appended newline doesn't produce
     # a blank line at end of file (which breaks the end-of-file-fixer pre-commit hook).

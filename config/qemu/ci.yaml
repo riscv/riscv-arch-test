@@ -5,6 +5,7 @@
 
 ci_enabled: true
 # TODO: Priv tests mismatch due to config issues. Atomics failure still needs to be diagnosed.
-exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zalrsc,Zacas,ZacasZabha,InterruptsSm,PMPSm,PMPmisaligned,PMPZalrsc,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,Sv,Svade,SvPMP,SvaduPMP,Svpbmt,Svnapot,SvZicbo,SvPMPZicbo,Svinval,ExceptionsZaamo,ExceptionsSvZaamo,ExceptionsSvZalrsc"
+# TODO: Remove Zama16b when Qemu starts supporting it.
+exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zalrsc,Zacas,ZacasZabha,InterruptsSm,PMPSm,PMPZalrsc,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,Sv,Svade,SvPMP,SvaduPMP,Svpbmt,Svnapot,SvZicbo,SvPMPZicbo,Svinval,ExceptionsZaamo,ExceptionsSvZaamo,ExceptionsSvZalrsc,Zama16b"
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"

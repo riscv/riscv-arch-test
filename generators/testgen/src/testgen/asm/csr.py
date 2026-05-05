@@ -25,9 +25,9 @@ def gen_csr_read_sigupd(check_reg: int, csr: tuple, test_data: TestData, mask_re
     Args:
         check_reg: Register to read CSR into
         csr: Tuple of (csr_name, mask) where csr_name is the CSR name string and
-             mask is either None or an integer representing a binary mask of bits to ignore
+             mask is either None or an integer representing a binary mask of bits to keep
         test_data: TestData object to track signature updates
-        mask_reg: Register pre-loaded with the complement of the mask (~mask), required
+        mask_reg: Register pre-loaded with the mask, required
                   when csr mask is not None. Supports masks of any bit width.
 
     Returns:
@@ -44,9 +44,9 @@ def gen_csr_read_sigupd(check_reg: int, csr: tuple, test_data: TestData, mask_re
     else:
         assert mask_reg is not None, "mask_reg must be provided when csr mask is not None"
         return (
-            f"{INDENT}# Read {csr_name} into x{check_reg}, mask ignored bits ({mask:#x}), and check against expected.\n"
+            f"{INDENT}# Read {csr_name} into x{check_reg}, keep only bits specified by mask ({mask:#x}), and check against expected.\n"
             f"CSRR(x{check_reg}, {csr_name})    # Read CSR\n"
-            f"and x{check_reg}, x{check_reg}, x{mask_reg}    # AND with ~{mask:#x} to ignore masked bits\n"
+            f"and x{check_reg}, x{check_reg}, x{mask_reg}    # AND with {mask:#x} to keep only masked bits\n"
             + write_sigupd(check_reg, test_data)
         )
 
@@ -81,7 +81,7 @@ def csr_access_test(test_data: TestData, csr: tuple, covergroup: str, coverpoint
     Args:
         test_data: TestData object to track signature updates
         csr: Tuple of (csr_name, mask) where csr_name is the CSR name string and
-             mask is either None or an integer representing a binary mask of bits to ignore
+             mask is either None or an integer representing a binary mask of bits to keep
         covergroup: Covergroup name for testcase strings
         coverpoint: Coverpoint name for testcase strings
 
@@ -102,7 +102,7 @@ def csr_access_test(test_data: TestData, csr: tuple, covergroup: str, coverpoint
         f"LI(x{temp_reg}, -1)          # x{temp_reg} = all 1s",
     ]
     if mask is not None:
-        lines.append(f"LI(x{mask_reg}, {~mask})    # Load complement of mask ({mask:#x})")
+        lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
     lines.extend(
         [
             test_data.add_testcase(f"{csr_name}_csrrw1", coverpoint, covergroup),
@@ -139,7 +139,7 @@ def csr_walk_test(
     Args:
         test_data: TestData object to track signature updates
         csr: Tuple of (csr_name, mask) where csr_name is the CSR name string and
-             mask is either None or an integer representing a binary mask of bits to ignore
+             mask is either None or an integer representing a binary mask of bits to keep
         covergroup: Covergroup name for testcase strings
         coverpoint: Coverpoint name for testcase strings
         start_bit: First bit position to walk; must be in 0..31 so the initial LI
@@ -161,7 +161,7 @@ def csr_walk_test(
         f"LI(x{walk_reg}, {1 << start_bit})              # 1 in bit {start_bit}",
     ]
     if mask is not None:
-        lines.append(f"LI(x{mask_reg}, {~mask})    # Load complement of mask ({mask:#x})")
+        lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
     if walk_zeros:
         lines.append(f"LI(x{temp_reg}, -1)             # x{temp_reg} = all 1s")
 

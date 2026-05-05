@@ -318,19 +318,18 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     # Standard M-mode CSRs
     csrs = [
         # TODO: sail does not yet support sstatus.S/M/UBE; mask it until available to avoid mismatches.  Delete mask when Sail has endian support.
-        ("mstatus", 0x30000000040),
-        ("mstatus", None),  # will need a mask for endianness, UXL/SXL until Sail can match all fields
-        ("medeleg", 0xFFFFFFFFFF000000),  # mask off custom bits and reserved bits
-        ("mideleg", 0xFFFFFFFFFFFF0000),  # limit to standard interrupt bits
-        ("mie", 0xFFFFFFFFFFFF0000),  # limit to standard interrupt bits
+        ("mstatus", 0xFFFFFFCFFFFFFFBF),
+        ("medeleg", 0xFFFFFF),  # mask off custom bits and reserved bits
+        ("mideleg", 0xFFFF),  # limit to standard interrupt bits
+        ("mie", 0xFFFF),  # limit to standard interrupt bits
         # mtvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
-        ("mtvec", 0xFFFFFFFFFFFFFFFD),
+        ("mtvec", 0b10),
         ("mcounteren", None),
         ("mscratch", None),
         ("mepc", None),
         #        ("mcause", None), # WLRL fields can't be handled with masks.  Use cp_mcause_* instead
         ("mtval", None),
-        ("mip", 0xFFFFFFFFFFFF0000),  # limit to standard interrupt bits
+        ("mip", 0xFFFF),  # limit to standard interrupt bits
         ("menvcfg", None),
         ("mcountinhibit", None),
         ("mhpmevent3", None),

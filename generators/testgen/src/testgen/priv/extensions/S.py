@@ -439,15 +439,15 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
 
     csrs = [
         # TODO: sail does not yet support sstatus.UBE; mask it until available to avoid mismatches.  Delete mask when Sail has UBE support.
-        ("sstatus", 0x000000040),
+        ("sstatus", 0xFFFFFFBF),
         # WLRL fields can't be managed with masks.  Use cp_scause_* instead
         #        ("scause", 0x7FFFFFFFFFFFFFF0),
         ("sie", None),
         # stvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
-        ("stvec", 0xFFFFFFFFFFFFFFFD),
+        ("stvec", 0b10),
         ("scounteren", None),
         # Mask off CBIE field because reserved 10 value can become unpredictable, fails on cvw.  TODO: give a better way to map 10 to a legal value in Sail
-        ("senvcfg", 0x30),
+        ("senvcfg", 0xFFFFFFCF),
         ("sscratch", None),
         ("sepc", None),
         ("stval", None),
@@ -628,7 +628,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
             f"LI(x{r1}, 0x007FFFBF) # skip UBE, UXL bits which would cause weird behavior",
             _add_shadow(r1, r2, rmask, rsave, "mstatus", "sstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data),
             _add_shadow(r1, r2, rmask, rsave, "sstatus", "mstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data),
-            f"LI(x{r1}, 0x3FFF) # all interrupts",
+            f"LI(x{r1}, 0xFFFF) # all interrupts",
             _add_shadow(r1, r2, rmask, rsave, "mie", "sie", 0x3666, coverpoint, covergroup, test_data),
             _add_shadow(r1, r2, rmask, rsave, "mip", "sip", 0x3666, coverpoint, covergroup, test_data),
             _add_shadow(r1, r2, rmask, rsave, "sie", "mie", 0x3666, coverpoint, covergroup, test_data),
@@ -658,7 +658,7 @@ def _add_shadow(
         [
             "",
             f"# Testcase: shadow CSR test for writing {wreg} and reading {rreg} with mask 0x{mask:x}",
-            f"LI(x{rmask}, 0x{mask:x}) # mask.  Note that these are bits to keep, instead of the usual bits to ignore.  Comment in sigupd mask is incorrect",
+            f"LI(x{rmask}, 0x{mask:x}) # mask specifying bits to keep",
             f"csrr x{rsave}, {wreg}       # save original value of {wreg}",
             f"csrw {wreg}, x{r1}       # write many 1s to {wreg}",
             test_data.add_testcase(f"{wreg}_{rreg}_1s", coverpoint, covergroup),

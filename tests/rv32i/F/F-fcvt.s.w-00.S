@@ -664,12 +664,14 @@ F_fcvt_s_w_cg_cp_fd_b31:
 /////////////////////////////////
 
 # Testcase cp_frm_2 (Test frm, mode = dyn)
-  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0x08fe7130
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs1: x22 = 0xef259b07
   fsflagsi 0b00000 # clear all fflags
+  fsrmi 2
 F_fcvt_s_w_cg_cp_frm_2_bdyn:
-  fcvt.s.w f11, x13, dyn # perform operation
-  # Check if f11 contains the expected result. Also checks fflags. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x11, x8, x7, f7, f11, F_fcvt_s_w_cg_cp_frm_2_bdyn, F_fcvt_s_w_cg_cp_frm_2_bdyn_str)
+  fcvt.s.w f31, x22, dyn # perform operation
+  # Check if f31 contains the expected result. Also checks fflags. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x11, x8, x7, f7, f31, F_fcvt_s_w_cg_cp_frm_2_bdyn, F_fcvt_s_w_cg_cp_frm_2_bdyn_str)
+  fsrmi 0x0
 
 # Testcase cp_frm_2 (Test frm, mode = rdn)
   RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs1: x29 = 0xaa8260b3
@@ -715,50 +717,55 @@ F_fcvt_s_w_cg_cp_frm_2_brup:
 // cp_csr_frm
 /////////////////////////////////
 
-  fsrmi 0x4 # set fcsr.frm to mode 4
-# Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 4)
+# Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 0)
   RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs1: x6 = 0x38bb71f4
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_s_w_cg_cp_csr_frm_rmm:
-  fcvt.s.w f26, x6 # perform operation
+  fsrmi 0
+F_fcvt_s_w_cg_cp_csr_frm_rne:
+  fcvt.s.w f26, x6, dyn # perform operation
   # Check if f26 contains the expected result. Also checks fflags. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x11, x8, x7, f7, f26, F_fcvt_s_w_cg_cp_csr_frm_rmm, F_fcvt_s_w_cg_cp_csr_frm_rmm_str)
+  RVTEST_SIGUPD_F(x11, x8, x7, f7, f26, F_fcvt_s_w_cg_cp_csr_frm_rne, F_fcvt_s_w_cg_cp_csr_frm_rne_str)
+  fsrmi 0x0
 
-  fsrmi 0x3 # set fcsr.frm to mode 3
-# Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 3)
+# Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 1)
   RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs1: x3 = 0xfcdb5c56
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_s_w_cg_cp_csr_frm_rup:
-  fcvt.s.w f13, x3 # perform operation
+  fsrmi 1
+F_fcvt_s_w_cg_cp_csr_frm_rtz:
+  fcvt.s.w f13, x3, dyn # perform operation
   # Check if f13 contains the expected result. Also checks fflags. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x11, x8, x7, f7, f13, F_fcvt_s_w_cg_cp_csr_frm_rup, F_fcvt_s_w_cg_cp_csr_frm_rup_str)
+  RVTEST_SIGUPD_F(x11, x8, x7, f7, f13, F_fcvt_s_w_cg_cp_csr_frm_rtz, F_fcvt_s_w_cg_cp_csr_frm_rtz_str)
+  fsrmi 0x0
 
-  fsrmi 0x2 # set fcsr.frm to mode 2
 # Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 2)
   RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs1: x20 = 0x402bbc0c
   fsflagsi 0b00000 # clear all fflags
+  fsrmi 2
 F_fcvt_s_w_cg_cp_csr_frm_rdn:
-  fcvt.s.w f11, x20 # perform operation
+  fcvt.s.w f11, x20, dyn # perform operation
   # Check if f11 contains the expected result. Also checks fflags. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f7 is a floating point temp reg.
   RVTEST_SIGUPD_F(x11, x8, x7, f7, f11, F_fcvt_s_w_cg_cp_csr_frm_rdn, F_fcvt_s_w_cg_cp_csr_frm_rdn_str)
+  fsrmi 0x0
 
-  fsrmi 0x1 # set fcsr.frm to mode 1
-# Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 1)
+# Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 3)
   RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs1: x13 = 0xba331225
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_s_w_cg_cp_csr_frm_rtz:
-  fcvt.s.w f31, x13 # perform operation
+  fsrmi 3
+F_fcvt_s_w_cg_cp_csr_frm_rup:
+  fcvt.s.w f31, x13, dyn # perform operation
   # Check if f31 contains the expected result. Also checks fflags. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x11, x8, x7, f7, f31, F_fcvt_s_w_cg_cp_csr_frm_rtz, F_fcvt_s_w_cg_cp_csr_frm_rtz_str)
+  RVTEST_SIGUPD_F(x11, x8, x7, f7, f31, F_fcvt_s_w_cg_cp_csr_frm_rup, F_fcvt_s_w_cg_cp_csr_frm_rup_str)
+  fsrmi 0x0
 
-  fsrmi 0x0 # set fcsr.frm to mode 0
-# Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 0)
+# Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 4)
   RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs1: x30 = 0x2292258b
   fsflagsi 0b00000 # clear all fflags
-F_fcvt_s_w_cg_cp_csr_frm_rne:
-  fcvt.s.w f5, x30 # perform operation
+  fsrmi 4
+F_fcvt_s_w_cg_cp_csr_frm_rmm:
+  fcvt.s.w f5, x30, dyn # perform operation
   # Check if f5 contains the expected result. Also checks fflags. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f7 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x11, x8, x7, f7, f5, F_fcvt_s_w_cg_cp_csr_frm_rne, F_fcvt_s_w_cg_cp_csr_frm_rne_str)
+  RVTEST_SIGUPD_F(x11, x8, x7, f7, f5, F_fcvt_s_w_cg_cp_csr_frm_rmm, F_fcvt_s_w_cg_cp_csr_frm_rmm_str)
+  fsrmi 0x0
 
   mv x2, x11 # restore signature pointer to default register for teardown
 
@@ -845,7 +852,7 @@ RVTEST_DATA_BEGIN
 .word 0x4902e3a5
 .word 0xc10c746d
 .word 0xba9d7e21
-.word 0x08fe7130
+.word 0xef259b07
 .word 0xaa8260b3
 .word 0xa91d4f7f
 .word 0xa2f30c76
@@ -940,11 +947,11 @@ F_fcvt_s_w_cg_cp_frm_2_brmm_str: .string "\"test: 79; cg: F_fcvt.s.w_cg; cp: cp_
 F_fcvt_s_w_cg_cp_frm_2_brne_str: .string "\"test: 80; cg: F_fcvt.s.w_cg; cp: cp_frm_2; bin: brne\""
 F_fcvt_s_w_cg_cp_frm_2_brtz_str: .string "\"test: 81; cg: F_fcvt.s.w_cg; cp: cp_frm_2; bin: brtz\""
 F_fcvt_s_w_cg_cp_frm_2_brup_str: .string "\"test: 82; cg: F_fcvt.s.w_cg; cp: cp_frm_2; bin: brup\""
-F_fcvt_s_w_cg_cp_csr_frm_rmm_str: .string "\"test: 83; cg: F_fcvt.s.w_cg; cp: cp_csr_frm; bin: rmm\""
-F_fcvt_s_w_cg_cp_csr_frm_rup_str: .string "\"test: 84; cg: F_fcvt.s.w_cg; cp: cp_csr_frm; bin: rup\""
+F_fcvt_s_w_cg_cp_csr_frm_rne_str: .string "\"test: 83; cg: F_fcvt.s.w_cg; cp: cp_csr_frm; bin: rne\""
+F_fcvt_s_w_cg_cp_csr_frm_rtz_str: .string "\"test: 84; cg: F_fcvt.s.w_cg; cp: cp_csr_frm; bin: rtz\""
 F_fcvt_s_w_cg_cp_csr_frm_rdn_str: .string "\"test: 85; cg: F_fcvt.s.w_cg; cp: cp_csr_frm; bin: rdn\""
-F_fcvt_s_w_cg_cp_csr_frm_rtz_str: .string "\"test: 86; cg: F_fcvt.s.w_cg; cp: cp_csr_frm; bin: rtz\""
-F_fcvt_s_w_cg_cp_csr_frm_rne_str: .string "\"test: 87; cg: F_fcvt.s.w_cg; cp: cp_csr_frm; bin: rne\""
+F_fcvt_s_w_cg_cp_csr_frm_rup_str: .string "\"test: 86; cg: F_fcvt.s.w_cg; cp: cp_csr_frm; bin: rup\""
+F_fcvt_s_w_cg_cp_csr_frm_rmm_str: .string "\"test: 87; cg: F_fcvt.s.w_cg; cp: cp_csr_frm; bin: rmm\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

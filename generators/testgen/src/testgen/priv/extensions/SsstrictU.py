@@ -252,6 +252,13 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
     lines.append("\t.align 4")  # force 4-byte alignment before the sweep
     lines.append(f"\t{test_data.add_testcase('illegal_instr_sweep', coverpoint, covergroup)}")
     lines.append("")
+    # Set all safe registers to an unmapped address so valid load/store
+    # encodings always fault, regardless of platform memory map.
+    lines.append("")
+    lines.append("\t# Pre-load safe regs with unmapped address")
+    lines.append("\tli x7, 0xFFFFFFFF00000000")
+    for r in range(8, 32):
+        lines.append(f"\tmv x{r}, x7")
 
     for cmt, tmpl in [
         ("Reserved op7", "RRRRRRRRRRRRRRRRRRRRRRRRR0011111"),

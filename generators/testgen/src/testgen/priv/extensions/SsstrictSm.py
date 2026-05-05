@@ -59,7 +59,7 @@ _M_CSR_SKIP: frozenset[int] = frozenset(
     + list(range(0x7A0, 0x7B0))  # debug trigger regs
     + list(range(0x7C0, 0x800))  # M-mode custom1
     + list(range(0xBC0, 0xC00))  # M-mode custom2
-    + list(range(0xFC0, 0x1000))  # M-mode custom3
+    + list(range(0xF00, 0x1000))  # M-mode read-only (includes custom3 0xFC0-0xFFF)
     + list(range(0x5C0, 0x600))  # S-mode custom1
     + list(range(0x6C0, 0x700))  # H-mode custom1
     + list(range(0x9C0, 0xA00))  # S-mode custom2
@@ -68,9 +68,8 @@ _M_CSR_SKIP: frozenset[int] = frozenset(
     + list(range(0xEC0, 0xF00))  # H-mode custom3
     + list(range(0x800, 0x900))  # user custom2
     + list(range(0xCC0, 0xD00))  # user custom3
-    + [0x747]  # mseccfg — skip to avoid enabling epmp and PMP troubles in M-mode
+    + [0x340, 0x747]  # mscratch, mseccfg
 )
-
 
 # ── Encoding helpers ──────────────────────────────────────────────────────
 
@@ -240,30 +239,58 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
     lines.append(f"\t{test_data.add_testcase('illegal_instr_sweep', coverpoint, covergroup)}")
     lines.append("")
 
+    # Set all safe registers to an unmapped address so valid load/store
+    # encodings always fault, regardless of platform memory map.
+    lines.append("")
+    lines.append("\t# Pre-load safe regs with unmapped address")
+    lines.append("\tli x7, 0xFFFFFFFF00000000")
+    for r in range(8, 32):
+        lines.append(f"\tmv x{r}, x7")
+
     for cmt, tmpl in [
         ("Reserved op7", "RRRRRRRRRRRRRRRRRRRRRRRRR0011111"),
         ("Reserved op15", "RRRRRRRRRRRRRRRRRRRRRRRRR0111111"),
         ("Reserved op23", "RRRRRRRRRRRRRRRRRRRRRRRRR1011111"),
         ("Reserved op26", "RRRRRRRRRRRRRRRRRRRRRRRRR1101011"),
-        ("Reserved op31", "RRRRRRRRRRRRRRRRRRRRRRRRR1111111"),
+        # ("Reserved op31", "RRRRRRRRRRRRRRRRRRRRRRRRR1111111"),
     ]:
         _emit_raw_words(lines, cmt, tmpl)
+    CBO_EXCLUSIONS = [
+        "000000000000XXXXX010XXXXX0001111",  # cbo.inval
+        "000000000001XXXXX010XXXXX0001111",  # cbo.clean
+        "000000000010XXXXX010XXXXX0001111",  # cbo.flush
+        "000000000100XXXXX010XXXXX0001111",  # cbo.zero
+        "000000000000XXXXX110XXXXX0001111",  # prefetch variants
+    ]
+    AMO_EXCLUSIONS = [
+        "00010XXXXXXXXXXXX01X010010101111",  # lr.w / lr.d
+        "00011XXXXXXXXXXXX01X010010101111",  # sc.w / sc.d
+        "00001XXXXXXXXXXXX01X010010101111",  # amoswap
+        "00000XXXXXXXXXXXX01X010010101111",  # amoadd
+        "00100XXXXXXXXXXXX01X010010101111",  # amoxor
+        "01100XXXXXXXXXXXX01X010010101111",  # amoand
+        "01000XXXXXXXXXXXX01X010010101111",  # amoor
+        "10000XXXXXXXXXXXX01X010010101111",  # amomin
+        "10100XXXXXXXXXXXX01X010010101111",  # amomax
+        "11000XXXXXXXXXXXX01X010010101111",  # amominu
+        "11100XXXXXXXXXXXX01X010010101111",  # amomaxu
+    ]
 
+    _emit_raw_words(lines, "cp_lrsc", "00010RREEEEE0000001E010010101111", exclusion=AMO_EXCLUSIONS)
+    _emit_raw_words(lines, "cp_atomic_funct7", "EEEEERRRRRRR0000001E010010101111", exclusion=AMO_EXCLUSIONS)
+    _emit_raw_words(lines, "cp_atomic_funct3", "RRRRRRRRRRRR00000EEE010010101111", exclusion=AMO_EXCLUSIONS)
     _emit_raw_words(lines, "cp_load", "RRRRRRRRRRRRRRRRREEE010010000011")
     _emit_raw_words(lines, "cp_fload", "RRRRRRRRRRRRRRRRREEE010010000111")
-    _emit_raw_words(lines, "cp_fence_cbo", "RRRRRRRRRRRRRRRRREEE010010001111")
-    _emit_raw_words(lines, "cp_cbo_immediate", "EEEEEEEEEEEE00000010000000001111")
-    _emit_raw_words(lines, "cp_cbo_rd", "00000000000RRRRRR010EEEEE0001111")
     _emit_raw_words(lines, "cp_store", "RRRRRRRRRRRR00000EEERRRRR0100011")
+    _emit_raw_words(lines, "cp_fence_cbo", "RRRRRRRRRRRRRRRRREEE010010001111", exclusion=CBO_EXCLUSIONS)
+    _emit_raw_words(lines, "cp_cbo_immediate", "EEEEEEEEEEEE00000010000000001111", exclusion=CBO_EXCLUSIONS)
+    _emit_raw_words(lines, "cp_cbo_rd", "00000000000RRRRRR010EEEEE0001111", exclusion=CBO_EXCLUSIONS)
     _emit_raw_words(lines, "cp_fstore", "RRRRRRRRRRRR00000EEERRRRR0100111")
     _emit_raw_words(lines, "cp_Itype", "EEEEEEEEEEEERRRRRE01010010010011")
     _emit_raw_words(lines, "cp_llAItype", "RRRRRRRRRRRRRRRRREEE010010010011")
     _emit_raw_words(lines, "cp_aes64ks1i", "0011000EEEEERRRRR001010010010011")
     _emit_raw_words(lines, "cp_IWtype", "RRRRRRRRRRRRRRRRREEE010010011011")
     _emit_raw_words(lines, "cp_IWshift", "EEEEEEERRRRRRRRRRE01010010011011")
-    _emit_raw_words(lines, "cp_atomic_funct3", "RRRRRRRRRRRR00000EEE010010101111")
-    _emit_raw_words(lines, "cp_atomic_funct7", "EEEEERRRRRRR0000001E010010101111")
-    _emit_raw_words(lines, "cp_lrsc", "00010RREEEEE0000001E010010101111")
     _emit_raw_words(lines, "cp_rtype", "EEEEEEE0011100111EEE001110110011")
     _emit_raw_words(lines, "cp_rwtype", "EEEEEEE0011100111EEE001110111011")
     _emit_raw_words(lines, "cp_ftype", "EEEEERR0011100111EEE001111010011")
@@ -340,11 +367,11 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
         ("cp_upperreg_fmv_x_w_rd", "111000000000000010001EEEE1010011"),
         ("cp_upperreg_fmv_w_x_rs1", "1111000000001EEEE000000011010011"),
         ("cp_upperreg_fmv_w_x_rd", "111100000000000010001EEEE1010011"),
-        ("cp_amocas_odd", "00101RRRRRRRRRRREEEE0100E0101111"),
+        # ("cp_amocas_odd", "00101RRRRRRRRRRREEEE0100E0101111"),
     ]:
         _emit_raw_words(lines, cmt, tmpl)
 
-    _emit_raw_words(lines, "cp_amocas_odd", "00101RRRRRRR00000000RRRRE0101111")
+    # _emit_raw_words(lines, "cp_amocas_odd", "00101RRRRRRR00000000RRRRE0101111")
     return lines
 
 

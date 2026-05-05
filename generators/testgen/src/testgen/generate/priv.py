@@ -32,10 +32,10 @@ from testgen.priv.registry import (
 _SPLIT_TESTSUITES: frozenset[str] = frozenset({"SsstrictSm", "SsstrictS", "SsstrictU"})
 
 # Maximum body lines per generated .S file for split testsuites.
-# 1000 lines keeps file count low (~80 files) which minimises per-file startup
+# 8000 lines keeps file count low (~10 files) which minimises per-file startup
 # overhead on slower simulators (spike, QEMU).  Each file still completes in
 # well under one second on Sail even when every instruction traps.
-_LINES_PER_FILE: int = 1000
+_LINES_PER_FILE: int = 8000
 
 # Fast illegal-instruction trap handler, prepended to every split file.
 #

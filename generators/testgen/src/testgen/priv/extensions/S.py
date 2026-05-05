@@ -421,7 +421,7 @@ def _generate_srets_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"\nCSRW(sstatus, x{save_reg})    # restore CSR",
-            "RVTEST_GOTO_MMODE      # back to M-mode to restore medeleg",
+            "RVTEST_GOTO_MMODE      # back to M-mode to touch medeleg",
             f"LI(x{reg1}, 1 << 2)",
             f"CSRS medeleg, x{reg1}           # restore delegating illegal instructions",
         ]
@@ -435,7 +435,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     covergroup = "S_scsr_cg"
 
     # Standard S-mode CSRs
-    # Format: (CSR Name, IgnoreMask).  IgnoreMask specifies a set of bits to ignore
+    # Format: (CSR Name, Mask).  Mask specifies a set of bits to check
 
     csrs = [
         # TODO: sail does not yet support sstatus.UBE; mask it until available to avoid mismatches.  Delete mask when Sail has UBE support.

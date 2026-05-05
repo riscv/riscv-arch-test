@@ -223,7 +223,7 @@ def cntr_access_test(test_data: TestData, csr: tuple, covergroup: str, coverpoin
     Args:
         test_data: TestData object to track signature updates
         csr: Tuple of (csr_name, mask) where csr_name is the CSR name string and
-             mask is either None or an integer representing a binary mask of bits to ignore
+             mask is either None or an integer representing a binary mask of bits to ignore (presently not used)
         covergroup: Covergroup name for testcase strings
         coverpoint: Coverpoint name for testcase strings
 

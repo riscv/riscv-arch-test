@@ -199,7 +199,7 @@ def csr_walk_test(
                     f"CSRW({csr_name}, x{temp_reg})      # set all bits",
                     f"CSRC({csr_name}, x{walk_reg})      # clear walking 1 in column {i}",
                     test_data.add_testcase(f"{csr_name}_clr_bit_{i}", coverpoint, covergroup),
-                    gen_csr_read_sigupd(check_reg, csr_name, test_data, mask_reg),
+                    gen_csr_read_sigupd(check_reg, csr, test_data, mask_reg),
                     f"slli x{walk_reg}, x{walk_reg}, 1      # walk the 1",
                 ]
             )

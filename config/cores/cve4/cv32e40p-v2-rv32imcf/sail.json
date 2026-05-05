@@ -11,7 +11,7 @@
     "writable_fiom": true,
     "writable_hpm_counters": {
       "len": 32,
-      // Only HPM counter 3 is active (NUM_MHPMCOUNTERS=1 default, cv32e40p_core.sv:40).
+      // Verification of cv32e40p_v1.8.3 has been done with only following value for NUM_MHPMCOUNTERS parameter: NUM_MHPMCOUNTERS == 1. Only HPM counter 3 is active.
       // Bit 3 set = mhpmcounter3/mhpmevent3 writable; counters 4-31 read-only zero.
       "value": "0x00000008"
     },
@@ -25,7 +25,7 @@
     // cause information to be written into the appropriate
     // `xtval` registers.
     "xtval_nonzero": {
-      // mtval is hardwired to 0 in cv32e40p — cv32e40p_cs_registers.sv:346,516.
+      // mtval is hardwired to 0 in cv32e40p.
       "illegal_instruction": false,
       "software_breakpoint": false,
       "hardware_breakpoint": false,
@@ -43,7 +43,7 @@
     },
     "reserved_behavior": {
       // SCHEMA-REQUIRED: cv32e40p has no Zacas extension; AMO instructions decode as
-      // illegal (cv32e40p_decoder.sv:450). Value has no effect on DUT comparison.
+      // illegal. Value has no effect on DUT comparison.
       "amocas_odd_register": "AMOCAS_Illegal",
       // F extension present: illegal rm value (0b101, 0b110, 0b111) in fcsr raises illegal instruction.
       "fcsr_rm": "Fcsr_RM_Illegal",
@@ -53,7 +53,7 @@
       // SCHEMA-REQUIRED: cv32e40p has no Zicbom. Value has no effect on DUT comparison.
       "xenvcfg_cbie": "Xenvcfg_ClearPermissions",
       // mtvec[1:0] mode field: cv32e40p supports modes 0 (direct) and 1 (vectored).
-      // Writes of mode >= 2 are ignored and old mode is retained — cv32e40p_cs_registers.sv:144.
+      // Writes of mode >= 2 are ignored and old mode is retained.
       "xtvec_mode": "Xtvec_Ignore",
       // SCHEMA-REQUIRED: cv32e40p has no Zdinx. Value has no effect on DUT comparison.
       "rv32zdinx_odd_register": "Zdinx_Illegal"
@@ -78,7 +78,7 @@
     "misaligned": {
       "exceptions": {
         // cv32e40p LSU handles misaligned loads/stores in hardware (splits into two
-        // aligned transactions) — cv32e40p_load_store_unit.sv:325-343. No exception raised.
+        // aligned transactions). No exception raised.
         "load_store": { "None": null },
         // SCHEMA-REQUIRED: cv32e40p has no V extension. No RTL counterpart.
         "vector": { "None": null },
@@ -86,7 +86,7 @@
         // LR/SC opcodes decode as illegal instructions. Value has no effect on DUT comparison.
         "lrsc": "AccessFault",
         // SCHEMA-REQUIRED: cv32e40p has no Zaamo/A extension (A: false, extensions section).
-        // AMO opcodes decode as illegal instructions — cv32e40p_decoder.sv:450.
+        // AMO opcodes decode as illegal instructions.
         // Value has no effect on DUT comparison.
         "amo": "AccessFault"
       },
@@ -190,9 +190,9 @@
   "platform": {
     // OpenHW Group JEDEC: bank=0xC, offset=0x2 → mvendorid=0x602=1538
     "vendorid": 1538,
-    // marchid=0x4 — verified cv32e40p_pkg.sv:528
+    // User manual states marchid=0x4 (Control and Status Registers section)
     "archid": 4,
-    // mimpid=0x1 for FPU=1 on v1.8.3 — verified cs_registers.sv:511-513
+    // mimpid=0x1 for FPU=1 on v1.8.3 (cv32e40p User Manual, Control and Status Registers)
     "impid": 1,
     "hartid": 0,
     // SCHEMA-REQUIRED: cv32e40p has no cache (no Zicbom/Zicboz). 64-byte (2^6) is the
@@ -216,7 +216,7 @@
     },
     "clock_frequency": 1000000000,
     "instructions_per_tick": 2,
-    // cv32e40p implements WFI as a real sleep instruction (cv32e40p_sleep_unit.sv).
+    // cv32e40p implements WFI as a real sleep instruction (not NOP).
     "wfi_is_nop": false,
     // Maximum time before a WFI instruction expires.
     "max_time_to_wait": 10
@@ -247,7 +247,6 @@
       "supported": false
     },
     "U": {
-      // cv32e40p (RI5CY based) — M-mode only, no U-mode execution
       "supported": false
     },
     "Zibi": {

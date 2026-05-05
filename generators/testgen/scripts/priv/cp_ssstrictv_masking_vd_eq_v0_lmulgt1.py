@@ -11,7 +11,7 @@ from random import randint, seed as set_seed
 import vector_testgen_common as common
 from priv_coverpoint_registry import register
 from ._ssstrictv_helpers import (build_testline, emit_vsetivli, init_operand_regs,
-                                 max_legal_lmul, sig_params)
+                                 make_dest_zero_overrides, max_legal_lmul, sig_params)
 
 CP = "cp_ssstrictv_masking_vd_eq_v0_lmulgt1"
 
@@ -26,12 +26,17 @@ def _pick_distinct(low: int, high: int, exclude: set[int], step: int = 1) -> int
 @register(CP)
 def make(instruction: str) -> None:
     set_seed(common.myhash(instruction + CP))
-    sew = common.getInstructionEEW(instruction) or common.minSEW_MIN
+    eew = common.getInstructionEEW(instruction)
+    sews = [eew] if eew else [8, 16, 32, 64]
     cap = max_legal_lmul(instruction)
+    dest_overrides = make_dest_zero_overrides(instruction)
 
+    sidx = 0
     for lmul in (2, 4, 8):
         if lmul > cap:
             break
+        sew = sews[sidx % len(sews)]
+        sidx += 1
         instruction_data = common.randomizeVectorInstructionData(
             instruction, sew, common.getBaseSuiteTestCount(),
             vd_val_pointer="vector_random",
@@ -45,14 +50,16 @@ def make(instruction: str) -> None:
         vs2 = _pick_distinct(lmul, 31, used, step=lmul); used.add(vs2)
         vs1 = _pick_distinct(lmul, 31, used, step=lmul); used.add(vs1)
 
-        common.writeLine(f"\n# Testcase {CP} (lmul={lmul})")
+        common.writeLine(f"\n# Testcase {CP} (lmul={lmul}, sew={sew})")
         scratch = common.pickPrivScratch(instruction_data[1])
         emit_vsetivli(scratch, vl=1, sew=sew, lmul=lmul)
         init_operand_regs(instruction, instruction_data[0], sew, scratch)
+        # Re-emit vsetivli right before the test so SAMPLE_BEFORE sees vtype.
+        emit_vsetivli(scratch, vl=1, sew=sew, lmul=lmul)
 
         testline, vd, rd = build_testline(
             instruction, instruction_data, maskval="v0.t",
-            override_vd=0, override_vs1=vs1, override_vs2=vs2,
+            override_vs1=vs1, override_vs2=vs2, **dest_overrides,
         )
         sig_lmul, sig_wr = sig_params(instruction, instruction_data, lmul=lmul)
 

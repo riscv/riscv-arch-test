@@ -345,10 +345,18 @@ def _gen_instrs(
             covergroup_lines.append(customize_template(templates, "instruction", arch, instr))
             init_lines.append(customize_template(templates, "init", arch, instr))
 
-        # Priv vector covergroups need the standard vector helpers (vd_ne_vs1, mask_enabled,
-        # vtype_lmul_*, std_trap_vec, etc.) included exactly once per covergroup.
-        if _is_priv_vector(arch):
-            covergroup_lines.append('    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"\n')
+        # SsstrictV templates reference a small set of helpers (vtype_lmul_*,
+        # std_trap_vec, mask_enabled, vd_v0, vd/vs1/vs2_all_reg_unaligned_lmul_*,
+        # vstart_zero, vl_nonzero, vtype_prev_vill_*, vtype_all_lmulge1).
+        # We include a SsstrictV-scoped header rather than the full standard
+        # vector header so the SsstrictV covergroups don't pick up dozens of
+        # unrelated 32-bin sweeps (vd_all_reg, vs1_all_reg, etc.) that aren't in
+        # SsstrictV's testplan and would inflate the corpus past the linker's
+        # ±1MiB JAL range. Other priv vector arches (ExceptionsVx/Vls/Vf)
+        # intentionally use a small, focused set of coverpoints (cp_vill /
+        # cp_vstart / cp_vstart_gt_vl) and must not pull in either header.
+        if arch.startswith("SsstrictV"):
+            covergroup_lines.append('    `include "general/RISCV_coverage_ssstrictv_helpers.svh"\n')
 
         # Coverpoint entries (skip metadata columns: sample_*, RV32, RV64, EFFEW*)
         # VCS requires coverpoints to be declared before they are referenced by cross coverpoints.

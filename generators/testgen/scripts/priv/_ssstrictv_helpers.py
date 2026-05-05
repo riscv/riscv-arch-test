@@ -34,6 +34,9 @@ _LMUL_FLAG = {1: "m1", 2: "m2", 4: "m4", 8: "m8"}
 SKIP_COVERPOINTS: frozenset[str] = frozenset({
     # Issue 003: Sail does not raise illegal-instruction for vstart >= VLMAX
     "cp_ssstrictv_vstart_ge_vlmax",
+    # Issue 006: Sail asserts on EMUL out of [1/8, 8] before reserved-encoding check
+    "cp_ssstrictv_ls_emul_16",
+    "cp_ssstrictv_ls_emul_f16",
 })
 
 
@@ -46,7 +49,8 @@ def max_legal_lmul(instruction: str) -> int:
     """Return the largest legal LMUL for ``instruction`` (≤ 8).
 
     For segment LS, ``NF * EMUL ≤ 8`` is required, so EMUL ≤ 8/NF.
-    For non-segment ops, the cap is 8.
+    For widening / narrowing ops, vd or vs2 has EEW = 2*SEW so EMUL = 2*LMUL,
+    capping LMUL at 4. For non-segment, non-widening ops, the cap is 8.
     """
     nf = common.getInstructionSegments(instruction)
     if nf > 1:
@@ -56,6 +60,8 @@ def max_legal_lmul(instruction: str) -> int:
             if m <= cap:
                 return m
         return 1
+    if instruction in common.vd_widen_ins or instruction in common.vs2_widen_ins:
+        return 4
     return 8
 
 
@@ -89,6 +95,9 @@ def build_testline(instruction: str, instruction_data: list, *,
                    override_vs1: int | None = None,
                    override_vs2: int | None = None,
                    override_vs3: int | None = None,
+                   override_rs1: int | None = None,
+                   override_rs2: int | None = None,
+                   override_rd: int | None = None,
                    override_imm: int | None = None,
                    addr_label: str = "random_mask_0") -> tuple[str, int, int]:
     """Build the assembly mnemonic line. Returns (testline, vd_reg, rd_reg)."""
@@ -103,6 +112,12 @@ def build_testline(instruction: str, instruction_data: list, *,
         vec_data["vs2"]["reg"] = override_vs2
     if override_vs3 is not None and "vs3" in vec_data:
         vec_data["vs3"]["reg"] = override_vs3
+    if override_rs1 is not None and "rs1" in scalar_data:
+        scalar_data["rs1"]["reg"] = override_rs1
+    if override_rs2 is not None and "rs2" in scalar_data:
+        scalar_data["rs2"]["reg"] = override_rs2
+    if override_rd is not None and "rd" in scalar_data:
+        scalar_data["rd"]["reg"] = override_rd
     if override_imm is not None:
         imm_val = override_imm
 
@@ -120,13 +135,18 @@ def build_testline(instruction: str, instruction_data: list, *,
         elif arg[0] == "v":
             testline += f"v{vec_data[arg]['reg']}"
         elif arg[0] == "r":
+            reg = scalar_data[arg]["reg"]
             if arg == "rs1" and instruction in common.vector_ls_ins:
-                reg = scalar_data[arg]["reg"]
                 common.writeLine(f"la x{reg}, {addr_label}", "# rs1 = valid memory address")
                 testline += f"(x{reg})"
             else:
-                common.loadScalarReg(arg, scalar_data)
-                testline += f"x{scalar_data[arg]['reg']}"
+                # Skip loadScalarReg for framework-reserved regs (ra/sp/gp/tp/t0)
+                # which off_group overrides may target. Their values come from
+                # the framework setup and are never randomized; the trap path
+                # doesn't care about the actual value, only the field bits.
+                if reg not in common.PRIV_RESERVED_SCALAR_REGS:
+                    common.loadScalarReg(arg, scalar_data)
+                testline += f"x{reg}"
         elif arg[0] == "f":
             testline += f"f{fp_data[arg]['reg']}"
         else:
@@ -149,6 +169,40 @@ def sig_params(instruction: str, instruction_data: list, lmul: int = 1) -> tuple
     return lmul, False
 
 
+def dest_field_role(instruction: str) -> str:
+    """Return which operand-name occupies the destination encoding bits[11:7].
+
+    For most vector ops, this is "vd". For unit/strided/indexed stores the
+    field holds vs3. For mask/scalar reductions (vcpop.m, vfirst.m, vmv.x.s,
+    vfmv.f.s) it holds rd/fd.
+    """
+    args = common.getInstructionArguments(instruction)
+    if "vd" in args:
+        return "vd"
+    if "vs3" in args:
+        return "vs3"
+    if "rd" in args:
+        return "rd"
+    if "fd" in args:
+        return "fd"
+    return "vd"
+
+
+def make_dest_zero_overrides(instruction: str) -> dict:
+    """Return ``override_*`` kwargs that force the destination encoding to 0.
+
+    Useful for masking_vd_eq_v0-style coverpoints which sample insn[11:7]==0.
+    """
+    role = dest_field_role(instruction)
+    if role == "vd":
+        return {"override_vd": 0}
+    if role == "vs3":
+        return {"override_vs3": 0}
+    if role == "rd":
+        return {"override_rd": 0}
+    return {}
+
+
 def issue_simple_test(instruction: str, cp: str, *,
                        sew: int | None = None, lmul: int = 1, vl: int = 1,
                        maskval: str | None = "v0.t",
@@ -156,6 +210,7 @@ def issue_simple_test(instruction: str, cp: str, *,
                        override_vs1: int | None = None,
                        override_vs2: int | None = None,
                        override_vs3: int | None = None,
+                       override_rd: int | None = None,
                        override_imm: int | None = None,
                        init_regs: Iterable[str] = ("vd", "vs2", "vs3"),
                        skip_sigupd: bool = True) -> None:
@@ -182,12 +237,17 @@ def issue_simple_test(instruction: str, cp: str, *,
     scratch = common.pickPrivScratch(instruction_data[1])
     emit_vsetivli(scratch, vl=vl, sew=sew, lmul=lmul)
     init_operand_regs(instruction, instruction_data[0], sew, scratch, regs=init_regs)
+    # Re-emit vsetivli RIGHT BEFORE the test so the previous-instruction CSR
+    # snapshot used by SAMPLE_BEFORE includes vtype/vl/vstart. The intervening
+    # vle*.v ops do not write those CSRs, and the rvvi shim does not carry
+    # forward unchanged CSR values (see simulator-issues/005).
+    emit_vsetivli(scratch, vl=vl, sew=sew, lmul=lmul)
 
     testline, vd, rd = build_testline(
         instruction, instruction_data, maskval=maskval,
         override_vd=override_vd, override_vs1=override_vs1,
         override_vs2=override_vs2, override_vs3=override_vs3,
-        override_imm=override_imm,
+        override_rd=override_rd, override_imm=override_imm,
     )
     sig_lmul, sig_wr = sig_params(instruction, instruction_data, lmul=lmul)
 

@@ -452,11 +452,6 @@ if __name__ == '__main__':
         setExtension(extension)
         setXlen(xlen)
 
-        # Reset per-file generator state (sigupd_count, testcase_count, sigReg, ...)
-        # so each (xlen, extension) starts clean. Without this, signature counts
-        # accumulate across files and label numbering drifts.
-        newInstruction()
-
         # Filter instructions to only those marked for this xlen
         all_instructions = list(testplans[extension].keys())
         instructions = [inst for inst in all_instructions if f"RV{xlen}" in testplans[extension][inst]]
@@ -468,62 +463,93 @@ if __name__ == '__main__':
 
         cmd = "mkdir -p " + pathname # make directory
         os.system(cmd)
-        fname = pathname + "/" + basename + f"_rv{xlen}.S"
-        tempfname = pathname + "/" + basename + f"_rv{xlen}_temp.S"
 
-        print(f"Generating rv{xlen} tests for " + fname)
+        # Split SsstrictV across multiple .S files so each ELF stays under the
+        # ±1MiB JAL relocation range. The framework's `tests_dir.rglob("*.S")`
+        # picks up every chunk independently, each with its own RVTEST_BEGIN/END
+        # wrapper, signature region, and SIGUPD_COUNT. Other priv arches keep a
+        # single file (CHUNK_SIZE >= len(instructions)).
+        if extension.startswith("SsstrictV"):
+            CHUNK_SIZE = 25
+        else:
+            CHUNK_SIZE = max(len(instructions), 1)
 
-        ############################### starting test file ###############################
-        # print custom header part
-        f = pathlib.Path(tempfname).open("w")
-        line = "///////////////////////////////////////////\n"
-        f.write(line)
-        line = "// "+fname+ "\n// " + author + "\n"
-        f.write(line)
+        chunks = [instructions[i:i + CHUNK_SIZE] for i in range(0, len(instructions), CHUNK_SIZE)]
+        # Discover existing chunk files so stale outputs from a larger split
+        # don't leak into the build (e.g. switching from 6 chunks to 4).
+        for stale in pathlib.Path(pathname).glob(f"{basename}_rv{xlen}*.S"):
+            os.system(f"rm -f {stale}")
 
-        # insert generic header
-        insertTemplate(basename, 0, "testgen_header.S", priv=True)
+        for chunk_idx, chunk_instructions in enumerate(chunks):
+            # Reset per-file generator state (sigupd_count, testcase_count, sigReg, ...)
+            # so each chunk starts clean and signature counts / label numbering
+            # don't accumulate across chunks.
+            newInstruction()
 
-        ###############################     test body      ###############################
-        for instruction in instructions:
-            coverpoints = list(testplans[extension][instruction])
-            makeTest(coverpoints, instruction)
+            # Single-chunk extensions keep the historical filename so other
+            # tooling that searches for "<ext>_rv<xlen>.S" continues to work.
+            if len(chunks) == 1:
+                chunk_basename = basename
+                fname = pathname + f"/{basename}_rv{xlen}.S"
+                tempfname = pathname + f"/{basename}_rv{xlen}_temp.S"
+            else:
+                chunk_basename = f"{basename}_p{chunk_idx}"
+                fname = pathname + f"/{basename}_rv{xlen}_p{chunk_idx}.S"
+                tempfname = pathname + f"/{basename}_rv{xlen}_p{chunk_idx}_temp.S"
 
-        insertTemplate(basename, 0, "cp_vstart_gt_vl_setup.S")
+            print(f"Generating rv{xlen} tests for " + fname)
 
-        # The framework's RVTEST_CODE_END (tests/env/rvtest_setup.h) hardcodes x2
-        # as the signature pointer for its final check_trap_sig_offset SIGUPD.
-        # If our test relocated sigReg away from x2 (handleSignaturePointerConflict),
-        # x2 now holds stale data and the cleanup epilog would store through a
-        # bogus pointer (typical symptom: trap loop with MEPC inside
-        # check_trap_sig_offset). Restore x2 = sigReg here so the cleanup works.
-        if common.sigReg != 2:
-            writeLine(f"mv x2, x{common.sigReg}", "# restore sigReg into x2 for RVTEST_CODE_END cleanup epilog")
+            ############################### starting test file ###############################
+            # print custom header part
+            f = pathlib.Path(tempfname).open("w")
+            line = "///////////////////////////////////////////\n"
+            f.write(line)
+            line = "// "+fname+ "\n// " + author + "\n"
+            f.write(line)
 
-        ###############################  ending test file  ###############################
-        # generate vector data (random and corners)
-        test_data = genVMaskedges() # TODO: change to generate a good random (vector_random)
-        test_data += genRandomVectorLS()
+            # insert generic header
+            insertTemplate(chunk_basename, 0, "testgen_header.S", priv=True)
 
-        # print footer with test data and signature
-        signatureWords = getSigSpace(xlen, flen)
-        insertTemplate(basename, signatureWords, "testgen_footer.S", test_data=test_data)
+            ###############################     test body      ###############################
+            for instruction in chunk_instructions:
+                coverpoints = list(testplans[extension][instruction])
+                makeTest(coverpoints, instruction)
 
-        # Finish
-        f.close()
-        # Replace the @SIGUPD_COUNT_FROM_TESTGEN@ placeholder using the dynamic
-        # sigupd_count tally maintained by writeSIGUPD / writeSIGUPD_V (same path
-        # used by vector-testgen-unpriv.py). PR #1353 dropped the _OFFSET arg from
-        # RVTEST_SIGUPD_V/_V_LEN, so the previous regex-based byte counter no longer
-        # works.
-        finalizeSigupdCount(tempfname, xlen, flen)
-        print(f"DEBUG sigupd_count for rv{xlen} {extension}: {common.sigupd_count} sigupd_countF={common.sigupd_countF}")
-        # if new file is different from old file, replace old file with new file
-        if pathlib.Path(fname).exists():
-            if filecmp.cmp(fname, tempfname): # files are the same
-                os.system(f"rm {tempfname}") # remove temp file
+            insertTemplate(chunk_basename, 0, "cp_vstart_gt_vl_setup.S")
+
+            # The framework's RVTEST_CODE_END (tests/env/rvtest_setup.h) hardcodes x2
+            # as the signature pointer for its final check_trap_sig_offset SIGUPD.
+            # If our test relocated sigReg away from x2 (handleSignaturePointerConflict),
+            # x2 now holds stale data and the cleanup epilog would store through a
+            # bogus pointer (typical symptom: trap loop with MEPC inside
+            # check_trap_sig_offset). Restore x2 = sigReg here so the cleanup works.
+            if common.sigReg != 2:
+                writeLine(f"mv x2, x{common.sigReg}", "# restore sigReg into x2 for RVTEST_CODE_END cleanup epilog")
+
+            ###############################  ending test file  ###############################
+            # generate vector data (random and corners)
+            test_data = genVMaskedges() # TODO: change to generate a good random (vector_random)
+            test_data += genRandomVectorLS()
+
+            # print footer with test data and signature
+            signatureWords = getSigSpace(xlen, flen)
+            insertTemplate(chunk_basename, signatureWords, "testgen_footer.S", test_data=test_data)
+
+            # Finish
+            f.close()
+            # Replace the @SIGUPD_COUNT_FROM_TESTGEN@ placeholder using the dynamic
+            # sigupd_count tally maintained by writeSIGUPD / writeSIGUPD_V (same path
+            # used by vector-testgen-unpriv.py). PR #1353 dropped the _OFFSET arg from
+            # RVTEST_SIGUPD_V/_V_LEN, so the previous regex-based byte counter no longer
+            # works.
+            finalizeSigupdCount(tempfname, xlen, flen)
+            print(f"DEBUG sigupd_count for rv{xlen} {chunk_basename}: {common.sigupd_count} sigupd_countF={common.sigupd_countF}")
+            # if new file is different from old file, replace old file with new file
+            if pathlib.Path(fname).exists():
+                if filecmp.cmp(fname, tempfname): # files are the same
+                    os.system(f"rm {tempfname}") # remove temp file
+                else:
+                    os.system(f"mv {tempfname} {fname}")
+                    print("Updated " + fname)
             else:
                 os.system(f"mv {tempfname} {fname}")
-                print("Updated " + fname)
-        else:
-            os.system(f"mv {tempfname} {fname}")

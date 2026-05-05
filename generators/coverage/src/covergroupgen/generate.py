@@ -17,6 +17,7 @@ from difflib import get_close_matches
 from pathlib import Path
 
 from rich import print as rprint
+from rich.progress import track
 
 # Coverpoints whose template name depends on the SEW (element width).
 SEW_DEPENDENT_CPS = {

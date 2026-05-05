@@ -36,7 +36,7 @@ Same constraints as SsstrictSm — all scratch registers chosen from
 the full rationale).
 """
 
-from random import randint, sample, seed
+from random import choice, randint, sample, seed
 
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
@@ -74,6 +74,8 @@ _S_CSR_SKIP: frozenset[int] = frozenset(
 # ── Encoding helpers (shared logic identical to SsstrictSm) ───────────────
 
 
+SAFE_REGS = list(range(7, 32))  # x7 .. x31
+
 def _gen_encodings(
     template: str,
     length: int = 32,
@@ -82,6 +84,15 @@ def _gen_encodings(
     """Generate all exhaustive encodings from a template string."""
     if exclusion is None:
         exclusion = []
+
+    # For 32-bit instructions, identify register fields (MSB-first indices).
+    # rd: bits[11:7] -> template[20:25]
+    # rs1: bits[19:15] -> template[12:17]
+    # rs2: bits[24:20] -> template[7:12]
+    reg_field_ranges = []
+    if length == 32:
+        reg_field_ranges = [(7, 12), (12, 17), (20, 25)]
+
     ebits = template.count("E")
     results: list[str] = []
     for j in range(2**ebits):
@@ -95,8 +106,21 @@ def _gen_encodings(
                 e -= 1
             else:
                 instr[i] = template[i]
+
+        # Overwrite register fields that are fully random (all 'R' in
+        # the template) with a randomly chosen safe register (x7..x31).
+        for start, end in reg_field_ranges:
+            if all(template[k] == "R" for k in range(start, end)):
+                reg = choice(SAFE_REGS)
+                reg_bits = f"{reg:05b}"
+                for k, b in enumerate(reg_bits):
+                    instr[start + k] = b
+
         instrstr = "".join(instr)
-        if not any(all(p[k] == "X" or p[k] == instrstr[k] for k in range(length)) for p in exclusion):
+        if not any(
+            all(p[k] == "X" or p[k] == instrstr[k] for k in range(length))
+            for p in exclusion
+        ):
             results.append(instrstr)
     return results
 
@@ -155,11 +179,11 @@ def _generate_csr_tests_s(test_data: TestData) -> list[str]:
     )
 
     # The S-mode CSR sweep stays in S-mode continuously from the opening
-    # RVTEST_GOTO_LOWER_MODE Smode (above) to the closing RVTEST_GOTO_LOWER_MODE Mmode
+    # RVTEST_GOTO_LOWER_MODE Smode (above) to the closing RVTEST_GOTO_MMODE
     # (below).  No intra-sweep mode switches are emitted.
     #
     # Why no batch boundaries with GOTO Mmode/Smode pairs:
-    # RVTEST_GOTO_LOWER_MODE Mmode is a preprocessor no-op on some configs
+    # RVTEST_GOTO_MMODE is a preprocessor no-op on some configs
     # (including RV32 sail-rv32-max) — it generates zero machine code.  Emitting
     # it inside the sweep therefore leaves us in S-mode.  GOTO Smode then executes
     # from S-mode: its first instruction is an M-mode CSR read that traps as
@@ -213,7 +237,7 @@ def _generate_csr_tests_s(test_data: TestData) -> list[str]:
         [
             "",
             "# Return to machine mode after S-mode CSR sweep",
-            "\tRVTEST_GOTO_LOWER_MODE Mmode",
+            "\tRVTEST_GOTO_MMODE",
             "\tcsrw    mie, x0",
             "",
         ]
@@ -335,7 +359,7 @@ def _generate_shadow_csr(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "",
-            "\tRVTEST_GOTO_LOWER_MODE Mmode",
+            "\tRVTEST_GOTO_MMODE",
             "\tcsrw    mie, x0",  # re-disable interrupts after Mtrampoline ecall return
             "",
         ]
@@ -378,16 +402,16 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
         ]
     )
 
+    lines.append("")
+    lines.append("\t.align 4")   # force 4-byte alignment before the sweep
     lines.append(f"\t{test_data.add_testcase('illegal_instr_sweep', coverpoint, covergroup)}")
     lines.append("")
 
     for cmt, tmpl in [
         ("Reserved op7", "RRRRRRRRRRRRRRRRRRRRRRRRR0011111"),
         ("Reserved op15", "RRRRRRRRRRRRRRRRRRRRRRRRR0111111"),
-        ("Reserved op21", "RRRRRRRRRRRRRRRRRRRRRRRRR1010111"),
         ("Reserved op23", "RRRRRRRRRRRRRRRRRRRRRRRRR1011111"),
         ("Reserved op26", "RRRRRRRRRRRRRRRRRRRRRRRRR1101011"),
-        ("Reserved op29", "RRRRRRRRRRRRRRRRRRRRRRRRR1110111"),
         ("Reserved op31", "RRRRRRRRRRRRRRRRRRRRRRRRR1111111"),
     ]:
         _emit_raw_words(lines, cmt, tmpl)

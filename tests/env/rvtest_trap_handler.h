@@ -1499,7 +1499,7 @@ sv_\__MODE__\()epc:
 
 adj_\__MODE__\()epc_rtn:                // adj mepc so there is at least 4B of padding after op
         andi    T3, T3, ~WDBYTMSK       // adjust mepc to prev 4B alignment (if 2B aligned)
-        addi    T3, T3,  2*WDBYTSZ      // adjust mepc so it skips past op, has padding & 4B aligned
+        addi    T3, T3,  WDBYTSZ      // adjust mepc so it skips past op, has padding & 4B aligned
         csrw    CSR_XEPC, T3            // restore adjusted value, w/ 2,4 or 6B of padding
 
 skp_adj_\__MODE__\()epc:

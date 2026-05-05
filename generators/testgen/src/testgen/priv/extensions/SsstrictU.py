@@ -30,7 +30,7 @@ Same constraints as SsstrictSm — all scratch registers chosen from
 the full rationale).
 """
 
-from random import randint, sample, seed
+from random import choice, randint, sample, seed
 
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
@@ -72,6 +72,8 @@ _U_CSR_ACCESSIBLE: frozenset[int] = frozenset(
 # ── Encoding helpers (shared logic identical to SsstrictSm) ───────────────
 
 
+SAFE_REGS = list(range(7, 32))  # x7 .. x31
+
 def _gen_encodings(
     template: str,
     length: int = 32,
@@ -80,6 +82,15 @@ def _gen_encodings(
     """Generate all exhaustive encodings from a template string."""
     if exclusion is None:
         exclusion = []
+
+    # For 32-bit instructions, identify register fields (MSB-first indices).
+    # rd: bits[11:7] -> template[20:25]
+    # rs1: bits[19:15] -> template[12:17]
+    # rs2: bits[24:20] -> template[7:12]
+    reg_field_ranges = []
+    if length == 32:
+        reg_field_ranges = [(7, 12), (12, 17), (20, 25)]
+
     ebits = template.count("E")
     results: list[str] = []
     for j in range(2**ebits):
@@ -93,8 +104,21 @@ def _gen_encodings(
                 e -= 1
             else:
                 instr[i] = template[i]
+
+        # Overwrite register fields that are fully random (all 'R' in
+        # the template) with a randomly chosen safe register (x7..x31).
+        for start, end in reg_field_ranges:
+            if all(template[k] == "R" for k in range(start, end)):
+                reg = choice(SAFE_REGS)
+                reg_bits = f"{reg:05b}"
+                for k, b in enumerate(reg_bits):
+                    instr[start + k] = b
+
         instrstr = "".join(instr)
-        if not any(all(p[k] == "X" or p[k] == instrstr[k] for k in range(length)) for p in exclusion):
+        if not any(
+            all(p[k] == "X" or p[k] == instrstr[k] for k in range(length))
+            for p in exclusion
+        ):
             results.append(instrstr)
     return results
 
@@ -150,9 +174,9 @@ def _generate_csr_tests_u(test_data: TestData) -> list[str]:
     )
 
     # The U-mode CSR sweep stays in U-mode continuously from the opening
-    # RVTEST_GOTO_LOWER_MODE Umode to the closing RVTEST_GOTO_LOWER_MODE Mmode.
+    # RVTEST_GOTO_LOWER_MODE Umode to the closing RVTEST_GOTO_MMODE.
     # No intra-sweep mode switches are emitted — same rationale as SsstrictS.py:
-    # RVTEST_GOTO_LOWER_MODE Mmode is a no-op on some configs, so any intra-sweep
+    # RVTEST_GOTO_MMODE is a no-op on some configs, so any intra-sweep
     # GOTO Umode would execute from U-mode, crashing identically.
     # All CSR accesses from U-mode either trap as illegal (handled by fast handler)
     # or execute silently — Mtrampoline is never fired, save area sp stays valid.
@@ -186,7 +210,7 @@ def _generate_csr_tests_u(test_data: TestData) -> list[str]:
         [
             "",
             "# Return to machine mode after U-mode CSR sweep",
-            "\tRVTEST_GOTO_LOWER_MODE Mmode",
+            "\tRVTEST_GOTO_MMODE",
             "",
         ]
     )
@@ -226,22 +250,34 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
         ]
     )
 
+    lines.append("")
+    lines.append("\t.align 4")   # force 4-byte alignment before the sweep
     lines.append(f"\t{test_data.add_testcase('illegal_instr_sweep', coverpoint, covergroup)}")
     lines.append("")
 
     for cmt, tmpl in [
         ("Reserved op7", "RRRRRRRRRRRRRRRRRRRRRRRRR0011111"),
         ("Reserved op15", "RRRRRRRRRRRRRRRRRRRRRRRRR0111111"),
-        ("Reserved op21", "RRRRRRRRRRRRRRRRRRRRRRRRR1010111"),
         ("Reserved op23", "RRRRRRRRRRRRRRRRRRRRRRRRR1011111"),
         ("Reserved op26", "RRRRRRRRRRRRRRRRRRRRRRRRR1101011"),
-        ("Reserved op29", "RRRRRRRRRRRRRRRRRRRRRRRRR1110111"),
         ("Reserved op31", "RRRRRRRRRRRRRRRRRRRRRRRRR1111111"),
     ]:
         _emit_raw_words(lines, cmt, tmpl)
 
     _emit_raw_words(lines, "cp_load", "RRRRRRRRRRRRRRRRREEE010010000011")
-    _emit_raw_words(lines, "cp_fload", "RRRRRRRRRRRRRRRRREEE010010000111")
+    _emit_raw_words(
+            lines,
+            "cp_fload",
+            "RRRRRRRRRRRRRRRRREEE010010000111",
+            exclusion=[
+                "110XXXXXXXXXXXX01XXXXXXXXXXXXXXX",  # c.beqz
+                "111XXXXXXXXXXXX01XXXXXXXXXXXXXXX",  # c.bnez
+                "101XXXXXXXXXXXX01XXXXXXXXXXXXXXX",  # c.j
+                "001XXXXXXXXXXXX01XXXXXXXXXXXXXXX",  # c.jal (RV32 only)
+                "1000XXXXXXXXX0000010XXXXXXXXXXXXXX",  # c.jr
+                "1001XXXXXXXXX0000010XXXXXXXXXXXXXX",  # c.jalr
+            ],
+    )
     _emit_raw_words(lines, "cp_fence_cbo", "RRRRRRRRRRRRRRRRREEE010010001111")
     _emit_raw_words(lines, "cp_cbo_immediate", "EEEEEEEEEEEE00000010000000001111")
     _emit_raw_words(lines, "cp_cbo_rd", "00000000000RRRRRR010EEEEE0001111")

@@ -16,7 +16,16 @@ import re
 from difflib import get_close_matches
 from pathlib import Path
 
-from rich.progress import track
+from rich import print as rprint
+from rich.progress import (
+    BarColumn,
+    MofNCompleteColumn,
+    Progress,
+    SpinnerColumn,
+    TaskProgressColumn,
+    TextColumn,
+    TimeElapsedColumn,
+)
 
 # Coverpoints whose template name depends on the SEW (element width).
 SEW_DEPENDENT_CPS = {
@@ -643,3 +652,4 @@ def generate_covergroups(testplan_dir: Path, output_dir: Path, extensions: str =
     write_priv_covergroups(testplan_dir, templates, output_dir, extensions, exclude)
     write_coverage_headers(all_test_plans, output_dir, templates)
     write_instruction_sample_file(all_test_plans, templates, output_dir)
+    rprint(f"[bold green]✓ Generated covergroups for {len(test_plans)} extension(s)[/]")

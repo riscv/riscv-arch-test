@@ -21,6 +21,14 @@
 # initializing custom state.
 // #define RVMODEL_BOOT
 
+// Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
+// if defined.  For most DUTs, the default should work and this macro
+// should not be defined.  If no M-mode or CSRs are implemented, define this
+// macro as blank to bypass the boot process.  If a nonconforming
+// M-mode is implemented, define this macro to set up the necessary
+// state in a fashion similar to RVTEST_BOOT_TO_MMODE.
+//#define RVMODEL_BOOT_TO_MMODE
+
 ##### TERMINATION #####
 
 // SAIL uses HTIF (Host-Target Interface) to terminate simulation.

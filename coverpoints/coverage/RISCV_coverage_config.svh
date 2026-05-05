@@ -176,6 +176,9 @@
 `ifdef SSSTRICTV_COVERAGE
   `include "SsstrictV_coverage.svh"
 `endif
+`ifdef SSTVALA_COVERAGE
+  `include "Sstvala_coverage.svh"
+`endif
 `ifdef SSTVECD_COVERAGE
   `include "Sstvecd_coverage.svh"
 `endif

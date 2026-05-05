@@ -207,7 +207,7 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("SmF", required_extensions=["Sm", "U", "F", "Zicsr"], march_extensions=["F", "D", "Zfa"])
+@add_priv_test_generator("SmF", required_extensions=["Sm", "F"], march_extensions=["F", "D", "Zfa"])
 def make_smf(test_data: TestData) -> list[str]:
     """Generate tests for SmF machine-mode floating-point testsuite."""
     lines: list[str] = []

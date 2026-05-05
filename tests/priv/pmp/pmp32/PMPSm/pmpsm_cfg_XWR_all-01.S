@@ -35,9 +35,6 @@
 #define TEST_FILE "pmpsm_cfg_XWR_all-01.S"
 #define SIGUPD_COUNT 400
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 
@@ -280,8 +277,10 @@ test_7_str: .string "\"test: 7; cp: pmpm_cfg_XWR_all_lhu\""
 test_8_str: .string "\"test: 8; cp: pmpm_cfg_XWR_all_lw\""
 test_9_str: .string "\"test: 9; cp: pmpm_cfg_XWR_all_jalr\""
 
-.align 13
-.align (RVMODEL_PMP_GRAIN+2)
+.align 12
+TEST_FOR_EXECUTION_0:
+    jr ra
+
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

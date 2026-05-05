@@ -1,3 +1,4 @@
+#define CONFORMING_SM_SUPPORTED
 #define RVMODEL_PMP_GRAIN 0
 #define RVMODEL_NUM_PMPS 16
 #define D_SUPPORTED
@@ -27,6 +28,7 @@
 #define SEWMIN 8
 #define ELEN 64
 #define MAXINDEXEEW 32
+#define ZVL32B_SUPPORTED
 
 // Supported fractional LMULs for vector
 // all supported now should be generated based on config

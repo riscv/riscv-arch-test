@@ -32,36 +32,26 @@ def _generate_scause_tests(test_data: TestData) -> list[str]:
     ]
 
     gated_exceptions = [
-        (10, "H_SUPPORTED"),  # ecall from VS-mode
+        (10, "#ifdef H_SUPPORTED"),  # ecall from VS-mode
         (11, "RESERVED"),  # ecall from M-mode never delegated
         (14, "RESERVED"),
         (16, "RESERVED"),  # Double trap never delegated
         (17, "RESERVED"),
-        (18, "ZICFILP_SUPPORTED"),  # software check
+        (18, "#if defined(ZICFILP_SUPPORTED) || defined(ZICFISS_SUPPORTED)"),  # software check
         (19, "RESERVED"),  # not all systems may produce hardware-error exceptions
-        (20, "H_SUPPORTED"),  # instruction guest-page fault
-        (21, "H_SUPPORTED"),  # load guest-page fault
-        (22, "H_SUPPORTED"),  # virtual instruction
-        (23, "H_SUPPORTED"),  # store guest-page fault
+        (20, "#ifdef H_SUPPORTED"),  # instruction guest-page fault
+        (21, "#ifdef H_SUPPORTED"),  # load guest-page fault
+        (22, "#ifdef H_SUPPORTED"),  # virtual instruction
+        (23, "#ifdef H_SUPPORTED"),  # store guest-page fault
     ]
 
     for i in range(24):
         gated = next((g for g in gated_exceptions if g[0] == i), None)
         if gated is not None and gated[1] == "RESERVED":
             lines.append(f"\n# Exception cause {i} is reserved")
-        elif gated is not None:
-            lines.extend(
-                [
-                    "",
-                    f"#ifdef {gated[1]}",
-                    f"# Testcase: set scause to exception cause {i}",
-                    f"LI(x{check_reg}, {i})",
-                    test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
-                    gen_csr_write_sigupd(check_reg, "scause", test_data),
-                    "#endif",
-                ]
-            )
         else:
+            if gated is not None:
+                lines.append(f"{gated[1]}")
             lines.extend(
                 [
                     "",
@@ -71,6 +61,8 @@ def _generate_scause_tests(test_data: TestData) -> list[str]:
                     gen_csr_write_sigupd(check_reg, "scause", test_data),
                 ]
             )
+            if gated is not None:
+                lines.append("#endif")
 
     ######################################
     coverpoint = "cp_scause_write_interrupt"
@@ -446,18 +438,16 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     # Format: (CSR Name, IgnoreMask).  IgnoreMask specifies a set of bits to ignore
 
     csrs = [
-        (
-            "sstatus",
-            0x000000040,
-        ),  # TODO: sail does not yet support UBE; mask it until available to avoid mismatches.  Delete mask when Sail has UBE support.
-        #        ("scause", 0x7FFFFFFFFFFFFFF0),  # WLRL fields can't be managed with masks.  Use cp_scause_* instead
+        # TODO: sail does not yet support sstatus.UBE; mask it until available to avoid mismatches.  Delete mask when Sail has UBE support.
+        ("sstatus", 0x000000040),
+        # WLRL fields can't be managed with masks.  Use cp_scause_* instead
+        #        ("scause", 0x7FFFFFFFFFFFFFF0),
         ("sie", None),
-        #        ("stvec", 0b1),  # stvec.MODE[0] can be 0 or 1. BASE is hard to predict with a reference model
+        # stvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
+        ("stvec", 0xFFFFFFFFFFFFFFFD),
         ("scounteren", None),
-        (
-            "senvcfg",
-            0x30,
-        ),  # Mask off CBIE field because reserved 10 value can become unpredictable, fails on cvw.  TODO: give a better way to map 10 to a legal value in Sail
+        # Mask off CBIE field because reserved 10 value can become unpredictable, fails on cvw.  TODO: give a better way to map 10 to a legal value in Sail
+        ("senvcfg", 0x30),
         ("sscratch", None),
         ("sepc", None),
         ("stval", None),
@@ -636,12 +626,8 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{r1}, 0x007FFFBF) # skip UBE, UXL bits which would cause weird behavior",
-            _add_shadow(
-                r1, r2, rmask, rsave, "mstatus", "sstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data
-            ),  # TODO: set mask to 0 when UXL and UBE are supported by Sail
-            _add_shadow(
-                r1, r2, rmask, rsave, "sstatus", "mstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data
-            ),  # TODO: set mask to 0 when UXL and UBE are supported by Sail
+            _add_shadow(r1, r2, rmask, rsave, "mstatus", "sstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data),
+            _add_shadow(r1, r2, rmask, rsave, "sstatus", "mstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data),
             f"LI(x{r1}, 0x3FFF) # all interrupts",
             _add_shadow(r1, r2, rmask, rsave, "mie", "sie", 0x3666, coverpoint, covergroup, test_data),
             _add_shadow(r1, r2, rmask, rsave, "mip", "sip", 0x3666, coverpoint, covergroup, test_data),

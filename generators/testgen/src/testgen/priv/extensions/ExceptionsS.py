@@ -427,20 +427,6 @@ def make_exceptionss(test_data: TestData) -> list[str]:
     """Main entry point for S-mode exception test generation (refactored)."""
     lines: list[str] = []
 
-    # Initialize scratch memory
-    lines.extend(
-        [
-            "# Initialize scratch memory with test data",
-            " LA(x10, scratch)",
-            " LI(x11, 0xDEADBEEF)",
-            " sw x11, 0(x10)",
-            " sw x11, 4(x10)",
-            " sw x11, 8(x10)",
-            " sw x11, 12(x10)",
-            "",
-        ]
-    )
-
     lines.extend(["RVTEST_GOTO_LOWER_MODE Smode  # use S-mode"])
     lines.extend(generate_instr_adr_misaligned_jal_tests(test_data, _CG))
     lines.extend(generate_instr_adr_misaligned_jalr_tests(test_data, _CG))

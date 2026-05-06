@@ -198,6 +198,10 @@
         `cover_info("//      SmV - Enabled");
         `include "SmV_coverage_init.svh"
     `endif
+    `ifdef COVER_SSCCPTR
+        `cover_info("//      Ssccptr - Enabled");
+        `include "Ssccptr_coverage_init.svh"
+    `endif
     `ifdef COVER_SSCOUNTERENW
         `cover_info("//      Sscounterenw - Enabled");
         `include "Sscounterenw_coverage_init.svh"
@@ -365,6 +369,10 @@
     `ifdef COVER_ZALRSC
         `cover_info("//      Zalrsc - Enabled");
         `include "Zalrsc_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZAMA16B
+        `cover_info("//      Zama16b - Enabled");
+        `include "Zama16b_coverage_init.svh"
     `endif
     `ifdef COVER_ZBA
         `cover_info("//      Zba - Enabled");

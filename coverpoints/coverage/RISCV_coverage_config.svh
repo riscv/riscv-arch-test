@@ -152,6 +152,9 @@
 `ifdef SMV_COVERAGE
   `include "SmV_coverage.svh"
 `endif
+`ifdef SSCCPTR_COVERAGE
+  `include "Ssccptr_coverage.svh"
+`endif
 `ifdef SSCOUNTERENW_COVERAGE
   `include "Sscounterenw_coverage.svh"
 `endif
@@ -277,6 +280,9 @@
 `endif
 `ifdef ZALRSC_COVERAGE
   `include "Zalrsc_coverage.svh"
+`endif
+`ifdef ZAMA16B_COVERAGE
+  `include "Zama16b_coverage.svh"
 `endif
 `ifdef ZBA_COVERAGE
   `include "Zba_coverage.svh"

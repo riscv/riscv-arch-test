@@ -427,8 +427,8 @@
 
   #if defined(F_SUPPORTED) || defined(ZFINX_SUPPORTED)
     failedtest_saveresults_fflags:
-        # Re-read fcsr for bad value (hasn't changed since failure)
-        csrr x6, fcsr
+        # Re-read fflags for bad value (hasn't changed since failure).
+        csrr x6, fflags
         SREG x6, 272(DEFAULT_TEMP_REG)    # failing_value
 
         # Extract load instruction at -12 for expected value (same approach as integer)

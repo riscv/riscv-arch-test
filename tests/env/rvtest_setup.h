@@ -685,15 +685,15 @@
 
     #ifdef SMSTATEEN_SUPPORTED
       #if __riscv_xlen == 64
-        li t0, MSTATEEN_HSTATEEN | MSTATEEN0_HENVCFG
+        li t0, MSTATEEN_HSTATEEN | MSTATEEN0_HENVCFG  # alternate names for SE0 and ENVCFG in encoding.h
         csrs mstateen0, t0  // Set these fields
       #else    // RV32
-        li t0, MSTATEENH_HSTATEEN | MSTATEEN0H_HENVCFG
+        li t0, MSTATEENH_HSTATEEN | MSTATEEN0H_HENVCFG   # alternate names for SE0 and ENVCFG in encoding.h
         csrs mstateen0h, t0 // Set these fields
       #endif
     #endif
     #ifdef SSSTATEEN_SUPPORTED
-      li t0, SMSTATEEN0_JVT | SMSTATEEN0_FCSR
+      li t0, SSTATEEN0_JVT | SSTATEEN0_FCSR
       csrs sstateen0, t0 // enable access from lower privilege mode
     #endif
 
@@ -761,6 +761,7 @@
     #ifdef ZVL32B_SUPPORTED  // this should be defined if there is any vector support whatsoever
       li t0, MSTATUS_VS
       csrs mstatus, t0 // Set VS to dirty to enable vector
+      csrr t0, vlenb   // Read VLENB so coverage trace records VLEN/8 (used by vlmax computation)
     #endif
 .endm
 

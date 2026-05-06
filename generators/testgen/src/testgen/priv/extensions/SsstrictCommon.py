@@ -166,13 +166,14 @@ def emit_raw_words(
     directive = ".word" if length == 32 else ".hword"
     encodings = _gen_encodings(template, length, exclusion)
     lines.append("")
+    if length == 32:
+        lines.append("\t.balign 4")  # ensure 4-byte alignment for .word blocks
     lines.append(f"# {comment}  ({len(encodings)} encodings)")
     for idx, enc in enumerate(encodings):
         if idx > 0 and idx % BLANK_INTERVAL == 0:
             lines.append("")
         lines.append(f"\t{directive} 0b{enc}")
     lines.append("")
-
 
 # ── CSR sweep body ────────────────────────────────────────────────────────
 
@@ -282,6 +283,7 @@ def generate_illegal_instr(
         ("Reserved op15", "RRRRRRRRRRRRRRRRRRRRRRRRR0111111"),
         ("Reserved op23", "RRRRRRRRRRRRRRRRRRRRRRRRR1011111"),
         ("Reserved op26", "RRRRRRRRRRRRRRRRRRRRRRRRR1101011"),
+        # ("Reserved op31", "RRRRRRRRRRRRRRRRRRRRRRRRR1111111"),
     ]:
         emit_raw_words(lines, cmt, tmpl)
 

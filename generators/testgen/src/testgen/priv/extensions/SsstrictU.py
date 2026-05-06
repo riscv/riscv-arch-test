@@ -30,7 +30,7 @@ from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
 
-from .SsstrictCommon import SAFE_REGS, generate_csr_sweep_body, generate_compressed_instr, generate_illegal_instr
+from .SsstrictCommon import generate_compressed_instr, generate_csr_sweep_body, generate_illegal_instr
 
 # ── CSR skip set (U-mode) ─────────────────────────────────────────────────
 

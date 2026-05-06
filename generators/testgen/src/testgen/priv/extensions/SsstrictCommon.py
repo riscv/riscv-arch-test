@@ -52,34 +52,17 @@ BLANK_INTERVAL = 50
 # Excludes x0-x6: zero, ra, sp(sig ptr), gp(data ptr), tp, t0, t1.
 # t0 and t1 are clobbered by the fast handler on every trap.
 SAFE_REGS: list[int] = list(range(7, 32))  # x7 .. x31
+# The register reserved as a permanent scratch base pointer.
+# Must be in SAFE_REGS.  Initialized to &scratch before the sweep so
+# every load/store that uses it as rs1 hits valid mapped memory.
+SCRATCH_BASE_REG: int = 8  # x8 / s0
+
 
 # ── Global exclusion lists ────────────────────────────────────────────────
 
-# CBO instructions — platform-dependent trap behaviour (access-fault vs
-# illegal-instruction vs no-trap depending on Zicbom/Zicboz enablement).
-# TODO: Restore these once CI for QEMU + Spike passes and all bugs identified
-CBO_EXCLUSIONS: list[str] = [
-    "000000000000XXXXX010XXXXX0001111",  # cbo.inval
-    "000000000001XXXXX010XXXXX0001111",  # cbo.clean
-    "000000000010XXXXX010XXXXX0001111",  # cbo.flush
-    "000000000100XXXXX010XXXXX0001111",  # cbo.zero
-    "000000000000XXXXX110XXXXX0001111",  # prefetch variants
-]
+CBO_EXCLUSIONS: list[str] = []
 
-# TODO: Restore these once CI for QEMU + Spike passes and all bugs identified
 AMO_EXCLUSIONS: list[str] = [
-    "00010XXXXXXXXXXXX01X010010101111",  # lr.w / lr.d
-    "00011XXXXXXXXXXXX01X010010101111",  # sc.w / sc.d
-    "00001XXXXXXXXXXXX01X010010101111",  # amoswap
-    "00000XXXXXXXXXXXX01X010010101111",  # amoadd
-    "00100XXXXXXXXXXXX01X010010101111",  # amoxor
-    "01100XXXXXXXXXXXX01X010010101111",  # amoand
-    "01000XXXXXXXXXXXX01X010010101111",  # amoor
-    "10000XXXXXXXXXXXX01X010010101111",  # amomin
-    "10100XXXXXXXXXXXX01X010010101111",  # amomax
-    "11000XXXXXXXXXXXX01X010010101111",  # amominu
-    "11100XXXXXXXXXXXX01X010010101111",  # amomaxu
-    "00101XXXXXXXXXXXX01X010010101111",  # amocas (Zacas)
     "01001XXXXXXXXXXXX01X010010101111",  # ssamoswap (Ssamoswap)
 ]
 # Privileged/SYSTEM instruction exclusions shared by all modes.
@@ -89,28 +72,11 @@ PRIVILEGED_000_EXCLUSIONS: list[str] = [
     "00X10000001000000000000001110011",  # mret/sret
     "00000000000000000000000001110011",  # ecall
     "00010000010100000000000001110011",  # wfi
-    # Valid privileged instructions that execute without trapping
-    # on implementations with Sv39/Svinval/H-extension:
-    "0001001XXXXXXXXXX000000001110011",  # SFENCE.VMA (any rs1,rs2)
-    "0001011XXXXXXXXXX000000001110011",  # SINVAL.VMA (Svinval)
-    "00011000000000000000000001110011",  # SFENCE.W.INVAL
-    "00011000000100000000000001110011",  # SFENCE.INVAL.IR
-    "0010001XXXXXXXXXX000000001110011",  # HFENCE.BVMA
-    "1010001XXXXXXXXXX000000001110011",  # HFENCE.GVMA
     "01110000001000000000000001110011",  # MNRET (Smrnmi)
-    "00000000001000000000000001110011",  # URET (deprecated)
 ]
 
 
 # ── Encoding helpers ──────────────────────────────────────────────────────
-
-
-# The register reserved as a permanent scratch base pointer.
-# Must be in SAFE_REGS.  Initialized to &scratch before the sweep so
-# every load/store that uses it as rs1 hits valid mapped memory.
-SCRATCH_BASE_REG: int = 8  # x8 / s0
-
-
 def _gen_encodings(
     template: str,
     length: int = 32,
@@ -204,6 +170,18 @@ def _gen_encodings(
         if not any(all(p[k] == "X" or p[k] == instrstr[k] for k in range(length)) for p in exclusion):
             results.append(instrstr)
     return results
+
+
+def _emit_reg_init(lines: list[str]) -> None:
+    """Re-initialize x8 to aligned scratch and copy to all other safe regs."""
+    lines.append("")
+    lines.append("\t# x8 = permanent scratch base, 8-byte aligned for atomics")
+    lines.append("\tla x8, scratch")
+    lines.append("\t# Pre-load remaining safe regs with scratch address")
+    for r in range(7, 32):
+        if r != 8:
+            lines.append(f"\tmv x{r}, x8")
+    lines.append("")
 
 
 def emit_raw_words(
@@ -320,17 +298,7 @@ def generate_illegal_instr(
     lines.append(f"\t{test_data.add_testcase('illegal_instr_sweep', coverpoint, covergroup)}")
     lines.append("")
 
-    # x8 = permanent scratch base pointer (never used as rd).
-    # All other safe regs also point to scratch so any surviving
-    # base-address usage hits valid mapped memory.
-    lines.append("")
-    lines.append("\t# x8 = permanent scratch base (never clobbered as rd)")
-    lines.append("\tla x8, scratch")
-    lines.append("\t# Pre-load remaining safe regs with scratch address")
-    for r in range(7, 32):
-        if r != 8:
-            lines.append(f"\tmv x{r}, x8")
-    # Reserved opcodes (op31 excluded — variable-length ambiguity)
+    _emit_reg_init(lines)
     for cmt, tmpl in [
         ("Reserved op7", "RRRRRRRRRRRRRRRRRRRRRRRRR0011111"),
         ("Reserved op15", "RRRRRRRRRRRRRRRRRRRRRRRRR0111111"),
@@ -341,19 +309,25 @@ def generate_illegal_instr(
     ]:
         emit_raw_words(lines, cmt, tmpl)
 
+    _emit_reg_init(lines)
     # Loads — rs1 is random (already constrained to safe regs, rd != rs1 != x8)
     emit_raw_words(lines, "cp_load", "RRRRRRRRRRRRRRRRREEE010010000011")
     emit_raw_words(lines, "cp_fload", "RRRRRRRRRRRRRRRRREEE010010000111")
 
+    _emit_reg_init(lines)
     # Stores — rs1 fixed to x8 (scratch base)
     emit_raw_words(lines, "cp_store", "RRRRRRRRRRRR01000EEERRRRR0100011")
     emit_raw_words(lines, "cp_fstore", "RRRRRRRRRRRR01000EEERRRRR0100111")
 
+    _emit_reg_init(lines)
     # Fence / CBO — rs1 fixed to x8
     emit_raw_words(lines, "cp_fence_cbo", "RRRRRRRRRRRRRRRRREEE010010001111", exclusion=CBO_EXCLUSIONS)
+    _emit_reg_init(lines)
     emit_raw_words(lines, "cp_cbo_immediate", "EEEEEEEEEEEE01000010000000001111", exclusion=CBO_EXCLUSIONS)
+    _emit_reg_init(lines)
     emit_raw_words(lines, "cp_cbo_rd", "00000000000RRRRRR010EEEEE0001111", exclusion=CBO_EXCLUSIONS)
 
+    _emit_reg_init(lines)
     # Atomics — rs1 fixed to x8
     emit_raw_words(lines, "cp_atomic_funct3", "RRRRRRRRRRRR01000EEE010010101111", exclusion=AMO_EXCLUSIONS)
     emit_raw_words(lines, "cp_atomic_funct7", "EEEEERRRRRRR0100001E010010101111", exclusion=AMO_EXCLUSIONS)
@@ -462,20 +436,19 @@ def generate_compressed_instr(
     lines.append("")
 
     # TODO: Restore these, Put scratch in x8, and do load/store from x8
+    _emit_reg_init(lines)
     emit_raw_words(
         lines,
         "compressed00",
         "EEEEEEEEEEEEEE00",
         length=16,
         exclusion=[
-            "X01XXXXXXXXXXX00",  # c.fld/c.fsd — bad address
             "X10XXXXXXXXXXX00",  # c.lw/c.sw — bad address
             "10000XXXXXXXXX00",  # c.lbu, c.lh, c.lhu
             "10010XXXXXXXXX00",  # c.sb
             "10011XXXXXXXXX00",  # c.sh
-            "XXXX00010XXXXX00",  # rd = x2
-            "011XXXXXXXXXXX00",  # c.ld — garbage in regs + random mtval on fault
-            "111XXXXXXXXXXX00",  # c.sd — store from uninitialised reg, bad address
+            "011XXXXXXXXXXX00",  # c.ld
+            "111XXXXXXXXXXX00",  # c.sd
         ],
     )
     emit_raw_words(

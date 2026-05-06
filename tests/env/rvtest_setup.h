@@ -75,16 +75,16 @@
 
   // Switch to M-mode
   // The following epilog and checks are needed if there is any trap handler.  Right now, it is not
-  // invoked unless there is CONFORMING_SM_SUPPORTED.  A user with nonconforming M-mode will need
+  // invoked unless there is STANDARD_SM_SUPPORTED.  A user with nonconforming M-mode will need
   // to reimplement many parts of this macro.
   rvtest_code_end:
-    #ifdef CONFORMING_SM_SUPPORTED
+    #ifdef STANDARD_SM_SUPPORTED
       RVTEST_GOTO_MMODE
     #endif
 
   // Restore xTVEC, trampoline, regs for each mode in opposite order that they were saved
   cleanup_epilogs:
-    #ifdef CONFORMING_SM_SUPPORTED
+    #ifdef STANDARD_SM_SUPPORTED
       #ifdef S_SUPPORTED
         #ifdef H_SUPPORTED
           RVTEST_TRAP_EPILOG V        // actual v-mode prolog/epilog/handler code
@@ -95,7 +95,7 @@
       RVTEST_TRAP_EPILOG M            // actual m-mode prolog/epilog/handler code
     #endif
 
-  #ifdef CONFORMING_SM_SUPPORTED
+  #ifdef STANDARD_SM_SUPPORTED
     LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
     bne     T4, T5, check_trap_sig_offset
     jal     T2, failedtest_trap_x7_x9
@@ -127,7 +127,7 @@
   // Guard matches the RVTEST_TRAP_EPILOG guard above: rvtest_Mend (and sibling
   // labels) are defined by RVTEST_TRAP_EPILOG, so the handler that references
   // them must only be emitted when the epilog is also emitted.
-  #ifdef CONFORMING_SM_SUPPORTED
+  #ifdef STANDARD_SM_SUPPORTED
   INSTANTIATE_MODE_MACRO RVTEST_TRAP_HANDLER
   #endif
 
@@ -185,7 +185,7 @@
     j . // Explicit non-returning tail if the macro returns (it should not)
 
   // ***DH 4/8/26 check this is proper gating
-  #ifdef CONFORMING_SM_SUPPORTED
+  #ifdef STANDARD_SM_SUPPORTED
     rvtest_set_msw_int:
       RVMODEL_SET_MSW_INT(T2, T5)
       ret
@@ -275,7 +275,7 @@
   // Guard matches RVTEST_TRAP_HANDLER guard: RVTEST_TRAP_SAVEAREA references
   // Mtrampoline (and sibling labels) which are only defined when RVTEST_TRAP_HANDLER
   // is instantiated.
-  #ifdef CONFORMING_SM_SUPPORTED
+  #ifdef STANDARD_SM_SUPPORTED
   INSTANTIATE_MODE_MACRO RVTEST_TRAP_SAVEAREA
   #endif
 
@@ -386,7 +386,7 @@
     // We are in M-mode now at initial boot time
 
     // Do setup that requires a conforming M-mode
-    #ifdef CONFORMING_SM_SUPPORTED
+    #ifdef STANDARD_SM_SUPPORTED
 
       // Disable interrupts
       csrw mie, zero

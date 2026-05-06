@@ -382,7 +382,7 @@ SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock:
 
 
 /////////////////////////////////
-// cp_spmp_oob_access
+// cp_spmp_oob_read_zero / cp_spmp_oob_write_ignored
 //   Access out-of-bounds SPMP index via siselect.
 //   Reads should return zero, writes should be ignored.
 /////////////////////////////////
@@ -391,52 +391,52 @@ SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock:
   LI(x13, 0x140)
   CSRW(siselect, x13)
   nop
-SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x140_read_addr:
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x140_read_addr:
   # Read spmpaddr (sireg) into x15 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x15, SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x140_read_addr, SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x140_read_addr_str)
-SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x140_read_cfg:
+  RVTEST_SIGUPD_CSR_READ(0x151, x15, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x140_read_addr, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x140_read_addr_str)
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x140_read_cfg:
   # Read spmpcfg (sireg2) into x15 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x140_read_cfg, SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x140_read_cfg_str)
+  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x140_read_cfg, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x140_read_cfg_str)
   li x14, -1
   CSRW(0x151, x14)  # write sireg (should be ignored)
   nop
-SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x140_write_addr:
+SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x140_write_addr:
   # Read spmpaddr (sireg) into x15 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x15, SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x140_write_addr, SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x140_write_addr_str)
+  RVTEST_SIGUPD_CSR_READ(0x151, x15, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x140_write_addr, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x140_write_addr_str)
 
 # Out-of-bounds index 0x150
   LI(x13, 0x150)
   CSRW(siselect, x13)
   nop
-SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x150_read_addr:
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x150_read_addr:
   # Read spmpaddr (sireg) into x15 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x15, SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x150_read_addr, SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x150_read_addr_str)
-SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x150_read_cfg:
+  RVTEST_SIGUPD_CSR_READ(0x151, x15, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x150_read_addr, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x150_read_addr_str)
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x150_read_cfg:
   # Read spmpcfg (sireg2) into x15 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x150_read_cfg, SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x150_read_cfg_str)
+  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x150_read_cfg, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x150_read_cfg_str)
   li x14, -1
   CSRW(0x151, x14)  # write sireg (should be ignored)
   nop
-SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x150_write_addr:
+SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x150_write_addr:
   # Read spmpaddr (sireg) into x15 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x15, SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x150_write_addr, SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x150_write_addr_str)
+  RVTEST_SIGUPD_CSR_READ(0x151, x15, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x150_write_addr, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x150_write_addr_str)
 
 # Out-of-bounds index 0x1ff
   LI(x13, 0x1ff)
   CSRW(siselect, x13)
   nop
-SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x1ff_read_addr:
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x1ff_read_addr:
   # Read spmpaddr (sireg) into x15 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x15, SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x1ff_read_addr, SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x1ff_read_addr_str)
-SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x1ff_read_cfg:
+  RVTEST_SIGUPD_CSR_READ(0x151, x15, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x1ff_read_addr, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x1ff_read_addr_str)
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x1ff_read_cfg:
   # Read spmpcfg (sireg2) into x15 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x1ff_read_cfg, SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x1ff_read_cfg_str)
+  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x1ff_read_cfg, SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x1ff_read_cfg_str)
   li x14, -1
   CSRW(0x151, x14)  # write sireg (should be ignored)
   nop
-SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x1ff_write_addr:
+SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x1ff_write_addr:
   # Read spmpaddr (sireg) into x15 and check.
-  RVTEST_SIGUPD_CSR_READ(0x151, x15, SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x1ff_write_addr, SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x1ff_write_addr_str)
+  RVTEST_SIGUPD_CSR_READ(0x151, x15, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x1ff_write_addr, SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x1ff_write_addr_str)
 SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_read_returns_zero:
 SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_write_no_state_change:
 
@@ -557,9 +557,9 @@ SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_4k:
   CSRW(0x152, x10)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_base_is_zero:
+SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0:
   # Read spmpcfg (sireg2) into x13 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x13, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_base_is_zero, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_base_is_zero_str)
+  RVTEST_SIGUPD_CSR_READ(0x152, x13, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0_str)
   LI(x10, 0x0)  # spmpcfg value
   CSRW(0x152, x10)  # write sireg2 (spmpcfg)
   nop
@@ -1417,7 +1417,7 @@ SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_cfg:
 
 
 /////////////////////////////////
-// cp_mpmpdeleg_pmpnum / cp_mpmpdeleg_locked
+// cp_mpmpdeleg_pmpnum_field / cp_mpmpdeleg_locked
 //   Test mpmpdeleg CSR (Smpmpdeleg extension).
 //   mpmpdeleg.pmpnum[6:0] determines the delegation boundary.
 //   Entries >= pmpnum are delegated as SPMP entries.
@@ -1429,7 +1429,6 @@ SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_cfg:
 # pmpnum = 0 (delegate all PMP entries as SPMP)
   CSRW(CSR_MPMPDELEG, zero)
   nop
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_0:
 SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_zero_all_delegated:
 SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_zero_zero_and_delegating:
   # Read CSR_MPMPDELEG into x11 and check against expected.
@@ -1439,34 +1438,30 @@ SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_zero_zero_and_delegating:
   LI(x10, 8)
   CSRW(CSR_MPMPDELEG, x10)
   nop
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_8:
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_8:
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_8:
   # Read CSR_MPMPDELEG into x11 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x11, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_8, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_8_str)
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x11, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_8, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_8_str)
 
 # pmpnum = 16
   LI(x10, 16)
   CSRW(CSR_MPMPDELEG, x10)
   nop
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_16:
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_16:
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_16:
   # Read CSR_MPMPDELEG into x11 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x11, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_16, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_16_str)
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x11, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_16, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_16_str)
 
 # pmpnum = 32
   LI(x10, 32)
   CSRW(CSR_MPMPDELEG, x10)
   nop
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_32:
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_32:
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_32:
   # Read CSR_MPMPDELEG into x11 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x11, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_32, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_32_str)
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x11, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_32, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_32_str)
 
 # pmpnum = 64 (no delegation, SPMP disabled)
   LI(x10, 64)
   CSRW(CSR_MPMPDELEG, x10)
   nop
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_64:
 SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_max_none_delegated:
 SspmpSm_csr_cg_cp_mpmpdeleg_no_delegation_max_no_deleg_reads_zero:
   # Read CSR_MPMPDELEG into x11 and check against expected.
@@ -1476,9 +1471,9 @@ SspmpSm_csr_cg_cp_mpmpdeleg_no_delegation_max_no_deleg_reads_zero:
   LI(x10, 100)
   CSRW(CSR_MPMPDELEG, x10)
   nop
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_100_clamp:
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_clamp_pmpnum_100:
   # Read CSR_MPMPDELEG into x11 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x11, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_100_clamp, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_100_clamp_str)
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x11, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_clamp_pmpnum_100, SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_clamp_pmpnum_100_str)
 
 
 /////////////////////////////////
@@ -1829,15 +1824,15 @@ SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_csrrc_cfg_str: .string "
 SspmpSm_csr_cg_cp_spmp_lock_write_ignored_entry2_locked_addr_write_str: .string "\"test: 39; cg: SspmpSm_csr_cg; cp: cp_spmp_lock_write_ignored; bin: entry2_locked_addr_write\""
 SspmpSm_csr_cg_cp_spmp_lock_tor_prevaddr_entry1_locked_tor_prevaddr_str: .string "\"test: 40; cg: SspmpSm_csr_cg; cp: cp_spmp_lock_tor_prevaddr; bin: entry1_locked_tor_prevaddr\""
 SspmpSm_csr_cg_cp_spmp_lock_clear_mmode_entry2_mmode_unlock_str: .string "\"test: 41; cg: SspmpSm_csr_cg; cp: cp_spmp_lock_clear_mmode; bin: entry2_mmode_unlock\""
-SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x140_read_addr_str: .string "\"test: 42; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_access; bin: oob_0x140_read_addr\""
-SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x140_read_cfg_str: .string "\"test: 43; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_access; bin: oob_0x140_read_cfg\""
-SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x140_write_addr_str: .string "\"test: 44; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_access; bin: oob_0x140_write_addr\""
-SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x150_read_addr_str: .string "\"test: 45; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_access; bin: oob_0x150_read_addr\""
-SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x150_read_cfg_str: .string "\"test: 46; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_access; bin: oob_0x150_read_cfg\""
-SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x150_write_addr_str: .string "\"test: 47; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_access; bin: oob_0x150_write_addr\""
-SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x1ff_read_addr_str: .string "\"test: 48; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_access; bin: oob_0x1ff_read_addr\""
-SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x1ff_read_cfg_str: .string "\"test: 49; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_access; bin: oob_0x1ff_read_cfg\""
-SspmpSm_csr_cg_cp_spmp_oob_access_oob_0x1ff_write_addr_str: .string "\"test: 50; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_access; bin: oob_0x1ff_write_addr\""
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x140_read_addr_str: .string "\"test: 42; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_read_zero; bin: oob_0x140_read_addr\""
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x140_read_cfg_str: .string "\"test: 43; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_read_zero; bin: oob_0x140_read_cfg\""
+SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x140_write_addr_str: .string "\"test: 44; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_write_ignored; bin: oob_0x140_write_addr\""
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x150_read_addr_str: .string "\"test: 45; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_read_zero; bin: oob_0x150_read_addr\""
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x150_read_cfg_str: .string "\"test: 46; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_read_zero; bin: oob_0x150_read_cfg\""
+SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x150_write_addr_str: .string "\"test: 47; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_write_ignored; bin: oob_0x150_write_addr\""
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x1ff_read_addr_str: .string "\"test: 48; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_read_zero; bin: oob_0x1ff_read_addr\""
+SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_0x1ff_read_cfg_str: .string "\"test: 49; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_read_zero; bin: oob_0x1ff_read_cfg\""
+SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_0x1ff_write_addr_str: .string "\"test: 50; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_write_ignored; bin: oob_0x1ff_write_addr\""
 SspmpSm_csr_cg_cp_spmp_oob_read_zero_oob_read_returns_zero_str: .string "\"test: 51; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_read_zero; bin: oob_read_returns_zero\""
 SspmpSm_csr_cg_cp_spmp_oob_write_ignored_oob_write_no_state_change_str: .string "\"test: 52; cg: SspmpSm_csr_cg; cp: cp_spmp_oob_write_ignored; bin: oob_write_no_state_change\""
 SspmpSm_addr_cg_cp_addr_match_off_entry0_off_str: .string "\"test: 53; cg: SspmpSm_addr_cg; cp: cp_addr_match_off; bin: entry0_off\""
@@ -1846,7 +1841,7 @@ SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_base_addr_str: .string "\"test: 55;
 SspmpSm_addr_cg_cp_addr_match_na4_entry0_na4_str: .string "\"test: 56; cg: SspmpSm_addr_cg; cp: cp_addr_match_na4; bin: entry0_na4\""
 SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_str: .string "\"test: 57; cg: SspmpSm_addr_cg; cp: cp_addr_match_napot; bin: entry0_napot\""
 SspmpSm_addr_cg_cp_addr_match_napot_entry0_napot_4k_str: .string "\"test: 58; cg: SspmpSm_addr_cg; cp: cp_addr_match_napot; bin: entry0_napot_4k\""
-SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_base_is_zero_str: .string "\"test: 59; cg: SspmpSm_addr_cg; cp: cp_addr_match_tor; bin: entry0_tor_base_is_zero\""
+SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0_str: .string "\"test: 59; cg: SspmpSm_addr_cg; cp: cp_addr_match_tor_entry0; bin: tor_on_entry0\""
 SspmpSm_addr_cg_cp_priority_match_priority_entry0_wins_str: .string "\"test: 60; cg: SspmpSm_addr_cg; cp: cp_priority_match; bin: priority_entry0_wins\""
 SspmpSm_addr_cg_cp_priority_match_priority_entry1_secondary_str: .string "\"test: 61; cg: SspmpSm_addr_cg; cp: cp_priority_match; bin: priority_entry1_secondary\""
 SspmpSm_addr_cg_cp_match_irrespective_perm_bits_match_rwx_variations_str: .string "\"test: 62; cg: SspmpSm_addr_cg; cp: cp_match_irrespective_perm_bits; bin: match_rwx_variations\""
@@ -1905,38 +1900,33 @@ SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_addr_str: .string "\"test: 
 SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry2_cfg_str: .string "\"test: 115; cg: SspmpSm_csr_cg; cp: cp_mmode_indirect_access; bin: mmode_entry2_cfg\""
 SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_addr_str: .string "\"test: 116; cg: SspmpSm_csr_cg; cp: cp_mmode_indirect_access; bin: mmode_entry3_addr\""
 SspmpSm_csr_cg_cp_mmode_indirect_access_mmode_entry3_cfg_str: .string "\"test: 117; cg: SspmpSm_csr_cg; cp: cp_mmode_indirect_access; bin: mmode_entry3_cfg\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_0_str: .string "\"test: 118; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum; bin: pmpnum_0\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_zero_all_delegated_str: .string "\"test: 119; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: zero_all_delegated\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_zero_zero_and_delegating_str: .string "\"test: 120; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_zero; bin: zero_and_delegating\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_8_str: .string "\"test: 121; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum; bin: pmpnum_8\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_8_str: .string "\"test: 122; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: partial_8\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_16_str: .string "\"test: 123; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum; bin: pmpnum_16\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_16_str: .string "\"test: 124; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: partial_16\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_32_str: .string "\"test: 125; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum; bin: pmpnum_32\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_32_str: .string "\"test: 126; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: partial_32\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_64_str: .string "\"test: 127; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum; bin: pmpnum_64\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_max_none_delegated_str: .string "\"test: 128; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: max_none_delegated\""
-SspmpSm_csr_cg_cp_mpmpdeleg_no_delegation_max_no_deleg_reads_zero_str: .string "\"test: 129; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_no_delegation; bin: max_no_deleg_reads_zero\""
-SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_100_clamp_str: .string "\"test: 130; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum; bin: pmpnum_100_clamp\""
-SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_16_ok_str: .string "\"test: 131; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_locked; bin: locked_pmpnum_16_ok\""
-SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_4_rejected_str: .string "\"test: 132; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_locked; bin: locked_pmpnum_4_rejected\""
-SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_allones_str: .string "\"test: 133; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_write_allones\""
-SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_zero_str: .string "\"test: 134; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_write_zero\""
-SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit0_str: .string "\"test: 135; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit0\""
-SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit1_str: .string "\"test: 136; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit1\""
-SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit2_str: .string "\"test: 137; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit2\""
-SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit3_str: .string "\"test: 138; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit3\""
-SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_disabled_str: .string "\"test: 139; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_entry0_disabled\""
-SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_enabled_str: .string "\"test: 140; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_entry0_enabled\""
-SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_aoff_no_activate_str: .string "\"test: 141; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_aoff_no_activate\""
-SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_csrrc_attempt_str: .string "\"test: 142; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_locked_readonly; bin: locked_csrrc_attempt\""
-SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_bit_still_set_str: .string "\"test: 143; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_locked_readonly; bin: locked_bit_still_set\""
-SspmpSm_csr_cg_cp_sfence_ordering_entry0_sfence_after_cfg_str: .string "\"test: 144; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry0_sfence_after_cfg\""
-SspmpSm_csr_cg_cp_sfence_ordering_entry1_sfence_after_cfg_str: .string "\"test: 145; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry1_sfence_after_cfg\""
-SspmpSm_csr_cg_cp_sfence_ordering_entry2_sfence_after_cfg_str: .string "\"test: 146; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry2_sfence_after_cfg\""
-SspmpSm_csr_cg_cp_sfence_ordering_entry3_sfence_after_cfg_str: .string "\"test: 147; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry3_sfence_after_cfg\""
-SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mode_str: .string "\"test: 148; cg: SspmpSm_paging_cg; cp: cp_satp_bare_spmp; bin: satp_bare_mode\""
-SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mmode_check_str: .string "\"test: 149; cg: SspmpSm_paging_cg; cp: cp_satp_bare_spmp; bin: satp_bare_mmode_check\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_zero_all_delegated_str: .string "\"test: 118; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: zero_all_delegated\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_zero_zero_and_delegating_str: .string "\"test: 119; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_zero; bin: zero_and_delegating\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_8_str: .string "\"test: 120; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: partial_pmpnum_8\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_16_str: .string "\"test: 121; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: partial_pmpnum_16\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_partial_pmpnum_32_str: .string "\"test: 122; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: partial_pmpnum_32\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_max_none_delegated_str: .string "\"test: 123; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: max_none_delegated\""
+SspmpSm_csr_cg_cp_mpmpdeleg_no_delegation_max_no_deleg_reads_zero_str: .string "\"test: 124; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_no_delegation; bin: max_no_deleg_reads_zero\""
+SspmpSm_csr_cg_cp_mpmpdeleg_pmpnum_field_clamp_pmpnum_100_str: .string "\"test: 125; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_pmpnum_field; bin: clamp_pmpnum_100\""
+SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_16_ok_str: .string "\"test: 126; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_locked; bin: locked_pmpnum_16_ok\""
+SspmpSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_4_rejected_str: .string "\"test: 127; cg: SspmpSm_csr_cg; cp: cp_mpmpdeleg_locked; bin: locked_pmpnum_4_rejected\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_allones_str: .string "\"test: 128; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_write_allones\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_write_zero_str: .string "\"test: 129; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_write_zero\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit0_str: .string "\"test: 130; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit0\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit1_str: .string "\"test: 131; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit1\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit2_str: .string "\"test: 132; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit2\""
+SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit3_str: .string "\"test: 133; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_readwrite; bin: spmpen_bit3\""
+SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_disabled_str: .string "\"test: 134; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_entry0_disabled\""
+SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_enabled_str: .string "\"test: 135; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_entry0_enabled\""
+SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_aoff_no_activate_str: .string "\"test: 136; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_aoff_no_activate\""
+SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_csrrc_attempt_str: .string "\"test: 137; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_locked_readonly; bin: locked_csrrc_attempt\""
+SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_bit_still_set_str: .string "\"test: 138; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_locked_readonly; bin: locked_bit_still_set\""
+SspmpSm_csr_cg_cp_sfence_ordering_entry0_sfence_after_cfg_str: .string "\"test: 139; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry0_sfence_after_cfg\""
+SspmpSm_csr_cg_cp_sfence_ordering_entry1_sfence_after_cfg_str: .string "\"test: 140; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry1_sfence_after_cfg\""
+SspmpSm_csr_cg_cp_sfence_ordering_entry2_sfence_after_cfg_str: .string "\"test: 141; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry2_sfence_after_cfg\""
+SspmpSm_csr_cg_cp_sfence_ordering_entry3_sfence_after_cfg_str: .string "\"test: 142; cg: SspmpSm_csr_cg; cp: cp_sfence_ordering; bin: entry3_sfence_after_cfg\""
+SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mode_str: .string "\"test: 143; cg: SspmpSm_paging_cg; cp: cp_satp_bare_spmp; bin: satp_bare_mode\""
+SspmpSm_paging_cg_cp_satp_bare_spmp_satp_bare_mmode_check_str: .string "\"test: 144; cg: SspmpSm_paging_cg; cp: cp_satp_bare_spmp; bin: satp_bare_mmode_check\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

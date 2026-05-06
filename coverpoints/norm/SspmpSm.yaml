@@ -77,6 +77,9 @@ normative_rule_definitions:
   - name: umode_rule_sum_effect
     coverpoint: ["SspmpSm_perm_cg/cp_sum_effect"]
 
+  - name: umode_rule_sum_denied
+    coverpoint: ["SspmpSm_perm_cg/cp_sum_denied"]
+
   - name: umode_rule_enforceNoX
     coverpoint: ["SspmpSm_perm_cg/cp_enforce_no_x"]
 

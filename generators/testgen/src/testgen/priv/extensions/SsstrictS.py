@@ -408,7 +408,7 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
     # encodings always fault, regardless of platform memory map.
     lines.append("")
     lines.append("\t# Pre-load safe regs with unmapped address")
-    lines.append("\tli x7, 0xFFFFFFFF00000000")
+    lines.append("\tli x7, -1")
     for r in range(8, 32):
         lines.append(f"\tmv x{r}, x7")
 

@@ -592,7 +592,7 @@
         csrw mnstatus, zero // Clear all fields in mnstatus as well if it exists
       #endif
 
-      #if (RVMODEL_NUM_PMPS > 0) && defined(U_SUPPORTED)
+      #if (UDB_NUM_PMP_ENTRIES > 0) && defined(U_SUPPORTED)
         // set up PMP so user and supervisor mode can access full address space
         CSRW(pmpcfg0, 0xF)   // configure PMP0 to TOR RWX
         LI(t0, -1)

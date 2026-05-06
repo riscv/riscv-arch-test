@@ -55,10 +55,10 @@ class RISCV_coverage
     `cover_info("//  adapted from riscvISACOV Version 20231026.0");
     `cover_info("//  SPDX-License-Identifier: Apache-2.0\n//");
     `cover_info("//  Configuration:");
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
         `cover_info("//    XLEN: 32");
     `endif
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         `cover_info("//    XLEN: 64");
     `endif
     `cover_info("//    EXTENSIONS:");

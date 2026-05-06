@@ -7,5 +7,4 @@
 //
 ///////////////////////////////////////////////
 
-Zama16b_cg = new();
-Zama16b_cg.set_inst_name("obj_Zama16b");
+    Zama16b_cg = new();         Zama16b_cg.set_inst_name("obj_Zama16b");

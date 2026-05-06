@@ -8,5 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-PMPZaamo_cg = new();
-PMPZaamo_cg.set_inst_name("obj_PMPZaamo");
+    PMPZaamo_cg = new();         PMPZaamo_cg.set_inst_name("obj_PMPZaamo");

@@ -152,8 +152,20 @@
 `ifdef SMV_COVERAGE
   `include "SmV_coverage.svh"
 `endif
+`ifdef SMMPM_COVERAGE
+  `include "Smmpm_coverage.svh"
+`endif
+`ifdef SMNPMS_COVERAGE
+  `include "SmnpmS_coverage.svh"
+`endif
+`ifdef SMNPMU_COVERAGE
+  `include "SmnpmU_coverage.svh"
+`endif
 `ifdef SSCOUNTERENW_COVERAGE
   `include "Sscounterenw_coverage.svh"
+`endif
+`ifdef SSNPM_COVERAGE
+  `include "Ssnpm_coverage.svh"
 `endif
 `ifdef SSSTRICTS_COVERAGE
   `include "SsstrictS_coverage.svh"

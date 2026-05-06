@@ -38,7 +38,10 @@ _M_CSR_SKIP: frozenset[int] = frozenset(
     + list(range(0xEC0, 0xF00))  # H-mode custom3
     + list(range(0x800, 0x900))  # user custom2
     + list(range(0xCC0, 0xD00))  # user custom3
-    + [0x340, 0x747]  # mscratch, mseccfg — skip to avoid enabling epmp and PMP troubles in M-mode & to overwrite mscratch with random values in the sweep
+    + [
+        0x340,
+        0x747,
+    ]  # mscratch, mseccfg — skip to avoid enabling epmp and PMP troubles in M-mode & to overwrite mscratch with random values in the sweep
 )
 
 

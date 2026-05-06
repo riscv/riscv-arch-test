@@ -659,23 +659,62 @@ def _generate_permission_smode_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_permission_umode_tests(test_data: TestData) -> list[str]:
-    """Test U-mode rules (SHARED=0, U=1).
+    """Test U-mode rules (SHARED=0, U=1) with *real* U-mode accesses.
 
     Covers: cp_umode_rule
+      For each RWX encoding we program SPMP entry 0 as a U-mode region
+      covering `scratch`, drop to U-mode, and verify the access checks:
+        - lw   succeeds iff R=1, else load page fault (cause 13)
+        - sw   succeeds iff W=1, else store page fault (cause 15)
+        - jalr succeeds iff X=1, else fetch page fault (cause 12),
+                recovered via SKIP_MEPC + x4 = 0xACCE sentinel.
+      After each iteration, RVTEST_GOTO_SMODE ecalls back to S-mode; medeleg
+      bit 8 is set up-front so U-mode ecall is delegated to S-mode, which
+      provides the rtn2smode fast path.
     """
     covergroup = "SspmpSm_perm_cg"
     coverpoint = "cp_umode_rule"
-    sel_reg, val_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
+    # x4 is framework-reserved as the RVTEST_SIGUPD temp and is also the
+    # SKIP_MEPC sentinel we LI just before jalr.
+    sel_reg, val_reg, check_reg, addr_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
 
     lines = [
         comment_banner(
             coverpoint,
-            "Configure SPMP U-mode rules (SHARED=0, U=1) with various RWX.\n"
-            "Verify permissions are enforced for U-mode.",
+            "Configure SPMP U-mode rules (SHARED=0, U=1) with various RWX and\n"
+            "exercise R / W / X permissions from inside U-mode.  Faulting\n"
+            "instructions rely on the framework's trap handler to advance xepc;\n"
+            "the fetch case uses SKIP_MEPC (x4 = 0xACCE) to force xepc = ra.",
         ),
     ]
 
     entry = 0
+
+    # Pre-install `ret` (0x00008067) at scratch[0] from S-mode, before SPMP is
+    # programmed.  This keeps the jalr target clean for cases where X=1.
+    lines.extend(
+        [
+            "\n# Pre-install `ret` (0x00008067) at scratch[0]",
+            f"LA(x{addr_reg}, scratch)",
+            f"LI(x{val_reg}, 0x00008067)  # ret",
+            f"sw x{val_reg}, 0(x{addr_reg})",
+            "fence.i  # sync icache with the data write",
+        ]
+    )
+
+    # Delegate U-mode ecall (cause 8) to S-mode so RVTEST_GOTO_SMODE can use
+    # the strap handler's rtn2smode fast path to return here.
+    lines.extend(
+        [
+            "\n# Delegate U-mode ecall (medeleg bit 8) to S-mode for RVTEST_GOTO_SMODE",
+            "RVTEST_GOTO_MMODE",
+            f"LI(x{val_reg}, 0x100)  # bit 8: U-mode ecall",
+            f"CSRS(CSR_MEDELEG, x{val_reg})",
+            "nop",
+            "RVTEST_GOTO_LOWER_MODE Smode",
+        ]
+    )
+
     valid_rwx = [
         (0b000, "none"),
         (0b001, "x"),
@@ -686,91 +725,183 @@ def _generate_permission_umode_tests(test_data: TestData) -> list[str]:
     ]
 
     for rwx_val, rwx_name in valid_rwx:
-        cfg_val = rwx_val | (A_NAPOT << SPMPCFG_A_LO) | (1 << SPMPCFG_U)  # SHARED=0, U=1
+        cfg_val = rwx_val | (A_NAPOT << SPMPCFG_A_LO) | (1 << SPMPCFG_U)
         lines.extend(
             [
-                f"\n# U-mode rule with RWX={rwx_name}",
-            ]
-        )
-        lines.extend(_spmp_select(entry, sel_reg))
-        lines.extend(_spmp_write_cfg(val_reg, cfg_val))
-        lines.extend(
-            [
-                _sfence_vma(),
-                test_data.add_testcase(f"umode_rwx_{rwx_name}", coverpoint, covergroup),
-                _spmp_read_cfg_sigupd(check_reg, test_data),
+                f"\n# === U-mode rule with RWX={rwx_name} ===",
+                "RVTEST_GOTO_MMODE",
+                f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + entry:x})",
+                f"CSRW(miselect, x{sel_reg})",
+                "nop",
+                f"LA(x{addr_reg}, scratch)",
+                f"srli x{addr_reg}, x{addr_reg}, 2  # spmpaddr format",
+                f"ori x{addr_reg}, x{addr_reg}, 0x1FF  # NAPOT 4 KB",
+                f"CSRW(mireg, x{addr_reg})  # spmpaddr via mireg",
+                "nop",
+                f"LI(x{val_reg}, 0x{cfg_val:x})  # U=1, RWX={rwx_name}",
+                f"CSRW(mireg2, x{val_reg})  # spmpcfg via mireg2",
+                "nop",
+                "sfence.vma x0, x0",
+                "RVTEST_GOTO_LOWER_MODE Umode",
+                "",
+                "# === In U-mode ===",
+                f"# load: succeeds iff R=1 ({'yes' if rwx_val & 0b100 else 'no'}) in RWX={rwx_name}",
+                test_data.add_testcase(f"umode_rwx_{rwx_name}_load", coverpoint, covergroup),
+                f"LA(x{addr_reg}, scratch)",
+                f"lw x{check_reg}, 0(x{addr_reg})",
+                "nop  # trap handler skips here on R=0",
+                "",
+                f"# store: succeeds iff W=1 ({'yes' if rwx_val & 0b010 else 'no'}) in RWX={rwx_name}",
+                test_data.add_testcase(f"umode_rwx_{rwx_name}_store", coverpoint, covergroup),
+                f"LI(x{val_reg}, 0x00008067)  # ret (preserves the jalr target)",
+                f"sw x{val_reg}, 0(x{addr_reg})",
+                "nop  # trap handler skips here on W=0",
+                "",
+                f"# fetch: succeeds iff X=1 ({'yes' if rwx_val & 0b001 else 'no'}) in RWX={rwx_name}",
+                test_data.add_testcase(f"umode_rwx_{rwx_name}_fetch", coverpoint, covergroup),
+                "LI(x4, 0xACCE)  # SKIP_MEPC sentinel",
+                f"jalr x1, 0(x{addr_reg})  # on fetch fault (X=0) handler forces xepc = ra",
+                "nop",
+                "",
+                "# Return to S-mode (strap handler's rtn2smode path; medeleg[8]=1)",
+                "RVTEST_GOTO_SMODE",
             ]
         )
 
-    # Clean up
+    # Clean up: clear spmpcfg and restore medeleg (bit 8 cleared at CODE_END
+    # by the framework's resto_edeleg, but clear explicitly to be polite).
+    lines.extend(
+        [
+            "\n# Clean up: clear spmpcfg via S-mode indirect access",
+        ]
+    )
+    lines.extend(_spmp_select(entry, sel_reg))
     lines.extend(_spmp_write_cfg(val_reg, 0))
     lines.append(_sfence_vma())
 
-    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg])
+    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg, addr_reg])
     return lines
 
 
 def _generate_sum_effect_tests(test_data: TestData) -> list[str]:
     """Test SUM bit effect on S-mode access to U-mode regions.
 
-    Covers: cp_sum_effect
-    SUM=0: S-mode denied; SUM=1: S-mode EnforceNoX (R/W but not X)
+    Covers: cp_sum_effect, cp_sum_denied, cp_enforce_no_x
+      SUM=0: S-mode denied any access to a U-mode region -> load/store fault.
+      SUM=1: S-mode data access allowed; instruction fetch still denied
+             (EnforceNoX), even when X=1 on the U-mode rule.
     """
     covergroup = "SspmpSm_perm_cg"
     coverpoint = "cp_sum_effect"
-    sel_reg, val_reg, check_reg, save_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
+    # x4 is reserved by the framework (RVTEST_SIGUPD temp) AND used by this
+    # test as the SKIP_MEPC sentinel for the EnforceNoX jalr.  We LI 0xACCE
+    # into x4 immediately before the jalr; no sigupd happens in between, so
+    # the sentinel survives until the trap handler inspects it.
+    sel_reg, val_reg, check_reg, save_reg, addr_reg = test_data.int_regs.get_registers(5, exclude_regs=[0])
 
     lines = [
         comment_banner(
             coverpoint,
-            "Test sstatus.SUM effect on S-mode access to U-mode SPMP regions.\n"
-            "SUM=0: S-mode is denied any access to U-mode regions.\n"
-            "SUM=1: S-mode gets EnforceNoX (R/W applied, but X is denied).",
+            "Test sstatus.SUM effect on S-mode access to a U-mode SPMP region.\n"
+            "SUM=0: S-mode is denied any access (load/store both fault).\n"
+            "SUM=1: S-mode data access is allowed; instruction fetch is still\n"
+            "       denied by EnforceNoX even when X=1 in the rule.",
         ),
     ]
 
     entry = 0
-    # Configure a U-mode rule with RWX
-    cfg_val = (0b111) | (A_NAPOT << SPMPCFG_A_LO) | (1 << SPMPCFG_U)  # U=1, RWX=111
-    lines.extend(_spmp_select(entry, sel_reg))
-    lines.extend(_spmp_write_cfg(val_reg, cfg_val))
-    lines.append(_sfence_vma())
 
-    for sum_val in (0, 1):
-        lines.extend(
-            [
-                f"\n# sstatus.SUM = {sum_val}",
-                f"CSRR(x{save_reg}, sstatus)  # save sstatus",
-            ]
-        )
-        if sum_val == 1:
-            lines.append(f"LI(x{val_reg}, 0x{1 << 18:x})  # sstatus.SUM bit (bit 18)")
-            lines.append(f"CSRS(sstatus, x{val_reg})  # set SUM bit")
-        else:
-            lines.append(f"LI(x{val_reg}, 0x{1 << 18:x})  # sstatus.SUM bit (bit 18)")
-            lines.append(f"CSRC(sstatus, x{val_reg})  # clear SUM bit")
-
-        lines.extend(
-            [
-                test_data.add_testcase(f"sum_{sum_val}_smode_access", coverpoint, covergroup),
-                gen_csr_read_sigupd(check_reg, "sstatus", test_data),
-                f"CSRW(sstatus, x{save_reg})  # restore sstatus",
-            ]
-        )
-
-    # Cross coverpoint labels for SUM-related permissions
+    # Pre-install `ret` (0x00008067) at scratch[0] so that if EnforceNoX ever
+    # fails to fire and the fetch succeeds, the jalr lands on a clean return
+    # rather than executing garbage.  This write must happen BEFORE we program
+    # SPMP because afterwards the region is U-mode-only with no S-mode
+    # permissions.
     lines.extend(
         [
-            test_data.add_testcase("sum_enforces_nox", "cp_enforce_no_x", covergroup),
-            test_data.add_testcase("sum_denies_access", "cp_sum_denied", covergroup),
+            "\n# Pre-install `ret` (0x00008067) at scratch[0]",
+            f"LA(x{addr_reg}, scratch)",
+            f"LI(x{val_reg}, 0x00008067)  # ret",
+            f"sw x{val_reg}, 0(x{addr_reg})",
+            "fence.i  # sync icache with the data write",
         ]
     )
 
-    # Clean up
+    # Configure SPMP entry 0: NAPOT region covering scratch (4 KB), U=1, RWX=111.
+    # X=1 is required so that cp_enforce_no_x.sum1_fetch_denied can fire
+    # (the bin requires umode_rule_rwx ∈ {rx, rwx, x_only}).
+    cfg_val = 0b111 | (A_NAPOT << SPMPCFG_A_LO) | (1 << SPMPCFG_U)  # U=1, RWX=111
+    lines.extend(_spmp_select(entry, sel_reg))
+    lines.extend(
+        [
+            f"LA(x{addr_reg}, scratch)",
+            f"srli x{addr_reg}, x{addr_reg}, 2  # convert to spmpaddr format",
+            f"ori x{addr_reg}, x{addr_reg}, 0x1FF  # NAPOT 4 KB region",
+            f"CSRW(0x151, x{addr_reg})  # write spmpaddr via sireg",
+            "nop",
+        ]
+    )
+    lines.extend(_spmp_write_cfg(val_reg, cfg_val))
+    lines.append(_sfence_vma())
+
+    # ---- SUM=0: S-mode is denied any access to the U-mode region ----
+    lines.extend(
+        [
+            "\n# sstatus.SUM = 0  ->  S-mode denied any access to U-mode region",
+            f"CSRR(x{save_reg}, sstatus)  # save sstatus",
+            f"LI(x{val_reg}, 0x40000)  # sstatus.SUM bit (bit 18)",
+            f"CSRC(sstatus, x{val_reg})  # clear SUM bit",
+            "",
+            "# Expected: load page fault (cause 13); strap handler advances sepc by 4.",
+            test_data.add_testcase("sum_0_smode_load_denied", "cp_sum_denied", covergroup),
+            f"LA(x{addr_reg}, scratch)",
+            f"lw x{check_reg}, 0(x{addr_reg})  # faults",
+            "nop  # trap handler skips to here",
+            "",
+            "# Expected: store page fault (cause 15); strap handler advances sepc by 4.",
+            test_data.add_testcase("sum_0_smode_store_denied", "cp_sum_denied", covergroup),
+            f"sw x{val_reg}, 0(x{addr_reg})  # faults",
+            "nop  # trap handler skips to here",
+        ]
+    )
+
+    # ---- SUM=1: data access allowed; fetch still denied (EnforceNoX) ----
+    lines.extend(
+        [
+            "\n# sstatus.SUM = 1  ->  S-mode data access allowed; fetch denied (EnforceNoX)",
+            f"LI(x{val_reg}, 0x40000)",
+            f"CSRS(sstatus, x{val_reg})  # set SUM bit",
+            "",
+            "# Expected: load succeeds, reads the `ret` instruction value.",
+            test_data.add_testcase("sum_1_data_allowed_load", coverpoint, covergroup),
+            f"LA(x{addr_reg}, scratch)",
+            f"lw x{check_reg}, 0(x{addr_reg})",
+            write_sigupd(check_reg, test_data),
+            "",
+            "# Expected: store succeeds.  Re-install `ret` so the jalr target is clean.",
+            test_data.add_testcase("sum_1_data_allowed_store", coverpoint, covergroup),
+            f"LI(x{val_reg}, 0x00008067)  # ret",
+            f"sw x{val_reg}, 0(x{addr_reg})",
+            f"lw x{check_reg}, 0(x{addr_reg})",
+            write_sigupd(check_reg, test_data),
+            "fence.i  # sync icache with the data write",
+            "",
+            "# Expected: instruction fetch denied by EnforceNoX even though X=1 in cfg.",
+            "# SKIP_MEPC + x4=0xACCE tells the trap handler to force xepc=ra on fetch fault.",
+            test_data.add_testcase("sum_1_fetch_denied", "cp_enforce_no_x", covergroup),
+            "LI(x4, 0xACCE)  # SKIP_MEPC sentinel",
+            f"LA(x{addr_reg}, scratch)",
+            f"jalr x1, 0(x{addr_reg})  # fetch page fault (cause 12); handler returns here",
+            "nop",
+            "",
+            f"CSRW(sstatus, x{save_reg})  # restore sstatus",
+        ]
+    )
+
+    # ---- Clean up: clear spmpcfg ----
     lines.extend(_spmp_write_cfg(val_reg, 0))
     lines.append(_sfence_vma())
 
-    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg, save_reg])
+    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg, save_reg, addr_reg])
     return lines
 
 
@@ -1885,7 +2016,8 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "Sspmp",
     required_extensions=["Sm", "S", "Zicsr", "Sspmp"],
-    march_extensions=["Zicsr"],
+    march_extensions=["Zicsr", "Zifencei"],
+    extra_defines=["#define SKIP_MEPC"],  # needed for EnforceNoX / U-mode exec-fault tests
 )
 def make_sspmp(test_data: TestData) -> list[str]:
     """Generate all SPMP sub-tests (combined into one file by the framework)."""
@@ -1968,7 +2100,10 @@ def _generate_single_test(
         testsuite=name,
         E_ext=False,
         required_extensions=["Sm", "S", "Zicsr", "Sspmp"],
-        march_extensions=["Zicsr"],
+        # Zifencei is needed by SspmpSmSum / SspmpSmPermUmode which use fence.i
+        # to sync the icache after writing the jalr target for fetch-fault tests.
+        # It is harmless for sub-tests that do not issue fence.i.
+        march_extensions=["Zicsr", "Zifencei"],
     )
 
     test_data = TestData(test_config)
@@ -1992,7 +2127,11 @@ def _generate_single_test(
     sigupd_count = _SIGUPD_MARGIN + tc.sigupd_count
 
     test_file_relative = Path("Sspmp") / filename
-    extra_defines = ["#define RVTEST_PRIV_TEST"]
+    # SKIP_MEPC enables the trap handler's fetch-fault recovery path used by
+    # EnforceNoX / U-mode exec-fault tests (x4 = 0xACCE sentinel + jalr).  It
+    # is a no-op unless the test sets x4 = 0xACCE immediately before the
+    # faulting fetch, so it is safe to include globally.
+    extra_defines = ["#define RVTEST_PRIV_TEST", "#define SKIP_MEPC"]
     header = insert_header_template(test_config, test_file_relative, sigupd_count, extra_defines)
 
     body = "\n".join(indent_asm(line) for line in tc.code.split("\n"))

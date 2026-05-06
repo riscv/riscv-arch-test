@@ -341,12 +341,17 @@ covergroup SspmpSm_perm_cg with function sample(ins_t ins);
     }
 
     // cp_sum_effect: SUM=1 ∧ S-mode data access ∧ no trap  (data goes through)
+    // Any U-mode rule with R=1 allows S-mode data access under SUM=1: r_only,
+    // rw, rx, and rwx all qualify.  x_only (R=0) would still trap on load, so
+    // it is excluded.
     cp_sum_effect: cross umode_rule_rwx, sum_bit, priv_mode_s, data_access_outcome {
         bins sum1_data_allowed = binsof(sum_bit.sum_1) &&
                                  binsof(priv_mode_s) &&
                                  binsof(data_access_outcome.no_trap) &&
                                  (binsof(umode_rule_rwx.r_only) ||
-                                  binsof(umode_rule_rwx.rw));
+                                  binsof(umode_rule_rwx.rw)     ||
+                                  binsof(umode_rule_rwx.rx)     ||
+                                  binsof(umode_rule_rwx.rwx));
     }
 
     // cp_enforce_no_x: SUM=1 ∧ S-mode instruction fetch ∧ fetch fault  (X denied)

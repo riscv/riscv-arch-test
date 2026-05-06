@@ -13,8 +13,8 @@
 covergroup PMPSM_cg with function sample(
                     ins_t ins,
                     logic [7:0] pmpcfg [63:0],        // Per region config registers
-                    logic [XLEN-1:0] pmpaddr [62:0],  // 63 unpacked pmpaddress registers
-                    logic [16*XLEN-1:0] pack_pmpaddr, // 16 packed pmpaddress registers
+                    logic [`UDB_MXLEN-1:0] pmpaddr [62:0],  // 63 unpacked pmpaddress registers
+                    logic [16*`UDB_MXLEN-1:0] pack_pmpaddr, // 16 packed pmpaddress registers
                     logic [29:0] pmpcfg_wr,           // first 15 regions RW fields
                     logic [95:0] pmpcfg_WR,           // next 48 regions RW fields
                     logic [29:0] pmpcfg_a,            // first 15 regions A fields
@@ -1387,8 +1387,8 @@ endgroup
 function void pmpsm_sample(int hart, int issue, ins_t ins);
 
   logic [7:0] pmpcfg [63:0];
-  logic [XLEN-1:0] pmpaddr [62:0];
-  logic [16*XLEN-1:0] pack_pmpaddr;
+  logic [`UDB_MXLEN-1:0] pmpaddr [62:0];
+  logic [16*`UDB_MXLEN-1:0] pack_pmpaddr;
   logic [29:0] pmpcfg_wr, pmpcfg_a;      // for first 15 Regions
   logic [95:0] pmpcfg_WR, pmpcfg_A;      // for next 48 Regions
   logic [14:0] pmpcfg_x, pmpcfg_l, pmp_hit;   // for first 15 Regions

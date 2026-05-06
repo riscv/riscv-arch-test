@@ -21,13 +21,13 @@ covergroup S_scause_cg with function sample(ins_t ins);
     scause: coverpoint ins.current.insn[31:20] {
         bins scause = {CSR_SCAUSE};
     }
-    scause_interrupt : coverpoint ins.current.rs1_val[XLEN-1] {
+    scause_interrupt : coverpoint ins.current.rs1_val[`UDB_MXLEN-1] {
         bins interrupt = {1};
     }
-    scause_exception : coverpoint ins.current.rs1_val[XLEN-1] {
+    scause_exception : coverpoint ins.current.rs1_val[`UDB_MXLEN-1] {
         bins exception = {0};
     }
-    scause_exception_values: coverpoint ins.current.rs1_val[XLEN-2:0] {
+    scause_exception_values: coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
         // exclude reserved and custom fields
         bins b_0_instruction_address_misaligned = {0};
         bins b_1_instruction_address_fault = {1};
@@ -57,7 +57,7 @@ covergroup S_scause_cg with function sample(ins_t ins);
         //bins b_47_32_reserved = {[47:32]};
         //bins b_63_48_custom = {[63:48]};
     }
-    scause_interrupt_values: coverpoint ins.current.rs1_val[XLEN-2:0] {
+    scause_interrupt_values: coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
         // exclude reserved and custom fields
         //bins b_0_reserved = {0};
         bins b_1_supervisor_software = {1};
@@ -88,7 +88,7 @@ covergroup S_sstatus_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    cp_sstatus_sd: coverpoint ins.current.rs1_val[XLEN-1]  {
+    cp_sstatus_sd: coverpoint ins.current.rs1_val[`UDB_MXLEN-1]  {
     }
     cp_sstatus_fs: coverpoint ins.current.rs1_val[14:13] {
     }

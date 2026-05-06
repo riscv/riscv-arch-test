@@ -204,7 +204,7 @@
 #endif
 
 #ifndef _VA_SZ_
-  #if XLEN==32
+  #if UDB_MXLEN==32
     #define _VA_SZ_ 32
   #else
     #define _VA_SZ_ 57
@@ -222,7 +222,7 @@
 
 #define GVA_LSB    6    // bit pos of LSB of the hstatus.GVA  field
 #define MPP_LSB   11    // bit pos of LSB of the mstatus.MPP  field
-#define MODE_LSB  (XLEN-4)
+#define MODE_LSB  (UDB_MXLEN-4)
 #define MPRV_LSB  17    // bit pos of LSB of the mstatus.MPRV field
 #define MPV_LSB    7    // bit pos of prev vmode mstatush.MPV in either mstatush or mstatus upper half
 #define MPP_SMODE (1<<MPP_LSB)
@@ -292,13 +292,13 @@
  *                       * 4                              // 4 bytes per instruction
  *
  ***************************************************************************************************/
-#define actual_tramp_sz ((XLEN + 3* NUM_SPECD_INTCAUSES + 9 + 5) * 4)
+#define actual_tramp_sz ((UDB_MXLEN + 3* NUM_SPECD_INTCAUSES + 9 + 5) * 4)
 #define tramp_sz        ((actual_tramp_sz+4) & -8)                    // round up to keep alignment for sv area alloc
 #define ptr_sv_sz       (16*8)
 #define reg_sv_sz       ( 8*REGWIDTH)
 #define model_sv_sz     ( 8*REGWIDTH)
 #define sv_area_sz      (tramp_sz + ptr_sv_sz + reg_sv_sz + model_sv_sz)           // force dblword alignment
-#define int_hndlr_tblsz (XLEN*2*WDBYTSZ)
+#define int_hndlr_tblsz (UDB_MXLEN*2*WDBYTSZ)
 
 //define a fixed offsets into the save area
 #define tramp_sv_off                         ( 0*8) // (Mtramptbl_sv  -Mtramptbl_s Mtrapreg_sv) algned to dblwd
@@ -428,7 +428,7 @@
   .set CSR_XSCRATCH,CSR_VSSCRATCH
   .set CSR_XEPC,    CSR_VSEPC
   .set CSR_XCAUSE,  CSR_VSCAUSE
-#if (XLEN==32)
+#if (UDB_MXLEN==32)
   .set CSR_XEDELEGH, CSR_SEDELEGH
 #endif
 .endm
@@ -447,7 +447,7 @@
   .set CSR_XSCRATCH,CSR_SSCRATCH
   .set CSR_XEPC,    CSR_SEPC
   .set CSR_XCAUSE,  CSR_SCAUSE
-#if (XLEN==32)
+#if (UDB_MXLEN)
   .set CSR_XEDELEGH, CSR_SEDELEGH
 #endif
 .endm
@@ -466,7 +466,7 @@
   .set CSR_XSCRATCH,CSR_SSCRATCH
   .set CSR_XEPC,    CSR_SEPC
   .set CSR_XCAUSE,  CSR_SCAUSE
- #if (XLEN==32)
+ #if (UDB_MXLEN==32)
   .set CSR_XEDELEGH, CSR_HEDELEGH
  #endif
 .endm
@@ -485,7 +485,7 @@
   .set CSR_XSCRATCH,CSR_MSCRATCH
   .set CSR_XEPC,    CSR_MEPC
   .set CSR_XCAUSE,  CSR_MCAUSE
-#if (XLEN==32)
+#if (UDB_MXLEN==32)
   .set CSR_XEDELEGH, CSR_MEDELEGH
 #endif
 .endm
@@ -718,7 +718,7 @@
 //**************** handle Vbit
    .if     ((\LMODE\()==VUmode) || (\LMODE\()==VSmode))
      LI    T2, (1<<MPV_LSB)
-#if (XLEN==32)
+#if (UDB_MXLEN==32)
      csrs  CSR_MSTATUSH, T2     /* set V RV32                   */
 #else
      slli T2, T2, 32
@@ -726,7 +726,7 @@
 #endif
    .elseif ((\LMODE\()==HSmode))
      LI    T2, (1<<MPV_LSB)
-#if (XLEN==32)
+#if (UDB_MXLEN==32)
      csrc  CSR_MSTATUSH, T2     /* clr V RV32                   */
 #else
      slli   T2, T2, 32
@@ -898,7 +898,7 @@ init_\__MODE__\()timecmp:               // init MTIMECMP to largest value if its
         LI(  T2,  -1)
         LI(  T4,  RVMODEL_MTIMECMP_BASE)
         SREG T2,  0(T4)
-  .if (XLEN==32)
+  .if (UDB_MXLEN==32)
         SREG T2,  4(T4)
   .endif
         nop                             // deal w/ traps if not accessed in Mmode
@@ -906,7 +906,7 @@ init_\__MODE__\()timecmp:               // init MTIMECMP to largest value if its
         nop
         nop
         nop
-  .if (XLEN==32)
+  .if (UDB_MXLEN==32)
         nop
   .endif
         nop
@@ -928,7 +928,7 @@ init_\__MODE__\()satp:
 .ifnc \__MODE__ , M                      // if HS, S or VS mode **FIXME: fixed offset frm trapreg_sv?
         LA(     T4, rvtest_\__MODE__\()root_pg_tbl)     // rplc xsatp w/ identity-mapped pg table
         srli T4, T4, 12
-      #if (XLEN==32)
+      #if (UDB_MXLEN==32)
         LI(T3, SATP32_MODE)             //enables  SV32 mode
       #elseif (_VA_SZ_ == 39)
         LI(T3, (SATP64_MODE) & (SATP_MODE_SV39 << 60))
@@ -1044,7 +1044,7 @@ rvtest_\__MODE__\()prolog_done:
         .set value, value + 12                  // length of xhandler trampoline spreader code
   .endr
 
-  .rept XLEN-NUM_SPECD_INTCAUSES                // fill at each impossible entry
+  .rept UDB_MXLEN-NUM_SPECD_INTCAUSES                // fill at each impossible entry
         j rvtest_\__MODE__\()endtest            // end test if this happens
   .endr
 
@@ -1110,7 +1110,7 @@ common_\__MODE__\()entry:
   .ifc \__MODE__ ,  M   //spcl case handling for ECALL in GOTO_MMODE mode,)
                         // ****tests can't use ECALL w/ x3=0; rsvd for GOTO_MMODE ****/
 spcl_\__MODE__\()2mmode_test:
-        LI(T4,(1<<(XLEN-1))+((1<<12)-1))        // make a mask of int bit and cause(11:0).
+        LI(T4,(1<<(UDB_MXLEN-1))+((1<<12)-1))        // make a mask of int bit and cause(11:0).
         and     T4, T4, T5                      // Keep only int bit and cause[11:0], fixing CLIC incompatibility
 spcl_\__MODE__\()chk4alt:
         addi    T3,T4, -ALT_GOTO_M_CAUSE        // check for special handling to see if it might be alternate go2mmode
@@ -1134,7 +1134,7 @@ spcl_\__MODE__\()chk4ecall:
 
 .ifc \__MODE__ ,  S                             // RVTEST_GOTO_SMODE U-mode ecall w/ x3=0 returns in S-mode
 \__MODE__\()goto_schk:
-        LI(T4,(1<<(XLEN-1))+((1<<12)-1))        // make a mask of int bit and cause(11:0)
+        LI(T4,(1<<(UDB_MXLEN-1))+((1<<12)-1))        // make a mask of int bit and cause(11:0)
         and     T4, T4, T5                      // keep only int bit and cause[11:0]
         addi    T3, T4, -CAUSE_USER_ECALL       // check for U-mode ecall
         bnez    T3, \__MODE__\()trapsig_ptr_upd // if not a U-mode ecall, handle normally
@@ -1158,7 +1158,7 @@ spcl_\__MODE__\()chk4ecall:
 .ifc \__MODE__ , M                              // exception case, don't adjust if hypervisor mode disabled
 #ifdef H_SUPPORTED
         csrr    T1, CSR_MISA
-        slli    T1, T1, XLEN-8                  // shift H bit into msb
+        slli    T1, T1, UDB_MXLEN-8             // shift H bit into msb
         bgez    T1, \__MODE__\()trap_sig_sv     // no hypervisor mode, keep std width
         li      T2, 6*REGWIDTH                  // Hmode implemented &  Mmode trap, override preinc to be 6*regsz
 #endif
@@ -1244,8 +1244,8 @@ sv_\__MODE__\()vect:                            // **FIXME?: breaks if tramp cro
 
         1:
         csrr    T2, CSR_XSTATUS                 // deposit xstatus(17:0) into [30:13)
-        slli    T2, T2, XLEN-17
-        srli    T2, T2, XLEN-17-13
+        slli    T2, T2, UDB_MXLEN-17
+        srli    T2, T2, UDB_MXLEN-17-13
         LI(     T3, 0x219FE5)                   // clear 16:13 (XS,FS) 10:9 (VS) and unused bits 4,2,0
         xori    T3, T3, -1
         and     T3, T2, T3
@@ -1255,8 +1255,8 @@ sv_\__MODE__\()vect:                            // **FIXME?: breaks if tramp cro
 //if  MMode and RV64 move mstatus [39:38] into bit 15:14
 //if HSMode          move hstatus [ 8: 6] into bit 16:14
 .ifc \__MODE__ , M
-  #if (XLEN==64)
-        srli    T4, T4, XLEN-32                 // align to mstatush
+  #if (UDB_MXLEN==64)
+        srli    T4, T4, UDB_MXLEN-32                 // align to mstatush
   #else
         csrr    T4, CSR_MSTATUSH
   #endif
@@ -1355,7 +1355,7 @@ common_\__MODE__\()excpt_handler:
  #else
         csrr    T6, CSR_MSTATUS
  // select MPP based on MPRV; if MPRV=1, substitute saved mstatus (with MPP bits)
-        slli    T2, T6, XLEN-MPRV_LSB-1         /* put MPRV [17] into sign bit & test   */
+        slli    T2, T6, UDB_MXLEN-MPRV_LSB-1         /* put MPRV [17] into sign bit & test   */
         bgez    T2, 1f
         LI(     T6, sved_mpp_off)
         add     T6, T6, sp
@@ -1372,7 +1372,7 @@ common_\__MODE__\()excpt_handler:
         csrr    T2, CSR_SATP
 #ifdef H_SUPPORTED
         csrr    T6, CSR_MISA           // select effective xATP based on misa[7] (H)
-        slli    T6, T6, XLEN-7-1
+        slli    T6, T6, UDB_MXLEN-7-1
         bgez    T6, 1f                 // keep  SATP      if no hypervisor
         csrr    T2, CSR_HGATP          // substitute HGATP if    hypervisor
 1:
@@ -1382,7 +1382,7 @@ common_\__MODE__\()excpt_handler:
         bnez    T2, sv_\__MODE__\()epc // skip reloc if not bare mode
 
  // extract and test mstatus.MPV; if 0, single translation & bare mode, force reloc
-        #if (XLEN==64)
+        #if (UDB_MXLEN==64)
                 csrr    T6, CSR_MSTATUS
         #else
                 csrr    T6, CSR_MSTATUSH
@@ -1406,7 +1406,7 @@ common_\__MODE__\()excpt_handler:
         bnez    T2, sv_\__MODE__\()epc          // its a VA, skip adj
  // extract and test hstatus.SPV; if 0, no lower mode, so bare mode, force reloc
         csrr    T2, CSR_HSTATUS
-        slli    T2, T2, XLEN-MPV_LSB-1
+        slli    T2, T2, UDB_MXLEN-MPV_LSB-1
         bgez    T2, vmem_adj_\__MODE__\()epc
  // extract and test vsatp.MODE!=bare; if so, VA, skip reloc
         csrr    T2, CSR_VSATP
@@ -1513,7 +1513,7 @@ skp_\__MODE__\()tval:
 
   .ifc \__MODE__ , M
         csrr    T3, CSR_MISA            // skip mtval2, mtinst save if hypervisor is enabled (misa[7] (H)-1)
-        slli    T3, T3, XLEN-7-1
+        slli    T3, T3, UDB_MXLEN-7-1
         bgez    T3, 1f
   .endif
   .ifnc \__MODE__ , S
@@ -1599,7 +1599,7 @@ spcl_\__MODE__\()handler:               // case table branch to special handler 
         LREG    T3, 0(T3)
 spcl_\__MODE__\()dispatch_handling:
         beqz    T3, 1f                  // if address is 0, this is an error, exit test
-        slli    T2, T3, XLEN-1          // look at LSB and dispatch if even
+        slli    T2, T3, UDB_MXLEN-1     // look at LSB and dispatch if even
         bge     T2, x0, spcl_\__MODE__\()dispatch
         srli    T3, T3,1                //odd entry>0, remove LSB, normalizing to cause range
         beq     T5, T3, resto_\__MODE__\()rtn // case range matches, not an error, just noop
@@ -1676,7 +1676,7 @@ clrint_\__MODE__\()tbl:                              //this code should only tou
  .rept NUM_SPECD_INTCAUSES-0xC
         .dword  1                       // int cause c..NUM_SPECD_INTCAUSES is reserved, just return
  .endr
- .rept XLEN-NUM_SPECD_INTCAUSES
+ .rept UDB_MXLEN-NUM_SPECD_INTCAUSES
         .dword  0                       // impossible, quit test by jumping to  epilogs
  .endr
 //****************************************************************
@@ -1689,7 +1689,7 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
         .dword  causeidx*2+1            // default, marked by @*cause+2just return
         .set    causeidx, causeidx+1
  .endr
- .rept XLEN-NUM_SPECD_EXCPTCAUSES
+ .rept UDB_MXLEN-NUM_SPECD_EXCPTCAUSES
         .dword  0                       // impossible, quit test by jumping to epilogs
  .endr
 
@@ -1802,7 +1802,7 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 // find callers save area
         addi    sp, sp, sv_area_sz      //preadjust svarea ptr to avoid to large offset
 
-  #if (XLEN==32)
+  #if (UDB_MXLEN==32)
         csrr    T2, CSR_MSTATUSH        /* find Vbit  if RV32                   */
   #else
         csrr    T2, CSR_MSTATUS
@@ -1895,7 +1895,7 @@ exit_\__MODE__\()cleanup:                       // if you enter here from the ab
 // the CSR does not exist. See issue #1050.
 resto_\__MODE__\()edeleg:
         LREG    T2,   xedeleg_sv_off(T1)        // get saved xedeleg
-#if (XLEN==32)
+#if (UDB_MXLEN==32)
         LREG    T4, 4+xedeleg_sv_off(T1)        // get saved xedelegh
 #endif
 .ifnc \__MODE__ , S
@@ -1903,7 +1903,7 @@ resto_\__MODE__\()edeleg:
 #ifdef S_SUPPORTED
         csrw    CSR_XEDELEG,  T2
     .ifc \_MODE__ , M   // TODO: Remove this .ifc when sail supports hedelegh (if Smstateen is supported, set mstateen0.P1P13)
-      #if (XLEN==32)
+      #if (UDB_MXLEN==32)
         csrw    CSR_XEDELEGH, T4
       #endif
     .endif

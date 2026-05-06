@@ -19,13 +19,13 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
     mcause: coverpoint ins.current.insn[31:20] {
         bins mcause = {CSR_MCAUSE};
     }
-    mcause_interrupt : coverpoint ins.current.rs1_val[XLEN-1] {
+    mcause_interrupt : coverpoint ins.current.rs1_val[`UDB_MXLEN-1] {
         bins interrupt = {1};
     }
-    mcause_exception : coverpoint ins.current.rs1_val[XLEN-1] {
+    mcause_exception : coverpoint ins.current.rs1_val[`UDB_MXLEN-1] {
         bins exception = {0};
     }
-    mcause_exception_values: coverpoint ins.current.rs1_val[XLEN-2:0] {
+    mcause_exception_values: coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
         // exclude reserved and custom fields
         bins b_0_instruction_address_misaligned = {0};
         bins b_1_instruction_address_fault = {1};
@@ -55,7 +55,7 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
         //bins b_47_32_reserved = {[47:32]};
         //bins b_63_48_custom = {[63:48]};
     }
-    mcause_interrupt_values: coverpoint ins.current.rs1_val[XLEN-2:0] {
+    mcause_interrupt_values: coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
         // exclude reserved and custom fields
         //bins b_0_reserved = {0};
         bins b_1_supervisor_software = {1};
@@ -89,7 +89,7 @@ covergroup Sm_mstatus_cg with function sample(ins_t ins);
 
     // SD COVERPOINTS
     // Cross-product of trying to write mstatus.SD, .FS, .XS, .VS
-    cp_mstatus_sd: coverpoint ins.current.rs1_val[XLEN-1]  {
+    cp_mstatus_sd: coverpoint ins.current.rs1_val[`UDB_MXLEN-1]  {
     }
     cp_mstatus_fs: coverpoint ins.current.rs1_val[14:13] {
     }
@@ -363,12 +363,12 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     // only check MISA.MXL.  The other bits are allowed to be 0s even if a feature is implemented.
     // misa.MXL is also allowed to be hardwired to 0 (but should match the reference model)
     misa_mxl_accesses : coverpoint ins.current.insn {
-        wildcard bins csrc_11  = {CSRC} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b11); // clear misa.MXL
-        wildcard bins csrs_11  = {CSRS} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b11); // set misa.MXL = 11
-        wildcard bins csrw_00  = {CSRW} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b00); // write misa.MXL = 00
-        wildcard bins csrw_01  = {CSRW} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b01); // write misa.MXL = 01
-        wildcard bins csrw_10  = {CSRW} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b10); // write misa.MXL = 10
-        wildcard bins csrw_11  = {CSRW} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b11); // write misa.MXL = 11
+        wildcard bins csrc_11  = {CSRC} iff (ins.current.rs1_val[`UDB_MXLEN-1:`UDB_MXLEN-2] == 2'b11); // clear misa.MXL
+        wildcard bins csrs_11  = {CSRS} iff (ins.current.rs1_val[`UDB_MXLEN-1:`UDB_MXLEN-2] == 2'b11); // set misa.MXL = 11
+        wildcard bins csrw_00  = {CSRW} iff (ins.current.rs1_val[`UDB_MXLEN-1:`UDB_MXLEN-2] == 2'b00); // write misa.MXL = 00
+        wildcard bins csrw_01  = {CSRW} iff (ins.current.rs1_val[`UDB_MXLEN-1:`UDB_MXLEN-2] == 2'b01); // write misa.MXL = 01
+        wildcard bins csrw_10  = {CSRW} iff (ins.current.rs1_val[`UDB_MXLEN-1:`UDB_MXLEN-2] == 2'b10); // write misa.MXL = 10
+        wildcard bins csrw_11  = {CSRW} iff (ins.current.rs1_val[`UDB_MXLEN-1:`UDB_MXLEN-2] == 2'b11); // write misa.MXL = 11
         wildcard bins csrr     = {CSRR};                                                   // read misa
     }
 

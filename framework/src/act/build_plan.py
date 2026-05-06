@@ -121,7 +121,6 @@ def gen_compile_tasks(
         f"-march={march}",
         f"-mabi={mabi}",
         "-DSIGNATURE",
-        f"-DXLEN={xlen}",
         f"-DTEST_FLEN={test_flen}",
         str(test_path),
     ]

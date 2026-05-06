@@ -769,9 +769,9 @@
 /**** helper macro to initialize regs, just to make sure you catch any errors ****/
 /*****************************************************************/
 
-.macro DBLSHIFTR dstreg,     oldreg,    tmpreg, shamt       //this is just a rotate  using xtmp as a tmp
-        slli    \tmpreg\(), \oldreg\(),   XLEN-\shamt
-        srli    \dstreg\(), \oldreg\(),        \shamt
+.macro DBLSHIFTR dstreg,     oldreg,       tmpreg, shamt       //this is just a rotate  using xtmp as a tmp
+        slli    \tmpreg\(), \oldreg\(), UDB_MXLEN-\shamt
+        srli    \dstreg\(), \oldreg\(),           \shamt
         or      \dstreg\(), \dstreg\(), \tmpreg\()
 .endm
 

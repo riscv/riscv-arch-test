@@ -51,7 +51,7 @@ endgroup
 function void pmpf_sample(int hart, int issue, ins_t ins);
 
   logic [7:0] pmpcfg [63:0];
-  logic [XLEN-1:0] pmpaddr [62:0];
+  logic [`UDB_MXLEN-1:0] pmpaddr [62:0];
   logic [14:0] pmp_hit;   // for first 15 Regions
 
   `ifdef UDB_MXLEN_32

@@ -15,8 +15,8 @@
 //
 //   When virtual memory is active (satp != 0), the HPTW reads PTEs from
 //   main memory to translate every virtual address.  This covergroup verifies
-//   that both loads and stores succeed under VM — i.e. the HPTW can read
-//   PTEs from main memory for both read and write translations.
+//   that loads succeed under VM by sampling an `LW` instruction and checking that
+ //   the loaded value matches the expected sentinel from translated memory.
 //
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////

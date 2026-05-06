@@ -412,7 +412,6 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
     for r in range(8, 32):
         lines.append(f"\tmv x{r}, x7")
 
-
     for cmt, tmpl in [
         ("Reserved op7", "RRRRRRRRRRRRRRRRRRRRRRRRR0011111"),
         ("Reserved op15", "RRRRRRRRRRRRRRRRRRRRRRRRR0111111"),

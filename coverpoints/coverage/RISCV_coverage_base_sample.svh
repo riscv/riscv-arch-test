@@ -169,6 +169,9 @@
     `ifdef COVER_SSSTRICTV
         ssstrictv_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SSTVALA
+        sstvala_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SSTVECD
         sstvecd_sample(hart, issue, ins);
     `endif
@@ -276,6 +279,9 @@
     `endif
     `ifdef COVER_ZALRSC
         zalrsc_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZAMA16B
+        zama16b_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZBA
         zba_sample(hart, issue, ins);

@@ -24,8 +24,8 @@ def _generate_scounteren_tests(test_data: TestData) -> list[str]:
         "",
     ]
 
-    lines.extend(csr_walk_test(test_data, "scounteren", covergroup, coverpoint))
-    lines.extend(csr_access_test(test_data, "scounteren", covergroup, coverpoint))
+    lines.extend(csr_walk_test(test_data, ("scounteren", None), covergroup, coverpoint))
+    lines.extend(csr_access_test(test_data, ("scounteren", None), covergroup, coverpoint))
     lines.extend(
         [
             "",

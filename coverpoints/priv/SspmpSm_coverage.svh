@@ -211,7 +211,10 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
     //   Per Spec §2.7: software must execute SFENCE.VMA rs1=x0,rs2=x0 to order
     //   subsequent S/U memory accesses against preceding SPMP CSR writes.
     //   We look for an SFENCE.VMA whose previous instruction wrote sireg/sireg2
-    //   (i.e. touched an SPMP CSR via siselect) or an spmpen CSR.
+    //   with siselect in the SPMP range (i.e. touched an SPMP CSR via the
+    //   indirect-access path).  spmpen writes are not modelled here because
+    //   this covergroup samples siselect state, not the prev instruction's
+    //   target CSR address.
     //   Maps to normative rule: sfence_vma_ordering
     //------------------------------------------
     sfence_vma_insn: coverpoint ins.current.insn {
@@ -223,7 +226,7 @@ covergroup SspmpSm_csr_cg with function sample(ins_t ins);
 
     prev_wrote_spmp_csr: coverpoint ins.prev.csr[12'h150] {
         type_option.weight = 0;
-        // Previous instruction targeted sireg(2) with an SPMP siselect, or touched spmpen.
+        // Previous instruction targeted sireg(2) with siselect in the SPMP range.
         bins prev_spmp_sel = {[12'h100:12'h13F]};
     }
 
@@ -616,15 +619,31 @@ covergroup SspmpSm_spmpen_cg with function sample(ins_t ins);
     }
 
     //------------------------------------------
-    // cp_spmpen_locked_readonly: spmpen[i] read-only when spmpcfg[i].L == 1
-    // Attempts to clear a locked entry's spmpen bit should be rejected
+    // cp_spmpen_locked_readonly: spmpen[i] is read-only when spmpcfg[i].L == 1.
+    // A write attempt (CSRRC to clear, or CSRRW) targeting CSR_SPMPEN while
+    // the selected SPMP entry is locked must be silently rejected -- the bit
+    // retains its previous value.
+    //
+    // We sample on instructions that target CSR_SPMPEN (insn[31:20] == 0x183)
+    // while miselect points at the locked entry (entry 1 in the test):
+    //   * locked_csrrc_attempt: funct3=011 (CSRRC) with L=1 and spmpen[1]=1 --
+    //     the clear was attempted and the bit stayed set (rejection observed).
+    //   * locked_bit_still_set: funct3=010 (CSRRS-read via `csrr rd, spmpen`)
+    //     with L=1 and spmpen[1]=1 -- the post-rejection verification read
+    //     confirms the locked bit is still set.
+    //
+    // The earlier "locked_clear = 2'b10" bin was unreachable under correct
+    // hardware (a rejected clear leaves the bit set), so detection moved to
+    // the CSR-write-attempt itself rather than the resulting bit value.
     //------------------------------------------
     cp_spmpen_locked_readonly: coverpoint {
-        ins.current.csr[12'h352][7],
-        ins.current.csr[12'h183][1]
-    } iff (ins.current.csr[12'h350] == 12'h101) {
-        bins locked_set    = {2'b11};  // L=1, spmpen[1]=1 (stays set)
-        bins locked_clear  = {2'b10};  // L=1, spmpen[1]=0 (clear rejected)
+        ins.current.insn[14:12],       // funct3: 001=CSRRW, 010=CSRRS/read, 011=CSRRC
+        ins.current.csr[12'h352][7],   // L bit of currently-selected SPMP entry (via mireg2)
+        ins.current.csr[12'h183][1]    // spmpen[1]
+    } iff (ins.current.insn[31:20] == 12'h183 &&               // insn targets CSR_SPMPEN
+           ins.current.csr[12'h350] == 12'h101) {              // miselect = SPMP entry 1
+        bins locked_csrrc_attempt = {5'b011_1_1};  // CSRRC attempt; bit stayed set
+        bins locked_bit_still_set = {5'b010_1_1};  // CSRR verifies bit is still 1
     }
 
 endgroup

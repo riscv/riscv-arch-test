@@ -1840,7 +1840,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
             f"LI(x{val_reg}, 0x{1 << lock_entry:x})",
             f"CSRC(CSR_SPMPEN, x{val_reg})",
             "nop",
-            test_data.add_testcase("spmpen_locked_clear_rejected", coverpoint, covergroup),
+            test_data.add_testcase("locked_csrrc_attempt", coverpoint, covergroup),
             gen_csr_read_sigupd(check_reg, "CSR_SPMPEN", test_data),
         ]
     )
@@ -1849,7 +1849,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "\n# Verify spmpen[1] is still 1 (read-only when locked)",
-            test_data.add_testcase("spmpen_locked_still_set", coverpoint, covergroup),
+            test_data.add_testcase("locked_bit_still_set", coverpoint, covergroup),
             gen_csr_read_sigupd(check_reg, "CSR_SPMPEN", test_data),
         ]
     )

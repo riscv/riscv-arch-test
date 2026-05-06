@@ -178,14 +178,14 @@ SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_aoff_no_activate:
   LI(x22, 0x2)
   CSRC(CSR_SPMPEN, x22)
   nop
-SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_spmpen_locked_clear_rejected:
+SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_csrrc_attempt:
   # Read CSR_SPMPEN into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_spmpen_locked_clear_rejected, SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_spmpen_locked_clear_rejected_str)
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_csrrc_attempt, SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_csrrc_attempt_str)
 
 # Verify spmpen[1] is still 1 (read-only when locked)
-SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_spmpen_locked_still_set:
+SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_bit_still_set:
   # Read CSR_SPMPEN into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_spmpen_locked_still_set, SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_spmpen_locked_still_set_str)
+  RVTEST_SIGUPD_CSR_READ(CSR_SPMPEN, x15, SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_bit_still_set, SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_bit_still_set_str)
 
 # Clean up: clear locked entry config
   LI(x14, 0x101)
@@ -219,8 +219,8 @@ SspmpSm_spmpen_cg_cp_spmpen_readwrite_spmpen_bit3_str: .string "\"test: 6; cg: S
 SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_disabled_str: .string "\"test: 7; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_entry0_disabled\""
 SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_entry0_enabled_str: .string "\"test: 8; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_entry0_enabled\""
 SspmpSm_spmpen_cg_cp_spmpen_activation_spmpen_aoff_no_activate_str: .string "\"test: 9; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_activation; bin: spmpen_aoff_no_activate\""
-SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_spmpen_locked_clear_rejected_str: .string "\"test: 10; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_locked_readonly; bin: spmpen_locked_clear_rejected\""
-SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_spmpen_locked_still_set_str: .string "\"test: 11; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_locked_readonly; bin: spmpen_locked_still_set\""
+SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_csrrc_attempt_str: .string "\"test: 10; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_locked_readonly; bin: locked_csrrc_attempt\""
+SspmpSm_spmpen_cg_cp_spmpen_locked_readonly_locked_bit_still_set_str: .string "\"test: 11; cg: SspmpSm_spmpen_cg; cp: cp_spmpen_locked_readonly; bin: locked_bit_still_set\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

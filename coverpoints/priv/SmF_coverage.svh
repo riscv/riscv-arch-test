@@ -50,7 +50,7 @@ covergroup SmF_cg with function sample(ins_t ins);
         `ifdef ZFA_SUPPORTED
             wildcard bins fli          = {FLI_S};
             wildcard bins fround       = {FROUND_S};
-            `ifdef XLEN32
+            `ifdef UDB_MXLEN_32
                 `ifdef D_SUPPORTED
                     wildcard bins fmvh         = {FMVH_X_D};
                     wildcard bins fmvp         = {FMVP_D_X};

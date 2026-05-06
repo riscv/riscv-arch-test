@@ -62,7 +62,7 @@ covergroup ExceptionsU_cg with function sample(ins_t ins);
         wildcard bins lhu = {LHU};
         wildcard bins lb  = {LB};
         wildcard bins lbu = {LBU};
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             wildcard bins ld  = {LD};
             wildcard bins lwu = {LWU};
         `endif
@@ -71,7 +71,7 @@ covergroup ExceptionsU_cg with function sample(ins_t ins);
         wildcard bins sb = {SB};
         wildcard bins sh = {SH};
         wildcard bins sw = {SW};
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             wildcard bins sd = {SD};
         `endif
     }

@@ -43,7 +43,7 @@ covergroup EndianH_cg with function sample(ins_t ins);
         wildcard bins lbu = {LBU};
     }
 
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
     cp_sd: coverpoint ins.current.insn {
         wildcard bins sd = {SD};
     }
@@ -84,7 +84,7 @@ covergroup EndianH_cg with function sample(ins_t ins);
         bins M_Mode = {2'b11};
     }
 
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         mstatus_mpv: coverpoint ins.current.csr[300][37] {// mpv is mstatus[39] in RV64
         }
     `else
@@ -92,7 +92,7 @@ covergroup EndianH_cg with function sample(ins_t ins);
         }
     `endif
 
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         mstatus_mbe: coverpoint ins.current.csr[CSR_MSTATUS][37] { // mbe is mstatus[37] in RV64
         }
     `else
@@ -130,7 +130,7 @@ covergroup EndianH_cg with function sample(ins_t ins);
     cp_vsstatus_ube_endianness_lb:  cross priv_mode_vu, vsstatus_ube, cp_lb,  cp_byteoffset;
     cp_vsstatus_ube_endianness_lhu: cross priv_mode_vu, vsstatus_ube, cp_lhu, cp_halfoffset;
     cp_vsstatus_ube_endianness_lbu: cross priv_mode_vu, vsstatus_ube, cp_lbu, cp_byteoffset;
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         cp_hstatus_vbe_endianness_sd:  cross priv_mode_vs, hstatus_vsbe, cp_sd,  cp_doubleoffset;
         cp_hstatus_vbe_endianness_ld:  cross priv_mode_vs, hstatus_vsbe, cp_ld,  cp_doubleoffset;
         cp_hstatus_vbe_endianness_lwu: cross priv_mode_vs, hstatus_vsbe, cp_lwu, cp_wordoffset;

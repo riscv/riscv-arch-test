@@ -5915,7 +5915,7 @@
             ins.add_rd(0);
             ins.add_rs1(1);
         end
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
         "aes32dsi"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
@@ -6021,7 +6021,7 @@
             ins.add_rs1(1);
         end
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
         "add.uw"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);

@@ -219,7 +219,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         `ifdef MSECCFG_SUPPORTED // update this in four places when UDB gives a name to this parameter
             bins mseccfg  = {CSR_MSECCFG};
         `endif
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins mstatush = {CSR_MSTATUSH};
             bins menvcfgh = {CSR_MENVCFGH};
             `ifdef MSECCFG_SUPPORTED // update this in four places when UDB gives a name to this parameter
@@ -262,7 +262,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins mhpmcounter29= {CSR_MHPMCOUNTER29};
         bins mhpmcounter30= {CSR_MHPMCOUNTER30};
         bins mhpmcounter31= {CSR_MHPMCOUNTER31};
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins mcycleh      = {CSR_MCYCLEH};
             bins minstreth    = {CSR_MINSTRETH};
             bins mhpmcounter3h = {CSR_MHPMCOUNTER3H};
@@ -302,7 +302,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         wildcard bins csrrc = {CSRRC};
     }
     walking_ones: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
-        bins b_1[] = { [0:`XLEN-1] };
+        bins b_1[] = { [0:`UDB_MXLEN-1] };
     }
 
     csr_debug: coverpoint ins.current.insn[31:20]  {
@@ -331,13 +331,13 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     old_mcountinhibit_cy: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "cy") {
         bins zero = {1'b0};
-        `ifdef COUNTINHIBIT_EN_0
+        `ifdef UDB_COUNTINHIBIT_EN_0
             bins one = {1'b1}; // only if counter can be inhibited
         `endif
     }
     old_mcountinhibit_ir: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "ir") {
         bins zero = {1'b0};
-        `ifdef COUNTINHIBIT_EN_2
+        `ifdef UDB_COUNTINHIBIT_EN_2
             bins one = {1'b1}; // only if counter can be inhibited
         `endif
     }
@@ -351,7 +351,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     time_csr: coverpoint ins.current.insn[31:20] {
         bins time_csr = {CSR_TIME};
     }
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
         timeh_csr: coverpoint ins.current.insn[31:20] {
             bins timeh_csr = {CSR_TIMEH};
         }
@@ -409,9 +409,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     cp_misa_dependencies :      cross priv_mode_m, csrrw, misa, misa_dependencies;
     cp_misa_clear_c :           cross priv_mode_m, csrc, misa_c_0, pc_1;
 
-    `ifdef TIME_CSR_IMPLEMENTED
+    `ifdef UDB_TIME_CSR_IMPLEMENTED
         cp_mtime_write :        cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             cp_mtimeh_write :   cross priv_mode_m, csrr,  timeh_csr; // assumes mtimeh has been written
         `endif
     `endif

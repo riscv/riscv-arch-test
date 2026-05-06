@@ -58,7 +58,7 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
         wildcard bins csrrc_fcsr   = {32'b000000000011_?????_011_?????_1110011};
         wildcard bins csrrc_frm    = {32'b000000000010_?????_011_?????_1110011};
         wildcard bins csrrc_fflags = {32'b000000000001_?????_011_?????_1110011};
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             wildcard bins fmvh         = {32'b1110001_00001_?????_000_?????_1010011};
             wildcard bins fmvp         = {32'b1011001_?????_?????_000_?????_1010011};
         `endif

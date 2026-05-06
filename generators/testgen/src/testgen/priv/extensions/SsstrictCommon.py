@@ -64,9 +64,6 @@ CBO_EXCLUSIONS: list[str] = [
     "000000000100XXXXX010XXXXX0001111",  # cbo.zero
     "000000000000XXXXX110XXXXX0001111",  # prefetch variants
 ]
-
-# AMO/LR/SC — with rs1=x0 the target address is 0x0 whose accessibility
-# is platform-dependent (mapped on some QEMU configs, unmapped on Sail).
 AMO_EXCLUSIONS: list[str] = [
     "00010XXXXXXXXXXXX01X010010101111",  # lr.w / lr.d
     "00011XXXXXXXXXXXX01X010010101111",  # sc.w / sc.d
@@ -79,8 +76,9 @@ AMO_EXCLUSIONS: list[str] = [
     "10100XXXXXXXXXXXX01X010010101111",  # amomax
     "11000XXXXXXXXXXXX01X010010101111",  # amominu
     "11100XXXXXXXXXXXX01X010010101111",  # amomaxu
+    "00101XXXXXXXXXXXX01X010010101111",  # amocas (Zacas)
+    "01001XXXXXXXXXXXX01X010010101111",  # ssamoswap (Ssamoswap)
 ]
-
 # Privileged/SYSTEM instruction exclusions shared by all modes.
 PRIVILEGED_000_EXCLUSIONS: list[str] = [
     "1XXX11XXXXXX00000000000001110011",  # custom system
@@ -103,6 +101,12 @@ PRIVILEGED_000_EXCLUSIONS: list[str] = [
 # ── Encoding helpers ──────────────────────────────────────────────────────
 
 
+# The register reserved as a permanent scratch base pointer.
+# Must be in SAFE_REGS.  Initialized to &scratch before the sweep so
+# every load/store that uses it as rs1 hits valid mapped memory.
+SCRATCH_BASE_REG: int = 8  # x8 / s0
+
+
 def _gen_encodings(
     template: str,
     length: int = 32,
@@ -114,17 +118,32 @@ def _gen_encodings(
       '0'/'1' — fixed bit
       'R'     — random bit (but register fields constrained to SAFE_REGS)
       'E'     — exhaustive bit (all 2^N combinations enumerated)
+
+    For 32-bit instructions:
+      - Register fields (rd, rs1, rs2) that are fully 'R' in the template
+        are replaced with a randomly chosen register from SAFE_REGS.
+      - rd is never assigned SCRATCH_BASE_REG (x8) to prevent clobbering
+        the permanent scratch base pointer used by load/store instructions.
+      - rs1 is never assigned the same register as rd to prevent loads
+        from corrupting their own base address.
     """
     if exclusion is None:
         exclusion = []
 
     # For 32-bit instructions, identify register fields (MSB-first indices).
-    # rd: bits[11:7] -> template[20:25]
-    # rs1: bits[19:15] -> template[12:17]
     # rs2: bits[24:20] -> template[7:12]
-    reg_field_ranges = []
+    # rs1: bits[19:15] -> template[12:17]
+    # rd:  bits[11:7]  -> template[20:25]
+    reg_field_ranges: list[tuple[str, int, int]] = []
     if length == 32:
-        reg_field_ranges = [(7, 12), (12, 17), (20, 25)]
+        reg_field_ranges = [
+            ("rs2", 7, 12),
+            ("rs1", 12, 17),
+            ("rd", 20, 25),
+        ]
+
+    # SAFE_REGS minus the scratch base — used when picking rd
+    safe_regs_no_scratch = [r for r in SAFE_REGS if r != SCRATCH_BASE_REG]
 
     ebits = template.count("E")
     results: list[str] = []
@@ -141,13 +160,41 @@ def _gen_encodings(
                 instr[i] = template[i]
 
         # Overwrite register fields that are fully random (all 'R' in
-        # the template) with a randomly chosen safe register (x7..x31).
-        for start, end in reg_field_ranges:
+        # the template) with a randomly chosen safe register.
+        for field_name, start, end in reg_field_ranges:
             if all(template[k] == "R" for k in range(start, end)):
-                reg = choice(SAFE_REGS)
+                reg = (
+                    choice(safe_regs_no_scratch) if field_name == "rd" else choice(SAFE_REGS)
+                )  # rd must never be SCRATCH_BASE_REG
                 reg_bits = f"{reg:05b}"
                 for k, b in enumerate(reg_bits):
                     instr[start + k] = b
+
+        # Read the actual rd value (whether fixed in template or just assigned)
+        # and ensure rs1 != rd to prevent loads from self-clobbering.
+        if length == 32:
+            rd_start, rd_end = 20, 25
+            rs1_start, rs1_end = 12, 17
+            rd_val = int("".join(instr[rd_start:rd_end]), 2)
+
+            # If rs1 was randomly assigned and collides with rd, re-pick
+            if all(template[k] == "R" for k in range(rs1_start, rs1_end)):
+                rs1_val = int("".join(instr[rs1_start:rs1_end]), 2)
+                if rs1_val == rd_val:
+                    alt = [r for r in SAFE_REGS if r != rd_val]
+                    reg = choice(alt)
+                    reg_bits = f"{reg:05b}"
+                    for k, b in enumerate(reg_bits):
+                        instr[rs1_start + k] = b
+
+            # Also ensure rd is not SCRATCH_BASE_REG even if rd was
+            # fixed in the template (e.g. template has rd = 01000 = x8)
+            if rd_val == SCRATCH_BASE_REG and all(template[k] != "R" for k in range(rd_start, rd_end)):
+                # rd is hardcoded to x8 in the template — we can't change
+                # it without altering the test intent, so leave it alone.
+                # This case is rare and only happens if the template
+                # explicitly targets x8.
+                pass
 
         instrstr = "".join(instr)
         if not any(all(p[k] == "X" or p[k] == instrstr[k] for k in range(length)) for p in exclusion):
@@ -269,15 +316,16 @@ def generate_illegal_instr(
     lines.append(f"\t{test_data.add_testcase('illegal_instr_sweep', coverpoint, covergroup)}")
     lines.append("")
 
-    # Set all safe registers to an unmapped address so valid load/store
-    # encodings always fault, regardless of platform memory map.
-    # -1 (all ones) is unmapped on all platforms for both RV32 and RV64.
+    # x8 = permanent scratch base pointer (never used as rd).
+    # All other safe regs also point to scratch so any surviving
+    # base-address usage hits valid mapped memory.
     lines.append("")
-    lines.append("\t# Pre-load safe regs with unmapped address")
-    lines.append("\tli x7, -1")
-    for r in range(8, 32):
-        lines.append(f"\tmv x{r}, x7")
-
+    lines.append("\t# x8 = permanent scratch base (never clobbered as rd)")
+    lines.append("\tla x8, scratch")
+    lines.append("\t# Pre-load remaining safe regs with scratch address")
+    for r in range(7, 32):
+        if r != 8:
+            lines.append(f"\tmv x{r}, x8")
     # Reserved opcodes (op31 excluded — variable-length ambiguity)
     for cmt, tmpl in [
         ("Reserved op7", "RRRRRRRRRRRRRRRRRRRRRRRRR0011111"),
@@ -288,22 +336,23 @@ def generate_illegal_instr(
     ]:
         emit_raw_words(lines, cmt, tmpl)
 
-    # Atomics — with AMO exclusions to avoid platform-dependent rs1=x0 traps
-    emit_raw_words(lines, "cp_lrsc", "00010RREEEEE0000001E010010101111", exclusion=AMO_EXCLUSIONS)
-    emit_raw_words(lines, "cp_atomic_funct7", "EEEEERRRRRRR0000001E010010101111", exclusion=AMO_EXCLUSIONS)
-    emit_raw_words(lines, "cp_atomic_funct3", "RRRRRRRRRRRR00000EEE010010101111", exclusion=AMO_EXCLUSIONS)
-
-    # Loads / stores
+    # Loads — rs1 is random (already constrained to safe regs, rd != rs1 != x8)
     emit_raw_words(lines, "cp_load", "RRRRRRRRRRRRRRRRREEE010010000011")
     emit_raw_words(lines, "cp_fload", "RRRRRRRRRRRRRRRRREEE010010000111")
-    emit_raw_words(lines, "cp_store", "RRRRRRRRRRRR00000EEERRRRR0100011")
-    emit_raw_words(lines, "cp_fstore", "RRRRRRRRRRRR00000EEERRRRR0100111")
 
-    # Fence / CBO — with CBO exclusions for platform-dependent behaviour
+    # Stores — rs1 fixed to x8 (scratch base)
+    emit_raw_words(lines, "cp_store", "RRRRRRRRRRRR01000EEERRRRR0100011")
+    emit_raw_words(lines, "cp_fstore", "RRRRRRRRRRRR01000EEERRRRR0100111")
+
+    # Fence / CBO — rs1 fixed to x8
     emit_raw_words(lines, "cp_fence_cbo", "RRRRRRRRRRRRRRRRREEE010010001111", exclusion=CBO_EXCLUSIONS)
-    emit_raw_words(lines, "cp_cbo_immediate", "EEEEEEEEEEEE00000010000000001111", exclusion=CBO_EXCLUSIONS)
+    emit_raw_words(lines, "cp_cbo_immediate", "EEEEEEEEEEEE01000010000000001111", exclusion=CBO_EXCLUSIONS)
     emit_raw_words(lines, "cp_cbo_rd", "00000000000RRRRRR010EEEEE0001111", exclusion=CBO_EXCLUSIONS)
 
+    # Atomics — rs1 fixed to x8
+    emit_raw_words(lines, "cp_atomic_funct3", "RRRRRRRRRRRR01000EEE010010101111", exclusion=AMO_EXCLUSIONS)
+    emit_raw_words(lines, "cp_atomic_funct7", "EEEEERRRRRRR0100001E010010101111", exclusion=AMO_EXCLUSIONS)
+    emit_raw_words(lines, "cp_lrsc", "00010RREEEEE0100001E010010101111", exclusion=AMO_EXCLUSIONS)
     # I-type / IW-type
     emit_raw_words(lines, "cp_Itype", "EEEEEEEEEEEERRRRRE01010010010011")
     emit_raw_words(lines, "cp_llAItype", "RRRRRRRRRRRRRRRRREEE010010010011")

@@ -164,7 +164,7 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
         [
             "",
             f"CSRW(sstatus, x{save_reg})        # restore sstatus after Ss1p13 UXL tests",
-            "#endif // XLEN64",
+            "#endif // UDB_MXLEN_64",
             "#endif // SS1P13_SUPPORTED",
         ]
     )

@@ -2,7 +2,7 @@
 
     cp_prev_lr : coverpoint ({ins.prev.inst_name == "lr.w", ins.prev.inst_name == "lr.d"}) {
         bins lr_w = {2'b10};  // previous instruction was load reserved
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             bins lr_d = {2'b01};
         `endif
     }
@@ -26,7 +26,7 @@
         bins sb = {3'b000};
         bins sh = {3'b001};
         bins sw = {3'b010};
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             bins sd = {3'b011};
         `else
             ignore_bins b3 = {3'b011};
@@ -39,7 +39,7 @@
         bins lh  = {3'b001};
         bins lhu = {3'b101};
         bins lw  = {3'b010};
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             bins lwu = {3'b110};
             bins ld  = {3'b011};
         `endif

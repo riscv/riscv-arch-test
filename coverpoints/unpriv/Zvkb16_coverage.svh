@@ -255,7 +255,7 @@ covergroup Zvkb16_vandn_vx_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -907,7 +907,7 @@ covergroup Zvkb16_vrol_vx_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -1450,7 +1450,7 @@ covergroup Zvkb16_vror_vx_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};

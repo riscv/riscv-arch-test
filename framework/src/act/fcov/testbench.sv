@@ -15,11 +15,7 @@ module testbench;
   `include "rvtest_config.svh"
 
   // Set up variable lengths
-  `ifdef XLEN32
-    localparam XLEN = 32;
-  `else
-    localparam XLEN = 64;
-  `endif
+  localparam XLEN = `UDB_XLEN;
 
   `ifdef FLEN128
     localparam FLEN = 128;

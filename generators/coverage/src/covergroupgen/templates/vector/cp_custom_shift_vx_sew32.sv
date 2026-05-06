@@ -17,11 +17,11 @@
 
 
     rs1_top_bits_one_cross_sew32 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  ins.current.rs1_val} {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
         wildcard bins sew32     = {34'b10_11111111_11111111_11111111_111?????};
         `endif
 
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
         wildcard bins sew32     = {66'b10_????????_????????_????????_????????_11111111_11111111_11111111_111?????};
         `endif
     }

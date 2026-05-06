@@ -4,7 +4,7 @@
                 bins csr_time    = {12'hC01};
         `endif
         bins csr_instret = {12'hC02};
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
                 bins csr_cycleh   = {12'hC80};
                 `ifdef UDB_TIME_CSR_IMPLEMENTED
                         bins csr_timeh    = {12'hC81};

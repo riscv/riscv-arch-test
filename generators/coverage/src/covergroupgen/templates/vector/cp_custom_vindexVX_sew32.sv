@@ -2,7 +2,7 @@
     // cp_custom_vindexVX_rs1_not_truncated_64
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
 
     std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
                         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &

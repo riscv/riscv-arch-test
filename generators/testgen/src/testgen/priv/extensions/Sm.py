@@ -319,7 +319,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     # Format: (CSR Name, Mask).  Mask specifies a set of bits to check
     csrs = [
         # TODO: sail does not yet support sstatus.S/M/UBE; mask it until available to avoid mismatches.  Delete mask when Sail has endian support.
-        ("mstatus", 0xFFFFFFCFFFFFFFBF if test_data.xlen == 64 else 0xFFFFFFBF),
+        ("mstatus", 0xFFFFFFCFFFFFFFBF),
         ("medeleg", 0xFFFFFF),  # mask off custom bits and reserved bits
         ("mideleg", 0xFFFF),  # limit to standard interrupt bits
         ("mie", 0xFFFF),  # limit to standard interrupt bits

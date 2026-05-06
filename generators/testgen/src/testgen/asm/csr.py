@@ -44,9 +44,9 @@ def gen_csr_read_sigupd(check_reg: int, csr: tuple, test_data: TestData, mask_re
     else:
         assert mask_reg is not None, "mask_reg must be provided when csr mask is not None"
         return (
-            f"{INDENT}# Read {csr_name} into x{check_reg}, keep only bits specified by mask ({mask:#x}), and check against expected.\n"
+            f"{INDENT}# Read {csr_name} into x{check_reg}, keep only bits specified by mask, and check against expected.\n"
             f"CSRR(x{check_reg}, {csr_name})    # Read CSR\n"
-            f"and x{check_reg}, x{check_reg}, x{mask_reg}    # AND with {mask:#x} to keep only masked bits\n"
+            f"and x{check_reg}, x{check_reg}, x{mask_reg}    # keep only masked bits {mask:#x}\n"
             + write_sigupd(check_reg, test_data)
         )
 
@@ -102,7 +102,19 @@ def csr_access_test(test_data: TestData, csr: tuple, covergroup: str, coverpoint
         f"LI(x{temp_reg}, -1)          # x{temp_reg} = all 1s",
     ]
     if mask is not None:
-        lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
+        mask32 = mask & 0xFFFFFFFF
+        if mask32 != mask:
+            lines.extend(
+                [
+                    "#if __riscv_xlen == 64",
+                    f"LI(x{mask_reg}, {mask:#x})    # Load 64-bit mask",
+                    "#else",
+                    f"LI(x{mask_reg}, {mask32:#x})   # Load 32-bit mask (upper bits of {mask:#x} are ignored)",
+                    "#endif",
+                ]
+            )
+        else:
+            lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
     lines.extend(
         [
             test_data.add_testcase(f"{csr_name}_csrrw1", coverpoint, covergroup),

@@ -175,6 +175,7 @@ def emit_raw_words(
         lines.append(f"\t{directive} 0b{enc}")
     lines.append("")
 
+
 # ── CSR sweep body ────────────────────────────────────────────────────────
 
 

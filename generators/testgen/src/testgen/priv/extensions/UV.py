@@ -46,7 +46,7 @@ def _gen_uvcsr_access(test_data: TestData) -> list[str]:
         ),
     ]
     for csr in _VECTOR_CSRS:
-        lines.extend(csr_access_test(test_data, csr, _CG, coverpoint))
+        lines.extend(csr_access_test(test_data, (csr, None), _CG, coverpoint))
     return lines
 
 
@@ -60,7 +60,7 @@ def _gen_uvcsrwalk(test_data: TestData) -> list[str]:
         ),
     ]
     for csr in _VECTOR_CSRS:
-        lines.extend(csr_walk_test(test_data, csr, _CG, coverpoint))
+        lines.extend(csr_walk_test(test_data, (csr, None), _CG, coverpoint))
     return lines
 
 

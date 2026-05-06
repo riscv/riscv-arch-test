@@ -11,15 +11,16 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp']
 # # # no param constraints
-# MARCH: rv${XLEN}i_zicsr
+# MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "SspmpSmPermUmode.S"
-#define SIGUPD_COUNT 16
+#define SIGUPD_COUNT 10
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
+#define SKIP_MEPC
 #define rvtest_strap_routine
 #define rvtest_mtrap_routine
 
@@ -46,75 +47,256 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // cp_umode_rule
-//   Configure SPMP U-mode rules (SHARED=0, U=1) with various RWX.
-//   Verify permissions are enforced for U-mode.
+//   Configure SPMP U-mode rules (SHARED=0, U=1) with various RWX and
+//   exercise R / W / X permissions from inside U-mode.  Faulting
+//   instructions rely on the framework's trap handler to advance xepc;
+//   the fetch case uses SKIP_MEPC (x4 = 0xACCE) to force xepc = ra.
 /////////////////////////////////
 
-# U-mode rule with RWX=none
-  LI(x26, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x26)
-  LI(x22, 0x118)  # spmpcfg value
-  CSRW(0x152, x22)  # write sireg2 (spmpcfg)
-  nop
-  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none:
-  # Read spmpcfg (sireg2) into x11 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x11, SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none, SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_str)
+# Pre-install `ret` (0x00008067) at scratch[0]
+  LA(x10, scratch)
+  LI(x22, 0x00008067)  # ret
+  sw x22, 0(x10)
+  fence.i  # sync icache with the data write
 
-# U-mode rule with RWX=x
-  LI(x26, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x26)
-  LI(x22, 0x119)  # spmpcfg value
-  CSRW(0x152, x22)  # write sireg2 (spmpcfg)
+# Delegate U-mode ecall (medeleg bit 8) to S-mode for RVTEST_GOTO_SMODE
+  RVTEST_GOTO_MMODE
+  LI(x22, 0x100)  # bit 8: U-mode ecall
+  CSRS(CSR_MEDELEG, x22)
   nop
-  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x:
-  # Read spmpcfg (sireg2) into x11 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x11, SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x, SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_str)
+  RVTEST_GOTO_LOWER_MODE Smode
 
-# U-mode rule with RWX=r
-  LI(x26, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x26)
-  LI(x22, 0x11c)  # spmpcfg value
-  CSRW(0x152, x22)  # write sireg2 (spmpcfg)
+# === U-mode rule with RWX=none ===
+  RVTEST_GOTO_MMODE
+  LI(x26, 0x100)
+  CSRW(miselect, x26)
   nop
-  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r:
-  # Read spmpcfg (sireg2) into x11 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x11, SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r, SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_str)
+  LA(x10, scratch)
+  srli x10, x10, 2  # spmpaddr format
+  ori x10, x10, 0x1FF  # NAPOT 4 KB
+  CSRW(mireg, x10)  # spmpaddr via mireg
+  nop
+  LI(x22, 0x118)  # U=1, RWX=none
+  CSRW(mireg2, x22)  # spmpcfg via mireg2
+  nop
+  sfence.vma x0, x0
+  RVTEST_GOTO_LOWER_MODE Umode
 
-# U-mode rule with RWX=rx
-  LI(x26, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x26)
-  LI(x22, 0x11d)  # spmpcfg value
-  CSRW(0x152, x22)  # write sireg2 (spmpcfg)
-  nop
-  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx:
-  # Read spmpcfg (sireg2) into x11 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x11, SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx, SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_str)
+# === In U-mode ===
+# load: succeeds iff R=1 (no) in RWX=none
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_load:
+  LA(x10, scratch)
+  lw x11, 0(x10)
+  nop  # trap handler skips here on R=0
 
-# U-mode rule with RWX=rw
-  LI(x26, 0x100)  # siselect = SPMP entry 0
-  CSRW(siselect, x26)
-  LI(x22, 0x11e)  # spmpcfg value
-  CSRW(0x152, x22)  # write sireg2 (spmpcfg)
-  nop
-  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw:
-  # Read spmpcfg (sireg2) into x11 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x11, SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw, SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_str)
+# store: succeeds iff W=1 (no) in RWX=none
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_store:
+  LI(x22, 0x00008067)  # ret (preserves the jalr target)
+  sw x22, 0(x10)
+  nop  # trap handler skips here on W=0
 
-# U-mode rule with RWX=rwx
+# fetch: succeeds iff X=1 (no) in RWX=none
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_fetch:
+  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
+  jalr x1, 0(x10)  # on fetch fault (X=0) handler forces xepc = ra
+  nop
+
+# Return to S-mode (strap handler's rtn2smode path; medeleg[8]=1)
+  RVTEST_GOTO_SMODE
+
+# === U-mode rule with RWX=x ===
+  RVTEST_GOTO_MMODE
+  LI(x26, 0x100)
+  CSRW(miselect, x26)
+  nop
+  LA(x10, scratch)
+  srli x10, x10, 2  # spmpaddr format
+  ori x10, x10, 0x1FF  # NAPOT 4 KB
+  CSRW(mireg, x10)  # spmpaddr via mireg
+  nop
+  LI(x22, 0x119)  # U=1, RWX=x
+  CSRW(mireg2, x22)  # spmpcfg via mireg2
+  nop
+  sfence.vma x0, x0
+  RVTEST_GOTO_LOWER_MODE Umode
+
+# === In U-mode ===
+# load: succeeds iff R=1 (no) in RWX=x
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_load:
+  LA(x10, scratch)
+  lw x11, 0(x10)
+  nop  # trap handler skips here on R=0
+
+# store: succeeds iff W=1 (no) in RWX=x
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_store:
+  LI(x22, 0x00008067)  # ret (preserves the jalr target)
+  sw x22, 0(x10)
+  nop  # trap handler skips here on W=0
+
+# fetch: succeeds iff X=1 (yes) in RWX=x
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_fetch:
+  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
+  jalr x1, 0(x10)  # on fetch fault (X=0) handler forces xepc = ra
+  nop
+
+# Return to S-mode (strap handler's rtn2smode path; medeleg[8]=1)
+  RVTEST_GOTO_SMODE
+
+# === U-mode rule with RWX=r ===
+  RVTEST_GOTO_MMODE
+  LI(x26, 0x100)
+  CSRW(miselect, x26)
+  nop
+  LA(x10, scratch)
+  srli x10, x10, 2  # spmpaddr format
+  ori x10, x10, 0x1FF  # NAPOT 4 KB
+  CSRW(mireg, x10)  # spmpaddr via mireg
+  nop
+  LI(x22, 0x11c)  # U=1, RWX=r
+  CSRW(mireg2, x22)  # spmpcfg via mireg2
+  nop
+  sfence.vma x0, x0
+  RVTEST_GOTO_LOWER_MODE Umode
+
+# === In U-mode ===
+# load: succeeds iff R=1 (yes) in RWX=r
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_load:
+  LA(x10, scratch)
+  lw x11, 0(x10)
+  nop  # trap handler skips here on R=0
+
+# store: succeeds iff W=1 (no) in RWX=r
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_store:
+  LI(x22, 0x00008067)  # ret (preserves the jalr target)
+  sw x22, 0(x10)
+  nop  # trap handler skips here on W=0
+
+# fetch: succeeds iff X=1 (no) in RWX=r
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_fetch:
+  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
+  jalr x1, 0(x10)  # on fetch fault (X=0) handler forces xepc = ra
+  nop
+
+# Return to S-mode (strap handler's rtn2smode path; medeleg[8]=1)
+  RVTEST_GOTO_SMODE
+
+# === U-mode rule with RWX=rx ===
+  RVTEST_GOTO_MMODE
+  LI(x26, 0x100)
+  CSRW(miselect, x26)
+  nop
+  LA(x10, scratch)
+  srli x10, x10, 2  # spmpaddr format
+  ori x10, x10, 0x1FF  # NAPOT 4 KB
+  CSRW(mireg, x10)  # spmpaddr via mireg
+  nop
+  LI(x22, 0x11d)  # U=1, RWX=rx
+  CSRW(mireg2, x22)  # spmpcfg via mireg2
+  nop
+  sfence.vma x0, x0
+  RVTEST_GOTO_LOWER_MODE Umode
+
+# === In U-mode ===
+# load: succeeds iff R=1 (yes) in RWX=rx
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_load:
+  LA(x10, scratch)
+  lw x11, 0(x10)
+  nop  # trap handler skips here on R=0
+
+# store: succeeds iff W=1 (no) in RWX=rx
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_store:
+  LI(x22, 0x00008067)  # ret (preserves the jalr target)
+  sw x22, 0(x10)
+  nop  # trap handler skips here on W=0
+
+# fetch: succeeds iff X=1 (yes) in RWX=rx
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_fetch:
+  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
+  jalr x1, 0(x10)  # on fetch fault (X=0) handler forces xepc = ra
+  nop
+
+# Return to S-mode (strap handler's rtn2smode path; medeleg[8]=1)
+  RVTEST_GOTO_SMODE
+
+# === U-mode rule with RWX=rw ===
+  RVTEST_GOTO_MMODE
+  LI(x26, 0x100)
+  CSRW(miselect, x26)
+  nop
+  LA(x10, scratch)
+  srli x10, x10, 2  # spmpaddr format
+  ori x10, x10, 0x1FF  # NAPOT 4 KB
+  CSRW(mireg, x10)  # spmpaddr via mireg
+  nop
+  LI(x22, 0x11e)  # U=1, RWX=rw
+  CSRW(mireg2, x22)  # spmpcfg via mireg2
+  nop
+  sfence.vma x0, x0
+  RVTEST_GOTO_LOWER_MODE Umode
+
+# === In U-mode ===
+# load: succeeds iff R=1 (yes) in RWX=rw
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_load:
+  LA(x10, scratch)
+  lw x11, 0(x10)
+  nop  # trap handler skips here on R=0
+
+# store: succeeds iff W=1 (yes) in RWX=rw
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_store:
+  LI(x22, 0x00008067)  # ret (preserves the jalr target)
+  sw x22, 0(x10)
+  nop  # trap handler skips here on W=0
+
+# fetch: succeeds iff X=1 (no) in RWX=rw
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_fetch:
+  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
+  jalr x1, 0(x10)  # on fetch fault (X=0) handler forces xepc = ra
+  nop
+
+# Return to S-mode (strap handler's rtn2smode path; medeleg[8]=1)
+  RVTEST_GOTO_SMODE
+
+# === U-mode rule with RWX=rwx ===
+  RVTEST_GOTO_MMODE
+  LI(x26, 0x100)
+  CSRW(miselect, x26)
+  nop
+  LA(x10, scratch)
+  srli x10, x10, 2  # spmpaddr format
+  ori x10, x10, 0x1FF  # NAPOT 4 KB
+  CSRW(mireg, x10)  # spmpaddr via mireg
+  nop
+  LI(x22, 0x11f)  # U=1, RWX=rwx
+  CSRW(mireg2, x22)  # spmpcfg via mireg2
+  nop
+  sfence.vma x0, x0
+  RVTEST_GOTO_LOWER_MODE Umode
+
+# === In U-mode ===
+# load: succeeds iff R=1 (yes) in RWX=rwx
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx_load:
+  LA(x10, scratch)
+  lw x11, 0(x10)
+  nop  # trap handler skips here on R=0
+
+# store: succeeds iff W=1 (yes) in RWX=rwx
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx_store:
+  LI(x22, 0x00008067)  # ret (preserves the jalr target)
+  sw x22, 0(x10)
+  nop  # trap handler skips here on W=0
+
+# fetch: succeeds iff X=1 (yes) in RWX=rwx
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx_fetch:
+  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
+  jalr x1, 0(x10)  # on fetch fault (X=0) handler forces xepc = ra
+  nop
+
+# Return to S-mode (strap handler's rtn2smode path; medeleg[8]=1)
+  RVTEST_GOTO_SMODE
+
+# Clean up: clear spmpcfg via S-mode indirect access
   LI(x26, 0x100)  # siselect = SPMP entry 0
   CSRW(siselect, x26)
-  LI(x22, 0x11f)  # spmpcfg value
-  CSRW(0x152, x22)  # write sireg2 (spmpcfg)
-  nop
-  sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx:
-  # Read spmpcfg (sireg2) into x11 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x11, SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx, SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx_str)
   LI(x22, 0x0)  # spmpcfg value
   CSRW(0x152, x22)  # write sireg2 (spmpcfg)
   nop
@@ -130,12 +312,24 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_str: .string "\"test: 1; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_none\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_str: .string "\"test: 2; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_x\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_str: .string "\"test: 3; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_r\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_str: .string "\"test: 4; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rx\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_str: .string "\"test: 5; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rw\""
-SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx_str: .string "\"test: 6; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rwx\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_load_str: .string "\"test: 1; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_none_load\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_store_str: .string "\"test: 2; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_none_store\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_none_fetch_str: .string "\"test: 3; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_none_fetch\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_load_str: .string "\"test: 4; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_x_load\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_store_str: .string "\"test: 5; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_x_store\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_x_fetch_str: .string "\"test: 6; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_x_fetch\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_load_str: .string "\"test: 7; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_r_load\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_store_str: .string "\"test: 8; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_r_store\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_r_fetch_str: .string "\"test: 9; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_r_fetch\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_load_str: .string "\"test: 10; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rx_load\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_store_str: .string "\"test: 11; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rx_store\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rx_fetch_str: .string "\"test: 12; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rx_fetch\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_load_str: .string "\"test: 13; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rw_load\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_store_str: .string "\"test: 14; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rw_store\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rw_fetch_str: .string "\"test: 15; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rw_fetch\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx_load_str: .string "\"test: 16; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rwx_load\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx_store_str: .string "\"test: 17; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rwx_store\""
+SspmpSm_perm_cg_cp_umode_rule_umode_rwx_rwx_fetch_str: .string "\"test: 18; cg: SspmpSm_perm_cg; cp: cp_umode_rule; bin: umode_rwx_rwx_fetch\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

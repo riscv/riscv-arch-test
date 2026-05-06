@@ -11,7 +11,7 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I', 'Sm', 'S', 'Zicsr', 'Sspmp']
 # # # no param constraints
-# MARCH: rv${XLEN}i_zicsr
+# MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -20,6 +20,7 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define RVTEST_PRIV_TEST
+#define SKIP_MEPC
 #define rvtest_strap_routine
 #define rvtest_mtrap_routine
 
@@ -46,36 +47,74 @@ RVTEST_BEGIN
 
 /////////////////////////////////
 // cp_sum_effect
-//   Test sstatus.SUM effect on S-mode access to U-mode SPMP regions.
-//   SUM=0: S-mode is denied any access to U-mode regions.
-//   SUM=1: S-mode gets EnforceNoX (R/W applied, but X is denied).
+//   Test sstatus.SUM effect on S-mode access to a U-mode SPMP region.
+//   SUM=0: S-mode is denied any access (load/store both fault).
+//   SUM=1: S-mode data access is allowed; instruction fetch is still
+//          denied by EnforceNoX even when X=1 in the rule.
 /////////////////////////////////
+
+# Pre-install `ret` (0x00008067) at scratch[0]
+  LA(x14, scratch)
+  LI(x30, 0x00008067)  # ret
+  sw x30, 0(x14)
+  fence.i  # sync icache with the data write
   LI(x10, 0x100)  # siselect = SPMP entry 0
   CSRW(siselect, x10)
+  LA(x14, scratch)
+  srli x14, x14, 2  # convert to spmpaddr format
+  ori x14, x14, 0x1FF  # NAPOT 4 KB region
+  CSRW(0x151, x14)  # write spmpaddr via sireg
+  nop
   LI(x30, 0x11f)  # spmpcfg value
   CSRW(0x152, x30)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
 
-# sstatus.SUM = 0
+# sstatus.SUM = 0  ->  S-mode denied any access to U-mode region
   CSRR(x8, sstatus)  # save sstatus
   LI(x30, 0x40000)  # sstatus.SUM bit (bit 18)
   CSRC(sstatus, x30)  # clear SUM bit
-SspmpSm_perm_cg_cp_sum_effect_sum_0_smode_access:
-  # Read sstatus into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(sstatus, x15, SspmpSm_perm_cg_cp_sum_effect_sum_0_smode_access, SspmpSm_perm_cg_cp_sum_effect_sum_0_smode_access_str)
-  CSRW(sstatus, x8)  # restore sstatus
 
-# sstatus.SUM = 1
-  CSRR(x8, sstatus)  # save sstatus
-  LI(x30, 0x40000)  # sstatus.SUM bit (bit 18)
+# Expected: load page fault (cause 13); strap handler advances sepc by 4.
+SspmpSm_perm_cg_cp_sum_denied_sum_0_smode_load_denied:
+  LA(x14, scratch)
+  lw x15, 0(x14)  # faults
+  nop  # trap handler skips to here
+
+# Expected: store page fault (cause 15); strap handler advances sepc by 4.
+SspmpSm_perm_cg_cp_sum_denied_sum_0_smode_store_denied:
+  sw x30, 0(x14)  # faults
+  nop  # trap handler skips to here
+
+# sstatus.SUM = 1  ->  S-mode data access allowed; fetch denied (EnforceNoX)
+  LI(x30, 0x40000)
   CSRS(sstatus, x30)  # set SUM bit
-SspmpSm_perm_cg_cp_sum_effect_sum_1_smode_access:
-  # Read sstatus into x15 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(sstatus, x15, SspmpSm_perm_cg_cp_sum_effect_sum_1_smode_access, SspmpSm_perm_cg_cp_sum_effect_sum_1_smode_access_str)
+
+# Expected: load succeeds, reads the `ret` instruction value.
+SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_load:
+  LA(x14, scratch)
+  lw x15, 0(x14)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_load, SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_load_str)
+
+# Expected: store succeeds.  Re-install `ret` so the jalr target is clean.
+SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_store:
+  LI(x30, 0x00008067)  # ret
+  sw x30, 0(x14)
+  lw x15, 0(x14)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_store, SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_store_str)
+  fence.i  # sync icache with the data write
+
+# Expected: instruction fetch denied by EnforceNoX even though X=1 in cfg.
+# SKIP_MEPC + x4=0xACCE tells the trap handler to force xepc=ra on fetch fault.
+SspmpSm_perm_cg_cp_enforce_no_x_sum_1_fetch_denied:
+  LI(x4, 0xACCE)  # SKIP_MEPC sentinel
+  LA(x14, scratch)
+  jalr x1, 0(x14)  # fetch page fault (cause 12); handler returns here
+  nop
+
   CSRW(sstatus, x8)  # restore sstatus
-SspmpSm_perm_cg_cp_enforce_no_x_sum_enforces_nox:
-SspmpSm_perm_cg_cp_sum_denied_sum_denies_access:
   LI(x30, 0x0)  # spmpcfg value
   CSRW(0x152, x30)  # write sireg2 (spmpcfg)
   nop
@@ -91,10 +130,11 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-SspmpSm_perm_cg_cp_sum_effect_sum_0_smode_access_str: .string "\"test: 1; cg: SspmpSm_perm_cg; cp: cp_sum_effect; bin: sum_0_smode_access\""
-SspmpSm_perm_cg_cp_sum_effect_sum_1_smode_access_str: .string "\"test: 2; cg: SspmpSm_perm_cg; cp: cp_sum_effect; bin: sum_1_smode_access\""
-SspmpSm_perm_cg_cp_enforce_no_x_sum_enforces_nox_str: .string "\"test: 3; cg: SspmpSm_perm_cg; cp: cp_enforce_no_x; bin: sum_enforces_nox\""
-SspmpSm_perm_cg_cp_sum_denied_sum_denies_access_str: .string "\"test: 4; cg: SspmpSm_perm_cg; cp: cp_sum_denied; bin: sum_denies_access\""
+SspmpSm_perm_cg_cp_sum_denied_sum_0_smode_load_denied_str: .string "\"test: 1; cg: SspmpSm_perm_cg; cp: cp_sum_denied; bin: sum_0_smode_load_denied\""
+SspmpSm_perm_cg_cp_sum_denied_sum_0_smode_store_denied_str: .string "\"test: 2; cg: SspmpSm_perm_cg; cp: cp_sum_denied; bin: sum_0_smode_store_denied\""
+SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_load_str: .string "\"test: 3; cg: SspmpSm_perm_cg; cp: cp_sum_effect; bin: sum_1_data_allowed_load\""
+SspmpSm_perm_cg_cp_sum_effect_sum_1_data_allowed_store_str: .string "\"test: 4; cg: SspmpSm_perm_cg; cp: cp_sum_effect; bin: sum_1_data_allowed_store\""
+SspmpSm_perm_cg_cp_enforce_no_x_sum_1_fetch_denied_str: .string "\"test: 5; cg: SspmpSm_perm_cg; cp: cp_enforce_no_x; bin: sum_1_fetch_denied\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -176,11 +176,6 @@ coverage: COVERAGE := True
 coverage: CONFIG_FILES := $(COVERAGE_CONFIG_FILES)
 coverage: elfs
 
-.PHONY: sspmp-coverage-report
-sspmp-coverage-report:
-	@$(UV_RUN) python scripts/sspmp_coverage_reachability.py
-
-
 ########### Regression ###########
 # Clean, run coverage, then run all configs that have a run_cmd.txt, continuing through failures.
 .PHONY: regression

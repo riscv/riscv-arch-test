@@ -30,7 +30,7 @@ def _generate_stvec_mode_tests(test_data: TestData) -> list[str]:
     ]
 
     # MODE bits [1:0] must stay 0; only walking 1s are needed per CTP.
-    lines.extend(csr_walk_test(test_data, "stvec", covergroup, coverpoint, start_bit=2, walk_zeros=False))
+    lines.extend(csr_walk_test(test_data, ("stvec", None), covergroup, coverpoint, start_bit=2, walk_zeros=False))
 
     lines.extend(
         [

@@ -2018,7 +2018,10 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "Sspmp",
-    required_extensions=["Sm", "S", "Zicsr", "Sspmp"],
+    # The combined test exercises Sspmpen (spmpen CSR) via _generate_spmpen_tests,
+    # so the add-on must be declared alongside the base extension.  Smpmpdeleg
+    # (mpmpdeleg CSR) is mandatory for Sspmp and needs no separate declaration.
+    required_extensions=["Sm", "S", "Zicsr", "Sspmp", "Sspmpen"],
     march_extensions=["Zicsr", "Zifencei"],
     extra_defines=["#define SKIP_MEPC"],  # needed for EnforceNoX / U-mode exec-fault tests
 )
@@ -2066,28 +2069,30 @@ def make_sspmp(test_data: TestData) -> list[str]:
 
 _SIGUPD_MARGIN = 10
 
-# (filename_stem, generator_function) for each sub-test
-_SSPMP_SUB_TESTS: list[tuple[str, Callable[[TestData], list[str]]]] = [
-    ("SspmpSmCsrAccess", _generate_spmp_csr_indirect_access_tests),
-    ("SspmpSmLock", _generate_spmp_lock_tests),
-    ("SspmpSmOobAccess", _generate_spmp_oob_access_tests),
-    ("SspmpSmAddrMatch", _generate_addr_match_tests),
-    ("SspmpSmTorEntry0", _generate_spmp_entry_tor_entry0_tests),
-    ("SspmpSmPriority", _generate_priority_match_tests),
-    ("SspmpSmPermSmode", _generate_permission_smode_tests),
-    ("SspmpSmPermUmode", _generate_permission_umode_tests),
-    ("SspmpSmSum", _generate_sum_effect_tests),
-    ("SspmpSmMxr", _generate_mxr_effect_tests),
-    ("SspmpSmShared", _generate_shared_rule_tests),
-    ("SspmpSmReserved", _generate_reserved_encoding_tests),
-    ("SspmpSmNoMatch", _generate_no_match_deny_tests),
-    ("SspmpSmFault", _generate_spmp_fault_tests),
-    ("SspmpSmMmodeBypass", _generate_mmode_bypass_tests),
-    ("SspmpSmMmodeAccess", _generate_mmode_indirect_access_tests),
-    ("SspmpSmMpmpdeleg", _generate_mpmpdeleg_tests),
-    ("SspmpSmSpmpen", _generate_spmpen_tests),
-    ("SspmpSmSfence", _generate_sfence_ordering_tests),
-    ("SspmpSmSatpBare", _generate_satp_bare_spmp_tests),
+# (filename_stem, generator_function, extra_required_extensions) for each sub-test.
+# Smpmpdeleg is mandatory for Sspmp so it is implicit; Sspmpen is an optional
+# add-on and must be declared explicitly by tests that access the spmpen CSR.
+_SSPMP_SUB_TESTS: list[tuple[str, Callable[[TestData], list[str]], list[str]]] = [
+    ("SspmpSmCsrAccess", _generate_spmp_csr_indirect_access_tests, []),
+    ("SspmpSmLock", _generate_spmp_lock_tests, []),
+    ("SspmpSmOobAccess", _generate_spmp_oob_access_tests, []),
+    ("SspmpSmAddrMatch", _generate_addr_match_tests, []),
+    ("SspmpSmTorEntry0", _generate_spmp_entry_tor_entry0_tests, []),
+    ("SspmpSmPriority", _generate_priority_match_tests, []),
+    ("SspmpSmPermSmode", _generate_permission_smode_tests, []),
+    ("SspmpSmPermUmode", _generate_permission_umode_tests, []),
+    ("SspmpSmSum", _generate_sum_effect_tests, []),
+    ("SspmpSmMxr", _generate_mxr_effect_tests, []),
+    ("SspmpSmShared", _generate_shared_rule_tests, []),
+    ("SspmpSmReserved", _generate_reserved_encoding_tests, []),
+    ("SspmpSmNoMatch", _generate_no_match_deny_tests, []),
+    ("SspmpSmFault", _generate_spmp_fault_tests, []),
+    ("SspmpSmMmodeBypass", _generate_mmode_bypass_tests, []),
+    ("SspmpSmMmodeAccess", _generate_mmode_indirect_access_tests, []),
+    ("SspmpSmMpmpdeleg", _generate_mpmpdeleg_tests, []),
+    ("SspmpSmSpmpen", _generate_spmpen_tests, ["Sspmpen"]),
+    ("SspmpSmSfence", _generate_sfence_ordering_tests, []),
+    ("SspmpSmSatpBare", _generate_satp_bare_spmp_tests, []),
 ]
 
 
@@ -2095,14 +2100,18 @@ def _generate_single_test(
     name: str,
     generator_fn: Callable[[TestData], list[str]],
     output_dir: Path,
+    extra_required_extensions: list[str] | None = None,
 ) -> None:
     """Generate a single Sspmp sub-test .S file."""
+    required_exts = ["Sm", "S", "Zicsr", "Sspmp"]
+    if extra_required_extensions:
+        required_exts = required_exts + list(extra_required_extensions)
     test_config = TestConfig(
         xlen=0,
         flen=64,
         testsuite=name,
         E_ext=False,
-        required_extensions=["Sm", "S", "Zicsr", "Sspmp"],
+        required_extensions=required_exts,
         # Zifencei is needed by SspmpSmSum / SspmpSmPermUmode which use fence.i
         # to sync the icache after writing the jalr target for fetch-fault tests.
         # It is harmless for sub-tests that do not issue fence.i.
@@ -2155,8 +2164,8 @@ def generate_sspmp_tests(output_dir: Path) -> None:
     """Generate all Sspmp sub-tests as individual .S files under *output_dir*/priv/Sspmp/."""
     sspmp_dir = output_dir / "priv" / "Sspmp"
     sspmp_dir.mkdir(parents=True, exist_ok=True)
-    for name, gen_fn in _SSPMP_SUB_TESTS:
-        _generate_single_test(name, gen_fn, sspmp_dir)
+    for name, gen_fn, extra_exts in _SSPMP_SUB_TESTS:
+        _generate_single_test(name, gen_fn, sspmp_dir, extra_exts)
     print(f"Generated {len(_SSPMP_SUB_TESTS)} Sspmp test files in {sspmp_dir}")
 
 

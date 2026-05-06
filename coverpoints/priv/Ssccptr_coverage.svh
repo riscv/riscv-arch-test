@@ -44,11 +44,13 @@ covergroup Ssccptr_cg with function sample(ins_t ins);
     }
     `endif
 
-    lw_insn: coverpoint ins.current.insn { wildcard bins lw = {LW}; }
+    lw_insn: coverpoint ins.current.insn {
+            wildcard bins lw = {LW};
+   }
 
     load_result_sentinel: coverpoint ins.current.rd_val[31:0] {
-            bins sentinel = {32'hDEADBEEF};
-    }
+            bins sentinel = {32'hC0FFEE42};
+   }
 
     cp_ssccptr: cross priv_mode_s, satp_active, lw_insn, load_result_sentinel;
 

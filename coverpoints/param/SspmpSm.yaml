@@ -4,7 +4,7 @@ parameter_definitions:
   - name: NUM_SPMP_ENTRIES
     coverpoint:
       [
-        "cp_spmp_indirect_access, cp_spmpaddr_write, cp_spmpcfg_write, cp_spmp_oob_read_zero, cp_spmp_oob_write_ignored, cp_mpmpdeleg_pmpnum_field",
+        "cp_{spmp_indirect_access, spmpaddr_write, spmpcfg_write, spmp_oob_read_zero, spmp_oob_write_ignored, mpmpdeleg_pmpnum_field}",
       ]
     effect:
       [
@@ -12,26 +12,27 @@ parameter_definitions:
       ]
 
   - name: SPMP_GRAIN
-    coverpoint: ["cp_addr_match_na4, cp_addr_match_napot"]
+    coverpoint: ["cp_addr_match_{na4, napot}"]
     effect:
       [
         "Minimum granularity of SPMP regions. NA4 is only available when grain is 0.",
       ]
 
   - name: NUM_PMP_ENTRIES
-    coverpoint: ["cp_mpmpdeleg_pmpnum_field, cp_mpmpdeleg_pmpnum_zero, cp_mpmpdeleg_no_delegation, cp_mpmpdeleg_locked"]
+    coverpoint:
+      ["cp_mpmpdeleg_{pmpnum_field, pmpnum_zero, no_delegation, locked}"]
     effect:
       [
         "Total number of PMP entries in the implementation, determines delegation range.",
       ]
 
   - name: MXLEN
-    coverpoint: ["cp_spmpen_readwrite, cp_spmpen_activation, cp_spmpen_locked_readonly"]
+    coverpoint: ["cp_spmpen_{readwrite, activation, locked_readonly}"]
     effect:
       [
         "XLEN-dependent register widths. On RV32 the Sspmpen extension also exposes spmpenh; these coverpoints exercise the XLEN-sensitive paths.",
       ]
 
   - name: SXLEN
-    coverpoint: ["cp_spmpaddr_write, cp_spmpcfg_write"]
+    coverpoint: ["cp_{spmpaddr_write, spmpcfg_write}"]
     effect: ["Determines width of spmpcfg and spmpaddr registers."]

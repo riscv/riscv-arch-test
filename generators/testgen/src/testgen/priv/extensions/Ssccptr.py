@@ -24,7 +24,7 @@ Test strategy
 
 Page-table infrastructure
 -------------------------
-rvtest_Sroot_pg_tbl (emitted by framework via rvtest_strap_routine)
+rvtest_Sroot_pg_tbl (defined inside RVTEST_DATA_BEGIN in tests/env/rvtest_setup.h when S_SUPPORTED)
 plus rvtest_slvl1_pg_tbl / rvtest_slvl0_pg_tbl injected via
 .pushsection into .data.
 """

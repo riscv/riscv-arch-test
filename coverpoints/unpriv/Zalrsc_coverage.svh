@@ -29,11 +29,11 @@ covergroup Zalrsc_lr_w_cg with function sample(ins_t ins);
     ignore_bins rl_noaq = {2'b01};
     }
     cp_custom_rd_edges : coverpoint ins.current.rd_val iff (ins.trap == 0) {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero = {0};
             bins one  = {32'b00000000000000000000000000000001};
             bins max  = {32'b11111111111111111111111111111111};
-        `else // XLEN64
+        `else // UDB_MXLEN_64
             bins zero = {0};
             bins one  = {64'b0000000000000000000000000000000000000000000000000000000000000001};
             bins max  = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -81,7 +81,7 @@ covergroup Zalrsc_sc_w_cg with function sample(ins_t ins);
 
     cp_prev_lr : coverpoint ({ins.prev.inst_name == "lr.w", ins.prev.inst_name == "lr.d"}) {
         bins lr_w = {2'b10};  // previous instruction was load reserved
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             bins lr_d = {2'b01};
         `endif
     }
@@ -105,7 +105,7 @@ covergroup Zalrsc_sc_w_cg with function sample(ins_t ins);
         bins sb = {3'b000};
         bins sh = {3'b001};
         bins sw = {3'b010};
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             bins sd = {3'b011};
         `else
             ignore_bins b3 = {3'b011};
@@ -118,7 +118,7 @@ covergroup Zalrsc_sc_w_cg with function sample(ins_t ins);
         bins lh  = {3'b001};
         bins lhu = {3'b101};
         bins lw  = {3'b010};
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             bins lwu = {3'b110};
             bins ld  = {3'b011};
         `endif
@@ -140,7 +140,7 @@ covergroup Zalrsc_sc_w_cg with function sample(ins_t ins);
     }
 
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -175,7 +175,7 @@ covergroup Zalrsc_sc_w_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
 covergroup Zalrsc_lr_d_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cmp_rd_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
@@ -193,11 +193,11 @@ covergroup Zalrsc_lr_d_cg with function sample(ins_t ins);
     ignore_bins rl_noaq = {2'b01};
     }
     cp_custom_rd_edges : coverpoint ins.current.rd_val iff (ins.trap == 0) {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero = {0};
             bins one  = {32'b00000000000000000000000000000001};
             bins max  = {32'b11111111111111111111111111111111};
-        `else // XLEN64
+        `else // UDB_MXLEN_64
             bins zero = {0};
             bins one  = {64'b0000000000000000000000000000000000000000000000000000000000000001};
             bins max  = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -245,7 +245,7 @@ covergroup Zalrsc_sc_d_cg with function sample(ins_t ins);
 
     cp_prev_lr : coverpoint ({ins.prev.inst_name == "lr.w", ins.prev.inst_name == "lr.d"}) {
         bins lr_w = {2'b10};  // previous instruction was load reserved
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             bins lr_d = {2'b01};
         `endif
     }
@@ -269,7 +269,7 @@ covergroup Zalrsc_sc_d_cg with function sample(ins_t ins);
         bins sb = {3'b000};
         bins sh = {3'b001};
         bins sw = {3'b010};
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             bins sd = {3'b011};
         `else
             ignore_bins b3 = {3'b011};
@@ -282,7 +282,7 @@ covergroup Zalrsc_sc_d_cg with function sample(ins_t ins);
         bins lh  = {3'b001};
         bins lhu = {3'b101};
         bins lw  = {3'b010};
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             bins lwu = {3'b110};
             bins ld  = {3'b011};
         `endif
@@ -304,7 +304,7 @@ covergroup Zalrsc_sc_d_cg with function sample(ins_t ins);
     }
 
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -349,7 +349,7 @@ function void zalrsc_sample(int hart, int issue, ins_t ins);
         "sc.w"     : begin
             Zalrsc_sc_w_cg.sample(ins);
         end
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
         "lr.d"     : begin
             Zalrsc_lr_d_cg.sample(ins);
         end

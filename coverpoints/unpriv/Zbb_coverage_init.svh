@@ -28,7 +28,7 @@
     Zbb_sext_h_cg = new(); Zbb_sext_h_cg.set_inst_name("obj_Zbb_sext_h");
     Zbb_xnor_cg = new(); Zbb_xnor_cg.set_inst_name("obj_Zbb_xnor");
     Zbb_zext_h_cg = new(); Zbb_zext_h_cg.set_inst_name("obj_Zbb_zext_h");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     Zbb_clzw_cg = new(); Zbb_clzw_cg.set_inst_name("obj_Zbb_clzw");
     Zbb_cpopw_cg = new(); Zbb_cpopw_cg.set_inst_name("obj_Zbb_cpopw");
     Zbb_ctzw_cg = new(); Zbb_ctzw_cg.set_inst_name("obj_Zbb_ctzw");

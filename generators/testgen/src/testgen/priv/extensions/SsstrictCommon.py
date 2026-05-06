@@ -98,7 +98,7 @@ PRIVILEGED_000_EXCLUSIONS: list[str] = [
     "0010001XXXXXXXXXX000000001110011",  # HFENCE.BVMA
     "1010001XXXXXXXXXX000000001110011",  # HFENCE.GVMA
     "01110000001000000000000001110011",  # MNRET (Smrnmi)
-    # "00000000001000000000000001110011",  # URET (deprecated)
+    "00000000001000000000000001110011",  # URET (deprecated)
 ]
 
 
@@ -337,7 +337,7 @@ def generate_illegal_instr(
         ("Reserved op23", "RRRRRRRRRRRRRRRRRRRRRRRRR1011111"),
         ("Reserved op26", "RRRRRRRRRRRRRRRRRRRRRRRRR1101011"),
         # TODO: Restore these once CI for QEMU + Spike passes and all bugs identified
-        #         # ("Reserved op31", "RRRRRRRRRRRRRRRRRRRRRRRRR1111111"),
+        #         ("Reserved op31", "RRRRRRRRRRRRRRRRRRRRRRRRR1111111"),
     ]:
         emit_raw_words(lines, cmt, tmpl)
 
@@ -487,7 +487,7 @@ def generate_compressed_instr(
             "101XXXXXXXXXXX01",  # c.j — random jump - EXCLUDED
             "11XXXXXXXXXXXX01",  # c.beqz/c.bnez — random branch
             "001XXXXXXXXXXX01",  # c.jr
-            # "XXXX00010XXXXX01",  # rd = x2 -  Bug resolved, nor x2 is not getting used as rd
+            "XXXX00010XXXXX01",  # rd = x2 -  Bug resolved, nor x2 is not getting used as rd
         ],
     )
     emit_raw_words(
@@ -501,7 +501,7 @@ def generate_compressed_instr(
             "X01XXXXXXXXXXX10",  # c.fldsp/c.fsdsp - Interfere with x2 which is pointing to regular signature area
             "X10XXXXXXXXXXX10",  # c.lwsp/c.swsp — Interfere with x2 which is pointing to regular signature area
             "1001000000000010",  # c.ebreak
-            # "XXXX00010XXXXX10",  # rd = x2 (sp) - Bug resolved, nor x2 is not getting used as rd
+            "XXXX00010XXXXX10",  # rd = x2 (sp) - Bug resolved, nor x2 is not getting used as rd
             "1100XXXXXXXXXX10",  # c.swsp with rs2=x2 (corrupts via store of sp) - Interfere with x2 which is pointing to regular signature area
             "1110XXXXXXXXXX10",  # c.lwsp rd=x2 alternate encoding guard - Interfere with x2 which is pointing to regular signature area
             "1010XXXXXXXXXX10",  # zero-length / nop-like edge in quadrant 2 - Will get the exact cause for this one

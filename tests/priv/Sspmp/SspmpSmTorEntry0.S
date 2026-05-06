@@ -59,9 +59,9 @@ RVTEST_BEGIN
   CSRW(0x152, x19)  # write sireg2 (spmpcfg)
   nop
   sfence.vma x0, x0  # synchronize SPMP CSR writes with subsequent memory accesses
-SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_base_is_zero:
+SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0:
   # Read spmpcfg (sireg2) into x15 and check.
-  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_base_is_zero, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_base_is_zero_str)
+  RVTEST_SIGUPD_CSR_READ(0x152, x15, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0, SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0_str)
   LI(x19, 0x0)  # spmpcfg value
   CSRW(0x152, x19)  # write sireg2 (spmpcfg)
   nop
@@ -80,7 +80,7 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_base_is_zero_str: .string "\"test: 1; cg: SspmpSm_addr_cg; cp: cp_addr_match_tor; bin: entry0_tor_base_is_zero\""
+SspmpSm_addr_cg_cp_addr_match_tor_entry0_tor_on_entry0_str: .string "\"test: 1; cg: SspmpSm_addr_cg; cp: cp_addr_match_tor_entry0; bin: tor_on_entry0\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

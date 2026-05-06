@@ -395,15 +395,16 @@ def _generate_spmp_lock_tests(test_data: TestData) -> list[str]:
 def _generate_spmp_oob_access_tests(test_data: TestData) -> list[str]:
     """Test out-of-bounds siselect index behavior.
 
-    Covers: cp_spmp_oob_access
+    Covers: cp_spmp_oob_read_zero, cp_spmp_oob_write_ignored
     """
     covergroup = "SspmpSm_csr_cg"
-    coverpoint = "cp_spmp_oob_access"
+    read_cp = "cp_spmp_oob_read_zero"
+    write_cp = "cp_spmp_oob_write_ignored"
     sel_reg, val_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
     lines = [
         comment_banner(
-            coverpoint,
+            "cp_spmp_oob_read_zero / cp_spmp_oob_write_ignored",
             "Access out-of-bounds SPMP index via siselect.\nReads should return zero, writes should be ignored.",
         ),
     ]
@@ -422,7 +423,7 @@ def _generate_spmp_oob_access_tests(test_data: TestData) -> list[str]:
         # Read spmpaddr - should be 0
         lines.extend(
             [
-                test_data.add_testcase(f"oob_0x{oob_idx:x}_read_addr", coverpoint, covergroup),
+                test_data.add_testcase(f"oob_0x{oob_idx:x}_read_addr", read_cp, covergroup),
                 _spmp_read_addr_sigupd(check_reg, test_data),
             ]
         )
@@ -430,7 +431,7 @@ def _generate_spmp_oob_access_tests(test_data: TestData) -> list[str]:
         # Read spmpcfg - should be 0
         lines.extend(
             [
-                test_data.add_testcase(f"oob_0x{oob_idx:x}_read_cfg", coverpoint, covergroup),
+                test_data.add_testcase(f"oob_0x{oob_idx:x}_read_cfg", read_cp, covergroup),
                 _spmp_read_cfg_sigupd(check_reg, test_data),
             ]
         )
@@ -441,16 +442,16 @@ def _generate_spmp_oob_access_tests(test_data: TestData) -> list[str]:
                 f"li x{val_reg}, -1",
                 f"CSRW(0x151, x{val_reg})  # write sireg (should be ignored)",
                 "nop",
-                test_data.add_testcase(f"oob_0x{oob_idx:x}_write_addr", coverpoint, covergroup),
+                test_data.add_testcase(f"oob_0x{oob_idx:x}_write_addr", write_cp, covergroup),
                 _spmp_read_addr_sigupd(check_reg, test_data),
             ]
         )
 
-    # Cross coverpoint labels (conditions already exercised above)
+    # Canonical bin-name labels so the SVH bins are reported by exact name.
     lines.extend(
         [
-            test_data.add_testcase("oob_read_returns_zero", "cp_spmp_oob_read_zero", covergroup),
-            test_data.add_testcase("oob_write_no_state_change", "cp_spmp_oob_write_ignored", covergroup),
+            test_data.add_testcase("oob_read_returns_zero", read_cp, covergroup),
+            test_data.add_testcase("oob_write_no_state_change", write_cp, covergroup),
         ]
     )
 
@@ -1320,14 +1321,15 @@ def _generate_mmode_indirect_access_tests(test_data: TestData) -> list[str]:
 def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
     """Test mpmpdeleg.pmpnum field (Smpmpdeleg extension).
 
-    Covers: cp_mpmpdeleg_pmpnum, cp_mpmpdeleg_locked
+    Covers: cp_mpmpdeleg_pmpnum_field, cp_mpmpdeleg_pmpnum_zero,
+            cp_mpmpdeleg_no_delegation, cp_mpmpdeleg_locked
     """
     covergroup = "SspmpSm_csr_cg"
     sel_reg, val_reg, check_reg, save_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
 
     lines = [
         comment_banner(
-            "cp_mpmpdeleg_pmpnum / cp_mpmpdeleg_locked",
+            "cp_mpmpdeleg_pmpnum_field / cp_mpmpdeleg_locked",
             "Test mpmpdeleg CSR (Smpmpdeleg extension).\n"
             "mpmpdeleg.pmpnum[6:0] determines the delegation boundary.\n"
             "Entries >= pmpnum are delegated as SPMP entries.",
@@ -1338,7 +1340,11 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
     lines.append("RVTEST_GOTO_MMODE")
 
     # ---------- Test pmpnum field ----------
-    coverpoint = "cp_mpmpdeleg_pmpnum"
+    # The SVH defines cp_mpmpdeleg_pmpnum_field with bins
+    #   zero_all_delegated / partial[4] / max_none_delegated
+    # and companion cross coverpoints cp_mpmpdeleg_pmpnum_zero and
+    # cp_mpmpdeleg_no_delegation.  Each test-case label below maps to a
+    # coverpoint that actually exists in the SVH.
     coverpoint_field = "cp_mpmpdeleg_pmpnum_field"
 
     # Read and save current mpmpdeleg
@@ -1357,7 +1363,6 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
             "\n# pmpnum = 0 (delegate all PMP entries as SPMP)",
             f"CSRW({mpmpdeleg_csr}, zero)",
             "nop",
-            test_data.add_testcase("pmpnum_0", coverpoint, covergroup),
             test_data.add_testcase("zero_all_delegated", coverpoint_field, covergroup),
             test_data.add_testcase("zero_and_delegating", "cp_mpmpdeleg_pmpnum_zero", covergroup),
             gen_csr_read_sigupd(check_reg, mpmpdeleg_csr, test_data),
@@ -1372,8 +1377,7 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
                 f"LI(x{val_reg}, {pmpnum})",
                 f"CSRW({mpmpdeleg_csr}, x{val_reg})",
                 "nop",
-                test_data.add_testcase(f"pmpnum_{pmpnum}", coverpoint, covergroup),
-                test_data.add_testcase(f"partial_{pmpnum}", coverpoint_field, covergroup),
+                test_data.add_testcase(f"partial_pmpnum_{pmpnum}", coverpoint_field, covergroup),
                 gen_csr_read_sigupd(check_reg, mpmpdeleg_csr, test_data),
             ]
         )
@@ -1385,7 +1389,6 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
             f"LI(x{val_reg}, 64)",
             f"CSRW({mpmpdeleg_csr}, x{val_reg})",
             "nop",
-            test_data.add_testcase("pmpnum_64", coverpoint, covergroup),
             test_data.add_testcase("max_none_delegated", coverpoint_field, covergroup),
             test_data.add_testcase("max_no_deleg_reads_zero", "cp_mpmpdeleg_no_delegation", covergroup),
             gen_csr_read_sigupd(check_reg, mpmpdeleg_csr, test_data),
@@ -1399,7 +1402,7 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
             f"LI(x{val_reg}, 100)",
             f"CSRW({mpmpdeleg_csr}, x{val_reg})",
             "nop",
-            test_data.add_testcase("pmpnum_100_clamp", coverpoint, covergroup),
+            test_data.add_testcase("clamp_pmpnum_100", coverpoint_field, covergroup),
             gen_csr_read_sigupd(check_reg, mpmpdeleg_csr, test_data),
         ]
     )
@@ -1742,11 +1745,11 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
 def _generate_spmp_entry_tor_entry0_tests(test_data: TestData) -> list[str]:
     """Test TOR mode with entry 0 (base = 0).
 
-    Covers: addr_match_tor_entry0
+    Covers: cp_addr_match_tor_entry0
     When spmpcfg[0].A == TOR, the lower bound is 0.
     """
     covergroup = "SspmpSm_addr_cg"
-    coverpoint = "cp_addr_match_tor"
+    coverpoint = "cp_addr_match_tor_entry0"
     sel_reg, val_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
     lines = [
@@ -1765,7 +1768,7 @@ def _generate_spmp_entry_tor_entry0_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             _sfence_vma(),
-            test_data.add_testcase("entry0_tor_base_is_zero", coverpoint, covergroup),
+            test_data.add_testcase("tor_on_entry0", coverpoint, covergroup),
             _spmp_read_cfg_sigupd(check_reg, test_data),
         ]
     )

@@ -127,8 +127,9 @@ def _generate_ssccptr_lw(test_data: TestData) -> list[str]:
     addr_reg, data_reg = test_data.int_regs.get_registers(2)
 
     lines.extend(
-        [
-            comment_banner(coverpoint, "HPTW Read: lw under virtual memory"),
+    to avoid clobbering temporary registers used internally by those
+    macros. The SATP setup is guarded by __riscv_xlen; everything else is
+    generic.
             f"LA(x{addr_reg}, scratch)",
             test_data.add_testcase("lw_under_vm", coverpoint, covergroup),
             f"lw x{data_reg}, 0(x{addr_reg})",

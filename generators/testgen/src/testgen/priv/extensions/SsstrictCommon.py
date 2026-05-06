@@ -57,6 +57,7 @@ SAFE_REGS: list[int] = list(range(7, 32))  # x7 .. x31
 
 # CBO instructions — platform-dependent trap behaviour (access-fault vs
 # illegal-instruction vs no-trap depending on Zicbom/Zicboz enablement).
+# TODO: Restore these once CI for QEMU + Spike passes and all bugs identified
 CBO_EXCLUSIONS: list[str] = [
     "000000000000XXXXX010XXXXX0001111",  # cbo.inval
     "000000000001XXXXX010XXXXX0001111",  # cbo.clean
@@ -64,6 +65,8 @@ CBO_EXCLUSIONS: list[str] = [
     "000000000100XXXXX010XXXXX0001111",  # cbo.zero
     "000000000000XXXXX110XXXXX0001111",  # prefetch variants
 ]
+
+# TODO: Restore these once CI for QEMU + Spike passes and all bugs identified
 AMO_EXCLUSIONS: list[str] = [
     "00010XXXXXXXXXXXX01X010010101111",  # lr.w / lr.d
     "00011XXXXXXXXXXXX01X010010101111",  # sc.w / sc.d
@@ -80,6 +83,7 @@ AMO_EXCLUSIONS: list[str] = [
     "01001XXXXXXXXXXXX01X010010101111",  # ssamoswap (Ssamoswap)
 ]
 # Privileged/SYSTEM instruction exclusions shared by all modes.
+# TODO: Restore fences + URET once CI for QEMU + Spike passes and all bugs identified
 PRIVILEGED_000_EXCLUSIONS: list[str] = [
     "1XXX11XXXXXX00000000000001110011",  # custom system
     "00X10000001000000000000001110011",  # mret/sret
@@ -94,7 +98,7 @@ PRIVILEGED_000_EXCLUSIONS: list[str] = [
     "0010001XXXXXXXXXX000000001110011",  # HFENCE.BVMA
     "1010001XXXXXXXXXX000000001110011",  # HFENCE.GVMA
     "01110000001000000000000001110011",  # MNRET (Smrnmi)
-    "00000000001000000000000001110011",  # URET (deprecated)
+    # "00000000001000000000000001110011",  # URET (deprecated)
 ]
 
 

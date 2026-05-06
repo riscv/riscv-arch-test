@@ -29,7 +29,8 @@ _M_CSR_SKIP: frozenset[int] = frozenset(
     + list(range(0x7A0, 0x7B0))  # debug trigger regs
     + list(range(0x7C0, 0x800))  # M-mode custom1
     + list(range(0xBC0, 0xC00))  # M-mode custom2
-    + list(range(0xF00, 0x1000))  # M-mode read-only (includes custom3 0xFC0-0xFFF)
+    + list(range(0xF00, 0xFC0))  # M-mode read-only - TODO: QEMU has implemented it (Restore it after Bug report in QEMU)
+    + list(range(0xFC0, 0x1000))  # M-mode read-only
     + list(range(0x5C0, 0x600))  # S-mode custom1
     + list(range(0x6C0, 0x700))  # H-mode custom1
     + list(range(0x9C0, 0xA00))  # S-mode custom2

@@ -35,6 +35,7 @@ from random import seed
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
+
 from .SsstrictCommon import SAFE_REGS, generate_compressed_instr, generate_csr_sweep_body, generate_illegal_instr
 
 # ── CSR skip set (S-mode) ─────────────────────────────────────────────────

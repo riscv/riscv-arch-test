@@ -2,7 +2,6 @@
 # priv/extensions/Ssccptr.py
 # Written by : Ayesha Anwar ayesha.anwaar2005@gmail.com
 # Ssccptr test generator
-# ayesha.anwaar2005@gmail.com Apr 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
@@ -43,77 +42,55 @@ _SENTINEL = "0xC0FFEE42"
 # ---------------------------------------------------------------------------
 
 
-def _generate_page_table_data_section() -> list[str]:
-    """
-    Inject page-table labels into .data via .pushsection / .popsection.
-
-    rvtest_Sroot_pg_tbl is already emitted by the framework when
-    rvtest_strap_routine is defined.  We only declare:
-        rvtest_slvl1_pg_tbl — L1 intermediate page table
-        rvtest_slvl0_pg_tbl — leaf page table
-    """
-    return [
-        "",
-        "# -----------------------------------------------------------------------",
-        "# Page-table labels injected into .data via .pushsection.",
-        "# rvtest_Sroot_pg_tbl is already declared by the framework.",
-        "# -----------------------------------------------------------------------",
-        ".pushsection .data",
-        ".align 12",
-        "rvtest_slvl1_pg_tbl:",
-        "    .fill 512, 8, 0",
-        ".align 12",
-        "rvtest_slvl0_pg_tbl:",
-        "    .fill 512, 8, 0",
-        ".popsection",
-        "",
-    ]
-
-
-def _setup_identity_map() -> list[str]:
+def _setup_identity_map(test_data: TestData) -> list[str]:
     """
     Set up a minimal identity map using a superpage entry — portable to
     any load address via AUIPC.
 
-    Uses t0/t1/t2 (caller-saved temporaries) so it does not interfere
-    with registers allocated for the test via get_registers().
+    Registers are allocated via get_registers() so the register allocator
+    remains in control rather than assuming t0/t1/t2 are free.
 
     RV64: 1 GiB superpage, 8 bytes per PTE, sd to write.
     RV32: 4 MiB superpage, 4 bytes per PTE, sw to write.
     The xlen guard selects the correct shift, mask, and store instruction.
     """
-    return [
+    r0, r1, r2 = test_data.int_regs.get_registers(3)
+
+    lines = [
         "# AUIPC-based superpage identity map — portable to any load address",
-        "auipc t0, 0",  # t0 = current PC
+        f"auipc x{r0}, 0",  # r0 = current PC
         "#if __riscv_xlen == 64",
-        "li t1, ~((1 << 30) - 1)",  # 1 GiB alignment mask
+        f"li x{r1}, ~((1 << 30) - 1)",  # 1 GiB alignment mask
         "#else",
-        "li t1, ~((1 << 22) - 1)",  # 4 MiB alignment mask
+        f"li x{r1}, ~((1 << 22) - 1)",  # 4 MiB alignment mask
         "#endif",
-        "and t0, t0, t1",  # t0 = superpage-aligned base PA
-        "srli t0, t0, 12",  # t0 = PPN
-        "slli t0, t0, 10",  # t0 = PPN in PTE field position
-        "li t1, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V)",
-        "or t0, t0, t1",  # t0 = leaf PTE value
-        "LA(t2, rvtest_Sroot_pg_tbl)",  # t2 = root page table base
-        "LA(t1, rvtest_code_begin)",  # t1 = code base address
+        f"and x{r0}, x{r0}, x{r1}",  # r0 = superpage-aligned base PA
+        f"srli x{r0}, x{r0}, 12",  # r0 = PPN
+        f"slli x{r0}, x{r0}, 10",  # r0 = PPN in PTE field position
+        f"li x{r1}, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V)",
+        f"or x{r0}, x{r0}, x{r1}",  # r0 = leaf PTE value
+        f"LA(x{r2}, rvtest_Sroot_pg_tbl)",  # r2 = root page table base
+        f"LA(x{r1}, rvtest_code_begin)",  # r1 = code base address
         "#if __riscv_xlen == 64",
-        "srli t1, t1, 30",  # VPN[2]
-        "andi t1, t1, 0x1FF",
-        "slli t1, t1, 3",  # 8 bytes per PTE
+        f"srli x{r1}, x{r1}, 30",  # VPN[2]
+        f"andi x{r1}, x{r1}, 0x1FF",
+        f"slli x{r1}, x{r1}, 3",  # 8 bytes per PTE
         "#else",
-        "srli t1, t1, 22",  # VPN[1]
-        "andi t1, t1, 0x3FF",
-        "slli t1, t1, 2",  # 4 bytes per PTE
+        f"srli x{r1}, x{r1}, 22",  # VPN[1]
+        f"andi x{r1}, x{r1}, 0x3FF",
+        f"slli x{r1}, x{r1}, 2",  # 4 bytes per PTE
         "#endif",
-        "add t2, t2, t1",  # t2 = address of PTE slot
+        f"add x{r2}, x{r2}, x{r1}",  # r2 = address of PTE slot
         "#if __riscv_xlen == 64",
-        "sd t0, 0(t2)",  # write PTE (RV64)
+        f"sd x{r0}, 0(x{r2})",  # write PTE (RV64)
         "#else",
-        "sw t0, 0(t2)",  # write PTE (RV32)
+        f"sw x{r0}, 0(x{r2})",  # write PTE (RV32)
         "#endif",
         "sfence.vma",
     ]
+
+    test_data.int_regs.return_registers([r0, r1, r2])
+    return lines
 
 
 # ---------------------------------------------------------------------------
@@ -127,12 +104,14 @@ def _generate_ssccptr_lw(test_data: TestData) -> list[str]:
     from main memory.
 
     Registers are allocated AFTER page-table setup and SATP/GOTO macros
-    to avoid clobbering x10/x11 used by those macros internally.
+    to avoid clobbering registers used by those macros internally.
     The SATP setup is guarded by __riscv_xlen; everything else is generic.
+
+    Note: returning to M-mode and disabling VM is handled by the framework.
     """
     coverpoint = "cp_ssccptr"
 
-    lines = _setup_identity_map()
+    lines = _setup_identity_map(test_data)
     lines.extend(
         [
             "RVTEST_GOTO_LOWER_MODE Smode",
@@ -154,9 +133,6 @@ def _generate_ssccptr_lw(test_data: TestData) -> list[str]:
             test_data.add_testcase("lw_under_vm", coverpoint, covergroup),
             f"lw x{data_reg}, 0(x{addr_reg})",
             write_sigupd(data_reg, test_data),
-            "RVTEST_GOTO_MMODE",
-            "csrwi satp, 0",
-            "sfence.vma",
         ]
     )
 
@@ -172,7 +148,7 @@ def _generate_ssccptr_lw(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "Ssccptr",
     required_extensions=["Ssccptr"],
-    march_extensions=["S", "Zicsr"],
+    march_extensions=["S"],
 )
 def _generate_ssccptr_main(test_data: TestData) -> list[str]:
     """Generate all Ssccptr tests running in S-mode."""
@@ -180,18 +156,18 @@ def _generate_ssccptr_main(test_data: TestData) -> list[str]:
 
     # Initialize scratch memory with a known sentinel value so the lw
     # result is deterministic and the signature check is meaningful.
+    # Use get_registers to avoid assuming which registers are free.
+    scratch_reg, val_reg = test_data.int_regs.get_registers(2)
     lines.extend(
         [
             "# Initialize scratch memory with known sentinel value",
-            "LA(x10, scratch)",
-            f"LI(x11, {_SENTINEL})",
-            "sw x11, 0(x10)",
+            f"LA(x{scratch_reg}, scratch)",
+            f"LI(x{val_reg}, {_SENTINEL})",
+            f"sw x{val_reg}, 0(x{scratch_reg})",
             "",
         ]
     )
-
-    # Inject page-table labels into .data before any PTE_SETUP_* call.
-    lines.extend(_generate_page_table_data_section())
+    test_data.int_regs.return_registers([scratch_reg, val_reg])
 
     # Must be in M-mode for page-table setup.
     lines.append("RVTEST_GOTO_MMODE")

@@ -3,7 +3,7 @@
 // RISC-V Architectural Functional Coverage Covergroups
 //
 // Written: Based on Ssccptr Extension Test Plan
-//
+// Written by : Ayesha Anwar ayesha.anwaar2005@gmail.com
 // Copyright (C) 2024 Harvey Mudd College, 10x Engineers, UET Lahore, Habib University
 //
 // SPDX-License-Identifier: Apache-2.0
@@ -35,22 +35,22 @@ covergroup Ssccptr_cg with function sample(ins_t ins);
     // -----------------------------------------------------------------------
 
     `ifdef XLEN64
-    satp_active: coverpoint ins.current.csr[CSR_SATP][63:60] {
-            bins vm_on = {[1:$]};
+        satp_active: coverpoint ins.current.csr[CSR_SATP][63:60] {
+                bins vm_on = {[1:$]};
     }
     `else
-    satp_active: coverpoint ins.current.csr[CSR_SATP][31] {
-            bins vm_on = {1'b1};
+        satp_active: coverpoint ins.current.csr[CSR_SATP][31] {
+                bins vm_on = {1'b1};
     }
     `endif
 
     lw_insn: coverpoint ins.current.insn {
-            wildcard bins lw = {LW};
-   }
+                wildcard bins lw = {LW};
+    }
 
     load_result_sentinel: coverpoint ins.current.rd_val[31:0] {
-            bins sentinel = {32'hC0FFEE42};
-   }
+                bins sentinel = {32'hC0FFEE42};
+    }
 
     cp_ssccptr: cross priv_mode_s, satp_active, lw_insn, load_result_sentinel;
 

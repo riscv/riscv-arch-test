@@ -168,9 +168,6 @@ def _generate_ssccptr_main(test_data: TestData) -> list[str]:
     )
     test_data.int_regs.return_registers([scratch_reg, val_reg])
 
-    # Must be in M-mode for page-table setup.
-    lines.append("RVTEST_GOTO_MMODE")
-
     lines.extend(_generate_ssccptr_lw(test_data))
 
     return lines

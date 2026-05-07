@@ -190,16 +190,23 @@ def emit_raw_words(
     template: str,
     length: int = 32,
     exclusion: list[str] | None = None,
+    reinit_interval: int = 0,
 ) -> None:
-    """Emit .word/.hword directives with blank lines every BLANK_INTERVAL."""
+    """Emit .word/.hword directives with blank lines every BLANK_INTERVAL.
+
+    If reinit_interval > 0, emit _emit_reg_init every reinit_interval
+    encodings to prevent register clobbering during compressed sweeps.
+    """
     directive = ".word" if length == 32 else ".hword"
     encodings = _gen_encodings(template, length, exclusion)
     lines.append("")
     if length == 32:
-        lines.append("\t.balign 4")  # ensure 4-byte alignment for .word blocks
+        lines.append("\t.balign 4")
     lines.append(f"# {comment}  ({len(encodings)} encodings)")
     for idx, enc in enumerate(encodings):
-        if idx > 0 and idx % BLANK_INTERVAL == 0:
+        if reinit_interval > 0 and idx > 0 and idx % reinit_interval == 0:
+            _emit_reg_init(lines)
+        elif idx > 0 and idx % BLANK_INTERVAL == 0:
             lines.append("")
         lines.append(f"\t{directive} 0b{enc}")
     lines.append("")
@@ -559,13 +566,13 @@ def generate_compressed_instr(
     lines.append(f"\t{test_data.add_testcase('compressed_sweep', coverpoint, covergroup)}")
     lines.append("")
 
-    _emit_reg_init(lines)
     emit_raw_words(
         lines,
         "compressed00",
         "EEEEEEEEEEEEEE00",
         length=16,
         exclusion=[],
+        reinit_interval=50,
     )
     emit_raw_words(
         lines,

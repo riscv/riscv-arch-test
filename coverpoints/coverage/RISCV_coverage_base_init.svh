@@ -106,6 +106,10 @@
         `cover_info("//      F - Enabled");
         `include "F_coverage_init.svh"
     `endif
+    `ifdef COVER_H
+        `cover_info("//      H - Enabled");
+        `include "H_coverage_init.svh"
+    `endif
     `ifdef COVER_HV
         `cover_info("//      HV - Enabled");
         `include "HV_coverage_init.svh"

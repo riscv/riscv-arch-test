@@ -176,6 +176,8 @@ def _emit_reg_init(lines: list[str]) -> None:
     """Re-initialize x8 to aligned scratch and copy to all other safe regs."""
     lines.append("")
     lines.append("\t# x8 = permanent scratch base, 8-byte aligned for atomics")
+    lines.append("\tnop")
+    lines.append("\tnop")
     lines.append("\tla x8, scratch")
     lines.append("\t# Pre-load remaining safe regs with scratch address")
     for r in range(7, 32):
@@ -569,9 +571,11 @@ def generate_compressed_instr(
     emit_raw_words(
         lines,
         "compressed00",
-        "EEEEEEEEEEEEEE00",
+        "EEEEEE000EEEEE00",  # rs1' fixed to 000 (x8/scratch base)
         length=16,
-        exclusion=[],
+        exclusion=[
+            "XXXXXXXXXXX000XX",  # rd' = x8 — clobbers scratch base pointer
+        ],
         reinit_interval=50,
     )
     emit_raw_words(
@@ -584,6 +588,7 @@ def generate_compressed_instr(
             "11XXXXXXXXXXXX01",  # c.beqz/c.bnez — random branch
             "001XXXXXXXXXXX01",  # c.jr
             "XXXX00010XXXXX01",  # rd = x2
+            "XXXXXXXXXXX000X1",  # rd' = x8 (insn[4:2]=000) — clobbers scratch base pointer
         ],
     )
     emit_raw_words(
@@ -598,9 +603,10 @@ def generate_compressed_instr(
             "X10XXXXXXXXXXX10",  # c.lwsp/c.swsp
             "1001000000000010",  # c.ebreak
             "XXXX00010XXXXX10",  # rd = x2 (sp)
+            "XXXX01000XXXXX10",  # rd = x8 — clobbers scratch base pointer
             "1100XXXXXXXXXX10",  # c.swsp with rs2=x2
-            "1110XXXXXXXXXX10",  # c.lwsp rd=x2 alternate encoding guard
-            "1010XXXXXXXXXX10",  # zero-length / nop-like edge in quadrant 2
+            "1110XXXXXXXXXX10",  # c.sdsp
+            "1010XXXXXXXXXX10",  # nop-like edge
         ],
     )
     lines.append("")

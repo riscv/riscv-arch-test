@@ -28,8 +28,37 @@ jobs:
         type=sha,format=long
       meta-flavor: |
         latest=${{ github.ref == 'refs/heads/act4' }}
+      target: act4-build
     secrets:
       registry-auths: |
         - registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+  act4-image:
+    needs: act4-build-image
+    uses: docker/github-builder/.github/workflows/build.yml@7d2a02426d4b989616ba5aaee4e879afd4134b0d # v1.6.0
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    with:
+      output: image
+      push: true
+      cache: true
+      cache-mode: min
+      platforms: linux/amd64,linux/arm64
+      meta-images: ghcr.io/${{ github.repository_owner }}/act4
+      meta-tags: |
+        type=ref,event=tag
+        type=ref,event=branch
+        type=sha,format=long
+      meta-flavor: |
+        latest=false
+      target: act4
+    secrets:
+      registry-auths: |
+        - registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+    if: ${{ github.ref != 'refs/heads/act4' }}

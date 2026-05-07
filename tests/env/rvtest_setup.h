@@ -606,7 +606,7 @@
           sfence.vma
         #endif // SV32 or SV39
       #endif // PMP
-    #endif // STANDARD_M_MODE
+    #endif // STANDARD_SM_SUPPORTED
 
   #endif // !RVMODEL_BOOT_TO_MMODE
 

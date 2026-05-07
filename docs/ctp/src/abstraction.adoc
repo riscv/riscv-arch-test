@@ -23,7 +23,7 @@ Fundamental design considerations are:
 
 The boot sequence boots to the lowest available privilege mode sufficient to run the tests.  Tests may define the BOOT_TO_MMODE or BOOT_TO_SMODE symbols to force booting to M-mode or S-mode, respectively, if the DUT supports those modes.  If neither symbol is defined, the boot sequence boots to U-mode if supported, and M-mode (possibly custom) otherwise. Note that hypervisor tests should define BOOT_TO_SMODE to boot into S (effectively HS)-mode and then are responsible for setting up and switching to VS/VU mode if desired.
 
-In the ACT framework, BOOT_TO_MMODE is defined when REQUIRED_EXTENSIONS contains Sm.  BOOT_TO_SMODE is defined when REQUIRED_EXTENSIONS contains S. Otherwise, neither symbol is defined.  Hence, privileged tests that specify Sm, S, or U will boot into these modes, respectively.  Unprivileged tests run in U-mode if supported, and in M-mode (custom) otherwise.  Another consequence is that if the UDB contains STANDARD_SM_SUPPORTED, then the trap handler is enabled even for unprivileged tests, helping produce graceful error messages for illegal instructions.  However, a simple core such as an RV32I microcontroller may not enable STANDARD_SM_SUPPORTED and will not set up a trap handler.
+In the ACT framework, BOOT_TO_MMODE is defined when REQUIRED_EXTENSIONS contains Sm.  BOOT_TO_SMODE is defined when REQUIRED_EXTENSIONS contains S. Otherwise, neither symbol is defined.  Hence, privileged tests that specify Sm, S, or U will boot into these modes, respectively.  Unprivileged tests run in U-mode if supported, and in M-mode (possibly custom) otherwise.  Another consequence is that if the UDB contains STANDARD_SM_SUPPORTED, then the trap handler is enabled even for unprivileged tests, helping produce graceful error messages for illegal instructions.  However, a simple core such as an RV32I microcontroller may not enable STANDARD_SM_SUPPORTED and will not set up a trap handler.
 
 === Controlling Parameters
 
@@ -173,7 +173,7 @@ Standard macros are defined in `tests/env`.  DUT-specific macros are defined in 
 
 Standard framework macros begin with `RVTEST`.  They include `rvtest_setup.h` for boot macros and `rvtest_trap_handler.h` for standard trap handlers, and `rvtest_failure_code.h` for error reporting. Other macros are defined in ***util.h, ... describe further
 
-DUT-specific macros begin with `RVMODEL`.  Some `RVTEST` macros check if corresponding `RVMODEL` macros are defined and invoke the `RVMODEL` macro instead for DUTs with custom M-modes, when defined.
+DUT-specific macros begin with `RVMODEL`.  Some `RVTEST` macros check if corresponding `RVMODEL` macros are defined and invoke the `RVMODEL` macro instead for DUTs with custom M-mode, when defined.
 
 === Test Supervisor Binary Interface (T-SBI)
 

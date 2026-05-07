@@ -84,7 +84,7 @@ covergroup SsstrictSm_instr_cg with function sample(ins_t ins);
     `include "priv/RISCV_coverage_instr.svh"
 
     // main coverpoints
-    cp_illegal:           cross priv_mode_m, illegal;
+    cp_illegal:           cross priv_mode_m, illegal
     cp_load:              cross priv_mode_m, load;
     cp_fload:             cross priv_mode_m, fload;
     cp_fence_cbo:         cross priv_mode_m, fence_cbo;
@@ -135,6 +135,154 @@ covergroup SsstrictSm_instr_cg with function sample(ins_t ins);
     cp_amocas_odd :       cross priv_mode_m, amocas_odd;
     cp_reserved_rm :      cross priv_mode_m, reserved_rm;
 
+    // ── Vector illegal instruction coverpoints ───────────────────────
+
+    // Vector vset* reserved encodings
+    // vsetvl reserved: bit[31]=1, bits[30:26] swept exhaustively
+    v_vsetvl : coverpoint ins.current.insn[30:26] iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b111 & ins.current.insn[31] == 1'b1) {
+        // 2^5 bins — only a subset are legal
+    }
+    cp_v_vsetvl: cross priv_mode_m, v_vsetvl;
+
+    // vsetvli with reserved SEW: bit[31]=0, bit[24]=1 (reserved SEW high bit)
+    v_vsetvli_sew : coverpoint ins.current.insn[23:22] iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b111 & ins.current.insn[31] == 1'b0 & ins.current.insn[24] == 1'b1) {
+        // 2^2 bins of reserved SEW values
+    }
+    cp_v_vsetvli_sew: cross priv_mode_m, v_vsetvli_sew;
+
+    // vsetvli with reserved upper bits: bit[31]=0, bit[24]=0
+    v_vsetvli_res : coverpoint ins.current.insn[30:28] iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b111 & ins.current.insn[31] == 1'b0 & ins.current.insn[24] == 1'b0) {
+        // 2^3 bins of reserved upper bits
+    }
+    cp_v_vsetvli_res: cross priv_mode_m, v_vsetvli_res;
+
+    // vsetivli with reserved SEW: bits[31:30]=11, bit[24]=1
+    v_vsetivli_sew : coverpoint ins.current.insn[23:22] iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b111 & ins.current.insn[31:30] == 2'b11 & ins.current.insn[24] == 1'b1) {
+        // 2^2 bins of reserved SEW values
+    }
+    cp_v_vsetivli_sew: cross priv_mode_m, v_vsetivli_sew;
+
+    // vsetivli with reserved upper bits: bits[31:30]=11, bit[24]=0
+    v_vsetivli_res : coverpoint ins.current.insn[29:28] iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b111 & ins.current.insn[31:30] == 2'b11 & ins.current.insn[24] == 1'b0) {
+        // 2^2 bins of reserved upper bits
+    }
+    cp_v_vsetivli_res: cross priv_mode_m, v_vsetivli_res;
+
+    // Vector load reserved width/mew combinations (opcode 0000111)
+    vl_width : coverpoint {ins.current.insn[28], ins.current.insn[14:12]} iff (ins.current.insn[6:0] == 7'b0000111) {
+        // {mew, width[2:0]} — 4-bit field, 16 combinations
+        // mew=0: width 000,101,110,111 are reserved if unsupported SEW
+        // mew=1: all widths reserved
+    }
+    cp_vl_width: cross priv_mode_m, vl_width;
+
+    // Vector load reserved lumop (nf[2]=1 selects unit-stride variants with lumop field)
+    vl_lumop : coverpoint ins.current.insn[24:20] iff (ins.current.insn[6:0] == 7'b0000111 & ins.current.insn[28] == 1'b0 & ins.current.insn[26] == 1'b1) {
+        // 2^5 bins — only 00000 (unit), 01000 (whole), 01011 (mask), 10000 (fault-only-first) legal
+    }
+    cp_vl_lumop: cross priv_mode_m, vl_lumop;
+
+    // Vector store reserved width/mew combinations (opcode 0100111)
+    vs_width : coverpoint {ins.current.insn[28], ins.current.insn[14:12]} iff (ins.current.insn[6:0] == 7'b0100111) {
+        // same structure as loads
+    }
+    cp_vs_width: cross priv_mode_m, vs_width;
+
+    // Vector store reserved sumop
+    vs_sumop : coverpoint ins.current.insn[24:20] iff (ins.current.insn[6:0] == 7'b0100111 & ins.current.insn[28] == 1'b0 & ins.current.insn[26] == 1'b1) {
+        // 2^5 bins — only 00000 (unit), 01000 (whole) legal for stores
+    }
+    cp_vs_sumop: cross priv_mode_m, vs_sumop;
+
+    // Vector arithmetic funct6 sweeps (opcode 1010111, funct3 selects category)
+    // Each funct6 bin covers all 64 possible function codes per category
+    v_IVV_f6 : coverpoint ins.current.insn[31:26] iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b000) {
+        // OPIVV: all 64 funct6 values
+    }
+    cp_v_IVV_f6: cross priv_mode_m, v_IVV_f6;
+
+    v_FVV_f6 : coverpoint ins.current.insn[31:26] iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b001) {
+        // OPFVV: all 64 funct6 values
+    }
+    cp_v_FVV_f6: cross priv_mode_m, v_FVV_f6;
+
+    v_MVV_f6 : coverpoint ins.current.insn[31:26] iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b010) {
+        // OPMVV: all 64 funct6 values
+    }
+    cp_v_MVV_f6: cross priv_mode_m, v_MVV_f6;
+
+    v_IVI_f6 : coverpoint ins.current.insn[31:26] iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b011) {
+        // OPIVI: all 64 funct6 values
+    }
+    cp_v_IVI_f6: cross priv_mode_m, v_IVI_f6;
+
+    v_IVX_f6 : coverpoint ins.current.insn[31:26] iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b100) {
+        // OPIVX: all 64 funct6 values
+    }
+    cp_v_IVX_f6: cross priv_mode_m, v_IVX_f6;
+
+    v_FVF_f6 : coverpoint ins.current.insn[31:26] iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b101) {
+        // OPFVF: all 64 funct6 values
+    }
+    cp_v_FVF_f6: cross priv_mode_m, v_FVF_f6;
+
+    v_MVX_f6 : coverpoint ins.current.insn[31:26] iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b110) {
+        // OPMVX: all 64 funct6 values
+    }
+    cp_v_MVX_f6: cross priv_mode_m, v_MVX_f6;
+
+    // Vector unary instructions — vs1/vs2 field encodes operation type
+    v_VWRXUNARY0 : coverpoint ins.current.insn[19:15] iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b010 & ins.current.insn[31:26] == 6'b010000) {
+        // VWRXUNARY0: vs1 encodes type, 2^5 bins
+    }
+    cp_v_VWRXUNARY0: cross priv_mode_m, v_VWRXUNARY0;
+
+    v_VRXUNARY0 : coverpoint ins.current.insn[24:20] iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b110 & ins.current.insn[31:26] == 6'b010000) {
+        // VRXUNARY0: vs2 encodes type, 2^5 bins (but actually 2^6 with vm bit)
+    }
+    cp_v_VRXUNARY0: cross priv_mode_m, v_VRXUNARY0;
+
+    v_VXUNARY0 : coverpoint ins.current.insn[19:15] iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b010 & ins.current.insn[31:26] == 6'b010010) {
+        // VXUNARY0: vs1 encodes type, 2^5 bins
+    }
+    cp_v_VXUNARY0: cross priv_mode_m, v_VXUNARY0;
+
+    v_VMUNARY0 : coverpoint ins.current.insn[19:15] iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b010 & ins.current.insn[31:26] == 6'b010100) {
+        // VMUNARY0: vs1 encodes type, 2^5 bins
+    }
+    cp_v_VMUNARY0: cross priv_mode_m, v_VMUNARY0;
+
+    v_VWFUNARY0 : coverpoint ins.current.insn[19:15] iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b001 & ins.current.insn[31:26] == 6'b010000) {
+        // VWFUNARY0: vs1 encodes type, 2^5 bins
+    }
+    cp_v_VWFUNARY0: cross priv_mode_m, v_VWFUNARY0;
+
+    v_VRFUNARY0 : coverpoint ins.current.insn[24:20] iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b101 & ins.current.insn[31:26] == 6'b010000) {
+        // VRFUNARY0: vs2 encodes type, 2^5 bins (but actually 2^6 with vm bit)
+    }
+    cp_v_VRFUNARY0: cross priv_mode_m, v_VRFUNARY0;
+
+    v_VFUNARY0 : coverpoint ins.current.insn[19:15] iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b001 & ins.current.insn[31:26] == 6'b010010) {
+        // VFUNARY0: vs1 encodes type, 2^5 bins
+    }
+    cp_v_VFUNARY0: cross priv_mode_m, v_VFUNARY0;
+
+    v_VFUNARY1 : coverpoint ins.current.insn[19:15] iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b001 & ins.current.insn[31:26] == 6'b010011) {
+        // VFUNARY1: vs1 encodes type, 2^5 bins
+    }
+    cp_v_VFUNARY1: cross priv_mode_m, v_VFUNARY1;
+
+    // Vector crypto — vaes.vv / vaes.vs
+    v_vaesvv : coverpoint ins.current.insn[19:15] iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b010 & ins.current.insn[31:26] == 6'b101000) {
+        // vaes.vv: vs1 encodes type, 2^5 bins
+    }
+    cp_v_vaesvv: cross priv_mode_m, v_vaesvv;
+
+    v_vaesvs : coverpoint ins.current.insn[19:15] iff (ins.current.insn[6:0] == 7'b1010111 & ins.current.insn[14:12] == 3'b010 & ins.current.insn[31:26] == 6'b101001) {
+        // vaes.vs: vs1 encodes type, 2^5 bins
+    }
+    cp_v_vaesvs: cross priv_mode_m, v_vaesvs;
+
 endgroup
 
 covergroup SsstrictSm_comp_instr_cg with function sample(ins_t ins);
@@ -143,9 +291,40 @@ covergroup SsstrictSm_comp_instr_cg with function sample(ins_t ins);
     `include "priv/RISCV_coverage_comp_instr.svh"
 
     // main coverpoints
+    // Exclude bins matching generator exclusions. The shared RISCV_coverage_comp_instr.svh
+    // already has its own ignore_bins; these additional ones match exclusions in
+    // SsstrictCommon.py's generate_compressed_instr().
+
+    // compressed00: NO generator exclusions — all encodings are generated.
+    // The ignore_bins in RISCV_coverage_comp_instr.svh (c.fld, c.lw, c.lbu, c.lh,
+    // c.sb, c.sh, c.fsd, c.sw) are sufficient.
     cp_compressed00: cross priv_mode_m, compressed00;
-    cp_compressed01: cross priv_mode_m, compressed01;
-    cp_compressed10: cross priv_mode_m, compressed10;
+
+    cp_compressed01: cross priv_mode_m, compressed01 {
+        // "001XXXXXXXXXXX01" — c.jal (RV32) / c.addiw (RV64): already ignored in svh as c_jal
+        // "101XXXXXXXXXXX01" — c.j: causes random jump, already ignored in svh as c_j
+        // "11XXXXXXXXXXXX01" — c.beqz/c.bnez: causes random branch, already ignored in svh as c_bez_bez
+        // "XXXX00010XXXXX01" — rd=x2: clobbers sp (signature pointer), corrupts framework state
+        //   insn[15:2] bits[10:6] encode rd; rd=x2 means bits[10:6]=00010
+        //   This pattern is scattered across the encoding space, so we use wildcard
+        wildcard ignore_bins rd_x2 = binsof(compressed01) intersect {14'b????00010?????};
+    }
+
+    cp_compressed10: cross priv_mode_m, compressed10 {
+        // "1000XXXXX0000010" — c.jr with rs1!=0: causes random jump, already ignored in svh as c_jr
+        // "1001XXXXX0000010" — c.jalr/c.ebreak: causes random jump, already ignored in svh as c_jalr
+        // "1001000000000010" — c.ebreak: legal instruction tested elsewhere, already ignored in svh
+        // "X01XXXXXXXXXXX10" — c.fldsp/c.fsdsp: interferes with x2/sp (signature pointer), already ignored in svh as c_fldsp/c_fsdsp
+        // "X10XXXXXXXXXXX10" — c.lwsp/c.swsp: interferes with x2/sp (signature pointer), already ignored in svh as c_lwsp/c_swsp
+        // "XXXX00010XXXXX10" — rd=x2(sp): clobbers signature pointer, corrupts framework state
+        wildcard ignore_bins rd_x2 = binsof(compressed10) intersect {14'b????00010?????};
+        // "1100XXXXXXXXXX10" — c.swsp with rs2=x2: stores sp value to random address, corrupts signature area
+        ignore_bins c_swsp_rs2_x2 = binsof(compressed10) intersect {[14'b11000000000000:14'b11001111111111]};
+        // "1110XXXXXXXXXX10" — c.sdsp (RV64) / c.fsw (RV32): interferes with sp-relative memory
+        ignore_bins c_sdsp = binsof(compressed10) intersect {[14'b11100000000000:14'b11101111111111]};
+        // "1010XXXXXXXXXX10" — nop-like edge in quadrant 2: causes unpredictable behavior on some platforms
+        ignore_bins c_nop_edge = binsof(compressed10) intersect {[14'b10100000000000:14'b10101111111111]};
+    }
 endgroup
 
 function void ssstrictsm_sample(int hart, int issue, ins_t ins);

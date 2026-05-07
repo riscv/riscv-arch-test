@@ -2,6 +2,13 @@
 # riscv-arch-test assembly test failure handling code
 # Jordan Carlin jcarlin@hmc.edu October 2025
 # SPDX-License-Identifier: Apache-2.0
+#
+# Enhanced trap failure diagnostics added May 2026
+# - Trap failure subtypes for per-word mismatch identification
+# - xcause human-readable name decoding
+# - Full trap signature entry context printing (mode, cause, epc, tval)
+# - Extra/missing trap detection with count
+# - Interrupt-specific diagnostics (xip, intID)
 
 // Macro to define failure detection code (functions)
 // This is instantiated after test code near the end of RVTEST_CODE_END in test_setup.h
@@ -41,6 +48,7 @@
         j failedtest_saveregs
 
     # Log failure. x7 contains return address of jal from the failure and x9 is a vacant temporary register
+    # This is the trap handler failure entry point
     failedtest_trap_x7_x9:
         la x9, begin_failure_scratch
         SREG x7, 104(x9)               # store return address
@@ -51,7 +59,6 @@
         sw x1, 0(x9)                   # failure_type = 3 (trap handler)
         mv DEFAULT_TEMP_REG, x9        # move scratch base into DEFAULT_TEMP_REG
         mv DEFAULT_LINK_REG, x7        # move return address into DEFAULT_LINK_REG
-        # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
         j failedtest_saveregs
 
 #ifdef F_SUPPORTED
@@ -385,6 +392,8 @@
         li x10, 4
         beq x9, x10, failedtest_saveresults_vector
 #endif // RVTEST_VECTOR
+        li x10, 3
+        beq x9, x10, failedtest_saveresults_trap
 
     failedtest_saveresults_int:
         # --- INTEGER (type 0): extract info from beq and load instructions ---
@@ -566,7 +575,7 @@
         la x12, failing_vtype
         SREG x11, 0(x12)                   # save vtype
 
-        // vtype[5:3] = vsew encoding: 0→e8, 1→e16, 2→e32, 3→e64
+        // vtype[5:3] = vsew encoding: 0->e8, 1->e16, 2->e32, 3->e64
         lhu x6, -26(DEFAULT_LINK_REG)      # extract from vsetvli or vle##_VD_EEW.v
         lhu x7, -28(DEFAULT_LINK_REG)
         slli x6, x6, 16
@@ -719,6 +728,346 @@
 
 #endif // RVTEST_VECTOR
 
+    //==========================================================================
+    // TRAP FAILURE RESULT EXTRACTION (failure_type == 3)
+    //
+    // When the trap handler's TRAP_SIGUPD detects a mismatch, it calls
+    // failedtest_trap_x7_x9 with:
+    //   - DEFAULT_LINK_REG pointing after the jal (to embedded pointer data)
+    //   - The embedded data contains:
+    //       offset 0:               RVTEST_WORD_PTR <label>  (address of failing check)
+    //       offset REGWIDTH:        RVTEST_WORD_PTR <string> (failure description string)
+    //       offset 2*REGWIDTH:      .word <CSR_XEPC>         (only for some callers)
+    //
+    // For trap signature offset mismatches (from check_trap_sig_offset in
+    // RVTEST_CODE_END), the actual and expected offsets are available as the
+    // mismatching signature value vs. the preloaded reference value.
+    //
+    // Strategy: identify which trap signature word mismatched by examining the
+    // failure string pointer. The string encodes both the mode (M/S/H/V) and
+    // the field (vect/cause/epc/tval/ip/intID/mtval2/mtinst). We compare
+    // against the known string addresses to determine the subtype, then load
+    // the corresponding expected/actual values from the trap signature region.
+    //==========================================================================
+
+    failedtest_saveresults_trap:
+        //--------------------------------------------------------------
+        // Load the failure string pointer from the embedded data
+        //--------------------------------------------------------------
+    #if __riscv_xlen == 64
+        lwu x6, REGWIDTH(DEFAULT_LINK_REG)
+        lw  x7, REGWIDTH+4(DEFAULT_LINK_REG)
+        slli x7, x7, 32
+        or x6, x6, x7
+    #else
+        lw x6, REGWIDTH(DEFAULT_LINK_REG)
+    #endif
+        la x16, trap_diag_fail_str_ptr
+        SREG x6, 0(x16)                            # save for later printing
+
+        //--------------------------------------------------------------
+        // Load the address of the failing check (instruction pointer)
+        //--------------------------------------------------------------
+    #if __riscv_xlen == 64
+        lwu x6, 0(DEFAULT_LINK_REG)
+        lw  x7, 4(DEFAULT_LINK_REG)
+        slli x7, x7, 32
+        or x6, x6, x7
+    #else
+        lw x6, 0(DEFAULT_LINK_REG)
+    #endif
+        SREG x6, 264(DEFAULT_TEMP_REG)              # store as failing_addr
+
+        //--------------------------------------------------------------
+        // Determine trap failure subtype from the failure string address.
+        // Compare the string pointer against known string label addresses.
+        // This tells us which word of the trap signature mismatched and
+        // which privilege mode the trap was being handled in.
+        //--------------------------------------------------------------
+        la x16, trap_diag_fail_str_ptr
+        LREG x6, 0(x16)                             # reload fail string ptr
+
+        // ---- Check for trap_sig_offset_mismatch (from RVTEST_CODE_END) ----
+        la x7, trap_sig_offset_mismatch
+        beq x6, x7, trap_diag_offset_mismatch
+
+        // ---- Determine mode from string pointer ----
+        // Mode is encoded in string name: sv_M*_str, sv_S*_str, sv_H*_str, sv_V*_str
+        // and Xclr_Xext_int_str variants
+        // We determine mode and field by checking each known string address
+
+        // Default: unknown subtype, just record the string and skip to common print
+        li x8, 0                                     # subtype = 0 (unknown)
+        la x16, trap_diag_subtype
+        sw x8, 0(x16)
+
+        //--- M-mode trap signature field checks ---
+        la x7, sv_Mvect_str
+        bne x6, x7, 1f
+        li x8, 1                                     # subtype: vect+mode word
+        li x9, 0                                     # mode: M
+        j trap_diag_field_identified
+    1:
+        la x7, sv_Mcause_str
+        bne x6, x7, 1f
+        li x8, 2                                     # subtype: xcause
+        li x9, 0
+        j trap_diag_field_identified
+    1:
+        la x7, sv_Mepc_str
+        bne x6, x7, 1f
+        li x8, 3                                     # subtype: xepc
+        li x9, 0
+        j trap_diag_field_identified
+    1:
+        la x7, sv_Mtval_str
+        bne x6, x7, 1f
+        li x8, 4                                     # subtype: xtval
+        li x9, 0
+        j trap_diag_field_identified
+    1:
+        la x7, sv_Mip_str
+        bne x6, x7, 1f
+        li x8, 5                                     # subtype: xip (interrupt)
+        li x9, 0
+        j trap_diag_field_identified
+    1:
+        la x7, sv_Mtval2_str
+        bne x6, x7, 1f
+        li x8, 6                                     # subtype: mtval2
+        li x9, 0
+        j trap_diag_field_identified
+    1:
+        la x7, sv_Mtinst_str
+        bne x6, x7, 1f
+        li x8, 7                                     # subtype: mtinst
+        li x9, 0
+        j trap_diag_field_identified
+    1:
+
+        //--- S-mode trap signature field checks ---
+        la x7, sv_Svect_str
+        bne x6, x7, 1f
+        li x8, 1
+        li x9, 1                                     # mode: S
+        j trap_diag_field_identified
+    1:
+        la x7, sv_Scause_str
+        bne x6, x7, 1f
+        li x8, 2
+        li x9, 1
+        j trap_diag_field_identified
+    1:
+        la x7, sv_Sepc_str
+        bne x6, x7, 1f
+        li x8, 3
+        li x9, 1
+        j trap_diag_field_identified
+    1:
+        la x7, sv_Stval_str
+        bne x6, x7, 1f
+        li x8, 4
+        li x9, 1
+        j trap_diag_field_identified
+    1:
+        la x7, sv_Sip_str
+        bne x6, x7, 1f
+        li x8, 5
+        li x9, 1
+        j trap_diag_field_identified
+    1:
+
+        //--- HS-mode trap signature field checks ---
+        la x7, sv_Hvect_str
+        bne x6, x7, 1f
+        li x8, 1
+        li x9, 2                                     # mode: HS
+        j trap_diag_field_identified
+    1:
+        la x7, sv_Hcause_str
+        bne x6, x7, 1f
+        li x8, 2
+        li x9, 2
+        j trap_diag_field_identified
+    1:
+        la x7, sv_Hepc_str
+        bne x6, x7, 1f
+        li x8, 3
+        li x9, 2
+        j trap_diag_field_identified
+    1:
+        la x7, sv_Htval_str
+        bne x6, x7, 1f
+        li x8, 4
+        li x9, 2
+        j trap_diag_field_identified
+    1:
+        la x7, sv_Hip_str
+        bne x6, x7, 1f
+        li x8, 5
+        li x9, 2
+        j trap_diag_field_identified
+    1:
+
+        //--- VS-mode trap signature field checks ---
+        la x7, sv_Vvect_str
+        bne x6, x7, 1f
+        li x8, 1
+        li x9, 3                                     # mode: VS
+        j trap_diag_field_identified
+    1:
+        la x7, sv_Vcause_str
+        bne x6, x7, 1f
+        li x8, 2
+        li x9, 3
+        j trap_diag_field_identified
+    1:
+        la x7, sv_Vepc_str
+        bne x6, x7, 1f
+        li x8, 3
+        li x9, 3
+        j trap_diag_field_identified
+    1:
+        la x7, sv_Vtval_str
+        bne x6, x7, 1f
+        li x8, 4
+        li x9, 3
+        j trap_diag_field_identified
+    1:
+        la x7, sv_Vip_str
+        bne x6, x7, 1f
+        li x8, 5
+        li x9, 3
+        j trap_diag_field_identified
+    1:
+
+        //--- External interrupt ID mismatch checks ---
+        // These use Xclr_Yext_int_str format
+        la x7, Mclr_Mext_int_str
+        bne x6, x7, 1f
+        li x8, 8                                     # subtype: ext intID
+        li x9, 0
+        j trap_diag_field_identified
+    1:
+        la x7, Mclr_Sext_int_str
+        bne x6, x7, 1f
+        li x8, 8
+        li x9, 0
+        j trap_diag_field_identified
+    1:
+        la x7, Sclr_Sext_int_str
+        bne x6, x7, 1f
+        li x8, 8
+        li x9, 1
+        j trap_diag_field_identified
+    1:
+        la x7, Hclr_Sext_int_str
+        bne x6, x7, 1f
+        li x8, 8
+        li x9, 2
+        j trap_diag_field_identified
+    1:
+        // Fall through: unknown string, use generic handler
+        j trap_diag_generic_report
+
+        //--------------------------------------------------------------
+        // TRAP SIGNATURE OFFSET MISMATCH
+        // This means the DUT generated a different number of traps
+        // than the reference model.
+        //--------------------------------------------------------------
+    trap_diag_offset_mismatch:
+        li x8, 9                                     # subtype: offset mismatch
+        la x16, trap_diag_subtype
+        sw x8, 0(x16)
+
+        // The actual offset was stored as the failing SIGUPD value.
+        // We need to extract it the same way integer failures do:
+        // the beq compared actual vs expected, and the ld loaded expected.
+        // For trap_sig_offset_mismatch, the value T1 (actual offset) was
+        // the value being checked. Extract from the instruction stream.
+
+        // Extract actual value (rs2 of beq = the value being compared)
+        lhu x6, -6(DEFAULT_LINK_REG)
+        lhu x7, -8(DEFAULT_LINK_REG)
+        slli x6, x6, 16
+        or x6, x6, x7
+        srli x8, x6, 20
+        andi x8, x8, 31                             # rs2 of beq
+        slli x6, x8, 3
+        add x6, DEFAULT_TEMP_REG, x6
+        LREG x6, 0(x6)                              # actual offset value
+        la x16, trap_diag_actual_offset
+        SREG x6, 0(x16)
+
+        // Extract expected value (from ld before beq)
+        lhu x6, -10(DEFAULT_LINK_REG)
+        lhu x7, -12(DEFAULT_LINK_REG)
+        slli x6, x6, 16
+        or x6, x6, x7
+        srai x7, x6, 20                             # immediate
+        srli x6, x6, 15
+        andi x6, x6, 31                             # rs1 (base reg)
+        slli x6, x6, 3
+        add x6, DEFAULT_TEMP_REG, x6
+        LREG x6, 0(x6)                              # base register value
+        add x6, x6, x7                              # base + offset
+        LREG x6, 0(x6)                              # expected offset value
+        la x16, trap_diag_expected_offset
+        SREG x6, 0(x16)
+
+        j failedtest_saveresults_common
+
+        //--------------------------------------------------------------
+        // FIELD IDENTIFIED: subtype in x8, mode in x9
+        //--------------------------------------------------------------
+    trap_diag_field_identified:
+        la x16, trap_diag_subtype
+        sw x8, 0(x16)
+        la x16, trap_diag_mode
+        sw x9, 0(x16)
+
+        // For field mismatches, extract actual and expected the same way
+        // as integer failures (from beq rs2 and ld)
+
+        // Actual value (rs2 of beq)
+        lhu x6, -6(DEFAULT_LINK_REG)
+        lhu x7, -8(DEFAULT_LINK_REG)
+        slli x6, x6, 16
+        or x6, x6, x7
+        srli x14, x6, 20
+        andi x14, x14, 31                           # rs2 of beq
+        slli x6, x14, 3
+        add x6, DEFAULT_TEMP_REG, x6
+        LREG x6, 0(x6)
+        SREG x6, 272(DEFAULT_TEMP_REG)              # failing_value = actual
+        la x16, trap_diag_actual_value
+        SREG x6, 0(x16)
+
+        // Expected value (from ld before beq)
+        lhu x6, -10(DEFAULT_LINK_REG)
+        lhu x7, -12(DEFAULT_LINK_REG)
+        slli x6, x6, 16
+        or x6, x6, x7
+        srai x7, x6, 20
+        srli x6, x6, 15
+        andi x6, x6, 31
+        slli x6, x6, 3
+        add x6, DEFAULT_TEMP_REG, x6
+        LREG x6, 0(x6)
+        add x6, x6, x7
+        LREG x6, 0(x6)
+        SREG x6, 280(DEFAULT_TEMP_REG)              # expected_value
+        la x16, trap_diag_expected_value
+        SREG x6, 0(x16)
+
+        j failedtest_saveresults_common
+
+    trap_diag_generic_report:
+        // Unknown trap failure string -- fall through to common with subtype 0
+        la x16, trap_diag_subtype
+        sw zero, 0(x16)
+        j failedtest_saveresults_common
+
 
     failedtest_saveresults_common:
         # After the jal instruction there are two XLEN-sized pointers: the instruction address and the test string pointer
@@ -775,6 +1124,11 @@
       print_newline_str:
         LA(a0, newlinestr)
         call rvmodel_io_write_str
+
+        # Dispatch to trap-specific reporting if failure_type == 3
+        lw a0, failure_type
+        li a1, 3
+        beq a0, a1, failedtest_report_trap_detailed
 
         # Print failing instruction (detect 16-bit compressed vs 32-bit)
         LA(a0, inststr)
@@ -1043,45 +1397,383 @@
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
 
-    failedtest_report_traphandler:
-        lw a0, failure_type
-        li a1, 3            # Failed in trap handler
-        bne a0, a1, failedtest_report_end
-    failedtest_report_xepc:
-        LA(a0, xepcstr)
+        j failedtest_report_end
+
+    //==========================================================================
+    // DETAILED TRAP FAILURE REPORTING (failure_type == 3)
+    //
+    // This section prints comprehensive trap diagnostic information including:
+    //   - Which privilege mode was handling the trap
+    //   - Which trap signature field mismatched
+    //   - Expected vs actual values
+    //   - Human-readable xcause name
+    //   - For offset mismatches: extra/missing trap count
+    //   - Diagnosis of likely root cause
+    //==========================================================================
+
+    failedtest_report_trap_detailed:
+        // Print trap failure header
+        LA(a0, trap_diag_header_str)
         call rvmodel_io_write_str
-        # Load CSR_XEPC (12-bit CSR addr) placed after STR_PTR
-        lhu x6, 2*REGWIDTH(DEFAULT_LINK_REG)
-        LI(x7, CSR_MEPC)
-        bne x6, x7, 1f
-        csrr a0, mepc
-        j 2f
-        1:
-        csrr a0, sepc
-        2:
+
+        // Print the original failure description string
+        LA(a0, trap_diag_origstr_label)
+        call rvmodel_io_write_str
+        la x16, trap_diag_fail_str_ptr
+        LREG a0, 0(x16)
+        call rvmodel_io_write_str
+        LA(a0, newlinestr)
+        call rvmodel_io_write_str
+
+        // Load subtype and dispatch
+        lw x8, trap_diag_subtype
+
+        // ---- Subtype 9: Trap signature offset mismatch ----
+        li x9, 9
+        beq x8, x9, trap_report_offset_mismatch
+
+        // ---- Subtype 0: Unknown / generic ----
+        beqz x8, trap_report_generic
+
+        // ---- Subtypes 1-8: Field-specific mismatches ----
+        j trap_report_field_mismatch
+
+    //--------------------------------------------------------------
+    // OFFSET MISMATCH: DUT generated wrong number of traps
+    //--------------------------------------------------------------
+    trap_report_offset_mismatch:
+        // Print "Trap Count Mismatch"
+        LA(a0, trap_diag_count_mismatch_str)
+        call rvmodel_io_write_str
+
+        // Print expected offset
+        LA(a0, trap_diag_expected_offset_str)
+        call rvmodel_io_write_str
+        LREG a0, trap_diag_expected_offset
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
-        mv a2, a0           # move xepc
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
-    failedtest_report_xepc_instr:
-        # Print instruction at xepc
+
+        // Print actual offset
+        LA(a0, trap_diag_actual_offset_str)
+        call rvmodel_io_write_str
+        LREG a0, trap_diag_actual_offset
+        li a1, __riscv_xlen
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        // Determine if extra or missing traps
+        LREG x6, trap_diag_actual_offset
+        LREG x7, trap_diag_expected_offset
+        blt x6, x7, trap_report_missing_traps
+
+    trap_report_extra_traps:
+        // DUT generated more traps than expected
+        LA(a0, trap_diag_extra_traps_str)
+        call rvmodel_io_write_str
+
+        // Calculate and print approximate extra trap count
+        // Each standard trap entry is 4*REGWIDTH bytes
+        LREG x6, trap_diag_actual_offset
+        LREG x7, trap_diag_expected_offset
+        sub x6, x6, x7                              # extra bytes
+        srli x6, x6, 2                               # divide by REGWIDTH (approx entries * 4/REGWIDTH)
+        // Print the byte difference as a hex number (exact entry count depends on entry size)
+        LA(a0, trap_diag_extra_bytes_str)
+        call rvmodel_io_write_str
+        LREG x6, trap_diag_actual_offset
+        LREG x7, trap_diag_expected_offset
+        sub a0, x6, x7
+        li a1, __riscv_xlen
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        LA(a0, trap_diag_extra_hint_str)
+        call rvmodel_io_write_str
+        j failedtest_report_end
+
+    trap_report_missing_traps:
+        // DUT generated fewer traps than expected
+        LA(a0, trap_diag_missing_traps_str)
+        call rvmodel_io_write_str
+
+        LA(a0, trap_diag_extra_bytes_str)
+        call rvmodel_io_write_str
+        LREG x6, trap_diag_expected_offset
+        LREG x7, trap_diag_actual_offset
+        sub a0, x6, x7
+        li a1, __riscv_xlen
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        LA(a0, trap_diag_missing_hint_str)
+        call rvmodel_io_write_str
+        j failedtest_report_end
+
+    //--------------------------------------------------------------
+    // FIELD MISMATCH: specific trap signature word differs
+    //--------------------------------------------------------------
+    trap_report_field_mismatch:
+        // Print handler mode
+        LA(a0, trap_diag_handler_mode_str)
+        call rvmodel_io_write_str
+        lw a0, trap_diag_mode
+        beqz a0, trap_mode_m
+        li a1, 1
+        beq a0, a1, trap_mode_s
+        li a1, 2
+        beq a0, a1, trap_mode_h
+        li a1, 3
+        beq a0, a1, trap_mode_v
+        LA(a0, trap_diag_mode_unknown_str)
+        j trap_mode_print
+    trap_mode_m:
+        LA(a0, trap_diag_mode_m_str)
+        j trap_mode_print
+    trap_mode_s:
+        LA(a0, trap_diag_mode_s_str)
+        j trap_mode_print
+    trap_mode_h:
+        LA(a0, trap_diag_mode_hs_str)
+        j trap_mode_print
+    trap_mode_v:
+        LA(a0, trap_diag_mode_vs_str)
+    trap_mode_print:
+        call rvmodel_io_write_str
+
+        // Print which field mismatched
+        LA(a0, trap_diag_field_str)
+        call rvmodel_io_write_str
+        lw a0, trap_diag_subtype
+        li a1, 1
+        beq a0, a1, trap_field_vect
+        li a1, 2
+        beq a0, a1, trap_field_cause
+        li a1, 3
+        beq a0, a1, trap_field_epc
+        li a1, 4
+        beq a0, a1, trap_field_tval
+        li a1, 5
+        beq a0, a1, trap_field_ip
+        li a1, 6
+        beq a0, a1, trap_field_tval2
+        li a1, 7
+        beq a0, a1, trap_field_tinst
+        li a1, 8
+        beq a0, a1, trap_field_intid
+        LA(a0, trap_diag_field_unknown_str)
+        j trap_field_print
+    trap_field_vect:
+        LA(a0, trap_diag_field_vect_str)
+        j trap_field_print
+    trap_field_cause:
+        LA(a0, trap_diag_field_cause_str)
+        j trap_field_print
+    trap_field_epc:
+        LA(a0, trap_diag_field_epc_str)
+        j trap_field_print
+    trap_field_tval:
+        LA(a0, trap_diag_field_tval_str)
+        j trap_field_print
+    trap_field_ip:
+        LA(a0, trap_diag_field_ip_str)
+        j trap_field_print
+    trap_field_tval2:
+        LA(a0, trap_diag_field_tval2_str)
+        j trap_field_print
+    trap_field_tinst:
+        LA(a0, trap_diag_field_tinst_str)
+        j trap_field_print
+    trap_field_intid:
+        LA(a0, trap_diag_field_intid_str)
+    trap_field_print:
+        call rvmodel_io_write_str
+
+        // Print expected value
+        LA(a0, trap_diag_expected_str)
+        call rvmodel_io_write_str
+        LREG a0, trap_diag_expected_value
+        li a1, __riscv_xlen
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        // Print actual value
+        LA(a0, trap_diag_actual_str)
+        call rvmodel_io_write_str
+        LREG a0, trap_diag_actual_value
+        li a1, __riscv_xlen
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        // For xcause mismatches, decode and print the cause name
+        lw a0, trap_diag_subtype
+        li a1, 2
+        bne a0, a1, trap_field_not_cause
+
+        // Print expected cause name
+        LA(a0, trap_diag_expected_cause_name_str)
+        call rvmodel_io_write_str
+        LREG a0, trap_diag_expected_value
+        jal trap_cause_to_str
+        call rvmodel_io_write_str
+
+        // Print actual cause name
+        LA(a0, trap_diag_actual_cause_name_str)
+        call rvmodel_io_write_str
+        LREG a0, trap_diag_actual_value
+        jal trap_cause_to_str
+        call rvmodel_io_write_str
+
+    trap_field_not_cause:
+
+        // For xepc mismatches, also print the instruction at the actual xepc
+        lw a0, trap_diag_subtype
+        li a1, 3
+        bne a0, a1, trap_field_not_epc
+
+        // Print current xepc CSR and instruction at that address
+        // (if we're in M-mode, we can read mepc directly)
+        LA(a0, trap_diag_curr_xepc_str)
+        call rvmodel_io_write_str
+        csrr a0, mepc
+        li a1, __riscv_xlen
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+    trap_field_not_epc:
+
+        // Print diagnostic hints based on the mismatch type
+        lw a0, trap_diag_subtype
+        li a1, 1
+        bne a0, a1, 1f
+        // vect+mode mismatch hints
+        LA(a0, trap_diag_hint_vect_str)
+        call rvmodel_io_write_str
+        j failedtest_report_end
+    1:
+        li a1, 2
+        bne a0, a1, 1f
+        // xcause mismatch hints
+        LA(a0, trap_diag_hint_cause_str)
+        call rvmodel_io_write_str
+        j failedtest_report_end
+    1:
+        li a1, 3
+        bne a0, a1, 1f
+        // xepc mismatch hints
+        LA(a0, trap_diag_hint_epc_str)
+        call rvmodel_io_write_str
+        j failedtest_report_end
+    1:
+        li a1, 4
+        bne a0, a1, 1f
+        // xtval mismatch hints
+        LA(a0, trap_diag_hint_tval_str)
+        call rvmodel_io_write_str
+        j failedtest_report_end
+    1:
+        li a1, 5
+        bne a0, a1, 1f
+        // xip mismatch hints
+        LA(a0, trap_diag_hint_ip_str)
+        call rvmodel_io_write_str
+        j failedtest_report_end
+    1:
+        j failedtest_report_end
+
+    //--------------------------------------------------------------
+    // GENERIC: unknown trap failure, print what we can
+    //--------------------------------------------------------------
+    trap_report_generic:
+        LA(a0, trap_diag_generic_str)
+        call rvmodel_io_write_str
+
+        // Still print xepc for context
+        LA(a0, xepcstr)
+        call rvmodel_io_write_str
+        csrr a0, mepc
+        li a1, __riscv_xlen
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        // Print instruction at mepc
+        csrr a2, mepc
         LA(a0, xepcinstrstr)
         call rvmodel_io_write_str
-        # Check if its a compressed instruction
-        lhu a0, 0(a2)       # load lower half of instruction at xepc
+        lhu a0, 0(a2)
         li a1, 16
         andi x8, a0, 3
         li x9, 3
-        bne x8, x9, 1f      # compressed: only lower half needed
+        bne x8, x9, 1f
         lhu x8, 2(a2)
         slli x8, x8, 16
         or a0, a0, x8
         li a1, 32
-        1:
+    1:
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
+
+        j failedtest_report_end
+
+
+    //==========================================================================
+    // TRAP CAUSE NAME DECODER
+    //
+    // Input: a0 = xcause value
+    // Output: a0 = pointer to null-terminated cause name string
+    //
+    // Handles both exceptions (MSB=0) and interrupts (MSB=1).
+    // Returns "Unknown" for unrecognized cause codes.
+    //==========================================================================
+
+    trap_cause_to_str:
+        bltz a0, trap_cause_interrupt           # MSB set = interrupt
+
+    trap_cause_exception:
+        // Exception causes (MSB=0)
+        li a1, 24                                # max known exception cause
+        bge a0, a1, trap_cause_unknown
+
+        // Index into exception name pointer table
+        la a1, trap_excpt_name_tbl
+        slli a2, a0, 2                           # cause * 4 (pointer size on RV32)
+    #if __riscv_xlen == 64
+        slli a2, a0, 3                           # cause * 8 (pointer size on RV64)
+    #endif
+        add a1, a1, a2
+        LREG a0, 0(a1)                           # load string pointer
+        ret
+
+    trap_cause_interrupt:
+        // Interrupt causes (MSB=1), mask off MSB
+        li a1, 1
+        slli a1, a1, (XLEN-1)
+        xor a0, a0, a1                           # clear MSB to get cause number
+        li a1, 16                                # max known interrupt cause
+        bge a0, a1, trap_cause_unknown
+
+        la a1, trap_int_name_tbl
+        slli a2, a0, 2
+    #if __riscv_xlen == 64
+        slli a2, a0, 3
+    #endif
+        add a1, a1, a2
+        LREG a0, 0(a1)
+        ret
+
+    trap_cause_unknown:
+        LA(a0, trap_cause_unknown_str)
+        ret
+
 
     failedtest_report_end:
         # Print end string
@@ -1248,10 +1940,178 @@
     vecreg_scratch:                              # space to save full vector register contents
         .fill VECREG_REGION_WORDS, 4, 0xfeedf00dbaaaaaad
 #endif // RVTEST_VECTOR
+
+    //==========================================================================
+    // TRAP DIAGNOSTIC DATA SECTION
+    //==========================================================================
+    .align 4
+    trap_diag_subtype:                           # 0=unknown, 1=vect, 2=cause, 3=epc, 4=tval,
+                                                 # 5=xip, 6=mtval2, 7=mtinst, 8=intID, 9=offset
+        .word 0
+    trap_diag_mode:                              # 0=M, 1=S, 2=HS, 3=VS
+        .word 0
+    trap_diag_actual_value:                      # actual trap sig value (DUT)
+        .fill 2, 4, 0
+    trap_diag_expected_value:                    # expected trap sig value (reference)
+        .fill 2, 4, 0
+    trap_diag_actual_offset:                     # actual trap sig pointer offset
+        .fill 2, 4, 0
+    trap_diag_expected_offset:                   # expected trap sig pointer offset
+        .fill 2, 4, 0
+    trap_diag_fail_str_ptr:                      # saved failure string pointer for dispatch
+        .fill 2, 4, 0
+
     ascii_buffer:
         .fill 40, 1, 0          # Buffer for hex string conversion (max "0x" + 16 + 16 + "\n" + null)
     end_failure_scratch:
 
+    //==========================================================================
+    // TRAP CAUSE NAME TABLES
+    //
+    // Pointer tables indexed by cause number.
+    // Exception table: cause 0..23 (NUM_SPECD_EXCPTCAUSES)
+    // Interrupt table: cause 0..15
+    //==========================================================================
+    .align REGWIDTH
+
+    trap_excpt_name_tbl:
+        RVTEST_WORD_PTR trap_excpt_name_0
+        RVTEST_WORD_PTR trap_excpt_name_1
+        RVTEST_WORD_PTR trap_excpt_name_2
+        RVTEST_WORD_PTR trap_excpt_name_3
+        RVTEST_WORD_PTR trap_excpt_name_4
+        RVTEST_WORD_PTR trap_excpt_name_5
+        RVTEST_WORD_PTR trap_excpt_name_6
+        RVTEST_WORD_PTR trap_excpt_name_7
+        RVTEST_WORD_PTR trap_excpt_name_8
+        RVTEST_WORD_PTR trap_excpt_name_9
+        RVTEST_WORD_PTR trap_excpt_name_10
+        RVTEST_WORD_PTR trap_excpt_name_11
+        RVTEST_WORD_PTR trap_excpt_name_12
+        RVTEST_WORD_PTR trap_excpt_name_13
+        RVTEST_WORD_PTR trap_excpt_name_14
+        RVTEST_WORD_PTR trap_excpt_name_15
+        RVTEST_WORD_PTR trap_excpt_name_16
+        RVTEST_WORD_PTR trap_excpt_name_17
+        RVTEST_WORD_PTR trap_excpt_name_18
+        RVTEST_WORD_PTR trap_excpt_name_19
+        RVTEST_WORD_PTR trap_excpt_name_20
+        RVTEST_WORD_PTR trap_excpt_name_21
+        RVTEST_WORD_PTR trap_excpt_name_22
+        RVTEST_WORD_PTR trap_excpt_name_23
+
+    trap_int_name_tbl:
+        RVTEST_WORD_PTR trap_int_name_0
+        RVTEST_WORD_PTR trap_int_name_1
+        RVTEST_WORD_PTR trap_int_name_2
+        RVTEST_WORD_PTR trap_int_name_3
+        RVTEST_WORD_PTR trap_int_name_4
+        RVTEST_WORD_PTR trap_int_name_5
+        RVTEST_WORD_PTR trap_int_name_6
+        RVTEST_WORD_PTR trap_int_name_7
+        RVTEST_WORD_PTR trap_int_name_8
+        RVTEST_WORD_PTR trap_int_name_9
+        RVTEST_WORD_PTR trap_int_name_10
+        RVTEST_WORD_PTR trap_int_name_11
+        RVTEST_WORD_PTR trap_int_name_12
+        RVTEST_WORD_PTR trap_int_name_13
+        RVTEST_WORD_PTR trap_int_name_14
+        RVTEST_WORD_PTR trap_int_name_15
+
+    //==========================================================================
+    // EXCEPTION CAUSE NAME STRINGS
+    //==========================================================================
+    trap_excpt_name_0:
+        .string "Instruction address misaligned\n"
+    trap_excpt_name_1:
+        .string "Instruction access fault\n"
+    trap_excpt_name_2:
+        .string "Illegal instruction\n"
+    trap_excpt_name_3:
+        .string "Breakpoint\n"
+    trap_excpt_name_4:
+        .string "Load address misaligned\n"
+    trap_excpt_name_5:
+        .string "Load access fault\n"
+    trap_excpt_name_6:
+        .string "Store/AMO address misaligned\n"
+    trap_excpt_name_7:
+        .string "Store/AMO access fault\n"
+    trap_excpt_name_8:
+        .string "Environment call from U-mode\n"
+    trap_excpt_name_9:
+        .string "Environment call from S-mode\n"
+    trap_excpt_name_10:
+        .string "Environment call from VS-mode\n"
+    trap_excpt_name_11:
+        .string "Environment call from M-mode\n"
+    trap_excpt_name_12:
+        .string "Instruction page fault\n"
+    trap_excpt_name_13:
+        .string "Load page fault\n"
+    trap_excpt_name_14:
+        .string "Reserved (14)\n"
+    trap_excpt_name_15:
+        .string "Store/AMO page fault\n"
+    trap_excpt_name_16:
+        .string "Double trap\n"
+    trap_excpt_name_17:
+        .string "Reserved (17)\n"
+    trap_excpt_name_18:
+        .string "Software check\n"
+    trap_excpt_name_19:
+        .string "Hardware error\n"
+    trap_excpt_name_20:
+        .string "Instruction guest-page fault\n"
+    trap_excpt_name_21:
+        .string "Load guest-page fault\n"
+    trap_excpt_name_22:
+        .string "Virtual instruction\n"
+    trap_excpt_name_23:
+        .string "Store/AMO guest-page fault\n"
+
+    //==========================================================================
+    // INTERRUPT CAUSE NAME STRINGS
+    //==========================================================================
+    trap_int_name_0:
+        .string "Reserved interrupt (0)\n"
+    trap_int_name_1:
+        .string "Supervisor software interrupt\n"
+    trap_int_name_2:
+        .string "Virtual supervisor software interrupt\n"
+    trap_int_name_3:
+        .string "Machine software interrupt\n"
+    trap_int_name_4:
+        .string "Reserved interrupt (4)\n"
+    trap_int_name_5:
+        .string "Supervisor timer interrupt\n"
+    trap_int_name_6:
+        .string "Virtual supervisor timer interrupt\n"
+    trap_int_name_7:
+        .string "Machine timer interrupt\n"
+    trap_int_name_8:
+        .string "Reserved interrupt (8)\n"
+    trap_int_name_9:
+        .string "Supervisor external interrupt\n"
+    trap_int_name_10:
+        .string "Virtual supervisor external interrupt\n"
+    trap_int_name_11:
+        .string "Machine external interrupt\n"
+    trap_int_name_12:
+        .string "Supervisor guest external interrupt\n"
+    trap_int_name_13:
+        .string "Counter overflow interrupt\n"
+    trap_int_name_14:
+        .string "Reserved interrupt (14)\n"
+    trap_int_name_15:
+        .string "Reserved interrupt (15)\n"
+
+    trap_cause_unknown_str:
+        .string "Unknown/custom cause\n"
+
+    //==========================================================================
+    // GENERAL STRINGS (unchanged from original)
+    //==========================================================================
     successstr:
         // Sequence of .ascii and .asciz is used to create a multi-part string with a single null terminator
         // clang does not allow implicit string concatenation with .string directives
@@ -1387,4 +2247,102 @@
         .string "fflags\n"
     canary_mismatch:
         .string "Testcase signature canary mismatch!"
+
+    //==========================================================================
+    // TRAP DIAGNOSTIC STRINGS
+    //==========================================================================
+    trap_diag_header_str:
+        .string "RVCP: ===== TRAP FAILURE DIAGNOSTICS =====\n"
+    trap_diag_origstr_label:
+        .string "RVCP: Failure: "
+    trap_diag_count_mismatch_str:
+        .string "RVCP: TRAP COUNT MISMATCH - DUT generated a different number of traps than the reference model.\n"
+    trap_diag_expected_offset_str:
+        .string "RVCP: Expected trap signature offset: "
+    trap_diag_actual_offset_str:
+        .string "RVCP: Actual trap signature offset:   "
+    trap_diag_extra_traps_str:
+        .string "RVCP: DIAGNOSIS: DUT generated MORE traps than expected.\n"
+    trap_diag_missing_traps_str:
+        .string "RVCP: DIAGNOSIS: DUT generated FEWER traps than expected (missing traps).\n"
+    trap_diag_extra_bytes_str:
+        .string "RVCP: Difference in trap signature bytes: "
+    trap_diag_extra_hint_str:
+        .ascii  "RVCP: HINT: Extra traps may indicate: spurious interrupts, incorrect exception\n"
+        .ascii  "RVCP:       delegation, wrong privilege mode at instruction execution, or an\n"
+        .asciz  "RVCP:       instruction causing a fault that should not fault on this DUT.\n"
+    trap_diag_missing_hint_str:
+        .ascii  "RVCP: HINT: Missing traps may indicate: exception not raised when expected,\n"
+        .ascii  "RVCP:       incorrect CSR state preventing trap (e.g. xIE disabled), trap\n"
+        .asciz  "RVCP:       delegation causing handler in wrong mode, or PMP/page fault missed.\n"
+
+    trap_diag_handler_mode_str:
+        .string "RVCP: Trap handler mode: "
+    trap_diag_mode_m_str:
+        .string "M-mode\n"
+    trap_diag_mode_s_str:
+        .string "S-mode\n"
+    trap_diag_mode_hs_str:
+        .string "HS-mode\n"
+    trap_diag_mode_vs_str:
+        .string "VS-mode\n"
+    trap_diag_mode_unknown_str:
+        .string "Unknown\n"
+
+    trap_diag_field_str:
+        .string "RVCP: Mismatching field: "
+    trap_diag_field_vect_str:
+        .string "Vector+Mode+Status word (trap signature word 0)\n"
+    trap_diag_field_cause_str:
+        .string "XCAUSE (trap signature word 1)\n"
+    trap_diag_field_epc_str:
+        .string "XEPC (trap signature word 2)\n"
+    trap_diag_field_tval_str:
+        .string "XTVAL (trap signature word 3)\n"
+    trap_diag_field_ip_str:
+        .string "XIP (trap signature word 2, interrupt)\n"
+    trap_diag_field_tval2_str:
+        .string "MTVAL2 (trap signature word 4, hypervisor)\n"
+    trap_diag_field_tinst_str:
+        .string "MTINST (trap signature word 5, hypervisor)\n"
+    trap_diag_field_intid_str:
+        .string "External Interrupt ID (trap signature word 3)\n"
+    trap_diag_field_unknown_str:
+        .string "Unknown field\n"
+
+    trap_diag_expected_str:
+        .string "RVCP: Expected value: "
+    trap_diag_actual_str:
+        .string "RVCP: Actual value:   "
+    trap_diag_expected_cause_name_str:
+        .string "RVCP: Expected cause: "
+    trap_diag_actual_cause_name_str:
+        .string "RVCP: Actual cause:   "
+    trap_diag_curr_xepc_str:
+        .string "RVCP: Current MEPC:   "
+
+    trap_diag_generic_str:
+        .string "RVCP: Unrecognized trap failure context. Printing available CSR state:\n"
+
+    trap_diag_hint_vect_str:
+        .ascii  "RVCP: HINT: Vector+Mode word mismatch may indicate: trap handled in wrong\n"
+        .ascii  "RVCP:       privilege mode (check medeleg/mideleg), incorrect mstatus fields\n"
+        .asciz  "RVCP:       (MPP/SPP/MPV), or wrong vectored interrupt entry.\n"
+    trap_diag_hint_cause_str:
+        .ascii  "RVCP: HINT: XCAUSE mismatch means a different exception or interrupt type was\n"
+        .ascii  "RVCP:       observed. Check: instruction encoding correctness, CSR accessibility\n"
+        .asciz  "RVCP:       at current privilege, PMP/page table configuration, extension support.\n"
+    trap_diag_hint_epc_str:
+        .ascii  "RVCP: HINT: XEPC mismatch means the trap occurred at a different instruction.\n"
+        .ascii  "RVCP:       This could indicate: different code layout (linker issue), instruction\n"
+        .asciz  "RVCP:       alignment difference, or a preceding instruction causing an unexpected trap.\n"
+    trap_diag_hint_tval_str:
+        .ascii  "RVCP: HINT: XTVAL mismatch. For illegal instructions, xtval should contain the\n"
+        .ascii  "RVCP:       instruction encoding (or 0). For address faults, it should contain the\n"
+        .asciz  "RVCP:       faulting address. Check DUT's xtval reporting behavior.\n"
+    trap_diag_hint_ip_str:
+        .ascii  "RVCP: HINT: XIP mismatch means interrupt pending bits differ. Check: interrupt\n"
+        .ascii  "RVCP:       controller configuration, RVMODEL interrupt set/clear macros, timer\n"
+        .asciz  "RVCP:       configuration (mtime/mtimecmp), and delegation settings.\n"
+
 .endm

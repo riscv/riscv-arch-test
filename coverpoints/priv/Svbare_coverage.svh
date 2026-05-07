@@ -14,10 +14,10 @@ covergroup Svbare_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
-    mprv_mstatus: coverpoint ins.current.csr[12'h300][17] {
+    mprv_mstatus: coverpoint ins.current.csr[CSR_MSTATUS][17] {
         bins set = {1};
     }
-    mpp_mstatus: coverpoint ins.prev.csr[12'h300][12:11] {
+    mpp_mstatus: coverpoint ins.prev.csr[CSR_MSTATUS][12:11] {
         bins U_mode = {2'b00};
         bins S_mode = {2'b01};
     }
@@ -32,11 +32,11 @@ covergroup Svbare_cg with function sample(ins_t ins);
     }
 
     `ifdef XLEN64
-        satp_bare: coverpoint ins.current.csr[12'h180][63:60] {
+        satp_bare: coverpoint ins.current.csr[CSR_SATP][63:60] {
             bins bare = {4'b0000};
         }
     `else
-        satp_bare: coverpoint ins.current.csr[12'h180][31] {
+        satp_bare: coverpoint ins.current.csr[CSR_SATP][31] {
             bins bare = {1'b0};
         }
     `endif

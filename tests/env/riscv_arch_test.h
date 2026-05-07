@@ -16,6 +16,6 @@
 #ifdef RVTEST_VECTOR
   #include "rvtest_macros_vector.h"
 #endif
-#include "rvtest_trap_handler.h" // TODO: clean up and split arch_test.h
-#include "failure_code.h"
+#include "rvtest_trap_handler.h"
+#include "rvtest_failure_code.h"
 #include "rvtest_setup.h"

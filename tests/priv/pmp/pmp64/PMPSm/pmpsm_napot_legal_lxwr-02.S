@@ -27,7 +27,7 @@
 
 #define SKIP_MEPC
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I']
+# REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
@@ -38,9 +38,6 @@
 #define TEST_FILE "pmpsm_napot_legal_lwxr.S"
 #define SIGUPD_COUNT 150
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -301,21 +298,6 @@ main:
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
 
-    j exit                                                        // Verification Complete, exit the test
-
-.align 12
-TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
-    nop
-    .endr
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
-
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 .align 4
@@ -343,6 +325,21 @@ test_16_str: .string "\"test: 16; cp: cp_cfg_A_napot_lw_address-4\""
 test_17_str: .string "\"test: 17; cp: cp_cfg_A_napot_lw_address+4\""
 test_18_str: .string "\"test: 18; cp: cp_cfg_A_napot_lw_address+g-4\""
 test_19_str: .string "\"test: 19; cp: cp_cfg_A_napot_lw_address+g\""
+
+.align 12
+.align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    jr ra
+
+TEST_FOR_EXECUTION:
+    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

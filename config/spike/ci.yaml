@@ -5,6 +5,7 @@
 
 ci_enabled: true
 # TODO: Priv tests mismatch due to config issues. Atomics failure still needs to be diagnosed.
-exclude_extensions: "Sm,ExceptionsZc,S,InterruptsSm,PMPmisaligned,ExceptionsZalrsc,Svadu,SvaduPMP,Svnapot,Svpbmt,SvZicbo,ExceptionsZaamo"
+# TODO: Remove Zama16b when spike starts supporting it.
+exclude_extensions: "Sm,ExceptionsZc,InterruptsSm,InterruptsS,InterruptsU,InterruptsSstc,ExceptionsZalrsc,Sv,SvPMP,SvPMPZicbo,Svade,Svadu,SvaduPMP,Svnapot,Svpbmt,SvZicbo,ExceptionsZaamo,ExceptionsSvZaamo,ExceptionsSvZalrsc,Svinval,PMPS,PMPU,PMPSm,Zama16b"
 install_script: ".github/scripts/install-spike.sh"
 apt_packages: "device-tree-compiler libboost-regex-dev libboost-system-dev"

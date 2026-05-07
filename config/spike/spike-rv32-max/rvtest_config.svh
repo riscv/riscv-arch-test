@@ -48,6 +48,11 @@
 `define ZICBOZ_SUPPORTED
 `define ZICBOM_SUPPORTED
 `define ZICBOP_SUPPORTED
+`define ZICFILP_SUPPORTED
+`define ZICFISS_SUPPORTED
+`define S_SUPPORTED
+`define SMSTATEEN_SUPPORTED
+`define SSSTATEEN_SUPPORTED
 
 `define COUNTINHIBIT_EN_0
 `define COUNTINHIBIT_EN_2
@@ -65,3 +70,6 @@
 `define LMULf8_SUPPORTED
 `define LMULf4_SUPPORTED
 `define LMULf2_SUPPORTED
+
+// Maximum supported index EEW for indexed load/store
+`define MAXINDEXEEW64

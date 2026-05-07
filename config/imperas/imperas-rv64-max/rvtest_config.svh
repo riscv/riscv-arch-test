@@ -10,15 +10,18 @@
 `define FLEN128
 `define VLEN1024
 
+// Maximum supported index EEW for indexed load/store
+`define MAXINDEXEEW64
+
 // PMP Grain (G)
 // Set G as needed (e.g., 0, 1, 2, ...)
-`define G 0
+`define G 4
 
 // Uncomment below if G = 0
- `define G_IS_0
+// `define G_IS_0
 
 // PMP mode selection
-`define PMP_16     // Choose between PMP_16 or PMP_64 or None
+`define PMP_64     // Choose between PMP_16 or PMP_64 or None
 
 // Base addresses specific for PMP
 `define RAM_BASE_ADDR       32'h80000000  // PMP Region starts at RAM_BASE_ADDR + LARGEST_PROGRAM
@@ -45,9 +48,14 @@
 `define ZICBOZ_SUPPORTED
 `define ZICBOM_SUPPORTED
 `define ZICBOP_SUPPORTED
+`define ZICFILP_SUPPORTED
+`define ZICFISS_SUPPORTED
 `define SV39_SUPPORTED
 `define SV48_SUPPORTED
 `define SV57_SUPPORTED
+`define S_SUPPORTED
+`define SMSTATEEN_SUPPORTED
+`define SSSTATEEN_SUPPORTED
 
 `define COUNTINHIBIT_EN_0
 `define COUNTINHIBIT_EN_2

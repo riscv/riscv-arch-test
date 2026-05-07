@@ -131,7 +131,9 @@
     Vx64_vrgather_vi_cg = new(); Vx64_vrgather_vi_cg.set_inst_name("obj_Vx64_vrgather_vi");
     Vx64_vrgather_vv_cg = new(); Vx64_vrgather_vv_cg.set_inst_name("obj_Vx64_vrgather_vv");
     Vx64_vrgather_vx_cg = new(); Vx64_vrgather_vx_cg.set_inst_name("obj_Vx64_vrgather_vx");
+`ifdef MAXINDEXEEW_GE16
     Vx64_vrgatherei16_vv_cg = new(); Vx64_vrgatherei16_vv_cg.set_inst_name("obj_Vx64_vrgatherei16_vv");
+`endif
     Vx64_vrsub_vi_cg = new(); Vx64_vrsub_vi_cg.set_inst_name("obj_Vx64_vrsub_vi");
     Vx64_vrsub_vx_cg = new(); Vx64_vrsub_vx_cg.set_inst_name("obj_Vx64_vrsub_vx");
     Vx64_vsadd_vi_cg = new(); Vx64_vsadd_vi_cg.set_inst_name("obj_Vx64_vsadd_vi");

@@ -695,7 +695,7 @@ For examples of how to write the individual coverpoint helper functions for priv
 
 - Do not hardcode register numbers. Instead use the register allocator described above for unprivileged coverpoints (`test_data.int_regs.get_registers(3)`, etc.).
 - Begin each coverpoint with a call to `comment_banner(coverpoint, "comments")` to add a descriptive marker to the generated test.
-- Include a call to `test_data.add_testcase` at the beginning of each testcase within a coverpoint. This creates the appropriate labels and debug strings.
+- Include a call to `test_data.add_testcase` at the beginning of each testcase within a coverpoint. This creates the appropriate labels and debug strings. If possible, put the call right before the instruction being tested.
 - To the extent possible, reuse functions and define new helper functions if a snippet of assembly seems like it will be useful in multiple tests. See [`csr.py`](../generators/testgen/src/testgen/asm/csr.py) for a few examples including `gen_csr_read_sigupd`, `gen_csr_write_sigupd`, and `csr_walk_test`.
 - Test are automatically formatted as follows:
   - Pre-processor directives (`#ifdef`, etc.), comments, and labels are unindented.
@@ -751,7 +751,7 @@ When debug mode enables simulator tracing, trace output can interleave with `RVC
   ```
   spike {debug:-l --log-commits --log=__TRACEFILE__} --isa=rv64gc
   qemu-system-riscv64 {debug:-d in_asm,int -D __TRACEFILE__} -nographic ...
-  sail_riscv_sim {debug:--trace-all --trace-output __TRACEFILE__} --config ...
+  sail_riscv_sim {debug:--trace --trace-output __TRACEFILE__} --config ...
   ```
 
 - **`__SUMMARYFILE__`** — Use when the simulator cannot redirect trace but _can_ redirect its console output (which contains `RVCP-SUMMARY`) to a file. When present, `run_tests.py` reads `RVCP-SUMMARY` from this `.summary.log` file instead of the main log. Example:

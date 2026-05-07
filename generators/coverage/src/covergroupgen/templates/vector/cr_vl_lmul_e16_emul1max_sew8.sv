@@ -15,9 +15,7 @@
         `ifdef LMULf2_SUPPORTED
             bins half   = {7};
         `endif
-        `ifndef COVER_VX8
-            bins one    = {0};
-        `endif
+        // LMUL=1 excluded: EEW=16, SEW=8 gives EMUL=2 > maxemul=1 (always unreachable)
     }
 
     cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {

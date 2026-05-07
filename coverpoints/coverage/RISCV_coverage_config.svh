@@ -152,6 +152,12 @@
 `ifdef SMV_COVERAGE
   `include "SmV_coverage.svh"
 `endif
+`ifdef SSCCPTR_COVERAGE
+  `include "Ssccptr_coverage.svh"
+`endif
+`ifdef SSCOUNTERENW_COVERAGE
+  `include "Sscounterenw_coverage.svh"
+`endif
 `ifdef SSSTRICTS_COVERAGE
   `include "SsstrictS_coverage.svh"
 `endif
@@ -163,6 +169,15 @@
 `endif
 `ifdef SSSTRICTV_COVERAGE
   `include "SsstrictV_coverage.svh"
+`endif
+`ifdef SSTVALA_COVERAGE
+  `include "Sstvala_coverage.svh"
+`endif
+`ifdef SSTVECD_COVERAGE
+  `include "Sstvecd_coverage.svh"
+`endif
+`ifdef SSU64XL_COVERAGE
+  `include "Ssu64xl_coverage.svh"
 `endif
 `ifdef SV_COVERAGE
   `include "Sv_coverage.svh"
@@ -236,18 +251,6 @@
 `ifdef VLS8_COVERAGE
   `include "Vls8_coverage.svh"
 `endif
-`ifdef VLSCUSTOM16_COVERAGE
-  `include "VlsCustom16_coverage.svh"
-`endif
-`ifdef VLSCUSTOM32_COVERAGE
-  `include "VlsCustom32_coverage.svh"
-`endif
-`ifdef VLSCUSTOM64_COVERAGE
-  `include "VlsCustom64_coverage.svh"
-`endif
-`ifdef VLSCUSTOM8_COVERAGE
-  `include "VlsCustom8_coverage.svh"
-`endif
 `ifdef VX16_COVERAGE
   `include "Vx16_coverage.svh"
 `endif
@@ -259,6 +262,9 @@
 `endif
 `ifdef VX8_COVERAGE
   `include "Vx8_coverage.svh"
+`endif
+`ifdef ZA64RS_COVERAGE
+  `include "Za64rs_coverage.svh"
 `endif
 `ifdef ZAAMO_COVERAGE
   `include "Zaamo_coverage.svh"
@@ -274,6 +280,9 @@
 `endif
 `ifdef ZALRSC_COVERAGE
   `include "Zalrsc_coverage.svh"
+`endif
+`ifdef ZAMA16B_COVERAGE
+  `include "Zama16b_coverage.svh"
 `endif
 `ifdef ZBA_COVERAGE
   `include "Zba_coverage.svh"
@@ -350,6 +359,9 @@
 `ifdef ZFHMIND_COVERAGE
   `include "ZfhminD_coverage.svh"
 `endif
+`ifdef ZIC64BZICBOZ_COVERAGE
+  `include "Zic64bZicboz_coverage.svh"
+`endif
 `ifdef ZICBOM_COVERAGE
   `include "Zicbom_coverage.svh"
 `endif
@@ -406,6 +418,9 @@
 `endif
 `ifdef ZKNH_COVERAGE
   `include "Zknh_coverage.svh"
+`endif
+`ifdef ZKR_COVERAGE
+  `include "Zkr_coverage.svh"
 `endif
 `ifdef ZKSED_COVERAGE
   `include "Zksed_coverage.svh"

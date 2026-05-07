@@ -21,10 +21,6 @@
 // PMP mode selection
 `define PMP_16     // Choose between PMP_16 or PMP_64 or None
 
-// Base addresses specific for PMP
-`define RAM_BASE_ADDR       32'h80000000  // PMP Region starts at RAM_BASE_ADDR + LARGEST_PROGRAM
-`define LARGEST_PROGRAM     32'h00002000
-
 // Define relevant addresses
 `define RVMODEL_ACCESS_FAULT_ADDRESS 64'h00000000
 `define CLINT_BASE 64'h02000000
@@ -48,8 +44,12 @@
 `define ZICBOM_SUPPORTED
 `define ZICBOZ_SUPPORTED
 `define ZICBOP_SUPPORTED
+`define ZICFILP_SUPPORTED
+`define ZICFISS_SUPPORTED
 `define ZKR_SUPPORTED
 `define S_SUPPORTED
+`define SMSTATEEN_SUPPORTED
+`define SSSTATEEN_SUPPORTED
 
 `define COUNTINHIBIT_EN_0
 `define COUNTINHIBIT_EN_2
@@ -67,3 +67,6 @@
 `define LMULf8_SUPPORTED
 `define LMULf4_SUPPORTED
 `define LMULf2_SUPPORTED
+
+// Maximum supported index EEW for indexed load/store
+`define MAXINDEXEEW32

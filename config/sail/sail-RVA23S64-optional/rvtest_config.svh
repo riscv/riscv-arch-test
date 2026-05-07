@@ -11,6 +11,9 @@
 `define VLEN512
 `define ELEN64
 
+// Maximum supported index EEW for indexed load/store
+`define MAXINDEXEEW64
+
 // PMP Grain (G)
 // Set G as needed (e.g., 0, 1, 2, ...)
 `define G 4
@@ -47,8 +50,11 @@
 `define ZICBOM_SUPPORTED
 `define ZICBOZ_SUPPORTED
 `define ZICBOP_SUPPORTED
+`define ZICFILP_SUPPORTED
+`define ZICFISS_SUPPORTED
 `define ZKR_SUPPORTED
 `define S_SUPPORTED
+`define SSSTATEEN_SUPPORTED
 `define SV39_SUPPORTED
 `define SV48_SUPPORTED
 `define SV57_SUPPORTED

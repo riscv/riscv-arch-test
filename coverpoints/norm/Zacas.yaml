@@ -3,40 +3,55 @@
 
 normative_rule_definitions:
   - name: Zacas_rv32_amocas-w_op
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Zacas_amocas_w_cg/{cp_asm_count, cp_rs1, cp_rs2, cp_rd, cmp_rd_rs1_val_eq, cmp_rd_rs1_val_lsb, cmp_rd_rs1_val_hw}",
+      ]
 
   - name: Zacas_rv32_amocas-d_op
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Zacas_amocas_d_cg/{cp_asm_count, cp_rs1, cp_rs2, cp_rd, cmp_rd_rs1_val_eq, cmp_rd_rs1_val_lsb, cmp_rd_rs1_val_hw, cmp_rd_rs1_val_w, cmp_rd_rs1_pair_partial_val}",
+      ]
 
   - name: Zacas_rv32_amocas-d_frst_pair_entry_reg_even
-    coverpoint: [""]
+    coverpoint: ["Zacas_amocas_d_cg/{cp_rs2_pair, cp_rd_pair}"]
 
   - name: Zacas_rv32_amocas-d_rs2_frst_reg_x0
-    coverpoint: [""]
+    coverpoint: ["Zacas_amocas_d_cg/{cp_rs2}"]
 
   - name: Zacas_rv32_amocas-d_rd_frst_reg_x0
-    coverpoint: [""]
+    coverpoint: ["Zacas_amocas_d_cg/{cp_rd}"]
 
   - name: Zacas_rv64_amocas-w_op
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Zacas_amocas_w_cg/{cp_asm_count, cp_rs1, cp_rs2, cp_rd, cmp_rd_rs1_val_eq, cmp_rd_rs1_val_lsb, cmp_rd_rs1_val_hw, cmp_rd_rs1_sign_ext}",
+      ]
 
   - name: Zacas_rv64_amocas-d_op
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Zacas_amocas_d_cg/{cp_asm_count, cp_rs1, cp_rs2, cp_rd, cmp_rd_rs1_val_eq, cmp_rd_rs1_val_lsb, cmp_rd_rs1_val_hw, cmp_rd_rs1_val_w}",
+      ]
 
   - name: Zacas_rv64_amocas-q_op
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Zacas_amocas_q_cg/{cp_asm_count, cp_rs1, cp_rs2, cp_rd, cmp_rd_rs1_val_eq, cmp_rd_rs1_val_lsb, cmp_rd_rs1_val_hw, cmp_rd_rs1_val_w, cmp_rd_rs1_pair_partial_val}",
+      ]
 
   - name: Zacas_rv64_amocas-q_frst_pair_entry_reg_even
-    coverpoint: [""]
+    coverpoint: ["Zacas_amocas_q_cg/{cp_rs2_pair, cp_rd_pair}"]
 
   - name: Zacas_rv64_amocas-q_rs2_frst_reg_x0
-    coverpoint: [""]
+    coverpoint: ["Zacas_amocas_q_cg/{cp_rs2}"]
 
   - name: Zacas_rv64_amocas-q_rd_frst_reg_x0
-    coverpoint: [""]
+    coverpoint: ["Zacas_amocas_q_cg/{cp_rd}"]
 
   - name: Zacas_amocas_rs1_addr_alignment
-    coverpoint: [""]
+    coverpoint: ["ExceptionsZaamo_cg/{cp_amo_address_misaligned}"]
 
   - name: Zacas_amocas_mem_op_success_aq_rl
     coverpoint: [""]

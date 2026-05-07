@@ -7,6 +7,8 @@
 
 #define RVMODEL_DATA_SECTION
 
+#define CONFORMING_SM_SUPPORTED
+
 ##### STARTUP #####
 
 # Perform boot operations. Can be empty or left undefined unless needed for

@@ -14,6 +14,8 @@
         .align 8; .global fromhost; fromhost: .dword 0;     \
         .popsection
 
+#define CONFORMING_SM_SUPPORTED
+
 ##### STARTUP #####
 
 # Perform boot operations. Can be empty or left undefined unless needed for

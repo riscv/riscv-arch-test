@@ -143,6 +143,7 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
                         [
                             f"or x{check_reg}, x{check_reg}, x{reg3}   # value to write to sstatus with SD/FS/XS/VS bits set/clear",
                             test_data.add_testcase(binname, coverpoint, covergroup),
+                            # TODO: mask sstatus.XS bits 16:15 to avoid mismatches with Whisper until Sail supports it
                             gen_csr_write_sigupd(check_reg, "sstatus", test_data),
                         ]
                     )
@@ -308,13 +309,11 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
         "# Setup",
         f"CSRR(x{save_reg}, mstatus)        # read and save mstatus",
         f"LI(x{reg1}, 1 << 2)",
-        f"CSRC medeleg, x{reg1}          # turn off delegating illegal instruction exceptions so TSR won't cause a trap loop on sret",
+        f"CSRC(medeleg, x{reg1})          # turn off delegating illegal instruction exceptions so TSR won't cause a trap loop on sret",
         f"{INDENT}# set up x{reg1} with mstatus except MPRV, SPP, SPIE, SIE, TSR cleared",
         f"LI(x{reg2}, 0x420122)          # x{reg2} has all MPRV, SPP, SPIE, SIE, TSR bits set (bits [17], [8], [5], [1], [22] respectively)",
         f"not x{reg2}, x{reg2}              # x{reg2} has all but MPRV, SPP, SPIE, SIE, TSR bits set",
         f"and x{reg1}, x{save_reg}, x{reg2}          # clear MPRV, SPP, SPIE, SIE, TSR bits",
-        f"LI x{reg1}, 1 << 2",
-        f"CSRC medeleg, x{reg1}          # turn off delegating illegal instruction exceptions so TSR won't cause a trap loop on sret",
     ]
 
     for spp in (0, 1):
@@ -342,13 +341,15 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
                                 write_sigupd(check_reg, test_data),
                                 "RVTEST_GOTO_MMODE      # make sure we return to machine mode",
                                 # Test mstatus was updated properly
-                                gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
+                                # TODO: relax mask when Sail matures
+                                # To work around Whisper issue https://github.com/tenstorrent/whisper/issues/18, mask off MPRV bit 17
+                                gen_csr_read_sigupd(check_reg, ("mstatus", 0xFFFFFFFFFFFDFFFF), test_data, reg3),
                             ]
                         )
 
     lines.extend(
         [
-            "// leave medeleg of illegal instruction off because it will be needed in the upcoming srets tests",
+            "# leave medeleg of illegal instruction off because it will be needed in the upcoming srets tests",
             f"\nCSRW(mstatus, x{save_reg})    # restore CSR",
         ]
     )
@@ -430,7 +431,7 @@ def _generate_srets_tests(test_data: TestData) -> list[str]:
             f"\nCSRW(sstatus, x{save_reg})    # restore CSR",
             "RVTEST_GOTO_MMODE      # back to M-mode to touch medeleg",
             f"LI(x{reg1}, 1 << 2)",
-            f"CSRS medeleg, x{reg1}           # restore delegating illegal instructions",
+            f"CSRS(medeleg, x{reg1})           # restore delegating illegal instructions",
         ]
     )
     test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
@@ -445,8 +446,9 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     # Format: (CSR Name, Mask).  Mask specifies a set of bits to check
 
     csrs = [
-        # TODO: sail does not yet support sstatus.UBE; mask it until available to avoid mismatches.  Delete mask when Sail has UBE support.
-        ("sstatus", 0xFFFFFFFFFFFFFFBF),
+        # TODO: sail does not yet support sstatus.UBE; mask it until available to avoid mismatches with CVW.  Delete mask when Sail has UBE support.
+        # TODO: sail does not yet support sstatusSPELP; mask it until available to avoid mismatches with Whisper.  Delete mask when Sail has SPELP support.
+        ("sstatus", 0xFFFFFFFFFF7FFFBF),
         # WLRL fields can't be managed with masks.  Use cp_scause_* instead
         #        ("scause", 0x7FFFFFFFFFFFFFF0),
         ("sie", None),

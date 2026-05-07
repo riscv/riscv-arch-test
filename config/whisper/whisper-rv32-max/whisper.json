@@ -36,8 +36,12 @@
       "poke_mask": "0xff"
     },
     "mstatus": {
-      "mask": "0x000002cf00fe7faa",
-      "poke_mask": "0x800002cf00fe7faa"
+      "mask": "0x00fe7faa",
+      "poke_mask": "0x80fe7faa"
+    },
+    "mie": {
+      "mask": "0x2222",
+      "poke_mask": "0x2222"
     },
     "stvec": {
       "mask": "0xFFFFFFFD" // don't allow setting MODE field to 2 (reserved)

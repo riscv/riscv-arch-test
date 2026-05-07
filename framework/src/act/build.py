@@ -9,14 +9,18 @@
 
 from __future__ import annotations
 
+import contextlib
 import os
 import re
+import signal
 import subprocess
+import threading
 from collections.abc import Callable
 from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from dataclasses import dataclass, field
 from graphlib import TopologicalSorter
 from pathlib import Path
+from types import FrameType
 from typing import Any
 
 from rich.console import Console, Group
@@ -129,7 +133,38 @@ def is_stale(task: BuildTask) -> bool:
     return any(inp.exists() and inp.stat().st_mtime > oldest_output_mtime for inp in all_inputs)
 
 
-def execute_task(task: BuildTask, *, verbose: bool = False) -> BuildError | None:
+class _ProcTracker:
+    """Thread-safe registry of subprocess PGIDs for group-kill on cancellation or Ctrl+C."""
+
+    def __init__(self) -> None:
+        self._pgids: set[int] = set()
+        self._lock = threading.Lock()
+        self._shutting_down = False
+
+    def add(self, pgid: int) -> None:
+        with self._lock:
+            self._pgids.add(pgid)
+            if self._shutting_down:
+                # kill_all() already ran; kill this late-registrant immediately
+                with contextlib.suppress(ProcessLookupError, PermissionError):
+                    os.killpg(pgid, signal.SIGKILL)
+
+    def remove(self, pgid: int) -> None:
+        with self._lock:
+            self._pgids.discard(pgid)
+
+    def kill_all(self) -> None:
+        with self._lock:
+            self._shutting_down = True
+            pgids = set(self._pgids)
+        for pgid in pgids:
+            with contextlib.suppress(ProcessLookupError, PermissionError):
+                os.killpg(pgid, signal.SIGKILL)
+
+
+def execute_task(
+    task: BuildTask, *, verbose: bool = False, proc_tracker: _ProcTracker | None = None
+) -> BuildError | None:
     """Execute a single build task. Returns None on success, BuildError on failure."""
     if verbose:
         print(f"  {_task_str(task)}")
@@ -137,21 +172,30 @@ def execute_task(task: BuildTask, *, verbose: bool = False) -> BuildError | None
 
     if isinstance(action, SubprocessAction):
         try:
-            result = subprocess.run(
+            proc = subprocess.Popen(
                 action.cmd,
-                capture_output=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
                 text=True,
-                check=False,  # manual check of returncode below for better error reporting
                 cwd=action.cwd,
+                start_new_session=True,  # own process group so killpg reaches children
             )
+            pgid = proc.pid  # start_new_session=True makes the child its own group leader
+            if proc_tracker is not None:
+                proc_tracker.add(pgid)
+            try:
+                stdout, stderr = proc.communicate()
+            finally:
+                if proc_tracker is not None:
+                    proc_tracker.remove(pgid)
             if action.stdout_file is not None:
-                action.stdout_file.write_text(result.stderr + result.stdout)
-            if result.returncode != 0:
+                action.stdout_file.write_text(stderr + stdout)
+            if proc.returncode != 0:
                 return BuildError(
                     task_name=task.name,
                     command=_task_str(task),
-                    returncode=result.returncode,
-                    output=result.stderr + result.stdout,
+                    returncode=proc.returncode,
+                    output=stderr + stdout,
                     log_file=action.stdout_file,
                 )
         except OSError as e:
@@ -217,6 +261,27 @@ def build(
     if not tasks:
         return result
 
+    tracker = _ProcTracker()
+
+    # Install a SIGINT handler so Ctrl+C kills running subprocesses before the
+    # ThreadPoolExecutor waits for worker threads to finish.
+    # signal.signal() requires the main thread; skip silently if called from a worker.
+    _prev_sigint: signal._HANDLER = None
+    try:
+
+        def _sigint_handler(signum: int, frame: FrameType | None) -> None:
+            tracker.kill_all()
+            if callable(_prev_sigint):
+                _prev_sigint(signum, frame)
+                return
+            if _prev_sigint == signal.SIG_IGN:
+                return
+            signal.default_int_handler(signum, frame)
+
+        _prev_sigint = signal.signal(signal.SIGINT, _sigint_handler)
+    except ValueError:
+        pass  # not the main thread
+
     # Build task lookup and dependency graph (keyed by primary output path)
     task_map: dict[Path, BuildTask] = {}
     graph: dict[Path, tuple[Path, ...]] = {}
@@ -272,75 +337,81 @@ def build(
     )
     progress_task = progress.add_task("Building", total=len(tasks))
 
-    with (
-        Live(Group(progress, status_text), console=progress.console, transient=True) as live,
-        ThreadPoolExecutor(max_workers=jobs) as executor,
-    ):
-        in_flight: dict[Path, Future[BuildError | None]] = {}
-        future_to_key: dict[Future[BuildError | None], Path] = {}
+    try:
+        with (
+            Live(Group(progress, status_text), console=progress.console, transient=True) as live,
+            ThreadPoolExecutor(max_workers=jobs) as executor,
+        ):
+            in_flight: dict[Path, Future[BuildError | None]] = {}
+            future_to_key: dict[Future[BuildError | None], Path] = {}
 
-        while sorter.is_active():
-            # Submit all ready tasks
-            for key in sorter.get_ready():
-                task = task_map[key]
+            while sorter.is_active():
+                # Submit all ready tasks
+                for key in sorter.get_ready():
+                    task = task_map[key]
 
-                # Skip if a dependency failed
-                if _has_failed_dep(key):
-                    failed_tasks.add(key)
-                    result.failed += 1
-                    sorter.done(key)
-                    progress.advance(progress_task)
+                    # Skip if a dependency failed
+                    if _has_failed_dep(key):
+                        failed_tasks.add(key)
+                        result.failed += 1
+                        sorter.done(key)
+                        progress.advance(progress_task)
+                        continue
+
+                    # Check staleness
+                    if not is_stale(task):
+                        result.skipped += 1
+                        sorter.done(key)
+                        progress.advance(progress_task)
+                        continue
+
+                    # Print task without running it
+                    if dry_run:
+                        live.console.print(f"  {task.name}: {_task_str(task)}")
+                        result.skipped += 1
+                        sorter.done(key)
+                        progress.advance(progress_task)
+                        continue
+
+                    # Submit task to thread pool
+                    future = executor.submit(execute_task, task, verbose=verbose, proc_tracker=tracker)
+                    in_flight[key] = future
+                    future_to_key[future] = key
+
+                _update_status(in_flight)
+
+                # If no tasks are running, continue to the next iteration
+                if not in_flight:
                     continue
 
-                # Check staleness
-                if not is_stale(task):
-                    result.skipped += 1
+                # Wait for at least one task to complete
+                done_futures = wait(in_flight.values(), return_when=FIRST_COMPLETED).done
+
+                # Process completed tasks
+                for done_future in done_futures:
+                    key = future_to_key.pop(done_future)
+                    in_flight.pop(key)
+                    error = done_future.result()
+                    if error is not None:
+                        result.failed += 1
+                        result.errors.append(error)
+                        failed_tasks.add(key)
+                        _print_failure(live.console, task_map[key], error, verbose=verbose)
+                        if not keep_going:
+                            # Kill running subprocesses before discarding in-flight threads
+                            tracker.kill_all()
+                            executor.shutdown(wait=False, cancel_futures=True)
+                            return result
+                    else:
+                        result.succeeded += 1
                     sorter.done(key)
                     progress.advance(progress_task)
-                    continue
 
-                # Print task without running it
-                if dry_run:
-                    live.console.print(f"  {task.name}: {_task_str(task)}")
-                    result.skipped += 1
-                    sorter.done(key)
-                    progress.advance(progress_task)
-                    continue
-
-                # Submit task to thread pool
-                future = executor.submit(execute_task, task, verbose=verbose)
-                in_flight[key] = future
-                future_to_key[future] = key
-
-            _update_status(in_flight)
-
-            # If no tasks are running, continue to the next iteration
-            if not in_flight:
-                continue
-
-            # Wait for at least one task to complete
-            done_futures = wait(in_flight.values(), return_when=FIRST_COMPLETED).done
-
-            # Process completed tasks
-            for done_future in done_futures:
-                key = future_to_key.pop(done_future)
-                in_flight.pop(key)
-                error = done_future.result()
-                if error is not None:
-                    result.failed += 1
-                    result.errors.append(error)
-                    failed_tasks.add(key)
-                    _print_failure(live.console, task_map[key], error, verbose=verbose)
-                    if not keep_going:
-                        # Cancel remaining tasks
-                        executor.shutdown(wait=False, cancel_futures=True)
-                        return result
-                else:
-                    result.succeeded += 1
-                sorter.done(key)
-                progress.advance(progress_task)
-
-            _update_status(in_flight)
+                _update_status(in_flight)
+    finally:
+        tracker.kill_all()
+        if _prev_sigint is not None:
+            signal.signal(signal.SIGINT, _prev_sigint)
 
     return result
 

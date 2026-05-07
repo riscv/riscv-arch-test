@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_VLS64
-`define COVER_VFCUSTOM64
+`define COVER_VLSCUSTOM64
 `ifdef ELEN64
     `define SEW_64_EQ_ELEN
 `endif

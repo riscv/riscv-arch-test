@@ -12,11 +12,11 @@ COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/
 # EXTENSIONS is a comma-separated list of extensions to generate tests for. Leave blank to generate for all tests.
 # EXCLUDE_EXTENSIONS overrides EXTENSIONS to exclude particular extensions from test generation. Applies as a negative filter after EXTENSIONS.
 # Default exclusion reasons:
-#  - Sm: Insufficient WARL configuration options.
-#  - InterruptsSm: hangs on Imperas
-#  - PMPSm,PMPZca,SvaduPMP,SvPMP,SvPMPZicbo: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
+#  - Sm, S: Insufficient WARL configuration options.
+#  - InterruptsSm,InterruptsS,InterruptsU,PMPSm,PMPZca,SvaduPMP,SvPMP,SvPMPZicbo: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
+#  - ExceptionsVx,ExceptionsVls,ExceptionsVf,UV: vstart not configurable on sail to match spike and qemu, qemu bug in UV
 EXTENSIONS  ?=
-EXCLUDE_EXTENSIONS ?= Sm,Sv,SvaduPMP,SvPMP,SvPMPZicbo,Svade,Svadu,Svinval,SvZicbo,Svnapot,Svpbmt,InterruptsSm,ExceptionsSvZalrsc,ExceptionsSvZaamo,ExceptionsZalrsc,ExceptionsZaamo,PMPS,PMPU,PMPSm
+EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,InterruptsS,InterruptsU,Sv,SvaduPMP,SvPMP,SvPMPZicbo,Svade,Svadu,Svinval,SvZicbo,Svnapot,Svpbmt,ExceptionsSvZalrsc,ExceptionsSvZaamo,ExceptionsZalrsc,ExceptionsZaamo,PMPS,PMPU,PMPSm,ExceptionsVx,ExceptionsVls,ExceptionsVf,UV
 
 # DEBUG, FAST, and VERBOSE are runtime options for controlling build output. DEBUG and FAST are mutually exclusive.
 # Set to True to enable, or leave blank to disable.
@@ -201,9 +201,16 @@ $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
 	@touch $@
 
 .PHONY: vector-testgen
-vector-testgen: $(STAMP_DIR)/vector-testgen-unpriv.stamp
+vector-testgen: $(STAMP_DIR)/vector-testgen-unpriv.stamp $(STAMP_DIR)/vector-testgen-priv.stamp
+
 $(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/testgen/scripts/vector-testgen-unpriv.py generators/testgen/scripts/vector_testgen_common.py Makefile | $(STAMP_DIR)
 	@$(UV_RUN) generators/testgen/scripts/vector-testgen-unpriv.py $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
+	@touch $@
+# Note: EXTENSIONS / EXCLUDE_EXTENSIONS only filter unpriv generation and
+# run-time test selection. The priv vector generator does not accept these
+# flags; priv vector tests are always generated.
+$(STAMP_DIR)/vector-testgen-priv.stamp: generators/testgen/scripts/vector-testgen-priv.py generators/testgen/scripts/vector_testgen_common.py Makefile | $(STAMP_DIR)
+	@$(UV_RUN) generators/testgen/scripts/vector-testgen-priv.py
 	@touch $@
 
 .PHONY: tests

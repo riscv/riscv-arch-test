@@ -79,8 +79,16 @@
         `include "ExceptionsU_coverage_init.svh"
     `endif
     `ifdef COVER_EXCEPTIONSVF
-        `cover_info("//      ExceptionsVF - Enabled");
-        `include "ExceptionsVF_coverage_init.svh"
+        `cover_info("//      ExceptionsVf - Enabled");
+        `include "ExceptionsVf_coverage_init.svh"
+    `endif
+    `ifdef COVER_EXCEPTIONSVLS
+        `cover_info("//      ExceptionsVls - Enabled");
+        `include "ExceptionsVls_coverage_init.svh"
+    `endif
+    `ifdef COVER_EXCEPTIONSVX
+        `cover_info("//      ExceptionsVx - Enabled");
+        `include "ExceptionsVx_coverage_init.svh"
     `endif
     `ifdef COVER_EXCEPTIONSZAAMO
         `cover_info("//      ExceptionsZaamo - Enabled");
@@ -198,6 +206,10 @@
         `cover_info("//      SmV - Enabled");
         `include "SmV_coverage_init.svh"
     `endif
+    `ifdef COVER_SMVF
+        `cover_info("//      SmVF - Enabled");
+        `include "SmVF_coverage_init.svh"
+    `endif
     `ifdef COVER_SSCCPTR
         `cover_info("//      Ssccptr - Enabled");
         `include "Ssccptr_coverage_init.svh"
@@ -297,10 +309,6 @@
     `ifdef COVER_UV
         `cover_info("//      UV - Enabled");
         `include "UV_coverage_init.svh"
-    `endif
-    `ifdef COVER_VF
-        `cover_info("//      VF - Enabled");
-        `include "VF_coverage_init.svh"
     `endif
     `ifdef COVER_VF16
         `cover_info("//      Vf16 - Enabled");

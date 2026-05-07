@@ -1,0 +1,90 @@
+"""Priv coverpoint handler for cp_exceptionsv_ffLS.
+
+Generates tests for fault-first load instructions with rs1=0 (address 0)
+and masking disabled (vm=1), triggering a fault on the first element.
+"""
+
+from __future__ import annotations
+
+from random import seed as set_seed
+
+import vector_testgen_common as common
+from priv_coverpoint_registry import register
+
+CP = "cp_exceptionsv_ffLS"
+
+
+@register(CP)
+def make_exceptionsv_ffLS(instruction: str) -> None:
+    """Execute ff instruction with rs1=0, unmasked → faults on element 0."""
+    set_seed(common.myhash(instruction + CP))
+
+    # Use SEW=EEW so EMUL=LMUL=1, avoiding register overlap issues
+    eew = common.getInstructionEEW(instruction) or common.minSEW_MIN
+    sew = eew
+
+    instruction_data = common.randomizeVectorInstructionData(
+        instruction, sew, common.getBaseSuiteTestCount(),
+        vd_val_pointer="vector_random",
+        vs2_val_pointer="vector_random",
+        vs1_val_pointer="vector_random",
+    )
+    common.remapPrivScalarRegs(instruction_data, instruction)
+
+    args = common.getInstructionArguments(instruction)
+
+    # Setup: valid vtype, vstart=0, vl=1
+    common.writeLine(f"\n# Testcase {CP}")
+    from .cp_exceptionsv_LS import _emit_setup
+    _emit_setup(instruction, instruction_data, sew)
+
+    # rs1 = 0 (address 0 → access fault on first element). Use the randomly
+    # chosen rs1 register, not a hardcoded one.
+    rs1_reg = instruction_data[1]["rs1"]["reg"]
+    common.writeLine(f"li x{rs1_reg}, RVMODEL_ACCESS_FAULT_ADDRESS", f"# rs1 (x{rs1_reg}) = RVMODEL_ACCESS_FAULT_ADDRESS (address fault trigger)")
+
+    # Build testline: unmasked (no v0.t) so insn[25]=1 → mask_disabled
+    vec_data, scalar_data, fp_data, imm_val = instruction_data
+    testline = instruction + " "
+    for arg in args:
+        if arg == "vm":
+            testline = testline[:-2]  # unmasked: drop trailing ", "
+        elif arg == "v0":
+            testline += "v0"
+        elif arg == "imm":
+            testline += f"{imm_val}"
+        elif arg[0] == "v":
+            testline += f"v{vec_data[arg]['reg']}"
+        elif arg[0] == "r":
+            if arg == "rs1":
+                # rs1 = 0 for fault-first: load address 0
+                scalar_data[arg]["val"] = 0
+                testline += f"(x{scalar_data[arg]['reg']})"
+            else:
+                common.loadScalarReg(arg, scalar_data)
+                testline += f"x{scalar_data[arg]['reg']}"
+        elif arg[0] == "f":
+            testline += f"f{fp_data[arg]['reg']}"
+        else:
+            raise TypeError(f"Unsupported argument type: '{arg}'")
+        testline += ", "
+    testline = testline[:-2]
+
+    vd = vec_data["vd"]["reg"]
+    rd = scalar_data["rd"]["reg"]
+
+    # Determine signature parameters
+    if vec_data["vd"]["reg_type"] in ("mask", "scalar"):
+        sig_lmul, sig_wr = 1, True
+    elif instruction in common.whole_register_move:
+        sig_lmul, sig_wr = common.getLengthLmul(instruction), True
+    else:
+        sig_lmul, sig_wr = 1, False
+
+    skip = instruction in common.vector_stores
+    common.add_testcase_string(CP, instruction)
+    common.writeVecTest(
+        instruction, CP, vd, sew, testline,
+        test=instruction, rd=rd, vl=1, sig_lmul=sig_lmul,
+        sig_whole_register_store=sig_wr, priv=True, skip_sigupd=skip,
+    )

@@ -220,7 +220,7 @@
 
         // Make sure bin is always hit if the sew isn't supported
         `ifndef SEW8_SUPPORTED
-        bins sew_not_supported  = {111:000};
+        bins sew_not_supported  = {[3'b000:3'b111]};
         `endif
     }
 
@@ -231,7 +231,7 @@
 
         // Make sure bin is always hit if the sew isn't supported
         `ifndef SEW16_SUPPORTED
-        bins sew_not_supported  = {111:000};
+        bins sew_not_supported  = {[3'b000:3'b111]};
         `endif
     }
 
@@ -242,7 +242,7 @@
 
         // Make sure bin is always hit if the sew isn't supported
         `ifndef SEW32_SUPPORTED
-        bins sew_not_supported  = {111:000};
+        bins sew_not_supported  = {[3'b000:3'b111]};
         `endif
     }
 
@@ -252,8 +252,8 @@
         `endif
 
         // Make sure bin is always hit if the sew isn't supported
-        `ifndef SEW64
-        bins sew_not_supported  = {111:000};
+        `ifndef SEW64_SUPPORTED
+        bins sew_not_supported  = {[3'b000:3'b111]};
         `endif
     }
 

@@ -201,6 +201,72 @@ def newInstruction():
   # reset testcase strings for the new instruction file
   reset_testcase_strings()
 
+# Reserved scratch registers in the priv vector test framework:
+#   x0  : zero
+#   x1  : link / used by trap routines
+#   x2  : signature pointer (sigReg)
+#   x3  : gp
+#   x4  : SIGUPD temp register (tempReg)
+#   x5  : SIGUPD link register (linkReg)
+# Avoid these (and any chosen instruction operand registers) when picking a
+# scratch register for `la random_mask_0` / `vsetivli` output / etc.
+PRIV_RESERVED_SCALAR_REGS = (0, 1, 2, 3, 4, 5)
+PRIV_SCRATCH_CANDIDATES   = (28, 29, 30, 31, 6, 7, 8, 9, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27)
+
+def remapPrivScalarRegs(instruction_data, instruction):
+  """For priv tests: ensure no scalar operand reg (rs1/rs2/rd) lands on a
+  framework-reserved register. The priv flow emits `li xN, 0`, `la xN, ...`,
+  and `loadScalarReg` against operand regs; if N coincides with sigReg (x2/sp)
+  or any framework scratch, sp gets clobbered and every subsequent SIGUPD_V
+  faults. randomizeVectorInstructionData is shared with the unpriv flow and
+  doesn't know about priv reservations, so remap here in-place."""
+  vec_data, scalar_data, _, _ = instruction_data
+  args = set(getInstructionArguments(instruction))
+  reserved = set(PRIV_RESERVED_SCALAR_REGS)
+  reserved.add(sigReg)
+  in_use = set()
+  for k in ("rd", "rs1", "rs2"):
+    v = scalar_data.get(k)
+    if v and v.get("reg") is not None:
+      in_use.add(v["reg"])
+  for k in ("rd", "rs1", "rs2"):
+    v = scalar_data.get(k)
+    if v is None or v.get("reg") is None or k not in args:
+      continue
+    if v["reg"] not in reserved:
+      continue
+    in_use.discard(v["reg"])
+    new_reg = None
+    for r in PRIV_SCRATCH_CANDIDATES:
+      if r not in reserved and r not in in_use:
+        new_reg = r
+        break
+    if new_reg is None:
+      raise RuntimeError(f"no scratch xreg available to remap {k} in priv test")
+    v["reg"] = new_reg
+    in_use.add(new_reg)
+
+
+def pickPrivScratch(scalar_register_data=None, exclude=()):
+  """Pick a scratch xreg that doesn't collide with framework-reserved regs,
+  the live signature pointer, any chosen rd/rs1/rs2 operands, or caller-supplied
+  excludes. Critically, the scratch register is written by the priv test prep
+  (vsetivli x{scratch}, la x{scratch}, vsetvli x{scratch}, ...). If sigReg is
+  not excluded the prep destroys the signature pointer mid-test, leaving every
+  subsequent SIGUPD store to write to a tiny address (the LMUL/byte-stride
+  value) and trap."""
+  used = set(PRIV_RESERVED_SCALAR_REGS) | set(exclude)
+  used.add(sigReg)
+  if scalar_register_data is not None:
+    for k in ("rd", "rs1", "rs2"):
+      v = scalar_register_data.get(k)
+      if v is not None and v.get("reg") is not None:
+        used.add(v["reg"])
+  for r in PRIV_SCRATCH_CANDIDATES:
+    if r not in used:
+      return r
+  raise RuntimeError("no scratch register available for priv test")
+
 def getSigReg():
   global sigReg
   return sigReg
@@ -1254,7 +1320,24 @@ def myhash(s):
     h = (h * 31 + ord(c)) & 0xFFFFFFFF
   return h
 
-def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
+def getPrivExtraDefines():
+    """Extra defines needed by vector privileged tests."""
+    sew_to_suffix = {8: "e8", 16: "e16", 32: "e32", 64: "e64"}
+    sewsize = sew_to_suffix[minSEW_MIN]
+    vle = f"vle{minSEW_MIN}.v"
+    return "\n".join([
+        "#define rvtest_mtrap_routine",
+        "#define rvtest_strap_routine",
+        "#define RVTEST_PRIV_TEST",
+        f"#define SEWMIN {minSEW_MIN}",
+        f"#define ELEN {maxELEN}",
+        f"#define SEWSIZE {sewsize}",
+        f"#define VLESEWMIN {vle}",
+        f"#define RVTEST_SIGUPD_V_SEWMIN(BR, TMPR, AVL, VREG) RVTEST_SIGUPD_V(BR, TMPR, AVL, {minSEW_MIN}, VREG)",
+    ])
+
+def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", priv=False):
+    writeLine(f"\n# {name}")
     with open(f"{ARCH_VERIF}/generators/testgen/src/testgen/templates/{name}") as h:
         template = h.read()
 
@@ -1274,8 +1357,9 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
       "Vf64":  ["Zve64d"],
     }
 
-    if (test == "ExceptionsV"):
+    if test.startswith("ExceptionsV"):
       march = f"rv{xlen}i_m_v_zicsr"
+      ext_parts_no_I = ['M', 'V', 'Zicsr']
     else:
       matched_alias = None
       derived_exts = []
@@ -1337,8 +1421,11 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
         # rewrites it after the test body is fully generated and sigupd_count is final.
         .replace("@TESTCASE_STRINGS@", generate_testcase_string_section())
         .replace("@EXTRA_DEFINES@", (f"#define RVTEST_VECTOR\n"
+                                     f"#define RVTEST_FP\n"
                                      f"#define RVTEST_SEW {sew}\n"
-                                     f"#define VDSEW {vdsew}\n"))
+                                     f"#define VDSEW {vdsew}\n"
+                                     + (f"\n{getPrivExtraDefines()}" if priv else "")))
+
     )
     # Strip trailing newlines so writeLine's own appended newline doesn't produce
     # a blank line at end of file (which breaks the end-of-file-fixer pre-commit hook).
@@ -1896,6 +1983,20 @@ def handleSignaturePointerConflict(*registers):
   if (sigReg != oldSigReg):
     writeLine("mv x" + str(sigReg) + ", x" + str(oldSigReg), "# switch signature pointer register to avoid conflict with test")
 
+# resolveScalarSigConflict: collect all x-regs the test will use (rd/rs1/rs2/...)
+# from instruction_data and relocate sigReg if needed. Call this BEFORE any
+# `li x{rd}, ...` is emitted, otherwise SIGUPD can end up using the same x-reg
+# as both signature base and result source (e.g. vcpop.m x2 + RVTEST_SIGUPD(x2, ..., x2)).
+# Returns the list of scalar regs used so callers can pass to allocScratchRegs etc.
+def resolveScalarSigConflict(instruction_arguments, scalar_register_data):
+  scalar_regs_used = [
+    scalar_register_data[a]['reg']
+    for a in instruction_arguments
+    if a and a[0] == 'r' and a in scalar_register_data
+  ]
+  handleSignaturePointerConflict(*scalar_regs_used)
+  return scalar_regs_used
+
 # allocScratchRegs picks `n` unique scratch X-registers, avoiding any in
 # scalar_registers_used (and x0). Mutates scalar_registers_used (appends each
 # pick) and returns the list of picks. Custom scripts using pre_test_lines /
@@ -1944,7 +2045,7 @@ def finalizeSigupdCount(filename, xlen, flen):
   with open(filename, "w") as fh:
     fh.write(content)
 
-def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, test=None, rd=None, fd=None, vl=1, sig_lmul = None, sig_whole_register_store = False, load_testline = None, reload_pre_init: list[str] | None = None, priv = False, testtype="base", masked=False, lmul=1, force_vill=False, pre_instruction_lines=None):
+def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, test=None, rd=None, fd=None, vl=1, sig_lmul = None, sig_whole_register_store = False, load_testline = None, reload_pre_init: list[str] | None = None, priv = False, testtype="base", masked=False, lmul=1, force_vill=False, pre_instruction_lines=None, post_instruction_lines=None, skip_sigupd=False):
     scalar_registers_used = list(scalar_registers_used)
 
     # record testcase string (_INST_PTR)
@@ -1977,7 +2078,19 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
 
     if (priv):
       writeLine("nop",                                           "# nop after possible trap")
+      # vstart may still be non-zero after a trapping vector op (e.g. cp_vstart_gt_vl
+      # leaves vstart > vl, which is reserved-behavior for the SIGUPD vse/vle that
+      # follows). Clear it explicitly so the signature ops always run cleanly.
+      writeLine("csrw vstart, x0",                               "# reset vstart so SIGUPD vector ops are not reserved/trapping")
       writeLine(f"vsetivli x0, 1, SEWSIZE, m{sig_lmul}, tu, mu",  f"# re-initialize vl = 1, LMUL = {sig_lmul}, SEW = SEWMIN for signature")
+
+    if post_instruction_lines:
+      # Caller-provided cleanup lines that must run after the test instruction
+      # but before the per-test SIGUPD/fcsr-save block (e.g. restore mstatus.FS
+      # so a follow-up `csrr fcsr` does not itself trap when the test forced
+      # FS=Off and trapped).
+      for line in post_instruction_lines:
+        writeLine(line)
 
     if load_testline is not None:
       if reload_pre_init:
@@ -1987,13 +2100,18 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
 
     if (test in vfloattypes) and (test not in fvtype):
       fcsrsaveReg = 2
-      while fcsrsaveReg in scalar_registers_used:
+      while fcsrsaveReg in scalar_registers_used or fcsrsaveReg == sigReg:
         fcsrsaveReg = randint(1,31)
       scalar_registers_used.append(fcsrsaveReg)
       writeLine(f"csrr x{fcsrsaveReg}, fcsr", f"# save fcsr into x{fcsrsaveReg} for signature")
       writeSIGUPD(inst_ptr, fcsrsaveReg)
 
-    if (test in vd_widen_ins):
+    if skip_sigupd:
+      # Caller (e.g. cp_exceptionsv_indexed) opts out of the per-test data SIGUPD.
+      # The trap handler still writes its mtrap_sigptr trap-signature on trap, so
+      # cross-model comparison still observes the trap event when one occurs.
+      pass
+    elif (test in vd_widen_ins) and (test not in wvsins):
       writeSIGUPD_V(inst_ptr, vd, 2*sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked, lmul=lmul)  # EEW of vd = 2 * SEW for widening (incl. vwred)
     elif (test in maskprodins):
       writeSIGUPD_V(inst_ptr, vd, 8, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, vd_mask = True, testtype=testtype, masked=masked, lmul=lmul)      # EEW of vd = 1 for mask
@@ -2127,21 +2245,28 @@ def prepMaskV(maskval, sew, tempReg, lmul):
     writeLine(f"la x{tempReg}, {maskval}")
     writeLine(f"vlm.v v0, (x{tempReg})",                      "# Load mask value into v0")
 
-def prepVstart(vstartval, lmul = 1):
+def prepVstart(vstartval, lmul = 1, scratch = 8, scratch2 = 28):
+  # `scratch` and `scratch2` must be picked via pickPrivScratch (which excludes
+  # sigReg, framework-reserved regs, and the test's operand regs). Hardcoding
+  # x8 / t3 (x28) here previously clobbered sigReg whenever resolveScalarSigConflict
+  # had relocated it to one of those registers, destroying the live signature
+  # pointer mid-test and triggering a chain of store-fault traps.
+  vstart_reg = scratch
   if   (vstartval == "one"):
-    writeLine("li x8, 1",                                    "# Load x8 = 1 for vstart")
+    writeLine(f"li x{vstart_reg}, 1",                                    f"# Load x{vstart_reg} = 1 for vstart")
   elif (vstartval == "vlmaxm1"):
-    writeLine(f"vsetvli x8, x0, SEWSIZE, m{lmul}, ta, ma",    "# x8 = VLMAX")
-    writeLine("addi x8, x8, -1",                             "# x8 = VLMAX - 1")
+    writeLine(f"vsetvli x{vstart_reg}, x0, SEWSIZE, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
+    writeLine(f"addi x{vstart_reg}, x{vstart_reg}, -1",                  f"# x{vstart_reg} = VLMAX - 1")
   elif (vstartval == "vlmaxd2"):
-    writeLine(f"vsetvli x8, x0, SEWSIZE, m{lmul}, ta, ma",    "# x8 = VLMAX")
-    writeLine("srli x8, x8, 1",                              "# x8 = VLMAX / 2")
+    writeLine(f"vsetvli x{vstart_reg}, x0, SEWSIZE, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
+    writeLine(f"srli x{vstart_reg}, x{vstart_reg}, 1",                   f"# x{vstart_reg} = VLMAX / 2")
   else: # random vstart
     randvstart = randint(3, maxVLEN)  # TODO: check logic for this
-    writeLine(f"vsetvli x8, x0, SEWSIZE, m{lmul}, ta, ma",    "# x8 = VLMAX")
-    writeLine(f"la t3, {randvstart}")
-    writeLine("remu t3, t3, x8",                             "# Ensure that vl < VLMAX")
-  writeLine("csrw vstart, x8",                               "# Write desired vstart value to the CSR")
+    writeLine(f"vsetvli x{vstart_reg}, x0, SEWSIZE, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
+    writeLine(f"li x{scratch2}, {randvstart}")
+    writeLine(f"remu x{scratch2}, x{scratch2}, x{vstart_reg}",           f"# x{scratch2} = randvstart % VLMAX (< VLMAX)")
+    vstart_reg = scratch2  # randomized vstart value lives in scratch2 from here on
+  writeLine(f"csrw vstart, x{vstart_reg}",                               f"# Write desired vstart value to the CSR")
 
 def getInstructionArguments(instruction):
   instruction_arguments = []
@@ -2698,9 +2823,10 @@ def getInstructionRegisterOverlapConstraints (instruction, sew, lmul):
 
   if instruction in vector_ls_ins   : no_overlap = addOverlap(no_overlap, [['rs1','rs2']])
 
-  if instruction == "vrgatherei16.vv": # vrgatherei16.vv has the additional constraint - if sew != 16 then vs1 and vs2 have different EEW and thus no overlap is allowed
-    if sew != 16:
-      no_overlap = addOverlap(no_overlap, [['vs1', 'vs2']])
+  # vrgatherei16.vv: vs1 holds 16-bit indices while vs2 holds SEW-bit data, so their EMUL groups
+  # differ when SEW != 16 and the registers cannot safely overlap.
+  if instruction == "vrgatherei16.vv" and not isinstance(sew, str) and sew != 16:
+    no_overlap = addOverlap(no_overlap, [['vs1','vs2']])
 
   ls_indexed_vs2_eew = getInstructionEEW(instruction)
 
@@ -3029,7 +3155,11 @@ def readTestplans(priv=False):
     for file in os.listdir(coverplanDir):
         if file.endswith(".csv"):
             arch = re.search("(.*).csv", file).group(1)
-            if (arch == "ExceptionsV" or arch.startswith("V") or arch.startswith("Zv")):
+            if (priv):
+                is_vector = (arch.startswith("ExceptionsV") or arch.startswith("SsstrictV") or arch.startswith("V") or arch.startswith("Zv"))
+            else:
+                is_vector = (arch.startswith("V") or arch.startswith("Zv"))
+            if is_vector:
                 with open(os.path.join(coverplanDir, file)) as csvfile:
                     reader = csv.DictReader(csvfile)
                     tp = dict()

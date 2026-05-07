@@ -62,6 +62,7 @@
 ##### Interrupt Latency #####
 
 #define RVMODEL_INTERRUPT_LATENCY 10
+#define RVMODEL_MTVEC_ALIGN 8
 
 ##### Machine Timer #####
 

@@ -84,7 +84,7 @@ covergroup SsstrictSm_instr_cg with function sample(ins_t ins);
     `include "priv/RISCV_coverage_instr.svh"
 
     // main coverpoints
-    cp_illegal:           cross priv_mode_m, illegal
+    cp_illegal:           cross priv_mode_m, illegal;
     cp_load:              cross priv_mode_m, load;
     cp_fload:             cross priv_mode_m, fload;
     cp_fence_cbo:         cross priv_mode_m, fence_cbo;

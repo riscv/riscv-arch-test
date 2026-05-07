@@ -160,7 +160,6 @@ covergroup SsstrictS_comp_instr_cg with function sample(ins_t ins);
     cp_compressed10: cross priv_mode_s, compressed10;
 endgroup
 
-
 function void ssstricts_sample(int hart, int issue, ins_t ins);
     SsstrictS_scsr_cg.sample(ins);
     SsstrictS_instr_cg.sample(ins);

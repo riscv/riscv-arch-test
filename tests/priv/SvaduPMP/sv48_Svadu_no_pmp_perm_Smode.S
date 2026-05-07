@@ -38,9 +38,8 @@
 // Total Expected Faults :: 28
 // --------------------------------------------------------------------------------------------------------------------------------
 
-// Remove NORUN once Sail supports Svadu
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Sv48, Svadu, Sm, NORUN]
+# REQUIRED_EXTENSIONS: [I, Sv48, Svadu, Sm]
 # params:
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv64i_zicsr
@@ -48,9 +47,6 @@
 
 #define TEST_FILE "sv48_Svadu_no_pmp_perm_Smode.S"
 #define SIGUPD_COUNT 55
-#define rvtest_mtrap_routine
-#define rvtest_strap_routine
-#define RVTEST_PRIV_TEST
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"

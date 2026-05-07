@@ -17,7 +17,7 @@ covergroup ExceptionsU_cg with function sample(ins_t ins);
 
     // building blocks for the main coverpoints
     ecall: coverpoint ins.current.insn {
-        bins ecall  = {32'h00000073};
+        bins ecall  = {ECALL};
     }
     branch: coverpoint ins.current.insn {
         wildcard bins branch = {32'b???????_?????_?????_???_?????_1100011};
@@ -45,16 +45,16 @@ covergroup ExceptionsU_cg with function sample(ins_t ins);
         wildcard bins bgeu_nottaken = {6'b111_?_?_1};
     }
     jal: coverpoint ins.current.insn {
-        wildcard bins jal = {32'b????????????????????_?????_1101111};
+        wildcard bins jal = {JAL};
     }
     jalr: coverpoint ins.current.insn {
-        wildcard bins jalr = {32'b????????????_?????_000_?????_1100111};
+        wildcard bins jalr = {JALR};
     }
     csrops: coverpoint ins.current.insn {
-        wildcard bins csrrs  = {32'b????????????_?????_010_?????_1110011};
-        wildcard bins csrrc  = {32'b????????????_?????_011_?????_1110011};
-        wildcard bins csrrsi = {32'b????????????_?????_110_?????_1110011};
-        wildcard bins csrrci = {32'b????????????_?????_111_?????_1110011};
+        wildcard bins csrrs  = {CSRRS};
+        wildcard bins csrrc  = {CSRRC};
+        wildcard bins csrrsi = {CSRRSI};
+        wildcard bins csrrci = {CSRRCI};
     }
     loadops: coverpoint ins.current.insn {
         wildcard bins lw  = {LW};
@@ -80,7 +80,7 @@ covergroup ExceptionsU_cg with function sample(ins_t ins);
         bins ones  = {'1};
     }
     ebreak: coverpoint ins.current.insn {
-        bins ebreak = {32'h00100073};
+        bins ebreak = {EBREAK};
     }
     adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0]  {
         // auto fills 000 through 111
@@ -89,9 +89,9 @@ covergroup ExceptionsU_cg with function sample(ins_t ins);
         bins zero = {5'b00000};
     }
     seed: coverpoint ins.current.insn[31:20] {
-        bins seed = {12'h015};
+        bins seed = {CSR_SEED};
     }
-    mstatus_MIE: coverpoint ins.prev.csr[12'h300][3] {
+    mstatus_MIE: coverpoint ins.prev.csr[CSR_MSTATUS][3] {
         // auto fills 1 and 0
     }
     pc_bit_1: coverpoint ins.current.pc_rdata[1] {
@@ -138,6 +138,6 @@ endgroup
 function void exceptionsu_sample(int hart, int issue, ins_t ins);
     ExceptionsU_cg.sample(ins);
 
-    //$display("Instruction is: PC %h: %h = %s (rd = %h rs1 = %h rs2 = %h) trap = %b mode = %b (old mode %b) mstatus %h (old mstatus %h).  Retired: %d",ins.current.pc_rdata, ins.current.insn, ins.current.disass, ins.current.rd_val, ins.current.rs1_val, ins.current.rs2_val, ins.current.trap, ins.current.mode, ins.prev.mode, ins.current.csr[12'h300], ins.prev.csr[12'h300], ins.current.csr[12'hB02]);
+    //$display("Instruction is: PC %h: %h = %s (rd = %h rs1 = %h rs2 = %h) trap = %b mode = %b (old mode %b) mstatus %h (old mstatus %h).  Retired: %d",ins.current.pc_rdata, ins.current.insn, ins.current.disass, ins.current.rd_val, ins.current.rs1_val, ins.current.rs2_val, ins.current.trap, ins.current.mode, ins.prev.mode, ins.current.csr[CSR_MSTATUS], ins.prev.csr[CSR_MSTATUS], ins.current.csr[CSR_MINSTRET]);
 
 endfunction

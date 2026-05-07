@@ -198,6 +198,10 @@
         `cover_info("//      SmV - Enabled");
         `include "SmV_coverage_init.svh"
     `endif
+    `ifdef COVER_SSCOUNTERENW
+        `cover_info("//      Sscounterenw - Enabled");
+        `include "Sscounterenw_coverage_init.svh"
+    `endif
     `ifdef COVER_SSSTRICTS
         `cover_info("//      SsstrictS - Enabled");
         `include "SsstrictS_coverage_init.svh"
@@ -213,6 +217,18 @@
     `ifdef COVER_SSSTRICTV
         `cover_info("//      SsstrictV - Enabled");
         `include "SsstrictV_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSTVALA
+        `cover_info("//      Sstvala - Enabled");
+        `include "Sstvala_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSTVECD
+        `cover_info("//      Sstvecd - Enabled");
+        `include "Sstvecd_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSU64XL
+        `cover_info("//      Ssu64xl - Enabled");
+        `include "Ssu64xl_coverage_init.svh"
     `endif
     `ifdef COVER_SV
         `cover_info("//      Sv - Enabled");
@@ -326,6 +342,10 @@
         `cover_info("//      Vx8 - Enabled");
         `include "Vx8_coverage_init.svh"
     `endif
+    `ifdef COVER_ZA64RS
+        `cover_info("//      Za64rs - Enabled");
+        `include "Za64rs_coverage_init.svh"
+    `endif
     `ifdef COVER_ZAAMO
         `cover_info("//      Zaamo - Enabled");
         `include "Zaamo_coverage_init.svh"
@@ -345,6 +365,10 @@
     `ifdef COVER_ZALRSC
         `cover_info("//      Zalrsc - Enabled");
         `include "Zalrsc_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZAMA16B
+        `cover_info("//      Zama16b - Enabled");
+        `include "Zama16b_coverage_init.svh"
     `endif
     `ifdef COVER_ZBA
         `cover_info("//      Zba - Enabled");
@@ -446,6 +470,10 @@
         `cover_info("//      ZfhminD - Enabled");
         `include "ZfhminD_coverage_init.svh"
     `endif
+    `ifdef COVER_ZIC64BZICBOZ
+        `cover_info("//      Zic64bZicboz - Enabled");
+        `include "Zic64bZicboz_coverage_init.svh"
+    `endif
     `ifdef COVER_ZICBOM
         `cover_info("//      Zicbom - Enabled");
         `include "Zicbom_coverage_init.svh"
@@ -521,6 +549,10 @@
     `ifdef COVER_ZKNH
         `cover_info("//      Zknh - Enabled");
         `include "Zknh_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZKR
+        `cover_info("//      Zkr - Enabled");
+        `include "Zkr_coverage_init.svh"
     `endif
     `ifdef COVER_ZKSED
         `cover_info("//      Zksed - Enabled");

@@ -31,6 +31,7 @@ import re
 import shutil
 import subprocess
 import sys
+import time
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -124,11 +125,18 @@ def _ensure_udb_installed() -> None:
         sys.exit(2)
     except subprocess.CalledProcessError:
         print("UDB gem missing or out of date; running 'bundle install'...")
-        try:
-            subprocess.run(["bundle", "install"], check=True, cwd=gemfile.parent)
-        except subprocess.CalledProcessError:
-            print("Error: 'bundle install' failed. Check Ruby and bundler installation.", file=sys.stderr)
-            sys.exit(2)
+        max_attempts = 3
+        for attempt in range(1, max_attempts + 1):
+            try:
+                subprocess.run(["bundle", "install"], check=True, cwd=gemfile.parent)
+                break
+            except subprocess.CalledProcessError:
+                if attempt == max_attempts:
+                    print("Error: 'bundle install' failed. Check Ruby and bundler installation.", file=sys.stderr)
+                    sys.exit(2)
+                backoff = attempt * 10
+                print(f"'bundle install' attempt {attempt} failed. Retrying in {backoff}s...")
+                time.sleep(backoff)
 
     if shutil.which("udb") is None:
         print("Error: 'udb' command still not found after 'bundle install'.", file=sys.stderr)

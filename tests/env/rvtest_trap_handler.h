@@ -13,6 +13,9 @@
         //********** FIXME: these comments are now completely out of order****************
         //********************************************************************************
 
+// NOTE: Users with a non-conforming M-mode that cannot run this trap handler may
+//      need to reimplement this entire file with their own custom version.  Use a custom
+//      RVMODEL_BOOT_TO_MMODE to initialize the custom trap handler.
 // This file is divided into the following sections:
 //      RV Arch Test Constants
 //      general test and helper macros, required,  optional, or just useful
@@ -91,7 +94,7 @@
 //
 //****************************************************************
 // RVTEST_TSIG_BEGIN                                             *
-////    mtrap_sigptr:                                            *
+////    trap_sigptr:                                            *
 //****************************************************************
 //
 //    *********************************************
@@ -130,7 +133,7 @@
         rvtest_Sroot_pg_tbl: defined inside RVTEST_DATA_BEGIN if Smode implemented
         rvtest_Hroot_pg_tbl: defined inside RVTEST_DATA_BEGIN if HSmode implemented
         rvtest_Vroot_pg_tbl: defined inside RVTEST_DATA_BEGIN if VSmode implemented
-        mtrap_sigptr:        defined by test if traps are possible, else is defaulted
+        trap_sigptr:         defined by test if traps are possible, else is defaulted
 */
 //****WARNING****don't put C-style macros (#define xxx) inside assembly macros; C-style is evaluated before assembly
 
@@ -355,15 +358,11 @@
 /**** PROLOG/HANDLER/EPILOG/SAVEAREA depending on test type & mode support ****/
 /******************************************************************************/
 .macro INSTANTIATE_MODE_MACRO MACRO_NAME
-  #ifdef rvtest_mtrap_routine
-    \MACRO_NAME M       // actual m-mode prolog/epilog/handler code
-  #endif
-  #ifdef rvtest_strap_routine
+  \MACRO_NAME M       // actual m-mode prolog/epilog/handler code
+  #ifdef S_SUPPORTED
     \MACRO_NAME S       // actual s-mode prolog/epilog/handler code
-    #ifdef rvtest_htrap_routine
+    #ifdef H_SUPPORTED
       \MACRO_NAME H     // actual hs-mode prolog/epilog/handler code
-    #endif
-    #ifdef rvtest_vtrap_routine
       \MACRO_NAME V     // actual v-mode prolog/epilog/handler code
     #endif
   #endif
@@ -648,38 +647,34 @@
 
 #ifndef CAUSE_SPCL_GO2MMODE_OP // make sure this default can be overwritten (e.g. to illegal fetch addr)
     #define ALT_GOTO_M_CAUSE CAUSE_ILLEGAL_INSTRUCTION
-    #define ALT_GOTO_M_OP    .insn 0
+    #define ALT_GOTO_M_OP    .word 0
 #endif
 
 .macro  RVTEST_GOTO_MMODE
   .option push
   .option norvc
-  #ifdef  rvtest_mtrap_routine
-    mv   t0, x3                 // FIXME: Hacky way to preserve x3 by trashing t0 instead
-    li   x3, 0                  // Ecall w/x3=0 is handled specially to rtn here
-    // Note that if ecalls are delegated, this may infinite loop
-    // The solution is to use RVTEST_GOTO_DELEGATED_MMODE instead
+  mv   t0, x3                 // FIXME: Hacky way to preserve x3 by trashing t0 instead
+  li   x3, 0                  // Ecall w/x3=0 is handled specially to rtn here
+  // Note that if ecalls are delegated, this may infinite loop
+  // The solution is to use RVTEST_GOTO_DELEGATED_MMODE instead
 
-    GOTO_M_OP                   /* ECALL: traps always, but returns immediately to
-                                  the next op if x3=0, else handles trap normally */
-    mv   x3, t0
-  #endif
+  GOTO_M_OP                   /* ECALL: traps always, but returns immediately to
+                                the next op if x3=0, else handles trap normally */
+  mv   x3, t0
   .option pop
 .endm
 
 .macro  RVTEST_GOTO_DELEGATED_MMODE
   .option push
   .option norvc
-  #ifdef  rvtest_mtrap_routine
-    // Note that this must be called with ecall traps delegated, else it could infinite loop
+  // Note that this must be called with ecall traps delegated, else it could infinite loop
 
-    mv   t0, x3                 // FIXME: Hacky way to preserve x3 by trashing t0 instead
-    li   x3, 0                  // Ecall w/x3=0 is handled specially to rtn here
+  mv   t0, x3                 // FIXME: Hacky way to preserve x3 by trashing t0 instead
+  li   x3, 0                  // Ecall w/x3=0 is handled specially to rtn here
 
-    ALT_GOTO_M_OP               /* It will trap and if ecalls are delegated, it will simply
+  ALT_GOTO_M_OP               /* It will trap and if ecalls are delegated, it will simply
                                   return to op after illegal op, else handles trap normally */
-    mv   x3, t0
-  #endif
+  mv   x3, t0
   .option pop
 .endm
 
@@ -687,7 +682,7 @@
 .macro  RVTEST_GOTO_SMODE
   .option push
   .option norvc
-  #ifdef  rvtest_strap_routine
+  #ifdef  S_SUPPORTED
     mv   t0, x3
     li   x3, 0
 
@@ -747,7 +742,7 @@
     csrc   CSR_MSTATUS, T4      /* clr PP always (also Umode    */
     .if (   !((\LMODE\()==VUmode) || (\LMODE\()==Umode)))  /* lv pp clred if umode     */
       .if    ((\LMODE\()==HSmode) || (\LMODE\()==VSmode) || (\LMODE\()==Smode))   /* set pp to S if it exists */
-  #ifdef rvtest_strap_routine
+  #ifdef S_SUPPORTED
      LI(  T4, MPP_SMODE)        /* val for Smode                */
   #else
      LI(  T4, MPP_MMODE)        /* val for no Smode             */
@@ -771,15 +766,15 @@
   .if     ((\LMODE\() == VSmode) || (\LMODE\() == VUmode)) // get trapsig_ptr & init val up 3 save areas (M->H->S->V)
         LREG    T1, 2*sv_area_sz(T2)     // 3*sv_area_sz is VS/VU
 
-  #ifdef rvtest_strap_routine                             // ensure you don't go to S in an M-U system
-    #ifdef rvtest_htrap_routine
+  #ifdef S_SUPPORTED                             // ensure you don't go to S in an M-U system
+    #ifdef H_SUPPORTED
       .elseif (\LMODE\() == Smode)                            // get trapsig_ptr & init val up 1 save areas (M->S)
             LREG    T1,  1*sv_area_sz(T2)                     // 2*svarea_sz is Smode
       .elseif (\LMODE\() == HSmode || \LMODE\() == Umode)     // get trapsig_ptr & init val up 1 save areas (M->S)
             LREG    T1, 0*sv_area_sz(T2)                      // 1*svarea_sz is HSmode
     #else
       .elseif (\LMODE\() == Smode || \LMODE\() == Umode)
-            LREG    T1,  0*sv_area_sz(T2)                     // 1*svarea_sz is Smode when rvtest_htrap_routine is not defined
+            LREG    T1,  0*sv_area_sz(T2)                     // 1*svarea_sz is Smode when Hypervisor is not supported
     #endif
   #endif
 
@@ -889,8 +884,6 @@
   //NOTE: this is run in M-mode, so can't use aliased S,V CSR names
 
 .global \__MODE__\()trampoline
-//.global mtrap_sigptr
-
         XCSR_RENAME \__MODE__          //retarget XCSR names to this modes CSRs, separate V/S copies
 
         LA(     T1, \__MODE__\()tramptbl_sv)    // get  ptr to save area (will be stored in xSCRATCH)
@@ -922,7 +915,7 @@ init_\__MODE__\()timecmp:               // init MTIMECMP to largest value if its
 init_\__MODE__\()edeleg:                // only medeleg and hedeleg ( if H, then there is a lower mode to delegate to)
         li      T2, 0                   // save and clear edeleg so we can exit to Mmode
   .ifc \__MODE__ , M
-    #ifdef rvtest_strap_routine
+    #ifdef S_SUPPORTED
         csrrw   T2, CSR_XEDELEG, T2     // this handles M  mode save, but only if Smode exists
     #endif
   .endif
@@ -1013,6 +1006,7 @@ abort\__MODE__\()test:
         jr      T6                              // this branch may be too far away, so longjmp
 
 rvtest_\__MODE__\()prolog_done:
+        nop                                     // keep this label from collapsing with the next
 
 .option pop
 .endm                                           //end of PROLOG
@@ -1162,7 +1156,7 @@ spcl_\__MODE__\()chk4ecall:
 
 \__MODE__\()xcpt_sig_sv:                        // adj the length if hypervisor exception
 .ifc \__MODE__ , M                              // exception case, don't adjust if hypervisor mode disabled
-#ifdef rvtest_htrap_routine
+#ifdef H_SUPPORTED
         csrr    T1, CSR_MISA
         slli    T1, T1, XLEN-8                  // shift H bit into msb
         bgez    T1, \__MODE__\()trap_sig_sv     // no hypervisor mode, keep std width
@@ -1176,7 +1170,7 @@ spcl_\__MODE__\()chk4ecall:
 
 \__MODE__\()trap_sig_sv:
         // This replaces an LA(rvtest_trap_sig) calculating initial_Xtrap_sigptr +
-        //                                    (Mtrap_sigptr-initial_Mtrap-sigptr)
+        //                                    (trap_sigptr-initial_Mtrap-sigptr)
         // The delta between Mmode_sigptr and Xmode_sigptr are constants
         // Xtrap_sigptr (current priv mode) are in the save area ponted to by sp
         // ****FIXME - this breaks if the signature area cross a page boundary and the mapping isn't contiguous
@@ -1187,7 +1181,7 @@ spcl_\__MODE__\()chk4ecall:
         .set sv_area_off, ( 0*sv_area_sz)       // get trapsig_ptr val  up 1 save areas   (M<-HS)
 .else
    .ifc \__MODE__ , S
-     #ifdef rvtest_htrap_routine
+     #ifdef H_SUPPORTED
         .set sv_area_off, (-1*sv_area_sz)       // get trapsig_ptr val  up 2 save areas   (M<-S<-HS)
      #else
         .set sv_area_off, ( 0*sv_area_sz)       // get trapsig_ptr val  up 1 save area    (M<-S)
@@ -1205,7 +1199,7 @@ spcl_\__MODE__\()chk4ecall:
         SREG    T4, trapsig_ptr_off+sv_area_off(sp)
 
 //------end atomic------------------------------------------------
-//  convert mtrap_sigptr to curr_mode trap_sigptr
+//  convert trap_sigptr to curr_mode trap_sigptr
         LREG    T3, sig_bgn_off+sv_area_off(sp) // load     Mmode sig begin addr
         sub     T1, T1, T3                      // cvt sigptr to offset from Mmode sig begin
         addi    sp, sp, 1*sv_area_sz            // undo the sp offset
@@ -1356,7 +1350,7 @@ common_\__MODE__\()excpt_handler:
         mv      T4, sp                  // Use T4 to point to trapping mode sv_area
 
 .ifc \__MODE__ , M
- #ifndef rvtest_strap_routine
+ #ifndef S_SUPPORTED
         j       vmem_adj_\__MODE__\()epc        /* force PA relocation if no Smode      */
  #else
         csrr    T6, CSR_MSTATUS
@@ -1376,7 +1370,7 @@ common_\__MODE__\()excpt_handler:
 
  // extract and test satp.MODE from trapping mode; if !=bare, VA, skip reloc
         csrr    T2, CSR_SATP
-#ifdef rvtest_htrap_routine
+#ifdef H_SUPPORTED
         csrr    T6, CSR_MISA           // select effective xATP based on misa[7] (H)
         slli    T6, T6, XLEN-7-1
         bgez    T6, 1f                 // keep  SATP      if no hypervisor
@@ -1401,7 +1395,7 @@ common_\__MODE__\()excpt_handler:
         srli    T2, T2, MODE_LSB
         LI(     T4, 3*sv_area_sz)               // VS/VU mode sv_area
         add     T4, T4, sp
-        bnez    T2, skp_adj_\__MODE__\()epc     // mode is bare, fall through to force reloc
+        bnez    T2, sv_\__MODE__\()epc          // mode is bare, fall through to force reloc
   #endif   /* end of Smode_implemented handling */
 .endif     /* end of MMode epc reloc handler    */
 
@@ -1409,7 +1403,7 @@ common_\__MODE__\()excpt_handler:
  //  extract and test curr level satp.MODE; if !=bare, VA, skip reloc */
         csrr    T2, CSR_HGATP
         srli    T2, T2, MODE_LSB
-        bnez    T2, skp_adj_\__MODE__\()epc     // its a VA, skip adj
+        bnez    T2, sv_\__MODE__\()epc          // its a VA, skip adj
  // extract and test hstatus.SPV; if 0, no lower mode, so bare mode, force reloc
         csrr    T2, CSR_HSTATUS
         slli    T2, T2, XLEN-MPV_LSB-1
@@ -1419,7 +1413,7 @@ common_\__MODE__\()excpt_handler:
         srli    T2, T2, MODE_LSB
         LI(     T4, 2*sv_area_sz)
         add     T4, T4, sp                      // T4 points to VS/VU mode sv_area
-        bnez    T2, skp_adj_\__MODE__\()epc
+        bnez    T2, sv_\__MODE__\()epc
  // mode is bare, fall through to force reloc
 .endif
 
@@ -1427,7 +1421,7 @@ common_\__MODE__\()excpt_handler:
 //  extract and test curr level satp.MODE!=bare; if so, skip reloc */
         csrr    T2, CSR_SATP
         srli    T2, T2, MODE_LSB
-        bnez    T2, skp_adj_\__MODE__\()epc
+        bnez    T2, sv_\__MODE__\()epc
 // mode is bare, fall through to force reloc
 .endif
 
@@ -1435,11 +1429,11 @@ common_\__MODE__\()excpt_handler:
  //  extract and test curr level satp.MODE!=bare; if so, skip reloc
         csrr    T2, CSR_SATP
         srli    T2, T2, MODE_LSB
-        bnez    T2, skp_adj_\__MODE__\()epc
+        bnez    T2, sv_\__MODE__\()epc
  // extract and test higher level satp.mode!=bare
         LREG    T2, sved_hgatp_off(sp)     /*saved when HS chgs its SATP */
         srli    T2, T2, MODE_LSB
-        bnez    T2, skp_adj_\__MODE__\()epc
+        bnez    T2, sv_\__MODE__\()epc
  // mode is bare, fall through to force reloc
   .endif
 
@@ -1524,13 +1518,13 @@ skp_\__MODE__\()tval:
   .endif
   .ifnc \__MODE__ , S
     .ifnc \__MODE__ , V                 // must be either M with H enabled or H
-      #ifdef rvtest_htrap_routine
-        sv_Mtval2:
+      #ifdef H_SUPPORTED
+        sv_\__MODE__\()Mtval2:
         csrr    T3, CSR_MTVAL2          // **** FIXME: does this need reloc also? Its a guest phys addr
-        TRAP_SIGUPD(T4, T3, 4, sv_Mtval2, sv_Mtval2_str)  // Save MTVAL2
-        sv_Mtinst:
+        TRAP_SIGUPD(T4, T3, 4, sv_\__MODE__\()Mtval2, sv_Mtval2_str)  // Save MTVAL2
+        sv_\__MODE__\()Mtinst:
         csrr    T3, CSR_MTINST
-        TRAP_SIGUPD(T4, T3, 5, sv_Mtinst, sv_Mtinst_str)  // Save MTINST
+        TRAP_SIGUPD(T4, T3, 5, sv_\__MODE__\()Mtinst, sv_Mtinst_str)  // Save MTINST
       #endif
     .endif
   .endif
@@ -1627,7 +1621,7 @@ spcl_\__MODE__\()dispatch:
 
         .align 3                        //make sure this is a dblwd boundary
 clrint_\__MODE__\()tbl:                              //this code should only touch T2..T6
-#if defined(rvtest_vtrap_routine)   //  M/S/V/U
+#if defined(H_SUPPORTED)   //  M/S/V/U
         .dword  0                        // int cause  0 is rsvd, error
         .dword  \__MODE__\()clr_Ssw_int  // int cause  1  Smode SW int
         .dword  \__MODE__\()clr_Vsw_int  // int cause  2  Vmode SW int
@@ -1644,7 +1638,7 @@ clrint_\__MODE__\()tbl:                              //this code should only tou
         .dword  \__MODE__\()clr_Mext_int // int cause  B  Mmode Ext int
  //****************************************************************
 #else
-  #if defined(rvtest_htrap_routine) || defined(rvtest_strap_routine)   // M/H/S/U only
+  #if defined(H_SUPPORTED) || defined(S_SUPPORTED)   // M/H/S/U only
         .dword  0                        // int cause  0 is rsvd, error
         .dword  \__MODE__\()clr_Ssw_int  // int cause  1  Smode SW int
         .dword  1                        // int cause  2  no Vmode
@@ -1821,7 +1815,7 @@ from_vs:
         addi    sp, sp, -sv_area_sz
         j       1f
 from_hs_u:
-  #ifdef rvtest_strap_routine
+  #ifdef S_SUPPORTED
         LREG    T6, code_bgn_off+0*sv_area_sz(sp) /* V=0& H=1, HS;  *1 offset   */
   #else
         LREG    T6, code_bgn_off-1*sv_area_sz(sp) /* Use M-mode save area       */
@@ -1906,7 +1900,7 @@ resto_\__MODE__\()edeleg:
 #endif
 .ifnc \__MODE__ , S
   .ifnc \__MODE__ , V
-#ifdef rvtest_strap_routine
+#ifdef S_SUPPORTED
         csrw    CSR_XEDELEG,  T2
     .ifc \_MODE__ , M   // TODO: Remove this .ifc when sail supports hedelegh (if Smstateen is supported, set mstateen0.P1P13)
       #if (XLEN==32)
@@ -1998,7 +1992,7 @@ rvtest_\__MODE__\()end:
 \__MODE__\()vmem_bgn_ptr:  .dword rvtest_code_begin // dflt to code bgn area  w/  this mode's mapping trampsvend+6*8
 \__MODE__\()vmem_seg_sz:   .dword rvtest_code_end-rvtest_code_begin      // vmem seg size in any mode trampsvend+7*8
 
-\__MODE__\()trap_sig:      .dword  mtrap_sigptr // ptr to next trapsig  ***GLBL(only Mmode ver. used) trampsvend+8*8
+\__MODE__\()trap_sig:      .dword  trap_sigptr  // ptr to next trapsig  (applies to all modes)        trampsvend+8*8
 \__MODE__\()satp_sv:       .dword 0             // sv area for incoming xsatp                         trampsvend+9*8
 \__MODE__\()sved_misa:                          // sved when misa.h changes               ***only Mmode sv area vers
 \__MODE__\()sved_hgatp:                         // sved when hgatp.mode chgs              ***only Hmode sv area vers

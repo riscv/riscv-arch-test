@@ -14,7 +14,8 @@
   },
   "lockFileMaintenance": {
     "enabled": true,
-    "schedule": ["before 6am on monday"]
+    "schedule": ["before 6am on monday"],
+    "automerge": true
   },
   "customManagers": [
     {
@@ -57,11 +58,14 @@
       "currentValueTemplate": "main"
     },
     {
-      "description": "RISC-V GCC toolchain version in CI workflow",
+      "description": "RISC-V GCC toolchain version in CI workflow and Dockerfile",
       "customType": "regex",
-      "managerFilePatterns": ["/^\\.github/workflows/regress\\.yml$/"],
+      "managerFilePatterns": [
+        "/^\\.github/workflows/regress\\.yml$/",
+        "/^Dockerfile$/"
+      ],
       "matchStrings": [
-        "GCC_TOOLCHAIN_VERSION:\\s*\"(?<currentValue>[\\d.]+)\""
+        "RISCV_TOOLCHAIN_VERSION[=:]\\s*\"?(?<currentValue>[\\d.]+)\"?"
       ],
       "depNameTemplate": "riscv-collab/riscv-gnu-toolchain",
       "datasourceTemplate": "github-releases",
@@ -85,23 +89,48 @@
     },
     {
       "description": "Keep ruff in sync across pyproject.toml dev deps and the pre-commit hook",
-      "matchDepNames": ["ruff", "https://github.com/astral-sh/ruff-pre-commit"],
+      "matchDepNames": ["ruff", "astral-sh/ruff-pre-commit"],
       "groupName": "ruff"
     },
     {
       "description": "Keep uv in sync across .mise.toml and the pre-commit hook",
-      "matchDepNames": ["uv", "https://github.com/astral-sh/uv-pre-commit"],
+      "matchDepNames": ["uv", "astral-sh/uv-pre-commit"],
       "groupName": "uv"
     },
     {
-      "description": "Group all GitHub Actions updates into one PR",
+      "description": "Group all GitHub Actions updates into one PR; auto-merge non-major bumps (digests, patches, minors)",
       "matchManagers": ["github-actions"],
-      "groupName": "github-actions"
+      "groupName": "github-actions",
+      "matchUpdateTypes": ["digest", "patch", "minor"],
+      "automerge": true
     },
     {
-      "description": "Group remaining pre-commit hook bumps",
+      "description": "Major GitHub Actions bumps still get grouped but require manual review",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["major"],
+      "groupName": "github-actions (major)"
+    },
+    {
+      "description": "Group remaining pre-commit hook bumps (ruff/uv are grouped with their non-hook counterparts above); auto-merge non-major",
       "matchManagers": ["pre-commit"],
+      "matchDepNames": [
+        "!astral-sh/ruff-pre-commit",
+        "!astral-sh/uv-pre-commit"
+      ],
+      "matchUpdateTypes": ["digest", "patch", "minor"],
       "groupName": "pre-commit hooks",
+      "schedule": ["before 6am on monday"],
+      "automerge": true
+    },
+    {
+      "description": "Major pre-commit hook bumps still get grouped but require manual review",
+      "matchManagers": ["pre-commit"],
+      "matchDepNames": [
+        "!astral-sh/ruff-pre-commit",
+        "!astral-sh/uv-pre-commit"
+      ],
+      "matchUpdateTypes": ["major"],
+      "groupName": "pre-commit hooks (major)",
       "schedule": ["before 6am on monday"]
     },
     {

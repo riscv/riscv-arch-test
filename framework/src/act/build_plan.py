@@ -20,7 +20,17 @@ from act.sail_to_rvvi import sailLog2Trace
 from act.sig_modify import process_signature_file
 from act.trap_report import generate_trap_report
 
-OBJDUMP_FLAGS = ["-Stsxd", "-M", "no-aliases,numeric"]
+# Flags used when generating .elf.objdump files.
+# -x: print all headers (file, section, program segment, relocation)
+# -d: disassemble executable sections
+# -S: intermix original source lines with each disassembled instruction (requires DWARF debug info)
+# -M no-aliases,numeric: suppress pseudo-instructions; use numeric register names (x0–x31, f0–f31)
+_OBJDUMP_FLAGS_COMMON = ["-x", "-d", "-S", "-M", "no-aliases,numeric"]
+
+# Extra flags added in debug mode:
+# -t: print the full symbol table
+# -s: print a full hex+ASCII dump of every section
+_OBJDUMP_FLAGS_DEBUG = [*_OBJDUMP_FLAGS_COMMON, "-t", "-s"]
 
 
 # ---------------------------------------------------------------------------
@@ -131,7 +141,7 @@ def gen_compile_tasks(
                 outputs=(objdump_file,),
                 deps=(sig_elf,),
                 action=SubprocessAction(
-                    cmd=[str(config.objdump_exe), *OBJDUMP_FLAGS, str(sig_elf)],
+                    cmd=[str(config.objdump_exe), *_OBJDUMP_FLAGS_DEBUG, str(sig_elf)],
                     stdout_file=objdump_file,
                 ),
             )
@@ -140,7 +150,7 @@ def gen_compile_tasks(
     # 2. sig – run Sail reference model
     sail_cmd = [str(config.ref_model_exe)]
     if debug:
-        sail_cmd.append("--trace-all")
+        sail_cmd.append("--trace")
         sail_cmd.extend(["--trace-output", str(sig_trace_file)])
     sail_cmd.extend(["--config", str(sail_config_path)])
     sail_cmd.extend(config.ref_model_type.signature_flags(sig_file, xlen // 8))
@@ -207,12 +217,13 @@ def gen_compile_tasks(
     # 4a. final.elf.objdump (optional, not in fast mode)
     if not fast and config.objdump_exe is not None:
         objdump_file = Path(f"{final_elf}.objdump")
+        objdump_flags = _OBJDUMP_FLAGS_DEBUG if debug else _OBJDUMP_FLAGS_COMMON
         tasks.append(
             BuildTask(
                 outputs=(objdump_file,),
                 deps=(final_elf,),
                 action=SubprocessAction(
-                    cmd=[str(config.objdump_exe), *OBJDUMP_FLAGS, str(final_elf)],
+                    cmd=[str(config.objdump_exe), *objdump_flags, str(final_elf)],
                     stdout_file=objdump_file,
                 ),
             )
@@ -254,7 +265,7 @@ def gen_rvvi_tasks(
     # Run Sail with trace
     sail_cmd = [
         str(config.ref_model_exe),
-        "--trace-all",
+        "--trace",
         "--trace-output",
         str(sail_trace),
         "--config",

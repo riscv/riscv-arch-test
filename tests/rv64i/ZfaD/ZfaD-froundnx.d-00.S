@@ -20,7 +20,7 @@
 #define SIGUPD_COUNT 280
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define RVTEST_FP
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -1043,101 +1043,108 @@ ZfaD_froundnx_d_cg_cmp_fd_fs1_b31:
 /////////////////////////////////
 
 # Testcase cp_frm_2 (Test frm, mode = dyn)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs1: f1 = 0xd2735a7d276b8e0b
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs1: f13 = 0x340aac4940c0361e
   fsflagsi 0b00000 # clear all fflags
+  fsrmi 0
 ZfaD_froundnx_d_cg_cp_frm_2_bdyn:
-  froundnx.d f22, f1, dyn # perform operation
-  # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, ZfaD_froundnx_d_cg_cp_frm_2_bdyn, ZfaD_froundnx_d_cg_cp_frm_2_bdyn_str)
+  froundnx.d f6, f13, dyn # perform operation
+  # Check if f6 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f6, ZfaD_froundnx_d_cg_cp_frm_2_bdyn, ZfaD_froundnx_d_cg_cp_frm_2_bdyn_str)
+  fsrmi 0x0
 
 # Testcase cp_frm_2 (Test frm, mode = rdn)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs1: f5 = 0x293e03da64ca21a2
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs1: f27 = 0xcb431c148d32d148
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_frm_2_brdn:
-  froundnx.d f24, f5, rdn # perform operation
-  # Check if f24 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f24, ZfaD_froundnx_d_cg_cp_frm_2_brdn, ZfaD_froundnx_d_cg_cp_frm_2_brdn_str)
+  froundnx.d f12, f27, rdn # perform operation
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, ZfaD_froundnx_d_cg_cp_frm_2_brdn, ZfaD_froundnx_d_cg_cp_frm_2_brdn_str)
 
 # Testcase cp_frm_2 (Test frm, mode = rmm)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs1: f2 = 0xca71c3ec438935bc
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs1: f5 = 0x275fd9bb4f2553b3
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_frm_2_brmm:
-  froundnx.d f15, f2, rmm # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, ZfaD_froundnx_d_cg_cp_frm_2_brmm, ZfaD_froundnx_d_cg_cp_frm_2_brmm_str)
+  froundnx.d f27, f5, rmm # perform operation
+  # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, ZfaD_froundnx_d_cg_cp_frm_2_brmm, ZfaD_froundnx_d_cg_cp_frm_2_brmm_str)
 
 # Testcase cp_frm_2 (Test frm, mode = rne)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs1: f9 = 0x65f05a83fc73c19b
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs1: f14 = 0x8c7b25d26d2e20df
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_frm_2_brne:
-  froundnx.d f21, f9, rne # perform operation
-  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f21, ZfaD_froundnx_d_cg_cp_frm_2_brne, ZfaD_froundnx_d_cg_cp_frm_2_brne_str)
+  froundnx.d f23, f14, rne # perform operation
+  # Check if f23 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, ZfaD_froundnx_d_cg_cp_frm_2_brne, ZfaD_froundnx_d_cg_cp_frm_2_brne_str)
 
 # Testcase cp_frm_2 (Test frm, mode = rtz)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs1: f12 = 0x8d046925811c6bdd
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f7) # load fs1: f7 = 0xb4842147e5f05a83
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_frm_2_brtz:
-  froundnx.d f15, f12, rtz # perform operation
-  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f15, ZfaD_froundnx_d_cg_cp_frm_2_brtz, ZfaD_froundnx_d_cg_cp_frm_2_brtz_str)
+  froundnx.d f11, f7, rtz # perform operation
+  # Check if f11 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f11, ZfaD_froundnx_d_cg_cp_frm_2_brtz, ZfaD_froundnx_d_cg_cp_frm_2_brtz_str)
 
 # Testcase cp_frm_2 (Test frm, mode = rup)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs1: f2 = 0x27d26813a5b99c10
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs1: f1 = 0x70c583ac6ec5fdf6
   fsflagsi 0b00000 # clear all fflags
 ZfaD_froundnx_d_cg_cp_frm_2_brup:
-  froundnx.d f30, f2, rup # perform operation
-  # Check if f30 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f30, ZfaD_froundnx_d_cg_cp_frm_2_brup, ZfaD_froundnx_d_cg_cp_frm_2_brup_str)
+  froundnx.d f12, f1, rup # perform operation
+  # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, ZfaD_froundnx_d_cg_cp_frm_2_brup, ZfaD_froundnx_d_cg_cp_frm_2_brup_str)
 
 /////////////////////////////////
 // cp_csr_frm
 /////////////////////////////////
 
-  fsrmi 0x4 # set fcsr.frm to mode 4
-# Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 4)
+# Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 0)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f1) # load fs1: f1 = 0xf5d6b4a299f99785
   fsflagsi 0b00000 # clear all fflags
-ZfaD_froundnx_d_cg_cp_csr_frm_rmm:
-  froundnx.d f12, f1 # perform operation
+  fsrmi 0
+ZfaD_froundnx_d_cg_cp_csr_frm_rne:
+  froundnx.d f12, f1, dyn # perform operation
   # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, ZfaD_froundnx_d_cg_cp_csr_frm_rmm, ZfaD_froundnx_d_cg_cp_csr_frm_rmm_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, ZfaD_froundnx_d_cg_cp_csr_frm_rne, ZfaD_froundnx_d_cg_cp_csr_frm_rne_str)
+  fsrmi 0x0
 
-  fsrmi 0x3 # set fcsr.frm to mode 3
-# Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 3)
+# Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 1)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs1: f6 = 0x100f96f6a640322b
   fsflagsi 0b00000 # clear all fflags
-ZfaD_froundnx_d_cg_cp_csr_frm_rup:
-  froundnx.d f28, f6 # perform operation
+  fsrmi 1
+ZfaD_froundnx_d_cg_cp_csr_frm_rtz:
+  froundnx.d f28, f6, dyn # perform operation
   # Check if f28 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, ZfaD_froundnx_d_cg_cp_csr_frm_rup, ZfaD_froundnx_d_cg_cp_csr_frm_rup_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, ZfaD_froundnx_d_cg_cp_csr_frm_rtz, ZfaD_froundnx_d_cg_cp_csr_frm_rtz_str)
+  fsrmi 0x0
 
-  fsrmi 0x2 # set fcsr.frm to mode 2
 # Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 2)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs1: f18 = 0xea643dfc4258f5c8
   fsflagsi 0b00000 # clear all fflags
+  fsrmi 2
 ZfaD_froundnx_d_cg_cp_csr_frm_rdn:
-  froundnx.d f12, f18 # perform operation
+  froundnx.d f12, f18, dyn # perform operation
   # Check if f12 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f12, ZfaD_froundnx_d_cg_cp_csr_frm_rdn, ZfaD_froundnx_d_cg_cp_csr_frm_rdn_str)
+  fsrmi 0x0
 
-  fsrmi 0x1 # set fcsr.frm to mode 1
-# Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 1)
+# Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 3)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs1: f10 = 0xd91f57a3b2e859c5
   fsflagsi 0b00000 # clear all fflags
-ZfaD_froundnx_d_cg_cp_csr_frm_rtz:
-  froundnx.d f27, f10 # perform operation
+  fsrmi 3
+ZfaD_froundnx_d_cg_cp_csr_frm_rup:
+  froundnx.d f27, f10, dyn # perform operation
   # Check if f27 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, ZfaD_froundnx_d_cg_cp_csr_frm_rtz, ZfaD_froundnx_d_cg_cp_csr_frm_rtz_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, ZfaD_froundnx_d_cg_cp_csr_frm_rup, ZfaD_froundnx_d_cg_cp_csr_frm_rup_str)
+  fsrmi 0x0
 
-  fsrmi 0x0 # set fcsr.frm to mode 0
-# Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 0)
+# Testcase cp_csr_frm (Test dynamic frm, fcsr.frm = 4)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs1: f2 = 0xb32fcc49b1ad9c45
   fsflagsi 0b00000 # clear all fflags
-ZfaD_froundnx_d_cg_cp_csr_frm_rne:
-  froundnx.d f8, f2 # perform operation
+  fsrmi 4
+ZfaD_froundnx_d_cg_cp_csr_frm_rmm:
+  froundnx.d f8, f2, dyn # perform operation
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, ZfaD_froundnx_d_cg_cp_csr_frm_rne, ZfaD_froundnx_d_cg_cp_csr_frm_rne_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, ZfaD_froundnx_d_cg_cp_csr_frm_rmm, ZfaD_froundnx_d_cg_cp_csr_frm_rmm_str)
+  fsrmi 0x0
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -1270,12 +1277,12 @@ RVTEST_DATA_BEGIN
 .dword 0x18be22ccb8a92b13
 .dword 0x41751ec03cee69a1
 .dword 0x22b507378e465249
-.dword 0xd2735a7d276b8e0b
-.dword 0x293e03da64ca21a2
-.dword 0xca71c3ec438935bc
-.dword 0x65f05a83fc73c19b
-.dword 0x8d046925811c6bdd
-.dword 0x27d26813a5b99c10
+.dword 0x340aac4940c0361e
+.dword 0xcb431c148d32d148
+.dword 0x275fd9bb4f2553b3
+.dword 0x8c7b25d26d2e20df
+.dword 0xb4842147e5f05a83
+.dword 0x70c583ac6ec5fdf6
 .dword 0xf5d6b4a299f99785
 .dword 0x100f96f6a640322b
 .dword 0xea643dfc4258f5c8
@@ -1413,11 +1420,11 @@ ZfaD_froundnx_d_cg_cp_frm_2_brmm_str: .string "\"test: 127; cg: ZfaD_froundnx.d_
 ZfaD_froundnx_d_cg_cp_frm_2_brne_str: .string "\"test: 128; cg: ZfaD_froundnx.d_cg; cp: cp_frm_2; bin: brne\""
 ZfaD_froundnx_d_cg_cp_frm_2_brtz_str: .string "\"test: 129; cg: ZfaD_froundnx.d_cg; cp: cp_frm_2; bin: brtz\""
 ZfaD_froundnx_d_cg_cp_frm_2_brup_str: .string "\"test: 130; cg: ZfaD_froundnx.d_cg; cp: cp_frm_2; bin: brup\""
-ZfaD_froundnx_d_cg_cp_csr_frm_rmm_str: .string "\"test: 131; cg: ZfaD_froundnx.d_cg; cp: cp_csr_frm; bin: rmm\""
-ZfaD_froundnx_d_cg_cp_csr_frm_rup_str: .string "\"test: 132; cg: ZfaD_froundnx.d_cg; cp: cp_csr_frm; bin: rup\""
+ZfaD_froundnx_d_cg_cp_csr_frm_rne_str: .string "\"test: 131; cg: ZfaD_froundnx.d_cg; cp: cp_csr_frm; bin: rne\""
+ZfaD_froundnx_d_cg_cp_csr_frm_rtz_str: .string "\"test: 132; cg: ZfaD_froundnx.d_cg; cp: cp_csr_frm; bin: rtz\""
 ZfaD_froundnx_d_cg_cp_csr_frm_rdn_str: .string "\"test: 133; cg: ZfaD_froundnx.d_cg; cp: cp_csr_frm; bin: rdn\""
-ZfaD_froundnx_d_cg_cp_csr_frm_rtz_str: .string "\"test: 134; cg: ZfaD_froundnx.d_cg; cp: cp_csr_frm; bin: rtz\""
-ZfaD_froundnx_d_cg_cp_csr_frm_rne_str: .string "\"test: 135; cg: ZfaD_froundnx.d_cg; cp: cp_csr_frm; bin: rne\""
+ZfaD_froundnx_d_cg_cp_csr_frm_rup_str: .string "\"test: 134; cg: ZfaD_froundnx.d_cg; cp: cp_csr_frm; bin: rup\""
+ZfaD_froundnx_d_cg_cp_csr_frm_rmm_str: .string "\"test: 135; cg: ZfaD_froundnx.d_cg; cp: cp_csr_frm; bin: rmm\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

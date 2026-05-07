@@ -22,6 +22,7 @@ implemented_extensions:
   - { name: Zvl32b, version: "= 1.0.0" }
   - { name: Zvl64b, version: "= 1.0.0" }
   - { name: Zvl128b, version: "= 1.0.0" }
+  - { name: Zvl256b, version: "= 1.0.0" }
   - { name: Zic64b, version: "= 1.0.0" }
   - { name: Zicbom, version: "= 1.0.0" }
   - { name: Zicbop, version: "= 1.0.0" }
@@ -39,6 +40,8 @@ implemented_extensions:
   - { name: Zihpm, version: "= 2.0.0" }
   - { name: Zaamo, version: "= 1.0.0" }
   - { name: Zalrsc, version: "= 1.0.0" }
+  - { name: Zacas, version: "= 1.0.0" }
+  - { name: Zabha, version: "= 1.0.0" }
   - { name: Za64rs, version: "= 1.0.0" }
   - { name: Za128rs, version: "= 1.0.0" }
   - { name: Zfa, version: "= 1.0.0" }
@@ -62,6 +65,7 @@ implemented_extensions:
   - { name: Zksed, version: "= 1.0.0" }
   - { name: Zksh, version: "= 1.0.0" }
   - { name: Zkt, version: "= 1.0.0" }
+  - { name: Zkr, version: "= 1.0.0" }
   - { name: Zmmul, version: "= 1.0.0" }
   - { name: U, version: "= 1.0.0" }
   - { name: S, version: "= 1.12.0" }
@@ -85,7 +89,6 @@ implemented_extensions:
   - { name: Sm, version: "= 1.12.0" }
   - { name: Zimop, version: "= 1.0.0" }
   - { name: Zcmop, version: "= 1.0.0" }
-  - { name: Zabha, version: "= 1.0.0" }
 
 params:
   # A params
@@ -110,7 +113,7 @@ params:
   MUTABLE_MISA_B: true
   # V params
   MUTABLE_MISA_V: true
-  VLEN: 512
+  VLEN: 256
   ELEN: 64
   FOLLOW_VTYPE_RESET_RECOMMENDATION: true
   HW_MSTATUS_VS_DIRTY_UPDATE: precise

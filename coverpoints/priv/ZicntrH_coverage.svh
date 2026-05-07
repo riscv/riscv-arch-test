@@ -16,31 +16,31 @@ covergroup ZicntrH_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     // counter access in hypervisor mode
 
-    mcounteren_ones: coverpoint ins.current.csr[12'h306]{
+    mcounteren_ones: coverpoint ins.current.csr[CSR_MCOUNTEREN]{
         bins ones = {32'b11111111111111111111111111111111};
     }
 
-    mcounteren_zeroes: coverpoint ins.current.csr[12'h306]{
+    mcounteren_zeroes: coverpoint ins.current.csr[CSR_MCOUNTEREN]{
         bins ones = {32'b00000000000000000000000000000000};
     }
 
-    scounteren_ones: coverpoint ins.current.csr[12'h106]{
+    scounteren_ones: coverpoint ins.current.csr[CSR_SCOUNTEREN]{
         bins ones = {32'b11111111111111111111111111111111};
     }
 
-    scounteren_zeroes: coverpoint ins.current.csr[12'h106]{
+    scounteren_zeroes: coverpoint ins.current.csr[CSR_SCOUNTEREN]{
         bins ones = {32'b00000000000000000000000000000000};
     }
 
-    hcounteren_ones: coverpoint ins.current.csr[12'h606]{
+    hcounteren_ones: coverpoint ins.current.csr[CSR_HCOUNTEREN]{
         bins ones = {32'b11111111111111111111111111111111};
     }
 
-    hcounteren_zeroes: coverpoint ins.current.csr[12'h606]{
+    hcounteren_zeroes: coverpoint ins.current.csr[CSR_HCOUNTEREN]{
         bins ones = {32'b00000000000000000000000000000000};
     }
 
-    counters_scounteren: coverpoint {ins.current.insn[31:20], ins.current.csr[12'h106][31:0]} {
+    counters_scounteren: coverpoint {ins.current.insn[31:20], ins.current.csr[CSR_SCOUNTEREN][31:0]} {
         bins cycle_enabled         = {44'b110000000000_00000000000000000000000000000001};
         bins time_enabled          = {44'b110000000001_00000000000000000000000000000010};
         bins instret_enabled       = {44'b110000000010_00000000000000000000000000000100};
@@ -175,7 +175,7 @@ covergroup ZicntrH_cg with function sample(ins_t ins);
         bins hpmcounter31h_disabled  = {44'b110010011111_01111111111111111111111111111111};
     `endif
 }
-    counters_mcounteren: coverpoint {ins.current.insn[31:20], ins.current.csr[12'h306][31:0] } {
+    counters_mcounteren: coverpoint {ins.current.insn[31:20], ins.current.csr[CSR_MCOUNTEREN][31:0] } {
         bins cycle_enabled         = {44'b110000000000_00000000000000000000000000000001};
         bins time_enabled          = {44'b110000000001_00000000000000000000000000000010};
         bins instret_enabled       = {44'b110000000010_00000000000000000000000000000100};
@@ -311,7 +311,7 @@ covergroup ZicntrH_cg with function sample(ins_t ins);
         `endif
     }
 
-    counters_hcounteren: coverpoint {ins.current.insn[31:20], ins.current.csr[12'h606][31:0]} {
+    counters_hcounteren: coverpoint {ins.current.insn[31:20], ins.current.csr[CSR_HCOUNTEREN][31:0]} {
         bins cycle_enabled         = {44'b110000000000_00000000000000000000000000000001};
         bins time_enabled          = {44'b110000000001_00000000000000000000000000000010};
         bins instret_enabled       = {44'b110000000010_00000000000000000000000000000100};
@@ -448,7 +448,7 @@ covergroup ZicntrH_cg with function sample(ins_t ins);
 }
 
     csrr: coverpoint ins.current.insn  {
-        wildcard bins csrr = {32'b????????????_00000_010_?????_1110011};
+        wildcard bins csrr = {CSRR};
     }
 
     `ifdef XLEN64
@@ -464,7 +464,7 @@ covergroup ZicntrH_cg with function sample(ins_t ins);
 
 
     `ifdef XLEN64
-    cp_htimedelta: coverpoint {ins.current.csr[12'h605][63:0]} {
+    cp_htimedelta: coverpoint {ins.current.csr[CSR_HTIMEDELTA][63:0]} {
         bins htimedelta_zero  = {64'h0};
         bins htimedelta_2p30  = {64'h0000000040000000};     //  2^30
         bins htimedelta_2p60  = {64'h1000000000000000};     //  2^60
@@ -472,7 +472,7 @@ covergroup ZicntrH_cg with function sample(ins_t ins);
         bins htimedelta_n2p60 = {64'hF000000000000000};     // -2^60
     }
     `else
-    cp_htimedelta: coverpoint {ins.current.csr[12'h615][31:0], ins.current.csr[12'h605][31:0]} {
+    cp_htimedelta: coverpoint {ins.current.csr[CSR_HTIMEDELTAH][31:0], ins.current.csr[CSR_HTIMEDELTA][31:0]} {
         bins htimedeltah_zero = {{32'h0}, {32'h0}};
         bins htimedeltah_2p30 = {{32'h0}, {32'h40000000}};            //  2^30
         bins htimedeltah_2p60 = {{32'h10000000}, {32'h0}};             // 2^60

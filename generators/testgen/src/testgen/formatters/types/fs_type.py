@@ -76,6 +76,5 @@ def format_fs_type(
         "#endif",
     ]
     assert test_data.test_chunk is not None
-    test_data.test_chunk.sigupd_count += 1
     check.append(write_sigupd(None, test_data, "fflags"))
     return (setup, test, check)

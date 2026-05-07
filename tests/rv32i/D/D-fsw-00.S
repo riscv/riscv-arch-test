@@ -17,7 +17,7 @@
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "D-fsw-00.S"
-#define SIGUPD_COUNT 52
+#define SIGUPD_COUNT 38
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 

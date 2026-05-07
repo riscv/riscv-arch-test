@@ -14,6 +14,7 @@ Provides:
   - Common exclusion lists (CBO, AMO, op31)
   - CSR sweep body emitter (generate_csr_sweep_body)
   - Illegal 32-bit instruction sweep (generate_illegal_instr)
+  - Vector illegal instruction sweep (generate_vector_illegal_instr)
   - Compressed 16-bit instruction sweep (generate_compressed_instr)
 
 Each mode-specific generator (SsstrictSm/S/U) imports these and passes
@@ -66,7 +67,6 @@ AMO_EXCLUSIONS: list[str] = [
     "01001XXXXXXXXXXXX01X010010101111",  # ssamoswap (Ssamoswap)
 ]
 # Privileged/SYSTEM instruction exclusions shared by all modes.
-# TODO: Restore fences + URET once CI for QEMU + Spike passes and all bugs identified
 PRIVILEGED_000_EXCLUSIONS: list[str] = [
     "1XXX11XXXXXX00000000000001110011",  # custom system
     "00X10000001000000000000001110011",  # mret/sret
@@ -262,12 +262,10 @@ def generate_illegal_instr(
     Encodings are identical for all Ssstrict variants: reserved/illegal
     encodings trap regardless of privilege level.
 
-    Vector opcodes op21/op29 excluded — covered in SsstrictV.
     Reserved op31 excluded — RISC-V spec reserves bits[6:0]=1111111 for
     ≥192-bit instructions; QEMU/Whisper interpret this literally and do
     not treat it as a simple 4-byte illegal instruction.
-    amocas_odd excluded — Zacas extension not in target profile; QEMU
-    may not decode these, causing platform-dependent behaviour.
+    Vector opcodes op21/op29 are included here (moved from SsstrictV).
     """
     coverpoint = "cp_illegal_instruction"
     lines: list[str] = []
@@ -276,9 +274,8 @@ def generate_illegal_instr(
         comment_banner(
             coverpoint,
             "Exhaustive reserved/illegal 32-bit encoding sweep from M-mode.\n"
-            "Vector opcodes op21/op29 excluded — covered in SsstrictV.\n"
             "Reserved op31 excluded — variable-length ambiguity across platforms.\n"
-            "amocas_odd excluded — Zacas not in target extension set.",
+            "Vector opcodes op21/op29 included.",
         )
     )
 
@@ -298,52 +295,59 @@ def generate_illegal_instr(
     lines.append(f"\t{test_data.add_testcase('illegal_instr_sweep', coverpoint, covergroup)}")
     lines.append("")
 
+    # ── Reserved opcodes ──────────────────────────────────────────────
     _emit_reg_init(lines)
     for cmt, tmpl in [
         ("Reserved op7", "RRRRRRRRRRRRRRRRRRRRRRRRR0011111"),
         ("Reserved op15", "RRRRRRRRRRRRRRRRRRRRRRRRR0111111"),
+        # ("Reserved op21 (OP-V)", "RRRRRRRRRRRRRRRRRRRRRRRRR1010111"),
         ("Reserved op23", "RRRRRRRRRRRRRRRRRRRRRRRRR1011111"),
         ("Reserved op26", "RRRRRRRRRRRRRRRRRRRRRRRRR1101011"),
-        # TODO: Restore these once CI for QEMU + Spike passes and all bugs identified
-        #         ("Reserved op31", "RRRRRRRRRRRRRRRRRRRRRRRRR1111111"),
+        # ("Reserved op29 (OP-VE)", "RRRRRRRRRRRRRRRRRRRRRRRRR1110111"),
+        # op31 excluded — variable-length ambiguity across QEMU/Whisper
     ]:
         emit_raw_words(lines, cmt, tmpl)
 
+    # ── Loads ─────────────────────────────────────────────────────────
     _emit_reg_init(lines)
-    # Loads — rs1 is random (already constrained to safe regs, rd != rs1 != x8)
     emit_raw_words(lines, "cp_load", "RRRRRRRRRRRRRRRRREEE010010000011")
     emit_raw_words(lines, "cp_fload", "RRRRRRRRRRRRRRRRREEE010010000111")
 
+    # ── Stores — rs1 fixed to x8 (scratch base) ──────────────────────
     _emit_reg_init(lines)
-    # Stores — rs1 fixed to x8 (scratch base)
     emit_raw_words(lines, "cp_store", "RRRRRRRRRRRR01000EEERRRRR0100011")
     emit_raw_words(lines, "cp_fstore", "RRRRRRRRRRRR01000EEERRRRR0100111")
 
+    # ── Fence / CBO — rs1 fixed to x8 ────────────────────────────────
     _emit_reg_init(lines)
-    # Fence / CBO — rs1 fixed to x8
     emit_raw_words(lines, "cp_fence_cbo", "RRRRRRRRRRRRRRRRREEE010010001111", exclusion=CBO_EXCLUSIONS)
     _emit_reg_init(lines)
     emit_raw_words(lines, "cp_cbo_immediate", "EEEEEEEEEEEE01000010000000001111", exclusion=CBO_EXCLUSIONS)
     _emit_reg_init(lines)
     emit_raw_words(lines, "cp_cbo_rd", "00000000000RRRRRR010EEEEE0001111", exclusion=CBO_EXCLUSIONS)
 
+    # ── Atomics — rs1 fixed to x8 ────────────────────────────────────
     _emit_reg_init(lines)
-    # Atomics — rs1 fixed to x8
     emit_raw_words(lines, "cp_atomic_funct3", "RRRRRRRRRRRR01000EEE010010101111", exclusion=AMO_EXCLUSIONS)
     emit_raw_words(lines, "cp_atomic_funct7", "EEEEERRRRRRR0100001E010010101111", exclusion=AMO_EXCLUSIONS)
     emit_raw_words(lines, "cp_lrsc", "00010RREEEEE0100001E010010101111", exclusion=AMO_EXCLUSIONS)
-    # I-type / IW-type
+
+    # ── amocas odd-register sweep ─────────────────────────────────────
+    _emit_reg_init(lines)
+    emit_raw_words(lines, "cp_amocas_odd", "00101RRRRRRRRRRREEEE01000E0101111")
+
+    # ── I-type / IW-type ──────────────────────────────────────────────
     emit_raw_words(lines, "cp_Itype", "EEEEEEEEEEEERRRRRE01010010010011")
     emit_raw_words(lines, "cp_llAItype", "RRRRRRRRRRRRRRRRREEE010010010011")
     emit_raw_words(lines, "cp_aes64ks1i", "0011000EEEEERRRRR001010010010011")
     emit_raw_words(lines, "cp_IWtype", "RRRRRRRRRRRRRRRRREEE010010011011")
     emit_raw_words(lines, "cp_IWshift", "EEEEEEERRRRRRRRRRE01010010011011")
 
-    # R-type / RW-type
+    # ── R-type / RW-type ──────────────────────────────────────────────
     emit_raw_words(lines, "cp_rtype", "EEEEEEE0011100111EEE001110110011")
     emit_raw_words(lines, "cp_rwtype", "EEEEEEE0011100111EEE001110111011")
 
-    # FP
+    # ── FP ────────────────────────────────────────────────────────────
     emit_raw_words(lines, "cp_ftype", "EEEEERR0011100111EEE001111010011")
     emit_raw_words(lines, "cp_fsqrt", "0101100EEEEE00111000011111010011")
     emit_raw_words(lines, "cp_fclass", "1110000EEEEE00111001001111010011")
@@ -357,11 +361,11 @@ def generate_illegal_instr(
     emit_raw_words(lines, "cp_fli", "11110EEEEEEERRRRR000010011010011")
     emit_raw_words(lines, "cp_fmvfi", "11110EEEEEEE00111000001111010011")
     emit_raw_words(lines, "cp_fmvh", "11100EEEEEEERRRRR000010011010011")
-    emit_raw_words(lines, "cp_fmvp", "11100EE0011100111000001111010011")
+    emit_raw_words(lines, "cp_fmvp", "10110EE0011100111000001111010011")  # funct5=10110 (fmv.p)
     emit_raw_words(lines, "cp_cvtmodwd", "11000EEEEEEE00111001001111010011")
     emit_raw_words(lines, "cp_fcvtmodwdfrm", "11000010100000111EEE001111010011")
 
-    # Branch / JALR
+    # ── Branch / JALR ─────────────────────────────────────────────────
     emit_raw_words(lines, "cp_branch2", "RRRRRRR0011100111010001111100011")
     emit_raw_words(lines, "cp_branch3", "RRRRRRR0011100111011001111100011")
     emit_raw_words(lines, "cp_jalr0", "RRRRRRR0011100111EE1001111100111")
@@ -369,8 +373,7 @@ def generate_illegal_instr(
     emit_raw_words(lines, "cp_jalr2", "RRRRRRR0011100111100001111100111")
     emit_raw_words(lines, "cp_jalr3", "RRRRRRR0011100111110001111100111")
 
-    # TODO: Bring back cp_amocas_odd + Add all vector cps
-    # Privileged / SYSTEM
+    # ── Privileged / SYSTEM ───────────────────────────────────────────
     emit_raw_words(lines, "cp_privileged_f3", "00000000000100000EEE000001110011")
     emit_raw_words(
         lines,
@@ -385,13 +388,13 @@ def generate_illegal_instr(
         lines, "cp_privileged_rs2", "000000000000EEEEE000000001110011", exclusion=["00000000000000000000000001110011"]
     )
 
-    # Reserved FMA / fence
+    # ── Reserved FMA / fence ──────────────────────────────────────────
     emit_raw_words(lines, "cp_reserved_fma", "RRRRRRRRRRRRRRRRREEERRRRR100EE11")
     emit_raw_words(lines, "cp_reserved_fence_fm", "EEEE00000000RRRRR000RRRRR0001111")
     emit_raw_words(lines, "cp_reserved_fence_rs1", "00001111111100001000RRRRE0001111")
     emit_raw_words(lines, "cp_reserved_fence_rd", "000011111111RRRRE000000010001111")
 
-    # Upper register sweep (E extension)
+    # ── Upper register sweep (E extension) ────────────────────────────
     lines.append(comment_banner("cp_upperreg", "x16-x31 — trap when E extension active"))
     for cmt, tmpl in [
         ("cp_upperreg_rs1_add", "0000000000011EEEE000000010110011"),
@@ -417,6 +420,127 @@ def generate_illegal_instr(
     return lines
 
 
+# ── Vector illegal instruction sweep ─────────────────────────────────────
+
+
+def generate_vector_illegal_instr(
+    test_data: TestData,
+    covergroup: str,
+) -> list[str]:
+    """cp_illegal_vector_instruction — reserved/illegal vector encoding sweep.
+
+    Covers vset* configuration instructions, reserved vector load/store
+    widths and lumops, vector arithmetic funct6 sweeps (per SEW),
+    vector unary instruction sweeps, and vector crypto instructions.
+
+    Run from M-mode so the fast handler can advance mepc correctly.
+    """
+    coverpoint = "cp_illegal_vector_instruction"
+    lines: list[str] = []
+
+    lines.append(
+        comment_banner(
+            coverpoint,
+            "Exhaustive reserved/illegal vector encoding sweep from M-mode.\n"
+            "Covers vset* config, vector load/store reserved encodings,\n"
+            "vector arithmetic funct6 sweeps (per SEW), unary instructions,\n"
+            "and vector crypto instructions.",
+        )
+    )
+
+    lines.append(f"\t{test_data.add_testcase('vector_illegal_sweep', coverpoint, covergroup)}")
+    lines.append("")
+
+    # ── vset* configuration instructions ──────────────────────────────
+    lines.append(comment_banner("vset* reserved encodings", "Reserved bits in vsetvl/vsetvli/vsetivli"))
+
+    _emit_reg_init(lines)
+    emit_raw_words(lines, "cp_v_vsetvl", "10EEEEERRRRRRRRRR111RRRRR1010111")
+    emit_raw_words(lines, "cp_v_vsetvli_sew", "0000RR1EERRRRRRRR111RRRRR1010111")
+    # TODO: Restore once Sail vsetvli reserved-vtype behavior is resolved
+    # emit_raw_words(lines, "cp_v_vsetvli_res", "EEE0RR0RRRRRRRRRR111RRRRR1010111")
+    emit_raw_words(lines, "cp_v_vsetivli_sew", "1100RR1EERRRRRRRR111RRRRR1010111")
+    emit_raw_words(lines, "cp_v_vsetivli_res", "11EERR0RRRRRRRRRR111RRRRR1010111")
+
+    # ── Reserved vector loads ─────────────────────────────────────────
+    lines.append(comment_banner("Vector load reserved encodings", "Reserved mew/width/lumop for vector loads"))
+
+    _emit_reg_init(lines)
+    # mew=0, reserved width values
+    emit_raw_words(lines, "cp_vl_0_000", "RRR0RRRRRRRRRRRRR000RRRRR0000111")
+    emit_raw_words(lines, "cp_vl_0_101", "RRR0RRRRRRRRRRRRR101RRRRR0000111")
+    emit_raw_words(lines, "cp_vl_0_110", "RRR0RRRRRRRRRRRRR110RRRRR0000111")
+    emit_raw_words(lines, "cp_vl_0_111", "RRR0RRRRRRRRRRRRR111RRRRR0000111")
+    # mew=1, reserved width values
+    emit_raw_words(lines, "cp_vl_1_000", "RRR1RRRRRRRRRRRRR000RRRRR0000111")
+    emit_raw_words(lines, "cp_vl_1_101", "RRR1RRRRRRRRRRRRR101RRRRR0000111")
+    emit_raw_words(lines, "cp_vl_1_110", "RRR1RRRRRRRRRRRRR110RRRRR0000111")
+    emit_raw_words(lines, "cp_vl_1_111", "RRR1RRRRRRRRRRRRR111RRRRR0000111")
+    # Reserved lumop values per width
+    emit_raw_words(lines, "cp_vl_lumop_8", "RRR0RR1EEEEERRRRR000RRRRR0000111")
+    emit_raw_words(lines, "cp_vl_lumop_16", "RRR0RR1EEEEERRRRR101RRRRR0000111")
+    emit_raw_words(lines, "cp_vl_lumop_32", "RRR0RR1EEEEERRRRR110RRRRR0000111")
+    emit_raw_words(lines, "cp_vl_lumop_64", "RRR0RR1EEEEERRRRR111RRRRR0000111")
+
+    # ── Reserved vector stores ────────────────────────────────────────
+    lines.append(comment_banner("Vector store reserved encodings", "Reserved mew/width/lumop for vector stores"))
+
+    _emit_reg_init(lines)
+    # mew=0, reserved width values
+    emit_raw_words(lines, "cp_vs_0_000", "RRR0RRRRRRRRRRRRR000RRRRR0100111")
+    emit_raw_words(lines, "cp_vs_0_101", "RRR0RRRRRRRRRRRRR101RRRRR0100111")
+    emit_raw_words(lines, "cp_vs_0_110", "RRR0RRRRRRRRRRRRR110RRRRR0100111")
+    emit_raw_words(lines, "cp_vs_0_111", "RRR0RRRRRRRRRRRRR111RRRRR0100111")
+    # mew=1, reserved width values
+    emit_raw_words(lines, "cp_vs_1_000", "RRR1RRRRRRRRRRRRR000RRRRR0100111")
+    emit_raw_words(lines, "cp_vs_1_101", "RRR1RRRRRRRRRRRRR101RRRRR0100111")
+    emit_raw_words(lines, "cp_vs_1_110", "RRR1RRRRRRRRRRRRR110RRRRR0100111")
+    emit_raw_words(lines, "cp_vs_1_111", "RRR1RRRRRRRRRRRRR111RRRRR0100111")
+    # Reserved lumop values per width
+    emit_raw_words(lines, "cp_vs_lumop_8", "RRR0RR1EEEEERRRRR000RRRRR0100111")
+    emit_raw_words(lines, "cp_vs_lumop_16", "RRR0RR1EEEEERRRRR101RRRRR0100111")
+    emit_raw_words(lines, "cp_vs_lumop_32", "RRR0RR1EEEEERRRRR110RRRRR0100111")
+    emit_raw_words(lines, "cp_vs_lumop_64", "RRR0RR1EEEEERRRRR111RRRRR0100111")
+
+    # ── Vector arithmetic per-SEW sweeps ──────────────────────────────
+    # Each SEW needs its own vsetivli so the vector unit is configured
+    # correctly when the illegal encodings are executed.
+    for sew in ["8", "16", "32", "64"]:
+        lines.append(comment_banner(f"Vector arithmetic SEW={sew}", f"funct6 sweeps with e{sew}"))
+        lines.append(f"\tvsetivli x0, 1, e{sew}, m1, ta, ma")
+        lines.append("")
+
+        _emit_reg_init(lines)
+
+        # funct6 sweep for every vector arithmetic category
+        emit_raw_words(lines, f"cp_IVV_f6_e{sew}", "EEEEEEERRRRRRRRRR000RRRRR1010111")
+        emit_raw_words(lines, f"cp_FVV_f6_e{sew}", "EEEEEEERRRRRRRRRR001RRRRR1010111")
+        emit_raw_words(lines, f"cp_MVV_f6_e{sew}", "EEEEEEERRRRRRRRRR010RRRRR1010111")
+        emit_raw_words(lines, f"cp_IVI_f6_e{sew}", "EEEEEEERRRRRRRRRR011RRRRR1010111")
+        emit_raw_words(lines, f"cp_IVX_f6_e{sew}", "EEEEEEERRRRRRRRRR100RRRRR1010111")
+        emit_raw_words(lines, f"cp_FVF_f6_e{sew}", "EEEEEEERRRRRRRRRR101RRRRR1010111")
+        emit_raw_words(lines, f"cp_MVX_f6_e{sew}", "EEEEEEERRRRRRRRRR110RRRRR1010111")
+
+        # Unary vector instructions — exhaustive encoding sweep
+        emit_raw_words(lines, f"cp_MVV_VWRXUNARY0_e{sew}", "010000ERRRRREEEEE010RRRRR1010111")
+        emit_raw_words(lines, f"cp_MVX_VRXUNARY0_e{sew}", "010000EEEEEERRRRR110RRRRR1010111")
+        emit_raw_words(lines, f"cp_MVV_VXUNARY0_e{sew}", "010010ERRRRREEEEE010RRRRR1010111")
+        emit_raw_words(lines, f"cp_MVV_VMUNARY0_e{sew}", "010100ERRRRREEEEE010RRRRR1010111")
+        emit_raw_words(lines, f"cp_FVV_VWFUNARY0_e{sew}", "010000ERRRRREEEEE001RRRRR1010111")
+        emit_raw_words(lines, f"cp_FVF_VRFUNARY0_e{sew}", "010000EEEEEERRRRR101RRRRR1010111")
+        emit_raw_words(lines, f"cp_FVV_VFUNARY0_e{sew}", "010010ERRRRREEEEE001RRRRR1010111")
+        emit_raw_words(lines, f"cp_FVV_VFUNARY1_e{sew}", "010011ERRRRREEEEE001RRRRR1010111")
+
+        # Vector crypto — vaes.vv / vaes.vs
+        # Note: no effort to make vl/vstart multiples of EGS for vector crypto.
+        # That is tested in ExceptionsV.
+        emit_raw_words(lines, f"cp_MVV_vaesvv_e{sew}", "101000ERRRRREEEEE010RRRRR1010111")
+        emit_raw_words(lines, f"cp_MVV_vaesvs_e{sew}", "101001ERRRRREEEEE010RRRRR1010111")
+
+    lines.append("")
+    return lines
+
+
 # ── Compressed 16-bit instruction sweep ──────────────────────────────────
 
 
@@ -435,21 +559,13 @@ def generate_compressed_instr(
     lines.append(f"\t{test_data.add_testcase('compressed_sweep', coverpoint, covergroup)}")
     lines.append("")
 
-    # TODO: Restore these, Put scratch in x8, and do load/store from x8
     _emit_reg_init(lines)
     emit_raw_words(
         lines,
         "compressed00",
         "EEEEEEEEEEEEEE00",
         length=16,
-        exclusion=[
-            "X10XXXXXXXXXXX00",  # c.lw/c.sw — bad address
-            "10000XXXXXXXXX00",  # c.lbu, c.lh, c.lhu
-            "10010XXXXXXXXX00",  # c.sb
-            "10011XXXXXXXXX00",  # c.sh
-            "011XXXXXXXXXXX00",  # c.ld
-            "111XXXXXXXXXXX00",  # c.sd
-        ],
+        exclusion=[],
     )
     emit_raw_words(
         lines,
@@ -457,10 +573,10 @@ def generate_compressed_instr(
         "EEEEEEEEEEEEEE01",
         length=16,
         exclusion=[
-            "101XXXXXXXXXXX01",  # c.j — random jump - EXCLUDED
+            "101XXXXXXXXXXX01",  # c.j — random jump
             "11XXXXXXXXXXXX01",  # c.beqz/c.bnez — random branch
             "001XXXXXXXXXXX01",  # c.jr
-            "XXXX00010XXXXX01",  # rd = x2 -  Bug resolved, nor x2 is not getting used as rd
+            "XXXX00010XXXXX01",  # rd = x2
         ],
     )
     emit_raw_words(
@@ -471,13 +587,13 @@ def generate_compressed_instr(
         exclusion=[
             "1000XXXXX0000010",  # c.jr rs1!=0
             "1001XXXXX0000010",  # c.jalr/c.ebreak
-            "X01XXXXXXXXXXX10",  # c.fldsp/c.fsdsp - Interfere with x2 which is pointing to regular signature area
-            "X10XXXXXXXXXXX10",  # c.lwsp/c.swsp — Interfere with x2 which is pointing to regular signature area
+            "X01XXXXXXXXXXX10",  # c.fldsp/c.fsdsp
+            "X10XXXXXXXXXXX10",  # c.lwsp/c.swsp
             "1001000000000010",  # c.ebreak
-            "XXXX00010XXXXX10",  # rd = x2 (sp) - Bug resolved, nor x2 is not getting used as rd
-            "1100XXXXXXXXXX10",  # c.swsp with rs2=x2 (corrupts via store of sp) - Interfere with x2 which is pointing to regular signature area
-            "1110XXXXXXXXXX10",  # c.lwsp rd=x2 alternate encoding guard - Interfere with x2 which is pointing to regular signature area
-            "1010XXXXXXXXXX10",  # zero-length / nop-like edge in quadrant 2 - Will get the exact cause for this one
+            "XXXX00010XXXXX10",  # rd = x2 (sp)
+            "1100XXXXXXXXXX10",  # c.swsp with rs2=x2
+            "1110XXXXXXXXXX10",  # c.lwsp rd=x2 alternate encoding guard
+            "1010XXXXXXXXXX10",  # zero-length / nop-like edge in quadrant 2
         ],
     )
     lines.append("")

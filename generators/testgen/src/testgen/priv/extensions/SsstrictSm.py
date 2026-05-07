@@ -20,7 +20,12 @@ from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
 
-from .SsstrictCommon import generate_compressed_instr, generate_csr_sweep_body, generate_illegal_instr
+from .SsstrictCommon import (
+    generate_compressed_instr,
+    generate_csr_sweep_body,
+    generate_illegal_instr,
+    generate_vector_illegal_instr,
+)
 
 # ── CSR skip set ──────────────────────────────────────────────────────────
 
@@ -94,16 +99,13 @@ def _generate_csr_tests_m(test_data: TestData) -> list[str]:
     "SsstrictSm",
     required_extensions=["Sm", "Zicsr"],
     march_extensions=[
-        # Zcf excluded — RV32-only.
-        # Vector excluded — covered by SsstrictV.
-        # Zbc/Zacas/Zcb excluded: not needed as assembler mnemonics,
-        # not in non-max configs, not supported by GCC < 14.
         "I",
         "M",
         "A",
         "F",
         "D",
         "C",
+        "V",  # needed for vsetivli in vector illegal instruction sweep
         "Zicsr",
         "Zba",
         "Zbb",
@@ -119,4 +121,5 @@ def make_ssstrictsm(test_data: TestData) -> list[str]:
     lines.extend(_generate_csr_tests_m(test_data))
     lines.extend(generate_illegal_instr(test_data, "SsstrictSm_instr_cg"))
     lines.extend(generate_compressed_instr(test_data, "SsstrictSm_comp_instr_cg"))
+    lines.extend(generate_vector_illegal_instr(test_data, "SsstrictSm_instr_cg"))
     return lines

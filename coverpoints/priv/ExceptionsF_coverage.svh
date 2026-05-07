@@ -26,6 +26,11 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
         bins fs_clean   = {2'b10};
         bins fs_dirty   = {2'b11};
     }
+    frm_illegal: coverpoint ins.prev.csr[CSR_FCSR][7:5] {
+        bins reserved_5 = {3'b101};
+        bins reserved_6 = {3'b110};
+        bins reserved_7 = {3'b111};
+    }
     frm_legal: coverpoint ins.prev.csr[CSR_FCSR][7:5] {
         bins legal_frm = {3'b000, 3'b001, 3'b010, 3'b011, 3'b100};
     }
@@ -94,7 +99,7 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
 
     // main coverpoints
     cp_mstatus_fs_illegal_instr: cross instrs, mstatus_FS_zero;
-    cp_badfrm:                   cross instrs_dynrm, mstatus_FS_nonzero, frm_illegal;
+    cp_badfrm:                   cross instrs, mstatus_FS_nonzero, frm_illegal;
     cp_mstatus_fs_legal:         cross instrs, mstatus_FS_status, frm_legal;
     cp_load_address_misaligned:  cross loadops, adr_LSBs;
     cp_store_address_misaligned: cross storeops, adr_LSBs;

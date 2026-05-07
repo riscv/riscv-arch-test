@@ -6,9 +6,8 @@
 #
 # Select tests to run based on UDB config and test list
 ##################################
-
 from __future__ import annotations
-
+import sys
 import re
 
 from act.parse_test_constraints import TestMetadata
@@ -67,6 +66,7 @@ def select_tests(
     config_params: dict[str, ConfigParamValue],
     *,
     include_priv_tests: bool = True,
+    excluded_extensions: set[str] | None = None,
 ) -> dict[str, TestMetadata]:
     """Select tests that match the UDB configuration."""
     selected_tests: dict[str, TestMetadata] = {}
@@ -80,4 +80,43 @@ def select_tests(
             test_params = test_metadata.params
             if check_test_params(test_params, config_params):
                 selected_tests[test_name] = test_metadata
+    # Warn about implemented extensions with no tests
+    untested_extensions = get_untested_implemented_extensions(
+        selected_tests,
+        implemented_extensions,
+        include_priv_tests=include_priv_tests,
+        excluded_extensions=excluded_extensions,
+    )
+
+    if untested_extensions:
+        print(
+            "Warning: no applicable tests selected for implemented extension(s): "
+            + ", ".join(untested_extensions),
+            file=sys.stderr,
+        )
+
     return selected_tests
+
+def _is_excluded_extension(ext: str, excluded_extensions: set[str]) -> bool:
+    return any(ext.startswith(ex) for ex in excluded_extensions)
+
+def get_untested_implemented_extensions(
+    selected_tests: dict[str, TestMetadata],
+    implemented_extensions: set[str],
+    *,
+    include_priv_tests: bool = True,
+    excluded_extensions: set[str] | None = None,
+) -> list[str]:
+    """Return implemented extensions that have no selected tests."""
+    covered_extensions = {
+        extension for test_metadata in selected_tests.values() for extension in test_metadata.required_extensions
+    }
+    untested_extensions = implemented_extensions - covered_extensions
+    if not include_priv_tests:
+        untested_extensions -= PRIV_EXTENSIONS
+    if excluded_extensions:
+        untested_extensions = {
+            ext for ext in untested_extensions
+            if not _is_excluded_extension(ext, excluded_extensions)
+        }
+    return sorted(untested_extensions)

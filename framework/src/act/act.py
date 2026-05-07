@@ -101,6 +101,7 @@ def run_act(
 
     config_names: list[str] = []
     tasks: list[BuildTask] = []
+    excluded_extensions = {ext.strip() for ext in exclude.split(",") if ext.strip()}
     for config_file in config_files:
         # Load configuration
         config = load_config(config_file)
@@ -114,7 +115,11 @@ def run_act(
 
         # Select tests for config
         selected_tests = select_tests(
-            full_test_dict, implemented_extensions, config_params, include_priv_tests=config.include_priv_tests
+            full_test_dict,
+            implemented_extensions,
+            config_params,
+            include_priv_tests=config.include_priv_tests,
+            excluded_extensions=excluded_extensions,
         )
         mxlen = config_params["MXLEN"]
         if not isinstance(mxlen, int):

@@ -296,7 +296,7 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
     covergroup = "S_sprivinst_cg"
     coverpoint = "cp_sret_m"
     ######################################
-    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5)
+    save_reg, check_reg, reg1, reg2, reg3, mask_reg = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -315,6 +315,18 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
         f"not x{reg2}, x{reg2}              # x{reg2} has all but MPRV, SPP, SPIE, SIE, TSR bits set",
         f"and x{reg1}, x{save_reg}, x{reg2}          # clear MPRV, SPP, SPIE, SIE, TSR bits",
     ]
+
+    mask = 0xFFFFFFFFFFFDFFFF
+    mask32 = mask & 0xFFFFFFFF
+    lines.extend(
+        [
+            "#if __riscv_xlen == 64",
+            f"LI(x{mask_reg}, {mask:#x})    # Load 64-bit mask",
+            "#else",
+            f"LI(x{mask_reg}, {mask32:#x})   # Load 32-bit mask (upper bits of {mask:#x} are ignored)",
+            "#endif",
+        ]
+    )
 
     for spp in (0, 1):
         for mprv in (0, 1):
@@ -343,7 +355,7 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
                                 # Test mstatus was updated properly
                                 # TODO: relax mask when Sail matures
                                 # To work around Whisper issue https://github.com/tenstorrent/whisper/issues/18, mask off MPRV bit 17
-                                gen_csr_read_sigupd(check_reg, ("mstatus", 0xFFFFFFFFFFFDFFFF), test_data, reg3),
+                                gen_csr_read_sigupd(check_reg, ("mstatus", 0xFFFFFFFFFFFDFFFF), test_data, mask_reg),
                             ]
                         )
 
@@ -353,7 +365,7 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
             f"\nCSRW(mstatus, x{save_reg})    # restore CSR",
         ]
     )
-    test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
+    test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3, mask_reg])
     return lines
 
 
@@ -447,7 +459,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
 
     csrs = [
         # TODO: sail does not yet support sstatus.UBE; mask it until available to avoid mismatches with CVW.  Delete mask when Sail has UBE support.
-        # TODO: sail does not yet support sstatusSPELP; mask it until available to avoid mismatches with Whisper.  Delete mask when Sail has SPELP support.
+        # TODO: sail does not yet support sstatusS.PELP; mask it until available to avoid mismatches with Whisper.  Delete mask when Sail has SPELP support.
         ("sstatus", 0xFFFFFFFFFF7FFFBF),
         # WLRL fields can't be managed with masks.  Use cp_scause_* instead
         #        ("scause", 0x7FFFFFFFFFFFFFF0),

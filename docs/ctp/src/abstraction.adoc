@@ -173,7 +173,7 @@ Standard macros are defined in `tests/env`.  DUT-specific macros are defined in 
 
 Standard framework macros begin with `RVTEST`.  They include `rvtest_setup.h` for boot macros and `rvtest_trap_handler.h` for standard trap handlers, and `rvtest_failure_code.h` for error reporting. Other macros are defined in ***util.h, ... describe further
 
-DUT-specific macros begin with `RVMODEL`.  Some `RVTEST` macros check if corresponding `RVMODEL` macros are defined and invoke the `RVMODEL` macro instead DUTs with custom M-modes, when defined.
+DUT-specific macros begin with `RVMODEL`.  Some `RVTEST` macros check if corresponding `RVMODEL` macros are defined and invoke the `RVMODEL` macro instead for DUTs with custom M-modes, when defined.
 
 === Test Supervisor Binary Interface (T-SBI)
 
@@ -191,13 +191,13 @@ The SBI is invoked with the `ecall` instruction.  The operation is passed in `a0
 |===
 |Function Name|Operation(`a0`)|Description
 |ECALL_TEST|0x00000073|Test `ecall` to the execution environment.  Returns xEPC in `a0` to indicate that the trap handler was entered.
-|CSR_SET|0x<CSR>5a073>|Performs the functionality of a CSRS instruction specified by the opcode. `a1` contains the value to write. <CSR> is the 12-bit CSR encoding.
+|CSR_SET|0x<CSR>5a073|Performs the functionality of a CSRS instruction specified by the opcode. `a1` contains the value to write. <CSR> is the 12-bit CSR encoding.
 |CSR_CLEAR|0x<CSR>5b073|Performs CSRC instruction specified by the opcode.  `a1` contains the value to write.
 |CSR_WRITE|0x<CSR>59073|Performs CSRW instruction specified by the opcode.  `a1` contains the value to write.
 |CSR_READ|0x<CSR>02573|Performs CSRR instruction specified by the opcode.  Returns result in `a0`.
 |===
 
-For example, an S-mode program can request setting `mstatus.TVM` with a CSR_SET call corresponding to `csrrs x0, mstatus, a1` (`a0` = 0x3005a073) with `a1` containing a 1 in bit 20 (the `TVM` bit) and all other bits 0.  A possible implementation with standard M-mode is for the trap handler to write this value to memory, perform `fence.i` to synchronize the instruction stream, execute the instruction, and return to the test.  If a custom M-mode does not support `mstatus.TVM`, it must emulate the behavior in some other way. Similarly, S-mode can read `mip` to `a0` with a CSR_READ call corresponding to `csrrs a0, mip, x0` (`a0` = 0x34402573).
+For example, an S-mode program can request setting `mstatus.TVM` with a CSR_SET call corresponding to `csrrs x0, mstatus, a1` (`a0` = 0x3005a073) with `a1` containing a 1 in bit 20 (the `TVM` bit) and all other bits 0.  A possible implementation with standard M-mode is for the trap handler to write this value to memory, perform `fence.i` to synchronize the instruction stream, execute the instruction, and return to the test.  If a custom M-mode does not implement `mstatus.TVM`, it must emulate the behavior in some other way. Similarly, S-mode can read `mip` to `a0` with a CSR_READ call corresponding to `csrrs a0, mip, x0` (`a0` = 0x34402573).
 
 
 The ACT trap handlers implement an additional set of convenience calls changing between privilege modes in a standard fashion.  This includes changing to M-mode.  The behavior in M-mode is only predictable if STANDARD_SM_SUPPORTED is true. Another suite with different trap handlers might not support these calls.
@@ -237,9 +237,6 @@ The following macros are defined for developer convenience to access the T-SBI a
 TODO
 
 testgen/src/testgen/io/templates.py format_params needs to accept STANDARD_SM_SUPPORTED parameter when available.  How to deal with UDB? (Released in UDB 4/29/26).
-
-Rename STANDARD_SM_SUPPORTED to STANDARD_SM_SUPPORTED, and use terms "Standard" and "Custom" M-mode.
-
 
 remove mention of RVTEST_VECTOR  from vector code
 

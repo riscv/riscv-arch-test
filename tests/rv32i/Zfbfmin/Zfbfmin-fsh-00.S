@@ -17,7 +17,7 @@
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "Zfbfmin-fsh-00.S"
-#define SIGUPD_COUNT 385
+#define SIGUPD_COUNT 260
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 

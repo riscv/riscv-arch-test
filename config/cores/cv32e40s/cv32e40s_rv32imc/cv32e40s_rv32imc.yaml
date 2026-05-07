@@ -1,0 +1,197 @@
+# yaml-language-server: $schema=../../../../external/riscv-unified-db/spec/schemas/config_schema.json
+
+# Copyright (c) 2026, 10xEngineers, Harvey Mudd College and OpenHW Foundation
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+# UDB Architecture Configuration for the CV32E40S, a configuration of the CORE-V project.
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: cv32e40s_rv32imc
+description: CV32E40S (CORE-V secure) - RV32IMC default configuration (ZC_EXT=1, B_EXT=NONE, PMP=0, PMA=0)
+implemented_extensions: # VERIFIED against cv32e40s_core.sv (openhwgroup/cv32e40s master @ 9d9cae78)
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" } # Always present when C enabled
+  - { name: Zcb, version: "= 1.0.0" } # VERIFIED — ZC_EXT=1 hardcoded localparam in cv32e40s_core.sv
+  - { name: Zcmp, version: "= 1.0.0" } # VERIFIED — ZC_EXT=1 hardcoded localparam in cv32e40s_core.sv
+  - { name: Zcmt, version: "= 1.0.0" } # VERIFIED — ZC_EXT=1 hardcoded localparam in cv32e40s_core.sv
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Zifencei, version: "= 2.0" }
+  - { name: Zkt, version: "= 1.0.0" } # VERIFIED — always enabled per intro.rst; data-independent execution latency
+  - { name: Sm, version: "= 1.12.0" }
+  # B_EXT=B_NONE by default → no Zba, Zbb, Zbc, Zbs
+
+params:
+  # XLEN parameters (VERIFIED — intro.rst; RV32I base ISA)
+  MXLEN: 32
+  PHYS_ADDR_WIDTH: 32 # VERIFIED — 32-bit addressing, no Sv32
+
+  # MISA (VERIFIED — cs_registers.sv: all MISA bits are WARL-hardwired)
+  MUTABLE_MISA_M: false # VERIFIED — M bit hardwired based on M_EXT parameter
+  MUTABLE_MISA_C: false # VERIFIED — C bit always hardwired to 1
+  MISA_CSR_IMPLEMENTED: true # VERIFIED — MISA CSR (0x301) documented
+
+  # endianness (VERIFIED — intro.rst: little-endian architecture)
+  M_MODE_ENDIANNESS: little
+
+  # trap/exception behavior (VERIFIED — exceptions_interrupts.rst)
+  TRAP_ON_ECALL_FROM_M: true # VERIFIED — ecall always traps
+  TRAP_ON_EBREAK: true # VERIFIED — ebreak generates breakpoint exception
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true # VERIFIED — exceptions_interrupts.rst: illegal instruction for unimplemented
+  TRAP_ON_RESERVED_INSTRUCTION: true # VERIFIED — undefined encodings trap as illegal instruction
+  TRAP_ON_UNIMPLEMENTED_CSR: true # VERIFIED — decoder: illegal instruction for undefined CSRs
+  TRAP_ON_ILLEGAL_WLRL: false # VERIFIED — cs_registers.sv: WARL masking only, no illegal-write trap
+
+  # MTVAL reporting (VERIFIED — cs_registers.sv line 486-487: mtval reads as 0)
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false
+  MTVAL_WIDTH: 32 # 32-bit field, RO hardwired to 0 — all REPORT_* flags are false
+
+  # Misaligned load/store support (VERIFIED — pipeline.rst, rvfi.rst: split transactions for misaligned)
+  MISALIGNED_LDST: true # VERIFIED — misaligned accesses supported via split bus transactions (main memory only)
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low # VERIFIED — never raises misaligned exception in main memory
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0 # VERIFIED — two bus transactions, no atomicity guarantee
+  MISALIGNED_SPLIT_STRATEGY: custom # VERIFIED — lowest address first (same as cv32e40p)
+
+  # CSR / implementation IDs (VERIFIED — cv32e40s_pkg.sv)
+  ARCH_ID_VALUE: 0x00000015 # VERIFIED — cv32e40s_pkg.sv:599: MARCHID = 32'h15
+  IMP_ID_VALUE: 0x0 # mimpid is an input port; 0 for baseline config
+  VENDOR_ID_BANK: 0xC # VERIFIED — cv32e40s_pkg.sv:596: MVENDORID_BANK = 25'hC (OpenHW, JEDEC bank 13)
+  VENDOR_ID_OFFSET: 0x2 # VERIFIED — cv32e40s_pkg.sv:595: MVENDORID_OFFSET = 7'h2
+
+  # MTVEC (VERIFIED — cs_registers.sv: CSR_MTVEC_MASK = 32'hFFFFFF01)
+  MTVEC_MODES: [0, 1] # VERIFIED — mode bit[0] writable; supports direct (0) and vectored (1)
+  MTVEC_ACCESS: rw
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom # VERIFIED — mode = {1'b0, wdata[0]}; masking always produces valid mode
+  MTVEC_BASE_ALIGNMENT_VECTORED: 256 # VERIFIED — bits [7:1] masked to 0 → 256-byte alignment
+  MTVEC_BASE_ALIGNMENT_DIRECT: 256 # VERIFIED — same mask applies to both modes
+
+  # Sm params
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true # VERIFIED — mepc set to current PC on exception
+  MARCHID_IMPLEMENTED: true
+  MIMPID_IMPLEMENTED: true
+  PMA_GRANULARITY: 2 # Schema minimum (= 4 bytes); PMA_NUM_REGIONS=0 by default → entire memory is main
+  NUM_PMP_ENTRIES: 0 # VERIFIED — PMP_NUM_REGIONS=0 default; PMP CSRs exist (SECURE=1) but all read-only-zero
+  CONFIG_PTR_ADDRESS: 0 # VERIFIED — cs_registers.sv: mconfigptr_rdata = 32'h0 (hardwired)
+
+  # Zcmt params (VERIFIED — cv32e40s_pkg.sv: CSR_JVT_MASK=0xFFFFFFC0, JVT_RESET_VAL=0)
+  JVT_BASE_TYPE: mask # VERIFIED — upper 26 bits writable via mask
+  JVT_READ_ONLY: false # VERIFIED — jvt is writable
+  JVT_BASE_MASK: 0x7FFFFFC0 # RTL mask is 0xFFFFFFC0 but UDB requires < 0xFFFFFFC0 for RV32; bit 31 excluded
+
+  # HPM Counters (VERIFIED — cv32e40s_pkg.sv: NUM_HPM_EVENTS=2; cv32e40s_core.sv: NUM_MHPMCOUNTERS=0)
+  HPM_COUNTER_EN: # VERIFIED — NUM_MHPMCOUNTERS=0; no HPM counters instantiated
+    [
+      false, # index 0 (CY — must be false per UDB schema)
+      false, # index 1 (TM — must be false per UDB schema)
+      false, # index 2 (IR — must be false per UDB schema)
+      false,
+      false,
+      false,
+      false,
+      false, # 3..7
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 8..15
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 16..23
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 24..31
+    ]
+  MCOUNTENABLE_EN: # VERIFIED — cs_registers.sv: mcounteren_rdata = 32'h0 (hardwired, no S-mode delegation)
+    [
+      false, # index 0 (CY)
+      false, # index 1 (TM)
+      false, # index 2 (IR)
+      false,
+      false,
+      false,
+      false,
+      false, # 3..7
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 8..15
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 16..23
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 24..31
+    ]
+  COUNTINHIBIT_EN: # VERIFIED — cs_registers.sv: only indices 0,2 (mcycle, minstret) inhibitable
+    [
+      true, # index 0 (MCYCLE inhibit)
+      false, # index 1 (TM — always false per UDB)
+      true, # index 2 (MINSTRET inhibit)
+      false,
+      false,
+      false,
+      false,
+      false, # 3..7
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 8..15
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 16..23
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 24..31
+    ]
+# end

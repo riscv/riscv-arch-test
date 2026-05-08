@@ -22,7 +22,7 @@
 # Each stage that uses them must redeclare them with a bare ARG (no default) to bring them into scope.
 ARG RISCV_TOOLCHAIN_PREFIX=/opt/riscv
 ARG SAIL_VERSION=0.11
-ARG RISCV_TOOLCHAIN_VERSION=2026.04.30
+ARG RISCV_TOOLCHAIN_VERSION=2026.05.06
 
 # Stage 1: build riscv-gnu-toolchain
 #

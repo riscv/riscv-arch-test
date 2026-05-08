@@ -33,6 +33,30 @@ def emit_seed_misa(scratch: int) -> None:
     common.writeLine(f"csrr x{scratch}, misa", "# seed misa into rvvi trace")
 
 
+def _pick_priv_fp_sew(instruction: str) -> int | None:
+    """Pick a non-reserved SEW for vector-FP instructions.
+
+    Vector-FP instructions are reserved at SEW=8 (no FP8 type). Widening FP
+    requires the destination 2*SEW to be a supported FP width; narrowing FP
+    requires the source 2*SEW to be a supported FP width. Picking SEW based on
+    the instruction class avoids producing reserved encodings whose result
+    differs between simulators (and across re-runs that may leave different
+    garbage in the destination tail).
+    """
+    if instruction not in common.vfloattypes:
+        return None
+    # Widening FP (vd EEW = 2*SEW): pick SEW=16 so vd EEW=32 (single precision).
+    if instruction in common.fwvvins or instruction in common.fwvfins \
+            or instruction in common.fwwvins or instruction in common.fwwfins \
+            or instruction in common.fwcvt_ins:
+        return 16
+    # Narrowing FP (vs2 EEW = 2*SEW): pick SEW=16 so input EEW=32.
+    if instruction in common.fcvt_w_ins:
+        return 16
+    # Non-widening / non-narrowing FP: SEW=32 is universally supported (FLEN>=32).
+    return 32
+
+
 def run_under_fs_vs(
     instruction: str,
     cp: str,
@@ -50,8 +74,12 @@ def run_under_fs_vs(
     True for cases that always trap (VS=Off, FS=Off): the trap-handler
     signature still records the trap event for cross-model comparison.
     """
-    eew = common.getInstructionEEW(instruction) or common.minSEW_MIN
-    sew = eew
+    fp_sew = _pick_priv_fp_sew(instruction)
+    if fp_sew is not None:
+        sew = fp_sew
+    else:
+        eew = common.getInstructionEEW(instruction) or common.minSEW_MIN
+        sew = eew
 
     instruction_data = common.randomizeVectorInstructionData(
         instruction, sew, common.getBaseSuiteTestCount(),

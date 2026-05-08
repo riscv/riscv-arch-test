@@ -249,8 +249,10 @@ def makeTest(coverpoints, instruction):
         if   ((coverpoint in ['RV32', 'RV64', 'EFFEW8', 'EFFEW16', 'EFFEW32', 'EFFEW64']) or
               ("sample" in coverpoint))                      : pass
         elif (coverpoint == "cp_vill")                       : make_vill(instruction)
-        elif (coverpoint == "cp_vstart")                     : make_vstart(instruction)
-        elif (coverpoint == "cp_vstart_gt_vl")               : make_vstart_gt_vl(instruction)
+        # TODO Issue 1445 on ACT$ Issue https://github.com/riscv/sail-riscv/issues/1104 on sail
+        # restore these next two lines when fixed
+        # elif (coverpoint == "cp_vstart")                     : make_vstart(instruction)
+        # elif (coverpoint == "cp_vstart_gt_vl")               : make_vstart_gt_vl(instruction)
         elif coverpoint in PRIV_REGISTRY                     : PRIV_REGISTRY[coverpoint](instruction)
         else:
             print("Warning: " + coverpoint + " not implemented yet for " + instruction)

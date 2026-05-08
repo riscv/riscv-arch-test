@@ -74,14 +74,26 @@ def _emit_setup(instruction: str, instruction_data: list, sew: int) -> int:
     vd_reg  = vec_data["vd"]["reg"]
     vs2_reg = vec_data["vs2"]["reg"]
     vs3_reg = vec_data["vs3"]["reg"]
-    common.writeLine(f"vsetivli x{scratch}, 1, e{sew}, m1, tu, mu", "# vill=0, vstart=0, vl=1")
+    vs1_reg = vec_data["vs1"]["reg"] if "vs1" in vec_data else None
+    # For widening instructions vd EEW = 2*SEW. Initialize vd at that EEW so the
+    # destination element is fully written by the load (otherwise the upper half
+    # of vd holds whatever boot-time garbage the model left there, producing
+    # non-deterministic signature values when the test instruction itself
+    # traps and leaves vd unchanged).
+    vd_sew = sew * 2 if instruction in common.vd_widen_ins else sew
+    vs2_sew = sew * 2 if instruction in common.vs2_widen_ins else sew
     common.writeLine(f"la x{scratch}, random_mask_0", "# valid data address")
     if "vd" in args:
-        common.writeLine(f"vle{sew}.v v{vd_reg}, (x{scratch})", f"# initialize vd (v{vd_reg})")
+        common.writeLine(f"vsetivli x0, 1, e{vd_sew}, m1, tu, mu", "# init vd at vd EEW")
+        common.writeLine(f"vle{vd_sew}.v v{vd_reg}, (x{scratch})", f"# initialize vd (v{vd_reg})")
+    if "vs2" in args:
+        common.writeLine(f"vsetivli x0, 1, e{vs2_sew}, m1, tu, mu", "# init vs2 at vs2 EEW")
+        common.writeLine(f"vle{vs2_sew}.v v{vs2_reg}, (x{scratch})", f"# initialize vs2 (v{vs2_reg})")
+    common.writeLine(f"vsetivli x0, 1, e{sew}, m1, tu, mu", "# vill=0, vstart=0, vl=1")
     if "vs3" in args:
         common.writeLine(f"vle{sew}.v v{vs3_reg}, (x{scratch})", f"# initialize vs3 (v{vs3_reg})")
-    if "vs2" in args:
-        common.writeLine(f"vle{sew}.v v{vs2_reg}, (x{scratch})", f"# initialize vs2 (v{vs2_reg})")
+    if "vs1" in args and vs1_reg is not None:
+        common.writeLine(f"vle{sew}.v v{vs1_reg}, (x{scratch})", f"# initialize vs1 (v{vs1_reg})")
     return scratch
 
 

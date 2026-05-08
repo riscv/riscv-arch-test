@@ -67,14 +67,14 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/4
+    .rept UDB_NUM_PMP_ENTRIES/4
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+1
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -130,7 +130,7 @@ test_3_str:  .string "\"test: 3;  cp: pmpzicbo_cbo_flush\""
 test_4_str:  .string "\"test: 4;  cp: pmpzicbo_cbo_inval\""
 
 .align 12
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 
 TEST_FOR_EXECUTION_1:
     .rept 1024

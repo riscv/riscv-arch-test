@@ -245,7 +245,7 @@ TEST_FOR_EXECUTION_0:
     .endr
 
 TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept (1<<(UDB_PMP_GRANULARITY))
     nop
     .endr
 

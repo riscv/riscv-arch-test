@@ -1,6 +1,6 @@
 """Priv coverpoint handler for cp_exceptionsv_ffLS.
 
-Generates tests for fault-first load instructions with rs1=0 (address 0)
+Generates tests for fault-first load instructions with rs1=0 (address RVMODEL_ACCESS_FAULT_ADDRESS)
 and masking disabled (vm=1), triggering a fault on the first element.
 """
 

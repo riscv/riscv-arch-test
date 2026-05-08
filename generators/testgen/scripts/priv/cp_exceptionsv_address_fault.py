@@ -1,7 +1,7 @@
 """Priv coverpoint handler for cp_exceptionsv_address_fault.
 
 Generates tests that execute vector LS instructions with a valid vtype
-but a bad address (0) in rs1, triggering an address fault while vill=0.
+but a bad address (RVMODEL_ACCESS_FAULT_ADDRESS) in rs1, triggering an address fault while vill=0.
 This crosses vtype_valid × trap_occurred.
 """
 

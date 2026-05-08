@@ -45,7 +45,7 @@ certification.
 The RVA23S64 profile implies requirements that might not be immediately
 obvious.  This section explains them in detail.
 
-=== Nonconforming M-mode
+=== Custom M-mode
 
 The RVA23S64 profile purposefully excludes Machine mode (M-mode).  It does not require a _Standard M-mode_ consistent with the ratified M-mode specification.
 Therefore, certification does not run M-mode code directly.
@@ -110,7 +110,7 @@ XS, SDT, MBE, SBE, UBE, SXL, UXL OUT-OF-SCOPE for RVA23.
 | PMP CSRs | PMP restrictions on access are indistinguishable below M-mode from a PMA that imposes similar restrictions.
 |===
 
-If `mideleg` or `medeleg` fields that should be delegated to S-mode are read-only zero, the supervisorexecution environment must respond by invoking the S-mode trap handler through software.
+If `mideleg` or `medeleg` fields that should be delegated to S-mode are read-only zero, the supervisor execution environment must respond by invoking the S-mode trap handler through software.
 
 === Interrupts
 

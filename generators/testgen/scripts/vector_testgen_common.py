@@ -1296,8 +1296,9 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
         if ext == "V" and matched_alias is not None:
           ext_str_no_I += "_" + ext
           continue
-        if ext.startswith("Zv"):
-          ext_str_no_I += "_v_" + ext
+        if ext == "Zvbb" or ext == "Zvbc": # Bit Manipulation and Carryless Multiplication
+          ext_str_no_I += "_" + ext + f"_zve{max(32, sew, vdsew)}x" # Ensure that we can handle either sew
+          ext_parts_no_I.append(f"_zve{max(32, sew, vdsew)}x")
 
         ext_parts_no_I.append(ext)
 

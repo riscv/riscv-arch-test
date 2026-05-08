@@ -31,18 +31,38 @@ def _generate_scause_tests(test_data: TestData) -> list[str]:
         f"CSRR(x{save_reg}, scause)     # save CSR before testing it",
     ]
 
+    gated_exceptions = [
+        (10, "#ifdef H_SUPPORTED"),  # ecall from VS-mode
+        (11, "RESERVED"),  # ecall from M-mode never delegated
+        (14, "RESERVED"),
+        (16, "RESERVED"),  # Double trap never delegated
+        (17, "RESERVED"),
+        (18, "#if defined(ZICFILP_SUPPORTED) || defined(ZICFISS_SUPPORTED)"),  # software check
+        (19, "RESERVED"),  # not all systems may produce hardware-error exceptions
+        (20, "#ifdef H_SUPPORTED"),  # instruction guest-page fault
+        (21, "#ifdef H_SUPPORTED"),  # load guest-page fault
+        (22, "#ifdef H_SUPPORTED"),  # virtual instruction
+        (23, "#ifdef H_SUPPORTED"),  # store guest-page fault
+    ]
+
     for i in range(24):
-        if i in {14, 17}:  # skip reserved causes
-            continue
-        lines.extend(
-            [
-                "",
-                f"# Testcase: set scause to exception cause {i}",
-                f"LI(x{check_reg}, {i})",
-                test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
-                gen_csr_write_sigupd(check_reg, "scause", test_data),
-            ]
-        )
+        gated = next((g for g in gated_exceptions if g[0] == i), None)
+        if gated is not None and gated[1] == "RESERVED":
+            lines.append(f"\n# Exception cause {i} is reserved")
+        else:
+            if gated is not None:
+                lines.append(f"{gated[1]}")
+            lines.extend(
+                [
+                    "",
+                    f"# Testcase: set scause to exception cause {i}",
+                    f"LI(x{check_reg}, {i})",
+                    test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
+                    gen_csr_write_sigupd(check_reg, "scause", test_data),
+                ]
+            )
+            if gated is not None:
+                lines.append("#endif")
 
     ######################################
     coverpoint = "cp_scause_write_interrupt"
@@ -260,7 +280,7 @@ def _generate_mretm_tests(test_data: TestData) -> list[str]:
                             "RVTEST_GOTO_MMODE      # make sure we return to machine mode",
                             write_sigupd(check_reg, test_data),
                             # Test mstatus was updated properly
-                            gen_csr_read_sigupd(check_reg, "mstatus", test_data),
+                            gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
                         ]
                     )
 
@@ -287,6 +307,8 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
         "",
         "# Setup",
         f"CSRR(x{save_reg}, mstatus)        # read and save mstatus",
+        f"LI(x{reg1}, 1 << 2)",
+        f"CSRC medeleg, x{reg1}          # turn off delegating illegal instruction exceptions so TSR won't cause a trap loop on sret",
         f"{INDENT}# set up x{reg1} with mstatus except MPRV, SPP, SPIE, SIE, TSR cleared",
         f"LI(x{reg2}, 0x420122)          # x{reg2} has all MPRV, SPP, SPIE, SIE, TSR bits set (bits [17], [8], [5], [1], [22] respectively)",
         f"not x{reg2}, x{reg2}              # x{reg2} has all but MPRV, SPP, SPIE, SIE, TSR bits set",
@@ -318,7 +340,7 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
                                 write_sigupd(check_reg, test_data),
                                 "RVTEST_GOTO_MMODE      # make sure we return to machine mode",
                                 # Test mstatus was updated properly
-                                gen_csr_read_sigupd(check_reg, "mstatus", test_data),
+                                gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
                             ]
                         )
 
@@ -392,11 +414,18 @@ def _generate_srets_tests(test_data: TestData) -> list[str]:
                             "RVTEST_GOTO_MMODE      # We might be coming from U-mode, so to get back to S-mode, macros may have to go through M",
                             "RVTEST_GOTO_LOWER_MODE Smode      # make sure we return to supervisor mode",
                             # Test sstatus was updated properly
-                            gen_csr_read_sigupd(check_reg, "sstatus", test_data),
+                            gen_csr_read_sigupd(check_reg, ("sstatus", None), test_data),
                         ]
                     )
 
-    lines.append(f"\nCSRW(sstatus, x{save_reg})    # restore CSR")
+    lines.extend(
+        [
+            f"\nCSRW(sstatus, x{save_reg})    # restore CSR",
+            "RVTEST_GOTO_MMODE      # back to M-mode to touch medeleg",
+            f"LI(x{reg1}, 1 << 2)",
+            f"CSRS medeleg, x{reg1}           # restore delegating illegal instructions",
+        ]
+    )
     test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
     return lines
 
@@ -406,7 +435,36 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     covergroup = "S_scsr_cg"
 
     # Standard S-mode CSRs
-    csrs = ["sstatus", "scause", "sie", "stvec", "scounteren", "senvcfg", "sscratch", "sepc", "stval", "sip"]
+    # Format: (CSR Name, Mask).  Mask specifies a set of bits to check
+
+    csrs = [
+        # TODO: sail does not yet support sstatus.UBE; mask it until available to avoid mismatches.  Delete mask when Sail has UBE support.
+        ("sstatus", 0xFFFFFFFFFFFFFFBF),
+        # WLRL fields can't be managed with masks.  Use cp_scause_* instead
+        #        ("scause", 0x7FFFFFFFFFFFFFF0),
+        ("sie", None),
+        # stvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
+        ("stvec", 0b10),
+        ("scounteren", None),
+        # Mask off CBIE field because reserved 10 value can become unpredictable, fails on cvw.  TODO: give a better way to map 10 to a legal value in Sail
+        ("senvcfg", 0xFFFFFFFFFFFFFFCF),
+        ("sscratch", None),
+        ("sepc", None),
+        ("stval", None),
+        ("sip", None),
+    ]
+    # Floating-point CSRs
+    csrf = [("fflags", None), ("frm", None), ("fcsr", None)]
+    # Vector CSRs
+    csrv = [
+        ("vstart", None),
+        ("vxsat", None),
+        ("vxrm", None),
+        ("vcsr", None),
+        ("vl", None),
+        ("vtype", None),
+        ("vlenb", None),
+    ]
 
     ######################################
     coverpoint = "cp_scsr_access"
@@ -432,12 +490,12 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     )
 
     lines.extend(["", "#ifdef F_SUPPORTED"])
-    for csr in ["fflags", "frm", "fcsr"]:
+    for csr in csrf:
         lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
     lines.extend(["", "#endif"])
 
     lines.extend(["", "#ifdef V_SUPPORTED"])
-    for csr in ["vstart", "vxsat", "vxrm", "vcsr", "vl", "vtype", "vlenb"]:
+    for csr in csrv:
         lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
     lines.extend(["", "#endif"])
 
@@ -484,10 +542,10 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
                 "",
                 f"csrs satp, x{walk_reg}    # set bit {i} in satp",
                 test_data.add_testcase(f"bit_{i}_set", coverpoint, covergroup),
-                gen_csr_read_sigupd(check_reg, "satp", test_data),
+                gen_csr_read_sigupd(check_reg, ("satp", None), test_data),
                 f"csrc satp, x{walk_reg}    # clear bit {i} in satp",
                 test_data.add_testcase(f"bit_{i}_clr", coverpoint, covergroup),
-                gen_csr_read_sigupd(check_reg, "satp", test_data),
+                gen_csr_read_sigupd(check_reg, ("satp", None), test_data),
                 f"slli x{walk_reg}, x{walk_reg}, 1   # shift to next bit",
                 f"and x{walk_reg}, x{walk_reg}, x{mask_reg}    # mask out mode bits",
             ]
@@ -564,36 +622,51 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
             "Check that values written to shadowed registers are consistent between machine and supervisor mode",
         ),
     )
-    r1, r2 = test_data.int_regs.get_registers(2)
+    r1, r2, rmask, rsave = test_data.int_regs.get_registers(4)
     lines.extend(
         [
-            f"LI(x{r1}, -1)          # x{r1} = all 1s for writing to shadowed registers",
-            _add_shadow(r1, r2, "mstatus", "sstatus", coverpoint, covergroup, test_data),
-            _add_shadow(r1, r2, "mie", "sie", coverpoint, covergroup, test_data),
-            _add_shadow(r1, r2, "mip", "sip", coverpoint, covergroup, test_data),
-            _add_shadow(r1, r2, "sstatus", "mstatus", coverpoint, covergroup, test_data),
-            _add_shadow(r1, r2, "sie", "mie", coverpoint, covergroup, test_data),
-            _add_shadow(r1, r2, "sip", "mip", coverpoint, covergroup, test_data),
+            f"LI(x{r1}, 0x007FFFBF) # skip UBE, UXL bits which would cause weird behavior",
+            _add_shadow(r1, r2, rmask, rsave, "mstatus", "sstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data),
+            _add_shadow(r1, r2, rmask, rsave, "sstatus", "mstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data),
+            f"LI(x{r1}, 0xFFFF) # all interrupts",
+            _add_shadow(r1, r2, rmask, rsave, "mie", "sie", 0x3666, coverpoint, covergroup, test_data),
+            _add_shadow(r1, r2, rmask, rsave, "mip", "sip", 0x3666, coverpoint, covergroup, test_data),
+            _add_shadow(r1, r2, rmask, rsave, "sie", "mie", 0x3666, coverpoint, covergroup, test_data),
+            _add_shadow(r1, r2, rmask, rsave, "sip", "mip", 0x3666, coverpoint, covergroup, test_data),
         ]
     )
-    test_data.int_regs.return_registers([r1, r2])
+    test_data.int_regs.return_registers([r1, r2, rmask, rsave])
 
     return lines
 
 
-def _add_shadow(r1: int, r2: int, wreg: str, rreg: str, coverpoint: str, covergroup: str, test_data: TestData) -> str:
+def _add_shadow(
+    r1: int,
+    r2: int,
+    rmask: int,
+    rsave: int,
+    wreg: str,
+    rreg: str,
+    mask: int,
+    coverpoint: str,
+    covergroup: str,
+    test_data: TestData,
+) -> str:
     """Helper function to generate shadow CSR test lines for writing wreg and reading rreg."""
     return str.join(
         "\n",
         [
             "",
-            f"# Testcase: shadow CSR test for writing {wreg} and reading {rreg}",
-            f"csrw {wreg}, x{r1}       # write all 1s to {wreg}",
+            f"# Testcase: shadow CSR test for writing {wreg} and reading {rreg} with mask 0x{mask:x}",
+            f"LI(x{rmask}, 0x{mask:x}) # mask specifying bits to keep",
+            f"csrr x{rsave}, {wreg}       # save original value of {wreg}",
+            f"csrw {wreg}, x{r1}       # write many 1s to {wreg}",
             test_data.add_testcase(f"{wreg}_{rreg}_1s", coverpoint, covergroup),
-            gen_csr_read_sigupd(r2, rreg, test_data),
+            gen_csr_read_sigupd(r2, (rreg, mask), test_data, rmask),
             f"csrw {wreg}, x0       # write all 0s to {wreg}",
             test_data.add_testcase(f"{wreg}_{rreg}_0s", coverpoint, covergroup),
-            gen_csr_read_sigupd(r2, rreg, test_data),
+            gen_csr_read_sigupd(r2, (rreg, mask), test_data, rmask),
+            f"csrw {wreg}, x{rsave}       # write back saved value of {wreg}",
         ],
     )
 

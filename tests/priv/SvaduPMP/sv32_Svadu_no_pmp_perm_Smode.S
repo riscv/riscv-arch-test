@@ -146,7 +146,7 @@ main:
 
   LA (t2, rvtest_Sroot_pg_tbl)
   srl t2, t2, PMP_SHIFT
-  LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)    // Minimum range is 8 Bytes (NAPOT). Increase range according to G
+  LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (NAPOT). Increase range according to G
   or t2, t2, t1
   CSRW(pmpaddr0, t2)
 
@@ -196,7 +196,7 @@ main:
 
   LA (t2, rvtest_slvl0_pg_tbl)
   srl t2, t2, PMP_SHIFT
-  LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)    // Minimum range is 8 Bytes (NAPOT). Increase range according to G
+  LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (NAPOT). Increase range according to G
   or t2, t2, t1
   CSRW(pmpaddr0, t2)
 
@@ -260,10 +260,10 @@ rvtest_data_1:
 
 // Page Tables
 .align 12
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 rvtest_slvl0_pg_tbl:
     .skip(4096)
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 
 write_pmpcfg0_str:   .string "\"Mismatch in pmpcfg0!\""
 test1_store_str:     .string "\"Mismatch during sw in Test Case 1!\""

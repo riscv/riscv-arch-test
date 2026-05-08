@@ -1296,6 +1296,9 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
         if ext == "V" and matched_alias is not None:
           ext_str_no_I += "_" + ext
           continue
+        if ext.startswith("Zv"):
+          ext_str_no_I += "_v_" + ext
+
         ext_parts_no_I.append(ext)
 
       ext_parts_no_I.extend(derived_exts)

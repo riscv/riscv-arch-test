@@ -293,6 +293,18 @@ def setExtension(new_extension):
     global extension
     extension = new_extension
 
+# SEW selected for the current priv vector-FP test file (e.g. ExceptionsVf16
+# sets this to 16). None for non-FP priv suites; the FP SEW picker falls back
+# to per-instruction inference in that case.
+priv_fp_sew = None
+
+def setPrivFpSew(new_sew):
+    global priv_fp_sew
+    priv_fp_sew = new_sew
+
+def getPrivFpSew():
+    return priv_fp_sew
+
 def incrementLengthtestCount():
     global lengthtest_count
     lengthtest_count = lengthtest_count + 1
@@ -3193,6 +3205,14 @@ def readTestplans(priv=False):
                     for effew in ["16", "32", "64"]:
                         testplans["Vf" + effew] = tp
                     del testplans["Vf"]
+                if (arch == "ExceptionsVf"):
+                    # Mirror unpriv Vf: expand into per-SEW pseudo-extensions so
+                    # each generated test runs vector-FP at a non-reserved SEW
+                    # (SEW=8 is reserved for FP). The driver filters instructions
+                    # by EFFEW{N} and emits ExceptionsVf{N}_rv{xlen}.S.
+                    for effew in ["16", "32", "64"]:
+                        testplans["ExceptionsVf" + effew] = tp
+                    del testplans["ExceptionsVf"]
                 if (arch in ["Zvbb", "Zvkb"]):
                     for effew in ["8", "16", "32", "64"]:
                         testplans[arch + effew] = tp

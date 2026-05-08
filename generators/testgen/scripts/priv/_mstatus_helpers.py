@@ -36,15 +36,20 @@ def emit_seed_misa(scratch: int) -> None:
 def _pick_priv_fp_sew(instruction: str) -> int | None:
     """Pick a non-reserved SEW for vector-FP instructions.
 
-    Vector-FP instructions are reserved at SEW=8 (no FP8 type). Widening FP
-    requires the destination 2*SEW to be a supported FP width; narrowing FP
-    requires the source 2*SEW to be a supported FP width. Picking SEW based on
-    the instruction class avoids producing reserved encodings whose result
-    differs between simulators (and across re-runs that may leave different
-    garbage in the destination tail).
+    Vector-FP instructions are reserved at SEW=8 (no FP8 type). The driver sets
+    a per-file SEW for ExceptionsVf{16,32,64} / ExceptionsVfmin via
+    common.setPrivFpSew; that file SEW is what we use here so each file
+    exercises its target precision and the EFFEW{N} CSV filter guarantees we
+    never emit a reserved (instr, SEW) combination.
+
+    Fallback (file SEW unset): infer per instruction class so widening/
+    narrowing avoid producing reserved encodings.
     """
     if instruction not in common.vfloattypes:
         return None
+    file_sew = common.getPrivFpSew()
+    if file_sew is not None:
+        return file_sew
     # Widening FP (vd EEW = 2*SEW): pick SEW=16 so vd EEW=32 (single precision).
     if instruction in common.fwvvins or instruction in common.fwvfins \
             or instruction in common.fwwvins or instruction in common.fwwfins \

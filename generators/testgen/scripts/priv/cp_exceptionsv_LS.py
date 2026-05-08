@@ -82,6 +82,10 @@ def _emit_setup(instruction: str, instruction_data: list, sew: int) -> int:
     # traps and leaves vd unchanged).
     vd_sew = sew * 2 if instruction in common.vd_widen_ins else sew
     vs2_sew = sew * 2 if instruction in common.vs2_widen_ins else sew
+    # Widening reductions (wvsins / fwvsins) read vs1[0] at 2*SEW (the widened
+    # accumulator). Initialize vs1 at that EEW so the upper half is not boot-time
+    # garbage — otherwise the signature differs from the generator's expected value.
+    vs1_sew = sew * 2 if instruction in common.wvsins else sew
     common.writeLine(f"la x{scratch}, random_mask_0", "# valid data address")
     if "vd" in args:
         common.writeLine(f"vsetivli x0, 1, e{vd_sew}, m1, tu, mu", "# init vd at vd EEW")
@@ -89,10 +93,13 @@ def _emit_setup(instruction: str, instruction_data: list, sew: int) -> int:
     if "vs2" in args:
         common.writeLine(f"vsetivli x0, 1, e{vs2_sew}, m1, tu, mu", "# init vs2 at vs2 EEW")
         common.writeLine(f"vle{vs2_sew}.v v{vs2_reg}, (x{scratch})", f"# initialize vs2 (v{vs2_reg})")
+    if "vs1" in args and vs1_reg is not None and vs1_sew != sew:
+        common.writeLine(f"vsetivli x0, 1, e{vs1_sew}, m1, tu, mu", "# init vs1 at vs1 EEW")
+        common.writeLine(f"vle{vs1_sew}.v v{vs1_reg}, (x{scratch})", f"# initialize vs1 (v{vs1_reg})")
     common.writeLine(f"vsetivli x0, 1, e{sew}, m1, tu, mu", "# vill=0, vstart=0, vl=1")
     if "vs3" in args:
         common.writeLine(f"vle{sew}.v v{vs3_reg}, (x{scratch})", f"# initialize vs3 (v{vs3_reg})")
-    if "vs1" in args and vs1_reg is not None:
+    if "vs1" in args and vs1_reg is not None and vs1_sew == sew:
         common.writeLine(f"vle{sew}.v v{vs1_reg}, (x{scratch})", f"# initialize vs1 (v{vs1_reg})")
     return scratch
 

@@ -89,7 +89,8 @@ main:
     csrw pmpaddr0, x5
 
     LA(x5, REGIONSTART)
-    addi x5, x5, REGION_SIZE
+    LI(x4, REGION_SIZE)
+    add x5, x5, x4
     srl x5, x5, PMP_SHIFT
     csrw pmpaddr1, x5
 

@@ -80,7 +80,7 @@ main:
     j exit                                                        // Verification Complete, exit the test
 
 .align 10
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 RETURN_INSTRUCTION:
     nop
     nop

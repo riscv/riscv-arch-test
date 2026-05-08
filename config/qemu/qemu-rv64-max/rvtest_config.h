@@ -30,7 +30,7 @@
 #define SMDBLTRP_SUPPORTED
 
 // Vector configuration
-#define VLEN 128
+#define VLEN 512
 #define SEWMIN 8
 #define ELEN 64
 #define MAXINDEXEEW 64

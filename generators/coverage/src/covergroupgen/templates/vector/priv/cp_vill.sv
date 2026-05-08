@@ -3,7 +3,6 @@
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vill: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
-        bins zero = {0};
         bins one  = {1};
     }
 

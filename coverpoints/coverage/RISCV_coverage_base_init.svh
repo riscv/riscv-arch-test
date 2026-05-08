@@ -82,6 +82,22 @@
         `cover_info("//      ExceptionsVf - Enabled");
         `include "ExceptionsVf_coverage_init.svh"
     `endif
+    `ifdef COVER_EXCEPTIONSVF16
+        `cover_info("//      ExceptionsVf16 - Enabled");
+        `include "ExceptionsVf16_coverage_init.svh"
+    `endif
+    `ifdef COVER_EXCEPTIONSVF32
+        `cover_info("//      ExceptionsVf32 - Enabled");
+        `include "ExceptionsVf32_coverage_init.svh"
+    `endif
+    `ifdef COVER_EXCEPTIONSVF64
+        `cover_info("//      ExceptionsVf64 - Enabled");
+        `include "ExceptionsVf64_coverage_init.svh"
+    `endif
+    `ifdef COVER_EXCEPTIONSVFMIN
+        `cover_info("//      ExceptionsVfmin - Enabled");
+        `include "ExceptionsVfmin_coverage_init.svh"
+    `endif
     `ifdef COVER_EXCEPTIONSVLS
         `cover_info("//      ExceptionsVls - Enabled");
         `include "ExceptionsVls_coverage_init.svh"

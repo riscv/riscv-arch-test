@@ -65,6 +65,18 @@
 `ifdef EXCEPTIONSVF_COVERAGE
   `include "ExceptionsVf_coverage.svh"
 `endif
+`ifdef EXCEPTIONSVF16_COVERAGE
+  `include "ExceptionsVf16_coverage.svh"
+`endif
+`ifdef EXCEPTIONSVF32_COVERAGE
+  `include "ExceptionsVf32_coverage.svh"
+`endif
+`ifdef EXCEPTIONSVF64_COVERAGE
+  `include "ExceptionsVf64_coverage.svh"
+`endif
+`ifdef EXCEPTIONSVFMIN_COVERAGE
+  `include "ExceptionsVfmin_coverage.svh"
+`endif
 `ifdef EXCEPTIONSVLS_COVERAGE
   `include "ExceptionsVls_coverage.svh"
 `endif

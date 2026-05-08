@@ -340,8 +340,6 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
                                 write_sigupd(check_reg, test_data),
                                 "RVTEST_GOTO_MMODE      # make sure we return to machine mode",
                                 # Test mstatus was updated properly
-                                # TODO: relax mask when Sail matures
-                                # To work around Whisper issue https://github.com/tenstorrent/whisper/issues/18, mask off MPRV bit 17
                                 gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
                             ]
                         )

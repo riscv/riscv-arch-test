@@ -18,9 +18,6 @@ from testgen.formatters.params import generate_random_params
 @add_coverpoint_generator("cp_csr_frm")
 def make_frm(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for frm values."""
-    if coverpoint != "cp_csr_frm":
-        raise ValueError(f"Unknown cp_csr_frm coverpoint variant: {coverpoint} for {instr_name}")
-
     # Test each valid fcsr.frm value (0-4) via dynamic rounding mode (rm=111 in the encoding).
     frm_modes = (("rne", 0), ("rtz", 1), ("rdn", 2), ("rup", 3), ("rmm", 4))
     test_chunks: list[TestChunk] = []

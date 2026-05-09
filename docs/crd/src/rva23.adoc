@@ -50,7 +50,7 @@ obvious.  This section explains them in detail.
 The RVA23S64 profile purposefully excludes Machine mode (M-mode).  It does not require a _Standard M-mode_ consistent with the ratified M-mode specification.
 Therefore, certification does not run M-mode code directly.
 
-Custom M-mode is an supervisor execution environment that deviates from the M-mode specification.  For example, it might have a bug that affects M-mode behavior but is invisible from S-mode.  The firmware could work around this bug by not running M-mode instructions affected by the bug.  Alternatively, Custom M-mode might have some security features or proprietary CSRs that break compatibility with ratified M-mode.
+Custom M-mode is a supervisor execution environment that deviates from the M-mode specification.  For example, it might have a bug that affects M-mode behavior but is invisible from S-mode.  The firmware could work around this bug by not running M-mode instructions affected by the bug.  Alternatively, Custom M-mode might have some security features or proprietary CSRs that break compatibility with ratified M-mode.
 
 === Execution Environment and Supervisor Binary Interface (SBI)
 
@@ -64,10 +64,6 @@ The execution environment must provide a Supervisor Binary Interface (SBI) that 
 
 RVA23 certification requires that the SBI provide methods of emulating every writable standard M-mode CSR field that can affect the behavior of lower privilege modes.  With a standard M-mode, the SBI may just write bitfields in the M-mode registers.  With custom M-mode, the SBI must make it appear to S-mode software that the field holds the value written by the SBI, even though the implementation might be different.
 
-Alternate: boot sets up most CSRs and we just test  S-mode with those.
-
-Require emulating all suitable m{e/i}deleg bits being set
-
 These CSRs are:
 
 [options=header]
@@ -77,13 +73,11 @@ These CSRs are:
 | `mstatus` | TSR, TW, TVM
 | `mcounteren` | All fields not hardwired to 0 must be controllable to allow testing of counter access from lower privilege modes.
 | `mcountinhibit` | All fields not hardwired to 0 must be controllable to allow testing of counter behavior from lower privilege modes.
-| `menvcfg` | STCE, PBMTE, ADUE, PMM, CBZE, CBCFE, CBIE, SSE, LPE, FIOM must be controllable to allow testing of the behavior of lower privilege modes with these features enabled and disabled. Note that some bits may be read-only zero. CDE, DTE, are OUT-OF-SCOPE because they do not relate to RVA23 features.
-All writable fields must be controllable to allow testing of the behavior of lower privilege modes when certain features are disabled.
+| `menvcfg` | STCE, PBMTE, ADUE, PMM, CBZE, CBCFE, CBIE, SSE, LPE, FIOM must be controllable to allow testing of the behavior of lower privilege modes with these features enabled and disabled. Note that some bits may be read-only zero. CDE, DTE, are OUT-OF-SCOPE because they do not relate to RVA23 features. All writable fields must be controllable to allow testing of the behavior of lower privilege modes when certain features are disabled.
 | `mseccfg` | PMM, SSEED, and USEED must be controllable to allow testing of the behavior of lower privilege modes when certain features are disabled.  Note that some bits may be read-only zero. MLPE, RLB, MMWP, MML are OUT-OF-SCOPE of RVA23.
 | `mstateen` | SE0, ENVCFG, CONTEXT must be controllable to allow testing of the behavior of lower privilege modes when certain features are disabled. Note that some bits may be read-only zero.  Other fields are OUT-OF-SCOPE because they do not relate to RVA23 features.
 | `mhartid` | Must be readable to influence the behavior of multicore tests.
 | `mtime` | Must be readable to find the current time to set timer interrupts.
-| `mtimecmp` | Must be controllable to set timer interrupts.
 |===
 
 The following M-mode CSRs are OUT-OF-SCOPE:
@@ -92,9 +86,7 @@ The following M-mode CSRs are OUT-OF-SCOPE:
 [cols="1,5"]
 |===
 | CSR | Notes
-| `mstatus` | SD, SPELP, MXR, SUM, FS, VS, SPP, SPIE, SIE are accessible from `sstatus` and should not be tested through `mstatus` for RVA23 certification.
- GVA and MPV do not affect the behavior of lower privilege modes.
-XS, SDT, MBE, SBE, UBE, SXL, UXL OUT-OF-SCOPE for RVA23.
+| `mstatus` | SD, SPELP, MXR, SUM, FS, VS, SPP, SPIE, SIE are accessible from `sstatus` and should not be tested through `mstatus` for RVA23 certification. GVA and MPV do not affect the behavior of lower privilege modes. XS, SDT, MBE, SBE, UBE, SXL, UXL OUT-OF-SCOPE for RVA23.
 | `medeleg` | All standard exceptions are delegated to S-mode except that `ecall` from S and M-mode must not be delegatable because the SBI must trap to M-mode.
 | `mideleg` | All supervisor interrupts are delegated including SEI, SSI, STI, VSEI, VSSI, VSTI, LCOFI, SGEI.  Machine interrupts MEI, MSI, MTI are OUT-OF_SCOPE and not delegated.
 | `mip` | MEIP, MSIP, MTIP are OUT-OF-SCOPE.  SEIP, STIP, SSIP, and LCOFIP are accessible from `sip` and SGEIP is controlled by `hgeip` and `hgeie`.

@@ -1345,7 +1345,7 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
       float_en = "\n# set mstatus.FS to 10 to enable fp\nli t0,0x4000\ncsrs mstatus, t0\n\n"
       f.write(float_en)
 
-    for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$', r'/VlsCustom(\d+)$', r'/VfCustom(\d+)$']:
+    for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$', r'/VlsCustom(\d+)$', r'/VfCustom(\d+)$', r'/Zvbb(\d+)$', r'/Zvbc(64)$', r'/Zvkb(\d+)$']:
       sew_match = re.search(pattern, pathname)
       if sew_match:
           sew = int(sew_match.group(1))

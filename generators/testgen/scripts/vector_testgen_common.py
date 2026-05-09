@@ -1392,6 +1392,11 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
         if ext == "V" and matched_alias is not None:
           ext_str_no_I += "_" + ext
           continue
+        if ext in ["Zvbb", "Zvbc", "Zvkb"]: # Bit Manipulation, Carryless Multiplication, and Crypto Bit Manipulation
+          zve_extension = f"Zve{max(32, sew, vdsew)}x"
+          ext_str_no_I += "_" + ext + "_" + zve_extension.lower() # Ensure that we can handle either sew
+          ext_parts_no_I.append(zve_extension)
+
         ext_parts_no_I.append(ext)
 
       ext_parts_no_I.extend(derived_exts)

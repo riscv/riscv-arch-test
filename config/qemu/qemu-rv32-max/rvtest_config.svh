@@ -8,7 +8,8 @@
 // Define XLEN, used in covergroups
 `define XLEN32
 `define FLEN128
-`define VLEN512
+`define VLEN128
+`define ELEN64
 
 // Maximum supported index EEW for indexed load/store
 `define MAXINDEXEEW64
@@ -74,4 +75,4 @@
 `define LMULf2_SUPPORTED
 
 // Maximum supported index EEW for indexed load/store
-`define MAXINDEXEEW32
+`define MAXINDEXEEW64

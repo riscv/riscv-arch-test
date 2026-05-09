@@ -6,7 +6,7 @@ trap-valid conditions (vill=0, vstart=0, vl>0, mstatus.vs!=0).
 
 from __future__ import annotations
 
-from random import seed as set_seed
+from random import randrange, seed as set_seed
 
 import vector_testgen_common as common
 from priv_coverpoint_registry import register
@@ -108,6 +108,18 @@ def _emit_setup(instruction: str, instruction_data: list, sew: int) -> int:
         common.writeLine(f"vle{sew}.v v{vs3_reg}, (x{scratch})", f"# initialize vs3 (v{vs3_reg})")
     if "vs1" in args and vs1_reg is not None and vs1_sew == sew:
         common.writeLine(f"vle{sew}.v v{vs1_reg}, (x{scratch})", f"# initialize vs1 (v{vs1_reg})")
+    # Indexed LS: vs2 holds byte offsets from rs1 (random_mask_0). The vle above
+    # left vs2 holding random data, which produces huge byte offsets that land
+    # outside mapped memory and trap as load/store access fault. Replace vs2[0]
+    # with a small sew-aligned random offset so the access stays inside the
+    # random_mask data region. Mirrors the (-2*vlmax, 2*vlmax) sew-aligned
+    # bound that unpriv applies via vand/vrem on the loaded indices. vl=1 here,
+    # so vmv.v.x writes only vs2[0] (the only element the test reads).
+    if "vs2" in args and instruction in common.indexed_ls_ins:
+        sew_bytes = max(sew // 8, 1)
+        small_idx = randrange(0, 8) * sew_bytes
+        common.writeLine(f"li x{scratch}, {small_idx}", "# small sew-aligned index offset")
+        common.writeLine(f"vmv.v.x v{vs2_reg}, x{scratch}", f"# vs2[0] = small index into random_mask_0")
     # Initialize scalar-FP source operands (fs1) so the test instruction
     # reads a known bit pattern. Must run while mstatus.FS is writable
     # (Dirty); the FS-state runner sets FS=Dirty before calling us.

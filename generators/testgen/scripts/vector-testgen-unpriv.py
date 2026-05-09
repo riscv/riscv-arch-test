@@ -947,6 +947,8 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cmp_vd_vs1_nv0"               : make_vd_vs1(test, sew, range(1,vreg_count))
     elif coverpoint == "cmp_vd_vs1_emul2"             : make_vd_vs1(test, sew, range(0,vreg_count,2))
     elif coverpoint == "cmp_vs1_vs2"                  : make_vs1_vs2(test, sew, range(vreg_count))
+    elif coverpoint == "cmp_vs1_vs2_sew16":
+        if sew == 16: make_vs1_vs2(test, sew, range(vreg_count))
     elif coverpoint == "cmp_vs1_vs2_nv0"              : make_vs1_vs2(test, sew, range(1,vreg_count))
     elif coverpoint == "cmp_vd_vs1_vs2"               : make_vd_vs1_vs2(test, sew, range(vreg_count))
     elif coverpoint == "cmp_vd_vs1_vs2_nv0"           : make_vd_vs1_vs2(test, sew, range(1,vreg_count))
@@ -1343,7 +1345,7 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
       float_en = "\n# set mstatus.FS to 10 to enable fp\nli t0,0x4000\ncsrs mstatus, t0\n\n"
       f.write(float_en)
 
-    for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$', r'/VlsCustom(\d+)$', r'/VfCustom(\d+)$']:
+    for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$', r'/VlsCustom(\d+)$', r'/VfCustom(\d+)$', r'/Zvbb(\d+)$', r'/Zvbc(64)$', r'/Zvkb(\d+)$']:
       sew_match = re.search(pattern, pathname)
       if sew_match:
           sew = int(sew_match.group(1))

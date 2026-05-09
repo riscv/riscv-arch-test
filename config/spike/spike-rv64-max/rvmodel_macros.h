@@ -102,7 +102,7 @@
 
 ##### Machine Interrupts #####
 
-#define RVMODEL_INTERRUPT_LATENCY 2000
+#define RVMODEL_INTERRUPT_LATENCY 10
 
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
@@ -125,7 +125,15 @@
 #define NS16550_BASE_ADDRESS 0x10000000
 #define UART_INT_SRC         1            /* NS16550 interrupt source ID in Spike */
 
-/* Set machine external interrupt via PLIC + NS16550 UART transmitter interrupt */
+/* Generates machine external interrupt via PLIC + NS16550 UART transmitter interrupt.
+ * The UART throws an interrupt because the THR (Transmit Holding Register) defaults to empty.
+ * Steps:
+ * - Configures PLIC UART_INT_SRC to priority 7
+ * - Enables UART_INT_SRC in PLIC
+ * - Sets PLIC priority threshold to 0
+ * - Sets UART IER.ETBEI (Interrupt Enable Register - Enable Transmitter Holding Register Empty Interrupt)
+ * The PLIC sees that the UART source is enabled and has priority greater than the threshold,
+ * so PLIC asserts Machine External Interrupt. */
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)          \
   li _R1, 7;                                     \
   li _R2, PLIC_BASE_ADDRESS;                     \
@@ -139,7 +147,9 @@
   li _R2, NS16550_BASE_ADDRESS;                  \
   sb _R1, 1(_R2);
 
-/* Clear machine external interrupt: disable UART, then claim/complete in PLIC */
+/* Clears machine external interrupt:
+ * - Turns off UART interrupt by disabling IER.ETBEI
+ * - Reads the PLIC Claim register and writes it back to deassert Machine External Interrupt */
 #define RVMODEL_CLR_MEXT_INT(_R1, _R2)          \
   li _R2, NS16550_BASE_ADDRESS;                  \
   sb zero, 1(_R2);                               \

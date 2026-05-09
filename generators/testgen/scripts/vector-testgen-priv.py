@@ -53,6 +53,7 @@ from vector_testgen_common import (
   randomizeVectorInstructionData,
   readTestplans,
   setExtension,
+  setFlen,
   setXlen,
   vd_widen_ins,
   vector_ls_ins,
@@ -481,6 +482,11 @@ if __name__ == '__main__':
             effewcp = f"EFFEW{file_sew}"
             instructions = [inst for inst in instructions if effewcp in testplans[extension][inst]]
         common.setPrivFpSew(file_sew)
+        # Initialize flen so loadFloatReg / FP value formatting work correctly
+        # when priv coverpoints (e.g. cp_vectorfp_mstatus_fs_state) need to
+        # preload a scalar-FP source. Without this, flen=0 makes the random
+        # FP value 0 and the hex format string empty.
+        setFlen(file_sew if file_sew is not None else xlen)
 
         if not instructions:
             continue

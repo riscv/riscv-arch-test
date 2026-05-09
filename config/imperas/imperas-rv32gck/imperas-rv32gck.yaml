@@ -67,7 +67,7 @@ implemented_extensions:
   - { name: Zalasr, version: "= 1.0.0" }
   - { name: Zalrsc, version: "= 1.0.0" }
   - { name: Zama16b, version: "= 1.0.0" }
-  - { name: Zawrs, version: "= 1.0.1" }
+  - { name: Zawrs, version: "= 1.0.0" }
   - { name: Zba, version: "= 1.0.0" }
   - { name: Zbb, version: "= 1.0.0" }
   - { name: Zbc, version: "= 1.0.0" }

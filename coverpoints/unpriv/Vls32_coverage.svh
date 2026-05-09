@@ -3524,7 +3524,7 @@ covergroup Vls32_vloxei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -3722,7 +3722,7 @@ covergroup Vls32_vloxei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -3920,7 +3920,7 @@ covergroup Vls32_vloxei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -4117,7 +4117,7 @@ covergroup Vls32_vloxei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -4338,7 +4338,7 @@ covergroup Vls32_vloxseg2ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -4563,7 +4563,7 @@ covergroup Vls32_vloxseg2ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -4787,7 +4787,7 @@ covergroup Vls32_vloxseg2ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -5010,7 +5010,7 @@ covergroup Vls32_vloxseg2ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -5209,7 +5209,7 @@ covergroup Vls32_vloxseg3ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -5409,7 +5409,7 @@ covergroup Vls32_vloxseg3ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -5609,7 +5609,7 @@ covergroup Vls32_vloxseg3ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -5808,7 +5808,7 @@ covergroup Vls32_vloxseg3ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -6031,7 +6031,7 @@ covergroup Vls32_vloxseg4ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -6256,7 +6256,7 @@ covergroup Vls32_vloxseg4ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -6481,7 +6481,7 @@ covergroup Vls32_vloxseg4ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -6705,7 +6705,7 @@ covergroup Vls32_vloxseg4ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -6905,7 +6905,7 @@ covergroup Vls32_vloxseg5ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -7106,7 +7106,7 @@ covergroup Vls32_vloxseg5ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -7307,7 +7307,7 @@ covergroup Vls32_vloxseg5ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -7507,7 +7507,7 @@ covergroup Vls32_vloxseg5ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -7709,7 +7709,7 @@ covergroup Vls32_vloxseg6ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -7911,7 +7911,7 @@ covergroup Vls32_vloxseg6ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -8113,7 +8113,7 @@ covergroup Vls32_vloxseg6ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -8314,7 +8314,7 @@ covergroup Vls32_vloxseg6ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -8517,7 +8517,7 @@ covergroup Vls32_vloxseg7ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -8720,7 +8720,7 @@ covergroup Vls32_vloxseg7ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -8923,7 +8923,7 @@ covergroup Vls32_vloxseg7ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -9125,7 +9125,7 @@ covergroup Vls32_vloxseg7ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -9353,7 +9353,7 @@ covergroup Vls32_vloxseg8ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -9581,7 +9581,7 @@ covergroup Vls32_vloxseg8ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -9809,7 +9809,7 @@ covergroup Vls32_vloxseg8ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -10036,7 +10036,7 @@ covergroup Vls32_vloxseg8ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -20114,7 +20114,7 @@ covergroup Vls32_vluxei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -20322,7 +20322,7 @@ covergroup Vls32_vluxei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -20530,7 +20530,7 @@ covergroup Vls32_vluxei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -20727,7 +20727,7 @@ covergroup Vls32_vluxei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -20948,7 +20948,7 @@ covergroup Vls32_vluxseg2ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -21173,7 +21173,7 @@ covergroup Vls32_vluxseg2ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -21397,7 +21397,7 @@ covergroup Vls32_vluxseg2ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -21620,7 +21620,7 @@ covergroup Vls32_vluxseg2ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -21819,7 +21819,7 @@ covergroup Vls32_vluxseg3ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -22019,7 +22019,7 @@ covergroup Vls32_vluxseg3ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -22219,7 +22219,7 @@ covergroup Vls32_vluxseg3ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -22418,7 +22418,7 @@ covergroup Vls32_vluxseg3ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -22641,7 +22641,7 @@ covergroup Vls32_vluxseg4ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -22866,7 +22866,7 @@ covergroup Vls32_vluxseg4ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -23091,7 +23091,7 @@ covergroup Vls32_vluxseg4ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -23315,7 +23315,7 @@ covergroup Vls32_vluxseg4ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -23515,7 +23515,7 @@ covergroup Vls32_vluxseg5ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -23716,7 +23716,7 @@ covergroup Vls32_vluxseg5ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -23917,7 +23917,7 @@ covergroup Vls32_vluxseg5ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -24117,7 +24117,7 @@ covergroup Vls32_vluxseg5ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -24319,7 +24319,7 @@ covergroup Vls32_vluxseg6ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -24521,7 +24521,7 @@ covergroup Vls32_vluxseg6ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -24723,7 +24723,7 @@ covergroup Vls32_vluxseg6ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -24924,7 +24924,7 @@ covergroup Vls32_vluxseg6ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -25127,7 +25127,7 @@ covergroup Vls32_vluxseg7ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -25330,7 +25330,7 @@ covergroup Vls32_vluxseg7ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -25533,7 +25533,7 @@ covergroup Vls32_vluxseg7ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -25735,7 +25735,7 @@ covergroup Vls32_vluxseg7ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -25963,7 +25963,7 @@ covergroup Vls32_vluxseg8ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -26191,7 +26191,7 @@ covergroup Vls32_vluxseg8ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -26419,7 +26419,7 @@ covergroup Vls32_vluxseg8ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -26646,7 +26646,7 @@ covergroup Vls32_vluxseg8ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -27998,7 +27998,7 @@ covergroup Vls32_vsoxei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -28206,7 +28206,7 @@ covergroup Vls32_vsoxei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -28414,7 +28414,7 @@ covergroup Vls32_vsoxei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -28621,7 +28621,7 @@ covergroup Vls32_vsoxei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -28852,7 +28852,7 @@ covergroup Vls32_vsoxseg2ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -29087,7 +29087,7 @@ covergroup Vls32_vsoxseg2ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -29321,7 +29321,7 @@ covergroup Vls32_vsoxseg2ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -29554,7 +29554,7 @@ covergroup Vls32_vsoxseg2ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -29764,7 +29764,7 @@ covergroup Vls32_vsoxseg3ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -29975,7 +29975,7 @@ covergroup Vls32_vsoxseg3ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -30186,7 +30186,7 @@ covergroup Vls32_vsoxseg3ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -30396,7 +30396,7 @@ covergroup Vls32_vsoxseg3ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -30631,7 +30631,7 @@ covergroup Vls32_vsoxseg4ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -30868,7 +30868,7 @@ covergroup Vls32_vsoxseg4ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -31105,7 +31105,7 @@ covergroup Vls32_vsoxseg4ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -31341,7 +31341,7 @@ covergroup Vls32_vsoxseg4ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -31554,7 +31554,7 @@ covergroup Vls32_vsoxseg5ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -31768,7 +31768,7 @@ covergroup Vls32_vsoxseg5ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -31982,7 +31982,7 @@ covergroup Vls32_vsoxseg5ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -32195,7 +32195,7 @@ covergroup Vls32_vsoxseg5ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -32411,7 +32411,7 @@ covergroup Vls32_vsoxseg6ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -32627,7 +32627,7 @@ covergroup Vls32_vsoxseg6ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -32843,7 +32843,7 @@ covergroup Vls32_vsoxseg6ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -33058,7 +33058,7 @@ covergroup Vls32_vsoxseg6ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -33276,7 +33276,7 @@ covergroup Vls32_vsoxseg7ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -33494,7 +33494,7 @@ covergroup Vls32_vsoxseg7ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -33712,7 +33712,7 @@ covergroup Vls32_vsoxseg7ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -33929,7 +33929,7 @@ covergroup Vls32_vsoxseg7ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -34173,7 +34173,7 @@ covergroup Vls32_vsoxseg8ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -34417,7 +34417,7 @@ covergroup Vls32_vsoxseg8ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -34661,7 +34661,7 @@ covergroup Vls32_vsoxseg8ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -34904,7 +34904,7 @@ covergroup Vls32_vsoxseg8ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -41055,7 +41055,7 @@ covergroup Vls32_vsuxei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -41263,7 +41263,7 @@ covergroup Vls32_vsuxei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -41471,7 +41471,7 @@ covergroup Vls32_vsuxei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -41678,7 +41678,7 @@ covergroup Vls32_vsuxei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -41909,7 +41909,7 @@ covergroup Vls32_vsuxseg2ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -42144,7 +42144,7 @@ covergroup Vls32_vsuxseg2ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -42378,7 +42378,7 @@ covergroup Vls32_vsuxseg2ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -42611,7 +42611,7 @@ covergroup Vls32_vsuxseg2ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -42821,7 +42821,7 @@ covergroup Vls32_vsuxseg3ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -43032,7 +43032,7 @@ covergroup Vls32_vsuxseg3ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -43243,7 +43243,7 @@ covergroup Vls32_vsuxseg3ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -43453,7 +43453,7 @@ covergroup Vls32_vsuxseg3ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -43688,7 +43688,7 @@ covergroup Vls32_vsuxseg4ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -43925,7 +43925,7 @@ covergroup Vls32_vsuxseg4ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -44162,7 +44162,7 @@ covergroup Vls32_vsuxseg4ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -44398,7 +44398,7 @@ covergroup Vls32_vsuxseg4ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -44611,7 +44611,7 @@ covergroup Vls32_vsuxseg5ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -44825,7 +44825,7 @@ covergroup Vls32_vsuxseg5ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -45039,7 +45039,7 @@ covergroup Vls32_vsuxseg5ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -45252,7 +45252,7 @@ covergroup Vls32_vsuxseg5ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -45468,7 +45468,7 @@ covergroup Vls32_vsuxseg6ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -45684,7 +45684,7 @@ covergroup Vls32_vsuxseg6ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -45900,7 +45900,7 @@ covergroup Vls32_vsuxseg6ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -46115,7 +46115,7 @@ covergroup Vls32_vsuxseg6ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -46333,7 +46333,7 @@ covergroup Vls32_vsuxseg7ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -46551,7 +46551,7 @@ covergroup Vls32_vsuxseg7ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -46769,7 +46769,7 @@ covergroup Vls32_vsuxseg7ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -46986,7 +46986,7 @@ covergroup Vls32_vsuxseg7ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -47230,7 +47230,7 @@ covergroup Vls32_vsuxseg8ei16_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -47474,7 +47474,7 @@ covergroup Vls32_vsuxseg8ei32_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -47718,7 +47718,7 @@ covergroup Vls32_vsuxseg8ei64_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -47961,7 +47961,7 @@ covergroup Vls32_vsuxseg8ei8_v_cg with function sample(ins_t ins);
     cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};

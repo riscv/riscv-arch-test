@@ -115,9 +115,6 @@
         rvtest_[M/H/S/V]trap_routine
         GOTO_[M/H/S/U]MODE, INSTANTIATE_MODE_MACRO (prolog/handler/epilog/savearea)
    The following are general parameter initialization
-        RVMODEL_MTVEC_ALIGN
-        RVMODEL_CBZ_BLOCKSIZE
-        RVMODEL_CMO_BLOCKSIZE
         RVMODEL_CLEAN_SIG
    The following variables are used     if interrupt tests are enabled (defaulted if not defined):
         NUM_SPECD_INTCAUSES
@@ -159,12 +156,6 @@
 #endif
 #ifndef T6
   #define T6      x11
-#endif
-
-#ifndef RVMODEL_MTVEC_ALIGN
-  #define MTVEC_ALIGN 6    // ensure that a trampoline is on a typical cacheline boundary, just in case
-#else
-  #define MTVEC_ALIGN RVMODEL_MTVEC_ALIGN  //Let the model defined value be used for required trap handler alignment based on implemented MTVEC
 #endif
 
 //==============================================================================
@@ -1017,7 +1008,14 @@ rvtest_\__MODE__\()prolog_done:
 .macro RVTEST_TRAP_HANDLER __MODE__
 .option push
 .option rvc             // temporarily allow compress to allow c.nop alignment
-.align MTVEC_ALIGN      // ensure that a trampoline is on a model defined or reasonable boundary
+// Ensure that trampoline is on a boundary that is the max of 64 bytes, UDB_MTVEC_BASE_ALIGNMENT_VECTORED, and UDB_MTVEC_BASE_ALIGNMENT_DIRECT
+.align 64
+.ifdef UDB_MTVEC_BASE_ALIGNMENT_VECTORED
+  .balign UDB_MTVEC_BASE_ALIGNMENT_VECTORED
+.endif
+.ifdef UDB_MTVEC_BASE_ALIGNMENT_DIRECT
+  .balign UDB_MTVEC_BASE_ALIGNMENT_DIRECT
+.endif
 .option pop
 
   /**********************************************************************/

@@ -114,8 +114,6 @@
         RVMODEL_CLR_[M/H/S/V][SW/TIMTER/EXT]_INT
         rvtest_[M/H/S/V]trap_routine
         GOTO_[M/H/S/U]MODE, INSTANTIATE_MODE_MACRO (prolog/handler/epilog/savearea)
-   The following are general parameter initialization
-        RVMODEL_CLEAN_SIG
    The following variables are used     if interrupt tests are enabled (defaulted if not defined):
         NUM_SPECD_INTCAUSES
    The following variables are optional:
@@ -183,15 +181,11 @@
 //==========================================================================================
 
 #ifndef   RVMODEL_FENCEI        /**** if not defaulted must be a single op or a JAL to a rvmodel_fencei routine in rvmodel_boot ****/
-  #ifndef ZIFENCE
-       #define RVMODEL_FENCEI nop                                // make sure ifetches get new code
+  #ifndef ZIFENCEI_SUPPORTED
+    #define RVMODEL_FENCEI nop                                // make sure ifetches get new code
   #else
-       #define RVMODEL_FENCEI fence.i
+    #define RVMODEL_FENCEI fence.i
   #endif
-#endif
-
-#ifndef RVMODEL_CLEAN_SIG
-  #define RVMODEL_CLEAN_SIG  RVMODEL_FENCEI
 #endif
 
 #ifndef _VA_SZ_

@@ -38,7 +38,7 @@ class RISCV_coverage
   // Additional functions for coverage collection
   `include "coverage/RISCV_coverage_rvvi.svh"
   `include "coverage/RISCV_coverage_csr.svh"
-  `ifdef VLEN
+  `ifdef UDB_VLEN
     `include "coverage/RISCV_coverage_vector.svh"
   `endif
   `include "coverage/RISCV_coverage_exceptions.svh"

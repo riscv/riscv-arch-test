@@ -15,19 +15,19 @@ Fundamental design considerations are:
 
 * For unprivileged extensions, RISC-V tests cannot assume the existence of any privileged capabilities whatsoever unless a profile explicitly requires them.  For example, RV32I tests should be able to run on a microcontroller that does not implement any CSRs, including `mtvec`, and thus cannot have a trap handler.
 
-* Even if machine-mode exists, the tests cannot assume the existence of a _Conforming Machine Mode_, i.e. a machine mode that implements all of the features in the ISA specification.  In particular, the RVA23S64 profile of particular interest for certification does not require a conforming M-mode, only an execution environment that responds to certain things such as `ecall`.
+* Even if machine-mode exists, the tests cannot assume the existence of a _Standard Machine Mode_, i.e. a machine mode that implements all of the features in the ISA specification. A DUT might implement a _Custom Machine Mode_, such as a minimal implementation for a specific application, or additional security features. In particular, the RVA23S64 profile of particular interest for certification does not require standard M-mode, only an execution environment that responds to certain things such as `ecall`.
 
-* Nevertheless, most users will implement a conforming M-mode on their DUT.  Therefore, the abstraction layer should provide default implementations of boot macros, trap handler, and SBI calls that assume a conforming M-mode, and users can override these implementations as needed for their DUT.
+* Nevertheless, most users will implement standard M-mode on their DUT.  Therefore, the abstraction layer should provide default implementations of boot macros, trap handler, and SBI calls that assume a standard M-mode, and users can override these implementations as needed for their DUT.
 
 * To reduce the risk of bugs from uninitialized state and the burden on test developers, the boot process places known values in all applicable GPRs and CSRs.
 
-The boot sequence boots to the lowest available privilege mode sufficient to run the tests.  Tests may define the BOOT_TO_MMODE or BOOT_TO_SMODE symbols to force booting to M-mode or S-mode, respectively, if the DUT supports those modes.  If neither symbol is defined, the boot sequence boots to U-mode if supported, and M-mode (possibly nonconforming) otherwise. Note that hypervisor tests should define BOOT_TO_SMODE to boot into S (effectively HS)-mode and then are responsible for setting up and switching to VS/VU mode if desired.
+The boot sequence boots to the lowest available privilege mode sufficient to run the tests.  Tests may define the BOOT_TO_MMODE or BOOT_TO_SMODE symbols to force booting to M-mode or S-mode, respectively, if the DUT supports those modes.  If neither symbol is defined, the boot sequence boots to U-mode if supported, and M-mode (possibly custom) otherwise. Note that hypervisor tests should define BOOT_TO_SMODE to boot into S (effectively HS)-mode and then are responsible for setting up and switching to VS/VU mode if desired.
 
-In the ACT framework, BOOT_TO_MMODE is defined when REQUIRED_EXTENSIONS contains Sm.  BOOT_TO_SMODE is defined when REQUIRED_EXTENSIONS contains S. Otherwise, neither symbol is defined.  Hence, privileged tests that specify Sm, S, or U will boot into these modes, respectively.  Unprivileged tests run in U-mode if supported, and in M-mode (possibly nonconforming) otherwise.  Another consequence is that if the UDB contains CONFORMING_SM_SUPPORTED, then the trap handler is enabled even for unprivileged tests, helping produce graceful error messages for illegal instructions.  However, a simple core such as an RV32I microcontroller may not enable CONFORMING_SM_SUPPORTED and will not set up a trap handler.
+In the ACT framework, BOOT_TO_MMODE is defined when REQUIRED_EXTENSIONS contains Sm.  BOOT_TO_SMODE is defined when REQUIRED_EXTENSIONS contains S. Otherwise, neither symbol is defined.  Hence, privileged tests that specify Sm, S, or U will boot into these modes, respectively.  Unprivileged tests run in U-mode if supported, and in M-mode (possibly custom) otherwise.  Another consequence is that if the UDB contains STANDARD_SM_SUPPORTED, then the trap handler is enabled even for unprivileged tests, helping produce graceful error messages for illegal instructions.  However, a simple core such as an RV32I microcontroller may not enable STANDARD_SM_SUPPORTED and will not set up a trap handler.
 
 === Controlling Parameters
 
-Every DUT has `S_SUPPORTED`, `U_SUPPORTED`, and `H_SUPPORTED` parameters from the UDB that indicate which privilege modes are supported.  All DUT UDB configs support `Sm`, but not necessarily a conforming M-mode (and possibly no CSRs at all). Therefore, UDB also provides the `CONFORMING_SM_SUPPORTED` parameter, which is true when the DUT implements mandatory portions of the M-mode spec.
+Every DUT has `S_SUPPORTED`, `U_SUPPORTED`, and `H_SUPPORTED` parameters from the UDB that indicate which privilege modes are supported.  All DUT UDB configs support `Sm`, but not necessarily standard M-mode (and possibly no CSRs at all). Therefore, UDB also provides the `STANDARD_SM_SUPPORTED` parameter, which is true when the DUT implements mandatory portions of the M-mode spec.
 
 === Boot Sequence
 
@@ -39,7 +39,7 @@ The test ELF begins with the `RVTEST_BEGIN` macro, which defines `rvtest_entry_p
 
 Next, `rvmodel_boot` calls `RVMODEL_IO_INIT` to perform any necessary I/O initialization, such as configuring baud rate and flow control in a UART.  This macro can also be empty or undefined if no I/O initialization is needed.
 
-Next, `rvmodel_boot` calls `RVTEST_BOOT_TO_MMODE` to set up the trap handlers and initialize M-mode CSRs. This macro first checks if `RVMODEL_BOOT_TO_MMODE` is defined. If undefined, it runs default boot code assuming conforming M-mode. If defined, it runs the DUT-specific `RVMODEL_BOOT_TO_MMODE` that performs the same general steps for nonconforming M-mode (or should be blank for cases such as an RV32I DUT that has no CSRs).
+Next, `rvmodel_boot` calls `RVTEST_BOOT_TO_MMODE` to set up the trap handlers and initialize M-mode CSRs. This macro first checks if `RVMODEL_BOOT_TO_MMODE` is defined. If undefined, it runs default boot code assuming standard M-mode. If defined, it runs the DUT-specific `RVMODEL_BOOT_TO_MMODE` that performs the same general steps for custom M-mode (or should be blank for cases such as an RV32I DUT that has no CSRs).
 
 CSR initialization includes
 
@@ -55,11 +55,11 @@ CSR initialization includes
 * pmpaddr0/pmpcfg0 if PMP_ENTRIES > 0
 * turn off virtual memory and perform sfence.vma to synchronize MMU if SV32_SUPPORTED or SV39_SUPPORTED
 
-Even if conforming M-mode is not supported or RVMODEL_BOOT_TO_MMODE is defined, the boot code still attempts to turn on mstatus.FS/VS if float or vector is supported, because these are needed for unprivileged tests, even on a RV32I DUT that has no other M-mode features.
+Even if standard M-mode is not supported or RVMODEL_BOOT_TO_MMODE is defined, the boot code still attempts to turn on mstatus.FS/VS if float or vector is supported, because these are needed for unprivileged tests, even on a RV32I DUT that has no other M-mode features.
 
 The boot process ends in M-mode if the BOOT_TO_MMODE symbol is defined in the test (for tests intended to run in machine mode), or if no lower privilege mode is supported.
 
-If the test is continuing to boot to a lower privilege mode, it next checks if `S_SUPPORTED` and, if so, calls `RVTEST_BOOT_TO_SMODE`. This initializes S-mode CSRs, and adjusts M-mode CSRs such as trap delegation and environment configuration. It then enters S-mode. This entire routine can be overridden by a RVMODEL equivalent for non-conforming M-mode implementations that cannot access M-mode CSRs or use the standard `mret` method of entering S-mode.
+If the test is continuing to boot to a lower privilege mode, it next checks if `S_SUPPORTED` and, if so, calls `RVTEST_BOOT_TO_SMODE`. This initializes S-mode CSRs, and adjusts M-mode CSRs such as trap delegation and environment configuration. It then enters S-mode. This entire routine can be overridden by a RVMODEL equivalent for custom M-mode implementations that cannot access M-mode CSRs or use the standard `mret` method of entering S-mode.
 
 S-mode CSR initialization includes
 
@@ -71,11 +71,9 @@ S-mode CSR initialization includes
 
 The boot process ends in S-mode if the BOOT_TO_SMODE symbol is defined in the test (for tests intended to run in supervisor mode).
 
-If the test is not intended to run in S-mode, and U-mode is supported, `rvmodel_boot` calls `RVTEST_BOOT_TO_UMODE`, which switches to U-mode by calling `RVTEST_GOTO_LOWER_MODE U`. *** or the correct macro  *** any other .  Again, it can be overridden by `RVMODEL_BOOT_TO_UMODE` for non-conforming M-mode implementations.
+If the test is not intended to run in S-mode, and U-mode is supported, `rvmodel_boot` calls `RVTEST_BOOT_TO_UMODE`, which switches to U-mode by calling `RVTEST_GOTO_LOWER_MODE U`. *** or the correct macro  *** any other .  Again, it can be overridden by `RVMODEL_BOOT_TO_UMODE` for custom M-mode implementations.
 
 Finally, `rvmodel_boot` jumps to `rvtest_init`, which calls `RVTEST_INIT_REGS` to initialize GPRs, then sets up the signature pointer and checks a canary if applicable.***
-
-The test ELF contains the RVMODEL_BOOT macro, which performs any necessary boot operations such as turning on a phase-locked loop or DRAM controller or initializing custom state.  After RVMODEL_BOOT, the system should be in conforming machine mode if supported, with XLEN and endianness for each lower privilege mode set to the same value as in machine mode (MXLEN = SXLEN = UXLEN = HSXLEN = VSXLEN and MBE = SBE = UBE = VSBE). *** replace
 
 [[rvmodel-macros]]
 === RVMODEL DUT-Specific Macros
@@ -138,7 +136,7 @@ The RVMODEL_BOOT macro may be empty for a simple DUT.
 
 For a complex SoC, the macro may need to perform initialization steps such as turning on a phase-locked loop or DRAM controller or initializing custom state.  It must not clobber `x1`/`ra`, but any other registers may be trashed.
 
-At the end of RVMODEL_BOOT, the system should be in conforming machine mode, with XLEN and endianness for each lower privilege mode set to the same value as in machine mode (MXLEN = SXLEN = UXLEN = HSXLEN = VSXLEN and MBE = SBE = UBE = VSBE).
+At the end of RVMODEL_BOOT, the system should be in standard machine mode, with XLEN and endianness for each lower privilege mode set to the same value as in machine mode (MXLEN = SXLEN = UXLEN = HSXLEN = VSXLEN and MBE = SBE = UBE = VSBE).
 
 Alternatively, the DUT might run a separate proprietary bootloader executable file that initializes the system, then loads the test ELF and jumps to `rvtest_entry_point`. Or the DUT could modify link.ld to link proprietary bootloader code into the test ELF and jump to `rvtest_entry_point`. In these cases, RVMODEL_BOOT can be empty.
 
@@ -175,15 +173,15 @@ Standard macros are defined in `tests/env`.  DUT-specific macros are defined in 
 
 Standard framework macros begin with `RVTEST`.  They include `rvtest_setup.h` for boot macros and `rvtest_trap_handler.h` for standard trap handlers, and `rvtest_failure_code.h` for error reporting. Other macros are defined in ***util.h, ... describe further
 
-DUT-specific macros begin with `RVMODEL`.  Some `RVTEST` macros check if corresponding `RVMODEL` macros are defined and invoke the `RVMODEL` macro instead for nonconforming DUTs when defined.
+DUT-specific macros begin with `RVMODEL`.  Some `RVTEST` macros check if corresponding `RVMODEL` macros are defined and invoke the `RVMODEL` macro instead for DUTs with custom M-mode, when defined.
 
 === Test Supervisor Binary Interface (T-SBI)
 
-The test must implement a custom _Test Supervisor Binary Interface_ (T-SBI) providing an abstraction layer to facilitate S and U-mode tests requesting services from a possibly non-conforming M-mode. These services include testing ECALL to the execution environment and accessing CSRs.
+The test must implement a custom _Test Supervisor Binary Interface_ (T-SBI) providing an abstraction layer to facilitate S and U-mode tests requesting services from a possibly custom M-mode. These services include testing ECALL to the execution environment and accessing CSRs.
 
 The ratified SBI compiles into a ~1MB OpenSBI firmware binary, which is unnecessarily large to load with every test.  Moreover, the SBI calling convention uses `a7` and `a6`, which are not available on RV32E.  Therefore,  T-SBI is a lighter-weight implementation with a custom calling convention that is incompatible with the ratified SBI.
 
-The SBI is invoked with the `ecall` instruction.  The operation is passed in `a0`.  An additional argument could be passed in `a1` and a result could be returned in `a0` if needed, but the present SBI calls do not require this.
+The SBI is invoked with the `ecall` instruction.  The operation is passed in `a0`.  An additional argument could be passed in `a1` and a result could be returned in `a0` if needed, but the present SBI calls do not require this. Other values of `a0` are reserved.
 
 [[t-tsbi]]
 .T-SBI Calls
@@ -193,16 +191,16 @@ The SBI is invoked with the `ecall` instruction.  The operation is passed in `a0
 |===
 |Function Name|Operation(`a0`)|Description
 |ECALL_TEST|0x00000073|Test `ecall` to the execution environment.  Returns xEPC in `a0` to indicate that the trap handler was entered.
-|CSR_SET|0x<CSR>5a073>|Performs CSRS instruction specified by the opcode in `a0`.  `rs1` must be `a1` containing the value to write. `rd` must be 0. <CSR> is the 12-bit CSR encoding.
-|CSR_CLEAR|0x<CSR>5b073|Performs CSRC instruction specified by the opcode.  `rs1` must be `a1` containing the value to write. `rd` must be 0.
-|CSR_WRITE|0x<CSR>59073|Performs CSRW instruction specified by the opcode in `a0`.  `rs1` must be `a1` containing the value to write. `rd` must be 0.
-|CSR_READ|0x<CSR>02573|Performs CSRR instruction specified by the opcode.  `rd` must be `a0` with the return result.  `rs1` must be 0.
-|RESERVED|Others|Return with -1 in `a0` to indicate an invalid operation.
+|CSR_SET|0x<CSR>5a073|Performs the functionality of a CSRS instruction specified by the opcode. `a1` contains the value to write. <CSR> is the 12-bit CSR encoding.
+|CSR_CLEAR|0x<CSR>5b073|Performs CSRC instruction specified by the opcode.  `a1` contains the value to write.
+|CSR_WRITE|0x<CSR>59073|Performs CSRW instruction specified by the opcode.  `a1` contains the value to write.
+|CSR_READ|0x<CSR>02573|Performs CSRR instruction specified by the opcode.  Returns result in `a0`.
 |===
 
-For example, an S-mode program can request setting `mstatus.TVM` with a CSR_SET call corresponding to `csrrs x0, mstatus, a1` (`a0` = 0x3005a073) with `a1` containing a 1 in bit 20 (the `TVM` bit) and all other bits 0.  A possible implementation with conforming M-mode is for the trap handler to write this value to memory, perform `fence.i` to synchronize the instruction stream, execute the instruction, and return to the test.  If a non-conforming M-mode does not support `mstatus.TVM`, it must emulate the behavior in some other way. Similarly, S-mode can read `mip` to `a0` with a CSR_READ call corresponding to `csrrs a0, mip, x0` (`a0` = 0x34402573).
+For example, an S-mode program can request setting `mstatus.TVM` with a CSR_SET call corresponding to `csrrs x0, mstatus, a1` (`a0` = 0x3005a073) with `a1` containing a 1 in bit 20 (the `TVM` bit) and all other bits 0.  A possible implementation with standard M-mode is for the trap handler to write this value to memory, perform `fence.i` to synchronize the instruction stream, execute the instruction, and return to the test.  If a custom M-mode does not implement `mstatus.TVM`, it must emulate the behavior in some other way. Similarly, S-mode can read `mip` to `a0` with a CSR_READ call corresponding to `csrrs a0, mip, x0` (`a0` = 0x34402573).
 
-The ACT trap handlers implement an additional set of convenience calls changing between privilege modes in a standard fashion.  This includes changing to M-mode.  The behavior in M-mode is only predictable if CONFORMING_SM_SUPPORTED is true. Another suite with different trap handlers might not support these calls.
+
+The ACT trap handlers implement an additional set of convenience calls changing between privilege modes in a standard fashion.  This includes changing to M-mode.  The behavior in M-mode is only predictable if STANDARD_SM_SUPPORTED is true. Another suite with different trap handlers might not support these calls.
 
 [[t-syscalls]]
 .Additional ACT System Calls
@@ -211,27 +209,43 @@ The ACT trap handlers implement an additional set of convenience calls changing 
 [%AUTOWIDTH]
 |===
 |Function Name|Operation(`a0`)|Description
-|GOTO_MMODE|0xf0001001|Switches to M-mode from any privilege mode.  Behavior may be unpredictable if CONFORMING_SM_SUPPORTED is false.
-|GOTO_SMODE|0xf0001002|Switches to S/HS-mode from any privilege mode.
-|GOTO_UMODE|0xf0001003|Switches to U-mode from any privilege mode.
-|GOTO_VSMODE|0xf0001004|Switches to VS-mode from any privilege mode.
-|GOTO_VUMODE|0xf0001005|Switches to VU-mode from any privilege mode.
+|GOTO_MMODE|0x00000101|Switches to M-mode from any privilege mode.  Behavior may be unpredictable if STANDARD_SM_SUPPORTED is false.
+|GOTO_SMODE|0x00000102|Switches to S/HS-mode from any privilege mode.
+|GOTO_UMODE|0x00000103|Switches to U-mode from any privilege mode.
+|GOTO_VSMODE|0x00000104|Switches to VS-mode from any privilege mode.
+|GOTO_VUMODE|0x00000105|Switches to VU-mode from any privilege mode.
 |===
 
-NOTE: The ACT S/HS and VS-mode trap handlers implement the same calls.  Each trap handler performs the request if possible at the current privilege level, or else makes another `ecall` to pass the request up the privilege chain if necessary.  For example, RVTEST_GOTO_MMODE is always passed up the chain.  A CSR access to S-mode CSRs is handled by the S-mode handler, while a CSR access to M-mode received by the S-mode handler is passed up to the M-mode handler by an `ecall` with unchanged arguments.
+NOTE: The ACT S/HS and VS-mode trap handlers implement the same calls.  Each trap handler performs the request if possible at the current privilege level, or else makes another `ecall` to pass the request up the privilege chain if necessary.  For example, GOTO_MMODE is always passed up the chain.  A CSR access to S-mode CSRs is handled by the S-mode handler, while a CSR access to M-mode received by the S-mode handler is passed up to the M-mode handler by an `ecall` with unchanged arguments.
 
-TODO:
+==== System Call Macros
 
-testgen/src/testgen/io/templates.py format_params needs to accept CONFORMING_SM_SUPPORTED parameter when available.  How to deal with UDB? (Released in UDB 4/29/26).
+The following macros are defined for developer convenience to access the T-SBI and ACT system calls.  They are not required.
+
+* RVTEST_ECALL_TEST(): returns xEPC in `a0`
+* RVTEST_CSR_SET(csr, value)
+* RVTEST_CSR_CLEAR(csr, value)
+* RVTEST_CSR_WRITE(csr, value)
+* RVTEST_CSR_READ(csr): returns value in `a0`
+* RVTEST_GOTO_MMODE
+* RVTEST_GOTO_SMODE
+* RVTEST_GOTO_UMODE
+* RVTEST_GOTO_VSMODE
+* RVTEST_GOTO_VUMODE
+
+
+TODO
+
+testgen/src/testgen/io/templates.py format_params needs to accept STANDARD_SM_SUPPORTED parameter when available.  How to deal with UDB? (Released in UDB 4/29/26).
 
 remove mention of RVTEST_VECTOR  from vector code
 
-DONE: replace rvtest_mtrap_routine with CONFORMING_SM_SUPPORTED or many places it gets deleted
+DONE: replace rvtest_mtrap_routine with STANDARD_SM_SUPPORTED or many places it gets deleted
     replace rvtest_strap_routine with S_SUPPORTED if needed
     replace rvtest_htrap_routine with H_SUPPORTED if needed
 
 Test generator:
-    Any test that lists Sm in REQUIRED_EXTENSIONS adds CONFORMING_SM_SUPPORTED as a parameter
+    Any test that lists Sm in REQUIRED_EXTENSIONS adds STANDARD_SM_SUPPORTED as a parameter
     DONE *** edit generators/testgen/src/testgen/io/templates.py/generate_defines_from_extensions to define these boot_TO_*.  DONE Drop RVTEST_FP and tweak where it was used (hopefully removed)
         if any(ext in ext_components for ext in ["H", "S"]):
             extra_defines.append("#define BOOT_TO_SMODE")

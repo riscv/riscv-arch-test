@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZVKB8
-`define COVER_VFCUSTOM8
+`define COVER_ZVKBCUSTOM8
 `ifdef ELEN8
     `define SEW_8_EQ_ELEN
 `endif

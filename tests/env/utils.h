@@ -151,10 +151,10 @@
 #endif
 #define VDSEWWIDTH (VDSEW>>3)  // in units of #bytes
 
-#ifndef VLEN
-  #define VLEN 0
+#ifndef UDB_VLEN
+  #define UDB_VLEN 0
 #endif
-#define VLEN_BYTES (VLEN>>3)   // in units of #bytes
+#define VLEN_BYTES (UDB_VLEN>>3)   // in units of #bytes
 #define VLEN_WORDS (VLEN_BYTES>>2) // in units of words
 #define VECREG_REGION_WORDS (VLEN_WORDS * 32) // number of words occupied by all 32 vector registers
 

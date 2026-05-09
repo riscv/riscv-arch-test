@@ -45,11 +45,11 @@
 `define PMP_SPECIAL_REGION_START 32'h80005000 // Zicbo + Zaamo tests
 
 // Calculate region size g in bytes.
-`define g_tor       (2 ** (`G + 2))
-`define g_napot     ((`G > 1) ? (2 ** (`G + 2)) : (2 ** (`G + 3)))
+`define g_tor       (2 ** (`UDB_PMP_GRANULARITY))
+`define g_napot     ((`UDB_PMP_GRANULARITY > 3) ? (2 ** (`UDB_PMP_GRANULARITY)) : (2 ** (`UDB_PMP_GRANULARITY + 1)))
 
 // Calculate k = G - 1 trailing ones in NAPOT encoding.
-`define k  ((`G > 1) ? (`G - 1) : 0)
+`define k  ((`UDB_PMP_GRANULARITY > 3) ? (`UDB_PMP_GRANULARITY - 3) : 0)
 
 // Address encodings
 
@@ -61,9 +61,9 @@
 `define STANDARD_REGION      ((`PMP_REGION_START >> 2) | ((2 ** `k) - 1)) // NAPOT format: yyyyy...0111
 `define SPECIAL_STANDARD_REGION      ((`PMP_SPECIAL_REGION_START >> 2) | ((2 ** `k) - 1)) // NAPOT format: yyyyy...0111
 
-// XLEN64 -> [53:0] & XLEN32 -> [31:0]
-`define EFFECTIVE_PMPADDR (`ifdef XLEN64 53 `else 31 `endif)
-`define READ_ZERO_MASK   ~((1<<`G)-1)
+// UDB_MXLEN_64 -> [53:0] & UDB_MXLEN_32 -> [31:0]
+`define EFFECTIVE_PMPADDR (`ifdef UDB_MXLEN_64 53 `else 31 `endif)
+`define READ_ZERO_MASK   ~((1<<(`UDB_PMP_GRANULARITY - 2))-1)
 
 
 // -----------------------------------------------------------------------------

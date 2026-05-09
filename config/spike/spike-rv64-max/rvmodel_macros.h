@@ -102,7 +102,7 @@
 
 ##### Machine Interrupts #####
 
-#define RVMODEL_INTERRUPT_LATENCY 10
+#define RVMODEL_INTERRUPT_LATENCY 2000
 
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 

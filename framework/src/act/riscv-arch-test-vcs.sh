@@ -18,7 +18,7 @@ VDB="${2}"
 WKDIR="${3}"
 FCOVDIR="${4}"
 COVERPOINTDIR="${5}"
-CONFIGDIR="${6}"
+UDBHEADERDIR="${6}"
 COVERAGELIST="${7}"
 
 # Clean old coverage database
@@ -32,7 +32,7 @@ COVERPOINTS=(
   "+incdir+${COVERPOINTDIR}/priv"
 )
 INC_DIRS=(
-  "+incdir+${CONFIGDIR}"
+  "+incdir+${UDBHEADERDIR}"
   "${COVERPOINTS[@]}"
   "+incdir+${FCOVDIR}"
 )

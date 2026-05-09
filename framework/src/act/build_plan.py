@@ -38,7 +38,7 @@ _OBJDUMP_FLAGS_DEBUG = [*_OBJDUMP_FLAGS_COMMON, "-t", "-s"]
 # ---------------------------------------------------------------------------
 
 
-def _compiler_cmd(config: Config, xlen: int, tests_dir: Path) -> list[str]:
+def _compiler_cmd(config: Config, xlen: int, tests_dir: Path, udb_header_dir: Path) -> list[str]:
     """Build the full compiler command list including compiler-specific and common flags."""
     cmd = [str(config.compiler_exe)]
     if config.compiler_type == CompilerType.CLANG:
@@ -52,6 +52,7 @@ def _compiler_cmd(config: Config, xlen: int, tests_dir: Path) -> list[str]:
             "-mcmodel=medany",
             "-nostdlib",
             f"-I{tests_dir}/env",
+            f"-I{udb_header_dir.absolute()}",
         ]
     )
     if config.compiler_type == CompilerType.GCC:
@@ -297,7 +298,7 @@ def gen_coverage_tasks(
     coverpoint_dir: Path,
     base_dir: Path,
     config_report_dir: Path,
-    dut_header_dir: Path,
+    udb_header_dir: Path,
     coverage_simulator: CoverageSimulator,
 ) -> list[BuildTask]:
     """Generate BuildTasks for coverage UCDB generation, reports, and summary merging."""
@@ -315,11 +316,12 @@ def gen_coverage_tasks(
     sim_script = Path(str(act_resources / script_name)).absolute()
 
     # Collect file dependencies for staleness checking.
-    # Coverage simulation depends on coverpoints, fcov infrastructure, DUT config headers, and the simulator script.
+    # Coverage simulation depends on coverpoints, fcov infrastructure, generated DUT
+    # config header (in udb_header_dir), and the simulator script.
     coverpoint_files = tuple(sorted(p.absolute() for p in coverpoint_dir.rglob("*") if p.is_file()))
     fcov_files = tuple(sorted(p.absolute() for p in fcov_path.rglob("*") if p.is_file()))
-    dut_svh_files = tuple(sorted(p.absolute() for p in dut_header_dir.iterdir() if p.suffix == ".svh"))
-    coverage_inputs = (*coverpoint_files, *fcov_files, *dut_svh_files, sim_script)
+    udb_svh_files = tuple(sorted(p.absolute() for p in udb_header_dir.iterdir() if p.suffix == ".svh"))
+    coverage_inputs = (*coverpoint_files, *fcov_files, *udb_svh_files, sim_script)
 
     for coverage_group, traces in sorted(coverage_targets.items()):
         # Paths
@@ -354,7 +356,7 @@ def gen_coverage_tasks(
                 f"{work_dir} "
                 f"{fcov_path} "
                 f"{coverpoint_dir} "
-                f"{dut_header_dir} "
+                f"{udb_header_dir} "
                 f"{{{coverage_group.stem.upper()}_COVERAGE}}"
             )
             coverage_cmd = ["vsim", "-c", "-do", do_script]
@@ -367,7 +369,7 @@ def gen_coverage_tasks(
                 str(work_dir),
                 str(fcov_path),
                 str(coverpoint_dir),
-                str(dut_header_dir),
+                str(udb_header_dir),
                 f"{coverage_group.stem.upper()}_COVERAGE",
             ]
 
@@ -436,13 +438,14 @@ def generate_build_plan(
     config_report_dir = config_wkdir / "reports"
 
     coverage_targets: defaultdict[Path, list[Path]] = defaultdict(list)
-    compiler_cmd = _compiler_cmd(config, xlen, tests_dir)
+    compiler_cmd = _compiler_cmd(config, xlen, tests_dir, config_wkdir)
 
     # Collect shared file dependencies that affect all compilations.
     # Any change to env headers, DUT headers, or the linker script should trigger recompilation.
     env_headers = tuple(sorted(p.absolute() for p in (tests_dir / "env").iterdir() if p.is_file()))
     dut_headers = tuple(sorted(p.absolute() for p in config.dut_include_dir.iterdir() if p.suffix == ".h"))
-    compile_inputs = (*env_headers, *dut_headers, config.linker_script.absolute())
+    udb_headers = tuple(sorted(p.absolute() for p in config_wkdir.iterdir() if p.suffix == ".h"))
+    compile_inputs = (*env_headers, *dut_headers, *udb_headers, config.linker_script.absolute())
 
     # Sail config affects reference model output
     sail_config = config.dut_include_dir / "sail.json"
@@ -492,7 +495,7 @@ def generate_build_plan(
                 coverpoint_dir,
                 config_coverage_dir,
                 config_report_dir,
-                config.dut_include_dir,
+                config_wkdir,
                 coverage_simulator,
             )
         )

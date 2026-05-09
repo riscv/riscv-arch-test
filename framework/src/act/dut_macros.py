@@ -24,7 +24,7 @@ _MIRRORED_DEFINES: list[str] = [
 _DEFINE_RE = re.compile(r"^\s*#define\s+(\w+)\s+(0[xX][0-9a-fA-F]+|\d+)\b")
 
 
-def _scan_h_defines(h_path: Path, names: tuple[str, ...]) -> dict[str, str]:
+def _scan_h_defines(h_path: Path, names: list[str]) -> dict[str, str]:
     """Return the value (as written) for each requested macro found in h_path.
 
     Only matches lines that begin (after whitespace) with `#define NAME VALUE`.

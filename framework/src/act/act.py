@@ -21,6 +21,7 @@ from act.build import BuildTask, build
 from act.build_plan import generate_build_plan
 from act.config import CoverageSimulator, load_config
 from act.coverreport import print_coverage_summary
+from act.dut_macros import generate_rvmodel_svh
 from act.parse_test_constraints import TestYamlHeaderError, generate_test_dict
 from act.parse_udb_config import generate_udb_files, get_config_params, get_implemented_extensions
 from act.select_tests import select_tests
@@ -109,6 +110,7 @@ def run_act(
 
         # UDB integration
         generate_udb_files(config.udb_config, config_dir)
+        generate_rvmodel_svh(config.dut_include_dir, config_dir)
         implemented_extensions = get_implemented_extensions(config_dir / "extensions.txt")
         config_params = get_config_params(config.udb_config)
 

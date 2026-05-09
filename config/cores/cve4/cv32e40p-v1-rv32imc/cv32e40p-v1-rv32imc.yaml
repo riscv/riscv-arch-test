@@ -116,6 +116,7 @@ params:
       false,
       false, # 24..31 (unimplemented)
     ]
+  MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN: # VERIFIED — cv32e40p_cs_registers.sv: indices 0,2,3 inhibitable via mcountinhibit_q register; index 1 always false per UDB; unimplemented counters hardwired 0
     [
       true, # index 0 (MCYCLE inhibit — mcountinhibit_q[0] gates cycle counter)

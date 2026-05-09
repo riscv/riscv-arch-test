@@ -123,6 +123,7 @@ params:
       false,
       false, # 24..31
     ]
+  MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
     [
       true,

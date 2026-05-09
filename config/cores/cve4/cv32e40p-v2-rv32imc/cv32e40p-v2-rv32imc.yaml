@@ -117,6 +117,7 @@ params:
       false,
       false, # 24..31 (unimplemented)
     ]
+  MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN: # VERIFIED — cs_registers.sv: indices 0,2,3 inhibitable via mcountinhibit_q
     [
       true, # index 0 (MCYCLE inhibit)

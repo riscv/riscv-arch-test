@@ -163,6 +163,7 @@ def add_fp_instructions(
             )
     op32 = ["fmvh.x.d", "fmvp.d.x"]
     t_lines.append("#if __riscv_xlen == 32")
+    t_lines.append("#ifdef D_SUPPORTED")
     for op in op32:
         t_lines.extend(
             [
@@ -187,6 +188,7 @@ def add_fp_instructions(
                     write_sigupd(dest_fp_reg, test_data, "float"),
                 ]
             )
+    t_lines.append("#endif // D_SUPPORTED")
     t_lines.append("#endif // __riscv_xlen == 32")
     t_lines.append("#endif // ZFA_SUPPORTED")
 

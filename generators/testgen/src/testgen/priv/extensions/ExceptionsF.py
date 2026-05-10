@@ -8,6 +8,7 @@
 
 """ExceptionsF test generator."""
 
+from testgen.asm.csr import gen_csr_read_sigupd, gen_csr_write_sigupd
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
@@ -16,7 +17,6 @@ from testgen.priv.registry import add_priv_test_generator
 def add_fp_instructions(
     clear_mask_reg: int,
     set_mask_reg: int,
-    frm_reg: int,
     fs_val: int,
     test_data: TestData,
     coverpoint: str,
@@ -51,24 +51,25 @@ def add_fp_instructions(
         "fsub.s",
         "fmul.s",
         "fdiv.s",
+        "fsgnj.s",
+        "fmin.s",
         "fcvt.w.s",
         "fcvt.s.w",
         "fmadd.s",
         "fsqrt.s",
-        "fsgnj.s",
         "feq.s",
         "fmv.x.w",
         "fmv.w.x",
         "fclass.s",
-        "fmin.s",
     ]
+
     for op in ops:
         t_lines.extend(
             [
-                test_data.add_testcase(f"{op}_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
+                f"LI(x{int_reg2}, 0xB0BACAFE)",
                 f"csrc mstatus, x{clear_mask_reg}",
                 f"csrs mstatus, x{set_mask_reg}",
-                f"LI(x{int_reg2}, 0xB0BACAFE)",
+                test_data.add_testcase(f"{op}_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
             ]
         )
         if op in ["fadd.s", "fsub.s", "fmul.s", "fdiv.s", "fsgnj.s", "fmin.s"]:
@@ -219,63 +220,64 @@ def add_csr_instructions(
     check_reg = test_data.int_regs.get_register()
 
     t_lines = [
-        test_data.add_testcase(f"csr_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
+        f"LI(x{check_reg}, 0)",
     ]
+
     if fs_val == 1:
         t_lines.extend(
             [
-                f"LI(x{check_reg}, 0)",
-                f"csrw fcsr, x{check_reg}",
-                "nop",
+                test_data.add_testcase(f"fcsr_clear_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
+                f"csrc mstatus, x{clear_mask_reg}",
+                f"csrs mstatus, x{set_mask_reg}",
+                gen_csr_write_sigupd(check_reg, "fcsr", test_data),
             ]
         )
+
     t_lines.extend(
         [
+            test_data.add_testcase(f"csrw_fcsr_zero_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
             f"csrc mstatus, x{clear_mask_reg}",
             f"csrs mstatus, x{set_mask_reg}",
-            f"csrrw x{check_reg}, fcsr, x0",
-            "nop",
-            write_sigupd(check_reg, test_data),
+            gen_csr_write_sigupd(check_reg, "fcsr", test_data),
+            test_data.add_testcase(f"csrw_frm_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
             f"csrc mstatus, x{clear_mask_reg}",
             f"csrs mstatus, x{set_mask_reg}",
-            f"csrrw x{check_reg}, frm, x{frm_reg}",
-            "nop",
-            write_sigupd(check_reg, test_data),
+            gen_csr_write_sigupd(check_reg, "frm", test_data),
+            f"LI(x{check_reg}, 0)",
+            test_data.add_testcase(f"csrw_fflags_zero_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
             f"csrc mstatus, x{clear_mask_reg}",
             f"csrs mstatus, x{set_mask_reg}",
-            f"csrrw x{check_reg}, fflags, x0",
-            "nop",
-            write_sigupd(check_reg, test_data),
+            gen_csr_write_sigupd(check_reg, "fflags", test_data),
+            test_data.add_testcase(f"csrrs_fcsr_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
             f"csrc mstatus, x{clear_mask_reg}",
             f"csrs mstatus, x{set_mask_reg}",
-            f"csrrs x{check_reg}, fcsr, x{check_reg}",
-            "nop",
-            write_sigupd(check_reg, test_data),
+            f"CSRRS(x{check_reg}, fcsr, x{check_reg})",
+            gen_csr_read_sigupd(check_reg, ("fcsr", None), test_data),
+            test_data.add_testcase(f"csrrs_fflags_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
             f"csrc mstatus, x{clear_mask_reg}",
             f"csrs mstatus, x{set_mask_reg}",
-            f"csrrs x{check_reg}, fflags, x{check_reg}",
-            "nop",
-            write_sigupd(check_reg, test_data),
+            f"CSRRS(x{check_reg}, fflags, x{check_reg})",
+            gen_csr_read_sigupd(check_reg, ("fflags", None), test_data),
+            test_data.add_testcase(f"csrrs_frm_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
             f"csrc mstatus, x{clear_mask_reg}",
             f"csrs mstatus, x{set_mask_reg}",
-            f"csrrs x{check_reg}, frm, x{frm_reg}",
-            "nop",
-            write_sigupd(check_reg, test_data),
+            f"CSRRS(x{check_reg}, frm, x{frm_reg})",
+            gen_csr_read_sigupd(check_reg, ("frm", None), test_data),
+            test_data.add_testcase(f"csrrc_fcsr_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
             f"csrc mstatus, x{clear_mask_reg}",
             f"csrs mstatus, x{set_mask_reg}",
-            f"csrrc x{check_reg}, fcsr, x{check_reg}",
-            "nop",
-            write_sigupd(check_reg, test_data),
+            f"CSRRC(x{check_reg}, fcsr, x{check_reg})",
+            gen_csr_read_sigupd(check_reg, ("fcsr", None), test_data),
+            test_data.add_testcase(f"csrrc_fflags_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
             f"csrc mstatus, x{clear_mask_reg}",
             f"csrs mstatus, x{set_mask_reg}",
-            f"csrrc x{check_reg}, frm, x{frm_reg}",
-            "nop",
-            write_sigupd(check_reg, test_data),
+            f"CSRRC(x{check_reg}, fflags, x{check_reg})",
+            gen_csr_read_sigupd(check_reg, ("fflags", None), test_data),
+            test_data.add_testcase(f"csrrc_frm_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
             f"csrc mstatus, x{clear_mask_reg}",
             f"csrs mstatus, x{set_mask_reg}",
-            f"csrrc x{check_reg}, fflags, x{check_reg}",
-            "nop",
-            write_sigupd(check_reg, test_data),
+            f"CSRRC(x{check_reg}, frm, x{frm_reg})",
+            gen_csr_read_sigupd(check_reg, ("frm", None), test_data),
         ]
     )
 
@@ -351,75 +353,57 @@ def add_fp_store_misaligned_test(
 
 def _generate_mstatus_fs_illegal_instr_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "ExceptionsF_cg", "cp_mstatus_fs_illegal_instr"
-    clear_mask_reg, fs_reg, frm_reg, set_mask_reg = test_data.int_regs.get_registers(4)
+    clear_mask_reg, frm_reg, set_mask_reg = test_data.int_regs.get_registers(3)
 
     lines = [
         comment_banner(
             coverpoint,
-            "Test that illegal instructions trap when mstatus.fs is set to 0 (Off)\n"
-            "and do not trap when mstatus.fs is set to 1 (Clean)",
+            "Test that illegal instructions trap when mstatus.fs is set to 0 (Off)",
         ),
         f"LI(x{clear_mask_reg}, 0x6000) # MSTATUS_FS mask",
-        f"LI(x{fs_reg}, 0)",
+        f"LI(x{set_mask_reg}, 0) # MSTATUS_FS = Off",
         f"LI(x{frm_reg}, 0)",
-        f"slli x{set_mask_reg}, x{fs_reg}, 13 # Set mstatus.fs to 0 (Off)",
     ]
 
-    lines.extend(add_fp_instructions(clear_mask_reg, set_mask_reg, frm_reg, 0, test_data, coverpoint, covergroup))
-    test_data.int_regs.return_registers([clear_mask_reg, fs_reg, frm_reg, set_mask_reg])
+    lines.extend(add_fp_instructions(clear_mask_reg, set_mask_reg, 0, test_data, coverpoint, covergroup))
+    test_data.int_regs.return_registers([clear_mask_reg, frm_reg, set_mask_reg])
     return lines
 
 
 def _generate_mstatus_fs_csr_write_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "ExceptionsF_cg", "cp_mstatus_fs_csr_write"
-    clear_mask_reg, fs_reg, frm_reg, set_mask_reg = test_data.int_regs.get_registers(4)
+    clear_mask_reg, frm_reg, set_mask_reg = test_data.int_regs.get_registers(3)
 
     lines = [
         comment_banner(
             coverpoint,
-            "Test that access to floating point CSRs trap when mstatus.fs is set to 0 (Off)\n"
-            "and do not trap when mstatus.fs is set to 1 (Clean)",
+            "Test that access to floating point CSRs trap when mstatus.fs is set to 0 (Off)",
         ),
         f"LI(x{clear_mask_reg}, 0x6000) # MSTATUS_FS mask",
-        f"LI(x{fs_reg}, 0)",
+        f"LI(x{set_mask_reg}, 0) # MSTATUS_FS = Off",
         f"LI(x{frm_reg}, 0)",
-        f"slli x{set_mask_reg}, x{fs_reg}, 13 # Set mstatus.fs to 0 (Off)",
     ]
 
     lines.extend(add_csr_instructions(clear_mask_reg, set_mask_reg, frm_reg, 0, test_data, coverpoint, covergroup))
-    test_data.int_regs.return_registers([clear_mask_reg, fs_reg, frm_reg, set_mask_reg])
+    test_data.int_regs.return_registers([clear_mask_reg, frm_reg, set_mask_reg])
     return lines
 
 
 def _generate_mstatus_fs_legal_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "ExceptionsF_cg", "cp_mstatus_fs_legal"
-    clear_mask_reg, fs_reg, frm_reg, set_mask_reg = test_data.int_regs.get_registers(4)
+    clear_mask_reg, frm_reg, set_mask_reg = test_data.int_regs.get_registers(3)
 
     lines = [
-        comment_banner(
-            coverpoint,
-            "Test that instructions execute correctly when mstatus.fs is set to 1 (Clean)\n"
-            "and that mstatus.fs updates to 2 (Dirty) when an F instruction is executed",
-        ),
+        comment_banner(coverpoint, "Test that instructions execute correctly when mstatus.fs is set to 1 (Clean)\n"),
         f"LI(x{clear_mask_reg}, 0x6000) # MSTATUS_FS mask",
         f"LI(x{frm_reg}, 0)",
     ]
+
     for i in range(1, 4):
-        lines.extend(
-            [
-                f"LI(x{fs_reg}, {i})",
-                f"slli x{set_mask_reg}, x{fs_reg}, 13 # Set mstatus.fs to {i}",
-            ]
-        )
+        lines.append(f"LI(x{set_mask_reg}, {i << 13}) # mstatus.FS = {i}")
         lines.extend(add_csr_instructions(clear_mask_reg, set_mask_reg, frm_reg, i, test_data, coverpoint, covergroup))
-        lines.extend(
-            [
-                f"LI(x{fs_reg}, {i})",
-                f"slli x{set_mask_reg}, x{fs_reg}, 13 # Set mstatus.fs to {i}",
-            ]
-        )
-        lines.extend(add_fp_instructions(clear_mask_reg, set_mask_reg, frm_reg, i, test_data, coverpoint, covergroup))
-    test_data.int_regs.return_registers([clear_mask_reg, fs_reg, frm_reg, set_mask_reg])
+        lines.extend(add_fp_instructions(clear_mask_reg, set_mask_reg, i, test_data, coverpoint, covergroup))
+    test_data.int_regs.return_registers([clear_mask_reg, frm_reg, set_mask_reg])
     return lines
 
 
@@ -434,21 +418,21 @@ def _generate_load_address_misaligned_tests(test_data: TestData) -> list[str]:
     ]
 
     for offset in range(16):
-        lines.append(f"\n# Testcase: flw with offset {offset} (LSBs: {offset:03b})")
+        lines.append(f"\n# Testcase: flw with offset {offset} (LSBs: {offset:04b})")
         lines.extend(add_fp_load_misaligned_test("flw", offset, test_data, coverpoint, covergroup))
 
         lines.append("#ifdef D_SUPPORTED")
-        lines.append(f"\n# Testcase: fld with offset {offset} (LSBs: {offset:03b})")
+        lines.append(f"\n# Testcase: fld with offset {offset} (LSBs: {offset:04b})")
         lines.extend(add_fp_load_misaligned_test("fld", offset, test_data, coverpoint, covergroup))
         lines.append("#endif\n")
 
         lines.append("#ifdef ZFHMIN_SUPPORTED")
-        lines.append(f"\n# Testcase: flh with offset {offset} (LSBs: {offset:03b})")
+        lines.append(f"\n# Testcase: flh with offset {offset} (LSBs: {offset:04b})")
         lines.extend(add_fp_load_misaligned_test("flh", offset, test_data, coverpoint, covergroup))
         lines.append("#endif")
 
         lines.append("#ifdef Q_SUPPORTED")
-        lines.append(f"\n# Testcase: flq with offset {offset} (LSBs: {offset:03b})")
+        lines.append(f"\n# Testcase: flq with offset {offset} (LSBs: {offset:04b})")
         lines.extend(add_fp_load_misaligned_test("flq", offset, test_data, coverpoint, covergroup))
         lines.append("#endif")
 
@@ -473,6 +457,10 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
             f"LI(x{addr_reg}, 0xBEE1CAFE)",
             f"fcvt.s.w f{check_reg}, x{addr_reg}",
             f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+        ]
+    )
+    lines.extend(
+        [
             test_data.add_testcase("flw_fault", coverpoint, covergroup),
             f"flw f{check_reg}, 0(x{addr_reg})",
             "nop",
@@ -482,33 +470,26 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
     lines.append("#ifdef D_SUPPORTED")
     lines.extend(
         [
-            f"LI(x{addr_reg}, 0xBEE1CAFE)",
-            f"fcvt.s.w f{check_reg}, x{addr_reg}",
-            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             test_data.add_testcase("fld_fault", coverpoint, covergroup),
             f"fld f{check_reg}, 0(x{addr_reg})",
             "nop",
         ]
     )
     lines.extend(["", "#endif\n"])
+
     lines.append("#ifdef ZFHMIN_SUPPORTED")
     lines.extend(
         [
-            f"LI(x{addr_reg}, 0xBEE1CAFE)",
-            f"fcvt.s.w f{check_reg}, x{addr_reg}",
-            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             test_data.add_testcase("flh_fault", coverpoint, covergroup),
             f"flh f{check_reg}, 0(x{addr_reg})",
             "nop",
         ]
     )
     lines.append("#endif")
+
     lines.append("#ifdef Q_SUPPORTED")
     lines.extend(
         [
-            f"LI(x{addr_reg}, 0xBEE1CAFE)",
-            f"fcvt.s.w f{check_reg}, x{addr_reg}",
-            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             test_data.add_testcase("flq_fault", coverpoint, covergroup),
             f"flq f{check_reg}, 0(x{addr_reg})",
             "nop",
@@ -531,21 +512,21 @@ def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
     ]
 
     for offset in range(16):
-        lines.append(f"\n# Testcase: fsw with offset {offset} (LSBs: {offset:03b})")
+        lines.append(f"\n# Testcase: fsw with offset {offset} (LSBs: {offset:04b})")
         lines.extend(add_fp_store_misaligned_test("fsw", offset, test_data, coverpoint, covergroup))
 
         lines.append("#ifdef D_SUPPORTED")
-        lines.append(f"\n# Testcase: fsd with offset {offset} (LSBs: {offset:03b})")
+        lines.append(f"\n# Testcase: fsd with offset {offset} (LSBs: {offset:04b})")
         lines.extend(add_fp_store_misaligned_test("fsd", offset, test_data, coverpoint, covergroup))
         lines.append("#endif\n")
 
         lines.append("#ifdef ZFHMIN_SUPPORTED")
-        lines.append(f"\n# Testcase: fsh with offset {offset} (LSBs: {offset:03b})")
+        lines.append(f"\n# Testcase: fsh with offset {offset} (LSBs: {offset:04b})")
         lines.extend(add_fp_store_misaligned_test("fsh", offset, test_data, coverpoint, covergroup))
         lines.append("#endif")
 
         lines.append("#ifdef Q_SUPPORTED")
-        lines.append(f"\n# Testcase: fsq with offset {offset} (LSBs: {offset:03b})")
+        lines.append(f"\n# Testcase: fsq with offset {offset} (LSBs: {offset:04b})")
         lines.extend(add_fp_store_misaligned_test("fsq", offset, test_data, coverpoint, covergroup))
         lines.append("#endif")
 
@@ -571,6 +552,10 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
             f"LI(x{addr_reg}, 0xBEE1CAFE)",
             f"fcvt.s.w f{data_reg}, x{addr_reg}",
             f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+        ]
+    )
+    lines.extend(
+        [
             test_data.add_testcase("fsw_fault", coverpoint, covergroup),
             f"fsw f{data_reg}, 0(x{addr_reg})",
             "nop",
@@ -580,33 +565,26 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
     lines.extend(["", "#ifdef D_SUPPORTED"])
     lines.extend(
         [
-            f"LI(x{addr_reg}, 0xBEE1CAFE)",
-            f"fcvt.s.w f{data_reg}, x{addr_reg}",
-            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             test_data.add_testcase("fsd_fault", coverpoint, covergroup),
             f"fsd f{data_reg}, 0(x{addr_reg})",
             "nop",
         ]
     )
     lines.append("#endif")
+
     lines.append("#ifdef ZFHMIN_SUPPORTED")
     lines.extend(
         [
-            f"LI(x{addr_reg}, 0xBEE1CAFE)",
-            f"fcvt.s.w f{data_reg}, x{addr_reg}",
-            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             test_data.add_testcase("fsh_fault", coverpoint, covergroup),
             f"fsh f{data_reg}, 0(x{addr_reg})",
             "nop",
         ]
     )
     lines.append("#endif")
+
     lines.append("#ifdef Q_SUPPORTED")
     lines.extend(
         [
-            f"LI(x{addr_reg}, 0xBEE1CAFE)",
-            f"fcvt.s.w f{data_reg}, x{addr_reg}",
-            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             test_data.add_testcase("fsq_fault", coverpoint, covergroup),
             f"fsq f{data_reg}, 0(x{addr_reg})",
             "nop",
@@ -626,11 +604,7 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
 def make_exceptionsf(test_data: TestData) -> list[str]:
     """Main entry point for F exception test generation."""
 
-    lines = [
-        "li t0,0x4000",
-        "csrs mstatus, t0",
-        "csrw frm, 0",
-    ]
+    lines = []
 
     # initialize fp registers
     for i in range(32):

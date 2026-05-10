@@ -36,7 +36,7 @@ normative_rule_definitions:
 
   - name: lr_sc_rv64
     coverpoint:
-      ["Zalrsc_lr_d_cg/{cp_rs1_nx0, cp_rd}, Zalrsc_sc_d_cg/cp_sc_fail"]
+      ["Zalrsc_lr_d_cg/{cp_rs1_nx0, cp_rd}, Zalrsc_sc_d_cg/cp_sc_pass_fail"]
 
   - name: sc_failure_code
     coverpoint: ["Zalrsc_sc_w_cg/cp_sc_pass_fail"]

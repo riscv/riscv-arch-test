@@ -17,7 +17,7 @@
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "Zalrsc-sc.w-00.S"
-#define SIGUPD_COUNT 547
+#define SIGUPD_COUNT 549
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -3423,6 +3423,23 @@ Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w:
   # Check if x28 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x28, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_str)
 
+# Testcase: cp_custom_sc_lr with prev lr.w first to matching address and then to a different address
+# This test is not described with a coverpoint because it involves three consecutive instructions
+#  Addresses sc_pairs_latest_lr normative rule
+  RVTEST_TESTDATA_LOAD_INT(x18, x2) # load rs2: x2 = 0xd02cc3e1
+  LA(x8, scratch) # rs1 = base address
+  lr.w x0, (x8) # establish reservation
+  addi x8, x8, 256 # change reservation address
+  lr.w x0, (x8) # establish reservation at a different address that should not match sc
+Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr:
+  sc.w x11, x2, (x8) # perform operation
+  # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr_str)
+  LA(x8, scratch) # reload base address
+  LREG x28, 0(x8) # load stored value
+  # Check if x28 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x28, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr_str)
+
 # Testcase: cp_custom_sc_after_sc (should fail because of intervening sc)
   RVTEST_TESTDATA_LOAD_INT(x18, x16) # load rs2: x16 = 0x4bcdd0b6
   RVTEST_TESTDATA_LOAD_INT(x18, x27) # load temp_reg: x27 = 0x48e056d7
@@ -4122,6 +4139,7 @@ RVTEST_DATA_BEGIN
 .word 0xd0955a66
 .word 0x383ff64e
 .word 0xd02cc3e1
+.word 0xd02cc3e1
 .word 0x4bcdd0b6
 .word 0x48e056d7
 .word 0xcae1cbea
@@ -4393,38 +4411,39 @@ Zalrsc_sc_w_cg_cp_custom_aqrl_str: .string "\"test: 233; cg: Zalrsc_sc.w_cg; cp:
 Zalrsc_sc_w_cg_cp_custom_aqrl_rl_str: .string "\"test: 234; cg: Zalrsc_sc.w_cg; cp: cp_custom_aqrl; bin: .rl\""
 Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl_str: .string "\"test: 235; cg: Zalrsc_sc.w_cg; cp: cp_custom_aqrl; bin: .aqrl\""
 Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_str: .string "\"test: 236; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_lr; bin: prev_lr_lr.w\""
-Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true_str: .string "\"test: 237; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_sc; bin: true\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8_str: .string "\"test: 238; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_8\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16_str: .string "\"test: 239; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_16\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24_str: .string "\"test: 240; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_24\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32_str: .string "\"test: 241; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_32\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40_str: .string "\"test: 242; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_40\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48_str: .string "\"test: 243; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_48\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56_str: .string "\"test: 244; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_56\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64_str: .string "\"test: 245; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_64\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72_str: .string "\"test: 246; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_72\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80_str: .string "\"test: 247; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_80\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88_str: .string "\"test: 248; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_88\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96_str: .string "\"test: 249; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_96\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104_str: .string "\"test: 250; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_104\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112_str: .string "\"test: 251; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_112\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120_str: .string "\"test: 252; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_120\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128_str: .string "\"test: 253; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_128\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136_str: .string "\"test: 254; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_136\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144_str: .string "\"test: 255; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_144\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152_str: .string "\"test: 256; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_152\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160_str: .string "\"test: 257; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_160\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168_str: .string "\"test: 258; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_168\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176_str: .string "\"test: 259; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_176\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184_str: .string "\"test: 260; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_184\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192_str: .string "\"test: 261; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_192\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200_str: .string "\"test: 262; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_200\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208_str: .string "\"test: 263; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_208\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216_str: .string "\"test: 264; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_216\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224_str: .string "\"test: 265; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_224\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232_str: .string "\"test: 266; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_232\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240_str: .string "\"test: 267; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_240\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248_str: .string "\"test: 268; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_248\""
+Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr_str: .string "\"test: 237; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_lr; bin: prev_lr_lr.w_sc_pairs_latest_lrr\""
+Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true_str: .string "\"test: 238; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_sc; bin: true\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8_str: .string "\"test: 239; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_8\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16_str: .string "\"test: 240; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_16\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24_str: .string "\"test: 241; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_24\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32_str: .string "\"test: 242; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_32\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40_str: .string "\"test: 243; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_40\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48_str: .string "\"test: 244; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_48\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56_str: .string "\"test: 245; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_56\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64_str: .string "\"test: 246; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_64\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72_str: .string "\"test: 247; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_72\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80_str: .string "\"test: 248; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_80\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88_str: .string "\"test: 249; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_88\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96_str: .string "\"test: 250; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_96\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104_str: .string "\"test: 251; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_104\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112_str: .string "\"test: 252; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_112\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120_str: .string "\"test: 253; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_120\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128_str: .string "\"test: 254; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_128\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136_str: .string "\"test: 255; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_136\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144_str: .string "\"test: 256; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_144\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152_str: .string "\"test: 257; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_152\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160_str: .string "\"test: 258; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_160\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168_str: .string "\"test: 259; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_168\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176_str: .string "\"test: 260; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_176\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184_str: .string "\"test: 261; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_184\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192_str: .string "\"test: 262; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_192\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200_str: .string "\"test: 263; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_200\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208_str: .string "\"test: 264; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_208\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216_str: .string "\"test: 265; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_216\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224_str: .string "\"test: 266; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_224\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232_str: .string "\"test: 267; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_232\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240_str: .string "\"test: 268; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_240\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248_str: .string "\"test: 269; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_248\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

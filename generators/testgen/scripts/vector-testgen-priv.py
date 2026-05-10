@@ -510,8 +510,13 @@ if __name__ == '__main__':
         # Initialize flen so loadFloatReg / FP value formatting work correctly
         # when priv coverpoints (e.g. cp_vectorfp_mstatus_fs_state) need to
         # preload a scalar-FP source. Without this, flen=0 makes the random
-        # FP value 0 and the hex format string empty.
-        setFlen(file_sew if file_sew is not None else xlen)
+        # FP value 0 and the hex format string empty. Mirror the unpriv
+        # vfloat path: scalar FLEN is 32 by default and only widens to 64
+        # when SEW=64 selects FD; SEW (16/32) does not narrow FLEN.
+        if file_sew is not None:
+          setFlen(file_sew if file_sew > 32 else 32)
+        else:
+          setFlen(xlen)
 
         if not instructions:
             continue

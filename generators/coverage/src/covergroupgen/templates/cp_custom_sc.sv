@@ -1,13 +1,11 @@
     // Custom coverpoints for Store Conditional
 
-    cp_prev_lr : coverpoint ({ins.prev.inst_name == "lr.w", ins.prev.inst_name == "lr.d"}) {
-        bins lr_w = {2'b10};  // previous instruction was load reserved
-        `ifdef XLEN64
-            bins lr_d = {2'b01};
-        `endif
+
+    cp_prev_lr : coverpoint ((ins.prev.inst_name == "lr.w" & ins.current.inst_name == "sc.w") | (ins.prev.inst_name == "lr.d" & ins.current.inst_name == "sc.d")) {
+        bins lr_sc_size_match = {1};
     }
 
-    cp_sc_fail : coverpoint (ins.current.rd_val) {
+    cp_sc_pass_fail : coverpoint (ins.current.rd_val) {
         bins pass = {0};
         bins fail = {[1:$]};
     }
@@ -44,5 +42,5 @@
             bins ld  = {3'b011};
         `endif
     }
-    cp_custom_sc_lrsc : cross cp_prev_lr, cp_sc_fail;
+    cp_custom_sc_lr : cross cp_prev_lr, cp_sc_pass_fail;
     cp_custom_sc_addresses : cross cp_prev_lr, cp_address_difference;

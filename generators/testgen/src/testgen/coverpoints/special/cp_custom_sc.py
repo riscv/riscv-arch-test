@@ -54,8 +54,9 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         )
         return_test_regs(test_data, params)
 
-    # cp_custom_sc_lrsc
-    lr_insns = ["lr.w"] if test_data.xlen == 32 else ["lr.d", "lr.w"]
+    # cp_custom_sc_lr
+    # only test matching lr and sc widths because it is undefined whether nonmatching ones will succeed
+    lr_insns = ["lr.w"] if test_data.xlen == 32 else ["lr.d"]
 
     for lr_insn in lr_insns:
         params = generate_random_params(test_data, instr_type, exclude_regs=[0])
@@ -68,11 +69,11 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         )
         test_lines.extend(
             [
-                f"# Testcase: cp_custom_sc_lrsc with prev {lr_insn}",
+                f"# Testcase: cp_custom_sc_lr with prev {lr_insn}",
                 load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                 f"LA(x{params.rs1}, scratch) # rs1 = base address",
                 f"{lr_insn} x0, (x{params.rs1}) # establish reservation",
-                test_data.add_testcase(f"prev_lr_{lr_insn}", "cp_custom_sc_lrsc"),
+                test_data.add_testcase(f"prev_lr_{lr_insn}", "cp_custom_sc_lr"),
                 f"{instr_name} x{params.rd}, x{params.rs2}, (x{params.rs1}) # perform operation",
                 write_sigupd(params.rd, test_data),
                 f"LA(x{params.rs1}, scratch) # reload base address",

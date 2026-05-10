@@ -3410,18 +3410,18 @@ Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl:
   # Check if x9 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x9, Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl, Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl_str)
 
-# Testcase: cp_custom_sc_lrsc with prev lr.w
+# Testcase: cp_custom_sc_lr with prev lr.w
   RVTEST_TESTDATA_LOAD_INT(x18, x2) # load rs2: x2 = 0xd02cc3e1
   LA(x8, scratch) # rs1 = base address
   lr.w x0, (x8) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_lrsc_prev_lr_lr_w:
+Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w:
   sc.w x11, x2, (x8) # perform operation
   # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_lrsc_prev_lr_lr_w, Zalrsc_sc_w_cg_cp_custom_sc_lrsc_prev_lr_lr_w_str)
+  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_str)
   LA(x8, scratch) # reload base address
   LREG x28, 0(x8) # load stored value
   # Check if x28 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x28, Zalrsc_sc_w_cg_cp_custom_sc_lrsc_prev_lr_lr_w, Zalrsc_sc_w_cg_cp_custom_sc_lrsc_prev_lr_lr_w_str)
+  RVTEST_SIGUPD(x21, x5, x4, x28, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_str)
 
 # Testcase: cp_custom_sc_after_sc (should fail because of intervening sc)
   RVTEST_TESTDATA_LOAD_INT(x18, x16) # load rs2: x16 = 0x4bcdd0b6
@@ -4613,7 +4613,7 @@ Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b31_str: .string "\"test: 232; cg: Zalrsc_sc.w
 Zalrsc_sc_w_cg_cp_custom_aqrl_str: .string "\"test: 233; cg: Zalrsc_sc.w_cg; cp: cp_custom_aqrl; bin: \""
 Zalrsc_sc_w_cg_cp_custom_aqrl_rl_str: .string "\"test: 234; cg: Zalrsc_sc.w_cg; cp: cp_custom_aqrl; bin: .rl\""
 Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl_str: .string "\"test: 235; cg: Zalrsc_sc.w_cg; cp: cp_custom_aqrl; bin: .aqrl\""
-Zalrsc_sc_w_cg_cp_custom_sc_lrsc_prev_lr_lr_w_str: .string "\"test: 236; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_lrsc; bin: prev_lr_lr.w\""
+Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_str: .string "\"test: 236; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_lr; bin: prev_lr_lr.w\""
 Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true_str: .string "\"test: 237; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_sc; bin: true\""
 Zalrsc_sc_w_cg_cp_custom_sc_after_store_sb_str: .string "\"test: 238; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_store; bin: sb\""
 Zalrsc_sc_w_cg_cp_custom_sc_after_store_sh_str: .string "\"test: 239; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_store; bin: sh\""

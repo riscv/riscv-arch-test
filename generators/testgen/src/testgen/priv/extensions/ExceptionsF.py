@@ -161,9 +161,7 @@ def add_fp_instructions(
                     write_sigupd(dest_fp_reg, test_data, "float"),
                 ]
             )
-    t_lines.append("#endif")
-
-    op32 = ["fmv.x.w", "fmvh.x.d", "fmvp.d.x"]
+    op32 = ["fmvh.x.d", "fmvp.d.x"]
     t_lines.append("#if __riscv_xlen == 32")
     for op in op32:
         t_lines.extend(
@@ -173,8 +171,7 @@ def add_fp_instructions(
                 f"csrs mstatus, x{set_mask_reg}",
             ]
         )
-
-        if op == "fmv.x.w":
+        if op == "fmvh.x.d":
             t_lines.extend(
                 [
                     f"{op} x{int_reg1}, f{source_reg1}",
@@ -182,26 +179,16 @@ def add_fp_instructions(
                     write_sigupd(int_reg1, test_data),
                 ]
             )
-        elif op in ["fmvh.x.d", "fmvp.d.x"]:
-            t_lines.append("#ifdef ZFA_SUPPORTED")
-            if op == "fmvh.x.d":
-                t_lines.extend(
-                    [
-                        f"{op} x{int_reg1}, f{source_reg1}",
-                        "nop",
-                        write_sigupd(int_reg1, test_data),
-                    ]
-                )
-            elif op == "fmvp.d.x":
-                t_lines.extend(
-                    [
-                        f"{op} f{dest_fp_reg}, x{int_reg1}, x{int_reg2}",
-                        "nop",
-                        write_sigupd(dest_fp_reg, test_data, "float"),
-                    ]
-                )
-            t_lines.append("#endif")
-    t_lines.append("#endif")
+        elif op == "fmvp.d.x":
+            t_lines.extend(
+                [
+                    f"{op} f{dest_fp_reg}, x{int_reg1}, x{int_reg2}",
+                    "nop",
+                    write_sigupd(dest_fp_reg, test_data, "float"),
+                ]
+            )
+    t_lines.append("#endif // __riscv_xlen == 32")
+    t_lines.append("#endif // ZFA_SUPPORTED")
 
     test_data.int_regs.return_registers([int_reg1, int_reg2])
     test_data.float_regs.return_registers([dest_fp_reg, source_reg1, source_reg2, source_reg3])
@@ -223,15 +210,14 @@ def add_csr_instructions(
         f"LI(x{check_reg}, 0)",
     ]
 
-    if fs_val == 1:
-        t_lines.extend(
-            [
-                test_data.add_testcase(f"fcsr_clear_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
-                f"csrc mstatus, x{clear_mask_reg}",
-                f"csrs mstatus, x{set_mask_reg}",
-                gen_csr_write_sigupd(check_reg, "fcsr", test_data),
-            ]
-        )
+    t_lines.extend(
+        [
+            test_data.add_testcase(f"fcsr_clear_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
+            f"csrc mstatus, x{clear_mask_reg}",
+            f"csrs mstatus, x{set_mask_reg}",
+            gen_csr_write_sigupd(check_reg, "fcsr", test_data),
+        ]
+    )
 
     t_lines.extend(
         [
@@ -598,7 +584,10 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "ExceptionsF",
-    required_extensions=["F", "Sm"],
+    required_extensions=[
+        "F",
+        "Sm",
+    ],  # Some priv mode is needed to set up trap handler.  Generalize so that this could run in U mode in the future.  Applies to many other Exceptions tests.
     march_extensions=["Zfa", "D", "Zfhmin"],
 )
 def make_exceptionsf(test_data: TestData) -> list[str]:

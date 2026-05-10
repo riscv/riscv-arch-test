@@ -147,35 +147,24 @@ def writeLine(argument: str, comment = ""):
 #####################################       test for each coverpoint      #####################################
 
 def make_vill(instruction):
-    # ============================================================
-    # SPIKE-VS-SAIL DISAGREEMENT — cp_vill GENERATION DISABLED
-    # ------------------------------------------------------------
-    # The cp_vill trigger below uses `vsetivli ..., e64, mf8` (SEW=64
-    # with LMUL=1/8). That fractional LMUL violates the rule
-    # `LMUL >= SEW/ELEN` (here 0.125 < 64/64 = 1) and so produces a
-    # config that Sail and Spike disagree on for some follow-up
-    # instructions (notably whole-register moves like vmv1r.v):
-    # Spike traps on the next instruction, Sail does not. Until the
-    # underlying ref-model bug is resolved (see TODOs below for
-    # cp_vstart / cp_vstart_gt_vl), do not emit cp_vill tests for any
-    # instruction whose vill trigger would require a fractional LMUL
-    # smaller than SEW/ELEN.
-    #
-    # TO RE-ENABLE cp_vill TESTS:
-    #   1. Delete this early-return block.
-    #   2. (Optionally) replace the e64/mf8 trigger on the next line
-    #      with a vill-setting sequence that obeys LMUL >= SEW/ELEN.
-    # ============================================================
-    return  # noqa: cp_vill disabled — see SPIKE-VS-SAIL DISAGREEMENT comment above
-
     description = "cp_vill"
     sew = _eff_sew_for_instruction(instruction)
     instruction_data = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(),
                                                       vd_val_pointer = "vector_random", vs2_val_pointer = "vector_random", vs1_val_pointer = "vector_random")
 
     scratch = pickPrivScratch(instruction_data[1])
+    vtype_reg = pickPrivScratch(instruction_data[1], exclude=(scratch,))
     writePrivTestPrep(description, instruction, instruction_data, sew=sew, scratch=scratch)
-    writeLine(f"vsetivli  x{scratch}, 1, e64, mf8, tu, mu",  "# SEW = 64 and LMUL = 1/8, illegal config which sets vill = 1")
+    # Set vtype.vill by loading an explicitly-illegal vtype value (all bits
+    # set, including the vill bit at XLEN-1 plus reserved fields) into a
+    # register and applying it via vsetvl. Per the V spec, supplying any
+    # unsupported vtype causes the implementation to set vill=1 and zero the
+    # remaining vtype bits, which is well-defined for both Spike and Sail.
+    # Avoid `vsetivli ..., e64, mf8` style triggers: that combination uses
+    # fractional LMUL with LMUL < SEW/ELEN, which the two reference models
+    # currently disagree on for follow-up instructions.
+    writeLine(f"li        x{vtype_reg}, -1",                                  "# all-ones vtype, vill bit set, all other fields reserved")
+    writeLine(f"vsetvl    x{scratch}, x0, x{vtype_reg}",                      "# install illegal vtype -> vill = 1")
     writePrivTestLine(instruction, instruction_data, cp="cp_vill", sew=sew)
 
 

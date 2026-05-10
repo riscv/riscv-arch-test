@@ -58,6 +58,7 @@ from vector_testgen_common import (
   vd_widen_ins,
   vector_ls_ins,
   vector_stores,
+  vstart_zero_required,
   whole_register_ls,
   whole_register_move,
   writeVecTest,
@@ -146,6 +147,27 @@ def writeLine(argument: str, comment = ""):
 #####################################       test for each coverpoint      #####################################
 
 def make_vill(instruction):
+    # ============================================================
+    # SPIKE-VS-SAIL DISAGREEMENT — cp_vill GENERATION DISABLED
+    # ------------------------------------------------------------
+    # The cp_vill trigger below uses `vsetivli ..., e64, mf8` (SEW=64
+    # with LMUL=1/8). That fractional LMUL violates the rule
+    # `LMUL >= SEW/ELEN` (here 0.125 < 64/64 = 1) and so produces a
+    # config that Sail and Spike disagree on for some follow-up
+    # instructions (notably whole-register moves like vmv1r.v):
+    # Spike traps on the next instruction, Sail does not. Until the
+    # underlying ref-model bug is resolved (see TODOs below for
+    # cp_vstart / cp_vstart_gt_vl), do not emit cp_vill tests for any
+    # instruction whose vill trigger would require a fractional LMUL
+    # smaller than SEW/ELEN.
+    #
+    # TO RE-ENABLE cp_vill TESTS:
+    #   1. Delete this early-return block.
+    #   2. (Optionally) replace the e64/mf8 trigger on the next line
+    #      with a vill-setting sequence that obeys LMUL >= SEW/ELEN.
+    # ============================================================
+    return  # noqa: cp_vill disabled — see SPIKE-VS-SAIL DISAGREEMENT comment above
+
     description = "cp_vill"
     sew = _eff_sew_for_instruction(instruction)
     instruction_data = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(),
@@ -253,8 +275,8 @@ def makeTest(coverpoints, instruction):
         elif (coverpoint == "cp_vill")                       : make_vill(instruction)
         # TODO Issue 1445 on ACT$ Issue https://github.com/riscv/sail-riscv/issues/1104 on sail
         # restore these next two lines when fixed
-        # elif (coverpoint == "cp_vstart")                     : make_vstart(instruction)
-        # elif (coverpoint == "cp_vstart_gt_vl")               : make_vstart_gt_vl(instruction)
+        elif (coverpoint == "cp_vstart")                     : pass # make_vstart(instruction)
+        elif (coverpoint == "cp_vstart_gt_vl")               : pass # make_vstart_gt_vl(instruction)
         elif coverpoint in PRIV_REGISTRY                     : PRIV_REGISTRY[coverpoint](instruction)
         else:
             print("Warning: " + coverpoint + " not implemented yet for " + instruction)
@@ -423,6 +445,7 @@ def writePrivTestLine(instruction, instruction_data, cp="cp_vill", vl=1, lmul=1,
         cp in ("cp_vill", "cp_vstart_gt_vl")
         or (cp == "cp_vstart" and instruction in whole_register_move)
         or (cp == "cp_vstart" and instruction in vector_stores)
+        or (cp == "cp_vstart" and instruction in vstart_zero_required)
     )
     writeVecTest(instruction, cp, vd, sew, testline, test=instruction, rd=rd, fd=fd, vl=vl, lmul=lmul, sig_lmul=sig_lmul, sig_whole_register_store=sig_whole_register_store, priv=True, force_vill=(cp == "cp_vill"), skip_sigupd=skip_sigupd)
 
@@ -545,7 +568,6 @@ if __name__ == '__main__':
         # RVTEST_SIGUPD_V/_V_LEN, so the previous regex-based byte counter no longer
         # works.
         finalizeSigupdCount(tempfname, xlen, flen)
-        print(f"DEBUG sigupd_count for rv{xlen} {extension}: {common.sigupd_count} sigupd_countF={common.sigupd_countF}")
         # if new file is different from old file, replace old file with new file
         if pathlib.Path(fname).exists():
             if filecmp.cmp(fname, tempfname): # files are the same

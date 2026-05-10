@@ -651,6 +651,28 @@ not_maskable    = vm_nomask_ins + mmins + vmvins + ls_not_maskable
 whole_register_move = ["vmv1r.v", "vmv2r.v", "vmv4r.v", "vmv8r.v"]
 whole_register_stores = ["vs1r.v", "vs2r.v", "vs4r.v", "vs8r.v"]
 
+# Instructions that require vstart=0; non-zero vstart is reserved and traps
+# illegal-instruction. cp_vstart sets vstart != 0, so these always trap.
+vstart_zero_required = [
+    # scalar-move instructions
+    "vmv.x.s", "vmv.s.x", "vfmv.f.s", "vfmv.s.f",
+    # integer reductions
+    "vredsum.vs", "vredand.vs", "vredor.vs", "vredxor.vs",
+    "vredminu.vs", "vredmin.vs", "vredmaxu.vs", "vredmax.vs",
+    "vwredsumu.vs", "vwredsum.vs",
+    # FP reductions
+    "vfredosum.vs", "vfredusum.vs", "vfredmax.vs", "vfredmin.vs",
+    "vfwredosum.vs", "vfwredusum.vs",
+    # mask population/find-first
+    "vcpop.m", "vfirst.m",
+    # mask set-before/including/only-first
+    "vmsbf.m", "vmsif.m", "vmsof.m",
+    # iota / id
+    "viota.m", "vid.v",
+    # compress
+    "vcompress.vm",
+]
+
 strided_loads= [
     "vlse8.v", "vlse16.v", "vlse32.v", "vlse64.v",
     "vlsseg2e8.v", "vlsseg2e16.v", "vlsseg2e32.v", "vlsseg2e64.v",
@@ -1433,8 +1455,11 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
           ext_str_no_I += "_" + ext
           continue
         ext_parts_no_I.append(ext)
+        ext_str_no_I += "_" + ext
 
       ext_parts_no_I.extend(derived_exts)
+      for ext in derived_exts:
+        ext_str_no_I += "_" + ext
 
       has_vector = (
         "V" in ext_parts_no_I or

@@ -14,7 +14,8 @@ COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/
 # Default exclusion reasons:
 #  - Sm, S: Insufficient WARL configuration options.
 #  - InterruptsSm,InterruptsS,InterruptsU,PMPSm,PMPZca,SvaduPMP,SvPMP,SvPMPZicbo: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
-EXTENSIONS  ?=
+# Vx8,Vx16,Vx32,Vx64,Vls8,Vls16,Vls32,Vls64,Vf16,Vf32,Vf64,
+EXTENSIONS  ?= ExceptionsVf16,ExceptionsVf32,ExceptionsVf64,ExceptionsVfhmin,ExceptionsVx,ExceptionsVls,SmV,SmVF,UV
 EXCLUDE_EXTENSIONS ?= Sm,Sv,SvaduPMP,SvPMP,SvPMPZicbo,Svade,Svadu,Svinval,SvZicbo,Svnapot,Svpbmt,InterruptsSm,ExceptionsSvZalrsc,ExceptionsSvZaamo,PMPS,PMPU,PMPSm
 
 # DEBUG, FAST, and VERBOSE are runtime options for controlling build output. DEBUG and FAST are mutually exclusive.

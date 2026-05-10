@@ -3431,8 +3431,9 @@ Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w:
   lr.w x0, (x8) # establish reservation
   addi x8, x8, 256 # change reservation address
   lr.w x0, (x8) # establish reservation at a different address that should not match sc
+  addi x8, x8, -256 # restore reservation address
 Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr:
-  sc.w x11, x2, (x8) # perform operation
+  sc.w x11, x2, (x8) # perform store conditional
   # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr_str)
   LA(x8, scratch) # reload base address

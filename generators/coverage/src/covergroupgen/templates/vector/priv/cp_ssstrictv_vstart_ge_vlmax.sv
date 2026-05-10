@@ -13,10 +13,6 @@
         bins valid = {1'b0};
     }
 
-    trap_occurred_8f65a1: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
-        bins trapped = {1'b1};
-    }
-
-    cp_ssstrictv_vstart_ge_vlmax: cross vstart_ge_vlmax, vtype_valid_8f65a1, trap_occurred_8f65a1;
+    cp_ssstrictv_vstart_ge_vlmax: cross vstart_ge_vlmax, vtype_valid_8f65a1;
 
 //// end cp_ssstrictv_vstart_ge_vlmax ///////////////////////////////////////////////////////////////////

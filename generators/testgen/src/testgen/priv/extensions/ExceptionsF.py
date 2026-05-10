@@ -161,10 +161,9 @@ def add_fp_instructions(
                     write_sigupd(dest_fp_reg, test_data, "float"),
                 ]
             )
-    t_lines.append("#endif")
-
-    op32 = ["fmv.x.w", "fmvh.x.d", "fmvp.d.x"]
+    op32 = ["fmvh.x.d", "fmvp.d.x"]
     t_lines.append("#if __riscv_xlen == 32")
+    t_lines.append("#ifdef D_SUPPORTED")
     for op in op32:
         t_lines.extend(
             [
@@ -173,8 +172,7 @@ def add_fp_instructions(
                 f"csrs mstatus, x{set_mask_reg}",
             ]
         )
-
-        if op == "fmv.x.w":
+        if op == "fmvh.x.d":
             t_lines.extend(
                 [
                     f"{op} x{int_reg1}, f{source_reg1}",
@@ -182,26 +180,17 @@ def add_fp_instructions(
                     write_sigupd(int_reg1, test_data),
                 ]
             )
-        elif op in ["fmvh.x.d", "fmvp.d.x"]:
-            t_lines.append("#ifdef ZFA_SUPPORTED")
-            if op == "fmvh.x.d":
-                t_lines.extend(
-                    [
-                        f"{op} x{int_reg1}, f{source_reg1}",
-                        "nop",
-                        write_sigupd(int_reg1, test_data),
-                    ]
-                )
-            elif op == "fmvp.d.x":
-                t_lines.extend(
-                    [
-                        f"{op} f{dest_fp_reg}, x{int_reg1}, x{int_reg2}",
-                        "nop",
-                        write_sigupd(dest_fp_reg, test_data, "float"),
-                    ]
-                )
-            t_lines.append("#endif")
-    t_lines.append("#endif")
+        elif op == "fmvp.d.x":
+            t_lines.extend(
+                [
+                    f"{op} f{dest_fp_reg}, x{int_reg1}, x{int_reg2}",
+                    "nop",
+                    write_sigupd(dest_fp_reg, test_data, "float"),
+                ]
+            )
+    t_lines.append("#endif // D_SUPPORTED")
+    t_lines.append("#endif // __riscv_xlen == 32")
+    t_lines.append("#endif // ZFA_SUPPORTED")
 
     test_data.int_regs.return_registers([int_reg1, int_reg2])
     test_data.float_regs.return_registers([dest_fp_reg, source_reg1, source_reg2, source_reg3])
@@ -220,66 +209,61 @@ def add_csr_instructions(
     check_reg = test_data.int_regs.get_register()
 
     t_lines = [
+        f"csrc mstatus, x{clear_mask_reg}",
+        f"csrs mstatus, x{set_mask_reg}",
         f"LI(x{check_reg}, 0)",
+        test_data.add_testcase(f"csrw_fcsr_zero_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
+        gen_csr_write_sigupd(check_reg, "fcsr", test_data),
+        f"csrc mstatus, x{clear_mask_reg}",
+        f"csrs mstatus, x{set_mask_reg}",
+        f"LI(x{check_reg}, -1)",
+        test_data.add_testcase(f"csrrs_fcsr_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
+        f"CSRRS(x{check_reg}, fcsr, x{check_reg})",
+        gen_csr_read_sigupd(check_reg, ("fcsr", None), test_data),
+        f"csrc mstatus, x{clear_mask_reg}",
+        f"csrs mstatus, x{set_mask_reg}",
+        f"LI(x{check_reg}, -1)",
+        test_data.add_testcase(f"csrrc_fcsr_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
+        f"CSRRC(x{check_reg}, fcsr, x{check_reg})",
+        gen_csr_read_sigupd(check_reg, ("fcsr", None), test_data),
+        "",
+        f"csrc mstatus, x{clear_mask_reg}",
+        f"csrs mstatus, x{set_mask_reg}",
+        f"LI(x{check_reg}, 0)",
+        test_data.add_testcase(f"csrw_frm_zero_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
+        gen_csr_write_sigupd(check_reg, "frm", test_data),
+        f"csrc mstatus, x{clear_mask_reg}",
+        f"csrs mstatus, x{set_mask_reg}",
+        f"LI(x{check_reg}, -1)",
+        test_data.add_testcase(f"csrrs_frm_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
+        f"CSRRS(x{check_reg}, frm, x{frm_reg})",
+        gen_csr_read_sigupd(check_reg, ("frm", None), test_data),
+        f"csrc mstatus, x{clear_mask_reg}",
+        f"csrs mstatus, x{set_mask_reg}",
+        f"LI(x{check_reg}, 0)",
+        test_data.add_testcase(f"csrrc_frm_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
+        f"CSRRC(x{check_reg}, frm, x{frm_reg})",
+        gen_csr_read_sigupd(check_reg, ("frm", None), test_data),
+        "",
+        f"LI(x{check_reg}, 0)",
+        f"csrc mstatus, x{clear_mask_reg}",
+        f"csrs mstatus, x{set_mask_reg}",
+        f"LI(x{check_reg}, 0)",
+        test_data.add_testcase(f"csrw_fflags_zero_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
+        gen_csr_write_sigupd(check_reg, "fflags", test_data),
+        f"csrc mstatus, x{clear_mask_reg}",
+        f"csrs mstatus, x{set_mask_reg}",
+        f"LI(x{check_reg}, -1)",
+        test_data.add_testcase(f"csrrs_fflags_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
+        f"CSRRS(x{check_reg}, fflags, x{check_reg})",
+        gen_csr_read_sigupd(check_reg, ("fflags", None), test_data),
+        f"csrc mstatus, x{clear_mask_reg}",
+        f"csrs mstatus, x{set_mask_reg}",
+        f"LI(x{check_reg}, -1)",
+        test_data.add_testcase(f"csrrc_fflags_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
+        f"CSRRC(x{check_reg}, fflags, x{check_reg})",
+        gen_csr_read_sigupd(check_reg, ("fflags", None), test_data),
     ]
-
-    if fs_val == 1:
-        t_lines.extend(
-            [
-                test_data.add_testcase(f"fcsr_clear_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
-                f"csrc mstatus, x{clear_mask_reg}",
-                f"csrs mstatus, x{set_mask_reg}",
-                gen_csr_write_sigupd(check_reg, "fcsr", test_data),
-            ]
-        )
-
-    t_lines.extend(
-        [
-            test_data.add_testcase(f"csrw_fcsr_zero_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
-            f"csrc mstatus, x{clear_mask_reg}",
-            f"csrs mstatus, x{set_mask_reg}",
-            gen_csr_write_sigupd(check_reg, "fcsr", test_data),
-            test_data.add_testcase(f"csrw_frm_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
-            f"csrc mstatus, x{clear_mask_reg}",
-            f"csrs mstatus, x{set_mask_reg}",
-            gen_csr_write_sigupd(check_reg, "frm", test_data),
-            f"LI(x{check_reg}, 0)",
-            test_data.add_testcase(f"csrw_fflags_zero_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
-            f"csrc mstatus, x{clear_mask_reg}",
-            f"csrs mstatus, x{set_mask_reg}",
-            gen_csr_write_sigupd(check_reg, "fflags", test_data),
-            test_data.add_testcase(f"csrrs_fcsr_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
-            f"csrc mstatus, x{clear_mask_reg}",
-            f"csrs mstatus, x{set_mask_reg}",
-            f"CSRRS(x{check_reg}, fcsr, x{check_reg})",
-            gen_csr_read_sigupd(check_reg, ("fcsr", None), test_data),
-            test_data.add_testcase(f"csrrs_fflags_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
-            f"csrc mstatus, x{clear_mask_reg}",
-            f"csrs mstatus, x{set_mask_reg}",
-            f"CSRRS(x{check_reg}, fflags, x{check_reg})",
-            gen_csr_read_sigupd(check_reg, ("fflags", None), test_data),
-            test_data.add_testcase(f"csrrs_frm_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
-            f"csrc mstatus, x{clear_mask_reg}",
-            f"csrs mstatus, x{set_mask_reg}",
-            f"CSRRS(x{check_reg}, frm, x{frm_reg})",
-            gen_csr_read_sigupd(check_reg, ("frm", None), test_data),
-            test_data.add_testcase(f"csrrc_fcsr_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
-            f"csrc mstatus, x{clear_mask_reg}",
-            f"csrs mstatus, x{set_mask_reg}",
-            f"CSRRC(x{check_reg}, fcsr, x{check_reg})",
-            gen_csr_read_sigupd(check_reg, ("fcsr", None), test_data),
-            test_data.add_testcase(f"csrrc_fflags_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
-            f"csrc mstatus, x{clear_mask_reg}",
-            f"csrs mstatus, x{set_mask_reg}",
-            f"CSRRC(x{check_reg}, fflags, x{check_reg})",
-            gen_csr_read_sigupd(check_reg, ("fflags", None), test_data),
-            test_data.add_testcase(f"csrrc_frm_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
-            f"csrc mstatus, x{clear_mask_reg}",
-            f"csrs mstatus, x{set_mask_reg}",
-            f"CSRRC(x{check_reg}, frm, x{frm_reg})",
-            gen_csr_read_sigupd(check_reg, ("frm", None), test_data),
-        ]
-    )
 
     test_data.int_regs.return_register(check_reg)
     return t_lines
@@ -598,7 +582,10 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "ExceptionsF",
-    required_extensions=["F", "Sm"],
+    required_extensions=[
+        "F",
+        "Sm",
+    ],  # Some priv mode is needed to set up trap handler.  Generalize so that this could run in U mode in the future.  Applies to many other Exceptions tests.
     march_extensions=["Zfa", "D", "Zfhmin"],
 )
 def make_exceptionsf(test_data: TestData) -> list[str]:

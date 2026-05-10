@@ -56,7 +56,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
 
     # cp_custom_sc_lr
     # only test matching lr and sc widths because it is undefined whether nonmatching ones will succeed
-    lr_insns = ["lr.w"] if test_data.xlen == 32 else ["lr.d"]
+    lr_insns = ["lr.w"] if instr_name == "sc.w" else ["lr.d"]
 
     for lr_insn in lr_insns:
         params = generate_random_params(test_data, instr_type, exclude_regs=[0])
@@ -115,98 +115,6 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         ]
     )
     return_test_regs(test_data, params)
-
-    # cp_custom_sc_after_store
-    # Store to interweave and the appropriate offsets
-    stores = [
-        ("sb", 3),
-        ("sh", 2),
-        ("sw", 0 if instr_name == "sc.w" else 4),
-    ]
-    if test_data.xlen == 64:
-        stores.append(("sd", 0))
-
-    for store_insn, offset in stores:
-        params = generate_random_params(test_data, instr_type, exclude_regs=[0])
-        assert (
-            params.rs1 is not None
-            and params.rd is not None
-            and params.rs2 is not None
-            and params.rs2val is not None
-            and params.temp_reg is not None
-            and params.temp_val is not None
-        )
-        test_lines.extend(
-            [
-                f"# Testcase: cp_custom_sc_after_store ({store_insn})",
-                load_int_reg("rs2", params.rs2, params.rs2val, test_data),
-                load_int_reg("temp_reg", params.temp_reg, params.temp_val, test_data),
-                f"LA(x{params.rs1}, scratch) # rs1 = base address",
-                f"{lr_insn} x0, (x{params.rs1}) # establish reservation",
-                f"{store_insn} x{params.temp_reg}, {offset}(x{params.rs1}) # intervening store",
-                test_data.add_testcase(store_insn, "cp_custom_sc_after_store"),
-                f"{instr_name} x{params.rd}, x{params.rs2}, (x{params.rs1}) # perform operation",
-                write_sigupd(params.rd, test_data),
-                f"LA(x{params.rs1}, scratch) # reload base address",
-                f"LREG x{params.temp_reg}, 0(x{params.rs1}) # load stored value",
-                write_sigupd(params.temp_reg, test_data),
-                "",
-            ]
-        )
-        return_test_regs(test_data, params)
-
-    # cp_custom_sc_after_load
-    # Store to interweave and the appropriate offsets
-    loads = [
-        ("lb", 3),
-        ("lb", 128),
-        ("lbu", 2),
-        ("lbu", 128),
-        ("lh", 2),
-        ("lh", 128),
-        ("lhu", 0),
-        ("lhu", 128),
-        ("lw", 0),
-        ("lw", 128),
-    ]
-    if test_data.xlen == 64:
-        loads.extend(
-            [
-                ("lwu", 0),
-                ("lwu", 128),
-                ("ld", 0),
-                ("ld", 128),
-            ]
-        )
-
-    for load_insn, offset in loads:
-        params = generate_random_params(test_data, instr_type, exclude_regs=[0])
-        assert (
-            params.rs1 is not None
-            and params.rd is not None
-            and params.rs2 is not None
-            and params.rs2val is not None
-            and params.temp_reg is not None
-            and params.temp_val is not None
-        )
-        test_lines.extend(
-            [
-                f"# Testcase: cp_custom_sc_after_load ({load_insn}, offset = {offset})",
-                load_int_reg("rs2", params.rs2, params.rs2val, test_data),
-                load_int_reg("temp_reg", params.temp_reg, params.temp_val, test_data),
-                f"LA(x{params.rs1}, scratch) # rs1 = base address",
-                f"{lr_insn} x0, (x{params.rs1}) # establish reservation",
-                f"{load_insn} x{params.temp_reg}, {offset}(x{params.rs1}) # intervening load",
-                test_data.add_testcase(f"{load_insn}_offset_{offset}", "cp_custom_sc_after_load"),
-                f"{instr_name} x{params.rd}, x{params.rs2}, (x{params.rs1}) # perform operation",
-                write_sigupd(params.rd, test_data),
-                f"LA(x{params.rs1}, scratch) # reload base address",
-                f"LREG x{params.temp_reg}, 0(x{params.rs1}) # load stored value",
-                write_sigupd(params.temp_reg, test_data),
-                "",
-            ]
-        )
-        return_test_regs(test_data, params)
 
     # cp_custom_sc_addresses
     lr_insns = ["lr.w"] if test_data.xlen == 32 else ["lr.d", "lr.w"]

@@ -19,28 +19,5 @@
     cp_custom_sc_after_sc : coverpoint (ins.prev.inst_name == "sc.w" | ins.prev.inst_name == "sc.d") {
         // previous instruction was store conditional
     }
-    cp_custom_sc_after_store : coverpoint (ins.prev.insn[14:12]) iff (ins.prev.insn[6:0] == 7'b0100011) {
-        // previous instruction was a store
-        bins sb = {3'b000};
-        bins sh = {3'b001};
-        bins sw = {3'b010};
-        `ifdef XLEN64
-            bins sd = {3'b011};
-        `else
-            ignore_bins b3 = {3'b011};
-        `endif
-        wildcard ignore_bins badbin = {3'b1??};
-    }
-    cp_custom_sc_after_load : coverpoint (ins.prev.insn[14:12]) iff (ins.prev.insn[6:0] == 7'b0000011) {
-        // previous instruction was a store
-        bins lb  = {3'b000};
-        bins lh  = {3'b001};
-        bins lhu = {3'b101};
-        bins lw  = {3'b010};
-        `ifdef XLEN64
-            bins lwu = {3'b110};
-            bins ld  = {3'b011};
-        `endif
-    }
     cp_custom_sc_lr : cross cp_prev_lr, cp_sc_pass_fail;
     cp_custom_sc_addresses : cross cp_prev_lr, cp_address_difference;

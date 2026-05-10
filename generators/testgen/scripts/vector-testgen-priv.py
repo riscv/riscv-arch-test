@@ -147,6 +147,11 @@ def writeLine(argument: str, comment = ""):
 #####################################       test for each coverpoint      #####################################
 
 def make_vill(instruction):
+    # Skip cp_vill for whole-register move family (vmv<nr>r.v): per V-spec §16.6
+    # these instructions still observe vill, but Sail does not trap. Sail bug;
+    # tracked in SAIL_SPIKE_MISMATCHES.md. Re-enable once Sail is fixed.
+    if instruction in ("vmv1r.v", "vmv2r.v", "vmv4r.v", "vmv8r.v"):
+        return
     description = "cp_vill"
     sew = _eff_sew_for_instruction(instruction)
     instruction_data = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(),

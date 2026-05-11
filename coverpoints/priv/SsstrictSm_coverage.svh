@@ -295,10 +295,15 @@ covergroup SsstrictSm_comp_instr_cg with function sample(ins_t ins);
     // already has its own ignore_bins; these additional ones match exclusions in
     // SsstrictCommon.py's generate_compressed_instr().
 
-    // compressed00: NO generator exclusions — all encodings are generated.
-    // The ignore_bins in RISCV_coverage_comp_instr.svh (c.fld, c.lw, c.lbu, c.lh,
-    // c.sb, c.sh, c.fsd, c.sw) are sufficient.
-    cp_compressed00: cross priv_mode_m, compressed00;
+    // compressed00: generator excludes encodings with rd' = x8.
+    // In the 14-bit compressed00 space (insn[15:2]), rd' is encoded in bits [2:0];
+    // rd' = x8 therefore corresponds to ...000 and must be ignored here to avoid
+    // unreachable bins in the cross. The remaining shared ignore_bins in
+    // RISCV_coverage_comp_instr.svh (c.fld, c.lw, c.lbu, c.lh, c.sb, c.sh, c.fsd,
+    // c.sw) still apply.
+    cp_compressed00: cross priv_mode_m, compressed00 {
+        wildcard ignore_bins rd_p_x8 = binsof(compressed00) intersect {14'b???????????000};
+    }
 
     cp_compressed01: cross priv_mode_m, compressed01 {
         // "001XXXXXXXXXXX01" — c.jal (RV32) / c.addiw (RV64): already ignored in svh as c_jal

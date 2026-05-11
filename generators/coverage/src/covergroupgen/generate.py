@@ -115,27 +115,68 @@ def _operand_presence(instr_type: str) -> tuple[bool, bool, bool]:
     return _TYPE_OPERANDS.get(instr_type, (True, True, True))
 
 
-def _filter_per_operand_crosses(rendered: str, instr_type: str) -> str:
+def _max_legal_lmul_for_instruction(instr: str) -> int:
+    """Return the largest legal LMUL for ``instr`` (≤ 8).
+
+    Mirrors the rules in ``priv/_ssstrictv_helpers.max_legal_lmul``:
+
+    * Segment LS instructions require ``NF * EMUL ≤ 8`` so EMUL ≤ 8/NF.
+    * Widening / narrowing ops have an operand with EEW = 2*SEW so EMUL = 2*LMUL,
+      capping LMUL at 4.
+    * Otherwise LMUL ≤ 8.
+    """
+    try:
+        import sys as _sys
+        _scripts = Path(__file__).resolve().parents[4] / "generators" / "testgen" / "scripts"
+        if str(_scripts) not in _sys.path:
+            _sys.path.insert(0, str(_scripts))
+        import vector_testgen_common as _c  # type: ignore
+    except Exception:
+        return 8
+    nf = _c.getInstructionSegments(instr) if hasattr(_c, "getInstructionSegments") else 1
+    if nf and nf > 1:
+        cap = 8 // nf
+        for m in (8, 4, 2, 1):
+            if m <= cap:
+                return m
+        return 1
+    if instr in getattr(_c, "vd_widen_ins", ()) or instr in getattr(_c, "vs2_widen_ins", ()):
+        return 4
+    return 8
+
+
+_LMUL_CROSS_RE = re.compile(r"cp_ssstrictv_lmul(\d+)_(vd|vs1|vs2)_off_group")
+
+
+def _filter_per_operand_crosses(rendered: str, instr_type: str, instr: str = "") -> str:
     """Drop cross lines tied to operands the instruction's Type does not encode.
 
     The ``cp_ssstrictv_lmulgt1_off_group`` template emits one cross per (lmul,
-    operand) pair. Instructions like vid.v / vfmv.v.f / vmv.x.s hardcode some of
-    those vector source/dest fields in their opcode, so the corresponding bins
-    can never be exercised. Strip them at emission time so they don't show up
-    as missing coverage.
+    operand) pair. Two reasons we may drop a cross:
+
+    * Operand absent in the Type encoding (e.g. ``vid.v`` has no vs1/vs2).
+    * The (LMUL, instruction) combination is illegal — e.g. widening ops cap at
+      LMUL=4 because vd has EEW=2*SEW, and segment LS caps at LMUL=8/NF.
     """
     has_vd, has_vs1, has_vs2 = _operand_presence(instr_type)
-    if has_vd and has_vs1 and has_vs2:
+    max_lmul = _max_legal_lmul_for_instruction(instr) if instr else 8
+    if has_vd and has_vs1 and has_vs2 and max_lmul >= 8:
         return rendered
     out_lines: list[str] = []
     for line in rendered.splitlines(keepends=True):
         stripped = line.lstrip()
-        if not has_vd and stripped.startswith("cp_ssstrictv_lmul") and "_vd_off_group" in stripped:
-            continue
-        if not has_vs1 and stripped.startswith("cp_ssstrictv_lmul") and "_vs1_off_group" in stripped:
-            continue
-        if not has_vs2 and stripped.startswith("cp_ssstrictv_lmul") and "_vs2_off_group" in stripped:
-            continue
+        m = _LMUL_CROSS_RE.search(stripped)
+        if m and stripped.startswith("cp_ssstrictv_lmul"):
+            lmul = int(m.group(1))
+            role = m.group(2)
+            if role == "vd" and not has_vd:
+                continue
+            if role == "vs1" and not has_vs1:
+                continue
+            if role == "vs2" and not has_vs2:
+                continue
+            if lmul > max_lmul:
+                continue
         out_lines.append(line)
     return "".join(out_lines)
 
@@ -495,11 +536,11 @@ def _gen_instrs(
                     if int(effew) <= max_sew:
                         cp = re.sub(r"_sew_lte_\d+", "", cp)
                         rendered = customize_template(templates, cp, arch, instr) + "\n"
-                        rendered = _filter_per_operand_crosses(rendered, _instr_type)
+                        rendered = _filter_per_operand_crosses(rendered, _instr_type, instr)
                         covergroup_lines.append(rendered)
             else:
                 rendered = customize_template(templates, cp, arch, instr) + "\n"
-                rendered = _filter_per_operand_crosses(rendered, _instr_type)
+                rendered = _filter_per_operand_crosses(rendered, _instr_type, instr)
                 covergroup_lines.append(rendered)
 
         # Instruction footer

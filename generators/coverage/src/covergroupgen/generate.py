@@ -70,6 +70,77 @@ PRIV_VECTOR_PREFIXES = ("ExceptionsV", "SsstrictV", "MissalignedV")
 VECTOR_WIDEN_PREFIXES = ("Vx", "Vls", "Vf")
 
 
+# Map instruction Type code → (has_vd_reg_group, has_vs1_reg_group, has_vs2_reg_group).
+# Used to suppress per-operand off_group / overlap crosses for instructions whose
+# encoding hardcodes an operand field (e.g. vid.v has no vs1/vs2 registers — those
+# bits are part of the opcode, so unaligned-vs1 / unaligned-vs2 bins can never fire).
+# vd is recorded as "present" for stores (the vs3 data register lives in the rd field
+# and still has an EMUL-aligned register group constraint).
+_TYPE_OPERANDS: dict[str, tuple[bool, bool, bool]] = {
+    "VVVM":  (True,  True,  True),
+    "VVV":   (True,  True,  True),
+    "VVVMR": (True,  True,  True),
+    "VVIM":  (True,  False, True),
+    "VVI":   (True,  False, True),
+    "VVXM":  (True,  False, True),
+    "VVX":   (True,  False, True),
+    "VVFM":  (True,  False, True),
+    "VVM":   (True,  False, True),
+    "VV":    (True,  False, True),
+    "VVR":   (True,  True,  False),
+    "VFVM":  (True,  False, True),
+    "VI":    (True,  False, False),
+    "VM":    (True,  False, False),
+    "VF":    (True,  False, False),
+    "FV":    (False, False, True),
+    "XV":    (False, False, True),
+    "XVM":   (False, False, True),
+    "VX":    (True,  False, False),
+    "VXM":   (True,  False, False),
+    "VXVM":  (True,  False, True),
+    "VXXM":  (True,  False, False),
+    "VSX":   (True,  False, False),
+    "VSXM":  (True,  False, False),
+    "VSXVM": (True,  False, True),
+    "VSXXM": (True,  False, False),
+}
+
+
+def _operand_presence(instr_type: str) -> tuple[bool, bool, bool]:
+    """Return (has_vd, has_vs1, has_vs2) register-group presence for a given Type.
+
+    Unknown types default to (True, True, True) so we don't accidentally drop bins
+    for new types that are added without updating this table.
+    """
+    return _TYPE_OPERANDS.get(instr_type, (True, True, True))
+
+
+def _filter_per_operand_crosses(rendered: str, instr_type: str) -> str:
+    """Drop cross lines tied to operands the instruction's Type does not encode.
+
+    The ``cp_ssstrictv_lmulgt1_off_group`` template emits one cross per (lmul,
+    operand) pair. Instructions like vid.v / vfmv.v.f / vmv.x.s hardcode some of
+    those vector source/dest fields in their opcode, so the corresponding bins
+    can never be exercised. Strip them at emission time so they don't show up
+    as missing coverage.
+    """
+    has_vd, has_vs1, has_vs2 = _operand_presence(instr_type)
+    if has_vd and has_vs1 and has_vs2:
+        return rendered
+    out_lines: list[str] = []
+    for line in rendered.splitlines(keepends=True):
+        stripped = line.lstrip()
+        if not has_vd and stripped.startswith("cp_ssstrictv_lmul") and "_vd_off_group" in stripped:
+            continue
+        if not has_vs1 and stripped.startswith("cp_ssstrictv_lmul") and "_vs1_off_group" in stripped:
+            continue
+        if not has_vs2 and stripped.startswith("cp_ssstrictv_lmul") and "_vs2_off_group" in stripped:
+            continue
+        out_lines.append(line)
+    return "".join(out_lines)
+
+
+
 def _write_if_changed(path: Path, content: str) -> None:
     """Write content only if it differs from the existing file, to avoid unnecessary rebuilds."""
     if path.exists() and path.read_text() == content:
@@ -423,9 +494,13 @@ def _gen_instrs(
                     max_sew = int(match.group(1))
                     if int(effew) <= max_sew:
                         cp = re.sub(r"_sew_lte_\d+", "", cp)
-                        covergroup_lines.append(customize_template(templates, cp, arch, instr) + "\n")
+                        rendered = customize_template(templates, cp, arch, instr) + "\n"
+                        rendered = _filter_per_operand_crosses(rendered, _instr_type)
+                        covergroup_lines.append(rendered)
             else:
-                covergroup_lines.append(customize_template(templates, cp, arch, instr) + "\n")
+                rendered = customize_template(templates, cp, arch, instr) + "\n"
+                rendered = _filter_per_operand_crosses(rendered, _instr_type)
+                covergroup_lines.append(rendered)
 
         # Instruction footer
         if vectorwiden:

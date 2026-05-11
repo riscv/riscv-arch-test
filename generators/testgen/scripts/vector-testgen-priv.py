@@ -152,8 +152,7 @@ def make_vill(instruction):
     # ------------------------------------------------------------
     # Per V-spec §16.6, the whole-register-move family vmv<nr>r.v
     # still observes vill: Spike correctly traps after we install an
-    # illegal vtype, but Sail does not. The mismatch is tracked in
-    # SAIL_SPIKE_MISMATCHES.md.
+    # illegal vtype, but Sail does not.
     #
     # TO RE-ENABLE cp_vill FOR vmv<nr>r.v (once Sail honors vill):
     #   Delete the `if instruction in (...): return` block below.

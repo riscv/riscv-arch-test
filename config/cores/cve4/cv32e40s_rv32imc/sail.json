@@ -16,7 +16,7 @@
       "value": "0x00000007"
     },
     "xtval_nonzero": {
-      // mtval hardwired to 0 (cs_registers.sv)
+      // mtval hardwired to 0 (User Manual, Control and Status Registers)
       "illegal_instruction": false,
       "software_breakpoint": false,
       "hardware_breakpoint": false,
@@ -154,7 +154,7 @@
   "platform": {
     // OpenHW Group JEDEC mvendorid=0x602=1538
     "vendorid": 1538,
-    // marchid=0x15 (cv32e40s_pkg.sv)
+    // marchid=0x15 (User Manual, Control and Status Registers)
     "archid": 21,
     "impid": 0,
     "hartid": 0,

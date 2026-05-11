@@ -14,26 +14,38 @@
 ///////////////////////////////////////////
 
     vtype_prev_vill_clear: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        option.weight = 0;
+        type_option.weight = 0;
         bins vill_not_set = {0};
     }
 
     vtype_prev_vill_set: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+        option.weight = 0;
+        type_option.weight = 0;
         bins vill_set = {1};
     }
 
     vstart_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") {
+        option.weight = 0;
+        type_option.weight = 0;
         bins target = {0};
     }
 
     vl_nonzero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+        option.weight = 0;
+        type_option.weight = 0;
         bins target = {[`XLEN'h10000:`XLEN'h1]};
     }
 
     mask_enabled: coverpoint ins.current.insn[25] {
+        option.weight = 0;
+        type_option.weight = 0;
         bins enabled = {1'b0};
     }
 
     vd_v0: coverpoint ins.current.insn[11:7] {
+        option.weight = 0;
+        type_option.weight = 0;
         bins zero = {5'b00000};
     }
 
@@ -47,6 +59,8 @@
     }
 
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        option.weight = 0;
+        type_option.weight = 0;
         bins one    = {0};
         bins two    = {1};
         bins four   = {2};
@@ -54,144 +68,214 @@
     }
 
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        option.weight = 0;
+        type_option.weight = 0;
         bins one = {0};
     }
 
     vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        option.weight = 0;
+        type_option.weight = 0;
         bins two = {1};
     }
 
     vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        option.weight = 0;
+        type_option.weight = 0;
         bins two = {2};
     }
 
     vtype_lmul_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        option.weight = 0;
+        type_option.weight = 0;
         bins two = {3};
     }
 
     vd_all_reg_unaligned_lmul_2: coverpoint ins.current.insn[11:7] {
+        option.weight = 0;
+        type_option.weight = 0;
         wildcard ignore_bins divisible_by_2 = {5'b????0};
     }
 
     vd_all_reg_unaligned_lmul_4: coverpoint ins.current.insn[11:7] {
+        option.weight = 0;
+        type_option.weight = 0;
         wildcard ignore_bins divisible_by_4 = {5'b???00};
     }
 
     vd_all_reg_unaligned_lmul_8: coverpoint ins.current.insn[11:7] {
+        option.weight = 0;
+        type_option.weight = 0;
         wildcard ignore_bins divisible_by_8 = {5'b??000};
     }
 
     vs1_all_reg_unaligned_lmul_2: coverpoint ins.current.insn[19:15] {
+        option.weight = 0;
+        type_option.weight = 0;
         wildcard ignore_bins divisible_by_2 = {5'b????0};
     }
 
     vs1_all_reg_unaligned_lmul_4: coverpoint ins.current.insn[19:15] {
+        option.weight = 0;
+        type_option.weight = 0;
         wildcard ignore_bins divisible_by_4 = {5'b???00};
     }
 
     vs1_all_reg_unaligned_lmul_8: coverpoint ins.current.insn[19:15] {
+        option.weight = 0;
+        type_option.weight = 0;
         wildcard ignore_bins divisible_by_8 = {5'b??000};
     }
 
     vs2_all_reg_unaligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        option.weight = 0;
+        type_option.weight = 0;
         wildcard ignore_bins divisible_by_2 = {5'b????0};
     }
 
     vs2_all_reg_unaligned_lmul_4: coverpoint ins.current.insn[24:20] {
+        option.weight = 0;
+        type_option.weight = 0;
         wildcard ignore_bins divisible_by_4 = {5'b???00};
     }
 
     vs2_all_reg_unaligned_lmul_8: coverpoint ins.current.insn[24:20] {
+        option.weight = 0;
+        type_option.weight = 0;
         wildcard ignore_bins divisible_by_8 = {5'b??000};
     }
 
     vd_eq_vs1 : coverpoint (ins.current.insn[11:7] == ins.current.insn[19:15]) {
+        option.weight = 0;
+        type_option.weight = 0;
         bins target = {1'b1};
     }
 
     vd_eq_vs2 : coverpoint (ins.current.insn[11:7] == ins.current.insn[24:20]) {
+        option.weight = 0;
+        type_option.weight = 0;
         bins target = {1'b1};
     }
 
     vd_ne_vs1 : coverpoint (ins.current.insn[19:15] != ins.current.insn[11:7]) {
+        option.weight = 0;
+        type_option.weight = 0;
         bins target = {1'b1};
     }
 
     vd_ne_vs2 : coverpoint (ins.current.insn[24:20] != ins.current.insn[11:7]) {
+        option.weight = 0;
+        type_option.weight = 0;
         bins target = {1'b1};
     }
 
     vs2_eq_vs1 : coverpoint (ins.current.insn[19:15] == ins.current.insn[24:20]) {
+        option.weight = 0;
+        type_option.weight = 0;
         bins target = {1'b1};
     }
 
     vs2_reg_aligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        option.weight = 0;
+        type_option.weight = 0;
         wildcard bins divisible_by_2 = {5'b????0};
     }
 
     vs2_reg_aligned_lmul_8: coverpoint ins.current.insn[24:20] {
+        option.weight = 0;
+        type_option.weight = 0;
         wildcard bins divisible_by_8 = {5'b??000};
     }
 
     vs1_reg_aligned_lmul_8: coverpoint ins.current.insn[19:15] {
+        option.weight = 0;
+        type_option.weight = 0;
         wildcard bins divisible_by_8 = {5'b??000};
     }
 
     vs1_vd_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        option.weight = 0;
+        type_option.weight = 0;
         bins overlapping = {1'b1};
     }
 
     vs1_vd_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        option.weight = 0;
+        type_option.weight = 0;
         bins overlapping = {1'b1};
     }
 
     vs1_vd_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        option.weight = 0;
+        type_option.weight = 0;
         bins overlapping = {1'b1};
     }
 
     vs1_vd_no_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        option.weight = 0;
+        type_option.weight = 0;
         bins overlapping = {1'b0};
     }
 
     vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        option.weight = 0;
+        type_option.weight = 0;
         bins overlapping = {1'b1};
     }
 
     vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        option.weight = 0;
+        type_option.weight = 0;
         bins overlapping = {1'b1};
     }
 
     vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        option.weight = 0;
+        type_option.weight = 0;
         bins overlapping = {1'b1};
     }
 
     vs2_vd_no_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        option.weight = 0;
+        type_option.weight = 0;
         bins overlapping = {1'b0};
     }
 
     vs2_ne_vs1 : coverpoint (ins.current.insn[19:15] != ins.current.insn[24:20]) {
+        option.weight = 0;
+        type_option.weight = 0;
         bins target = {1'b1};
     }
 
     vd_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
+        option.weight = 0;
+        type_option.weight = 0;
         wildcard bins divisible_by_2 = {5'b????0};
     }
 
     vd_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
+        option.weight = 0;
+        type_option.weight = 0;
         wildcard bins divisible_by_4 = {5'b???00};
     }
 
     vd_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
+        option.weight = 0;
+        type_option.weight = 0;
         wildcard bins divisible_by_8 = {5'b??000};
     }
 
     vtype_all_lmulgt1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        option.weight = 0;
+        type_option.weight = 0;
         bins two    = {1};
         bins four   = {2};
         bins eight  = {3};
     }
 
     vtype_all_sew_supported: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
+        option.weight = 0;
+        type_option.weight = 0;
         `ifdef SEW8_SUPPORTED
         bins eight      = {0};
         `endif
@@ -217,5 +301,7 @@
     }
 
     vtype_sew_supported : coverpoint check_vtype_sew_supported(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")) {
+        option.weight = 0;
+        type_option.weight = 0;
         bins supported = {1};
     }

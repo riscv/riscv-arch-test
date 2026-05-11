@@ -21,6 +21,22 @@ from random import randint, seed
 import priv  # priv coverpoint generator scripts
 import vector_testgen_common as common
 from priv_coverpoint_registry import PRIV_REGISTRY, import_all_modules
+##################################
+# SsstrictV skip table
+##################################
+# The (coverpoint-column, instruction) pairs that the SsstrictV pipeline
+# intentionally OMITS due to simulator failures or missing generator support
+# live in `ssstrictv_skip_combinations.SKIP_COMBINATIONS`.
+#
+# Single source of truth: generators/testgen/scripts/ssstrictv_skip_combinations.py
+# That table is consumed by:
+#   * the priv test generator (this file) to suppress test emission, and
+#   * the coverage generator (covergroupgen/generate.py) to suppress the
+#     corresponding covergroup bins so they are not counted as missing.
+#
+# To audit / extend the skip list, edit that module directly. Keep entries
+# justified (sail issue 1104, unimplemented coverpoint, etc.).
+from ssstrictv_skip_combinations import SKIP_COMBINATIONS as SSSTRICTV_SKIP_COMBINATIONS
 from vector_testgen_common import (
   ARCH_VERIF,
   add_testcase_string,
@@ -242,6 +258,10 @@ def makeTest(coverpoints, instruction):
     writeLine(f"// ExceptionsV tests for {instruction}")
     writeLine("///////////////////////////////////////////")
     for coverpoint in coverpoints:
+        # Skip simulator-failure / unimplemented combinations curated in the
+        # SsstrictV skip table (see ssstrictv_skip_combinations.py).
+        if instruction in SSSTRICTV_SKIP_COMBINATIONS.get(coverpoint, ()):
+            continue
         # produce a deterministic seed for repeatable random numbers distinct for each instruction and coverpoint
         testname = instruction + coverpoint
         hashval = myhash(testname)

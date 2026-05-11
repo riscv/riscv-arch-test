@@ -19,6 +19,27 @@ from pathlib import Path
 from rich import print as rprint
 from rich.progress import track
 
+
+def _load_ssstrictv_skip_combinations() -> dict[str, set[str]]:
+    """Load the SsstrictV (column, instruction) skip table.
+
+    Single source of truth lives in
+    ``generators/testgen/scripts/ssstrictv_skip_combinations.py``; this loader
+    avoids creating an inter-package import dependency by exec-ing the small
+    pure-data module directly. Returns ``{csv_column: set(instructions)}``.
+    """
+    repo_root = Path(__file__).resolve().parents[4]
+    skip_path = repo_root / "generators" / "testgen" / "scripts" / "ssstrictv_skip_combinations.py"
+    if not skip_path.exists():
+        return {}
+    namespace: dict = {}
+    exec(compile(skip_path.read_text(), str(skip_path), "exec"), namespace)  # noqa: S102
+    raw = namespace.get("SKIP_COMBINATIONS", {})
+    return {col: set(instrs) for col, instrs in raw.items()}
+
+
+SSSTRICTV_SKIP_COMBINATIONS = _load_ssstrictv_skip_combinations()
+
 # Coverpoints whose template name depends on the SEW (element width).
 SEW_DEPENDENT_CPS = {
     "cp_vs2_edges_f",
@@ -369,6 +390,13 @@ def _gen_instrs(
             if cp.startswith(("sample_", "EFFEW", "cp_ibm")) or cp in {"RV32", "RV64"}:
                 continue
 
+            # SsstrictV: honor the curated (column, instruction) skip table that
+            # records simulator-failure / unimplemented combinations. Skipping
+            # here removes the corresponding bins from the covergroup so they
+            # do not count as missing coverage.
+            if arch.startswith("SsstrictV") and instr in SSSTRICTV_SKIP_COMBINATIONS.get(cp, ()):
+                continue
+
             # Skip cp_custom_ffLS for instructions where LMUL=2 is infeasible at this SEW
             if cp == "cp_custom_ffLS" and _is_vector(arch):
                 sew = int(_get_effew(arch))
@@ -661,7 +689,6 @@ def write_priv_covergroups(
         for effew in ("16", "32", "64"):
             priv_plans[f"ExceptionsVf{effew}"] = ex_vf_tp
         del priv_plans["ExceptionsVf"]
-
 
     if extensions != "all" or exclude != "":
         priv_plans = _filter_testplans(priv_plans, extensions, exclude)

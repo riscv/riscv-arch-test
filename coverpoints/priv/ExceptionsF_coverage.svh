@@ -52,11 +52,11 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
         `ifdef ZFA_SUPPORTED
             wildcard bins fli          = {FLI_S};
             wildcard bins fround       = {FROUND_S};
-        `endif
-        `ifdef XLEN32
-            `ifdef D_SUPPORTED
-                wildcard bins fmvh         = {FMVH_X_D};
-                wildcard bins fmvp         = {FMVP_D_X};
+            `ifdef XLEN32
+                `ifdef D_SUPPORTED
+                    wildcard bins fmvh         = {FMVH_X_D};
+                    wildcard bins fmvp         = {FMVP_D_X};
+                `endif
             `endif
         `endif
     }

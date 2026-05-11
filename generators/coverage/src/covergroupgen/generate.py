@@ -64,7 +64,7 @@ VECTOR_PREFIXES = ("Vx", "Zv", "Vls", "Vf")
 # Priv-side architectures that need vector-flavored covergroups (header_vector etc.).
 # These priv testplans use the same vector helpers as unpriv vector covergroups
 # but do not undergo per-SEW expansion.
-PRIV_VECTOR_PREFIXES = ("ExceptionsV", "SsstrictV")
+PRIV_VECTOR_PREFIXES = ("ExceptionsV", "SsstrictV", "MissalignedV")
 
 # Subset of vector prefixes that support widening instructions.
 VECTOR_WIDEN_PREFIXES = ("Vx", "Vls", "Vf")
@@ -377,7 +377,7 @@ def _gen_instrs(
         # ±1MiB JAL range. Other priv vector arches (ExceptionsVx/Vls/Vf)
         # intentionally use a small, focused set of coverpoints (cp_vill /
         # cp_vstart / cp_vstart_gt_vl) and must not pull in either header.
-        if arch.startswith("SsstrictV"):
+        if arch.startswith(("SsstrictV", "MissalignedV")):
             covergroup_lines.append('    `include "general/RISCV_coverage_ssstrictv_helpers.svh"\n')
 
         # Coverpoint entries (skip metadata columns: sample_*, RV32, RV64, EFFEW*)

@@ -1370,7 +1370,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
       "Vf64":  ["Zve64d"],
     }
 
-    if test.startswith("ExceptionsV") or test.startswith("SsstrictV"):
+    if test.startswith(("ExceptionsV", "SsstrictV", "MissalignedV")):
       march = f"rv{xlen}i_m_v_zicsr"
       ext_parts_no_I = ['M', 'V', 'Zicsr']
     else:
@@ -3185,7 +3185,7 @@ def readTestplans(priv=False):
         if file.endswith(".csv"):
             arch = re.search("(.*).csv", file).group(1)
             if (priv):
-                is_vector = (arch.startswith("ExceptionsV") or arch.startswith("SsstrictV") or arch.startswith("V") or arch.startswith("Zv"))
+                is_vector = (arch.startswith(("ExceptionsV", "SsstrictV", "MissalignedV", "V", "Zv")))
             else:
                 is_vector = (arch.startswith("V") or arch.startswith("Zv"))
             if is_vector:

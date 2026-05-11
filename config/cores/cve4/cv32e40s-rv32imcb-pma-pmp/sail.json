@@ -44,9 +44,9 @@
   "memory": {
     "pmp": {
       "grain": 0,
-      // PMP_NUM_REGIONS=0
-      "count": 0,
-      "usable_count": 0,
+      // PMP_NUM_REGIONS=16, PMP_GRANULARITY=0 (G=0)
+      "count": 16,
+      "usable_count": 16,
       "tor_supported": true,
       "na4_supported": true,
       "napot_supported": true
@@ -210,7 +210,7 @@
     "Zihintpause": { "supported": false },
     "Zihpm": { "supported": true },
     "Zimop": { "supported": false },
-    "Zmmul": { "supported": false },
+    "Zmmul": { "supported": true },
     "Zaamo": { "supported": false },
     "Zabha": { "supported": false },
     "Zacas": { "supported": false },
@@ -231,12 +231,12 @@
     "Zcd": { "supported": false },
     "Zcb": { "supported": true },
     "Zcmop": { "supported": false },
-    "Zba": { "supported": false },
-    "Zbb": { "supported": false },
-    "Zbs": { "supported": false },
-    "Zbc": { "supported": false },
+    "Zba": { "supported": true },
+    "Zbb": { "supported": true },
+    "Zbs": { "supported": true },
+    "Zbc": { "supported": true },
     "Zbkb": { "supported": false },
-    "Zbkc": { "supported": false },
+    "Zbkc": { "supported": true },
     "Zbkx": { "supported": false },
     "Zknd": { "supported": false },
     "Zkne": { "supported": false },
@@ -262,8 +262,8 @@
     "Svrsw60t59b": { "supported": false },
     "Smcntrpmf": { "supported": false },
     "Svbare": {
-      "supported": false,
-      "sfence_vma_illegal_if_svbare_only": true
+      "supported": true,
+      "sfence_vma_illegal_if_svbare_only": false
     },
     "Svade": { "supported": false },
     "Svadu": { "supported": false },

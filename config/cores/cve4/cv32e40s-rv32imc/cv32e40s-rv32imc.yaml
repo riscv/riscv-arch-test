@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=../../../../external/riscv-unified-db/spec/schemas/config_schema.json
 
-# Copyright (c) 2026, 10xEngineers, Harvey Mudd College and OpenHW Foundation
+# Copyright (c) 2026, Harvey Mudd College, Eclipse Foundation and Marin Radic
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 
 # UDB Architecture Configuration for the CV32E40S, a configuration of the CORE-V project.
@@ -9,10 +9,11 @@ $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
 name: cv32e40s_rv32imc
-description: CV32E40S (CORE-V secure) - RV32IMC PMA-enabled configuration (ZC_EXT=1, B_EXT=NONE, PMP=0, PMA=1)
+description: CV32E40S (CORE-V secure) - RV32IMC default configuration (ZC_EXT=1, B_EXT=NONE, PMP=0, PMA=0)
 implemented_extensions: # VERIFIED against User Manual (Introduction)
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0" } # VERIFIED — multiplication subset of M; enabled when M_EXT=M (User Manual, Introduction)
   - { name: C, version: "= 2.0" }
   - { name: Zca, version: "= 1.0.0" } # Always present when C enabled
   - { name: Zcb, version: "= 1.0.0" } # VERIFIED — always present per User Manual, Introduction (always-enabled extensions)
@@ -79,7 +80,7 @@ params:
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true # VERIFIED — mepc set to current PC on exception
   MARCHID_IMPLEMENTED: true
   MIMPID_IMPLEMENTED: true
-  PMA_GRANULARITY: 2 # Schema minimum (= 4 bytes); PMA_NUM_REGIONS=1, region 0 covers 0x00000000–0x003FFFFF
+  PMA_GRANULARITY: 2 # Schema minimum (= 4 bytes); PMA_NUM_REGIONS=0 by default → entire memory is main
   NUM_PMP_ENTRIES: 0 # VERIFIED — PMP_NUM_REGIONS=0 default; PMP CSRs exist (SECURE=1) but all read-only-zero
   CONFIG_PTR_ADDRESS: 0 # VERIFIED — mconfigptr hardwired to 0x0 (User Manual, Control and Status Registers)
 

@@ -1,11 +1,11 @@
 <!--
-Copyright (c) 2026, OpenHW Foundation
+Copyright (c) 2026, Harvey Mudd College, Eclipse Foundation and Marin Radic
 SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 --->
 
 ## DUT Configuration for the CV32E40S (PMA + PMP enabled)
 
-Same as `cv32e40s_rv32imc_PMA` but with PMP_NUM_REGIONS=16 so the core enforces
+Same as `cv32e40s-rv32imc-pma` but with PMP_NUM_REGIONS=16 so the core enforces
 physical memory protection in addition to physical memory attributes.
 
 ### Testbench PMP requirements
@@ -50,5 +50,5 @@ Instantiate the core with **PMA_NUM_REGIONS = 1** and the following region:
 ### Build
 
 ```
-$ make CONFIG_FILES=config/cores/cv32e40s/cv32e40s_rv32imc_PMA-PMP/test_config.yaml
+$ make CONFIG_FILES=config/cores/cve4/cv32e40s-rv32imc-pma-pmp/test_config.yaml
 ```

@@ -1,11 +1,11 @@
 <!--
-Copyright (c) 2026, OpenHW Foundation
+Copyright (c) 2026, Harvey Mudd College, Eclipse Foundation and Marin Radic
 SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 --->
 
 ## DUT Configuration for the CV32E40S (PMA enabled)
 
-Same as `cv32e40s_rv32imc` but with PMA_NUM_REGIONS=1 so the core enforces
+Same as `cv32e40s-rv32imc` but with PMA_NUM_REGIONS=1 so the core enforces
 physical memory attributes.  All unprivileged tests (I, M, C, Zc*, ...) run
 unchanged — the PMA region covers the entire code/data address range.
 
@@ -42,5 +42,5 @@ misaligned access, no modified transactions, no PUSH/POP).
 ### Build
 
 ```
-$ make CONFIG_FILES=config/cores/cv32e40s/cv32e40s_rv32imc_PMA/test_config.yaml
+$ make CONFIG_FILES=config/cores/cve4/cv32e40s-rv32imc-pma/test_config.yaml
 ```

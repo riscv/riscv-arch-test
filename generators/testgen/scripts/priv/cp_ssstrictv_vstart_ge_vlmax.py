@@ -43,9 +43,15 @@ def make(instruction: str) -> None:
     common.writeLine(f"vsetivli x{scratch}, 1, e{sew}, {lmul_flag(lmul)}, tu, mu",
                      "# vill=0, vstart=0, vl=1, m1")
     init_operand_regs(instruction, instruction_data[0], sew, scratch)
-    # Force vstart = VLMAX (= VLEN/SEW for m1) -> guaranteed >= VLMAX.
-    # Use a value larger than any plausible VLMAX to satisfy the >= check.
-    common.writeLine(f"li x{scratch}, 2048", "# very large vstart, >= VLMAX")
+    # Re-emit vsetivli RIGHT BEFORE writing vstart so SAMPLE_BEFORE on the
+    # test instruction picks up the (vtype, vl, vstart) we just configured.
+    common.writeLine(f"vsetivli x{scratch}, 1, e{sew}, {lmul_flag(lmul)}, tu, mu",
+                     "# repeat: ensure prior-insn snapshot has vill=0, vl=1")
+    # Force vstart >= VLMAX. Use 0x7FF (2047): wider than any plausible VLMAX
+    # for the configured vtype, but not a power-of-two boundary that would
+    # alias to 0 when masked to vstart's actual width (e.g. for VLEN=1024
+    # vstart is 10 bits and writing 0x800 aliases to 0).
+    common.writeLine(f"li x{scratch}, 0x7FF", "# very large vstart, >= VLMAX")
     common.writeLine(f"csrw vstart, x{scratch}", "# vstart >= VLMAX (reserved)")
 
     testline, vd, rd = build_testline(instruction, instruction_data)

@@ -31,9 +31,13 @@ _LMUL_FLAG = {1: "m1", 2: "m2", 4: "m4", 8: "m8"}
 # Coverpoints that are unreachable on the Sail simulator due to documented
 # simulator behaviour that doesn't violate the spec (see ../../../../simulator-issues/).
 # Generators consult this set and early-return so the test corpus stays clean.
+#
+# POLICY: an entry here MUST cite a numbered file under simulator-issues/
+# describing a direct sail-vs-spec contradiction (e.g. sail asserts/crashes on
+# an encoding the spec defines as illegal-instruction). Coverpoint
+# over-constraints (requiring a trap to occur) are fixed in the template, not
+# skipped here.
 SKIP_COVERPOINTS: frozenset[str] = frozenset({
-    # Issue 003: Sail does not raise illegal-instruction for vstart >= VLMAX
-    "cp_ssstrictv_vstart_ge_vlmax",
     # Issue 006: Sail asserts on EMUL out of [1/8, 8] before reserved-encoding check
     "cp_ssstrictv_ls_emul_16",
     "cp_ssstrictv_ls_emul_f16",

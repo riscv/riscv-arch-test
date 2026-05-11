@@ -308,7 +308,7 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
         "# Setup",
         f"CSRR(x{save_reg}, mstatus)        # read and save mstatus",
         f"LI(x{reg1}, 1 << 2)",
-        f"CSRC medeleg, x{reg1}          # turn off delegating illegal instruction exceptions so TSR won't cause a trap loop on sret",
+        f"CSRC(medeleg, x{reg1})          # turn off delegating illegal instruction exceptions so TSR won't cause a trap loop on sret",
         f"{INDENT}# set up x{reg1} with mstatus except MPRV, SPP, SPIE, SIE, TSR cleared",
         f"LI(x{reg2}, 0x420122)          # x{reg2} has all MPRV, SPP, SPIE, SIE, TSR bits set (bits [17], [8], [5], [1], [22] respectively)",
         f"not x{reg2}, x{reg2}              # x{reg2} has all but MPRV, SPP, SPIE, SIE, TSR bits set",
@@ -344,7 +344,12 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
                             ]
                         )
 
-    lines.append(f"\nCSRW(mstatus, x{save_reg})    # restore CSR")
+    lines.extend(
+        [
+            "# leave medeleg of illegal instruction off because it will be needed in the upcoming srets tests",
+            f"\nCSRW(mstatus, x{save_reg})    # restore CSR",
+        ]
+    )
     test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
     return lines
 
@@ -423,7 +428,7 @@ def _generate_srets_tests(test_data: TestData) -> list[str]:
             f"\nCSRW(sstatus, x{save_reg})    # restore CSR",
             "RVTEST_GOTO_MMODE      # back to M-mode to touch medeleg",
             f"LI(x{reg1}, 1 << 2)",
-            f"CSRS medeleg, x{reg1}           # restore delegating illegal instructions",
+            f"CSRS(medeleg, x{reg1})           # restore delegating illegal instructions",
         ]
     )
     test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
@@ -438,8 +443,9 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     # Format: (CSR Name, Mask).  Mask specifies a set of bits to check
 
     csrs = [
-        # TODO: sail does not yet support sstatus.UBE; mask it until available to avoid mismatches.  Delete mask when Sail has UBE support.
-        ("sstatus", 0xFFFFFFFFFFFFFFBF),
+        # TODO: sail does not yet support sstatus.UBE; mask it until available to avoid mismatches with CVW.  Delete mask when Sail has UBE support.
+        # TODO: sail does not yet support sstatus.SPELP; mask it until available to avoid mismatches with Whisper.  Delete mask when Sail has SPELP support.
+        ("sstatus", 0xFFFFFFFFFF7FFFBF),
         # WLRL fields can't be managed with masks.  Use cp_scause_* instead
         #        ("scause", 0x7FFFFFFFFFFFFFF0),
         ("sie", None),
@@ -512,46 +518,47 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     for csr in csrs:
         lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
 
-    ######################################
-    coverpoint = "cp_csr_satp"
-    ######################################
-    lines.append(
-        comment_banner(
-            coverpoint,
-            "Set and clear each bit individually in satp, excluding satp.mode",
-        ),
-    )
+    # cp_csr_satp waived because behavior of other fields is UNSPECIFIED when satp.MODE = Bare
+    # ######################################
+    # coverpoint = "cp_csr_satp"
+    # ######################################
+    # lines.append(
+    #     comment_banner(
+    #         coverpoint,
+    #         "Set and clear each bit individually in satp, excluding satp.mode",
+    #     ),
+    # )
 
-    walk_reg, mask_reg, check_reg = test_data.int_regs.get_registers(3)
+    # walk_reg, mask_reg, check_reg = test_data.int_regs.get_registers(3)
 
-    lines.extend(
-        [
-            "# CSR Walk Tests for satp",
-            "csrw satp, zero      # set satp to 0 to start with",
-            f"LI(x{mask_reg}, -1)     # x{mask_reg} = all 1s for walking bit tests",
-            f"srli x{mask_reg}, x{mask_reg}, 4    # change 4 msbs to 0s to exclude satp.mode from RV64 walk tests",
-            f"LI(x{walk_reg}, 7)   # 111",
-            f"slli x{walk_reg}, x{walk_reg}, 28   # bits 30:28 = 111",
-            f"or x{mask_reg}, x{mask_reg}, x{walk_reg}    # x{mask_reg} = all 1s except satp.MODE (bits 63:60 for RV64 or 31 for RV32)",
-            f"LI(x{walk_reg}, 1) # initialize walking 1",
-        ]
-    )
-    for i in range(60):
-        lines.extend(
-            [
-                "",
-                f"csrs satp, x{walk_reg}    # set bit {i} in satp",
-                test_data.add_testcase(f"bit_{i}_set", coverpoint, covergroup),
-                gen_csr_read_sigupd(check_reg, ("satp", None), test_data),
-                f"csrc satp, x{walk_reg}    # clear bit {i} in satp",
-                test_data.add_testcase(f"bit_{i}_clr", coverpoint, covergroup),
-                gen_csr_read_sigupd(check_reg, ("satp", None), test_data),
-                f"slli x{walk_reg}, x{walk_reg}, 1   # shift to next bit",
-                f"and x{walk_reg}, x{walk_reg}, x{mask_reg}    # mask out mode bits",
-            ]
-        )
+    # lines.extend(
+    #     [
+    #         "# CSR Walk Tests for satp",
+    #         "csrw satp, zero      # set satp to 0 to start with",
+    #         f"LI(x{mask_reg}, -1)     # x{mask_reg} = all 1s for walking bit tests",
+    #         f"srli x{mask_reg}, x{mask_reg}, 4    # change 4 msbs to 0s to exclude satp.mode from RV64 walk tests",
+    #         f"LI(x{walk_reg}, 7)   # 111",
+    #         f"slli x{walk_reg}, x{walk_reg}, 28   # bits 30:28 = 111",
+    #         f"or x{mask_reg}, x{mask_reg}, x{walk_reg}    # x{mask_reg} = all 1s except satp.MODE (bits 63:60 for RV64 or 31 for RV32)",
+    #         f"LI(x{walk_reg}, 1) # initialize walking 1",
+    #     ]
+    # )
+    # for i in range(60):
+    #     lines.extend(
+    #         [
+    #             "",
+    #             f"csrs satp, x{walk_reg}    # set bit {i} in satp",
+    #             test_data.add_testcase(f"bit_{i}_set", coverpoint, covergroup),
+    #             gen_csr_read_sigupd(check_reg, ("satp", None), test_data),
+    #             f"csrc satp, x{walk_reg}    # clear bit {i} in satp",
+    #             test_data.add_testcase(f"bit_{i}_clr", coverpoint, covergroup),
+    #             gen_csr_read_sigupd(check_reg, ("satp", None), test_data),
+    #             f"slli x{walk_reg}, x{walk_reg}, 1   # shift to next bit",
+    #             f"and x{walk_reg}, x{walk_reg}, x{mask_reg}    # mask out mode bits",
+    #         ]
+    #     )
 
-    test_data.int_regs.return_registers([walk_reg, mask_reg, check_reg])
+    # test_data.int_regs.return_registers([walk_reg, mask_reg, check_reg])
 
     ######################################
     coverpoint = "cp_csr_insufficient_priv"

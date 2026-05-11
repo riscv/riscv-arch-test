@@ -174,6 +174,10 @@
         `cover_info("//      MisalignZca - Enabled");
         `include "MisalignZca_coverage_init.svh"
     `endif
+    `ifdef COVER_MISSALIGNEDV
+        `cover_info("//      MissalignedV - Enabled");
+        `include "MissalignedV_coverage_init.svh"
+    `endif
     `ifdef COVER_PMPF
         `cover_info("//      PMPF - Enabled");
         `include "PMPF_coverage_init.svh"

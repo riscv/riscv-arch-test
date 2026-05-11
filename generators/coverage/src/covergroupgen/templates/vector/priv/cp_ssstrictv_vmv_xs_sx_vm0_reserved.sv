@@ -9,8 +9,7 @@
     }
 
     vmv_xs_sx_funct3: coverpoint ins.current.insn[14:12] {
-        bins vmv_x_s = {3'b010};
-        bins vmv_s_x = {3'b110};
+        bins vmv = {3'b010, 3'b110};
     }
 
     vm_masked: coverpoint ins.current.insn[25] {

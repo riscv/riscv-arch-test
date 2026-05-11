@@ -1,4 +1,4 @@
-#define CONFORMING_SM_SUPPORTED
+#define STANDARD_SM_SUPPORTED
 //#define ACCESS_FAULT_ADDRESS 0x80000000
 #define RVMODEL_PMP_GRAIN 0
 // PMP_NUM_REGIONS=0 by default — no PMP hardware instantiated (User Manual, Core Integration)

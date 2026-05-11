@@ -49,6 +49,8 @@ These additional exception tests are run on configurations with floating-point (
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=1241522932#gid=1241522932[Google Sheet Testplan]
 ,===
 
+include::norm/ExceptionsF_norm_rules.adoc[]
+
 ==== ExceptionsVx Vector Integer Exceptions
 
 These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on mstatus.VS) related to vector integer instructions.
@@ -91,6 +93,8 @@ https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN7
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=891200072#gid=891200072[Google Sheet Testplan]
 ,===
 
+include::norm/ExceptionsZalrsc_norm_rules.adoc[]
+
 ==== ExceptionsZaamo Atomic Memory Operation Exceptions
 
 [[t-ExceptionsZaamo-coverpoints]]
@@ -98,6 +102,8 @@ https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXP
 ,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=2143559149#gid=2143559149[Google Sheet Testplan]
 ,===
+
+include::norm/ExceptionsZaamo_norm_rules.adoc[]
 
 [NOTE]
 ExceptionsZaamo also covers Zama16b.
@@ -143,6 +149,8 @@ include::norm/ExceptionsZicboU_norm_rules.adoc[]
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=270777025#gid=270777025[Google Sheet Testplan]
 ,===
 
+include::norm/ExceptionsSv_norm_rules.adoc[]
+
 ==== ExceptionsSvZalrsc  Virtual Memory LR/SC Exceptions
 
 [[t-ExceptionsSvZalrsc-coverpoints]]
@@ -151,6 +159,8 @@ https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXP
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=287426144#gid=287426144[Google Sheet Testplan]
 ,===
 
+include::norm/ExceptionsSvZalrsc_norm_rules.adoc[]
+
 ==== ExceptionsSvZaamo Virtual Memory AMO Exceptions
 
 [[t-ExceptionsSvZaamo-coverpoints]]
@@ -158,3 +168,5 @@ https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXP
 ,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=1747092954#gid=1747092954[Google Sheet Testplan]
 ,===
+
+include::norm/ExceptionsSvZaamo_norm_rules.adoc[]

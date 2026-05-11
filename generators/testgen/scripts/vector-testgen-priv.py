@@ -15,6 +15,7 @@ import filecmp
 import math
 import os
 import pathlib
+import re
 from random import randint, seed
 
 import priv  # priv coverpoint generator scripts
@@ -455,6 +456,25 @@ if __name__ == '__main__':
         # Filter instructions to only those marked for this xlen
         all_instructions = list(testplans[extension].keys())
         instructions = [inst for inst in all_instructions if f"RV{xlen}" in testplans[extension][inst]]
+
+        # Per-SEW filtering for vector-FP test suites. Mirrors the unpriv driver:
+        # ExceptionsVf{16,32,64} share one ExceptionsVf.csv; the driver filters
+        # to instructions marked EFFEW{N}. ExceptionsVfmin runs at SEW=16 (the
+        # only SEW where vfwcvt.f.f.v / vfncvt.f.f.w exercise the Zvfhmin
+        # FP16<->FP32 conversion). SEW=8 is reserved for vector FP and is
+        # excluded by the absence of EFFEW8 marks in the CSVs.
+        sew_match = re.search(r"ExceptionsVf(\d+)$", extension)
+        if sew_match:
+            file_sew = int(sew_match.group(1))
+        elif extension == "ExceptionsVfmin":
+            file_sew = 16
+        else:
+            file_sew = None
+        if file_sew is not None:
+            effewcp = f"EFFEW{file_sew}"
+            instructions = [inst for inst in instructions if effewcp in testplans[extension][inst]]
+        common.setPrivFpSew(file_sew)
+
         if not instructions:
             continue
 
@@ -463,6 +483,8 @@ if __name__ == '__main__':
 
         cmd = "mkdir -p " + pathname # make directory
         os.system(cmd)
+        fname = pathname + "/" + basename + f"_rv{xlen}.S"
+        tempfname = pathname + "/" + basename + f"_rv{xlen}_temp.S"
 
         # Split SsstrictV across multiple .S files so each ELF stays under the
         # ±1MiB JAL relocation range. The framework's `tests_dir.rglob("*.S")`

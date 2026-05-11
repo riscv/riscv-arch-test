@@ -16,6 +16,7 @@ import re
 from difflib import get_close_matches
 from pathlib import Path
 
+from rich import print as rprint
 from rich.progress import track
 
 # Coverpoints whose template name depends on the SEW (element width).
@@ -651,6 +652,17 @@ def write_priv_covergroups(
 
     priv_plans = {csv_path.stem: _parse_testplan_csv(csv_path) for csv_path in priv_plan_dir.glob("*.csv")}
 
+    # Mirror the unpriv per-SEW expansion for ExceptionsVf so a single
+    # ExceptionsVf.csv produces ExceptionsVf{16,32,64} covergroup files (one
+    # per non-reserved vector-FP SEW). The testgen driver applies the matching
+    # EFFEW{N} filter when emitting tests.
+    if "ExceptionsVf" in priv_plans:
+        ex_vf_tp = priv_plans["ExceptionsVf"]
+        for effew in ("16", "32", "64"):
+            priv_plans[f"ExceptionsVf{effew}"] = ex_vf_tp
+        del priv_plans["ExceptionsVf"]
+
+
     if extensions != "all" or exclude != "":
         priv_plans = _filter_testplans(priv_plans, extensions, exclude)
 
@@ -678,3 +690,4 @@ def generate_covergroups(testplan_dir: Path, output_dir: Path, extensions: str =
     write_priv_covergroups(testplan_dir, templates, output_dir, extensions, exclude)
     write_coverage_headers(all_test_plans, output_dir, templates)
     write_instruction_sample_file(all_test_plans, templates, output_dir)
+    rprint(f"[bold green]✓ Generated covergroups for {len(test_plans)} extension(s)[/]")

@@ -65,6 +65,18 @@
 `ifdef EXCEPTIONSVF_COVERAGE
   `include "ExceptionsVf_coverage.svh"
 `endif
+`ifdef EXCEPTIONSVF16_COVERAGE
+  `include "ExceptionsVf16_coverage.svh"
+`endif
+`ifdef EXCEPTIONSVF32_COVERAGE
+  `include "ExceptionsVf32_coverage.svh"
+`endif
+`ifdef EXCEPTIONSVF64_COVERAGE
+  `include "ExceptionsVf64_coverage.svh"
+`endif
+`ifdef EXCEPTIONSVFMIN_COVERAGE
+  `include "ExceptionsVfmin_coverage.svh"
+`endif
 `ifdef EXCEPTIONSVLS_COVERAGE
   `include "ExceptionsVls_coverage.svh"
 `endif
@@ -161,6 +173,9 @@
 `ifdef SMVF_COVERAGE
   `include "SmVF_coverage.svh"
 `endif
+`ifdef SSCCPTR_COVERAGE
+  `include "Ssccptr_coverage.svh"
+`endif
 `ifdef SSCOUNTERENW_COVERAGE
   `include "Sscounterenw_coverage.svh"
 `endif
@@ -175,6 +190,9 @@
 `endif
 `ifdef SSSTRICTV_COVERAGE
   `include "SsstrictV_coverage.svh"
+`endif
+`ifdef SSTVALA_COVERAGE
+  `include "Sstvala_coverage.svh"
 `endif
 `ifdef SSTVECD_COVERAGE
   `include "Sstvecd_coverage.svh"
@@ -280,6 +298,9 @@
 `endif
 `ifdef ZALRSC_COVERAGE
   `include "Zalrsc_coverage.svh"
+`endif
+`ifdef ZAMA16B_COVERAGE
+  `include "Zama16b_coverage.svh"
 `endif
 `ifdef ZBA_COVERAGE
   `include "Zba_coverage.svh"

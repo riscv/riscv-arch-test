@@ -3,7 +3,7 @@
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
-name: imperas-rv32-max
+name: imperas-rv32gcv
 description: rv32 with all non-conflicting extensions enabled
 implemented_extensions:
   - { name: A, version: "= 2.1.0" }
@@ -72,9 +72,6 @@ implemented_extensions:
   - { name: Zba, version: "= 1.0.0" }
   - { name: Zbb, version: "= 1.0.0" }
   - { name: Zbc, version: "= 1.0.0" }
-  - { name: Zbkb, version: "= 1.0.0" }
-  - { name: Zbkc, version: "= 1.0.0" }
-  - { name: Zbkx, version: "= 1.0.0" }
   - { name: Zbs, version: "= 1.0.0" }
   - { name: Zca, version: "= 1.0.0" }
   - { name: Zcb, version: "= 1.0.0" }
@@ -105,19 +102,7 @@ implemented_extensions:
   - { name: Zihpm, version: "= 2.0.0" }
   - { name: Zilsd, version: "= 1.0.0" }
   - { name: Zimop, version: "= 1.0.0" }
-  - { name: Zk, version: "= 1.0.0" }
-  - { name: Zkn, version: "= 1.0.0" }
-  - { name: Zknd, version: "= 1.0.0" }
-  - { name: Zkne, version: "= 1.0.0" }
-  - { name: Zknh, version: "= 1.0.0" }
-  - { name: Zkr, version: "= 1.0.0" }
-  - { name: Zks, version: "= 1.0.0" }
-  - { name: Zksed, version: "= 1.0.0" }
-  - { name: Zksh, version: "= 1.0.0" }
-  - { name: Zkt, version: "= 1.0.0" }
   - { name: Zmmul, version: "= 1.0.0" }
-  - { name: Zvbb, version: "= 1.0.0" }
-  - { name: Zvbc, version: "= 1.0.0" }
   - { name: Zve32f, version: "= 1.0.0" }
   - { name: Zve32x, version: "= 1.0.0" }
   - { name: Zve64d, version: "= 1.0.0" }
@@ -127,20 +112,6 @@ implemented_extensions:
   - { name: Zvfbfwma, version: "= 1.0.0" }
   - { name: Zvfh, version: "= 1.0.0" }
   - { name: Zvfhmin, version: "= 1.0.0" }
-  - { name: Zvkb, version: "= 1.0.0" }
-  - { name: Zvkg, version: "= 1.0.0" }
-  - { name: Zvkn, version: "= 1.0.0" }
-  - { name: Zvknc, version: "= 1.0.0" }
-  - { name: Zvkned, version: "= 1.0.0" }
-  - { name: Zvkng, version: "= 1.0.0" }
-  - { name: Zvknha, version: "= 1.0.0" }
-  - { name: Zvknhb, version: "= 1.0.0" }
-  - { name: Zvks, version: "= 1.0.0" }
-  - { name: Zvksc, version: "= 1.0.0" }
-  - { name: Zvksed, version: "= 1.0.0" }
-  - { name: Zvksg, version: "= 1.0.0" }
-  - { name: Zvksh, version: "= 1.0.0" }
-  - { name: Zvkt, version: "= 1.0.0" }
   - { name: Zvl32b, version: "= 1.0.0" }
   - { name: Zvl64b, version: "= 1.0.0" }
   - { name: Zvl128b, version: "= 1.0.0" }
@@ -153,7 +124,7 @@ params:
   LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
   LRSC_FAIL_ON_VA_SYNONYM: false
   LRSC_MISALIGNED_BEHAVIOR: "always raise access fault"
-  LRSC_FAIL_ON_NON_EXACT_LRSC: false
+  LRSC_FAIL_ON_NON_EXACT_LRSC: true
   MUTABLE_MISA_A: false
   # M params
   MUTABLE_MISA_M: false

@@ -11,14 +11,14 @@
 `define VLEN256
 
 // Maximum supported index EEW for indexed load/store
-`define MAXINDEXEEW32
+`define MAXINDEXEEW64
 
 // Virtual Memory Modes
 `define SV32_SUPPORTED
 
 // PMP Grain (G)
 // Set G as needed (e.g., 0, 1, 2, ...)
-`define G 8
+`define G 10
 
 // Uncomment below if G = 0
 // `define G_IS_0
@@ -40,7 +40,7 @@
 `define C_SUPPORTED
 `define D_SUPPORTED
 `define F_SUPPORTED
-`define H_SUPPORTED
+// `define H_SUPPORTED // H not yet turned on in yaml file
 `define I_SUPPORTED
 `define M_SUPPORTED
 `define N_SUPPORTED
@@ -48,8 +48,8 @@
 `define SDTRIG_SUPPORTED
 `define SMAIA_SUPPORTED
 `define SMDBLTRP_SUPPORTED
-`define SMRNMI_SUPPORTED
 `define SMSTATEEN_SUPPORTED
+`define SSSTATEEN_SUPPORTED
 `define SSAIA_SUPPORTED
 `define SSCOFPMF_SUPPORTED
 `define SSQOSID_SUPPORTED

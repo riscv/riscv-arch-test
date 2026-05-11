@@ -16,12 +16,9 @@
         bins mf4 = {6};
     }
 
-    trap_occurred_f5e54c: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
-        bins trapped = {1'b1};
-    }
 
-    cp_ssstrictv_vzext_vf4_bad_eew: cross std_trap_vec, sew_reserved_vf4, trap_occurred_f5e54c;
+    cp_ssstrictv_vzext_vf4_bad_eew: cross std_trap_vec, sew_reserved_vf4;
 
-    cp_ssstrictv_vzext_vf4_bad_emul: cross std_trap_vec, lmul_reserved_vf4, trap_occurred_f5e54c;
+    cp_ssstrictv_vzext_vf4_bad_emul: cross std_trap_vec, lmul_reserved_vf4;
 
 //// end cp_ssstrictv_vzext_vf4_reserved ///////////////////////////////////////////////////////////

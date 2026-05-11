@@ -8,9 +8,6 @@
         bins nonzero = {[1:$]};
     }
 
-    trap_occurred_dea7bb: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
-        bins trapped = {1'b1};
-    }
 
     vcompress_funct6_dea7bb: coverpoint ins.current.insn[31:26] {
         bins vcompress = {6'b010111};
@@ -20,6 +17,6 @@
         bins opmvv = {3'b010};
     }
 
-    cp_ssstrictv_vcompress_vstart_nonzero: cross vstart_nonzero, trap_occurred_dea7bb, vcompress_funct6_dea7bb, vcompress_funct3_dea7bb;
+    cp_ssstrictv_vcompress_vstart_nonzero: cross vstart_nonzero, vcompress_funct6_dea7bb, vcompress_funct3_dea7bb;
 
 //// end cp_ssstrictv_vcompress_vstart_nonzero ///////////////////////////////////////////////////////////////

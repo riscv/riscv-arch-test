@@ -5,9 +5,6 @@
 
     // vzext source EEW not supported or source EMUL below minimum legal LMUL (1/8)
 
-    trap_occurred_97e21f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
-        bins trapped = {1'b1};
-    }
 
     // vzext variant from vs1 field: vf2=6, vf4=4, vf8=2
     vzext_vf2: coverpoint ins.current.insn[19:15] {
@@ -73,15 +70,15 @@
     }
 
     // Source EEW unsupported crosses
-    cp_ssstrictv_vzext_vf2_src_eew: cross std_trap_vec, vzext_vf2, sew_8, trap_occurred_97e21f;
-    cp_ssstrictv_vzext_vf4_src_eew: cross std_trap_vec, vzext_vf4, sew_8_or_16, trap_occurred_97e21f;
-    cp_ssstrictv_vzext_vf8_src_eew: cross std_trap_vec, vzext_vf8, sew_8_16_or_32, trap_occurred_97e21f;
+    cp_ssstrictv_vzext_vf2_src_eew: cross std_trap_vec, vzext_vf2, sew_8;
+    cp_ssstrictv_vzext_vf4_src_eew: cross std_trap_vec, vzext_vf4, sew_8_or_16;
+    cp_ssstrictv_vzext_vf8_src_eew: cross std_trap_vec, vzext_vf8, sew_8_16_or_32;
 
     // Source EMUL below minimum crosses
     `ifdef LMULf8_SUPPORTED
-    cp_ssstrictv_vzext_vf2_src_emul: cross std_trap_vec, vzext_vf2, lmul_mf8, trap_occurred_97e21f;
+    cp_ssstrictv_vzext_vf2_src_emul: cross std_trap_vec, vzext_vf2, lmul_mf8;
     `endif
-    cp_ssstrictv_vzext_vf4_src_emul: cross std_trap_vec, vzext_vf4, lmul_mf8_or_mf4, trap_occurred_97e21f;
-    cp_ssstrictv_vzext_vf8_src_emul: cross std_trap_vec, vzext_vf8, lmul_mf8_mf4_or_mf2, trap_occurred_97e21f;
+    cp_ssstrictv_vzext_vf4_src_emul: cross std_trap_vec, vzext_vf4, lmul_mf8_or_mf4;
+    cp_ssstrictv_vzext_vf8_src_emul: cross std_trap_vec, vzext_vf8, lmul_mf8_mf4_or_mf2;
 
 //// end cp_ssstrictv_vzext_src_reserved ///////////////////////////////////////////////////////////

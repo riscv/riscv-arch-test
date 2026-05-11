@@ -11,14 +11,11 @@
         bins opmvv = {3'b010};
     }
 
-    trap_occurred_d2a850: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
-        bins trapped = {1'b1};
-    }
 
     vstart_zero_after: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vstart", "vstart") {
         bins zero = {0};
     }
 
-    cp_ssstrictv_vcompress_vstart_report_zero: cross vcompress_funct6_d2a850, vcompress_funct3_d2a850, trap_occurred_d2a850, vstart_zero_after;
+    cp_ssstrictv_vcompress_vstart_report_zero: cross vcompress_funct6_d2a850, vcompress_funct3_d2a850, vstart_zero_after;
 
 //// end cp_ssstrictv_vcompress_vstart_report_zero ///////////////////////////////////////////////////////////

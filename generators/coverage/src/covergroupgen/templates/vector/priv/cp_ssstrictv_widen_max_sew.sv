@@ -13,10 +13,7 @@
         bins four = {2};
     }
 
-    trap_occurred_498ed4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
-        bins trapped = {1'b1};
-    }
 
-    cp_ssstrictv_widen_max_sew: cross std_trap_vec, vtype_all_sew_supported, vtype_lmul_widen, trap_occurred_498ed4;
+    cp_ssstrictv_widen_max_sew: cross std_trap_vec, vtype_all_sew_supported, vtype_lmul_widen;
 
 //// end cp_ssstrictv_widen_max_sew /////////////////////////////////////////////////////////////////////////

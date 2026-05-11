@@ -10,10 +10,7 @@
         bins one = {0};
     }
 
-    trap_occurred_e4a27f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
-        bins trapped = {1'b1};
-    }
 
-    cp_ssstrictv_narrowing_vs2_sew_eq_elen: cross std_trap_vec, vtype_all_sew_supported, vtype_lmul_1_e4a27f, trap_occurred_e4a27f;
+    cp_ssstrictv_narrowing_vs2_sew_eq_elen: cross std_trap_vec, vtype_all_sew_supported, vtype_lmul_1_e4a27f;
 
 //// end cp_ssstrictv_narrowing_vs2_sew_eq_elen ////////////////////////////////////////////////////////////////

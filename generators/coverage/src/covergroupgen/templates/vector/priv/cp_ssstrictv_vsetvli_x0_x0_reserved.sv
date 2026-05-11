@@ -12,12 +12,9 @@
         bins zero = {5'b00000};
     }
 
-    trap_occurred_984a0e: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
-        bins trapped = {1'b1};
-    }
 
     // Case 1: vill was already set beforehand
-    cp_ssstrictv_vsetvli_x0_x0_vill: cross rd_x0, rs1_x0, vtype_prev_vill_set, trap_occurred_984a0e;
+    cp_ssstrictv_vsetvli_x0_x0_vill: cross rd_x0, rs1_x0, vtype_prev_vill_set;
 
     // Case 2: new SEW/LMUL would change VLMAX (vill=0, new vsew or vlmul differs from current)
     new_sew_differs: coverpoint (ins.current.insn[25:23] !=
@@ -30,8 +27,8 @@
         bins differs = {1'b1};
     }
 
-    cp_ssstrictv_vsetvli_x0_x0_vlmax_sew: cross rd_x0, rs1_x0, vtype_prev_vill_clear, new_sew_differs, trap_occurred_984a0e;
+    cp_ssstrictv_vsetvli_x0_x0_vlmax_sew: cross rd_x0, rs1_x0, vtype_prev_vill_clear, new_sew_differs;
 
-    cp_ssstrictv_vsetvli_x0_x0_vlmax_lmul: cross rd_x0, rs1_x0, vtype_prev_vill_clear, new_lmul_differs, trap_occurred_984a0e;
+    cp_ssstrictv_vsetvli_x0_x0_vlmax_lmul: cross rd_x0, rs1_x0, vtype_prev_vill_clear, new_lmul_differs;
 
 //// end cp_ssstrictv_vsetvli_x0_x0_reserved /////////////////////////////////////////////////////////

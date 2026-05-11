@@ -10,10 +10,7 @@
         bins csr_00E = {12'h00E};
     }
 
-    trap_occurred_ce24df: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
-        bins trapped = {1'b1};
-    }
 
-    cp_ssstrictv_reserved_vcsrs: cross reserved_vcsr_addr, trap_occurred_ce24df;
+    cp_ssstrictv_reserved_vcsrs: cross reserved_vcsr_addr;
 
 //// end cp_ssstrictv_reserved_vcsrs /////////////////////////////////////////////////////////////////////

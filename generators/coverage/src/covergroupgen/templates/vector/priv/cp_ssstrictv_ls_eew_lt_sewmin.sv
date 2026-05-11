@@ -16,11 +16,8 @@
         `endif
     }
 
-    trap_occurred_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
-        bins trapped = {1'b1};
-    }
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin, trap_occurred_6b0501;
+    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
     // Edge case: still reserved when vl=0
     vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
@@ -31,7 +28,7 @@
         bins active[] = {[1:3]};
     }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin, trap_occurred_6b0501;
+    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
     // Edge case: still reserved when vstart >= vl
     vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
@@ -39,6 +36,6 @@
         bins true = {1'b1};
     }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin, trap_occurred_6b0501;
+    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////

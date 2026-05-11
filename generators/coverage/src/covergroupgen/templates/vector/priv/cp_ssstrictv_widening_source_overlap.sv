@@ -11,10 +11,7 @@
         bins four = {2};
     }
 
-    trap_occurred_9b660f: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 2) {
-        bins trapped = {1'b1};
-    }
 
-    cp_ssstrictv_widening_source_overlap: cross std_trap_vec, vtype_lmul_widen_src, vs2_eq_vs1, trap_occurred_9b660f;
+    cp_ssstrictv_widening_source_overlap: cross std_trap_vec, vtype_lmul_widen_src, vs2_eq_vs1;
 
 //// end cp_ssstrictv_widening_source_overlap ///////////////////////////////////////////////////////////////

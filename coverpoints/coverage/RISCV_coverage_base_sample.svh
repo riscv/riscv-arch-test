@@ -64,6 +64,24 @@
     `ifdef COVER_EXCEPTIONSVF
         exceptionsvf_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_EXCEPTIONSVF16
+        exceptionsvf16_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_EXCEPTIONSVF32
+        exceptionsvf32_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_EXCEPTIONSVF64
+        exceptionsvf64_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_EXCEPTIONSVFMIN
+        exceptionsvfmin_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_EXCEPTIONSVLS
+        exceptionsvls_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_EXCEPTIONSVX
+        exceptionsvx_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_EXCEPTIONSZAAMO
         exceptionszaamo_sample(hart, issue, ins);
     `endif
@@ -151,6 +169,12 @@
     `ifdef COVER_SMV
         smv_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SMVF
+        smvf_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSCCPTR
+        ssccptr_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SSCOUNTERENW
         sscounterenw_sample(hart, issue, ins);
     `endif
@@ -222,9 +246,6 @@
     `endif
     `ifdef COVER_UV
         uv_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VF
-        vf_sample(hart, issue, ins);
     `endif
     `ifdef COVER_VF16
         vf16_sample(hart, issue, ins);

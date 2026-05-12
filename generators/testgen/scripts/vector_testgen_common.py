@@ -643,6 +643,18 @@ ls_not_maskable = [
 
 vmvins          = vvrtype + vxtype + vitype + xvtype + vftype + fvtype + vvvxtype + vcompressins
 vd_widen_ins    = wvvins + wvxins + wwvins + wwxins + wvsins + fwvfins + fwwfins + fwcvt_ins
+# Widening multiply-accumulate instructions: vd is both destination (EEW=2*SEW) AND a source
+# operand (the accumulator, also read at EEW=2*SEW). Because vs1/vs2 are read at EEW=SEW, any
+# overlap between vd and vs1/vs2 would cause the same vector register to be read at two different
+# EEWs, which is reserved per V spec section 5.2 (norm:eew_emul). The standard widening
+# "lowest-numbered-part" overlap exception does NOT apply here, because vd is also read (not
+# just written). Therefore vd must have NO overlap with vs1/vs2 for these instructions.
+widening_mac_ins = [
+  "vwmacc.vv", "vwmaccu.vv", "vwmaccsu.vv",
+  "vwmacc.vx", "vwmaccu.vx", "vwmaccsu.vx", "vwmaccus.vx",
+  "vfwmacc.vv", "vfwnmacc.vv", "vfwmsac.vv", "vfwnmsac.vv",
+  "vfwmacc.vf", "vfwnmacc.vf", "vfwmsac.vf", "vfwnmsac.vf",
+]
 not_maskable    = vm_nomask_ins + mmins + vmvins + ls_not_maskable
 
 # "vl1re8.v", "vl1re16.v", "vl1re32.v", "vl1re64.v"
@@ -2267,6 +2279,55 @@ def getInstructionEEW(instruction):
   elif instruction in eew64_ins : return 64
   else                          : return None
 
+def encodeIndexedLSAsInsn(instruction, instruction_data, masked=False):
+  """Emit indexed LS as raw `.insn 0xXXXXXXXX` so the assembler accepts forms
+  (e.g. `vsoxseg7ei64.v` on RV32) that clang otherwise rejects with
+  "instruction requires the following: RV64I Base Instruction Set". The
+  encoding follows V-spec indexed LS layout; mnemonic appears as a trailing
+  comment for readability.
+  """
+  if instruction not in indexed_ls_ins:
+    raise ValueError(f"{instruction} is not an indexed LS instruction")
+  vec_data, scalar_data, _fp_data, _imm = instruction_data
+  rs1 = scalar_data['rs1']['reg']
+  vs2 = vec_data['vs2']['reg']
+  if instruction in indexed_stores:
+    dst    = vec_data['vs3']['reg']
+    opcode = 0b0100111  # STORE-FP
+  else:
+    dst    = vec_data['vd']['reg']
+    opcode = 0b0000111  # LOAD-FP
+  eew = getInstructionEEW(instruction)
+  width_map = {8: 0b000, 16: 0b101, 32: 0b110, 64: 0b111}
+  if eew not in width_map:
+    supported_eews = ", ".join(str(supported_eew) for supported_eew in sorted(width_map))
+    raise ValueError(
+      f"Unsupported EEW {eew!r} for indexed LS instruction {instruction}; "
+      f"supported EEWs: {supported_eews}"
+    )
+  width = width_map[eew]
+  # mop: 01 = indexed-unordered (vluxei/vsuxei), 11 = indexed-ordered (vloxei/vsoxei)
+  if instruction.startswith("vsox") or instruction.startswith("vlox"):
+    mop = 0b11
+  else:
+    mop = 0b01
+  nf = getInstructionSegments(instruction) - 1
+  vm = 0 if masked else 1
+  mew = 0
+  enc = (
+    (nf     << 29) |
+    (mew    << 28) |
+    (mop    << 26) |
+    (vm     << 25) |
+    (vs2    << 20) |
+    (rs1    << 15) |
+    (width  << 12) |
+    (dst    << 7 ) |
+    opcode
+  )
+  mnemonic_args = f"v{dst}, (x{rs1}), v{vs2}" + (", v0.t" if masked else "")
+  return f".insn 0x{enc:08x}    # {instruction} {mnemonic_args}"
+
 def prepMaskV(maskval, sew, tempReg, lmul):
   lmulflag = getLmulFlag(lmul)
   # vid.v requires an lmul-aligned register. v1 is fine for lmul<=1, but
@@ -2837,7 +2898,16 @@ def getVectorEmulMultipliers(instruction):
 def getInstructionRegisterOverlapConstraints (instruction, sew, lmul):
   no_overlap = None
 
-  if   instruction in wvvins          : no_overlap = [['vd_bottom', 'vs2'], ['vd_bottom', 'vs1']]
+  # Widening MACs must be checked before the generic widening branches: vd is read+written at
+  # EEW=2*SEW (accumulator). For .vv forms, both vs1 and vs2 are EEW=SEW vector sources, so
+  # overlap with either would read the same vector register at two different EEWs (reserved per
+  # V spec §5.2). For .vx/.vf forms, the second source is scalar, so only constrain vd vs vs2.
+  if   instruction in widening_mac_ins:
+    if instruction.endswith(".vv"):
+      no_overlap = [['vd',        'vs2'], ['vd',        'vs1']]
+    else:
+      no_overlap = [['vd',        'vs2']]
+  elif instruction in wvvins          : no_overlap = [['vd_bottom', 'vs2'], ['vd_bottom', 'vs1']]
   elif instruction in vupgatherins    : no_overlap = [['vd',        'vs2'], ['vd',        'vs1']]
   elif instruction in vmlogicalins    : no_overlap = [['vd',        'vs2']                      ]
   elif instruction in viotains        : no_overlap = [['vd',        'vs2']                      ]

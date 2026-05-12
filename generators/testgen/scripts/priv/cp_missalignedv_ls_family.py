@@ -1,14 +1,14 @@
-"""Generators for MissalignedV LS misaligned coverpoints.
+"""Generators for MisalignedV LS misaligned coverpoints.
 
 Implements:
 
-- ``cp_missalignedv_ls_element_misaligned`` — element LS with base address
+- ``cp_Misalignedv_ls_element_misaligned`` — element LS with base address
   whose low bits are non-zero.
-- ``cp_missalignedv_ls_wholereg_misaligned`` — whole-register LS
+- ``cp_Misalignedv_ls_wholereg_misaligned`` — whole-register LS
   (vl<NF>r<EEW>.v / vs<NF>r.v) with misaligned base address.
 
 Self-contained: copies the small set of helpers it needs from the (not yet
-upstreamed) SsstrictV helper module so the MissalignedV PR does not depend
+upstreamed) SsstrictV helper module so the MisalignedV PR does not depend
 on SsstrictV.
 """
 
@@ -139,25 +139,25 @@ def _eew(instruction: str) -> int:
 
 # ---------------- ls_element_misaligned ----------------
 
-@register("cp_missalignedv_ls_element_misaligned")
+@register("cp_Misalignedv_ls_element_misaligned")
 def make_element_misaligned(instruction: str) -> None:
     if instruction not in common.vector_ls_ins:
         return
     eew = _eew(instruction)
     sew = eew if eew else 8
     for off in range(1, 8):
-        _ls_test(instruction, "cp_missalignedv_ls_element_misaligned",
+        _ls_test(instruction, "cp_Misalignedv_ls_element_misaligned",
                   sew=sew, lmul_flag="m1", addr_offset=off)
 
 
 # ---------------- ls_wholereg_misaligned ----------------
 
-@register("cp_missalignedv_ls_wholereg_misaligned")
+@register("cp_Misalignedv_ls_wholereg_misaligned")
 def make_wholereg_misaligned(instruction: str) -> None:
     if instruction not in common.whole_register_ls:
         return
     eew = _eew(instruction)
     sew = eew if eew else 8
     for off in range(1, 8):
-        _ls_test(instruction, "cp_missalignedv_ls_wholereg_misaligned",
+        _ls_test(instruction, "cp_Misalignedv_ls_wholereg_misaligned",
                   sew=sew, lmul_flag="m1", addr_offset=off)

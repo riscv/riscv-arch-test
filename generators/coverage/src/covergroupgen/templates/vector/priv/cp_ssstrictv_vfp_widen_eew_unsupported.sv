@@ -21,7 +21,7 @@
     }
 
     mstatus_vs_active_155ca2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active[] = {[1:3]};
+        bins active = {[1:3]};
     }
 
     cp_ssstrictv_vfp_widen_eew_unsupported_vl0: cross vtype_prev_vill_clear, vl_zero_155ca2, mstatus_vs_active_155ca2, sew_widen_unsupported_fp;

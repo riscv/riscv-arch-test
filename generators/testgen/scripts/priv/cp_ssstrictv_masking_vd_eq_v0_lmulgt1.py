@@ -28,13 +28,15 @@ def make(instruction: str) -> None:
     set_seed(common.myhash(instruction + CP))
     eew = common.getInstructionEEW(instruction)
     sews = [eew] if eew else [8, 16, 32, 64]
-    cap = max_legal_lmul(instruction)
+    # NOTE: do not gate on max_legal_lmul; the cross is over the reserved
+    # encoding (vd=v0, masked, LMUL>1) and fires on SAMPLE_BEFORE pre-state,
+    # not on whether the instruction is otherwise legal. For segment loads
+    # with NF*EMUL > 8 the instruction will trap for two reasons; that's
+    # fine — the cross still samples the encoding bits + vtype.
     dest_overrides = make_dest_zero_overrides(instruction)
 
     sidx = 0
     for lmul in (2, 4, 8):
-        if lmul > cap:
-            break
         sew = sews[sidx % len(sews)]
         sidx += 1
         instruction_data = common.randomizeVectorInstructionData(

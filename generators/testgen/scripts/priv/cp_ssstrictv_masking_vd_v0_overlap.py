@@ -30,13 +30,12 @@ def make(instruction: str) -> None:
     set_seed(common.myhash(instruction + CP))
     eew = common.getInstructionEEW(instruction)
     sews = [eew] if eew else [8, 16, 32, 64]
-    cap = max_legal_lmul(instruction)
+    # See note in cp_ssstrictv_masking_vd_eq_v0_lmulgt1.py: emit all LMULs
+    # regardless of max_legal_lmul; the cross is encoding+pre-state only.
     dest_overrides = make_dest_zero_overrides(instruction)
 
     sidx = 0
     for lmul in (1, 2, 4, 8):
-        if lmul > cap:
-            break
         sew = sews[sidx % len(sews)]
         sidx += 1
         instruction_data = common.randomizeVectorInstructionData(

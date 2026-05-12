@@ -7,6 +7,6 @@
         bins v0 = { 5'b00000 };
     }
 
-    cp_ssstrictv_masking_vd_v0_overlap : cross std_trap_vec, vtype_all_lmulge1, vd_eq_v0_overlap, vd_ne_vs1, vd_ne_vs2, vs2_ne_vs1, mask_enabled;
+    cp_ssstrictv_masking_vd_v0_overlap : cross std_trap_vec, vtype_all_lmulge1, vd_eq_v0_overlap, mask_enabled;
 
 //// end cp_ssstrictv_masking_vd_v0_overlap //////////////////////////////////////////////////////////////

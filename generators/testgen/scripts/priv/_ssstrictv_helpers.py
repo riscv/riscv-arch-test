@@ -209,6 +209,7 @@ def make_dest_zero_overrides(instruction: str) -> dict:
 
 def issue_simple_test(instruction: str, cp: str, *,
                        sew: int | None = None, lmul: int = 1, vl: int = 1,
+                       vstart: int | None = None,
                        maskval: str | None = "v0.t",
                        override_vd: int | None = None,
                        override_vs1: int | None = None,
@@ -246,6 +247,9 @@ def issue_simple_test(instruction: str, cp: str, *,
     # vle*.v ops do not write those CSRs, and the rvvi shim does not carry
     # forward unchanged CSR values (see simulator-issues/005).
     emit_vsetivli(scratch, vl=vl, sew=sew, lmul=lmul)
+    if vstart is not None:
+        common.writeLine(f"li x{scratch}, {vstart}", f"# vstart override = {vstart}")
+        common.writeLine(f"csrw vstart, x{scratch}", "# install non-zero vstart")
 
     testline, vd, rd = build_testline(
         instruction, instruction_data, maskval=maskval,

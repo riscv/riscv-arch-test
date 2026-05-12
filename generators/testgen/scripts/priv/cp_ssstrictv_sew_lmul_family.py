@@ -110,6 +110,19 @@ def vfp_eew_unsupported(instruction: str) -> None:
         except Exception:
             # Some FP tests may fail to randomize at SEW=8; ignore.
             pass
+        # _vl0 variant: same encoding but with vl=0 in pre-state.
+        try:
+            issue_simple_test(instruction, cp, sew=sew, lmul=1, vl=0, maskval=None,
+                              override_vd=4, override_vs1=12, override_vs2=8)
+        except Exception:
+            pass
+        # _vstart_ge_vl variant: vl=1, vstart=1 -> vstart>=vl true.
+        try:
+            issue_simple_test(instruction, cp, sew=sew, lmul=1, vl=1, vstart=1,
+                              maskval=None, override_vd=4, override_vs1=12,
+                              override_vs2=8)
+        except Exception:
+            pass
 
 
 # ---------------------------------------------------------------------------
@@ -118,9 +131,22 @@ def vfp_eew_unsupported(instruction: str) -> None:
 
 @register("cp_ssstrictv_vfp_widen_eew_unsupported")
 def vfp_widen_eew_unsupported(instruction: str) -> None:
-    issue_simple_test(instruction, "cp_ssstrictv_vfp_widen_eew_unsupported",
-                      sew=32, lmul=1, maskval=None,
+    cp = "cp_ssstrictv_vfp_widen_eew_unsupported"
+    issue_simple_test(instruction, cp, sew=32, lmul=1, maskval=None,
                       override_vd=8, override_vs1=12, override_vs2=10)
+    # _vl0 variant.
+    try:
+        issue_simple_test(instruction, cp, sew=32, lmul=1, vl=0, maskval=None,
+                          override_vd=8, override_vs1=12, override_vs2=10)
+    except Exception:
+        pass
+    # _vstart_ge_vl variant.
+    try:
+        issue_simple_test(instruction, cp, sew=32, lmul=1, vl=1, vstart=1,
+                          maskval=None, override_vd=8, override_vs1=12,
+                          override_vs2=10)
+    except Exception:
+        pass
 
 
 # ---------------------------------------------------------------------------
@@ -128,8 +154,14 @@ def vfp_widen_eew_unsupported(instruction: str) -> None:
 # We pre-write the desired frm value into the fcsr field via csrw.
 # ---------------------------------------------------------------------------
 
-def _emit_frm_test(instruction: str, cp: str, frm_val: int) -> None:
-    """Set frm to ``frm_val`` then issue a normal-vtype FP test."""
+def _emit_frm_test(instruction: str, cp: str, frm_val: int, *,
+                   vl: int = 1, vstart: int | None = None) -> None:
+    """Set frm to ``frm_val`` then issue a normal-vtype FP test.
+
+    ``vl`` controls the AVL passed to vsetivli (0 enables _vl0 cross).
+    ``vstart`` (if set) is written to the vstart CSR after vsetivli to enable
+    the _vstart_ge_vl cross.
+    """
     sew = common.getInstructionEEW(instruction) or 32
     if sew not in (16, 32, 64):
         sew = 32
@@ -141,10 +173,15 @@ def _emit_frm_test(instruction: str, cp: str, frm_val: int) -> None:
     )
     common.remapPrivScalarRegs(instruction_data, instruction)
 
-    common.writeLine(f"\n# Testcase {cp} frm={frm_val}")
+    suffix = ""
+    if vl == 0:
+        suffix = " vl=0"
+    elif vstart is not None:
+        suffix = f" vstart={vstart}"
+    common.writeLine(f"\n# Testcase {cp} frm={frm_val}{suffix}")
     scratch = common.pickPrivScratch(instruction_data[1])
     # Set up trap-eligible vtype first.
-    common.writeLine(f"vsetivli x{scratch}, 1, e{sew}, m1, tu, mu",
+    common.writeLine(f"vsetivli x{scratch}, {max(vl,1)}, e{sew}, m1, tu, mu",
                      "# trap-eligible vtype")
     # Initialize operand vector regs.
     args = common.getInstructionArguments(instruction)
@@ -156,9 +193,12 @@ def _emit_frm_test(instruction: str, cp: str, frm_val: int) -> None:
     # Set reserved frm via csrw frm, x.
     common.writeLine(f"li x{scratch}, {frm_val}", f"# reserved frm value {frm_val}")
     common.writeLine(f"csrw frm, x{scratch}", "# install reserved frm")
-    # Re-emit vsetivli so SAMPLE_BEFORE captures vtype.
-    common.writeLine(f"vsetivli x{scratch}, 1, e{sew}, m1, tu, mu",
-                     "# re-emit vtype for SAMPLE_BEFORE")
+    # Re-emit vsetivli so SAMPLE_BEFORE captures vtype/vl.
+    common.writeLine(f"vsetivli x{scratch}, {vl}, e{sew}, m1, tu, mu",
+                     f"# re-emit vtype for SAMPLE_BEFORE (vl={vl})")
+    if vstart is not None:
+        common.writeLine(f"li x{scratch}, {vstart}", f"# vstart override = {vstart}")
+        common.writeLine(f"csrw vstart, x{scratch}", "# install non-zero vstart")
 
     from ._ssstrictv_helpers import build_testline, sig_params  # local import
     testline, vd, rd = build_testline(instruction, instruction_data, maskval=None)
@@ -170,7 +210,7 @@ def _emit_frm_test(instruction: str, cp: str, frm_val: int) -> None:
     post = [f"csrwi frm, 0  # restore frm"]
     common.writeVecTest(
         instruction, cp, vd, sew, testline,
-        test=instruction, rd=rd, vl=1, lmul=1,
+        test=instruction, rd=rd, vl=max(vl, 1), lmul=1,
         sig_lmul=sig_lmul, sig_whole_register_store=sig_wr,
         priv=True, skip_sigupd=True,
         post_instruction_lines=post,
@@ -183,5 +223,15 @@ def vfp_frm_reserved(instruction: str) -> None:
     for frm_val in (5, 6, 7):
         try:
             _emit_frm_test(instruction, cp, frm_val)
+        except Exception:
+            pass
+        # _vl0 variant
+        try:
+            _emit_frm_test(instruction, cp, frm_val, vl=0)
+        except Exception:
+            pass
+        # _vstart_ge_vl variant: vl=1, vstart=1
+        try:
+            _emit_frm_test(instruction, cp, frm_val, vl=1, vstart=1)
         except Exception:
             pass

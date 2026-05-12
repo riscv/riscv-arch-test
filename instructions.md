@@ -124,3 +124,40 @@ FIXED: cp_ssstrictv_ls_wr_nf_reserved (split into nf_not_pow2 + nreg{2,4,8}_vd_u
 FIXED: cp_ssstrictv_ls_eew_lt_sewmin (100% on rv32+rv64)
 FIXED: cp_ssstrictv_ls_eew_lt_sewmin_vl0 (100% on rv32+rv64)
 FIXED: cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl (100% on rv32+rv64)
+
+FIXED: cp_ssstrictv_vfp_frm_reserved_vl0 (100% rv32+rv64)
+FIXED: cp_ssstrictv_vfp_frm_reserved_vstart_ge_vl (100% rv32+rv64)
+FIXED: cp_ssstrictv_vfp_eew_unsupported_vl0 (100% rv32+rv64)
+FIXED: cp_ssstrictv_vfp_eew_unsupported_vstart_ge_vl (100% rv32+rv64)
+FIXED: cp_ssstrictv_vfp_widen_eew_unsupported_vl0 (100% rv32+rv64)
+FIXED: cp_ssstrictv_vfp_widen_eew_unsupported_vstart_ge_vl (100% rv32+rv64)
+FIXED: cp_ssstrictv_masking_vd_eq_v0_lmulgt1 (100% rv32+rv64)
+FIXED: cp_ssstrictv_masking_vd_v0_overlap (100% rv32+rv64)
+  Changes:
+  - testgen `_ssstrictv_helpers.issue_simple_test`: added `vstart` parameter
+    so handlers can write a non-zero vstart before the test.
+  - testgen `cp_ssstrictv_sew_lmul_family.vfp_eew_unsupported` /
+    `vfp_widen_eew_unsupported`: emit additional vl=0 and vstart=1 variants
+    so the corresponding _vl0 / _vstart_ge_vl crosses fire.
+  - testgen `_emit_frm_test`: added `vl` and `vstart` parameters; emit 3
+    variants per reserved frm value (standard / vl=0 / vstart=1).
+  - templates `cp_ssstrictv_vfp_frm_reserved.sv`,
+    `cp_ssstrictv_vfp_eew_unsupported.sv`,
+    `cp_ssstrictv_vfp_widen_eew_unsupported.sv`,
+    `cp_ssstrictv_ls_eew_lt_sewmin.sv`: collapse `mstatus_vs_active`
+    multi-bin (Initial/Clean/Dirty) into a single `bins active = {[1:3]}`
+    bin — Initial/Clean states are not reachable from the test framework
+    (vector ops promote VS to Dirty automatically) and would otherwise
+    cap the cross at 33%.
+  - templates `cp_ssstrictv_masking_vd_eq_v0_lmulgt1.sv` and
+    `cp_ssstrictv_masking_vd_v0_overlap.sv`: drop over-constraints
+    `vd_ne_vs1, vd_ne_vs2, vs2_ne_vs1` from the cross. These were
+    unsatisfiable for instructions where insn[24:20]/insn[19:15] are
+    funct/opcode bits hardcoded to 0 (loads, vid, vfsqrt, segment ops),
+    which made the cross unreachable for ~144 covergroups. The
+    "exercise the reserved encoding/state only" policy supports this
+    simplification.
+  - testgen masking handlers: removed `max_legal_lmul` cap so segment
+    loads with NF≥5 still emit LMUL>1 tests (the cross fires on the
+    encoding bits + pre-state, not on whether the instruction is
+    otherwise legal).

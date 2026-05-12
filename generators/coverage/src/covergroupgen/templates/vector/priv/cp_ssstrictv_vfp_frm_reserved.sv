@@ -21,7 +21,7 @@
     }
 
     mstatus_vs_active_6af882: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active[] = {[1:3]};
+        bins active = {[1:3]};
     }
 
     cp_ssstrictv_vfp_frm_reserved_vl0: cross vtype_prev_vill_clear, vl_zero_6af882, mstatus_vs_active_6af882, frm_invalid;

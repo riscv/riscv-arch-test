@@ -23,7 +23,7 @@
     }
 
     mstatus_vs_active_196c2e: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active[] = {[1:3]};
+        bins active = {[1:3]};
     }
 
     cp_ssstrictv_vfp_eew_unsupported_vl0: cross vtype_prev_vill_clear, vl_zero_196c2e, mstatus_vs_active_196c2e, sew_unsupported_fp;

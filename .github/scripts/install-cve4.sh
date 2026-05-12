@@ -15,19 +15,19 @@ VERILATOR_VERSION="v5.042"
 mkdir -p "$INSTALL_DIR/bin"
 
 # 1. Verilator from source
-git clone https://github.com/verilator/verilator.git "$INSTALL_DIR/verilator-src"
+git clone --depth 1 --branch "$VERILATOR_VERSION" https://github.com/verilator/verilator.git "$INSTALL_DIR/verilator-src"
 (
   cd "$INSTALL_DIR/verilator-src"
-  git checkout "$VERILATOR_VERSION"
   autoconf
   ./configure --prefix="$INSTALL_DIR"
   make -j"$(nproc)"
   make install
 )
+rm -rf "$INSTALL_DIR/verilator-src"
 export PATH="$INSTALL_DIR/bin:$PATH"
 
 # 2. Clone the cv32e40p-dv testbench (ACT4 CI branch)
-git clone --branch "$CVE4_DV_BRANCH" "$CVE4_DV_REPO" "$INSTALL_DIR/cv32e40p-dv"
+git clone --depth 1 --branch "$CVE4_DV_BRANCH" "$CVE4_DV_REPO" "$INSTALL_DIR/cv32e40p-dv"
 (
   cd "$INSTALL_DIR/cv32e40p-dv"
   git checkout "$CVE4_DV_COMMIT"

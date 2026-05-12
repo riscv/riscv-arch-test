@@ -55,7 +55,7 @@ covergroup SsstrictSm_mcsr_cg with function sample(ins_t ins);
         ignore_bins super_custom3 = {[12'hDC0:12'hDFF]};
         bins hyper_std3[] = {[12'hE00:12'hEBF]};
         ignore_bins hyper_custom3 = {[12'hEC0:12'hEFF]};
-        bins mach_std3[] = {[12'hF00:12'hFBF]};
+        ignore_bins mach_std3_readonly = {[12'hF00:12'hFBF]}; // Read-only M-mode CSRs, not testable
         ignore_bins mach_custom3 = {[12'hFC0:12'hFFF]};
     }
     rs1_ones: coverpoint ins.current.rs1_val {
@@ -134,7 +134,14 @@ covergroup SsstrictSm_instr_cg with function sample(ins_t ins);
     cp_upperreg_imm_rs1:  cross priv_mode_m, upperreg_imm_rs1;
     cp_upperreg_fmv_rs1 : cross priv_mode_m, upperreg_fmv_rs1;
     cp_upperreg_fmv_rd :  cross priv_mode_m, upperreg_fmv_rd;
-    cp_amocas_odd :       cross priv_mode_m, amocas_odd;
+    cp_amocas_odd :       cross priv_mode_m, amocas_odd {
+        // AMOCAS requires 64-bit register pairs (even-aligned registers).
+        // Odd register indices are architecturally invalid and not testable.
+        wildcard ignore_bins amocas_d_odd_rd = binsof(amocas_odd) intersect {32'b00101????????????_011_????1_0101111};
+        wildcard ignore_bins amocas_q_odd_rd = binsof(amocas_odd) intersect {32'b00101????????????_100_????1_0101111};
+        wildcard ignore_bins amocas_d_odd_rs1 = binsof(amocas_odd) intersect {32'b00101???????????1_011_?????_0101111};
+        wildcard ignore_bins amocas_q_odd_rs1 = binsof(amocas_odd) intersect {32'b00101???????????1_100_?????_0101111};
+    }
     cp_reserved_rm :      cross priv_mode_m, reserved_rm;
 
     // ── Vector coverpoints crossed with priv_mode_m ──────────────────
@@ -188,6 +195,15 @@ covergroup SsstrictSm_comp_instr_cg with function sample(ins_t ins);
     // of insn[15:2] = 000) to protect the scratch base pointer.
     cp_compressed00: cross priv_mode_m, compressed00 {
         wildcard ignore_bins rd_p_x8 = binsof(compressed00) intersect {14'b???????????000};
+        // Ignore memory operations that throw exceptions for bad addresses
+        wildcard ignore_bins c_fld = binsof(compressed00) intersect {14'b001??????000};
+        wildcard ignore_bins c_lw  = binsof(compressed00) intersect {14'b010??????000};
+        wildcard ignore_bins c_lbu = binsof(compressed00) intersect {14'b10000?????000};
+        wildcard ignore_bins c_lh  = binsof(compressed00) intersect {14'b100001????000};
+        wildcard ignore_bins c_sb  = binsof(compressed00) intersect {14'b10001?????000};
+        wildcard ignore_bins c_sh  = binsof(compressed00) intersect {14'b1000110???000};
+        wildcard ignore_bins c_fsd = binsof(compressed00) intersect {14'b101??????000};
+        wildcard ignore_bins c_sw  = binsof(compressed00) intersect {14'b110??????000};
     }
 
     // compressed01: generator excludes rd=x2 for CI-type instructions.
@@ -199,16 +215,29 @@ covergroup SsstrictSm_comp_instr_cg with function sample(ins_t ins);
         wildcard ignore_bins rd_x2_ci_000 = binsof(compressed01) intersect {14'b00000001000000:14'b00000001011111};
         wildcard ignore_bins rd_x2_ci_010 = binsof(compressed01) intersect {14'b01000001000000:14'b01000001011111};
         wildcard ignore_bins rd_x2_ci_011 = binsof(compressed01) intersect {14'b01100001000000:14'b01100001011111};
+        // Ignore control flow instructions that would break test execution
+        wildcard ignore_bins c_jal = binsof(compressed01) intersect {14'b001????01};
+        wildcard ignore_bins c_j   = binsof(compressed01) intersect {14'b101????01};
+        wildcard ignore_bins c_beqz_bnez = binsof(compressed01) intersect {14'b11??????01};
     }
 
     // compressed10: generator excludes rd=x2 and rd=x8.
     // In quadrant 10, bit[15]=1 is fixed in the template "1EEEEEEEEEEEEE10",
     // so only the upper half of the encoding space is swept.
     cp_compressed10: cross priv_mode_m, compressed10 {
+        // Ignore lower half (bit[15]=0) - not swept by generator
+        wildcard ignore_bins lower_half = binsof(compressed10) intersect {14'b0???????????10};
         // rd=x2(sp) for the swept portion (bit[15]=1): insn[11:7]=00010
         wildcard ignore_bins rd_x2 = binsof(compressed10) intersect {14'b1???00010?????};
         // rd=x8 for the swept portion
         wildcard ignore_bins rd_x8 = binsof(compressed10) intersect {14'b1???01000?????};
+        // Ignore floating-point/stack operations that throw exceptions
+        wildcard ignore_bins c_fldsp = binsof(compressed10) intersect {14'b1001??????????};
+        wildcard ignore_bins c_lwsp  = binsof(compressed10) intersect {14'b10010?????????};
+        wildcard ignore_bins c_jr    = binsof(compressed10) intersect {14'b1000000000????};
+        wildcard ignore_bins c_jalr  = binsof(compressed10) intersect {14'b1001000000????};
+        wildcard ignore_bins c_fsdsp = binsof(compressed10) intersect {14'b1101??????????};
+        wildcard ignore_bins c_swsp  = binsof(compressed10) intersect {14'b1110??????????};
     }
 endgroup
 

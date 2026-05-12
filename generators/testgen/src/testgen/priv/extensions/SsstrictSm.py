@@ -46,7 +46,7 @@ _M_CSR_SKIP: frozenset[int] = frozenset(
     + [
         0x340,
         0x747,
-        0x5a8   # scontext ignore, sail does not support it but other sims does
+        0x5A8,  # scontext ignore, sail does not support it but other sims does
     ]  # mscratch, mseccfg — skip to avoid enabling epmp and PMP troubles in M-mode & to overwrite mscratch with random values in the sweep
 )
 
@@ -96,7 +96,11 @@ def _generate_csr_tests_m(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "SsstrictSm",
     required_extensions=["Sm", "Zicsr"],
-    march_extensions=[],
+    march_extensions=[
+        "I",
+        "V",
+        "Zicsr",
+    ],
 )
 def make_ssstrictsm(test_data: TestData) -> list[str]:
     """SsstrictSm — machine-mode strict compliance tests."""

@@ -264,17 +264,8 @@ def _generate_shadow_csr(test_data: TestData) -> list[str]:
         # Vector excluded — covered by SsstrictV.
         # Zbc/Zacas/Zcb excluded: not in non-max configs, not supported by GCC < 14.
         "I",
-        "M",
-        "A",
-        "F",
-        "D",
-        "C",
+        "V",
         "Zicsr",
-        "Zba",
-        "Zbb",
-        "Zbs",
-        "Zca",
-        "Zcd",
     ],
 )
 def make_ssstrictss(test_data: TestData) -> list[str]:

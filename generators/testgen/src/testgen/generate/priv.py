@@ -243,8 +243,7 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
             # overflow the signature region and corrupt the TRAP_CANARY.
             cg_count = sum(1 for line in group if line.strip().endswith(":") and "_cg_" in line)
             raw_instr_count = sum(
-                1 for line in group
-                if line.strip().startswith(".word ") or line.strip().startswith(".hword ")
+                1 for line in group if line.strip().startswith(".word ") or line.strip().startswith(".hword ")
             )
             chunk.sigupd_count = 4 * (cg_count + raw_instr_count)
             # Pass a COPY of extra_defines: insert_header_template() calls

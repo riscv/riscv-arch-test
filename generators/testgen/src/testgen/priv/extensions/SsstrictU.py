@@ -115,21 +115,9 @@ def _generate_csr_tests_u(test_data: TestData) -> list[str]:
     "SsstrictU",
     required_extensions=["Sm", "U", "Zicsr"],
     march_extensions=[
-        # Zcf excluded — RV32-only.
-        # Vector excluded — covered by SsstrictV.
-        # Zbc/Zacas/Zcb excluded: not in non-max configs, not supported by GCC < 14.
         "I",
-        "M",
-        "A",
-        "F",
-        "D",
-        "C",
+        "V",
         "Zicsr",
-        "Zba",
-        "Zbb",
-        "Zbs",
-        "Zca",
-        "Zcd",
     ],
 )
 def make_ssstrictu(test_data: TestData) -> list[str]:

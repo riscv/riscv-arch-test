@@ -29,7 +29,7 @@ covergroup UV_cg with function sample(ins_t ins);
         bins b_1[] = { [0:`XLEN-1] };
     }
 
-    csrop: coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b1110011) {
+    csrop: coverpoint ins.current.insn {
         wildcard bins csrrs = {CSRRS};
         wildcard bins csrrc = {CSRRC};
     }

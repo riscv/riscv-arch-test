@@ -96,21 +96,7 @@ def _generate_csr_tests_m(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "SsstrictSm",
     required_extensions=["Sm", "Zicsr"],
-    march_extensions=[
-        "I",
-        "M",
-        "A",
-        "F",
-        "D",
-        "C",
-        "V",  # needed for vsetivli in vector illegal instruction sweep
-        "Zicsr",
-        "Zba",
-        "Zbb",
-        "Zbs",
-        "Zca",
-        "Zcd",
-    ],
+    march_extensions=[],
 )
 def make_ssstrictsm(test_data: TestData) -> list[str]:
     """SsstrictSm — machine-mode strict compliance tests."""

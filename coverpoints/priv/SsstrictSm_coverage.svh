@@ -134,14 +134,7 @@ covergroup SsstrictSm_instr_cg with function sample(ins_t ins);
     cp_upperreg_imm_rs1:  cross priv_mode_m, upperreg_imm_rs1;
     cp_upperreg_fmv_rs1 : cross priv_mode_m, upperreg_fmv_rs1;
     cp_upperreg_fmv_rd :  cross priv_mode_m, upperreg_fmv_rd;
-    cp_amocas_odd :       cross priv_mode_m, amocas_odd {
-        // AMOCAS requires 64-bit register pairs (even-aligned registers).
-        // Odd register indices are architecturally invalid and not testable.
-        wildcard ignore_bins amocas_d_odd_rd = binsof(amocas_odd) intersect {32'b00101????????????_011_????1_0101111};
-        wildcard ignore_bins amocas_q_odd_rd = binsof(amocas_odd) intersect {32'b00101????????????_100_????1_0101111};
-        wildcard ignore_bins amocas_d_odd_rs1 = binsof(amocas_odd) intersect {32'b00101???????????1_011_?????_0101111};
-        wildcard ignore_bins amocas_q_odd_rs1 = binsof(amocas_odd) intersect {32'b00101???????????1_100_?????_0101111};
-    }
+    cp_amocas_odd :       cross priv_mode_m, amocas_odd;
     cp_reserved_rm :      cross priv_mode_m, reserved_rm;
 
     // ── Vector coverpoints crossed with priv_mode_m ──────────────────

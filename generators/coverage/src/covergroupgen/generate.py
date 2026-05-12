@@ -43,7 +43,7 @@ VECTOR_PREFIXES = ("Vx", "Zv", "Vls", "Vf")
 # Priv-side architectures that need vector-flavored covergroups (header_vector etc.).
 # These priv testplans use the same vector helpers as unpriv vector covergroups
 # but do not undergo per-SEW expansion.
-PRIV_VECTOR_PREFIXES = ("ExceptionsV", "SsstrictV", "MissalignedV")
+PRIV_VECTOR_PREFIXES = ("ExceptionsV", "MissalignedV")
 
 # Subset of vector prefixes that support widening instructions.
 VECTOR_WIDEN_PREFIXES = ("Vx", "Vls", "Vf")

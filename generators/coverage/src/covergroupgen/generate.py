@@ -353,7 +353,7 @@ def _gen_instrs(
         # ±1MiB JAL range. Other priv vector arches (ExceptionsVx/Vls/Vf)
         # intentionally use a small, focused set of coverpoints (cp_vill /
         # cp_vstart / cp_vstart_gt_vl) and must not pull in either header.
-        if arch.startswith(("SsstrictV", "MissalignedV")):
+        if arch.startswith("SsstrictV"):
             covergroup_lines.append('    `include "general/RISCV_coverage_ssstrictv_helpers.svh"\n')
 
         # Coverpoint entries (skip metadata columns: sample_*, RV32, RV64, EFFEW*)

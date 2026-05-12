@@ -2279,6 +2279,49 @@ def getInstructionEEW(instruction):
   elif instruction in eew64_ins : return 64
   else                          : return None
 
+def encodeIndexedLSAsInsn(instruction, instruction_data, masked=False):
+  """Emit indexed LS as raw `.insn 0xXXXXXXXX` so the assembler accepts forms
+  (e.g. `vsoxseg7ei64.v` on RV32) that clang otherwise rejects with
+  "instruction requires the following: RV64I Base Instruction Set". The
+  encoding follows V-spec indexed LS layout; mnemonic appears as a trailing
+  comment for readability.
+  """
+  if instruction not in indexed_ls_ins:
+    raise ValueError(f"{instruction} is not an indexed LS instruction")
+  vec_data, scalar_data, _fp_data, _imm = instruction_data
+  rs1 = scalar_data['rs1']['reg']
+  vs2 = vec_data['vs2']['reg']
+  if instruction in indexed_stores:
+    dst    = vec_data['vs3']['reg']
+    opcode = 0b0100111  # STORE-FP
+  else:
+    dst    = vec_data['vd']['reg']
+    opcode = 0b0000111  # LOAD-FP
+  eew = getInstructionEEW(instruction)
+  width_map = {8: 0b000, 16: 0b101, 32: 0b110, 64: 0b111}
+  width = width_map[eew]
+  # mop: 01 = indexed-unordered (vluxei/vsuxei), 11 = indexed-ordered (vloxei/vsoxei)
+  if instruction.startswith("vsox") or instruction.startswith("vlox"):
+    mop = 0b11
+  else:
+    mop = 0b01
+  nf = getInstructionSegments(instruction) - 1
+  vm = 0 if masked else 1
+  mew = 0
+  enc = (
+    (nf     << 29) |
+    (mew    << 28) |
+    (mop    << 26) |
+    (vm     << 25) |
+    (vs2    << 20) |
+    (rs1    << 15) |
+    (width  << 12) |
+    (dst    << 7 ) |
+    opcode
+  )
+  mnemonic_args = f"v{dst}, (x{rs1}), v{vs2}" + (", v0.t" if masked else "")
+  return f".insn 0x{enc:08x}    # {instruction} {mnemonic_args}"
+
 def prepMaskV(maskval, sew, tempReg, lmul):
   lmulflag = getLmulFlag(lmul)
   # vid.v requires an lmul-aligned register. v1 is fine for lmul<=1, but

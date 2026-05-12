@@ -1,4 +1,4 @@
-#!/usr/nin/env bash
+#!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 # Install cv32e40p-dv testbench (Verilator) for CI                                                                                                          
 # Usage: install-cve4.sh <install-dir>
@@ -7,7 +7,7 @@
 set -euo pipefail
 
 INSTALL_DIR="${1:?Usage: install-cve4.sh <install-dir>}"
-CVE4_DV_REPO="https://github.com/karabambus/cv32e40p-dv-review.git"
+CVE4_DV_REPO="https://github.com/openhwgroup/cv32e40p-dv-review.git"
 CVE4_DV_BRANCH="feat/run-cve4-multi-config"                                                                                                                   
 CVE4_DV_COMMIT="a1c4ec501e82f23987d1d74625b70a6cd1dfc2e1"                                                                                                   
 VERILATOR_VERSION="v5.042"   

@@ -121,3 +121,6 @@ FIXED: cp_ssstrictv_vfmv_fs_sf_vm0_reserved
 FIXED: cp_ssstrictv_vcompress_vm0_reserved
 FIXED: cp_ssstrictv_vmvnr_simm_reserved
 FIXED: cp_ssstrictv_ls_wr_nf_reserved (split into nf_not_pow2 + nreg{2,4,8}_vd_unaligned)
+FIXED: cp_ssstrictv_ls_eew_lt_sewmin (100% on rv32+rv64)
+FIXED: cp_ssstrictv_ls_eew_lt_sewmin_vl0 (100% on rv32+rv64)
+FIXED: cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl (100% on rv32+rv64)

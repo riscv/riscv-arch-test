@@ -186,6 +186,15 @@ def _emit_reg_init(lines: list[str]) -> None:
     lines.append("")
 
 
+def _emit_vector_init(lines: list[str]) -> None:
+    """Re-initialize GPRs and enable vector extension state (mstatus.VS)."""
+    _emit_reg_init(lines)
+    lines.append("\t# Enable vector extension: mstatus.VS = 11 (Initial/Dirty)")
+    lines.append("\tli t2, 0x00000600  # VS field bitmask [14:13]")
+    lines.append("\tcsrs mstatus, t2")
+    lines.append("")
+
+
 def emit_raw_words(
     lines: list[str],
     comment: str,
@@ -463,7 +472,7 @@ def generate_vector_illegal_instr(
     # ── vset* configuration instructions ──────────────────────────────
     lines.append(comment_banner("vset* reserved encodings", "Reserved bits in vsetvl/vsetvli/vsetivli"))
 
-    _emit_reg_init(lines)
+    _emit_vector_init(lines)
     emit_raw_words(lines, "cp_v_vsetvl", "10EEEEERRRRRRRRRR111RRRRR1010111")
     emit_raw_words(lines, "cp_v_vsetvli_sew", "0000RR1EERRRRRRRR111RRRRR1010111")
     # TODO: Restore once Sail vsetvli reserved-vtype behavior is resolved
@@ -474,7 +483,7 @@ def generate_vector_illegal_instr(
     # ── Reserved vector loads ─────────────────────────────────────────
     lines.append(comment_banner("Vector load reserved encodings", "Reserved mew/width/lumop for vector loads"))
 
-    _emit_reg_init(lines)
+    _emit_vector_init(lines)
     # mew=0, reserved width values
     emit_raw_words(lines, "cp_vl_0_000", "RRR0RRRRRRRRRRRRR000RRRRR0000111")
     emit_raw_words(lines, "cp_vl_0_101", "RRR0RRRRRRRRRRRRR101RRRRR0000111")
@@ -494,7 +503,7 @@ def generate_vector_illegal_instr(
     # ── Reserved vector stores ────────────────────────────────────────
     lines.append(comment_banner("Vector store reserved encodings", "Reserved mew/width/lumop for vector stores"))
 
-    _emit_reg_init(lines)
+    _emit_vector_init(lines)
     # mew=0, reserved width values
     emit_raw_words(lines, "cp_vs_0_000", "RRR0RRRRRRRRRRRRR000RRRRR0100111")
     emit_raw_words(lines, "cp_vs_0_101", "RRR0RRRRRRRRRRRRR101RRRRR0100111")
@@ -519,7 +528,7 @@ def generate_vector_illegal_instr(
         lines.append(f"\tvsetivli x0, 1, e{sew}, m1, ta, ma")
         lines.append("")
 
-        _emit_reg_init(lines)
+        _emit_vector_init(lines)
 
         # funct6 sweep for every vector arithmetic category
         emit_raw_words(lines, f"cp_IVV_f6_e{sew}", "EEEEEEERRRRRRRRRR000RRRRR1010111")

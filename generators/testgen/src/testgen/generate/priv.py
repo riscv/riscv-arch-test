@@ -35,7 +35,7 @@ _SPLIT_TESTSUITES: frozenset[str] = frozenset({"SsstrictSm", "SsstrictS", "Ssstr
 # 8000 lines keeps file count low (~10 files) which minimises per-file startup
 # overhead on slower simulators (spike, QEMU).  Each file still completes in
 # well under one second on Sail even when every instruction traps.
-_LINES_PER_FILE: int = 8000
+_LINES_PER_FILE: int = 500
 
 # Fast illegal-instruction trap handler, prepended to every split file.
 #
@@ -69,15 +69,15 @@ _LINES_PER_FILE: int = 8000
 _FAST_HANDLER_PREFIX: list[str] = [
     "",
     "// ── Fast illegal-instruction handler (prepended to every Ssstrict file) ────",
-    "// Handles ALL illegal instruction traps fast (no signature write).",
+    "// Handles ALL illegal instruction traps — writes mcause, mepc and mtval to signature on each trap.",
     "// 32-bit (bits[1:0]==11): advance mepc+4.",
     "// 16-bit (bits[1:0]!=11): advance mepc+2.",
     "// Any non-illegal trap: hand off to Mtrampoline (real framework handler).",
     "//",
-    "// Uses ONLY t0 (x5). t1 (x6) is deliberately never touched: when",
-    "// rvtest_strap_routine is defined (SsstrictS/U), x6 holds the Mtrampoline",
-    "// trap-signature pointer. Clobbering it corrupts that pointer and causes",
-    "// RVTEST_CODE_END signature-offset checks to fail.",
+    "// Uses t0 (x5) and x2 (the signature pointer, advanced by SIG_STRIDE per trap).",
+    "// t1 (x6) is deliberately never touched: when rvtest_strap_routine is defined",
+    "// (SsstrictS/U), x6 holds the Mtrampoline trap-signature pointer. Clobbering it",
+    "// corrupts that pointer and causes RVTEST_CODE_END signature-offset checks to fail.",
     "\tj ssstrict_test_body",
     "",
     "\t.align 4",
@@ -86,8 +86,15 @@ _FAST_HANDLER_PREFIX: list[str] = [
     "\tli t1, 2                # Illegal Instruction cause = 2",
     "\tbne t0, t1, othertrap   # not illegal instruction, use regular handler",
     "illegalinstruction:",
+    "\tSREG t0, 0(x2)          # store mcause (=2) to signature",
+    "\taddi x2, x2, SIG_STRIDE # advance signature pointer",
+    "\tcsrr t0, mepc",
+    "\tSREG t0, 0(x2)          # store mepc to signature",
+    "\taddi x2, x2, SIG_STRIDE",
     "\tcsrr t0, mtval          # get the faulting instruction encoding",
-    "\tandi t0, t0, 3          # extract bits[1:0] into t0",
+    "\tSREG t0, 0(x2)          # store mtval to signature",
+    "\taddi x2, x2, SIG_STRIDE",
+    "\tandi t0, t0, 3          # extract bits[1:0] into t0 (t0 still holds mtval)",
     "\tli t1, 3                # uncompressed marker = 0b11",
     "\tbeq t0, t1, uncompressedillegalinstructionreturn  # bits[1:0]==11 → uncompressed",
     "compressedillegalinstructionreturn:",
@@ -224,11 +231,22 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
             # redirected to it at the start of each file's code section,
             # regardless of which part of the body the file contains.
             chunk.code = "\n".join(_FAST_HANDLER_PREFIX + group)
-            # Count testcase labels in this group to set the correct
-            # sigupd_count. Without this, write_test_file uses only
-            # SIGUPD_MARGIN (=10), which overflows on RV32 when a CSR-sweep
-            # file has hundreds of testcase labels (50 CSRs × 5 ops = 250).
-            chunk.sigupd_count = sum(1 for line in group if line.strip().endswith(":") and "_cg_" in line)
+            # Count trap-inducing instructions in this group to size the
+            # signature region correctly.  There are two kinds:
+            #   1. _cg_ testcase labels — each precedes a CSR instruction that
+            #      may trap (illegal CSR access).
+            #   2. Raw .word/.hword directives — each IS an illegal instruction
+            #      in the reserved-encoding sweeps; every one traps.
+            # Each trap writes 4 signature words (mstatus, mcause, mepc, mtval).
+            # Counting both kinds ensures that large compressed/vector sweeps
+            # (thousands of .hword/.word lines, zero _cg_ labels) don't
+            # overflow the signature region and corrupt the TRAP_CANARY.
+            cg_count = sum(1 for line in group if line.strip().endswith(":") and "_cg_" in line)
+            raw_instr_count = sum(
+                1 for line in group
+                if line.strip().startswith(".word ") or line.strip().startswith(".hword ")
+            )
+            chunk.sigupd_count = 4 * (cg_count + raw_instr_count)
             # Pass a COPY of extra_defines: insert_header_template() calls
             # extra_defines.extend(...) which mutates the list in-place.
             # Without a copy, each successive file accumulates duplicate

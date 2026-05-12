@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Marin Radic mradic07@gmail.com
 # SPDX-License-Identifier: Apache-2.0
 # Setup environment for cve4 after install / cache restore
 # Usage: setup-cve4.sh <install-dir>

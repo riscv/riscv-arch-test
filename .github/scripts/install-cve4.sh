@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Marin Radic mradic07@gmail.com
 # SPDX-License-Identifier: Apache-2.0
 # Install cv32e40p-dv testbench (Verilator) for CI
 # Usage: install-cve4.sh <install-dir>

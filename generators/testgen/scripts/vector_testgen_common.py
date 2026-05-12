@@ -2299,6 +2299,12 @@ def encodeIndexedLSAsInsn(instruction, instruction_data, masked=False):
     opcode = 0b0000111  # LOAD-FP
   eew = getInstructionEEW(instruction)
   width_map = {8: 0b000, 16: 0b101, 32: 0b110, 64: 0b111}
+  if eew not in width_map:
+    supported_eews = ", ".join(str(supported_eew) for supported_eew in sorted(width_map))
+    raise ValueError(
+      f"Unsupported EEW {eew!r} for indexed LS instruction {instruction}; "
+      f"supported EEWs: {supported_eews}"
+    )
   width = width_map[eew]
   # mop: 01 = indexed-unordered (vluxei/vsuxei), 11 = indexed-ordered (vloxei/vsoxei)
   if instruction.startswith("vsox") or instruction.startswith("vlox"):
@@ -2893,9 +2899,14 @@ def getInstructionRegisterOverlapConstraints (instruction, sew, lmul):
   no_overlap = None
 
   # Widening MACs must be checked before the generic widening branches: vd is read+written at
-  # EEW=2*SEW (accumulator), so any overlap with the EEW=SEW sources vs1/vs2 would read the same
-  # vector register at two different EEWs (reserved per V spec §5.2).
-  if   instruction in widening_mac_ins: no_overlap = [['vd',        'vs2'], ['vd',        'vs1']]
+  # EEW=2*SEW (accumulator). For .vv forms, both vs1 and vs2 are EEW=SEW vector sources, so
+  # overlap with either would read the same vector register at two different EEWs (reserved per
+  # V spec §5.2). For .vx/.vf forms, the second source is scalar, so only constrain vd vs vs2.
+  if   instruction in widening_mac_ins:
+    if instruction.endswith(".vv"):
+      no_overlap = [['vd',        'vs2'], ['vd',        'vs1']]
+    else:
+      no_overlap = [['vd',        'vs2']]
   elif instruction in wvvins          : no_overlap = [['vd_bottom', 'vs2'], ['vd_bottom', 'vs1']]
   elif instruction in vupgatherins    : no_overlap = [['vd',        'vs2'], ['vd',        'vs1']]
   elif instruction in vmlogicalins    : no_overlap = [['vd',        'vs2']                      ]

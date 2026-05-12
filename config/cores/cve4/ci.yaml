@@ -5,7 +5,7 @@ ci_enabled: true
 exclude_configs:
   - cv32e40p-v1-rv32imc
   - cv32e40p-v2-rv32imc
-exclude_extensions: "Sm,ExceptionsSm,InterruptsSm,ExceptionsZc"
+exclude_extensions: "Sm,SmF,ExceptionsSm,InterruptsSm,ExceptionsZc,ExceptionsF"
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cve4.sh"
 setup_script: ".github/scripts/setup-cve4.sh"

@@ -39,7 +39,6 @@
     ExceptionsVf16_vfmv_f_s_cg = new(); ExceptionsVf16_vfmv_f_s_cg.set_inst_name("obj_ExceptionsVf16_vfmv_f_s");
     ExceptionsVf16_vfmv_s_f_cg = new(); ExceptionsVf16_vfmv_s_f_cg.set_inst_name("obj_ExceptionsVf16_vfmv_s_f");
     ExceptionsVf16_vfmv_v_f_cg = new(); ExceptionsVf16_vfmv_v_f_cg.set_inst_name("obj_ExceptionsVf16_vfmv_v_f");
-    ExceptionsVf16_vfncvt_f_f_w_cg = new(); ExceptionsVf16_vfncvt_f_f_w_cg.set_inst_name("obj_ExceptionsVf16_vfncvt_f_f_w");
     ExceptionsVf16_vfncvt_f_x_w_cg = new(); ExceptionsVf16_vfncvt_f_x_w_cg.set_inst_name("obj_ExceptionsVf16_vfncvt_f_x_w");
     ExceptionsVf16_vfncvt_f_xu_w_cg = new(); ExceptionsVf16_vfncvt_f_xu_w_cg.set_inst_name("obj_ExceptionsVf16_vfncvt_f_xu_w");
     ExceptionsVf16_vfncvt_rod_f_f_w_cg = new(); ExceptionsVf16_vfncvt_rod_f_f_w_cg.set_inst_name("obj_ExceptionsVf16_vfncvt_rod_f_f_w");

@@ -194,13 +194,13 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         bins b_1[] = { [0:`XLEN-1] };
     }
 
-    walking_ones_nonmode: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
-        `ifdef XLEN64
-            bins b_1[] = { [0:`XLEN-5] };
-        `else
-            bins b_1[] = { [0:`XLEN-2] };
-        `endif
-    }
+    // walking_ones_nonmode: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+    //     `ifdef XLEN64
+    //         bins b_1[] = { [0:`XLEN-5] };
+    //     `else
+    //         bins b_1[] = { [0:`XLEN-2] };
+    //     `endif
+    // }
 
 
     csrname : coverpoint ins.current.insn[31:20] {
@@ -232,9 +232,9 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         `endif
         // counters tested in ZicntrS
     }
-    satp : coverpoint ins.current.insn[31:20] {
-        bins satp          = {CSR_SATP};
-    }
+    // satp : coverpoint ins.current.insn[31:20] {
+    //     bins satp          = {CSR_SATP};
+    // }
 
     csrop: coverpoint ins.current.insn {
         wildcard bins csrrs = {CSRRS};
@@ -289,9 +289,12 @@ covergroup S_scsr_cg with function sample(ins_t ins);
     cp_scsr_from_m:           cross priv_mode_m, csrname, csraccesses;
     cp_ucsr_from_s:           cross priv_mode_s, csruname, csraccesses;
     cp_shadow :               cross priv_mode_m, shadow, csrw_prev, rs1_prev, csrr;
-    cp_csr_satp:              cross priv_mode_s, satp, csrop, walking_ones_nonmode;
     cp_csr_insufficient_priv: cross priv_mode_s, csrr, csr_machine, nonzerord;
     cp_csr_ro:                cross priv_mode_s, csrw, csr_sro;
+
+// waived because behavior of other fields is UNSPECIFIED when satp.MODE=Bare
+//    cp_csr_satp:              cross priv_mode_s, satp, csrop, walking_ones_nonmode;
+
 endgroup
 
 function void s_sample(int hart, int issue, ins_t ins);

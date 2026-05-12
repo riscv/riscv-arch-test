@@ -115,10 +115,10 @@
         // A misaligned LR/SC currently always faults, and this field can specify
         // whether it generates an access fault (use `"AccessFault"`)
         // or a misaligned exception (use `"AlignmentException"`).
-        "lrsc": "AccessFault",
+        "lrsc": "AlignmentException",
         // Similarly, a misaligned AMO currently always faults, and this field
         // can specify either `"AccessFault"` or `"AlignmentException"`.
-        "amo": "AccessFault"
+        "amo": "AlignmentException"
       },
       // If a misaligned access was specified to have no fault in `exceptions` above, the
       // fields below specify how it is handled.
@@ -304,7 +304,7 @@
     // Note: it is also legal for these instructions to spuriously
     // retire successfully at any point, but there is currently no
     // configuration option for this behaviour.
-    "max_time_to_wait": 10
+    "max_time_to_wait": 200
   },
   "extensions": {
     "M": {

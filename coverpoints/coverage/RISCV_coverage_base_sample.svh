@@ -136,9 +136,6 @@
     `ifdef COVER_MISALIGNEDV
         misalignedv_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_MISSALIGNEDV
-        missalignedv_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_PMPF
         pmpf_sample(hart, issue, ins);
     `endif

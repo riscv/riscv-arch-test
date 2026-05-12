@@ -643,6 +643,18 @@ ls_not_maskable = [
 
 vmvins          = vvrtype + vxtype + vitype + xvtype + vftype + fvtype + vvvxtype + vcompressins
 vd_widen_ins    = wvvins + wvxins + wwvins + wwxins + wvsins + fwvfins + fwwfins + fwcvt_ins
+# Widening multiply-accumulate instructions: vd is both destination (EEW=2*SEW) AND a source
+# operand (the accumulator, also read at EEW=2*SEW). Because vs1/vs2 are read at EEW=SEW, any
+# overlap between vd and vs1/vs2 would cause the same vector register to be read at two different
+# EEWs, which is reserved per V spec section 5.2 (norm:eew_emul). The standard widening
+# "lowest-numbered-part" overlap exception does NOT apply here, because vd is also read (not
+# just written). Therefore vd must have NO overlap with vs1/vs2 for these instructions.
+widening_mac_ins = [
+  "vwmacc.vv", "vwmaccu.vv", "vwmaccsu.vv",
+  "vwmacc.vx", "vwmaccu.vx", "vwmaccsu.vx", "vwmaccus.vx",
+  "vfwmacc.vv", "vfwnmacc.vv", "vfwmsac.vv", "vfwnmsac.vv",
+  "vfwmacc.vf", "vfwnmacc.vf", "vfwmsac.vf", "vfwnmsac.vf",
+]
 not_maskable    = vm_nomask_ins + mmins + vmvins + ls_not_maskable
 
 # "vl1re8.v", "vl1re16.v", "vl1re32.v", "vl1re64.v"
@@ -2837,7 +2849,11 @@ def getVectorEmulMultipliers(instruction):
 def getInstructionRegisterOverlapConstraints (instruction, sew, lmul):
   no_overlap = None
 
-  if   instruction in wvvins          : no_overlap = [['vd_bottom', 'vs2'], ['vd_bottom', 'vs1']]
+  # Widening MACs must be checked before the generic widening branches: vd is read+written at
+  # EEW=2*SEW (accumulator), so any overlap with the EEW=SEW sources vs1/vs2 would read the same
+  # vector register at two different EEWs (reserved per V spec §5.2).
+  if   instruction in widening_mac_ins: no_overlap = [['vd',        'vs2'], ['vd',        'vs1']]
+  elif instruction in wvvins          : no_overlap = [['vd_bottom', 'vs2'], ['vd_bottom', 'vs1']]
   elif instruction in vupgatherins    : no_overlap = [['vd',        'vs2'], ['vd',        'vs1']]
   elif instruction in vmlogicalins    : no_overlap = [['vd',        'vs2']                      ]
   elif instruction in viotains        : no_overlap = [['vd',        'vs2']                      ]

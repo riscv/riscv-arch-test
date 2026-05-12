@@ -8,7 +8,8 @@
 // Define XLEN, used in covergroups
 `define XLEN32
 `define FLEN128
-`define VLEN1024
+`define VLEN128
+`define ELEN64
 
 // Maximum supported index EEW for indexed load/store
 `define MAXINDEXEEW64
@@ -28,7 +29,7 @@
 `define LARGEST_PROGRAM     32'h00001000
 
 // Define relevant addresses
-`define RVMODEL_ACCESS_FAULT_ADDRESS 64'h00000000
+`define RVMODEL_ACCESS_FAULT_ADDRESS 64'h00000100
 `define CLINT_BASE 64'h02000000
 
 //define extra supported extensions to collect full coverage in Privileged files
@@ -36,6 +37,7 @@
 `define ZFA_SUPPORTED
 `define F_SUPPORTED
 `define ZFH_SUPPORTED
+`define ZFHMIN_SUPPORTED
 `define ZBB_SUPPORTED
 `define ZBA_SUPPORTED
 `define ZBS_SUPPORTED
@@ -50,7 +52,28 @@
 `define ZICBOZ_SUPPORTED
 `define ZICBOM_SUPPORTED
 `define ZICBOP_SUPPORTED
+`define ZICFILP_SUPPORTED
+`define ZICFISS_SUPPORTED
+`define S_SUPPORTED
+`define SMSTATEEN_SUPPORTED
+`define SSSTATEEN_SUPPORTED
 
 `define COUNTINHIBIT_EN_0
 `define COUNTINHIBIT_EN_2
 `define TIME_CSR_IMPLEMENTED
+
+// Supported SEWs for vector
+// all supported now should be generated based on config (SEWMIN and ELEN)
+`define SEW8_SUPPORTED
+`define SEW16_SUPPORTED
+`define SEW32_SUPPORTED
+`define SEW64_SUPPORTED
+
+// Supported fractional LMULs for vector
+// all supported now should be generated based on config (SEWMIN and ELEN)
+`define LMULf8_SUPPORTED
+`define LMULf4_SUPPORTED
+`define LMULf2_SUPPORTED
+
+// Maximum supported index EEW for indexed load/store
+`define MAXINDEXEEW64

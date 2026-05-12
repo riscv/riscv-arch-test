@@ -254,8 +254,3 @@
                     iff (ins.current.insn[6:0] == 7'b1010011 & ins.current.insn[31:27] == 5'b00000 & ins.current.insn[14:12] == 3'b111) {
         // check all bins
     }
-
-    // *** TODO add all misa_ext_disable tests to all versions of Ssstrict
-
-    // `ifdef MUTABLE_MISA_A
-    // `end

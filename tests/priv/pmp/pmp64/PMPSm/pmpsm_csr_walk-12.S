@@ -143,9 +143,7 @@ test_82_str: .string "\"test: 82; cp: cp_csr_walk_test_82\""
 .align 12
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION_0:
-    .rept 1024
-    nop
-    .endr
+    jr ra
 
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

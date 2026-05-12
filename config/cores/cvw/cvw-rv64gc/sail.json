@@ -304,7 +304,7 @@
     // Note: it is also legal for these instructions to spuriously
     // retire successfully at any point, but there is currently no
     // configuration option for this behaviour.
-    "max_time_to_wait": 10
+    "max_time_to_wait": 200
   },
   "extensions": {
     "M": {
@@ -409,10 +409,10 @@
       "supported": false
     },
     "Zmmul": {
-      "supported": false
+      "supported": true
     },
     "Zaamo": {
-      "supported": false
+      "supported": true
     },
     "Zabha": {
       "supported": false
@@ -421,7 +421,7 @@
       "supported": false
     },
     "Zalrsc": {
-      "supported": false
+      "supported": true
     },
     "Zawrs": {
       "supported": false,
@@ -442,7 +442,7 @@
       "supported": true
     },
     "Zfhmin": {
-      "supported": false
+      "supported": true
     },
     "Zfinx": {
       "supported": false
@@ -466,13 +466,13 @@
       "supported": false
     },
     "Zba": {
-      "supported": false
+      "supported": true
     },
     "Zbb": {
-      "supported": false
+      "supported": true
     },
     "Zbs": {
-      "supported": false
+      "supported": true
     },
     "Zbc": {
       "supported": true

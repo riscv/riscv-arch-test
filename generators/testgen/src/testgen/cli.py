@@ -19,7 +19,16 @@ from pathlib import Path
 from typing import Annotated
 
 import typer
-from rich.progress import track
+from rich import print as rprint
+from rich.progress import (
+    BarColumn,
+    MofNCompleteColumn,
+    Progress,
+    SpinnerColumn,
+    TaskProgressColumn,
+    TextColumn,
+    TimeElapsedColumn,
+)
 
 from testgen.constants import E_EXTENSION_TESTS
 from testgen.generate import generate_priv_test, generate_unpriv_extension_tests
@@ -123,9 +132,27 @@ def generate_all_tests(
     with ProcessPoolExecutor(max_workers=jobs) as executor:
         futures = [executor.submit(_dispatch_test_gen, task) for task in tasks]
 
-        # Process completed tasks with progress tracking
-        for future in track(as_completed(futures), description="[cyan]Generating tests...", total=len(futures)):
-            future.result()  # Re-raise any exceptions
+        with _progress("Generating tests...") as progress:
+            task_id = progress.add_task("generate", total=len(futures))
+            for future in as_completed(futures):
+                future.result()  # Re-raise any exceptions
+                progress.advance(task_id)
+
+    rprint(f"[bold green]✓ Generated {len(tasks)} test suite(s)[/]")
+
+
+def _progress(description: str) -> Progress:
+    """Construct the standard project progress display."""
+    return Progress(
+        SpinnerColumn(),
+        TextColumn(f"[cyan]{description}"),
+        BarColumn(),
+        MofNCompleteColumn(),
+        TaskProgressColumn(),
+        TextColumn("elapsed:"),
+        TimeElapsedColumn(),
+        transient=True,
+    )
 
 
 def _dispatch_test_gen(task: UnprivTask | PrivTask) -> None:

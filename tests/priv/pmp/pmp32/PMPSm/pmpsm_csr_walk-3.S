@@ -128,8 +128,10 @@ test_5_str: .string "\"test: 5; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_19\"
 test_6_str: .string "\"test: 6; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_20\""
 test_7_str: .string "\"test: 7; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_21\""
 
-.align 13
-.align (RVMODEL_PMP_GRAIN+2)
+.align 12
+TEST_FOR_EXECUTION_0:
+    jr ra
+
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

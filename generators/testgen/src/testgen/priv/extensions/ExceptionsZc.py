@@ -434,7 +434,7 @@ def _generate_illegal_instruction_tests(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "ExceptionsZc",
-    required_extensions=["Zicsr", "Sm", "Zca"],
+    required_extensions=["Sm", "Zca"],
     march_extensions=["Zicsr", "Zca", "Zcb", "Zcd", "C", "F", "D"],
 )
 def make_exceptionszc(test_data: TestData) -> list[str]:

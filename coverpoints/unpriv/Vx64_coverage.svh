@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_VX64
-`define COVER_VFCUSTOM64
+`define COVER_VXCUSTOM64
 `ifdef ELEN64
     `define SEW_64_EQ_ELEN
 `endif
@@ -23565,9 +23565,20 @@ covergroup Vx64_vrgather_vx_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`ifdef MAXINDEXEEW_GE16
 covergroup Vx64_vrgatherei16_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cmp_vs1_vs2
+    //////////////////////////////////////////////////////////////////////////////////
+
+    `ifdef COVER_VX16
+    cmp_vs1_vs2 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.current.vs1 == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers
+    }
+    `endif
+
+    //// eend cmp_vs1_vs2////////////////////////////////////////////////
+
     cp_asm_count : coverpoint ins.ins_str == "vrgatherei16.vv"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -23798,7 +23809,6 @@ covergroup Vx64_vrgatherei16_vv_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`endif
 covergroup Vx64_vrsub_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -32976,11 +32986,9 @@ function void vx64_sample(int hart, int issue, ins_t ins);
             "vrgather.vx"     : begin
                 Vx64_vrgather_vx_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vrgatherei16.vv"     : begin
                 Vx64_vrgatherei16_vv_cg.sample(ins);
             end
-`endif
             "vrsub.vi"     : begin
                 Vx64_vrsub_vi_cg.sample(ins);
             end

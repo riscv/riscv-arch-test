@@ -296,3 +296,7 @@ There are several Zvk* vector cryptography extensions.
 ==== Zvkt Constant-Time Vector Instructions
 
 Not tested yet.
+
+==== MisalignedV
+
+TBD, Kaden moving over from SsstrictV

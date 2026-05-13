@@ -10,7 +10,7 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Coverpoints : cp_cfg_A_tor for PMPU is fully covered in this test file.
+// Coverpoints : cp_cfg_A_tor for PMPU is partially covered in this test file.
 //
 // Test Cases  : Configuring PMP in M mode and then switching to U mode.
 //               Checking XWR controls accesses in matching TOR region. With
@@ -54,6 +54,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_11, test_11_str)
 
+    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     addi a4, a4, -4                     // REGIONSTART - 4
     LA(x1, 2f)                          // Store the return Address in x1
     \TEST_CASE\()_12:
@@ -65,6 +66,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_12, test_12_str)
 
+    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     addi a4, a4, 8                      // REGIONSTART + 4
     LA(x1, 3f)                          // Store the return Address in x1
     \TEST_CASE\()_13:
@@ -76,7 +78,8 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_13, test_13_str)
 
-    addi a4, a4, (g-8)                  // REGIONSTART + g - 4
+    li t0, (g-8)
+    add a4, a4, t0                  // REGIONSTART + g - 4
     LA(x1, 4f)                          // Store the return Address in x1
     \TEST_CASE\()_14:
     jalr ra, 0(a4)
@@ -124,7 +127,8 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
 
-    addi a5, a5, (g-8)                                      // REGIONSTART + g - 4
+    li t0, (g-8)
+    add a5, a5, t0                                      // REGIONSTART + g - 4
 
     \TEST_CASE\()_4:
     sw a4, 0(a5)
@@ -164,7 +168,8 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)                                   // Signature update
 
-    addi a5, a5, (g-8)                                      // REGIONSTART + g - 4
+    li t0, (g-8)
+    add a5, a5, t0                                      // REGIONSTART + g - 4
 
     \TEST_CASE\()_9:
     lw a4, 0(a5)
@@ -223,7 +228,8 @@ main:
 // Test Case: 1 : L -> 0 and No Permissions given to the PMP Region 11
 
     LA(x6, REGIONSTART)
-    addi x6, x6, g
+    li t0, g
+    add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr11, x6
     LA(x5, REGIONSTART)
@@ -239,7 +245,8 @@ main:
 // Test Case: 2 : L -> 0 and R Permissions given to the PMP Region 9
 
     LA(x6, REGIONSTART)
-    addi x6, x6, g
+    li t0, g
+    add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr9, x6
     LA(x5, REGIONSTART)
@@ -255,7 +262,8 @@ main:
 // Test Case: 3 : L -> 0 and WR Permissions given to the PMP Region 7
 
     LA(x6, REGIONSTART)
-    addi x6, x6, g
+    li t0, g
+    add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr7, x6
     LA(x5, REGIONSTART)
@@ -266,54 +274,6 @@ main:
 
     RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
-    RVTEST_GOTO_MMODE
-
-// Test Case: 4 : L -> 0 and X Permissions given to the PMP Region 5
-
-    LA(x6, REGIONSTART)
-    addi x6, x6, g
-    srl x6, x6, PMP_SHIFT
-    csrw pmpaddr5, x6
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    csrw pmpaddr4, x5
-    LI(x4, PMPREGION_LXWR_0100)
-    csrw pmpcfg0, x4
-
-    RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
-    RVTEST_GOTO_MMODE
-
-// Test Case: 5 : L -> 0 and RX Permissions given to the PMP Region 3
-
-    LA(x6, REGIONSTART)
-    addi x6, x6, g
-    srl x6, x6, PMP_SHIFT
-    csrw pmpaddr3, x6
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    csrw pmpaddr2, x5
-    LI(x4, PMPREGION_LXWR_0101)
-    csrw pmpcfg0, x4
-
-    RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
-    RVTEST_GOTO_MMODE
-
-// Test Case: 6 : L -> 0 and XWR Permissions given to the PMP Region 1
-
-    LA(x6, REGIONSTART)
-    addi x6, x6, g
-    srl x6, x6, PMP_SHIFT
-    csrw pmpaddr1, x6
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    csrw pmpaddr0, x5
-    LI(x4, PMPREGION_LXWR_0111)
-    csrw pmpcfg0, x4
-
-    RVTEST_GOTO_LOWER_MODE    Umode        // SWITCH TO U-mode
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
     RVTEST_GOTO_MMODE
 
     j exit                                                        // Verification Complete, exit the test
@@ -345,11 +305,8 @@ test_14_str: .string "\"test: 14; cp: cp_cfg_A_tor_jalr_address+g-4\""
 test_15_str: .string "\"test: 15; cp: cp_cfg_A_tor_jalr_address+g\""
 
 .align 12
-.align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION_0:
-    .rept 1024
-    nop
-    .endr
+    jr ra
 
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

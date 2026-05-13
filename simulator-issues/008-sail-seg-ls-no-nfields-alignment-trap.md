@@ -1,4 +1,4 @@
-# Issue 008: Sail seg load/store does not enforce vd/vs3 alignment to EMUL*NFIELDS
+# Issue 008: Sail seg load/store does not enforce vd/vs3 alignment to EMUL\*NFIELDS
 
 ## Summary
 

@@ -72,6 +72,11 @@ def make_exceptionsv_address_fault(instruction: str) -> None:
         testline += ", "
     testline = testline[:-2]
 
+    # clang's RV32 frontend rejects indexed-segment ei{32,64} mnemonics
+    # ("requires RV64I"); emit raw `.insn` encoding to force assembly.
+    if instruction in common.indexed_ls_ins:
+        testline = common.encodeIndexedLSAsInsn(instruction, instruction_data, masked=False)
+
     vd = vec_data["vd"]["reg"]
     rd = scalar_data["rd"]["reg"]
 

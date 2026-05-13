@@ -451,7 +451,9 @@
       #else    // RV32
         li t0, MSTATUS_MPP
         csrw mstatus, t0
+#ifdef H_SUPPORTED
         csrw mstatush, zero // Clear all these fields
+#endif
       #endif
 
       // Disable all privileged environment configuration, and enable unprivileged configuration

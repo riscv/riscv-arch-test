@@ -120,9 +120,6 @@ main:
   LI(t0, MENVCFG_CBZE)
   CSRS(menvcfg, t0)                                                      // Allow execution of cbo.zero in S-Mode
 
-// This test case for root page table is skipped if G >= 10, because with PMP granularity ≥ 4KB,
-// the entire root page table will lose its read/write permissions, preventing entry into S-Mode.
-.if (RVMODEL_PMP_GRAIN < 10)
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                 Configure level 4 PTE as NAPOT region with X permission
@@ -139,6 +136,9 @@ main:
   write_pmpcfg0:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, write_pmpcfg0, write_pmpcfg0_str)
 
+  // This test case for root page table is skipped if G >= 10, because with PMP granularity ≥ 4KB,
+  // the entire root page table will lose its read/write permissions, preventing entry into S-Mode.
+  .if (RVMODEL_PMP_GRAIN < 10)
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                                    TESTS AT LEVEL 4
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -152,7 +152,7 @@ main:
   TEST_CASES_RUNNER Smode, va_data, LEVEL4
 
 
-.endif
+  .endif
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                 Configure level 3 PTE as NAPOT region with X permission

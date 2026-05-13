@@ -132,9 +132,6 @@ main:
   SATP_SETUP_RV64(sv48)                                                  // Set SATP for virtualization
   sfence.vma                                                             // Flush TLB
 
-  // This test case for root page table is skipped if G >= 10, because with PMP granularity ≥ 4KB,
-  // the entire root page table will lose its read/write permissions, preventing entry into U-Mode.
-  .if (RVMODEL_PMP_GRAIN < 10)
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                 Configure level 3 PTE as NAPOT region with X permission
@@ -151,6 +148,9 @@ main:
   write_pmpcfg0:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, write_pmpcfg0, write_pmpcfg0_str)
 
+  // This test case for root page table is skipped if G >= 10, because with PMP granularity ≥ 4KB,
+  // the entire root page table will lose its read/write permissions, preventing entry into U-Mode.
+  .if (RVMODEL_PMP_GRAIN < 10)
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                                    TESTS AT LEVEL 3
 //---------------------------------------------------------------------------------------------------------------------------------

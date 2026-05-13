@@ -123,9 +123,6 @@ main:
   LI(t0, MENVCFG_CBCFE | MENVCFG_CBIE)
   CSRS(menvcfg, t0)                                                      // Allow execution of Zicbom instructions in S-Mode
 
-  // This test case for root page table is skipped if G >= 10, because with PMP granularity ≥ 4KB,
-  // the entire root page table will lose its read/write permissions, preventing entry into S-Mode.
-  .if (RVMODEL_PMP_GRAIN < 10)
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                 Configure level 3 PTE as NAPOT region with X permission
@@ -142,6 +139,9 @@ main:
   write_pmpcfg0:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, write_pmpcfg0, write_pmpcfg0_str)
 
+  // This test case for root page table is skipped if G >= 10, because with PMP granularity ≥ 4KB,
+  // the entire root page table will lose its read/write permissions, preventing entry into S-Mode.
+  .if (RVMODEL_PMP_GRAIN < 10)
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                                    TESTS AT LEVEL 3
 //---------------------------------------------------------------------------------------------------------------------------------

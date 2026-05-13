@@ -3,6 +3,6 @@
 # CI configuration for Whisper simulator
 
 ci_enabled: true
-exclude_extensions: "Sm,S,InterruptsSm,InterruptsU,ExceptionsZalrsc,ExceptionsZaamo,Zkr,PMPSm,PMPZca,Svadu,SvaduPMP,Zalrsc,ExceptionsSvZaamo,ExceptionsSvZalrsc,PMPU,PMPS"
+exclude_extensions: "Sm,InterruptsSm,InterruptsS,InterruptsU,InterruptsSstc,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,Svadu,SvaduPMP,Zalrsc,ExceptionsSvZaamo,ExceptionsSvZalrsc,PMPU,PMPS"
 install_script: ".github/scripts/install-whisper.sh"
 apt_packages: "libboost-program-options-dev"

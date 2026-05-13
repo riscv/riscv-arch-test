@@ -168,31 +168,34 @@
 
     RVTEST_INIT_REGS // Put deterministic values in each register
 
-    // Identity maps rvtest_data_beign and forms an Sv32 megapage, Sv39 gigapage,
-    // Sv48 terapage and Sv57 petapage
-    // This is so that the S-Mode trap handler can be used without requiring to map it first
-    LA(T1, rvtest_Sroot_pg_tbl)
-    LA(T2, rvtest_data_begin)
-    #if __riscv_xlen == 32
-      srli T3, T2, 22
-      andi T3, T3, 0x3FF
-      slli T4, T3, 20
-      ori  T4, T4, 0xCF
-      slli T3, T3, 2
-      add  T3, T1, T3
-      sw   T4, 0(T3)
-    #else
-      .set VPN_SHIFT, 21
-      .rept (3)
-        .set VPN_SHIFT, VPN_SHIFT+9
-        srli T3, T2, VPN_SHIFT
-        andi T3, T3, 0x1FF
-        slli T4, T3, VPN_SHIFT-2
-        ori  T4, T4, 0xCF
-        slli T3, T3, 3
-        add  T3, T1, T3
-        sd   T4, 0(T3)
-      .endr
+    #ifdef S_SUPPORTED
+      rvtest_identity_map:
+        // Identity maps rvtest_data_beign and forms an Sv32 megapage, Sv39 gigapage,
+        // Sv48 terapage and Sv57 petapage
+        // This is so that the S-Mode trap handler can be used without requiring to map it first
+        LA(T1, rvtest_Sroot_pg_tbl)
+        LA(T2, rvtest_data_begin)
+        #if __riscv_xlen == 32
+          srli T3, T2, 22
+          andi T3, T3, 0x3FF
+          slli T4, T3, 20
+          ori  T4, T4, 0xCF
+          slli T3, T3, 2
+          add  T3, T1, T3
+          sw   T4, 0(T3)
+        #else
+          .set VPN_SHIFT, 21
+          .rept (3)
+            .set VPN_SHIFT, VPN_SHIFT+9
+            srli T3, T2, VPN_SHIFT
+            andi T3, T3, 0x1FF
+            slli T4, T3, VPN_SHIFT-2
+            ori  T4, T4, 0xCF
+            slli T3, T3, 3
+            add  T3, T1, T3
+            sd   T4, 0(T3)
+          .endr
+        #endif
     #endif
 
     LA (T1, rvtest_code_begin)

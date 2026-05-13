@@ -2861,14 +2861,15 @@ def getInstructionRegisterOverlapConstraints (instruction, sew, lmul, masked=Fal
   ls_indexed_vs2_eew = getInstructionEEW(instruction)
 
   if ls_indexed_vs2_eew is not None and not isinstance(sew, str):
-    if ls_indexed_vs2_eew > sew :
-      if lmul * ls_indexed_vs2_eew / sew <= 1: # if vs2 emul is <= 1 then all overlap is bottom thus we do not need the overlap constraint
-        pass
-      else:
-        no_overlap = addOverlap(no_overlap, [['vd','vs2_top']])
-    if ls_indexed_vs2_eew < sew :
-      if lmul * ls_indexed_vs2_eew / sew >= 1:
-        no_overlap = addOverlap(no_overlap, [['vd_bottom','vs2']])
+    # When the data register group (vs3 for stores, vd for loads) is read at
+    # SEW while vs2 holds indices at a different EEW, the spec forbids any
+    # register-group overlap between them (v-spec norm:vreg_source_eew_rsv).
+    # This is stricter than the prior vd_top / vd_bottom partial-overlap rule
+    # and is also required for indexed-segment LS (where the data group spans
+    # NF*EMUL_data registers and can overflow into the vs2 index group).
+    if ls_indexed_vs2_eew != sew:
+      if instruction in indexed_stores:
+        no_overlap = addOverlap(no_overlap, [['vs3','vs2']])
       else:
         no_overlap = addOverlap(no_overlap, [['vd','vs2']])
 

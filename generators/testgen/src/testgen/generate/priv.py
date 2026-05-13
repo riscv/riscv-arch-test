@@ -119,6 +119,17 @@ _FAST_HANDLER_PREFIX: list[str] = [
     "",
 ]
 
+_SPLIT_FILE_GPR_INIT: list[str] = [
+    "",
+    "# Re-initialize GPRs at the top of every split Ssstrict file.",
+    "# This ensures scratch base and safe registers are valid when a split",
+    "# file begins in the middle of a large sweep.",
+    "\t# x8 = permanent scratch base, 8-byte aligned for atomics",
+    "\tnop",
+    "\tnop",
+    "\tla x8, scratch",
+] + [f"\tmv x{r}, x8" for r in range(7, 32) if r != 8] + ["", ""]
+
 
 def _split_at_blank(lines: list[str], max_lines: int) -> list[list[str]]:
     """Split lines into groups of ≤ max_lines, preferring blank-line boundaries."""
@@ -227,10 +238,10 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
         groups = _split_at_blank(body_lines, _LINES_PER_FILE)
         for file_idx, group in enumerate(groups):
             chunk = TestChunk()
-            # Prepend the fast handler to EVERY file so mtvec is always
-            # redirected to it at the start of each file's code section,
-            # regardless of which part of the body the file contains.
-            chunk.code = "\n".join(_FAST_HANDLER_PREFIX + group)
+            # Prepend the fast handler + per-file register init to EVERY file
+            # so mtvec is always redirected to it and scratch registers are
+            # reloaded at the start of each split body.
+            chunk.code = "\n".join(_FAST_HANDLER_PREFIX + _SPLIT_FILE_GPR_INIT + group)
             # Count trap-inducing instructions in this group to size the
             # signature region correctly.  There are two kinds:
             #   1. _cg_ testcase labels — each precedes a CSR instruction that

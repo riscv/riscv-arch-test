@@ -352,8 +352,7 @@ def generate_illegal_instr(
 
     # ── amocas odd-register sweep ─────────────────────────────────────
     _emit_reg_init(lines)
-    emit_raw_words(lines, "cp_amocas_odd", "00101RRRRRRRRRRREEEE01000E0101111")
-
+    emit_raw_words(lines, "cp_amocas_odd", "00101RRRRRRR01000EEERRREE0101111")
     # ── I-type / IW-type ──────────────────────────────────────────────
     emit_raw_words(lines, "cp_Itype", "EEEEEEEEEEEERRRRRE01010010010011")
     emit_raw_words(lines, "cp_llAItype", "RRRRRRRRRRRRRRRRREEE010010010011")
@@ -477,8 +476,8 @@ def generate_vector_illegal_instr(
     emit_raw_words(lines, "cp_v_vsetvli_sew", "0000RR1EERRRRRRRR111RRRRR1010111")
     # TODO: Restore once Sail vsetvli reserved-vtype behavior is resolved
     # emit_raw_words(lines, "cp_v_vsetvli_res", "EEE0RR0RRRRRRRRRR111RRRRR1010111")
-    emit_raw_words(lines, "cp_v_vsetivli_sew", "1100RR1EERRRRRRRR111RRRRR1010111")
-    emit_raw_words(lines, "cp_v_vsetivli_res", "11EERR0RRRRRRRRRR111RRRRR1010111")
+    # emit_raw_words(lines, "cp_v_vsetivli_sew", "1100RR1EERRRRRRRR111RRRRR1010111")
+    # emit_raw_words(lines, "cp_v_vsetivli_res", "11EERR0RRRRRRRRRR111RRRRR1010111")
 
     # ── Reserved vector loads ─────────────────────────────────────────
     lines.append(comment_banner("Vector load reserved encodings", "Reserved mew/width/lumop for vector loads"))

@@ -166,11 +166,9 @@
       #endif
     #endif
 
-    RVTEST_INIT_REGS // Put deterministic values in each register
-
     #ifdef S_SUPPORTED
       rvtest_identity_map:
-        // Identity maps rvtest_data_beign and forms an Sv32 megapage, Sv39 gigapage,
+        // Identity maps rvtest_data_begin and forms an Sv32 megapage, Sv39 gigapage,
         // Sv48 terapage and Sv57 petapage
         // This is so that the S-Mode trap handler can be used without requiring to map it first
         LA(T1, rvtest_Sroot_pg_tbl)
@@ -197,6 +195,8 @@
           .endr
         #endif
     #endif
+
+    RVTEST_INIT_REGS // Put deterministic values in each register
 
     LA (T1, rvtest_code_begin)
     jr T1                         // Jump back to the start of the test

@@ -73,6 +73,7 @@ def _emit_one(instruction: str, lmul: int, role: str, off_reg: int, sew: int) ->
     overrides: dict[str, int] = {}
     if role == "vd":
         overrides["override_vd"] = off_reg
+        overrides["override_vs3"] = off_reg
     elif role == "vs1":
         # vs1 field bits hold rs1 (vx-form), imm5 (vi-form), or vs1 (vv-form).
         # vec_data may contain "vs1" even when args don't use it (e.g. vaadd.vx

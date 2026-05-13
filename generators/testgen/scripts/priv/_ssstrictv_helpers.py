@@ -25,7 +25,13 @@ from typing import Iterable
 import vector_testgen_common as common
 
 
-_LMUL_FLAG = {1: "m1", 2: "m2", 4: "m4", 8: "m8"}
+_LMUL_FLAG = {1: "m1", 2: "m2", 4: "m4", 8: "m8",
+              "mf2": "mf2", "mf4": "mf4", "mf8": "mf8"}
+
+
+def lmul_flag(lmul) -> str:
+    """Return the LMUL field string for ``vsetivli`` (e.g. ``"m2"``, ``"mf4"``)."""
+    return _LMUL_FLAG[lmul]
 
 
 # Coverpoints that are unreachable on the Sail simulator due to documented
@@ -42,11 +48,6 @@ SKIP_COVERPOINTS: frozenset[str] = frozenset({
     "cp_ssstrictv_ls_emul_16",
     "cp_ssstrictv_ls_emul_f16",
 })
-
-
-def lmul_flag(lmul: int) -> str:
-    """Return the LMUL field string for ``vsetivli`` (e.g. ``"m2"``)."""
-    return _LMUL_FLAG[lmul]
 
 
 def max_legal_lmul(instruction: str) -> int:
@@ -166,11 +167,12 @@ def build_testline(instruction: str, instruction_data: list, *,
 def sig_params(instruction: str, instruction_data: list, lmul: int = 1) -> tuple[int, bool]:
     """Determine sig_lmul and sig_whole_register_store for writeVecTest."""
     vec_data = instruction_data[0]
+    sig_lmul = lmul if isinstance(lmul, int) else 1
     if vec_data["vd"]["reg_type"] in ("mask", "scalar"):
         return 1, True
     if instruction in common.whole_register_move:
         return common.getLengthLmul(instruction), True
-    return lmul, False
+    return sig_lmul, False
 
 
 def dest_field_role(instruction: str) -> str:
@@ -258,11 +260,12 @@ def issue_simple_test(instruction: str, cp: str, *,
         override_rd=override_rd, override_imm=override_imm,
     )
     sig_lmul, sig_wr = sig_params(instruction, instruction_data, lmul=lmul)
+    write_lmul = lmul if isinstance(lmul, int) else 1
 
     common.add_testcase_string(cp, instruction)
     common.writeVecTest(
         instruction, cp, vd, sew, testline,
-        test=instruction, rd=rd, vl=vl, lmul=lmul,
+        test=instruction, rd=rd, vl=vl, lmul=write_lmul,
         sig_lmul=sig_lmul, sig_whole_register_store=sig_wr,
         priv=True, skip_sigupd=skip_sigupd,
     )

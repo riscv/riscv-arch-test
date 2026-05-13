@@ -70,12 +70,32 @@ def _emit_partial_overlap(instruction: str, cp: str, lmul: int, role: str) -> No
 
 @register("cp_ssstrictv_vrgather_vd_vs1_eq")
 def vrgather_vs1_eq(instruction: str) -> None:
-    _emit_vd_eq_role(instruction, "cp_ssstrictv_vrgather_vd_vs1_eq", lmul=1, role="vs1")
+    cp = "cp_ssstrictv_vrgather_vd_vs1_eq"
+    cap = max_legal_lmul(instruction)
+    for lmul in (1, 2, 4, 8):
+        if lmul > cap:
+            break
+        _emit_vd_eq_role(instruction, cp, lmul=lmul, role="vs1")
+
+
+@register("cp_exceptionsv_vd_vs2_overlap")
+def exceptionsv_vd_vs2_overlap(instruction: str) -> None:
+    cp = "cp_exceptionsv_vd_vs2_overlap"
+    cap = max_legal_lmul(instruction)
+    for lmul in (1, 2, 4, 8):
+        if lmul > cap:
+            break
+        _emit_vd_eq_role(instruction, cp, lmul=lmul, role="vs2")
 
 
 @register("cp_ssstrictv_vrgather_vd_vs2_eq")
 def vrgather_vs2_eq(instruction: str) -> None:
-    _emit_vd_eq_role(instruction, "cp_ssstrictv_vrgather_vd_vs2_eq", lmul=1, role="vs2")
+    cp = "cp_ssstrictv_vrgather_vd_vs2_eq"
+    cap = max_legal_lmul(instruction)
+    for lmul in (1, 2, 4, 8):
+        if lmul > cap:
+            break
+        _emit_vd_eq_role(instruction, cp, lmul=lmul, role="vs2")
 
 
 @register("cp_ssstrictv_vrgather_vd_vs1_overlap")
@@ -94,7 +114,7 @@ def vrgather_vs2_overlap(instruction: str) -> None:
     cp = "cp_ssstrictv_vrgather_vd_vs2_overlap"
     cap = max_legal_lmul(instruction)
     _emit_vd_eq_role(instruction, cp, lmul=1, role="vs2")
-    for lmul in (2, 4):
+    for lmul in (2, 4, 8):
         if lmul > cap:
             break
         _emit_partial_overlap(instruction, cp, lmul=lmul, role="vs2")
@@ -145,7 +165,7 @@ def vcompress_vs2_overlap(instruction: str) -> None:
 def vcompress_vd_v0_overlap(instruction: str) -> None:
     cp = "cp_ssstrictv_vcompress_vd_v0_overlap"
     cap = max_legal_lmul(instruction)
-    for lmul in (1, 2, 4):
+    for lmul in (1, 2, 4, 8):
         if lmul > cap:
             break
         issue_simple_test(instruction, cp, lmul=lmul, override_vd=0, maskval=None)
@@ -234,21 +254,48 @@ def vwidenw_vd_vs1(instruction: str) -> None:
 
 @register("cp_ssstrictv_widening_source_overlap")
 def widening_source_overlap(instruction: str) -> None:
+    """Cross requires vs2_eq_vs1 (insn[24:20] == insn[19:15]) at multiple LMULs.
+    Template covers LMUL ∈ {mf2(7), m1(0), m2(1), m4(2)}.
+    """
     cp = "cp_ssstrictv_widening_source_overlap"
     args = common.getInstructionArguments(instruction)
-    if "vs1" in args:
-        issue_simple_test(instruction, cp, lmul=1, override_vd=4, override_vs1=4,
-                          override_vs2=8, maskval=None)
-    if "vs2" in args:
-        issue_simple_test(instruction, cp, lmul=1, override_vd=4, override_vs2=4,
-                          override_vs1=8 if "vs1" in args else None, maskval=None)
+    if "vs1" not in args or "vs2" not in args:
+        return
+    cap = max_legal_lmul(instruction)
+    # vd has 2x EMUL — choose vd far from vs1/vs2 group to avoid vd-overlap traps masking the cross.
+    for lmul in (1, 2, 4):
+        if lmul > cap:
+            break
+        # vs1 == vs2 = 8; vd = 16 (aligned to 2*lmul up to 8).
+        vd = 16 if lmul <= 4 else 16
+        issue_simple_test(instruction, cp, lmul=lmul,
+                          override_vd=vd, override_vs1=8, override_vs2=8,
+                          maskval=None)
+    # mf2 case (LMUL code 7); helper accepts string lmul.
+    issue_simple_test(instruction, cp, lmul="mf2", sew=8,
+                      override_vd=16, override_vs1=8, override_vs2=8,
+                      maskval=None)
 
 
 @register("cp_ssstrictv_all_widening_source_overlap")
 def all_widening_source_overlap(instruction: str) -> None:
     cp = "cp_ssstrictv_all_widening_source_overlap"
     args = common.getInstructionArguments(instruction)
+    if "vs1" not in args or "vs2" not in args:
+        return
     cap = max_legal_lmul(instruction)
+    # Cross requires std_trap_vec ∧ vtype_all_lmulge1 ∧ vs2_eq_vs1.
+    # Use vd=vs1=vs2=8 so the source-source equality satisfies vs2_eq_vs1
+    # AND vd group includes vs1/vs2 (overlap → trap). vd=8 is aligned to
+    # 2,4,8,16 so works for widening at any LMUL.
+    for lmul in (1, 2, 4, 8):
+        if lmul > cap and lmul != 8:
+            break
+        issue_simple_test(instruction, cp, lmul=lmul,
+                          override_vd=8, override_vs1=8, override_vs2=8,
+                          maskval=None)
+    # Also exercise legacy vd_eq_role pattern for incidental coverage of
+    # downstream cgs that depend on vd-overlap-vs1/vs2 bits.
     for lmul in (1, 2, 4):
         if lmul > cap:
             break

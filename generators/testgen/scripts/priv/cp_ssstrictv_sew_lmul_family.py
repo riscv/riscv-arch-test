@@ -25,8 +25,8 @@ _MAX_SEW = 64
 
 @register("cp_ssstrictv_widening_vd_emul_16")
 def widening_vd_emul_16(instruction: str) -> None:
-    if 8 > max_legal_lmul(instruction):
-        return
+    # LMUL=8 widened to dst EMUL=16 is reserved by definition; emit unconditionally
+    # (max_legal_lmul caps at 4 for widening, but that's the whole point of this cross).
     issue_simple_test(instruction, "cp_ssstrictv_widening_vd_emul_16",
                       sew=8, lmul=8, maskval=None,
                       override_vd=0, override_vs1=8, override_vs2=16)

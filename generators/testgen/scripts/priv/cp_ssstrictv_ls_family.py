@@ -70,6 +70,7 @@ def _ls_test(instruction: str, cp: str, sew: int, lmul_flag: str, *,
     overrides: dict = {}
     if override_vd is not None:
         overrides["override_vd"] = override_vd
+        overrides["override_vs3"] = override_vd
 
     testline, vd, rd = build_testline(instruction, instruction_data,
                                        addr_label=addr_label, **overrides)
@@ -239,3 +240,43 @@ def make_seg_vd_overflow_emulgt1(instruction: str) -> None:
             continue
         _ls_test(instruction, "cp_ssstrictv_ls_seg_vd_overflow_emulgt1",
                   sew=eew, lmul_flag=lmul_flag, override_vd=vd)
+
+
+# ---------------- ls_nf_eew_emul{2,4,8} ----------------
+# NF*EMUL > 8 is reserved (per v-st-ext spec). Pick (lmul, sew) such that
+# EMUL == EEW/SEW * LMUL == target, with NF satisfying NF*EMUL > 8.
+
+_NF_EEW_LMUL = {
+    2: ("m2", 5),  # EMUL=2, NF>=5  → NF*EMUL >= 10
+    4: ("m4", 3),  # EMUL=4, NF>=3  → NF*EMUL >= 12
+    8: ("m8", 2),  # EMUL=8, NF>=2  → NF*EMUL >= 16
+}
+
+
+def _make_nf_eew(instruction: str, target_emul: int) -> None:
+    if instruction not in common.vector_ls_ins:
+        return
+    if instruction in common.whole_register_ls or instruction in common.whole_register_move:
+        return
+    nf = common.getInstructionSegments(instruction)
+    lmul_flag, min_nf = _NF_EEW_LMUL[target_emul]
+    if nf < min_nf:
+        return
+    eew = _eew(instruction)
+    cp = f"cp_ssstrict_ls_nf_eew_emul{target_emul}"
+    _ls_test(instruction, cp, sew=eew, lmul_flag=lmul_flag)
+
+
+@register("cp_ssstrict_ls_nf_eew_emul2")
+def make_nf_eew_emul2(instruction: str) -> None:
+    _make_nf_eew(instruction, 2)
+
+
+@register("cp_ssstrict_ls_nf_eew_emul4")
+def make_nf_eew_emul4(instruction: str) -> None:
+    _make_nf_eew(instruction, 4)
+
+
+@register("cp_ssstrict_ls_nf_eew_emul8")
+def make_nf_eew_emul8(instruction: str) -> None:
+    _make_nf_eew(instruction, 8)

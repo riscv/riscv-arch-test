@@ -12,13 +12,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_SSSTRICTV
-`define COVER_SSSTRICTVCUSTOMEFFEW
-`ifdef ELENEFFEW
-    `define SEW_EFFEW_EQ_ELEN
-`endif
-`ifdef ELENTWOEFFEW
-    `define SEW_EFFEW_EQ_ELEN_DIV_2
-`endif
 covergroup SsstrictV_vaadd_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"

@@ -1961,19 +1961,14 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
       eew = getInstructionEEW(instruction)
       vs2_emul = math.ceil(lmul * eew / sew)
 
-      element_positive = 2 ** (eew-1) - 1
-
       writeLine(f"csrr x{vtypeReg}, vtype",                                     "# save vtype register for after load")
       writeLine(f"csrr x{avlReg}, vl",                                          "# save vl register for after load")
       writeLine(f"vsetvl x{vlmaxReg}, x0, x{vtypeReg}",                         "# set vl to vlmax")
       writeLine(f"add x{vlmaxReg}, x{vlmaxReg}, x{vlmaxReg}",                   "# save vlmax * 2")
       writeLine(f"vsetvli x0, x{avlReg}, e{eew}, m{getLmulFlag(vs2_emul)}, ta, ma", "# setting sew to vs2 eew")
-      if eew < xlen: # make sure the number is positive since it will be 0 extended to XLEN
-        element_positiv_reg = pickScalarScratch(scalar_registers_used)
-        scalar_registers_used.append(element_positiv_reg)
-        writeLine(f"li x{element_positiv_reg}, {element_positive}",             "#  make sure the number is positive since it will be 0 extended to XLEN")
-        writeLine(f"vand.vx v{register}, v{register}, x{element_positiv_reg}",  "#")
-      writeLine(f"vrem.vx v{register}, v{register}, x{vlmaxReg}",               "# ensure all values are within (-2*vlmax, 2*vlmax)")
+      # spec zero-extends index elements to XLEN; use unsigned remainder so
+      # offsets stay non-negative in [0, 2*vlmax) and never alias to huge addrs.
+      writeLine(f"vremu.vx v{register}, v{register}, x{vlmaxReg}",              "# ensure all values are within [0, 2*vlmax)")
       writeLine(f"vand.vi v{register}, v{register}, {sew_aligned}",             "# sew-aligning elements")
       writeLine(f"vsetvl x0, x{avlReg}, x{vtypeReg}",                           "# restore vl and vtype setting")
 

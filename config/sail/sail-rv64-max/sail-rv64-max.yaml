@@ -400,7 +400,7 @@ params:
     ]
   # Vector params
   MUTABLE_MISA_V: false
-  VLEN: 1024
+  VLEN: 128
   ELEN: 64
   FOLLOW_VTYPE_RESET_RECOMMENDATION: true
   HW_MSTATUS_VS_DIRTY_UPDATE: precise

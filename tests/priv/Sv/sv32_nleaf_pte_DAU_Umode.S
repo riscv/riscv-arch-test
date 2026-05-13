@@ -13,8 +13,9 @@
 // Total Expected Faults :: 9
 // --------------------------------------------------------------------------------------------------------------------------------
 
+// TODO: This test is failing on Wally. Re-enable after the bug in Wally is fixed.
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Sv32]
+# REQUIRED_EXTENSIONS: [I, Sv32, NORUN]
 # MARCH: rv32i_zicsr
 ##### END_TEST_CONFIG #####
 

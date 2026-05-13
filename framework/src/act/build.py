@@ -362,8 +362,7 @@ def _print_failure(console: Console, task: BuildTask, error: BuildError, verbose
 
     if error.output:
         console.print("[bold red]  Error output:[/]")
-        annotated = _annotate_htif_failure(_strip_noise(error.output))
-        output_lines = annotated.strip().splitlines()
+        output_lines = _strip_noise(error.output).strip().splitlines()
         if not verbose and len(output_lines) > max_output_lines:
             omitted = len(output_lines) - max_output_lines
             if error.log_file is not None:
@@ -375,11 +374,6 @@ def _print_failure(console: Console, task: BuildTask, error: BuildError, verbose
             output_lines = output_lines[-max_output_lines:]
         for line in output_lines:
             console.print(f"    {line}", soft_wrap=True, highlight=False)
-        if _HTIF_FAILURE_RE.search(error.output):
-            console.print(
-                "  [dim]Hint: unexpected HTIF tohost value — re-run with --debug and check the .sig.trace file.[/]",
-                soft_wrap=True,
-            )
     else:
         console.print(f"  [dim](no output captured; exit status {error.returncode})[/]")
 
@@ -418,24 +412,12 @@ _NOISE_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"^\s*Entry point: 0x[0-9a-fA-F]+\s*$"),
 )
 
-_HTIF_FAILURE_RE = re.compile(r"^(FAILURE: )(\d+)\s*$", re.MULTILINE)
-
 
 def _strip_noise(output: str) -> str:
     """Drop boilerplate lines that obscure real errors."""
     if not output:
         return output
     return "\n".join(line for line in output.splitlines() if not any(p.match(line) for p in _NOISE_PATTERNS))
-
-
-def _annotate_htif_failure(output: str) -> str:
-    """Add hex representation to HTIF FAILURE lines for readability."""
-
-    def _sub(m: re.Match[str]) -> str:
-        val = int(m.group(2))
-        return f"{m.group(1)}{val} (0x{val:08x})"
-
-    return _HTIF_FAILURE_RE.sub(_sub, output)
 
 
 def _format_cmd_lines(cmd: list[str]) -> list[str]:

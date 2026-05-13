@@ -9,6 +9,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from pydantic import BaseModel, Field, FilePath, ValidationError
@@ -63,14 +64,21 @@ class TestMetadata(BaseModel):
         """Get floating-point register length from the march string.
 
         FLEN is determined by the widest FP extension in the march: Q=128, D=64, F=32.
-        Single-letter extensions (including G=IMAFD) appear before the first underscore.
+        Scans both the single-letter cluster (before first underscore) and any
+        underscore-separated multi-letter extensions, so D in "rv32i_f_d_zfhmin"
+        is detected correctly.
         """
-        base = self.march.split("_")[0].lower()
-        if "q" in base:
+        m = self.march.lower()
+        parts = m.split("_")
+        single_letter = parts[0]
+        # Skip the rv{XLEN} prefix when scanning single-letter extensions.
+        sl_exts = re.sub(r"^rv\d+", "", single_letter)
+        rest = parts[1:]
+        if "q" in sl_exts or "q" in rest:
             return "128"
-        if "d" in base or "g" in base:
+        if "d" in sl_exts or "g" in sl_exts or "d" in rest:
             return "64"
-        if "f" in base:
+        if "f" in sl_exts or "f" in rest:
             return "32"
         return "32"
 

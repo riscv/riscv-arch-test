@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_VX32
-`define COVER_VFCUSTOM32
+`define COVER_VXCUSTOM32
 `ifdef ELEN32
     `define SEW_32_EQ_ELEN
 `endif
@@ -27328,9 +27328,20 @@ covergroup Vx32_vrgather_vx_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`ifdef MAXINDEXEEW_GE16
 covergroup Vx32_vrgatherei16_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cmp_vs1_vs2
+    //////////////////////////////////////////////////////////////////////////////////
+
+    `ifdef COVER_VX16
+    cmp_vs1_vs2 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.current.vs1 == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers
+    }
+    `endif
+
+    //// eend cmp_vs1_vs2////////////////////////////////////////////////
+
     cp_asm_count : coverpoint ins.ins_str == "vrgatherei16.vv"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -27564,7 +27575,6 @@ covergroup Vx32_vrgatherei16_vv_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`endif
 covergroup Vx32_vrsub_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -37588,126 +37598,6 @@ covergroup Vx32_vwmacc_vv_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vdOverlapTopVs2_vd_vs2_lmul1/2/4
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Custom coverpoints for Vector widening operations with vv operands
-
-    // ensures vd updates
-    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins one = {0};
-    }
-
-    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins two = {1};
-    }
-
-    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins two = {2};
-    }
-
-    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs1_vd_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs1_vd_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs1_vd_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs1_vd_no_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
-        bins overlapping = {1'b0};
-    }
-
-    vs2_vd_no_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
-        bins overlapping = {1'b0};
-    }
-
-    vs1_vd_no_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
-        bins overlapping = {1'b0};
-    }
-
-    vs2_vd_no_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
-        bins overlapping = {1'b0};
-    }
-
-    vs1_vd_no_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
-        bins overlapping = {1'b0};
-    }
-
-    vs2_vd_no_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
-        bins overlapping = {1'b0};
-    }
-
-    vd_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
-        wildcard bins divisible_by_2 = {5'b????0};
-    }
-
-    vd_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
-        wildcard bins divisible_by_4 = {5'b???00};
-    }
-
-    vd_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
-        wildcard bins divisible_by_8 = {5'b??000};
-    }
-
-    vs2_vs1_no_overlap_lmul1: coverpoint (ins.current.insn[24:20] == ins.current.insn[11:7]) {
-        bins overlapping = {1'b0};
-    }
-
-    vs2_mod4_2: coverpoint ins.current.insn[21:20] {
-        bins mod4_2 = {2'b10};
-    }
-
-    vs2_mod8_4: coverpoint ins.current.insn[22:20] {
-        bins mod8_4 = {3'b100};
-    }
-
-    vs1_mod4_2: coverpoint ins.current.insn[16:15] {
-        bins mod4_2 = {2'b10};
-    }
-
-    vs1_mod8_4: coverpoint ins.current.insn[17:15] {
-        bins mod8_4 = {3'b100};
-    }
-
-    cp_custom_vdOverlapTopVs2_vd_vs2_lmul1 : cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_reg_aligned_lmul_2, vs1_vd_no_overlap_lmul1, vs2_vs1_no_overlap_lmul1;
-    cp_custom_vdOverlapTopVs1_vd_vs1_lmul1 : cross std_vec, vtype_lmul_1, vs1_vd_overlap_lmul1, vd_reg_aligned_lmul_2, vs2_vd_no_overlap_lmul1, vs2_vs1_no_overlap_lmul1;
-
-    cp_custom_vdOverlapTopVs1_vd_vs1_lmul2 : cross std_vec, vtype_lmul_2, vs1_vd_overlap_lmul2, vd_reg_aligned_lmul_4, vs2_vd_no_overlap_lmul2, vs1_mod4_2;
-    cp_custom_vdOverlapTopVs2_vd_vs2_lmul2 : cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_reg_aligned_lmul_4, vs1_vd_no_overlap_lmul2, vs2_mod4_2;
-
-    cp_custom_vdOverlapTopVs1_vd_vs1_lmul4 : cross std_vec, vtype_lmul_4, vs1_vd_overlap_lmul4, vd_reg_aligned_lmul_8, vs2_vd_no_overlap_lmul4, vs1_mod8_4;
-    cp_custom_vdOverlapTopVs2_vd_vs2_lmul4 : cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_reg_aligned_lmul_8, vs1_vd_no_overlap_lmul4, vs2_mod8_4;
-
-    //// end cp_custom_vdOverlapTopVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -37886,77 +37776,6 @@ covergroup Vx32_vwmacc_vx_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vdOverlapTopVs2_vd_vs2_lmul1/2/4
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Custom coverpoints for Vector widening operations with vx operands
-
-    // ensures vd updates
-    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins one = {0};
-    }
-
-    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins two = {1};
-    }
-
-    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins two = {2};
-    }
-
-    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
-        bins overlapping = {1'b1};
-    }
-
-    vd_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
-        wildcard bins divisible_by_2 = {5'b????0};
-    }
-
-    vd_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
-        wildcard bins divisible_by_4 = {5'b???00};
-    }
-
-    vd_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
-        wildcard bins divisible_by_8 = {5'b??000};
-    }
-
-    vs2_reg_unaligned_lmul_2: coverpoint ins.current.insn[24:20] {
-        wildcard bins odd = {5'b????1};
-    }
-
-    vs2_mod4_2: coverpoint ins.current.insn[21:20] {
-        bins mode4_2 = {2'b10};
-    }
-
-    vs2_mod8_4: coverpoint ins.current.insn[22:20] {
-        bins mod8_4 = {3'b100};
-    }
-
-    cp_custom_vdOverlapTopVs2_vd_vs2_lmul1 : cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_reg_aligned_lmul_2, vs2_reg_unaligned_lmul_2;
-    cp_custom_vdOverlapTopVs2_vd_vs2_lmul2 : cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_reg_aligned_lmul_4, vs2_mod4_2;
-    cp_custom_vdOverlapTopVs2_vd_vs2_lmul4 : cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_reg_aligned_lmul_8, vs2_mod8_4;
-
-    //// end cp_custom_vdOverlapTopVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -38153,126 +37972,6 @@ covergroup Vx32_vwmaccsu_vv_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vdOverlapTopVs2_vd_vs2_lmul1/2/4
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Custom coverpoints for Vector widening operations with vv operands
-
-    // ensures vd updates
-    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins one = {0};
-    }
-
-    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins two = {1};
-    }
-
-    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins two = {2};
-    }
-
-    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs1_vd_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs1_vd_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs1_vd_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs1_vd_no_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
-        bins overlapping = {1'b0};
-    }
-
-    vs2_vd_no_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
-        bins overlapping = {1'b0};
-    }
-
-    vs1_vd_no_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
-        bins overlapping = {1'b0};
-    }
-
-    vs2_vd_no_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
-        bins overlapping = {1'b0};
-    }
-
-    vs1_vd_no_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
-        bins overlapping = {1'b0};
-    }
-
-    vs2_vd_no_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
-        bins overlapping = {1'b0};
-    }
-
-    vd_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
-        wildcard bins divisible_by_2 = {5'b????0};
-    }
-
-    vd_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
-        wildcard bins divisible_by_4 = {5'b???00};
-    }
-
-    vd_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
-        wildcard bins divisible_by_8 = {5'b??000};
-    }
-
-    vs2_vs1_no_overlap_lmul1: coverpoint (ins.current.insn[24:20] == ins.current.insn[11:7]) {
-        bins overlapping = {1'b0};
-    }
-
-    vs2_mod4_2: coverpoint ins.current.insn[21:20] {
-        bins mod4_2 = {2'b10};
-    }
-
-    vs2_mod8_4: coverpoint ins.current.insn[22:20] {
-        bins mod8_4 = {3'b100};
-    }
-
-    vs1_mod4_2: coverpoint ins.current.insn[16:15] {
-        bins mod4_2 = {2'b10};
-    }
-
-    vs1_mod8_4: coverpoint ins.current.insn[17:15] {
-        bins mod8_4 = {3'b100};
-    }
-
-    cp_custom_vdOverlapTopVs2_vd_vs2_lmul1 : cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_reg_aligned_lmul_2, vs1_vd_no_overlap_lmul1, vs2_vs1_no_overlap_lmul1;
-    cp_custom_vdOverlapTopVs1_vd_vs1_lmul1 : cross std_vec, vtype_lmul_1, vs1_vd_overlap_lmul1, vd_reg_aligned_lmul_2, vs2_vd_no_overlap_lmul1, vs2_vs1_no_overlap_lmul1;
-
-    cp_custom_vdOverlapTopVs1_vd_vs1_lmul2 : cross std_vec, vtype_lmul_2, vs1_vd_overlap_lmul2, vd_reg_aligned_lmul_4, vs2_vd_no_overlap_lmul2, vs1_mod4_2;
-    cp_custom_vdOverlapTopVs2_vd_vs2_lmul2 : cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_reg_aligned_lmul_4, vs1_vd_no_overlap_lmul2, vs2_mod4_2;
-
-    cp_custom_vdOverlapTopVs1_vd_vs1_lmul4 : cross std_vec, vtype_lmul_4, vs1_vd_overlap_lmul4, vd_reg_aligned_lmul_8, vs2_vd_no_overlap_lmul4, vs1_mod8_4;
-    cp_custom_vdOverlapTopVs2_vd_vs2_lmul4 : cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_reg_aligned_lmul_8, vs1_vd_no_overlap_lmul4, vs2_mod8_4;
-
-    //// end cp_custom_vdOverlapTopVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -38451,77 +38150,6 @@ covergroup Vx32_vwmaccsu_vx_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vdOverlapTopVs2_vd_vs2_lmul1/2/4
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Custom coverpoints for Vector widening operations with vx operands
-
-    // ensures vd updates
-    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins one = {0};
-    }
-
-    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins two = {1};
-    }
-
-    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins two = {2};
-    }
-
-    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
-        bins overlapping = {1'b1};
-    }
-
-    vd_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
-        wildcard bins divisible_by_2 = {5'b????0};
-    }
-
-    vd_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
-        wildcard bins divisible_by_4 = {5'b???00};
-    }
-
-    vd_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
-        wildcard bins divisible_by_8 = {5'b??000};
-    }
-
-    vs2_reg_unaligned_lmul_2: coverpoint ins.current.insn[24:20] {
-        wildcard bins odd = {5'b????1};
-    }
-
-    vs2_mod4_2: coverpoint ins.current.insn[21:20] {
-        bins mode4_2 = {2'b10};
-    }
-
-    vs2_mod8_4: coverpoint ins.current.insn[22:20] {
-        bins mod8_4 = {3'b100};
-    }
-
-    cp_custom_vdOverlapTopVs2_vd_vs2_lmul1 : cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_reg_aligned_lmul_2, vs2_reg_unaligned_lmul_2;
-    cp_custom_vdOverlapTopVs2_vd_vs2_lmul2 : cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_reg_aligned_lmul_4, vs2_mod4_2;
-    cp_custom_vdOverlapTopVs2_vd_vs2_lmul4 : cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_reg_aligned_lmul_8, vs2_mod8_4;
-
-    //// end cp_custom_vdOverlapTopVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -38718,126 +38346,6 @@ covergroup Vx32_vwmaccu_vv_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vdOverlapTopVs2_vd_vs2_lmul1/2/4
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Custom coverpoints for Vector widening operations with vv operands
-
-    // ensures vd updates
-    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins one = {0};
-    }
-
-    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins two = {1};
-    }
-
-    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins two = {2};
-    }
-
-    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs1_vd_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs1_vd_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs1_vd_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs1_vd_no_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
-        bins overlapping = {1'b0};
-    }
-
-    vs2_vd_no_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
-        bins overlapping = {1'b0};
-    }
-
-    vs1_vd_no_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
-        bins overlapping = {1'b0};
-    }
-
-    vs2_vd_no_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
-        bins overlapping = {1'b0};
-    }
-
-    vs1_vd_no_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
-        bins overlapping = {1'b0};
-    }
-
-    vs2_vd_no_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
-        bins overlapping = {1'b0};
-    }
-
-    vd_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
-        wildcard bins divisible_by_2 = {5'b????0};
-    }
-
-    vd_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
-        wildcard bins divisible_by_4 = {5'b???00};
-    }
-
-    vd_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
-        wildcard bins divisible_by_8 = {5'b??000};
-    }
-
-    vs2_vs1_no_overlap_lmul1: coverpoint (ins.current.insn[24:20] == ins.current.insn[11:7]) {
-        bins overlapping = {1'b0};
-    }
-
-    vs2_mod4_2: coverpoint ins.current.insn[21:20] {
-        bins mod4_2 = {2'b10};
-    }
-
-    vs2_mod8_4: coverpoint ins.current.insn[22:20] {
-        bins mod8_4 = {3'b100};
-    }
-
-    vs1_mod4_2: coverpoint ins.current.insn[16:15] {
-        bins mod4_2 = {2'b10};
-    }
-
-    vs1_mod8_4: coverpoint ins.current.insn[17:15] {
-        bins mod8_4 = {3'b100};
-    }
-
-    cp_custom_vdOverlapTopVs2_vd_vs2_lmul1 : cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_reg_aligned_lmul_2, vs1_vd_no_overlap_lmul1, vs2_vs1_no_overlap_lmul1;
-    cp_custom_vdOverlapTopVs1_vd_vs1_lmul1 : cross std_vec, vtype_lmul_1, vs1_vd_overlap_lmul1, vd_reg_aligned_lmul_2, vs2_vd_no_overlap_lmul1, vs2_vs1_no_overlap_lmul1;
-
-    cp_custom_vdOverlapTopVs1_vd_vs1_lmul2 : cross std_vec, vtype_lmul_2, vs1_vd_overlap_lmul2, vd_reg_aligned_lmul_4, vs2_vd_no_overlap_lmul2, vs1_mod4_2;
-    cp_custom_vdOverlapTopVs2_vd_vs2_lmul2 : cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_reg_aligned_lmul_4, vs1_vd_no_overlap_lmul2, vs2_mod4_2;
-
-    cp_custom_vdOverlapTopVs1_vd_vs1_lmul4 : cross std_vec, vtype_lmul_4, vs1_vd_overlap_lmul4, vd_reg_aligned_lmul_8, vs2_vd_no_overlap_lmul4, vs1_mod8_4;
-    cp_custom_vdOverlapTopVs2_vd_vs2_lmul4 : cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_reg_aligned_lmul_8, vs1_vd_no_overlap_lmul4, vs2_mod8_4;
-
-    //// end cp_custom_vdOverlapTopVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -39016,77 +38524,6 @@ covergroup Vx32_vwmaccu_vx_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vdOverlapTopVs2_vd_vs2_lmul1/2/4
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Custom coverpoints for Vector widening operations with vx operands
-
-    // ensures vd updates
-    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins one = {0};
-    }
-
-    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins two = {1};
-    }
-
-    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins two = {2};
-    }
-
-    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
-        bins overlapping = {1'b1};
-    }
-
-    vd_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
-        wildcard bins divisible_by_2 = {5'b????0};
-    }
-
-    vd_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
-        wildcard bins divisible_by_4 = {5'b???00};
-    }
-
-    vd_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
-        wildcard bins divisible_by_8 = {5'b??000};
-    }
-
-    vs2_reg_unaligned_lmul_2: coverpoint ins.current.insn[24:20] {
-        wildcard bins odd = {5'b????1};
-    }
-
-    vs2_mod4_2: coverpoint ins.current.insn[21:20] {
-        bins mode4_2 = {2'b10};
-    }
-
-    vs2_mod8_4: coverpoint ins.current.insn[22:20] {
-        bins mod8_4 = {3'b100};
-    }
-
-    cp_custom_vdOverlapTopVs2_vd_vs2_lmul1 : cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_reg_aligned_lmul_2, vs2_reg_unaligned_lmul_2;
-    cp_custom_vdOverlapTopVs2_vd_vs2_lmul2 : cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_reg_aligned_lmul_4, vs2_mod4_2;
-    cp_custom_vdOverlapTopVs2_vd_vs2_lmul4 : cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_reg_aligned_lmul_8, vs2_mod8_4;
-
-    //// end cp_custom_vdOverlapTopVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -39272,77 +38709,6 @@ covergroup Vx32_vwmaccus_vx_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vdOverlapTopVs2_vd_vs2_lmul1/2/4
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Custom coverpoints for Vector widening operations with vx operands
-
-    // ensures vd updates
-    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins one = {0};
-    }
-
-    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins two = {1};
-    }
-
-    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins two = {2};
-    }
-
-    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
-        bins overlapping = {1'b1};
-    }
-
-    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
-        bins overlapping = {1'b1};
-    }
-
-    vd_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
-        wildcard bins divisible_by_2 = {5'b????0};
-    }
-
-    vd_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
-        wildcard bins divisible_by_4 = {5'b???00};
-    }
-
-    vd_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
-        wildcard bins divisible_by_8 = {5'b??000};
-    }
-
-    vs2_reg_unaligned_lmul_2: coverpoint ins.current.insn[24:20] {
-        wildcard bins odd = {5'b????1};
-    }
-
-    vs2_mod4_2: coverpoint ins.current.insn[21:20] {
-        bins mode4_2 = {2'b10};
-    }
-
-    vs2_mod8_4: coverpoint ins.current.insn[22:20] {
-        bins mod8_4 = {3'b100};
-    }
-
-    cp_custom_vdOverlapTopVs2_vd_vs2_lmul1 : cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_reg_aligned_lmul_2, vs2_reg_unaligned_lmul_2;
-    cp_custom_vdOverlapTopVs2_vd_vs2_lmul2 : cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_reg_aligned_lmul_4, vs2_mod4_2;
-    cp_custom_vdOverlapTopVs2_vd_vs2_lmul4 : cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_reg_aligned_lmul_8, vs2_mod8_4;
-
-    //// end cp_custom_vdOverlapTopVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -45433,11 +44799,9 @@ function void vx32_sample(int hart, int issue, ins_t ins);
             "vrgather.vx"     : begin
                 Vx32_vrgather_vx_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vrgatherei16.vv"     : begin
                 Vx32_vrgatherei16_vv_cg.sample(ins);
             end
-`endif
             "vrsub.vi"     : begin
                 Vx32_vrsub_vi_cg.sample(ins);
             end

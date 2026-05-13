@@ -29,6 +29,10 @@
 --override cpu*/Svadu=T # Enable SVADU hardware update of A/D bits when menvcfg.ADUE=1
 --override cpu*/Svinval=T
 
+# Vector
+--override cpu*/Zvfbfmin=T
+--override cpu*/Zvfbfwma=T
+
 # Miscellaneous extensions
 --override cpu*/Zicond=T
 --override cpu*/Zfh=T
@@ -53,6 +57,8 @@
 # More extensions
 #--override cpu*/Smdbltrp=T
 #--override cpu*/Ssdbltrp=T
+--override iss/cpu0/Zicfilp=T
+--override iss/cpu0/Zicfiss=T
 
 # PMA Settings
 # 'r': read access allowed

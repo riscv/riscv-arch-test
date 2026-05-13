@@ -119,16 +119,20 @@ _FAST_HANDLER_PREFIX: list[str] = [
     "",
 ]
 
-_SPLIT_FILE_GPR_INIT: list[str] = [
-    "",
-    "# Re-initialize GPRs at the top of every split Ssstrict file.",
-    "# This ensures scratch base and safe registers are valid when a split",
-    "# file begins in the middle of a large sweep.",
-    "\t# x8 = permanent scratch base, 8-byte aligned for atomics",
-    "\tnop",
-    "\tnop",
-    "\tla x8, scratch",
-] + [f"\tmv x{r}, x8" for r in range(7, 32) if r != 8] + ["", ""]
+_SPLIT_FILE_GPR_INIT: list[str] = (
+    [
+        "",
+        "# Re-initialize GPRs at the top of every split Ssstrict file.",
+        "# This ensures scratch base and safe registers are valid when a split",
+        "# file begins in the middle of a large sweep.",
+        "\t# x8 = permanent scratch base, 8-byte aligned for atomics",
+        "\tnop",
+        "\tnop",
+        "\tla x8, scratch",
+    ]
+    + [f"\tmv x{r}, x8" for r in range(7, 32) if r != 8]
+    + ["", ""]
+)
 
 
 def _split_at_blank(lines: list[str], max_lines: int) -> list[list[str]]:

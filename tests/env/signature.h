@@ -393,18 +393,28 @@
 //   _MASKED_FLAG   - Immediate flag indicating whether the instruction under test is masked (1) or unmasked (0)
 //   _VD_EEW        - Destination element width (for widening, 2*SEW)
 //   _LMUL          - LMUL setting
+//   _SCALAR_DST_FLAG - 1 if only element 0 is written (vmv.s.x, reductions); 0 otherwise.
+//                    When 1, the saved vl is overridden to 1 so only element 0 is treated
+//                    as active and elements 1..VLMAX-1 receive the tail-agnostic relaxation.
 //   _INST_PTR      - Label of instruction under test
 //   _STR_PTR       - Label to descriptive string
 //   Note: _VTMP, _MTMP, _MTMP2 cannot be v0 since v0 should be saved to preserve its mask value (in case the instruction under test is masked)
 
 #ifdef RVTEST_SELFCHECK
     #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _VTMP, _MTMP2, _MTMP, _VR,              \
-        _MASKPROD_FLAG, _MASKED_FLAG, _VD_EEW, _LMUL, _INST_PTR, _STR_PTR)                                          \
+        _MASKPROD_FLAG, _MASKED_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR)                        \
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
         /* Save architecture state of instruction under test (vl and vtype) */                                      \
         csrr        _TEMP_REG, vl            ;                                                                      \
         csrr        _TEMP_REG2, vtype        ;                                                                      \
+        /* For scalar-dst instructions (vmv.s.x, reductions) only element 0 is written. */                         \
+        /* Override the saved vl to 1 so the active mask covers only element 0 and     */                          \
+        /* elements 1..VLMAX-1 are treated as tail, getting the vta-agnostic relaxation.*/                          \
+        LI(_LINK_REG, _SCALAR_DST_FLAG)      ;                                                                      \
+        beqz        _LINK_REG, 40f           ;                                                                      \
+        li          _TEMP_REG, 1             ;                                                                      \
+    40:                                      ;                                                                      \
         /* Set vl = VLMAX for full-register comparison*/                                                            \
         vsetvli     _LINK_REG, x0, e##_VD_EEW, m##_LMUL, ta, ma ;                                                   \
         /* Load reference from signature and compute mismatch mask */                                               \
@@ -538,12 +548,16 @@
         .option pop
 #else
     #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _VTMP, _MTMP2, _MTMP, _VR,              \
-        _MASKPROD_FLAG, _MASKED_FLAG, _VD_EEW, _LMUL, _INST_PTR, _STR_PTR)                                          \
+        _MASKPROD_FLAG, _MASKED_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR)                        \
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
         /* Save architecture state of instruction under test (vl and vtype) */                                      \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
+        nop                                  ;   /* _SCALAR_DST_FLAG: LI placeholder */                             \
+        nop                                  ;   /* _SCALAR_DST_FLAG: beqz placeholder */                          \
+        nop                                  ;   /* _SCALAR_DST_FLAG: li placeholder */                             \
+    40:                                      ;                                                                      \
         /* Set vl = VLMAX for full-register comparison*/                                                            \
         vsetvli     _LINK_REG, x0, e ##_VD_EEW, m ##_LMUL, ta, ma ;                                                 \
         /* Load reference from signature and compute mismatch mask */                                               \

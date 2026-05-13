@@ -40,6 +40,11 @@ SEW_DEPENDENT_CPS = {
 # Vector extension prefixes used to identify vector architectures.
 VECTOR_PREFIXES = ("Vx", "Zv", "Vls", "Vf")
 
+# Priv-side architectures that need vector-flavored covergroups (header_vector etc.).
+# These priv testplans use the same vector helpers as unpriv vector covergroups
+# but do not undergo per-SEW expansion.
+PRIV_VECTOR_PREFIXES = ("ExceptionsV", "MisalignedV")
+
 # Subset of vector prefixes that support widening instructions.
 VECTOR_WIDEN_PREFIXES = ("Vx", "Vls", "Vf")
 
@@ -337,6 +342,19 @@ def _gen_instrs(
         else:
             covergroup_lines.append(customize_template(templates, "instruction", arch, instr))
             init_lines.append(customize_template(templates, "init", arch, instr))
+
+        # SsstrictV templates reference a small set of helpers (vtype_lmul_*,
+        # std_trap_vec, mask_enabled, vd_v0, vd/vs1/vs2_all_reg_unaligned_lmul_*,
+        # vstart_zero, vl_nonzero, vtype_prev_vill_*, vtype_all_lmulge1).
+        # We include a SsstrictV-scoped header rather than the full standard
+        # vector header so the SsstrictV covergroups don't pick up dozens of
+        # unrelated 32-bin sweeps (vd_all_reg, vs1_all_reg, etc.) that aren't in
+        # SsstrictV's testplan and would inflate the corpus past the linker's
+        # ±1MiB JAL range. Other priv vector arches (ExceptionsVx/Vls/Vf)
+        # intentionally use a small, focused set of coverpoints (cp_vill /
+        # cp_vstart / cp_vstart_gt_vl) and must not pull in either header.
+        if arch.startswith("SsstrictV"):
+            covergroup_lines.append('    `include "general/RISCV_coverage_ssstrictv_helpers.svh"\n')
 
         # Coverpoint entries (skip metadata columns: sample_*, RV32, RV64, EFFEW*)
         # VCS requires coverpoints to be declared before they are referenced by cross coverpoints.

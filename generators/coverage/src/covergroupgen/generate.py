@@ -64,7 +64,7 @@ VECTOR_PREFIXES = ("Vx", "Zv", "Vls", "Vf")
 # Priv-side architectures that need vector-flavored covergroups (header_vector etc.).
 # These priv testplans use the same vector helpers as unpriv vector covergroups
 # but do not undergo per-SEW expansion.
-PRIV_VECTOR_PREFIXES = ("ExceptionsV", "SsstrictV", "MissalignedV")
+PRIV_VECTOR_PREFIXES = ("ExceptionsV", "SsstrictV", "MisalignedV")
 
 # Subset of vector prefixes that support widening instructions.
 VECTOR_WIDEN_PREFIXES = ("Vx", "Vls", "Vf")
@@ -77,32 +77,32 @@ VECTOR_WIDEN_PREFIXES = ("Vx", "Vls", "Vf")
 # vd is recorded as "present" for stores (the vs3 data register lives in the rd field
 # and still has an EMUL-aligned register group constraint).
 _TYPE_OPERANDS: dict[str, tuple[bool, bool, bool]] = {
-    "VVVM":  (True,  True,  True),
-    "VVV":   (True,  True,  True),
-    "VVVMR": (True,  True,  True),
-    "VVIM":  (True,  False, True),
-    "VVI":   (True,  False, True),
-    "VVXM":  (True,  False, True),
-    "VVX":   (True,  False, True),
-    "VVFM":  (True,  False, True),
-    "VVM":   (True,  False, True),
-    "VV":    (True,  False, True),
-    "VVR":   (True,  True,  False),
-    "VFVM":  (True,  False, True),
-    "VI":    (True,  False, False),
-    "VM":    (True,  False, False),
-    "VF":    (True,  False, False),
-    "FV":    (False, False, True),
-    "XV":    (False, False, True),
-    "XVM":   (False, False, True),
-    "VX":    (True,  False, False),
-    "VXM":   (True,  False, False),
-    "VXVM":  (True,  False, True),
-    "VXXM":  (True,  False, False),
-    "VSX":   (True,  False, False),
-    "VSXM":  (True,  False, False),
-    "VSXVM": (True,  False, True),
-    "VSXXM": (True,  False, False),
+    "VVVM": (True, True, True),
+    "VVV": (True, True, True),
+    "VVVMR": (True, True, True),
+    "VVIM": (True, False, True),
+    "VVI": (True, False, True),
+    "VVXM": (True, False, True),
+    "VVX": (True, False, True),
+    "VVFM": (True, False, True),
+    "VVM": (True, False, True),
+    "VV": (True, False, True),
+    "VVR": (True, True, False),
+    "VFVM": (True, False, True),
+    "VI": (True, False, False),
+    "VM": (True, False, False),
+    "VF": (True, False, False),
+    "FV": (False, False, True),
+    "XV": (False, False, True),
+    "XVM": (False, False, True),
+    "VX": (True, False, False),
+    "VXM": (True, False, False),
+    "VXVM": (True, False, True),
+    "VXXM": (True, False, False),
+    "VSX": (True, False, False),
+    "VSXM": (True, False, False),
+    "VSXVM": (True, False, True),
+    "VSXXM": (True, False, False),
 }
 
 
@@ -127,11 +127,12 @@ def _max_legal_lmul_for_instruction(instr: str) -> int:
     """
     try:
         import sys as _sys
+
         _scripts = Path(__file__).resolve().parents[4] / "generators" / "testgen" / "scripts"
         if str(_scripts) not in _sys.path:
             _sys.path.insert(0, str(_scripts))
         import vector_testgen_common as _c  # type: ignore
-    except Exception:
+    except Exception:  # noqa: BLE001
         return 8
     nf = _c.getInstructionSegments(instr) if hasattr(_c, "getInstructionSegments") else 1
     if nf and nf > 1:
@@ -179,7 +180,6 @@ def _filter_per_operand_crosses(rendered: str, instr_type: str, instr: str = "")
                 continue
         out_lines.append(line)
     return "".join(out_lines)
-
 
 
 def _write_if_changed(path: Path, content: str) -> None:
@@ -362,14 +362,16 @@ def _is_vector_widen(arch: str, instr: str) -> bool:
     return arch.startswith(VECTOR_WIDEN_PREFIXES) and (instr.startswith(("vw", "vfw")) or ".w" in instr)
 
 
+def _has_effew_suffix(arch: str) -> bool:
+    """Whether *arch* uses the per-SEW EFFEW{N} testplan filter."""
+    return _is_vector(arch) or bool(re.match(r"ExceptionsVf\d+$", arch))
+
+
 def _get_sorted_instr_keys(tp: dict[tuple[str, str], list[str]], arch: str) -> list[tuple[str, str]]:
-    """Get sorted instruction keys, filtering by EFFEW for vector architectures."""
+    """Get sorted instruction keys, filtering by EFFEW for vector/per-SEW priv arches."""
     keys = sorted(tp.keys())
-    if _is_vector(arch):
-        try:
-            effew = _get_effew(arch)
-        except ValueError:
-            return keys
+    if _has_effew_suffix(arch):
+        effew = _get_effew(arch)
         keys = [k for k in keys if f"EFFEW{effew}" in tp[k]]
     return keys
 
@@ -489,7 +491,7 @@ def _gen_instrs(
         # ±1MiB JAL range. Other priv vector arches (ExceptionsVx/Vls/Vf)
         # intentionally use a small, focused set of coverpoints (cp_vill /
         # cp_vstart / cp_vstart_gt_vl) and must not pull in either header.
-        if arch.startswith(("SsstrictV", "MissalignedV")):
+        if arch.startswith("SsstrictV"):
             covergroup_lines.append('    `include "general/RISCV_coverage_ssstrictv_helpers.svh"\n')
 
         # Coverpoint entries (skip metadata columns: sample_*, RV32, RV64, EFFEW*)
@@ -628,13 +630,13 @@ def _write_extension_files(
     key list is filtered to the matching SEW.
     """
     effew = ""
-    if vector:
+    if vector or _has_effew_suffix(arch):
         try:
             effew = _get_effew(arch)
         except ValueError:
-            # Priv vector archs (SsstrictV, ExceptionsV*) have no SEW expansion or EFFEW.
+            # Priv vector archs (SsstrictV, ExceptionsV*, MisalignedV) have no SEW expansion or EFFEW.
             effew = ""
-    instr_keys = _get_sorted_instr_keys(tp, arch) if vector else sorted(tp.keys())
+    instr_keys = _get_sorted_instr_keys(tp, arch) if (vector or _has_effew_suffix(arch)) else sorted(tp.keys())
 
     header_tmpl = "header_vector" if vector else "header"
     # Priv vector archs (SsstrictV, ExceptionsV*) don't expand per-SEW so the
@@ -798,8 +800,9 @@ def write_priv_covergroups(
 
     # Mirror the unpriv per-SEW expansion for ExceptionsVf so a single
     # ExceptionsVf.csv produces ExceptionsVf{16,32,64} covergroup files (one
-    # per non-reserved vector-FP SEW). The testgen driver applies the matching
-    # EFFEW{N} filter when emitting tests.
+    # per non-reserved vector-FP SEW). Per-instruction filtering is driven by
+    # the EFFEW{N} columns in the testplan via _get_sorted_instr_keys, so this
+    # block doesn't need to drop any rows itself.
     if "ExceptionsVf" in priv_plans:
         ex_vf_tp = priv_plans["ExceptionsVf"]
         for effew in ("16", "32", "64"):

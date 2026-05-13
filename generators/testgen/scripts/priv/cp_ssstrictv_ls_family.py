@@ -2,7 +2,6 @@
 
 Covers the high-impact load/store reserved-encoding families:
 
-- ``cp_missalignedv_ls_element_misaligned`` — base address with low bits != 0
 - ``cp_ssstrictv_ls_emul_16`` — (EEW/SEW)*LMUL == 16 reserved
 - ``cp_ssstrictv_ls_emul_f16`` — EMUL == 1/16 reserved
 - ``cp_ssstrictv_ls_emul_nfields_16`` — segment LS with NF*LMUL == 16
@@ -36,16 +35,7 @@ def _ls_test(instruction: str, cp: str, sew: int, lmul_flag: str, *,
              vl: int = 1,
              override_vd: int | None = None,
              addr_offset: int = 0) -> None:
-    """Run one LS test with the given vsetivli + optional address offset.
-
-    For ``cp_missalignedv_ls_element_misaligned`` we need rs1 to point at an address whose
-    low bits are nonzero. We do so by emitting the standard ``la rs1, label``
-    that ``build_testline`` would emit, then ``addi rs1, rs1, addr_offset``,
-    and finally pass ``addr_label=`` something we won't re-emit. The cleanest
-    path is to monkey-patch around ``build_testline`` writing the ``la``: we
-    instead emit our own ``la + addi`` before ``build_testline`` and swap
-    instruction out of ``vector_ls_ins`` momentarily so it doesn't re-emit.
-    """
+    """Run one LS test with the given vsetivli + optional address offset."""
     set_seed(common.myhash(instruction + cp + lmul_flag + str(addr_offset) + str(override_vd)))
 
     instruction_data = common.randomizeVectorInstructionData(
@@ -96,34 +86,6 @@ def _is_segment_ls(instruction: str) -> bool:
 
 def _eew(instruction: str) -> int:
     return common.getInstructionEEW(instruction) or 8
-
-
-# ---------------- ls_element_misaligned ----------------
-
-@register("cp_missalignedv_ls_element_misaligned")
-def make_element_misaligned(instruction: str) -> None:
-    if instruction not in common.vector_ls_ins:
-        return
-    eew = _eew(instruction)
-    # Whole-register and mask LS have no EEW field; default to e8 SEW
-    sew = eew if eew else 8
-    for off in range(1, 8):
-        _ls_test(instruction, "cp_missalignedv_ls_element_misaligned",
-                  sew=sew, lmul_flag="m1", addr_offset=off)
-
-
-# ---------------- ls_wholereg_misaligned ----------------
-
-@register("cp_missalignedv_ls_wholereg_misaligned")
-def make_wholereg_misaligned(instruction: str) -> None:
-    # Whole-register LS only: vl<NF>r<EEW>.v / vs<NF>r.v.
-    if instruction not in common.whole_register_ls:
-        return
-    eew = _eew(instruction)
-    sew = eew if eew else 8
-    for off in range(1, 8):
-        _ls_test(instruction, "cp_missalignedv_ls_wholereg_misaligned",
-                  sew=sew, lmul_flag="m1", addr_offset=off)
 
 
 # ---------------- ls_emul_16 ----------------

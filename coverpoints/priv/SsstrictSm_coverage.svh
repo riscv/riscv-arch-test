@@ -205,9 +205,9 @@ covergroup SsstrictSm_comp_instr_cg with function sample(ins_t ins);
     // only applies to CI-type.
     cp_compressed01: cross priv_mode_m, compressed01 {
         // rd=x2 only for CI-type (funct3 = 000, 010, 011)
-        wildcard ignore_bins rd_x2_ci_000 = binsof(compressed01) intersect {14'b00000001000000:14'b00000001011111};
-        wildcard ignore_bins rd_x2_ci_010 = binsof(compressed01) intersect {14'b01000001000000:14'b01000001011111};
-        wildcard ignore_bins rd_x2_ci_011 = binsof(compressed01) intersect {14'b01100001000000:14'b01100001011111};
+        wildcard ignore_bins rd_x2_ci_000 = binsof(compressed01) intersect {[14'b00000001000000:14'b00000001011111]};
+        wildcard ignore_bins rd_x2_ci_010 = binsof(compressed01) intersect {[14'b01000001000000:14'b01000001011111]};
+        wildcard ignore_bins rd_x2_ci_011 = binsof(compressed01) intersect {[14'b01100001000000:14'b01100001011111]};
         // Ignore control flow instructions that would break test execution
         wildcard ignore_bins c_jal = binsof(compressed01) intersect {14'b001????01};
         wildcard ignore_bins c_j   = binsof(compressed01) intersect {14'b101????01};

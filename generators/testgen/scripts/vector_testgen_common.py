@@ -2834,7 +2834,7 @@ def getVectorEmulMultipliers(instruction):
 
 #                  Example: no_overlap = [['vs1', 'vs2_top'], ['v0', 'vd_bottom']]
 #                  all values will be continued to be randomized until there is no overlap within lists
-def getInstructionRegisterOverlapConstraints (instruction, sew, lmul):
+def getInstructionRegisterOverlapConstraints (instruction, sew, lmul, masked=False):
   no_overlap = None
 
   if   instruction in wvvins          : no_overlap = [['vd_bottom', 'vs2'], ['vd_bottom', 'vs1']]
@@ -2880,6 +2880,12 @@ def getInstructionRegisterOverlapConstraints (instruction, sew, lmul):
   if instruction in segment_loads:
     no_overlap = addOverlap(no_overlap, [['vd','vs2']])
 
+  # Masked indexed LS: vs2 (index, EEW = index EEW) cannot equal v0 (mask,
+  # EEW = 1) — spec forbids reading the same register at two different EEWs
+  # in a single instruction (v-spec norm:vreg_source_eew_rsv).
+  if masked and instruction in indexed_ls_ins:
+    no_overlap = addOverlap(no_overlap, [['v0', 'vs2']])
+
   return no_overlap
 
 def addOverlap(instruction_overlap_constaints, additional_no_overlap):
@@ -2906,10 +2912,10 @@ def randomizeOngroupVectorRegister(instruction, *preset_vreg, lmul=1, maskval=No
 # lmul               - the lmul set in vtype csr
 # **preset_variables - any value in preset_data can be set here, for example vd = 2 will ensure vd is set to the v2 register above all else
 # return             - returns an array of all randomized values following constraints
-def randomizeVectorInstructionData(instruction, sew, test_count, suite="base", lmul=1, additional_no_overlap = None, **preset_variables):
+def randomizeVectorInstructionData(instruction, sew, test_count, suite="base", lmul=1, additional_no_overlap = None, masked=False, **preset_variables):
   preset_variables.update(getVectorEmulMultipliers(instruction))
 
-  instruction_overlap_constaints  = getInstructionRegisterOverlapConstraints(instruction, sew, lmul)
+  instruction_overlap_constaints  = getInstructionRegisterOverlapConstraints(instruction, sew, lmul, masked=masked)
   no_overlap                      = addOverlap(instruction_overlap_constaints, additional_no_overlap)
 
   scalar_register_preset_data         = {

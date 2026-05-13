@@ -134,6 +134,9 @@
 `ifdef MISALIGNZCA_COVERAGE
   `include "MisalignZca_coverage.svh"
 `endif
+`ifdef MISALIGNEDV_COVERAGE
+  `include "MisalignedV_coverage.svh"
+`endif
 `ifdef PMPF_COVERAGE
   `include "PMPF_coverage.svh"
 `endif

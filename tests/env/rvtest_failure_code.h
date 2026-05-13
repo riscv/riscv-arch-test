@@ -375,6 +375,8 @@
     failedtest_saveresults:
         # Dispatch based on failure type
         lw x9, failure_type
+        li x10, 3
+        beq x9, x10, failedtest_saveresults_trap  # type 3: trap abort, skip register/value extraction
 #if defined(F_SUPPORTED) || defined(ZFINX_SUPPORTED)
         li x10, 1
         beq x9, x10, failedtest_saveresults_fp
@@ -719,6 +721,8 @@
 
 #endif // RVTEST_VECTOR
 
+    failedtest_saveresults_trap:
+        # Trap abort: no register/value extraction, fall through to common to load string pointer
 
     failedtest_saveresults_common:
         # After the jal instruction there are two XLEN-sized pointers: the instruction address and the test string pointer
@@ -775,6 +779,11 @@
       print_newline_str:
         LA(a0, newlinestr)
         call rvmodel_io_write_str
+
+        # Trap abort: skip instruction/address/register/value fields, they are meaningless
+        lw a0, failure_type
+        li a1, 3
+        beq a0, a1, failedtest_report_traphandler
 
         # Print failing instruction (detect 16-bit compressed vs 32-bit)
         LA(a0, inststr)

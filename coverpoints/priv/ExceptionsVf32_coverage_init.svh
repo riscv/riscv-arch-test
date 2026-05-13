@@ -78,7 +78,6 @@
     ExceptionsVf32_vfwadd_vv_cg = new(); ExceptionsVf32_vfwadd_vv_cg.set_inst_name("obj_ExceptionsVf32_vfwadd_vv");
     ExceptionsVf32_vfwadd_wf_cg = new(); ExceptionsVf32_vfwadd_wf_cg.set_inst_name("obj_ExceptionsVf32_vfwadd_wf");
     ExceptionsVf32_vfwadd_wv_cg = new(); ExceptionsVf32_vfwadd_wv_cg.set_inst_name("obj_ExceptionsVf32_vfwadd_wv");
-    ExceptionsVf32_vfwcvt_f_f_v_cg = new(); ExceptionsVf32_vfwcvt_f_f_v_cg.set_inst_name("obj_ExceptionsVf32_vfwcvt_f_f_v");
     ExceptionsVf32_vfwcvt_f_x_v_cg = new(); ExceptionsVf32_vfwcvt_f_x_v_cg.set_inst_name("obj_ExceptionsVf32_vfwcvt_f_x_v");
     ExceptionsVf32_vfwcvt_f_xu_v_cg = new(); ExceptionsVf32_vfwcvt_f_xu_v_cg.set_inst_name("obj_ExceptionsVf32_vfwcvt_f_xu_v");
     ExceptionsVf32_vfwcvt_rtz_x_f_v_cg = new(); ExceptionsVf32_vfwcvt_rtz_x_f_v_cg.set_inst_name("obj_ExceptionsVf32_vfwcvt_rtz_x_f_v");

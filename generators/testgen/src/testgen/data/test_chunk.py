@@ -29,6 +29,8 @@ class TestChunk:
         section_header: Optional banner comment before a coverpoint section
         start_sig_reg: Signature pointer register expected at the start of this chunk
         start_data_reg: Data pointer register expected at the start of this chunk
+        end_sig_reg: Signature pointer register in use at the end of this chunk
+        end_data_reg: Data pointer register in use at the end of this chunk
     """
 
     code: str = ""
@@ -39,3 +41,5 @@ class TestChunk:
     section_header: str | None = None
     start_sig_reg: int = 2
     start_data_reg: int = 3
+    end_sig_reg: int = 2
+    end_data_reg: int = 3

@@ -18,10 +18,10 @@ covergroup ZicntrU_cg with function sample(ins_t ins);
 
     // building blocks for the main coverpoints
     csrr: coverpoint ins.current.insn  {
-        wildcard bins csrr = {32'b????????????_00000_010_?????_1110011};
+        wildcard bins csrr = {CSRR};
     }
 
-    counters_mcounteren: coverpoint {ins.current.insn[31:20], ins.current.csr[12'h306][31:0] } {
+    counters_mcounteren: coverpoint {ins.current.insn[31:20], ins.current.csr[CSR_MCOUNTEREN][31:0] } {
         bins cycle_enabled         = {44'b110000000000_00000000000000000000000000000001};
         bins time_enabled          = {44'b110000000001_00000000000000000000000000000010};
         bins instret_enabled       = {44'b110000000010_00000000000000000000000000000100};

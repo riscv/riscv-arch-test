@@ -9,6 +9,17 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_SM
+
+// Software check exceptions are supported for both Zicfilp and Zicfiss
+`ifdef ZICFILP_SUPPORTED
+    `define SOFTWARE_CHECK_SUPPORTED
+`endif
+`ifdef ZICFISS_SUPPORTED
+    `ifndef SOFTWARE_CHECK_SUPPORTED
+        `define SOFTWARE_CHECK_SUPPORTED
+    `endif
+`endif
+
 covergroup Sm_mcause_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -35,22 +46,34 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
         bins b_5_load_access_fault = {5};
         bins b_6_store_address_misaligned = {6};
         bins b_7_store_access_fault = {7};
-        bins b_8_ecall_u = {8};
-        bins b_9_ecall_s = {9};
-        bins b_10_ecall_vs = {10};
+        `ifdef U_SUPPORTED
+            bins b_8_ecall_u = {8};
+        `endif
+        `ifdef S_SUPPORTED
+            bins b_9_ecall_s = {9};
+        `endif
+        `ifdef H_SUPPORTED
+            bins b_10_ecall_vs = {10};
+        `endif
         bins b_11_ecall_m = {11};
         bins b_12_instruction_page_fault = {12};
         bins b_13_load_page_fault = {13};
         //bins b_14_reserved = {14};
         bins b_15_store_page_fault = {15};
-        bins b_16_double_trap = {16};
+        `ifdef SMDBLTRP_SUPPORTED
+            bins b_16_double_trap = {16}; // never delegated to S mode
+        `endif
         //bins b_17_reserved = {17};
-        bins b_18_software_check = {18};
-        bins b_19_hardware_error = {19};
-        bins b_20_instr_guest_page_fault = {20};
-        bins b_21_load_guest_page_fault = {21};
-        bins b_22_virtual_instruction = {22};
-        bins b_23_store_guest_page_fault = {23};
+        `ifdef SOFTWARE_CHECK_SUPPORTED
+            bins b_18_software_check = {18};
+        `endif
+        // bins b_19_hardware_error = {19}; // unclear how to trigger on all implementations
+        `ifdef H_SUPPORTED
+            bins b_20_instr_guest_page_fault = {20};
+            bins b_21_load_guest_page_fault = {21};
+            bins b_22_virtual_instruction = {22};
+            bins b_23_store_guest_page_fault = {23};
+        `endif
         //bins b_31_24_custom = {[31:24]};
         //bins b_47_32_reserved = {[47:32]};
         //bins b_63_48_custom = {[63:48]};
@@ -79,6 +102,7 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
     // This is Sm machine-mode testing, so all coverpoints are in Machine mode.
     cp_mcause_write_exception: cross priv_mode_m, csrrw, mcause, mcause_exception_values, mcause_exception; // CSR write of mcause in M mode with interesting values
     cp_mcause_write_interrupt: cross priv_mode_m, csrrw, mcause, mcause_interrupt_values, mcause_interrupt; // CSR write of mcause in M mode with interesting values
+
 endgroup
 
 
@@ -174,15 +198,14 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     mcsrname : coverpoint ins.current.insn[31:20] { // excludes read-only CSRs
         bins mstatus    = {CSR_MSTATUS};
-        bins misa       = {CSR_MISA};
         bins medeleg    = {CSR_MEDELEG};
         bins mideleg    = {CSR_MIDELEG};
         bins mie        = {CSR_MIE};
-        bins mtvec      = {CSR_MTVEC};
+        // bins mtvec      = {CSR_MTVEC}; // warl field has complex write restrictions and is not easy to test
         bins mcounteren = {CSR_MCOUNTEREN};
         bins mscratch   = {CSR_MSCRATCH};
         bins mepc       = {CSR_MEPC};
-        bins mcause     = {CSR_MCAUSE};
+        // bins mcause     = {CSR_MCAUSE}; // WLRL field; tested with cp_mcause_write_exception and cp_mcause_write_interrupt
         bins mtval      = {CSR_MTVAL};
         bins mip        = {CSR_MIP};
         bins menvcfg    = {CSR_MENVCFG};
@@ -221,10 +244,12 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         `endif
         `ifdef XLEN32
             bins mstatush = {CSR_MSTATUSH};
-            // bins medelegh = {12'h312}; // move this to Sm1p13 coverpoints
             bins menvcfgh = {CSR_MENVCFGH};
             `ifdef MSECCFG_SUPPORTED // update this in four places when UDB gives a name to this parameter
                 bins mseccfgh = {CSR_MSECCFGH};
+            `endif
+            `ifdef SM1P13_SUPPORTED
+                bins medelegh = {CSR_MEDELEGH};
             `endif
         `endif
     }
@@ -413,6 +438,34 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             cp_mtimeh_write :   cross priv_mode_m, csrr,  timeh_csr; // assumes mtimeh has been written
         `endif
     `endif
+
+    `ifdef SM1P13_SUPPORTED
+        misa_b_bit: coverpoint ins.current.rs1_val[1] {
+            bins b_set   = {1'b1};
+            bins b_clear = {1'b0};
+        }
+        misa_v_bit: coverpoint ins.current.rs1_val[21] {
+            bins v_set   = {1'b1};
+            bins v_clear = {1'b0};
+        }
+
+        cp_misa_b: cross priv_mode_m, misa, csrop, misa_b_bit;
+        cp_misa_v: cross priv_mode_m, misa, csrop, misa_v_bit;
+
+
+        `ifdef RVMODEL_MSIP_ADDRESS
+            msip_address: coverpoint ins.current.rs1_val {
+                bin msip = {`RVMODEL_MSIP_ADDRESS};
+            }
+            msip_val: coverpoint ins.current.rs2_val {
+                bin zero = {0};
+                bin one  = {1};
+            }
+            cp_msip: cross priv_mode_m, sw, msip_address, msip_val;
+        `endif // RVMODEL_MSIP_ADDRESS
+    `endif // SM1P13_SUPPORTED
+
+
 endgroup
 
 function void sm_sample(int hart, int issue, ins_t ins);

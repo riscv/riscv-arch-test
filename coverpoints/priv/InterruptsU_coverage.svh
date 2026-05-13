@@ -2,7 +2,7 @@
 //
 // RISC-V Architectural Functional Coverage Covergroups
 //
-// Written: Corey Hickson chickson@hmc.edu 16 Feb 2025, Modified: Sadhvi Narayanan sanarayanan@hmc.edu
+// Written: Corey Hickson chickson@hmc.edu 16 Feb 2025, Sadhvi Narayanan sanarayanan@hmc.edu April 2026
 //
 // Copyright (C) 2024 Harvey Mudd College, 10x Engineers, UET Lahore, Habib University
 //
@@ -19,42 +19,42 @@ covergroup InterruptsU_cg with function sample(ins_t ins);
 
     // Uses ins.prev instead of ins.current because RVVI updates CSRs after instruction retirement,
     // so ins.current shows post-trap state while ins.prev shows pre-trap state.
-    mstatus_mie: coverpoint ins.prev.csr[12'h300][3]  {
+    mstatus_mie: coverpoint ins.prev.csr[CSR_MSTATUS][3]  {
         // autofill 0/1
     }
-    mstatus_tw:  coverpoint ins.current.csr[12'h300][21] {
+    mstatus_tw:  coverpoint ins.current.csr[CSR_MSTATUS][21] {
         // autofill 0/1
     }
-    mstatus_tw_one: coverpoint ins.current.csr[12'h300][21] {
+    mstatus_tw_one: coverpoint ins.current.csr[CSR_MSTATUS][21] {
         bins one = {1};  // Only TW=1
     }
-    mie_msie_one: coverpoint ins.current.csr[12'h304][3] {
+    mie_msie_one: coverpoint ins.current.csr[CSR_MIE][3] {
         bins one = {1};
     }
-    mie_mtie: coverpoint ins.current.csr[12'h304][7] {
+    mie_mtie: coverpoint ins.current.csr[CSR_MIE][7] {
         // autofill 0/1
     }
-    mie_mtie_one: coverpoint ins.current.csr[12'h304][7] {
+    mie_mtie_one: coverpoint ins.current.csr[CSR_MIE][7] {
         bins one = {1};
     }
-    mie_meie_one: coverpoint ins.current.csr[12'h304][11] {
+    mie_meie_one: coverpoint ins.current.csr[CSR_MIE][11] {
         bins one = {1};
     }
-    mtvec_mode: coverpoint ins.current.csr[12'h305][1:0] {
+    mtvec_mode: coverpoint ins.current.csr[CSR_MTVEC][1:0] {
         bins direct   = {2'b00};
         bins vector   = {2'b01};
     }
-    mip_msip:    coverpoint ins.current.csr[12'h344][3]  {
+    mip_msip:    coverpoint ins.current.csr[CSR_MIP][3]  {
         // autofill 0/1
     }
-    mip_mtip:    coverpoint ins.current.csr[12'h344][7]  {
+    mip_mtip:    coverpoint ins.current.csr[CSR_MIP][7]  {
         // autofill 0/1
     }
-    mip_meip:    coverpoint ins.current.csr[12'h344][11] {
+    mip_meip:    coverpoint ins.current.csr[CSR_MIP][11] {
         // autofill 0/1
     }
     wfi: coverpoint ins.current.insn {
-        bins wfi = {32'b0001000_00101_00000_000_00000_1110011};
+        bins wfi = {WFI};
     }
 
 
@@ -74,14 +74,14 @@ function void interruptsu_sample(int hart, int issue, ins_t ins);
     // $display("=== InterruptsU Debug ===");
     // $display("PC: %h Instr: %s", ins.current.pc_rdata, ins.current.disass);
     // $display("  mstatus.MIE=%b mstatus.TW=%b mode: %b, vector: %b",
-    //             ins.prev.csr[12'h300][3], ins.current.csr[12'h300][21], {ins.prev.mode_virt, ins.prev.mode}, {ins.current.csr[12'h305][1:0]});
+    //             ins.prev.csr[CSR_MSTATUS][3], ins.current.csr[CSR_MSTATUS][21], {ins.prev.mode_virt, ins.prev.mode}, {ins.current.csr[CSR_MTVEC][1:0]});
     // $display("  mie: MEIE=%b MTIE=%b MSIE=%b (full=%h)",
-    //             ins.current.csr[12'h304][11], ins.current.csr[12'h304][7],
-    //             ins.current.csr[12'h304][3], ins.current.csr[12'h304][15:0]);
+    //             ins.current.csr[CSR_MIE][11], ins.current.csr[CSR_MIE][7],
+    //             ins.current.csr[CSR_MIE][3], ins.current.csr[CSR_MIE][15:0]);
     // $display("  mip: MEIP=%b MTIP=%b MSIP=%b (full=%h)",
-    //             ins.current.csr[12'h344][11], ins.current.csr[12'h344][7],
-    //             ins.current.csr[12'h344][3], ins.current.csr[12'h344]);
+    //             ins.current.csr[CSR_MIP][11], ins.current.csr[CSR_MIP][7],
+    //             ins.current.csr[CSR_MIP][3], ins.current.csr[CSR_MIP]);
     // if (ins.current.trap)
-    //     $display("  TRAP! mcause=%h", ins.current.csr[12'h342]);
+    //     $display("  TRAP! mcause=%h", ins.current.csr[CSR_MCAUSE]);
     // $display("");
 endfunction

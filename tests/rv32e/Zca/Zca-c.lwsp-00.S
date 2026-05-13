@@ -757,6 +757,8 @@ Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xfc:
   RVTEST_SIGUPD(x3, x5, x4, x15, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xfc, Zca_c_lwsp_cg_cp_imm_mul_4sp_b0xfc_str)
   addi x1, x1, SIG_STRIDE # increment data_ptr
 
+  mv x2, x3 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

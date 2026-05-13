@@ -6,6 +6,11 @@ name: autofix.ci
 on:
   pull_request:
 
+# Only run on the latest commit if a PR is updated
+concurrency:
+  group: "${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}"
+  cancel-in-progress: true
+
 permissions:
   contents: read
 

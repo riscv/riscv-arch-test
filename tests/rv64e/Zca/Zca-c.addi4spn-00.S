@@ -1881,6 +1881,8 @@ Zca_c_addi4spn_cg_cp_imm_mul_addi4spn_b0x3fc:
   # Check if x10 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x1, x5, x4, x10, Zca_c_addi4spn_cg_cp_imm_mul_addi4spn_b0x3fc, Zca_c_addi4spn_cg_cp_imm_mul_addi4spn_b0x3fc_str)
 
+  mv x2, x1 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

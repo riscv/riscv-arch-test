@@ -30,6 +30,12 @@ __pycache__
 # Work directories
 work/
 
+# vector tests
+tests/rv32i/V*
+tests/rv32i/Zv*
+tests/rv64i/V*
+tests/rv64i/Zv*
+
 # priv tests
 tests/priv/headers
 tests/priv/**/*.S

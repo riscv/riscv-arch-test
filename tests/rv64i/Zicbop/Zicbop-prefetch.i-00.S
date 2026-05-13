@@ -669,6 +669,8 @@ Zicbop_prefetch_i_cg_cp_custom_prefetch_word_64:
   RVTEST_SIGUPD(x1, x5, x4, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_64, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_64_str)
 
 
+  mv x2, x1 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

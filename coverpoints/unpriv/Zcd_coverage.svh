@@ -18,16 +18,20 @@ covergroup Zcd_c_fld_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_fdp : coverpoint ins.get_fpr_c_reg(ins.current.fd)  iff (ins.trap == 0 )  {
         // FD register assignment
     }
+
     cp_imm_mul_8 : coverpoint ins.current.imm iff (ins.trap == 0) {
         // Immediate Multiples of 8
         bins offset[] = {[0:248]} with (item % 8 == 0);
     }
+
     cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
 endgroup
 // ---------------------
 covergroup Zcd_c_fldsp_cg with function sample(ins_t ins);
@@ -36,13 +40,16 @@ covergroup Zcd_c_fldsp_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
         // FD register assignment
     }
+
     cp_imm_mul_8sp : coverpoint ins.current.imm iff (ins.trap == 0) {
         // Immediate Multiples of 8
         bins offset[] = {[0:504]} with (item % 8 == 0);
     }
+
 endgroup
 // ---------------------
 covergroup Zcd_c_fsd_cg with function sample(ins_t ins);
@@ -51,16 +58,20 @@ covergroup Zcd_c_fsd_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_fs2p : coverpoint ins.get_fpr_c_reg(ins.current.fs2)  iff (ins.trap == 0 )  {
         // FS2 register assignment
     }
+
     cp_imm_mul_8 : coverpoint ins.current.imm iff (ins.trap == 0) {
         // Immediate Multiples of 8
         bins offset[] = {[0:248]} with (item % 8 == 0);
     }
+
     cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
 endgroup
 // ---------------------
 covergroup Zcd_c_fsdsp_cg with function sample(ins_t ins);
@@ -69,13 +80,16 @@ covergroup Zcd_c_fsdsp_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_fs2 : coverpoint ins.get_fpr_reg(ins.current.fs2)  iff (ins.trap == 0 )  {
         // FS2 register assignment
     }
+
     cp_imm_mul_8sp : coverpoint ins.current.imm iff (ins.trap == 0) {
         // Immediate Multiples of 8
         bins offset[] = {[0:504]} with (item % 8 == 0);
     }
+
 endgroup
 // ---------------------
 function void zcd_sample(int hart, int issue, ins_t ins);

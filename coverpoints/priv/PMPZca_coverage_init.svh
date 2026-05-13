@@ -8,5 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-PMPZca_cg = new();
-PMPZca_cg.set_inst_name("obj_PMPZca");
+    PMPZca_cg = new();         PMPZca_cg.set_inst_name("obj_PMPZca");

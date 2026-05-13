@@ -5346,6 +5346,8 @@ Zksed_sm4ed_cg_cp_sbox_b255:
   # Check if x1 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x14, x5, x4, x1, Zksed_sm4ed_cg_cp_sbox_b255, Zksed_sm4ed_cg_cp_sbox_b255_str)
 
+  mv x2, x14 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

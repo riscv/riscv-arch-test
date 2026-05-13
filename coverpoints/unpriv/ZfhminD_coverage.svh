@@ -18,6 +18,7 @@ covergroup ZfhminD_fcvt_h_s_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhminD_fcvt_s_h_cg with function sample(ins_t ins);
@@ -37,6 +38,7 @@ covergroup ZfhminD_fcvt_s_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhminD_flh_cg with function sample(ins_t ins);
@@ -45,6 +47,7 @@ covergroup ZfhminD_flh_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhminD_fmv_h_x_cg with function sample(ins_t ins);
@@ -53,6 +56,7 @@ covergroup ZfhminD_fmv_h_x_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a double register)
         bins NaNBox = {48'hffffffffffff};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhminD_fmv_x_h_cg with function sample(ins_t ins);
@@ -72,6 +76,7 @@ covergroup ZfhminD_fmv_x_h_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 covergroup ZfhminD_fsh_cg with function sample(ins_t ins);
@@ -91,6 +96,7 @@ covergroup ZfhminD_fsh_cg with function sample(ins_t ins);
         bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
         bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
     }
+
 endgroup
 // ---------------------
 function void zfhmind_sample(int hart, int issue, ins_t ins);

@@ -15,10 +15,10 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
   addr_in_region: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_region = {`REGIONSTART};
+    bins at_region = {`PMP_REGION_START};
   }
 
-  standard_region: coverpoint ins.current.csr[12'h3B5] {
+  standard_region: coverpoint ins.current.csr[CSR_PMPADDR5] {
     bins standard_region = {`STANDARD_REGION };
   }
 
@@ -27,7 +27,7 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
   }
 
   uncompressed_jalr: coverpoint ins.prev.insn {
-    wildcard bins jalr = {32'b????????????_?????_000_?????_1100111};
+    wildcard bins jalr = {JALR};
   }
 
   read_c_instr: coverpoint ins.current.insn[15:0] {
@@ -37,15 +37,15 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
       wildcard bins c_ld   = {16'b011_???????????_00};
       wildcard bins c_ldsp = {16'b011_???????????_10};
     `endif
-    `ifdef COVER_ZCF
+    `ifdef ZCF_SUPPORTED
       wildcard bins c_flw   = {16'b011_???????????_00};
       wildcard bins c_flwsp = {16'b011_???????????_10};
     `endif
-    `ifdef COVER_ZCD
+    `ifdef ZCD_SUPPORTED
       wildcard bins c_fld   = {16'b001_???????????_00};
       wildcard bins c_fldsp = {16'b001_???????????_10};
     `endif
-    `ifdef COVER_ZCB
+    `ifdef ZCB_SUPPORTED
       wildcard bins c_lbu = {16'b100000_????????_00};
       wildcard bins c_lh  = {16'b100001_???1????_00};
       wildcard bins c_lhu = {16'b100001_???0????_00};
@@ -59,15 +59,15 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
       wildcard bins c_sd   = {16'b111_???????????_00};
       wildcard bins c_sdsp = {16'b111_???????????_10};
     `endif
-    `ifdef COVER_ZCF
+    `ifdef ZCF_SUPPORTED
       wildcard bins c_fsw   = {16'b111_???????????_00};
       wildcard bins c_fswsp = {16'b111_???????????_10};
     `endif
-    `ifdef COVER_ZCD
+    `ifdef ZCD_SUPPORTED
       wildcard bins c_fsd   = {16'b101_???????????_00};
       wildcard bins c_fsdsp = {16'b101_???????????_10};
     `endif
-    `ifdef COVER_ZCB
+    `ifdef ZCB_SUPPORTED
       wildcard bins c_sb = {16'b100010_????????_00};
       wildcard bins c_sh = {16'b100011_???0????_00};
     `endif
@@ -83,119 +83,119 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
   }
 
   addr_in_consecutive_regions: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins inside_first_region   = {`REGIONSTART};
-    bins straddle_first_second = {`REGIONSTART + `g_tor - 2};
-    bins inside_second_region  = {`REGIONSTART + `g_tor};
-    bins straddle_second_third = {`REGIONSTART + 2*`g_tor - 2 };
+    bins inside_first_region   = {`PMP_REGION_START};
+    bins straddle_first_second = {`PMP_REGION_START + `g_tor - 2};
+    bins inside_second_region  = {`PMP_REGION_START + `g_tor};
+    bins straddle_second_third = {`PMP_REGION_START + 2*`g_tor - 2 };
   }
 
   addr_in_consecutive_regions_napot: coverpoint (ins.current.rs1_val) {
-    bins inside_first_region   = {`REGIONSTART};
-    bins straddle_first_second = {`REGIONSTART + `g_napot - 2};
-    bins inside_second_region  = {`REGIONSTART + `g_napot};
-    bins straddle_second_third = {`REGIONSTART + 2*`g_napot - 2 };
+    bins inside_first_region   = {`PMP_REGION_START};
+    bins straddle_first_second = {`PMP_REGION_START + `g_napot - 2};
+    bins inside_second_region  = {`PMP_REGION_START + `g_napot};
+    bins straddle_second_third = {`PMP_REGION_START + 2*`g_napot - 2 };
   }
 
   `ifdef G_IS_0
     addr_in_consecutive_na4: coverpoint (ins.current.rs1_val + ins.current.imm) {
-      bins straddle_first_second = {`REGIONSTART + 2};
-      bins straddle_second_third = {`REGIONSTART + 6};
+      bins straddle_first_second = {`PMP_REGION_START + 2};
+      bins straddle_second_third = {`PMP_REGION_START + 6};
     }
   `endif
 
   addr_adjacent_to_pmp_boundary_tor: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins just_below_pmp = {`REGIONSTART - 2};          // 2 bytes before region start (possible straddle)
-    bins at_start_pmp   = {`REGIONSTART};              // aligned to start of region
-    bins at_end_pmp     = {`REGIONSTART + `g_tor - 2};   // 2 bytes before end → straddles out
-    bins just_above_pmp = {`REGIONSTART + `g_tor};       // just outside region
+    bins just_below_pmp = {`PMP_REGION_START - 2};          // 2 bytes before region start (possible straddle)
+    bins at_start_pmp   = {`PMP_REGION_START};              // aligned to start of region
+    bins at_end_pmp     = {`PMP_REGION_START + `g_tor - 2};   // 2 bytes before end → straddles out
+    bins just_above_pmp = {`PMP_REGION_START + `g_tor};       // just outside region
   }
 
   addr_adjacent_to_pmp_boundary_napot: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins just_below_pmp = {`REGIONSTART - 2};          // 2 bytes before region start (possible straddle)
-    bins at_start_pmp   = {`REGIONSTART};              // aligned to start of region
-    bins at_end_pmp     = {`REGIONSTART + `g_napot - 2}; // 2 bytes before end → straddles out
-    bins just_above_pmp = {`REGIONSTART + `g_napot};     // just outside region
+    bins just_below_pmp = {`PMP_REGION_START - 2};          // 2 bytes before region start (possible straddle)
+    bins at_start_pmp   = {`PMP_REGION_START};              // aligned to start of region
+    bins at_end_pmp     = {`PMP_REGION_START + `g_napot - 2}; // 2 bytes before end → straddles out
+    bins just_above_pmp = {`PMP_REGION_START + `g_napot};     // just outside region
   }
 
   `ifdef G_IS_0
     addr_adjacent_to_na4_boundary: coverpoint (ins.current.rs1_val + ins.current.imm) {
-      // NA4 region (4 bytes): (REGIONSTART, REGIONSTART + 4)
-      bins just_before_start     = {`REGIONSTART - 2};
-      bins at_the_top     = {`REGIONSTART };
-      bins at_the_bottom    = {`REGIONSTART + 2};     // 2 bytes before end → straddles out
-      bins just_below = {`REGIONSTART + 4};     // just outside region
+      // NA4 region (4 bytes): (PMP_REGION_START, PMP_REGION_START + 4)
+      bins just_before_start     = {`PMP_REGION_START - 2};
+      bins at_the_top     = {`PMP_REGION_START };
+      bins at_the_bottom    = {`PMP_REGION_START + 2};     // 2 bytes before end → straddles out
+      bins just_below = {`PMP_REGION_START + 4};     // just outside region
     }
   `endif
 
   // First three consecutive standard napot regions.
   // Region 0 -> LXWR 1111, Region 1 -> LXWR 1111, Region 2 -> LXWR 1000
-  cfg_consecutive_napot: coverpoint (ins.current.csr[12'h3A0][23:0]) {
+  cfg_consecutive_napot: coverpoint (ins.current.csr[CSR_PMPCFG0][23:0]) {
     bins locked_napot_regions = {24'b100110001001111110011111};
   }
 
-  // First region is starting at `REGIONSTART, second region is at `REGIONSTART + `g, and third region is at `REGIONSTART + 2*`g.
-  pmpaddr_consecutive_napot: coverpoint ( (pmpaddr[2] == (((`REGIONSTART+2**(`k+4)) >> 2) | (2**`k - 1)))   &&
-                                          (pmpaddr[1] == (((`REGIONSTART+2**(`k+3)) >> 2) | (2**`k - 1)))   &&
+  // First region is starting at `PMP_REGION_START, second region is at `PMP_REGION_START + `g, and third region is at `PMP_REGION_START + 2*`g.
+  pmpaddr_consecutive_napot: coverpoint ( (pmpaddr[2] == (((`PMP_REGION_START+2**(`k+4)) >> 2) | (2**`k - 1)))   &&
+                                          (pmpaddr[1] == (((`PMP_REGION_START+2**(`k+3)) >> 2) | (2**`k - 1)))   &&
                                           (pmpaddr[0] == `STANDARD_REGION)) {
     bins first_three_regions = {1};
   }
 
-  napot_region: coverpoint (ins.current.csr[12'h3B0]) {
+  napot_region: coverpoint (ins.current.csr[CSR_PMPADDR0]) {
     bins address = {`STANDARD_REGION}; // NAPOT region with LXWR 1111
   }
 
-  napot_setup: coverpoint (ins.current.csr[12'h3A0][7:0]) {
+  napot_setup: coverpoint (ins.current.csr[CSR_PMPCFG0][7:0]) {
     bins napot_lxwr = {8'b10011111}; // NAPOT region with LXWR 1111
   }
 
   // First three consecutive standard tor regions.
   // Region 0 -> LXWR 1111, Region 1 -> LXWR 1111, Region 2 -> LXWR 1000
-  cfg_consecutive_tor: coverpoint (ins.current.csr[12'h3A0]) {
+  cfg_consecutive_tor: coverpoint (ins.current.csr[CSR_PMPCFG0]) {
     bins locked_tor_regions = {32'b10001000_10001111_10001111_00000000};
   }
 
   // PMP TOR regions configured as follows:
-  // - Region 0: start at 0, end at `REGIONSTART + `g` (pmpaddr0)
-  // - Region 1: start at `REGIONSTART + `g`, end at `REGIONSTART + 2*`g` (pmpaddr1)
-  // - Region 2: start at `REGIONSTART + 2*`g`, end at `REGIONSTART + 3*`g` (pmpaddr2)
-  pmpaddr_consecutive_tor: coverpoint ({((pmpaddr[3]) == ((`REGIONSTART + 3*`g_tor) >> 2)) &&
-                                        ((pmpaddr[2]) == ((`REGIONSTART + 2*`g_tor) >> 2)) &&
-                                        ((pmpaddr[1]) == ((`REGIONSTART +   `g_tor) >> 2)) &&
-                                        ((pmpaddr[0]) == ((`REGIONSTART)          >> 2))}) {
+  // - Region 0: start at 0, end at `PMP_REGION_START + `g` (pmpaddr0)
+  // - Region 1: start at `PMP_REGION_START + `g`, end at `PMP_REGION_START + 2*`g` (pmpaddr1)
+  // - Region 2: start at `PMP_REGION_START + 2*`g`, end at `PMP_REGION_START + 3*`g` (pmpaddr2)
+  pmpaddr_consecutive_tor: coverpoint ({((pmpaddr[3]) == ((`PMP_REGION_START + 3*`g_tor) >> 2)) &&
+                                        ((pmpaddr[2]) == ((`PMP_REGION_START + 2*`g_tor) >> 2)) &&
+                                        ((pmpaddr[1]) == ((`PMP_REGION_START +   `g_tor) >> 2)) &&
+                                        ((pmpaddr[0]) == ((`PMP_REGION_START)          >> 2))}) {
     bins first_three_region = {1};
   }
 
-  tor_region: coverpoint ({ (pmpaddr[1]==(`REGIONSTART + `g_tor)>>2) && (pmpaddr[0] == (`REGIONSTART >> 2)) }) {
+  tor_region: coverpoint ({ (pmpaddr[1]==(`PMP_REGION_START + `g_tor)>>2) && (pmpaddr[0] == (`PMP_REGION_START >> 2)) }) {
     bins address = {1};
   }
 
-  tor_setup: coverpoint (ins.current.csr[12'h3A0][15:8]) {
+  tor_setup: coverpoint (ins.current.csr[CSR_PMPCFG0][15:8]) {
     bins tor_lxwr = { 8'b10001111}; // TOR region with LXWR 1111
   }
 
   `ifdef G_IS_0
-    cfg_consecutive_na4: coverpoint (ins.current.csr[12'h3A0][23:0]) {
+    cfg_consecutive_na4: coverpoint (ins.current.csr[CSR_PMPCFG0][23:0]) {
       bins locked_na4_regions = {24'b100100001001011110010111};
     }
 
-    // PMP0, PMP1, PMP2: NA4, L=1, XWR=111 — regions at REGIONSTART, REGIONSTART+4, REGIONSTART+8
-    pmpaddr_consecutive_na4: coverpoint ((ins.current.csr[12'h3B2] == ((`REGIONSTART + 8) >> 2)) &&
-                                         (ins.current.csr[12'h3B1] == ((`REGIONSTART + 4) >> 2)) &&
-                                         (ins.current.csr[12'h3B0] == (`REGIONSTART >> 2))) {
+    // PMP0, PMP1, PMP2: NA4, L=1, XWR=111 — regions at PMP_REGION_START, PMP_REGION_START+4, PMP_REGION_START+8
+    pmpaddr_consecutive_na4: coverpoint ((ins.current.csr[CSR_PMPADDR2] == ((`PMP_REGION_START + 8) >> 2)) &&
+                                         (ins.current.csr[CSR_PMPADDR1] == ((`PMP_REGION_START + 4) >> 2)) &&
+                                         (ins.current.csr[CSR_PMPADDR0] == (`PMP_REGION_START >> 2))) {
       bins first_three_regions = {1};
     }
 
-    na4_region: coverpoint (ins.current.csr[12'h3B0]) {
-      bins address = {`REGIONSTART >> 2}; // NA4 region with LXWR 1111
+    na4_region: coverpoint (ins.current.csr[CSR_PMPADDR0]) {
+      bins address = {`PMP_REGION_START >> 2}; // NA4 region with LXWR 1111
     }
 
-    na4_setup: coverpoint (ins.current.csr[12'h3A0][7:0]) {
+    na4_setup: coverpoint (ins.current.csr[CSR_PMPCFG0][7:0]) {
       bins na4_lxwr = { 8'b10010111}; // NA4 region with LXWR 1111
     }
 
   `endif
 
-  cfg_consecutive_off: coverpoint (ins.current.csr[12'h3A0][23:0]) {
+  cfg_consecutive_off: coverpoint (ins.current.csr[CSR_PMPCFG0][23:0]) {
     bins locked_off_regions = {24'b100001111000011110000111};
   }
 
@@ -231,7 +231,7 @@ function void pmpzca_sample(int hart, int issue, ins_t ins);
   `ifdef XLEN32
     // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
     for (int i = 0; i < 16; i++) begin
-      logic [31:0] cfg_word = ins.current.csr[12'h3A0 + i];
+      logic [31:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + i];
       pmpcfg[i*4 + 0] = cfg_word[7:0];
       pmpcfg[i*4 + 1] = cfg_word[15:8];
       pmpcfg[i*4 + 2] = cfg_word[23:16];
@@ -240,7 +240,7 @@ function void pmpzca_sample(int hart, int issue, ins_t ins);
   `elsif XLEN64
     // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
-      logic [63:0] cfg_word = ins.current.csr[12'h3A0 + 2*i];
+      logic [63:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + 2*i];
       pmpcfg[i*8 + 0] = cfg_word[7:0];
       pmpcfg[i*8 + 1] = cfg_word[15:8];
       pmpcfg[i*8 + 2] = cfg_word[23:16];
@@ -253,7 +253,7 @@ function void pmpzca_sample(int hart, int issue, ins_t ins);
   `endif
 
   for (int j = 0; j < 63; j++) begin
-    pmpaddr[j] = ins.current.csr[12'h3B0 + j];
+    pmpaddr[j] = ins.current.csr[CSR_PMPADDR0 + j];
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions

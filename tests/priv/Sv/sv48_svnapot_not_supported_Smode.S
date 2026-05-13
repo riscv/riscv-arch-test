@@ -11,18 +11,14 @@
 // Total Expected Faults :: 3
 // --------------------------------------------------------------------------------------------------------------------------------
 
-// Remove NORUN once Sail supports Svnapot
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Sv48, NORUN]
+# REQUIRED_EXTENSIONS: [I, Sv48]
 # MARCH: rv64i_zicsr
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv48_svnapot_not_supported_Smode.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 30
-#define rvtest_mtrap_routine
-#define rvtest_strap_routine
-#define RVTEST_PRIV_TEST
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"

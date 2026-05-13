@@ -4388,6 +4388,8 @@ I_bne_cg_cp_imm_edges_branch_all:
   # Check if x6 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x21, x8, x7, x6, I_bne_cg_cp_imm_edges_branch_all, I_bne_cg_cp_imm_edges_branch_all_str)
 
+  mv x2, x21 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

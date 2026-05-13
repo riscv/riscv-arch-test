@@ -29,7 +29,7 @@
 
 #define SKIP_MEPC
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I']
+# REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
@@ -38,11 +38,8 @@
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "pmpsm_priority.S"
-#define SIGUPD_COUNT 50
+#define SIGUPD_COUNT 200
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -58,12 +55,14 @@ RVTEST_BEGIN
     // Execution Access Check
     LA (a4, \ADDRESS)
     LA(x1, 1f)                          // Store the return Address in x1
+    \TEST_CASE\()_3:
     jalr ra, 0(a4)
     nop
     nop
 1:
     nop
-    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
+
 
    LI(a4, NOP)                                              // Value to write (NOP)
     // Store Access Check
@@ -144,7 +143,8 @@ main:
     csrw pmpcfg1, x5
     LI(x4, (PMPREGION_LXWR_1111|PMPREGION_LXWR_1001))
     csrw pmpcfg2, x4
-    LI(x5, PMPREGION_LXWR_1000)
+//    LI(x5, PMPREGION_LXWR_1000)
+    LI(x5, (PMPREGION_LXWR_1000 | PMP_REGION_GLOBAL))
     csrw pmpcfg3, x5
 
 //                                          Verification Section
@@ -176,21 +176,6 @@ main:
 
     VERIFICATION_RWX   (TEST_FOR_EXECUTION + 7*g - 4), test_7
 
-    j exit                                                      // Verification Complete, exit the test
-
-.align 13
-TEST_FOR_EXECUTION:     // Largest Region of size 7*g
-    .rept 7*(1<<(RVMODEL_PMP_GRAIN+2))
-    nop
-    .endr
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
-
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
@@ -199,6 +184,22 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpm_priority_sw\""
 test_2_str: .string "\"test: 2; cp: pmpm_priority_lw\""
+test_3_str: .string "\"test: 3; cp: pmpm_priority_jalr\""
+
+
+.align 12
+TEST_FOR_EXECUTION_x:
+    jr ra
+
+TEST_FOR_EXECUTION:
+    .rept (8*(1<<(RVMODEL_PMP_GRAIN+2)))
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

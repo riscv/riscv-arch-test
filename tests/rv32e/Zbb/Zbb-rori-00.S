@@ -1139,6 +1139,8 @@ Zbb_rori_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x1f:
   # Check if x12 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x1, x5, x4, x12, Zbb_rori_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x1f, Zbb_rori_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x1f_str)
 
+  mv x2, x1 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

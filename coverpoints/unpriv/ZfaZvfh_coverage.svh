@@ -18,16 +18,20 @@ covergroup ZfaZvfh_fli_h_cg with function sample(ins_t ins);
         // NaNBoxing (half result in a float register)
         bins NaNBox = {16'hffff};
     }
+
     cp_asm_count : coverpoint ins.ins_str == "fli.h"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
         // FD register assignment
     }
+
     cp_rs1_fli : coverpoint ins.current.insn[19:15]  iff (ins.trap == 0 )  {
         // FLI immediate encoding
     }
+
 endgroup
 // ---------------------
 function void zfazvfh_sample(int hart, int issue, ins_t ins);

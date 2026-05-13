@@ -257,7 +257,7 @@ def _generate_store_misaligned_priority_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("ExceptionsZalrsc", required_extensions=["Zicsr", "Zalrsc", "Sm"])
+@add_priv_test_generator("ExceptionsZalrsc", required_extensions=["Zalrsc", "Sm"])
 def make_exceptionszalrsc(test_data: TestData) -> list[str]:
     """Generate tests for ExceptionsZalrsc coverpoints"""
     lines = []

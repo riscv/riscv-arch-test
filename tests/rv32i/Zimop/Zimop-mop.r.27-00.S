@@ -594,6 +594,8 @@ Zimop_mop_r_27_cg_cp_rs1_edges_0x55555555:
   # Check if x6 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x22, x8, x7, x6, Zimop_mop_r_27_cg_cp_rs1_edges_0x55555555, Zimop_mop_r_27_cg_cp_rs1_edges_0x55555555_str)
 
+  mv x2, x22 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

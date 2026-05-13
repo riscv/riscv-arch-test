@@ -16,17 +16,19 @@ In addition to the runtime prerequisites, contributors should set up the followi
 
 ### Pre-commit Hooks
 
-This project uses [`pre-commit`](https://pre-commit.com/) to run automated checks before each commit, including linting, formatting, type checking, and spell checking. Install the hooks with:
+This project uses [`prek`](https://prek.j178.dev/) (a fast, drop-in replacement for [`pre-commit`](https://pre-commit.com/)) to run automated checks before each commit, including linting, formatting, type checking, and spell checking. `prek` is pinned in [`.mise.toml`](./.mise.toml) and installed automatically by `mise`. Install the Git hooks with:
 
 ```bash
-uv run pre-commit install
+mise run prek-install
 ```
 
 Once installed, the hooks will run automatically on `git commit`. You can also run them manually on all files with:
 
 ```bash
-uv run pre-commit run --all-files
+mise run prek
 ```
+
+(`mise run` works whether or not `mise` is activated in your shell; the underlying commands are `prek install` and `prek run --all-files`.)
 
 ### Code Quality Tools
 
@@ -35,7 +37,7 @@ All Python code must pass the following checks:
 - **[Ruff](https://docs.astral.sh/ruff/)** for linting and formatting
 - **[Pyright](https://github.com/microsoft/pyright)** for type checking
 
-These tools are run automatically by the pre-commit hooks, but can also be run manually:
+These tools are run automatically by the prek hooks, but can also be run manually:
 
 ```bash
 # Lint and type check
@@ -55,7 +57,7 @@ All Python code should include type hints. Configuration for Ruff and Pyright is
 Pull requests are the best way to propose changes to the codebase. We actively welcome your pull requests:
 
 1. Fork the repo and create your branch from `act4`.
-2. Set up pre-commit hooks and ensure all checks pass (see [Development Setup](#development-setup)).
+2. Set up prek hooks and ensure all checks pass (see [Development Setup](#development-setup)).
 3. If you have added or modified tests, ensure they compile and pass by running `make` with an appropriate [DUT configuration](./README.md#configuration). A good choice for testing is `make spike`. To also verify coverage, run `make coverage`.
 4. If you have added or modified coverpoints or test generators, refer to the [Developer's Guide](./docs/DeveloperGuide.md) for the expected workflow.
 5. If you have updated the docs, ensure that they render correctly in the respective format.

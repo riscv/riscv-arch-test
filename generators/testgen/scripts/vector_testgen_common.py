@@ -2839,6 +2839,18 @@ def randomizeRegister(instruction, eew, register_argument_name: str, reg_count: 
         register = randint(1, reg_count-1) # 1 to maxreg, inclusive
       else: # "f" registers
         register = randint(0, reg_count-1) # 0 to maxreg, inclusive
+  elif register_type == "v":
+    # Preset vector register: verify the requested base register leaves room
+    # for the full segment group (NF * EMUL_field). Callers (e.g. make_vs3_vs2)
+    # iterate over v in range(32) and rely on ValueError to skip illegal vs.
+    emul_check = int(register_data['size_multiplier'] * lmul)
+    if register_data['reg_type'] == "scalar" or register_data['reg_type'] == "mask" or emul_check < 1:
+      emul_check = 1
+    if register + emul_check * register_data['segments'] > reg_count:
+      raise ValueError(
+        f"preset {register_argument_name}=v{register} with NF={register_data['segments']} "
+        f"EMUL_field={emul_check} overflows past v{reg_count-1} for {instruction}"
+      )
 
   register_data['reg'] = register
 
@@ -2931,19 +2943,32 @@ def getInstructionRegisterOverlapConstraints (instruction, sew, lmul, masked=Fal
   ls_indexed_vs2_eew = getInstructionEEW(instruction)
 
   if ls_indexed_vs2_eew is not None and not isinstance(sew, str):
-    # When the data register group (vs3 for stores, vd for loads) is read at
-    # SEW while vs2 holds indices at a different EEW, the spec forbids any
-    # register-group overlap between them (v-spec norm:vreg_source_eew_rsv).
-    # This is stricter than the prior vd_top / vd_bottom partial-overlap rule
-    # and is also required for indexed-segment LS (where the data group spans
-    # NF*EMUL_data registers and can overflow into the vs2 index group).
+    # Indexed L/S: data EEW (= SEW) vs index EEW (= instruction EEW) may differ.
+    # V-spec §5.2 register-overlap rules between dest and source register groups:
+    #   (a) EEW_dest == EEW_src                -> any overlap legal
+    #   (b) EEW_dest <  EEW_src                -> overlap only at LOWEST part of source group
+    #   (c) EEW_dest >  EEW_src, EMUL_src >= 1 -> overlap only at HIGHEST part of dest group
+    # For non-segment indexed loads (dest=vd, src=vs2) we forbid the *illegal*
+    # overlap region:
+    #   K > SEW: vd must not overlap the TOP of vs2 group (only bottom legal -> rule b).
+    #   K < SEW: vs2 must not overlap the BOTTOM of vd group (only top legal -> rule c).
+    # Indexed segment loads keep the full no-overlap rule applied above
+    # (norm:vector_ls_seg_indexed_vreg_rsv).
+    # For indexed stores (any nf) both vs3 and vs2 are sources; vs3 == vs2 is only
+    # legal when EEW_idx == SEW (a single source register cannot be read at two EEWs).
     if ls_indexed_vs2_eew != sew:
       if instruction in indexed_stores:
         no_overlap = addOverlap(no_overlap, [['vs3','vs2']])
-      else:
-        no_overlap = addOverlap(no_overlap, [['vd','vs2']])
+      elif instruction in indexed_loads and instruction not in segment_loads:
+        if ls_indexed_vs2_eew > sew:
+          no_overlap = addOverlap(no_overlap, [['vd','vs2_top']])
+        else:  # ls_indexed_vs2_eew < sew
+          no_overlap = addOverlap(no_overlap, [['vd_bottom','vs2']])
 
   if instruction in segment_loads:
+    # Indexed segment loads explicitly reserve any vd/vs2 overlap (V-spec
+    # norm:vector_ls_seg_indexed_vreg_rsv); non-indexed segment loads keep the
+    # same conservative rule.
     no_overlap = addOverlap(no_overlap, [['vd','vs2']])
 
   # Masked indexed LS: vs2 (index, EEW = index EEW) cannot equal v0 (mask,

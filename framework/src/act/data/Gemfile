@@ -4,4 +4,21 @@
 
 source "https://rubygems.org"
 
-gem "udb", "~> 0.1.9"
+# By default we pull the UDB Ruby gems from rubygems.org. To develop against
+# a local riscv-unified-db checkout (e.g. to pick up unpublished changes such
+# as augmented udb-gen subcommands), set UDB_LOCAL_PATH to the checkout root
+# and the gems will be sourced from <UDB_LOCAL_PATH>/tools/ruby-gems instead.
+udb_local_path = ENV["UDB_LOCAL_PATH"]
+
+if udb_local_path && !udb_local_path.empty?
+  gems_root = "#{udb_local_path}/tools/ruby-gems"
+  gem "udb",         path: "#{gems_root}/udb"
+  gem "udb-gen",     path: "#{gems_root}/udb-gen"
+  gem "udb_helpers", path: "#{gems_root}/udb_helpers"
+  gem "idlc",        path: "#{gems_root}/idlc"
+else
+  gem "udb"
+  gem "udb-gen"
+  gem "udb_helpers"
+  gem "idlc"
+end

@@ -87,14 +87,7 @@ def _ensure_udb_installed() -> None:
         raise RuntimeError("'bundle' command still not found after install.")
 
 
-def ensure_udb_installed() -> None:
-    """Public wrapper for `_ensure_udb_installed` so callers can trigger the
-    one-time `bundle install` outside of any parallel execution context
-    (the install step isn't safe to run concurrently)."""
-    _ensure_udb_installed()
-
-
-def _validate_with_marker(udb_config_file: Path, marker: Path) -> None:
+def validate_udb_config(udb_config_file: Path, marker: Path) -> None:
     """Run `udb validate cfg` and touch a sentinel marker on success.
 
     The marker is the BuildTask's primary output — its mtime drives the
@@ -102,7 +95,15 @@ def _validate_with_marker(udb_config_file: Path, marker: Path) -> None:
     config has changed and is then reused as a dep by every UDB-gen task
     for that config.
     """
-    validate_udb_config(udb_config_file)
+    try:
+        _bundle_exec(["udb", "validate", "cfg", str(udb_config_file)], check=True, capture_output=True)
+    except subprocess.CalledProcessError as e:
+        rprint(f"[bold red]✗ UDB configuration validation failed for {udb_config_file.name}[/]")
+        if e.stdout:
+            sys.stdout.buffer.write(e.stdout)
+        if e.stderr:
+            sys.stderr.buffer.write(e.stderr)
+        sys.exit(1)
     marker.parent.mkdir(parents=True, exist_ok=True)
     marker.touch()
 
@@ -138,7 +139,7 @@ def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int) -> None
         tasks.append(
             BuildTask(
                 outputs=(marker,),
-                action=PythonAction(_validate_with_marker, (src, marker)),
+                action=PythonAction(validate_udb_config, (src, marker)),
                 extra_inputs=(src,),
             )
         )
@@ -184,18 +185,6 @@ def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int) -> None
     n = len(configs)
     suffix = "all up to date" if result.succeeded == 0 else f"in {elapsed:.1f}s"
     rprint(f"[bold green]✓ DUT configs prepared:[/] {n} config{'s' if n != 1 else ''} {suffix}")
-
-
-def validate_udb_config(udb_config_file: Path) -> None:
-    try:
-        _bundle_exec(["udb", "validate", "cfg", str(udb_config_file)], check=True, capture_output=True)
-    except subprocess.CalledProcessError as e:
-        rprint(f"[bold red]✗ UDB configuration validation failed for {udb_config_file.name}[/]")
-        if e.stdout:
-            sys.stdout.buffer.write(e.stdout)
-        if e.stderr:
-            sys.stderr.buffer.write(e.stderr)
-        sys.exit(1)
 
 
 def get_config_params(udb_config_file: Path) -> dict[str, int | bool | str | list[int | str | bool]]:

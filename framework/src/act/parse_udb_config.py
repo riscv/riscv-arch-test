@@ -15,10 +15,22 @@ import shutil
 import subprocess
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+from rich.console import Console, Group
+from rich.live import Live
+from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
+from rich.text import Text
+from ruamel.yaml import YAML
+
+from act.dut_macros import generate_rvmodel_svh
+
+if TYPE_CHECKING:
+    from act.config import Config
 
 from rich import print as rprint
-from ruamel.yaml import YAML
 
 
 def _find_gemfile() -> Path:
@@ -87,6 +99,75 @@ def ensure_udb_installed() -> None:
     _ensure_udb_installed()
 
 
+def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int) -> None:
+    """Generate all UDB-derived files (extensions.txt, rvtest_config.{h,svh})
+    plus rvmodel_macros.svh for every config, in parallel.
+
+    Handles `bundle install` once up front (the install step isn't safe to
+    run concurrently) and renders a transient rich progress bar that
+    disappears when finished, matching the look of the main build pipeline.
+    """
+    if not configs:
+        return
+
+    _ensure_udb_installed()
+
+    # Build the per-config job list and pre-create workdirs.
+    jobs_to_run: list[tuple[Config, Path]] = []
+    for cfg in configs:
+        config_dir = workdir / cfg.udb_config.stem
+        config_dir.mkdir(parents=True, exist_ok=True)
+        jobs_to_run.append((cfg, config_dir))
+
+    def _do_one(cfg: Config, config_dir: Path) -> None:
+        generate_udb_files(cfg.udb_config, config_dir)
+        generate_rvmodel_svh(cfg.dut_include_dir, config_dir)
+
+    workers = min(len(jobs_to_run), jobs) or 1
+
+    progress = Progress(
+        SpinnerColumn(),
+        TextColumn("[cyan]Preparing DUT configs..."),
+        BarColumn(),
+        MofNCompleteColumn(),
+        TextColumn("elapsed:"),
+        TimeElapsedColumn(),
+    )
+    progress_task = progress.add_task("prep", total=len(jobs_to_run))
+    status_text = Text()
+    in_flight: set[str] = set()
+
+    def _refresh_status() -> None:
+        status_text.truncate(0)
+        if in_flight:
+            status_text.append("  " + ", ".join(sorted(in_flight)), style="dim")
+
+    console = Console()
+    with (
+        Live(Group(progress, status_text), console=console, transient=True) as live,
+        ThreadPoolExecutor(max_workers=workers) as pool,
+    ):
+        future_to_name = {}
+        for cfg, config_dir in jobs_to_run:
+            name = cfg.udb_config.stem
+            in_flight.add(name)
+            future_to_name[pool.submit(_do_one, cfg, config_dir)] = name
+        _refresh_status()
+
+        for fut in as_completed(future_to_name):
+            name = future_to_name[fut]
+            try:
+                fut.result()
+            except Exception:
+                # Surface failure via the live console so the transient bar
+                # still clears after the exception unwinds.
+                live.console.print(f"[bold red]✗ Failed preparing DUT outputs for {name}[/]")
+                raise
+            in_flight.discard(name)
+            progress.advance(progress_task)
+            _refresh_status()
+
+
 def validate_udb_config(udb_config_file: Path) -> None:
     try:
         _bundle_exec(["udb", "validate", "cfg", str(udb_config_file)], check=True, capture_output=True)
@@ -109,7 +190,6 @@ def get_config_params(udb_config_file: Path) -> dict[str, int | bool | str | lis
 def generate_extension_list(udb_config_file: Path, output_dir: Path) -> None:
     extension_list_file = output_dir / "extensions.txt"
     if not extension_list_file.exists() or (extension_list_file.stat().st_mtime < udb_config_file.stat().st_mtime):
-        print(f"Generating {extension_list_file.name} for {udb_config_file.stem}")
         generate_cmd = [
             "udb",
             "list",
@@ -130,7 +210,6 @@ def _generate_one_dut_header(udb_config_file: Path, output_file: Path, subcomman
     """Run `udb-gen <subcommand>` for the given config and write the result to output_file."""
     if output_file.exists() and output_file.stat().st_mtime >= udb_config_file.stat().st_mtime:
         return
-    print(f"Generating {output_file.name} for {udb_config_file.stem}")
     output_file.parent.mkdir(parents=True, exist_ok=True)
     cmd = ["udb-gen", subcommand, "-c", str(udb_config_file), "-o", str(output_file)]
     try:

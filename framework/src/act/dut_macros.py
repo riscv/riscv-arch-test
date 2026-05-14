@@ -15,8 +15,6 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from rich import print as rprint
-
 # Defines mirrored from rvmodel_macros.h into rvmodel_macros.svh. Each entry is
 # the macro name; only macros with an active (non-commented) #define are emitted.
 _MIRRORED_DEFINES: list[str] = [
@@ -59,7 +57,6 @@ def generate_rvmodel_svh(dut_include_dir: Path, output_dir: Path) -> None:
     if output_svh.exists() and output_svh.stat().st_mtime >= input_h.stat().st_mtime:
         return
 
-    rprint(f"[bold]Generating[/] {output_svh.name} for [cyan]{dut_include_dir.name}[/]")
     defines = _scan_h_defines(input_h, _MIRRORED_DEFINES)
 
     guard = f"_RVMODEL_MACROS_SVH_{dut_include_dir.name.upper().replace('-', '_')}_"

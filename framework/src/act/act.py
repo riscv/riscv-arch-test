@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import os
 import sys
-from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Annotated
 
@@ -22,13 +21,11 @@ from act.build import BuildTask, build
 from act.build_plan import generate_build_plan
 from act.config import Config, CoverageSimulator, load_config
 from act.coverreport import print_coverage_summary
-from act.dut_macros import generate_rvmodel_svh
 from act.parse_test_constraints import TestYamlHeaderError, generate_test_dict
 from act.parse_udb_config import (
-    ensure_udb_installed,
-    generate_udb_files,
     get_config_params,
     get_implemented_extensions,
+    prepare_dut_outputs,
 )
 from act.select_tests import select_tests
 
@@ -109,26 +106,18 @@ def run_act(
     config_names: list[str] = []
     tasks: list[BuildTask] = []
 
-    # Load configs and prepare per-config workdirs sequentially (cheap, IO-only).
+    # Load all configs first so a single top-level UDB call can prepare every
+    # DUT's generated files (extensions.txt, rvtest_config.{h,svh}, and
+    # rvmodel_macros.svh) in parallel under a unified progress display.
     loaded_configs: list[tuple[Config, Path]] = []
     for config_file in config_files:
         config = load_config(config_file)
         config_dir = workdir / config.udb_config.stem
-        config_dir.mkdir(parents=True, exist_ok=True)
         loaded_configs.append((config, config_dir))
 
-    # Generate UDB-derived files (extensions.txt, rvtest_config.{h,svh}) for
-    # all configs in parallel — each config is an independent `udb-gen` invocation
-    # bottlenecked on Ruby startup, so threading wins. Run `bundle install` once
-    # up front since it isn't safe to run concurrently.
-    ensure_udb_installed()
-    udb_workers = min(len(loaded_configs), jobs) or 1
-    with ThreadPoolExecutor(max_workers=udb_workers) as pool:
-        list(pool.map(lambda cd: generate_udb_files(cd[0].udb_config, cd[1]), loaded_configs))
+    prepare_dut_outputs([cfg for cfg, _ in loaded_configs], workdir, jobs)
 
     for config, config_dir in loaded_configs:
-        # UDB integration (files already generated above)
-        generate_rvmodel_svh(config.dut_include_dir, config_dir)
         implemented_extensions = get_implemented_extensions(config_dir / "extensions.txt")
         config_params = get_config_params(config.udb_config)
 

@@ -181,7 +181,7 @@
 //==========================================================================================
 
 #ifndef   RVMODEL_FENCEI        /**** if not defaulted must be a single op or a JAL to a rvmodel_fencei routine in rvmodel_boot ****/
-  #ifndef ZIFENCEI_SUPPORTED
+  #if !defined(ZIFENCEI_SUPPORTED) || !defined(__riscv_zifencei)
     #define RVMODEL_FENCEI nop                                // make sure ifetches get new code
   #else
     #define RVMODEL_FENCEI fence.i
@@ -1003,13 +1003,9 @@ rvtest_\__MODE__\()prolog_done:
 .option push
 .option rvc             // temporarily allow compress to allow c.nop alignment
 // Ensure that trampoline is on a boundary that is the max of 64 bytes, UDB_MTVEC_BASE_ALIGNMENT_VECTORED, and UDB_MTVEC_BASE_ALIGNMENT_DIRECT
-.align 64
-.ifdef UDB_MTVEC_BASE_ALIGNMENT_VECTORED
-  .balign UDB_MTVEC_BASE_ALIGNMENT_VECTORED
-.endif
-.ifdef UDB_MTVEC_BASE_ALIGNMENT_DIRECT
-  .balign UDB_MTVEC_BASE_ALIGNMENT_DIRECT
-.endif
+.balign 64
+.balign UDB_MTVEC_BASE_ALIGNMENT_VECTORED
+.balign UDB_MTVEC_BASE_ALIGNMENT_DIRECT
 .option pop
 
   /**********************************************************************/

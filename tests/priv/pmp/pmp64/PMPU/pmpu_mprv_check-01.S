@@ -90,8 +90,8 @@ main:
 #define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
 #define REGIONSTART            TEST_FOR_EXECUTION    // RAM_BASE_ADDR + PROGRAM_SIZE
 #if UDB_PMP_GRANULARITY != 2
-    #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
-    #define PMP_REGION_SIZE     (1 << (UDB_PMP_GRANULARITY - 3)) - 1
+    #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY-3))-1)
+    #define PMP_REGION_SIZE     (1 << (UDB_PMP_GRANULARITY-3)) - 1
 #else
     #define PMP_MASK            ~0
     #define PMP_REGION_SIZE     0
@@ -178,8 +178,10 @@ test_1_str: .string "\"test: 1; cp: pmpm_cfg_A_off_all_jalr\""
 test_2_str: .string "\"test: 2; cp: pmpm_cfg_A_off_all_sw\""
 test_3_str: .string "\"test: 3; cp: pmpm_cfg_A_off_all_lw\""
 
-.align 13
-.align (UDB_PMP_GRANULARITY)
+.align 12
+TEST_FOR_EXECUTION_0:
+    jr ra
+
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

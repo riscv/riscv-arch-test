@@ -240,11 +240,8 @@ test_8_str: .string "\"test: 8; cp: pmpu_cfg_A_off_all_sw_address+4\""
 test_9_str: .string "\"test: 9; cp: pmpu_cfg_A_off_all_lw_address+4\""
 
 .align 12
-.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
-    .rept 1024
-    nop
-    .endr
+    jr ra
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

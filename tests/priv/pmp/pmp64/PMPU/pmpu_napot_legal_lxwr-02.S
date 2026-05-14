@@ -43,7 +43,7 @@ RVTEST_BEGIN
 #if UDB_PMP_GRANULARITY != 2
   #define g   (1 << (UDB_PMP_GRANULARITY))
 #else
-  #define g   (1 << (UDB_PMP_GRANULARITY + 1))
+  #define g   (1 << (UDB_PMP_GRANULARITY+1))
 #endif
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
@@ -83,7 +83,8 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_19, test_19_str)
 
-    addi a4, a4, (g-8)                  // REGIONSTART + g - 4
+    li t0, (g-8)
+    add a4, a4, t0                  // REGIONSTART + g - 4
     LA(x1, 4f)                          // Store the return Address in x1
     \TEST_CASE\()_20:
     jalr ra, 0(a4)
@@ -143,7 +144,8 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_5, test_5_str)
 
-    addi a5, a5, (g-8)                                      // REGIONSTART + g - 4
+    li t0, (g-8)
+    add a5, a5, t0                                      // REGIONSTART + g - 4
 
     \TEST_CASE\()_6:
     sw a4, 0(a5)
@@ -207,7 +209,8 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_14, test_14_str)                                   // Signature update
 
-    addi a5, a5, (g-8)                                      // REGIONSTART + g - 4
+    li t0, (g-8)
+    add a5, a5, t0                                      // REGIONSTART + g - 4
 
     \TEST_CASE\()_15:
     lw a4, 0(a5)
@@ -271,8 +274,8 @@ main:
 #define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
 #define REGIONSTART            TEST_FOR_EXECUTION    // RAM_BASE_ADDR + PROGRAM_SIZE
 #if UDB_PMP_GRANULARITY != 2
-    #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
-    #define PMP_REGION_SIZE     (1 << (UDB_PMP_GRANULARITY - 3)) - 1
+    #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY-3))-1)
+    #define PMP_REGION_SIZE     (1 << (UDB_PMP_GRANULARITY-3)) - 1
 #else
     #define PMP_MASK            ~0
     #define PMP_REGION_SIZE     0
@@ -368,11 +371,8 @@ test_23_str:  .string "\"test: 23;  cp: pmpu_napot_legal_lwxr_ld_address\""
 test_24_str:  .string "\"test: 24;  cp: pmpu_napot_legal_lwxr_lwu_address\""
 
 .align 12
-.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
-    .rept 1024
-    nop
-    .endr
+    jr ra
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

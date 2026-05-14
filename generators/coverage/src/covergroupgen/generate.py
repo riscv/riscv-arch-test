@@ -40,6 +40,11 @@ SEW_DEPENDENT_CPS = {
 # Vector extension prefixes used to identify vector architectures.
 VECTOR_PREFIXES = ("Vx", "Zv", "Vls", "Vf")
 
+# Priv-side architectures that need vector-flavored covergroups (header_vector etc.).
+# These priv testplans use the same vector helpers as unpriv vector covergroups
+# but do not undergo per-SEW expansion.
+PRIV_VECTOR_PREFIXES = ("ExceptionsV", "MisalignedV")
+
 # Subset of vector prefixes that support widening instructions.
 VECTOR_WIDEN_PREFIXES = ("Vx", "Vls", "Vf")
 
@@ -219,10 +224,15 @@ def _is_vector_widen(arch: str, instr: str) -> bool:
     return arch.startswith(VECTOR_WIDEN_PREFIXES) and (instr.startswith(("vw", "vfw")) or ".w" in instr)
 
 
+def _has_effew_suffix(arch: str) -> bool:
+    """Whether *arch* uses the per-SEW EFFEW{N} testplan filter."""
+    return _is_vector(arch) or bool(re.match(r"ExceptionsVf\d+$", arch))
+
+
 def _get_sorted_instr_keys(tp: dict[tuple[str, str], list[str]], arch: str) -> list[tuple[str, str]]:
-    """Get sorted instruction keys, filtering by EFFEW for vector architectures."""
+    """Get sorted instruction keys, filtering by EFFEW for vector/per-SEW priv arches."""
     keys = sorted(tp.keys())
-    if _is_vector(arch):
+    if _has_effew_suffix(arch):
         effew = _get_effew(arch)
         keys = [k for k in keys if f"EFFEW{effew}" in tp[k]]
     return keys
@@ -332,6 +342,19 @@ def _gen_instrs(
         else:
             covergroup_lines.append(customize_template(templates, "instruction", arch, instr))
             init_lines.append(customize_template(templates, "init", arch, instr))
+
+        # SsstrictV templates reference a small set of helpers (vtype_lmul_*,
+        # std_trap_vec, mask_enabled, vd_v0, vd/vs1/vs2_all_reg_unaligned_lmul_*,
+        # vstart_zero, vl_nonzero, vtype_prev_vill_*, vtype_all_lmulge1).
+        # We include a SsstrictV-scoped header rather than the full standard
+        # vector header so the SsstrictV covergroups don't pick up dozens of
+        # unrelated 32-bin sweeps (vd_all_reg, vs1_all_reg, etc.) that aren't in
+        # SsstrictV's testplan and would inflate the corpus past the linker's
+        # ±1MiB JAL range. Other priv vector arches (ExceptionsVx/Vls/Vf)
+        # intentionally use a small, focused set of coverpoints (cp_vill /
+        # cp_vstart / cp_vstart_gt_vl) and must not pull in either header.
+        if arch.startswith("SsstrictV"):
+            covergroup_lines.append('    `include "general/RISCV_coverage_ssstrictv_helpers.svh"\n')
 
         # Coverpoint entries (skip metadata columns: sample_*, RV32, RV64, EFFEW*)
         # VCS requires coverpoints to be declared before they are referenced by cross coverpoints.
@@ -457,8 +480,8 @@ def _write_extension_files(
     an EFFEW substitution is made available in the header, and the instruction
     key list is filtered to the matching SEW.
     """
-    effew = _get_effew(arch) if vector else ""
-    instr_keys = _get_sorted_instr_keys(tp, arch) if vector else sorted(tp.keys())
+    effew = _get_effew(arch) if (vector or _has_effew_suffix(arch)) else ""
+    instr_keys = _get_sorted_instr_keys(tp, arch) if (vector or _has_effew_suffix(arch)) else sorted(tp.keys())
 
     header_tmpl = "header_vector" if vector else "header"
     sample_header_tmpl = "covergroup_sample_header_vector" if vector else "covergroup_sample_header"
@@ -619,8 +642,9 @@ def write_priv_covergroups(
 
     # Mirror the unpriv per-SEW expansion for ExceptionsVf so a single
     # ExceptionsVf.csv produces ExceptionsVf{16,32,64} covergroup files (one
-    # per non-reserved vector-FP SEW). The testgen driver applies the matching
-    # EFFEW{N} filter when emitting tests.
+    # per non-reserved vector-FP SEW). Per-instruction filtering is driven by
+    # the EFFEW{N} columns in the testplan via _get_sorted_instr_keys, so this
+    # block doesn't need to drop any rows itself.
     if "ExceptionsVf" in priv_plans:
         ex_vf_tp = priv_plans["ExceptionsVf"]
         for effew in ("16", "32", "64"):

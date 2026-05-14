@@ -50,7 +50,7 @@ obvious.  This section explains them in detail.
 The RVA23S64 profile purposefully excludes Machine mode (M-mode).  It does not require a _Standard M-mode_ consistent with the ratified M-mode specification.
 Therefore, certification does not run M-mode code directly.
 
-Custom M-mode is an supervisor execution environment that deviates from the M-mode specification.  For example, it might have a bug that affects M-mode behavior but is invisible from S-mode.  The firmware could work around this bug by not running M-mode instructions affected by the bug.  Alternatively, Custom M-mode might have some security features or proprietary CSRs that break compatibility with ratified M-mode.
+Custom M-mode is a supervisor execution environment that deviates from the M-mode specification.  For example, it might have a bug that affects M-mode behavior but is invisible from S-mode.  The firmware could work around this bug by not running M-mode instructions affected by the bug.  Alternatively, Custom M-mode might have some security features or proprietary CSRs that break compatibility with ratified M-mode.
 
 === Execution Environment and Supervisor Binary Interface (SBI)
 

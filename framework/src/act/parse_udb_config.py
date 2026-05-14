@@ -143,6 +143,7 @@ def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int) -> None
             status_text.append("  " + ", ".join(sorted(in_flight)), style="dim")
 
     console = Console()
+    start = time.monotonic()
     with (
         Live(Group(progress, status_text), console=console, transient=True) as live,
         ThreadPoolExecutor(max_workers=workers) as pool,
@@ -166,6 +167,10 @@ def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int) -> None
             in_flight.discard(name)
             progress.advance(progress_task)
             _refresh_status()
+
+    elapsed = time.monotonic() - start
+    n = len(jobs_to_run)
+    rprint(f"[bold green]✓ DUT configs prepared:[/] {n} config{'s' if n != 1 else ''} in {elapsed:.1f}s")
 
 
 def validate_udb_config(udb_config_file: Path) -> None:

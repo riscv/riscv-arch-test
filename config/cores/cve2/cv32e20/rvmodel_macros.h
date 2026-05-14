@@ -7,7 +7,7 @@
 
 #define RVMODEL_DATA_SECTION
 
-#define CONFORMING_SM_SUPPORTED
+#define STANDARD_SM_SUPPORTED
 
 ##### STARTUP #####
 

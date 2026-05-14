@@ -14,7 +14,7 @@
         _semihost_exit_fail: .dword 0x20023; .dword 1;                  \
         .popsection
 
-#define CONFORMING_SM_SUPPORTED
+#define STANDARD_SM_SUPPORTED
 
 ##### STARTUP #####
 

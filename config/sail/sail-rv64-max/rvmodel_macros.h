@@ -14,7 +14,7 @@
         .align 8; .global fromhost; fromhost: .dword 0;     \
         .popsection
 
-#define CONFORMING_SM_SUPPORTED
+#define STANDARD_SM_SUPPORTED
 
 ##### STARTUP #####
 

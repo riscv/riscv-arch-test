@@ -3,7 +3,7 @@
 [tools]
 prek = "0.3.13"
 ruby = "3.4.9"
-uv = "0.11.11"
+uv = "0.11.14"
 
 [settings.ruby]
 compile = false

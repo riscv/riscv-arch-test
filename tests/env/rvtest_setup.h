@@ -168,9 +168,10 @@
 
     #ifdef S_SUPPORTED
       rvtest_identity_map:
-        // Identity maps rvtest_data_begin and forms an Sv32 megapage, Sv39 gigapage,
-        // Sv48 terapage and Sv57 petapage
-        // This is so that the S-Mode trap handler can be used without requiring to map it first
+        // Identity maps rvtest_data_begin, forming an aligned Sv32 megapage,
+        // Sv39 gigapage, Sv48 terapage and Sv57 petapage.
+        // This allows the S-mode trap handler and save area to be accessed
+        // without requiring prior page table entries setup.
         LA(T1, rvtest_Sroot_pg_tbl)
         LA(T2, rvtest_data_begin)
         #if __riscv_xlen == 32

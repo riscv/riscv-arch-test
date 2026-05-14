@@ -135,6 +135,7 @@ def run_act(
                 coverage_simulator,
                 debug,
                 fast,
+                verbose,
             )
         )
 

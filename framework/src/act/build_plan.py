@@ -302,6 +302,7 @@ def gen_coverage_tasks(
     udb_header_dir: Path,
     env_header_dir: Path,
     coverage_simulator: CoverageSimulator,
+    verbose: bool = False,
 ) -> list[BuildTask]:
     """Generate BuildTasks for coverage UCDB generation, reports, and summary merging."""
     tasks: list[BuildTask] = []
@@ -351,6 +352,8 @@ def gen_coverage_tasks(
             tracelist_file.write_text(tracelist_contents)
 
         # Coverage collection task
+        coverage_tag = f"{coverage_group.stem.upper()}_COVERAGE"
+        coverage_defines = f"{coverage_tag} FCOV_VERBOSE" if verbose else coverage_tag
         if coverage_simulator == CoverageSimulator.QUESTA:
             do_script = (
                 f"do {sim_script} "
@@ -361,7 +364,7 @@ def gen_coverage_tasks(
                 f"{coverpoint_dir} "
                 f"{udb_header_dir} "
                 f"{env_header_dir} "
-                f"{{{coverage_group.stem.upper()}_COVERAGE}}"
+                f"{{{coverage_defines}}}"
             )
             coverage_cmd = ["vsim", "-c", "-do", do_script]
         else:
@@ -375,7 +378,7 @@ def gen_coverage_tasks(
                 str(coverpoint_dir),
                 str(udb_header_dir),
                 str(env_header_dir),
-                f"{coverage_group.stem.upper()}_COVERAGE",
+                coverage_defines,
             ]
 
         # Deps: all rvvi traces for this coverage group must be done
@@ -434,6 +437,7 @@ def generate_build_plan(
     coverage_simulator: CoverageSimulator,
     debug: bool = False,
     fast: bool = False,
+    verbose: bool = False,
 ) -> list[BuildTask]:
     """Build the full DAG of tasks for a single config."""
     tasks: list[BuildTask] = []
@@ -503,6 +507,7 @@ def generate_build_plan(
                 config_wkdir,
                 tests_dir / "env",
                 coverage_simulator,
+                verbose,
             )
         )
 

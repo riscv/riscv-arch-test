@@ -207,10 +207,10 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
-  idlc
-  udb
-  udb-gen
-  udb_helpers
+  idlc (= 0.1.2)
+  udb (= 0.1.9)
+  udb-gen (= 0.1.7)
+  udb_helpers (= 0.1.3)
 
 CHECKSUMS
   Ascii85 (2.0.1) sha256=15cb5d941808543cbb9e7e6aea3c8ec3877f154c3461e8b3673e97f7ecedbe5a

@@ -15,7 +15,8 @@ import shutil
 import subprocess
 import sys
 import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from collections.abc import Callable
+from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -103,27 +104,57 @@ def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int) -> None
     """Generate all UDB-derived files (extensions.txt, rvtest_config.{h,svh})
     plus rvmodel_macros.svh for every config, in parallel.
 
+    Parallelism is at the file level: every (config, file) pair is its own
+    work unit submitted to a single ThreadPoolExecutor, so independent
+    `udb-gen` invocations run concurrently across both configs and files.
+    The only intra-config ordering kept is `validate cfg` before
+    `extensions.txt`, since the validate step is a precondition for that
+    one file in the existing flow.
+
     Handles `bundle install` once up front (the install step isn't safe to
     run concurrently) and renders a transient rich progress bar that
-    disappears when finished, matching the look of the main build pipeline.
+    matches the look of the main build pipeline.
     """
     if not configs:
         return
 
     _ensure_udb_installed()
 
-    # Build the per-config job list and pre-create workdirs.
-    jobs_to_run: list[tuple[Config, Path]] = []
+    # Pre-create all per-config workdirs.
+    config_dirs: list[tuple[Config, Path]] = []
     for cfg in configs:
         config_dir = workdir / cfg.udb_config.stem
         config_dir.mkdir(parents=True, exist_ok=True)
-        jobs_to_run.append((cfg, config_dir))
+        config_dirs.append((cfg, config_dir))
 
-    def _do_one(cfg: Config, config_dir: Path) -> None:
-        generate_udb_files(cfg.udb_config, config_dir)
-        generate_rvmodel_svh(cfg.dut_include_dir, config_dir)
+    # Build the file-level work units. Each unit is (label, callable).
+    work_units: list[tuple[str, Callable[[], None]]] = []
+    for cfg, config_dir in config_dirs:
+        stem = cfg.udb_config.stem
 
-    workers = min(len(jobs_to_run), jobs) or 1
+        def _ext_unit(c: Config = cfg, d: Path = config_dir) -> None:
+            ext = d / "extensions.txt"
+            if not ext.exists() or ext.stat().st_mtime < c.udb_config.stat().st_mtime:
+                # validate is a precondition for `udb list extensions`; pair
+                # them in this single unit.
+                validate_udb_config(c.udb_config)
+                generate_extension_list(c.udb_config, d)
+
+        def _h_unit(c: Config = cfg, d: Path = config_dir) -> None:
+            _generate_one_dut_header(c.udb_config, d / "rvtest_config.h", "cfg-c-header")
+
+        def _svh_unit(c: Config = cfg, d: Path = config_dir) -> None:
+            _generate_one_dut_header(c.udb_config, d / "rvtest_config.svh", "cfg-svh-header")
+
+        def _rvmodel_unit(c: Config = cfg, d: Path = config_dir) -> None:
+            generate_rvmodel_svh(c.dut_include_dir, d)
+
+        work_units.append((f"{stem}:extensions.txt", _ext_unit))
+        work_units.append((f"{stem}:rvtest_config.h", _h_unit))
+        work_units.append((f"{stem}:rvtest_config.svh", _svh_unit))
+        work_units.append((f"{stem}:rvmodel_macros.svh", _rvmodel_unit))
+
+    workers = min(len(work_units), jobs) or 1
 
     progress = Progress(
         SpinnerColumn(),
@@ -133,14 +164,19 @@ def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int) -> None
         TextColumn("elapsed:"),
         TimeElapsedColumn(),
     )
-    progress_task = progress.add_task("prep", total=len(jobs_to_run))
+    progress_task = progress.add_task("prep", total=len(work_units))
     status_text = Text()
     in_flight: set[str] = set()
 
     def _refresh_status() -> None:
         status_text.truncate(0)
-        if in_flight:
-            status_text.append("  " + ", ".join(sorted(in_flight)), style="dim")
+        if not in_flight:
+            return
+        names = sorted(in_flight)
+        if len(names) <= 4:
+            status_text.append("  " + ", ".join(names), style="dim")
+        else:
+            status_text.append(f"  {len(names)} units running, oldest: {names[0]}", style="dim")
 
     console = Console()
     start = time.monotonic()
@@ -148,28 +184,27 @@ def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int) -> None
         Live(Group(progress, status_text), console=console, transient=True) as live,
         ThreadPoolExecutor(max_workers=workers) as pool,
     ):
-        future_to_name = {}
-        for cfg, config_dir in jobs_to_run:
-            name = cfg.udb_config.stem
-            in_flight.add(name)
-            future_to_name[pool.submit(_do_one, cfg, config_dir)] = name
+        future_to_label: dict[Future[None], str] = {}
+        for label, fn in work_units:
+            in_flight.add(label)
+            future_to_label[pool.submit(fn)] = label
         _refresh_status()
 
-        for fut in as_completed(future_to_name):
-            name = future_to_name[fut]
+        for fut in as_completed(future_to_label):
+            label = future_to_label[fut]
             try:
                 fut.result()
             except Exception:
                 # Surface failure via the live console so the transient bar
                 # still clears after the exception unwinds.
-                live.console.print(f"[bold red]✗ Failed preparing DUT outputs for {name}[/]")
+                live.console.print(f"[bold red]✗ Failed preparing {label}[/]")
                 raise
-            in_flight.discard(name)
+            in_flight.discard(label)
             progress.advance(progress_task)
             _refresh_status()
 
     elapsed = time.monotonic() - start
-    n = len(jobs_to_run)
+    n = len(config_dirs)
     rprint(f"[bold green]✓ DUT configs prepared:[/] {n} config{'s' if n != 1 else ''} in {elapsed:.1f}s")
 
 

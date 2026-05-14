@@ -47,15 +47,12 @@ def generate_rvmodel_svh(dut_include_dir: Path, output_dir: Path) -> None:
     """Generate rvmodel_macros.svh in output_dir derived from rvmodel_macros.h.
 
     Emits a `define for each macro in _MIRRORED_DEFINES that has an active
-    `#define` in the input header. Skips regeneration when the output is newer
-    than the input.
+    `#define` in the input header.
     """
     input_h = dut_include_dir / "rvmodel_macros.h"
     output_svh = output_dir / "rvmodel_macros.svh"
     if not input_h.exists():
         raise FileNotFoundError(f"rvmodel_macros.h not found at {input_h}")
-    if output_svh.exists() and output_svh.stat().st_mtime >= input_h.stat().st_mtime:
-        return
 
     defines = _scan_h_defines(input_h, _MIRRORED_DEFINES)
 

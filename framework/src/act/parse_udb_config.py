@@ -207,17 +207,16 @@ def get_config_params(udb_config_file: Path) -> dict[str, int | bool | str | lis
 
 def generate_extension_list(udb_config_file: Path, output_dir: Path) -> None:
     extension_list_file = output_dir / "extensions.txt"
-    if not extension_list_file.exists() or (extension_list_file.stat().st_mtime < udb_config_file.stat().st_mtime):
-        generate_cmd = [
-            "udb",
-            "list",
-            "extensions",
-            "--config",
-            str(udb_config_file),
-            "--output",
-            str(extension_list_file),
-        ]
-        _bundle_exec(generate_cmd, check=True, capture_output=True)
+    generate_cmd = [
+        "udb",
+        "list",
+        "extensions",
+        "--config",
+        str(udb_config_file),
+        "--output",
+        str(extension_list_file),
+    ]
+    _bundle_exec(generate_cmd, check=True, capture_output=True)
 
 
 def get_implemented_extensions(extension_list_file: Path) -> set[str]:
@@ -226,8 +225,6 @@ def get_implemented_extensions(extension_list_file: Path) -> set[str]:
 
 def _generate_one_dut_header(udb_config_file: Path, output_file: Path, subcommand: str) -> None:
     """Run `udb-gen <subcommand>` for the given config and write the result to output_file."""
-    if output_file.exists() and output_file.stat().st_mtime >= udb_config_file.stat().st_mtime:
-        return
     output_file.parent.mkdir(parents=True, exist_ok=True)
     cmd = ["udb-gen", subcommand, "-c", str(udb_config_file), "-o", str(output_file)]
     try:

@@ -13,10 +13,10 @@
 
 `define COVER_ZVKB64
 `define COVER_ZVKBCUSTOM64
-`ifdef ELEN64
+`ifdef UDB_ELEN_64
     `define SEW_64_EQ_ELEN
 `endif
-`ifdef ELEN128
+`ifdef UDB_ELEN_128
     `define SEW_64_EQ_ELEN_DIV_2
 `endif
 covergroup Zvkb64_vandn_vv_cg with function sample(ins_t ins);

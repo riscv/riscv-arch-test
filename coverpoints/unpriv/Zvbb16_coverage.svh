@@ -13,10 +13,10 @@
 
 `define COVER_ZVBB16
 `define COVER_ZVBBCUSTOM16
-`ifdef ELEN16
+`ifdef UDB_ELEN_16
     `define SEW_16_EQ_ELEN
 `endif
-`ifdef ELEN32
+`ifdef UDB_ELEN_32
     `define SEW_16_EQ_ELEN_DIV_2
 `endif
 covergroup Zvbb16_vandn_vv_cg with function sample(ins_t ins);

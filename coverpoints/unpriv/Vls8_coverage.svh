@@ -13,10 +13,10 @@
 
 `define COVER_VLS8
 `define COVER_VLSCUSTOM8
-`ifdef ELEN8
+`ifdef UDB_ELEN_8
     `define SEW_8_EQ_ELEN
 `endif
-`ifdef ELEN16
+`ifdef UDB_ELEN_16
     `define SEW_8_EQ_ELEN_DIV_2
 `endif
 covergroup Vls8_vl1re16_v_cg with function sample(ins_t ins);

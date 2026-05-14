@@ -13,10 +13,10 @@
 
 `define COVER_VX8
 `define COVER_VXCUSTOM8
-`ifdef ELEN8
+`ifdef UDB_ELEN_8
     `define SEW_8_EQ_ELEN
 `endif
-`ifdef ELEN16
+`ifdef UDB_ELEN_16
     `define SEW_8_EQ_ELEN_DIV_2
 `endif
 covergroup Vx8_vaadd_vv_cg with function sample(ins_t ins);
@@ -19282,7 +19282,7 @@ covergroup Vx8_vmxor_mm_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vnclip_wi_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnclip.wi"  iff (ins.trap == 0 )  {
@@ -19604,7 +19604,7 @@ covergroup Vx8_vnclip_wi_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vnclip_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -19887,7 +19887,7 @@ covergroup Vx8_vnclip_wv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vnclip_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnclip.wx"  iff (ins.trap == 0 )  {
@@ -20171,7 +20171,7 @@ covergroup Vx8_vnclip_wx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vnclipu_wi_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnclipu.wi"  iff (ins.trap == 0 )  {
@@ -20493,7 +20493,7 @@ covergroup Vx8_vnclipu_wi_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vnclipu_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -20776,7 +20776,7 @@ covergroup Vx8_vnclipu_wv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vnclipu_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnclipu.wx"  iff (ins.trap == 0 )  {
@@ -21844,7 +21844,7 @@ covergroup Vx8_vnmsub_vx_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vnsra_wi_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnsra.wi"  iff (ins.trap == 0 )  {
@@ -22147,7 +22147,7 @@ covergroup Vx8_vnsra_wi_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vnsra_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -22412,7 +22412,7 @@ covergroup Vx8_vnsra_wv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vnsra_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnsra.wx"  iff (ins.trap == 0 )  {
@@ -22678,7 +22678,7 @@ covergroup Vx8_vnsra_wx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vnsrl_wi_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnsrl.wi"  iff (ins.trap == 0 )  {
@@ -22981,7 +22981,7 @@ covergroup Vx8_vnsrl_wi_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vnsrl_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -23246,7 +23246,7 @@ covergroup Vx8_vnsrl_wv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vnsrl_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnsrl.wx"  iff (ins.trap == 0 )  {
@@ -35827,7 +35827,7 @@ covergroup Vx8_vsub_vx_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwadd_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -36153,7 +36153,7 @@ covergroup Vx8_vwadd_vv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwadd_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwadd.vx"  iff (ins.trap == 0 )  {
@@ -36423,7 +36423,7 @@ covergroup Vx8_vwadd_vx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwadd_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -36741,7 +36741,7 @@ covergroup Vx8_vwadd_wv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwadd_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -36974,7 +36974,7 @@ covergroup Vx8_vwadd_wx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwaddu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -37289,7 +37289,7 @@ covergroup Vx8_vwaddu_vv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwaddu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwaddu.vx"  iff (ins.trap == 0 )  {
@@ -37551,7 +37551,7 @@ covergroup Vx8_vwaddu_vx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwaddu_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -37861,7 +37861,7 @@ covergroup Vx8_vwaddu_wv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwaddu_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -38094,7 +38094,7 @@ covergroup Vx8_vwaddu_wx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwmacc_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -38289,7 +38289,7 @@ covergroup Vx8_vwmacc_vv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwmacc_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmacc.vx"  iff (ins.trap == 0 )  {
@@ -38480,7 +38480,7 @@ covergroup Vx8_vwmacc_vx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwmaccsu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -38675,7 +38675,7 @@ covergroup Vx8_vwmaccsu_vv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwmaccsu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmaccsu.vx"  iff (ins.trap == 0 )  {
@@ -38866,7 +38866,7 @@ covergroup Vx8_vwmaccsu_vx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwmaccu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -39061,7 +39061,7 @@ covergroup Vx8_vwmaccu_vv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwmaccu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmaccu.vx"  iff (ins.trap == 0 )  {
@@ -39252,7 +39252,7 @@ covergroup Vx8_vwmaccu_vx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwmaccus_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmaccus.vx"  iff (ins.trap == 0 )  {
@@ -39443,7 +39443,7 @@ covergroup Vx8_vwmaccus_vx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwmul_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -39758,7 +39758,7 @@ covergroup Vx8_vwmul_vv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwmul_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmul.vx"  iff (ins.trap == 0 )  {
@@ -40020,7 +40020,7 @@ covergroup Vx8_vwmul_vx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwmulsu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -40335,7 +40335,7 @@ covergroup Vx8_vwmulsu_vv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwmulsu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmulsu.vx"  iff (ins.trap == 0 )  {
@@ -40597,7 +40597,7 @@ covergroup Vx8_vwmulsu_vx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwmulu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -40912,7 +40912,7 @@ covergroup Vx8_vwmulu_vv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwmulu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmulu.vx"  iff (ins.trap == 0 )  {
@@ -41174,7 +41174,7 @@ covergroup Vx8_vwmulu_vx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwredsum_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -41536,7 +41536,7 @@ covergroup Vx8_vwredsum_vs_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwredsumu_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -41898,7 +41898,7 @@ covergroup Vx8_vwredsumu_vs_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwsub_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -42213,7 +42213,7 @@ covergroup Vx8_vwsub_vv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwsub_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwsub.vx"  iff (ins.trap == 0 )  {
@@ -42475,7 +42475,7 @@ covergroup Vx8_vwsub_vx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwsub_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -42785,7 +42785,7 @@ covergroup Vx8_vwsub_wv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwsub_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -43018,7 +43018,7 @@ covergroup Vx8_vwsub_wx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwsubu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -43333,7 +43333,7 @@ covergroup Vx8_vwsubu_vv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwsubu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwsubu.vx"  iff (ins.trap == 0 )  {
@@ -43595,7 +43595,7 @@ covergroup Vx8_vwsubu_vx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwsubu_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -43905,7 +43905,7 @@ covergroup Vx8_vwsubu_wv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN8
+`ifndef UDB_ELEN_8
 covergroup Vx8_vwsubu_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -44996,32 +44996,32 @@ function void vx8_sample(int hart, int issue, ins_t ins);
             "vmxor.mm"     : begin
                 Vx8_vmxor_mm_cg.sample(ins);
             end
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vnclip.wi"     : begin
                 Vx8_vnclip_wi_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vnclip.wv"     : begin
                 Vx8_vnclip_wv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vnclip.wx"     : begin
                 Vx8_vnclip_wx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vnclipu.wi"     : begin
                 Vx8_vnclipu_wi_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vnclipu.wv"     : begin
                 Vx8_vnclipu_wv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vnclipu.wx"     : begin
                 Vx8_vnclipu_wx_cg.sample(ins);
             end
@@ -45038,32 +45038,32 @@ function void vx8_sample(int hart, int issue, ins_t ins);
             "vnmsub.vx"     : begin
                 Vx8_vnmsub_vx_cg.sample(ins);
             end
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vnsra.wi"     : begin
                 Vx8_vnsra_wi_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vnsra.wv"     : begin
                 Vx8_vnsra_wv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vnsra.wx"     : begin
                 Vx8_vnsra_wx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vnsrl.wi"     : begin
                 Vx8_vnsrl_wi_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vnsrl.wv"     : begin
                 Vx8_vnsrl_wv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vnsrl.wx"     : begin
                 Vx8_vnsrl_wx_cg.sample(ins);
             end
@@ -45239,157 +45239,157 @@ function void vx8_sample(int hart, int issue, ins_t ins);
             "vsub.vx"     : begin
                 Vx8_vsub_vx_cg.sample(ins);
             end
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwadd.vv"     : begin
                 Vx8_vwadd_vv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwadd.vx"     : begin
                 Vx8_vwadd_vx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwadd.wv"     : begin
                 Vx8_vwadd_wv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwadd.wx"     : begin
                 Vx8_vwadd_wx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwaddu.vv"     : begin
                 Vx8_vwaddu_vv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwaddu.vx"     : begin
                 Vx8_vwaddu_vx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwaddu.wv"     : begin
                 Vx8_vwaddu_wv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwaddu.wx"     : begin
                 Vx8_vwaddu_wx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwmacc.vv"     : begin
                 Vx8_vwmacc_vv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwmacc.vx"     : begin
                 Vx8_vwmacc_vx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwmaccsu.vv"     : begin
                 Vx8_vwmaccsu_vv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwmaccsu.vx"     : begin
                 Vx8_vwmaccsu_vx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwmaccu.vv"     : begin
                 Vx8_vwmaccu_vv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwmaccu.vx"     : begin
                 Vx8_vwmaccu_vx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwmaccus.vx"     : begin
                 Vx8_vwmaccus_vx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwmul.vv"     : begin
                 Vx8_vwmul_vv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwmul.vx"     : begin
                 Vx8_vwmul_vx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwmulsu.vv"     : begin
                 Vx8_vwmulsu_vv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwmulsu.vx"     : begin
                 Vx8_vwmulsu_vx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwmulu.vv"     : begin
                 Vx8_vwmulu_vv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwmulu.vx"     : begin
                 Vx8_vwmulu_vx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwredsum.vs"     : begin
                 Vx8_vwredsum_vs_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwredsumu.vs"     : begin
                 Vx8_vwredsumu_vs_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwsub.vv"     : begin
                 Vx8_vwsub_vv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwsub.vx"     : begin
                 Vx8_vwsub_vx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwsub.wv"     : begin
                 Vx8_vwsub_wv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwsub.wx"     : begin
                 Vx8_vwsub_wx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwsubu.vv"     : begin
                 Vx8_vwsubu_vv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwsubu.vx"     : begin
                 Vx8_vwsubu_vx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwsubu.wv"     : begin
                 Vx8_vwsubu_wv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN8
+        `ifndef UDB_ELEN_8
             "vwsubu.wx"     : begin
                 Vx8_vwsubu_wx_cg.sample(ins);
             end

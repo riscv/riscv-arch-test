@@ -13,10 +13,10 @@
 
 `define COVER_VX16
 `define COVER_VXCUSTOM16
-`ifdef ELEN16
+`ifdef UDB_ELEN_16
     `define SEW_16_EQ_ELEN
 `endif
-`ifdef ELEN32
+`ifdef UDB_ELEN_32
     `define SEW_16_EQ_ELEN_DIV_2
 `endif
 covergroup Vx16_vaadd_vv_cg with function sample(ins_t ins);
@@ -18985,7 +18985,7 @@ covergroup Vx16_vmxor_mm_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vnclip_wi_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnclip.wi"  iff (ins.trap == 0 )  {
@@ -19304,7 +19304,7 @@ covergroup Vx16_vnclip_wi_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vnclip_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -19584,7 +19584,7 @@ covergroup Vx16_vnclip_wv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vnclip_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnclip.wx"  iff (ins.trap == 0 )  {
@@ -19866,7 +19866,7 @@ covergroup Vx16_vnclip_wx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vnclipu_wi_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnclipu.wi"  iff (ins.trap == 0 )  {
@@ -20185,7 +20185,7 @@ covergroup Vx16_vnclipu_wi_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vnclipu_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -20465,7 +20465,7 @@ covergroup Vx16_vnclipu_wv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vnclipu_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnclipu.wx"  iff (ins.trap == 0 )  {
@@ -21519,7 +21519,7 @@ covergroup Vx16_vnmsub_vx_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vnsra_wi_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnsra.wi"  iff (ins.trap == 0 )  {
@@ -21819,7 +21819,7 @@ covergroup Vx16_vnsra_wi_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vnsra_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -22081,7 +22081,7 @@ covergroup Vx16_vnsra_wv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vnsra_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnsra.wx"  iff (ins.trap == 0 )  {
@@ -22345,7 +22345,7 @@ covergroup Vx16_vnsra_wx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vnsrl_wi_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnsrl.wi"  iff (ins.trap == 0 )  {
@@ -22645,7 +22645,7 @@ covergroup Vx16_vnsrl_wi_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vnsrl_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -22907,7 +22907,7 @@ covergroup Vx16_vnsrl_wv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vnsrl_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vnsrl.wx"  iff (ins.trap == 0 )  {
@@ -35747,7 +35747,7 @@ covergroup Vx16_vsub_vx_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwadd_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -36070,7 +36070,7 @@ covergroup Vx16_vwadd_vv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwadd_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwadd.vx"  iff (ins.trap == 0 )  {
@@ -36337,7 +36337,7 @@ covergroup Vx16_vwadd_vx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwadd_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -36652,7 +36652,7 @@ covergroup Vx16_vwadd_wv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwadd_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -36882,7 +36882,7 @@ covergroup Vx16_vwadd_wx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwaddu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -37194,7 +37194,7 @@ covergroup Vx16_vwaddu_vv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwaddu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwaddu.vx"  iff (ins.trap == 0 )  {
@@ -37453,7 +37453,7 @@ covergroup Vx16_vwaddu_vx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwaddu_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -37760,7 +37760,7 @@ covergroup Vx16_vwaddu_wv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwaddu_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -37990,7 +37990,7 @@ covergroup Vx16_vwaddu_wx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwmacc_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -38182,7 +38182,7 @@ covergroup Vx16_vwmacc_vv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwmacc_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmacc.vx"  iff (ins.trap == 0 )  {
@@ -38370,7 +38370,7 @@ covergroup Vx16_vwmacc_vx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwmaccsu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -38562,7 +38562,7 @@ covergroup Vx16_vwmaccsu_vv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwmaccsu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmaccsu.vx"  iff (ins.trap == 0 )  {
@@ -38750,7 +38750,7 @@ covergroup Vx16_vwmaccsu_vx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwmaccu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -38942,7 +38942,7 @@ covergroup Vx16_vwmaccu_vv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwmaccu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmaccu.vx"  iff (ins.trap == 0 )  {
@@ -39130,7 +39130,7 @@ covergroup Vx16_vwmaccu_vx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwmaccus_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmaccus.vx"  iff (ins.trap == 0 )  {
@@ -39318,7 +39318,7 @@ covergroup Vx16_vwmaccus_vx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwmul_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -39630,7 +39630,7 @@ covergroup Vx16_vwmul_vv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwmul_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmul.vx"  iff (ins.trap == 0 )  {
@@ -39889,7 +39889,7 @@ covergroup Vx16_vwmul_vx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwmulsu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -40201,7 +40201,7 @@ covergroup Vx16_vwmulsu_vv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwmulsu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmulsu.vx"  iff (ins.trap == 0 )  {
@@ -40460,7 +40460,7 @@ covergroup Vx16_vwmulsu_vx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwmulu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -40772,7 +40772,7 @@ covergroup Vx16_vwmulu_vv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwmulu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwmulu.vx"  iff (ins.trap == 0 )  {
@@ -41031,7 +41031,7 @@ covergroup Vx16_vwmulu_vx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwredsum_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -41390,7 +41390,7 @@ covergroup Vx16_vwredsum_vs_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwredsumu_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -41749,7 +41749,7 @@ covergroup Vx16_vwredsumu_vs_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwsub_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -42061,7 +42061,7 @@ covergroup Vx16_vwsub_vv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwsub_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwsub.vx"  iff (ins.trap == 0 )  {
@@ -42320,7 +42320,7 @@ covergroup Vx16_vwsub_vx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwsub_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -42627,7 +42627,7 @@ covergroup Vx16_vwsub_wv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwsub_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -42857,7 +42857,7 @@ covergroup Vx16_vwsub_wx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwsubu_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -43169,7 +43169,7 @@ covergroup Vx16_vwsubu_vv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwsubu_vx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vwsubu.vx"  iff (ins.trap == 0 )  {
@@ -43428,7 +43428,7 @@ covergroup Vx16_vwsubu_vx_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwsubu_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -43735,7 +43735,7 @@ covergroup Vx16_vwsubu_wv_cg with function sample(ins_t ins);
 endgroup
 `endif
 // ---------------------
-`ifndef ELEN16
+`ifndef UDB_ELEN_16
 covergroup Vx16_vwsubu_wx_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -44997,32 +44997,32 @@ function void vx16_sample(int hart, int issue, ins_t ins);
             "vmxor.mm"     : begin
                 Vx16_vmxor_mm_cg.sample(ins);
             end
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vnclip.wi"     : begin
                 Vx16_vnclip_wi_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vnclip.wv"     : begin
                 Vx16_vnclip_wv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vnclip.wx"     : begin
                 Vx16_vnclip_wx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vnclipu.wi"     : begin
                 Vx16_vnclipu_wi_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vnclipu.wv"     : begin
                 Vx16_vnclipu_wv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vnclipu.wx"     : begin
                 Vx16_vnclipu_wx_cg.sample(ins);
             end
@@ -45039,32 +45039,32 @@ function void vx16_sample(int hart, int issue, ins_t ins);
             "vnmsub.vx"     : begin
                 Vx16_vnmsub_vx_cg.sample(ins);
             end
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vnsra.wi"     : begin
                 Vx16_vnsra_wi_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vnsra.wv"     : begin
                 Vx16_vnsra_wv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vnsra.wx"     : begin
                 Vx16_vnsra_wx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vnsrl.wi"     : begin
                 Vx16_vnsrl_wi_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vnsrl.wv"     : begin
                 Vx16_vnsrl_wv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vnsrl.wx"     : begin
                 Vx16_vnsrl_wx_cg.sample(ins);
             end
@@ -45246,157 +45246,157 @@ function void vx16_sample(int hart, int issue, ins_t ins);
             "vsub.vx"     : begin
                 Vx16_vsub_vx_cg.sample(ins);
             end
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwadd.vv"     : begin
                 Vx16_vwadd_vv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwadd.vx"     : begin
                 Vx16_vwadd_vx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwadd.wv"     : begin
                 Vx16_vwadd_wv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwadd.wx"     : begin
                 Vx16_vwadd_wx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwaddu.vv"     : begin
                 Vx16_vwaddu_vv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwaddu.vx"     : begin
                 Vx16_vwaddu_vx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwaddu.wv"     : begin
                 Vx16_vwaddu_wv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwaddu.wx"     : begin
                 Vx16_vwaddu_wx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwmacc.vv"     : begin
                 Vx16_vwmacc_vv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwmacc.vx"     : begin
                 Vx16_vwmacc_vx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwmaccsu.vv"     : begin
                 Vx16_vwmaccsu_vv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwmaccsu.vx"     : begin
                 Vx16_vwmaccsu_vx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwmaccu.vv"     : begin
                 Vx16_vwmaccu_vv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwmaccu.vx"     : begin
                 Vx16_vwmaccu_vx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwmaccus.vx"     : begin
                 Vx16_vwmaccus_vx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwmul.vv"     : begin
                 Vx16_vwmul_vv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwmul.vx"     : begin
                 Vx16_vwmul_vx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwmulsu.vv"     : begin
                 Vx16_vwmulsu_vv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwmulsu.vx"     : begin
                 Vx16_vwmulsu_vx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwmulu.vv"     : begin
                 Vx16_vwmulu_vv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwmulu.vx"     : begin
                 Vx16_vwmulu_vx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwredsum.vs"     : begin
                 Vx16_vwredsum_vs_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwredsumu.vs"     : begin
                 Vx16_vwredsumu_vs_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwsub.vv"     : begin
                 Vx16_vwsub_vv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwsub.vx"     : begin
                 Vx16_vwsub_vx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwsub.wv"     : begin
                 Vx16_vwsub_wv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwsub.wx"     : begin
                 Vx16_vwsub_wx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwsubu.vv"     : begin
                 Vx16_vwsubu_vv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwsubu.vx"     : begin
                 Vx16_vwsubu_vx_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwsubu.wv"     : begin
                 Vx16_vwsubu_wv_cg.sample(ins);
             end
         `endif
-        `ifndef ELEN16
+        `ifndef UDB_ELEN_16
             "vwsubu.wx"     : begin
                 Vx16_vwsubu_wx_cg.sample(ins);
             end

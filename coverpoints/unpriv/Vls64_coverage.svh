@@ -13,10 +13,10 @@
 
 `define COVER_VLS64
 `define COVER_VLSCUSTOM64
-`ifdef ELEN64
+`ifdef UDB_ELEN_64
     `define SEW_64_EQ_ELEN
 `endif
-`ifdef ELEN128
+`ifdef UDB_ELEN_128
     `define SEW_64_EQ_ELEN_DIV_2
 `endif
 covergroup Vls64_vl1re16_v_cg with function sample(ins_t ins);

@@ -114,7 +114,7 @@
   #define CONFIG_FLEN TEST_FLEN
 #endif
 
-#ifdef ZFINX
+#ifdef ZFINX_SUPPORTED
   // Zfinx: FP values live in integer registers; use plain integer store/load.
   #define FLREG LREG
   #define FSREG SREG

@@ -556,7 +556,7 @@
     .if (__SV_MASK__ &     (0x8000)) == 0x8000          ;\
     RVTEST_SIGUPD(_BR, x15)                             ;\
     .endif                                              ;\
-#ifndef RVTEST_E                                        ;\
+#ifndef E_SUPPORTED                                     ;\
     .if (__SV_MASK__ &    (0x10000)) == 0x10000         ;\
     RVTEST_SIGUPD(_BR, x16)                             ;\
     .endif                                              ;\

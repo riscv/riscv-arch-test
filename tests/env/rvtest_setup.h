@@ -782,7 +782,7 @@
   /* init regs, to ensure you catch any errors */
   rvtest_init_regs:
 
-  #ifndef RVTEST_E
+  #ifndef E_SUPPORTED
     LI (x16, (0x7D5BFDDB7D5BFDDB & MASK))
     DBLSHIFTR x17, x16, x15, 7
     DBLSHIFTR x18, x17, x15, 7

@@ -415,7 +415,7 @@ def _generate_load_address_misaligned_tests(test_data: TestData) -> list[str]:
         lines.extend(add_fp_load_misaligned_test("flh", offset, test_data, coverpoint, covergroup))
         lines.append("#endif")
 
-        lines.append("#ifdef Q_SUPPORTED")
+        lines.append("#if defined(Q_SUPPORTED) && defined(__riscv_q)")
         lines.append(f"\n# Testcase: flq with offset {offset} (LSBs: {offset:04b})")
         lines.extend(add_fp_load_misaligned_test("flq", offset, test_data, coverpoint, covergroup))
         lines.append("#endif")
@@ -471,7 +471,7 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
     )
     lines.append("#endif")
 
-    lines.append("#ifdef Q_SUPPORTED")
+    lines.append("#if defined(Q_SUPPORTED) && defined(__riscv_q)")
     lines.extend(
         [
             test_data.add_testcase("flq_fault", coverpoint, covergroup),
@@ -509,7 +509,7 @@ def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
         lines.extend(add_fp_store_misaligned_test("fsh", offset, test_data, coverpoint, covergroup))
         lines.append("#endif")
 
-        lines.append("#ifdef Q_SUPPORTED")
+        lines.append("#if defined(Q_SUPPORTED) && defined(__riscv_q)")
         lines.append(f"\n# Testcase: fsq with offset {offset} (LSBs: {offset:04b})")
         lines.extend(add_fp_store_misaligned_test("fsq", offset, test_data, coverpoint, covergroup))
         lines.append("#endif")
@@ -566,7 +566,7 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
     )
     lines.append("#endif")
 
-    lines.append("#ifdef Q_SUPPORTED")
+    lines.append("#if defined(Q_SUPPORTED) && defined(__riscv_q)")
     lines.extend(
         [
             test_data.add_testcase("fsq_fault", coverpoint, covergroup),

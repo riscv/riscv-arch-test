@@ -80,6 +80,13 @@ def _ensure_udb_installed() -> None:
         raise RuntimeError("'bundle' command still not found after install.")
 
 
+def ensure_udb_installed() -> None:
+    """Public wrapper for `_ensure_udb_installed` so callers can run it once
+    before any parallel `generate_udb_files` invocations (the underlying
+    `bundle install` is not safe to run concurrently)."""
+    _ensure_udb_installed()
+
+
 def validate_udb_config(udb_config_file: Path) -> None:
     try:
         _bundle_exec(["udb", "validate", "cfg", str(udb_config_file)], check=True, capture_output=True)
@@ -102,7 +109,7 @@ def get_config_params(udb_config_file: Path) -> dict[str, int | bool | str | lis
 def generate_extension_list(udb_config_file: Path, output_dir: Path) -> None:
     extension_list_file = output_dir / "extensions.txt"
     if not extension_list_file.exists() or (extension_list_file.stat().st_mtime < udb_config_file.stat().st_mtime):
-        rprint(f"[bold]Generating[/] {extension_list_file.name} for [cyan]{udb_config_file.stem}[/]")
+        print(f"Generating {extension_list_file.name} for {udb_config_file.stem}")
         generate_cmd = [
             "udb",
             "list",
@@ -123,7 +130,7 @@ def _generate_one_dut_header(udb_config_file: Path, output_file: Path, subcomman
     """Run `udb-gen <subcommand>` for the given config and write the result to output_file."""
     if output_file.exists() and output_file.stat().st_mtime >= udb_config_file.stat().st_mtime:
         return
-    rprint(f"[bold]Generating[/] {output_file.name} for [cyan]{udb_config_file.stem}[/]")
+    print(f"Generating {output_file.name} for {udb_config_file.stem}")
     output_file.parent.mkdir(parents=True, exist_ok=True)
     cmd = ["udb-gen", subcommand, "-c", str(udb_config_file), "-o", str(output_file)]
     try:

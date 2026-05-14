@@ -199,6 +199,7 @@ def build(
     keep_going: bool = False,
     dry_run: bool = False,
     verbose: bool = False,
+    phase_label: str = "Building",
 ) -> BuildResult:
     """Execute a DAG of build tasks using TopologicalSorter + ThreadPoolExecutor.
 
@@ -208,6 +209,8 @@ def build(
         keep_going: If True, continue building independent tasks after a failure.
         dry_run: If True, print what would be built without executing.
         verbose: If True, print each command as it is issued.
+        phase_label: Label shown in the transient progress widget (e.g.
+            "Building", "Preparing DUT configs"). Trailing "..." is appended.
 
     Returns:
         BuildResult with counts and any errors.
@@ -263,14 +266,14 @@ def build(
 
     progress = Progress(
         SpinnerColumn(),
-        TextColumn("[cyan]Building..."),
+        TextColumn(f"[cyan]{phase_label}..."),
         BarColumn(),
         MofNCompleteColumn(),
         TaskProgressColumn(),
         TextColumn("elapsed:"),
         TimeElapsedColumn(),
     )
-    progress_task = progress.add_task("Building", total=len(tasks))
+    progress_task = progress.add_task(phase_label, total=len(tasks))
 
     with (
         Live(Group(progress, status_text), console=progress.console, transient=True) as live,

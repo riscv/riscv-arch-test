@@ -299,6 +299,7 @@ def gen_coverage_tasks(
     base_dir: Path,
     config_report_dir: Path,
     udb_header_dir: Path,
+    env_header_dir: Path,
     coverage_simulator: CoverageSimulator,
 ) -> list[BuildTask]:
     """Generate BuildTasks for coverage UCDB generation, reports, and summary merging."""
@@ -321,7 +322,8 @@ def gen_coverage_tasks(
     coverpoint_files = tuple(sorted(p.absolute() for p in coverpoint_dir.rglob("*") if p.is_file()))
     fcov_files = tuple(sorted(p.absolute() for p in fcov_path.rglob("*") if p.is_file()))
     udb_svh_files = tuple(sorted(p.absolute() for p in udb_header_dir.iterdir() if p.suffix == ".svh"))
-    coverage_inputs = (*coverpoint_files, *fcov_files, *udb_svh_files, sim_script)
+    env_svh_files = tuple(sorted(p.absolute() for p in env_header_dir.iterdir() if p.suffix == ".svh"))
+    coverage_inputs = (*coverpoint_files, *fcov_files, *udb_svh_files, *env_svh_files, sim_script)
 
     for coverage_group, traces in sorted(coverage_targets.items()):
         # Paths
@@ -357,6 +359,7 @@ def gen_coverage_tasks(
                 f"{fcov_path} "
                 f"{coverpoint_dir} "
                 f"{udb_header_dir} "
+                f"{env_header_dir} "
                 f"{{{coverage_group.stem.upper()}_COVERAGE}}"
             )
             coverage_cmd = ["vsim", "-c", "-do", do_script]
@@ -370,6 +373,7 @@ def gen_coverage_tasks(
                 str(fcov_path),
                 str(coverpoint_dir),
                 str(udb_header_dir),
+                str(env_header_dir),
                 f"{coverage_group.stem.upper()}_COVERAGE",
             ]
 
@@ -496,6 +500,7 @@ def generate_build_plan(
                 config_coverage_dir,
                 config_report_dir,
                 config_wkdir,
+                tests_dir / "env",
                 coverage_simulator,
             )
         )

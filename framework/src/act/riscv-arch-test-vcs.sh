@@ -19,7 +19,8 @@ WKDIR="${3}"
 FCOVDIR="${4}"
 COVERPOINTDIR="${5}"
 UDBHEADERDIR="${6}"
-COVERAGELIST="${7}"
+ENVHEADERDIR="${7}"
+COVERAGELIST="${8}"
 
 # Clean old coverage database
 rm -rf "${WKDIR}" "${VDB}"
@@ -33,6 +34,7 @@ COVERPOINTS=(
 )
 INC_DIRS=(
   "+incdir+${UDBHEADERDIR}"
+  "+incdir+${ENVHEADERDIR}"
   "${COVERPOINTS[@]}"
   "+incdir+${FCOVDIR}"
 )

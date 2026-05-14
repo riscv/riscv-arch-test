@@ -104,7 +104,6 @@ def validate_udb_config(udb_config_file: Path, marker: Path) -> None:
         if e.stderr:
             sys.stderr.buffer.write(e.stderr)
         sys.exit(1)
-    marker.parent.mkdir(parents=True, exist_ok=True)
     marker.touch()
 
 
@@ -132,10 +131,11 @@ def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int) -> None
     tasks: list[BuildTask] = []
     for cfg in configs:
         config_dir = workdir / cfg.udb_config.stem
-        config_dir.mkdir(parents=True, exist_ok=True)
         src = cfg.udb_config
-
         marker = config_dir / ".validated"
+
+        # Validate the UDB config once per config; every UDB-derived file
+        # below depends on this marker so it runs first.
         tasks.append(
             BuildTask(
                 outputs=(marker,),
@@ -144,28 +144,24 @@ def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int) -> None
             )
         )
 
-        for out_name, sub in (
-            ("rvtest_config.h", "cfg-c-header"),
-            ("rvtest_config.svh", "cfg-svh-header"),
-        ):
-            tasks.append(
-                BuildTask(
-                    outputs=(config_dir / out_name,),
-                    action=PythonAction(_generate_one_dut_header, (src, config_dir / out_name, sub)),
-                    extra_inputs=(src,),
-                    deps=(marker,),
-                )
-            )
+        # UDB-derived per-config files: one BuildTask each, all gated on
+        # the validate marker and stale vs. the source UDB yaml.
+        udb_outputs: list[tuple[Path, PythonAction]] = [
+            (
+                config_dir / "rvtest_config.h",
+                PythonAction(_generate_one_dut_header, (src, config_dir / "rvtest_config.h", "cfg-c-header")),
+            ),
+            (
+                config_dir / "rvtest_config.svh",
+                PythonAction(_generate_one_dut_header, (src, config_dir / "rvtest_config.svh", "cfg-svh-header")),
+            ),
+            (config_dir / "extensions.txt", PythonAction(generate_extension_list, (src, config_dir))),
+        ]
+        for out, action in udb_outputs:
+            tasks.append(BuildTask(outputs=(out,), action=action, extra_inputs=(src,), deps=(marker,)))
 
-        tasks.append(
-            BuildTask(
-                outputs=(config_dir / "extensions.txt",),
-                action=PythonAction(generate_extension_list, (src, config_dir)),
-                extra_inputs=(src,),
-                deps=(marker,),
-            )
-        )
-
+        # rvmodel_macros.svh derives from the DUT's rvmodel_macros.h, not
+        # from UDB, so it has no validate dep.
         tasks.append(
             BuildTask(
                 outputs=(config_dir / "rvmodel_macros.svh",),
@@ -214,7 +210,6 @@ def get_implemented_extensions(extension_list_file: Path) -> set[str]:
 
 def _generate_one_dut_header(udb_config_file: Path, output_file: Path, subcommand: str) -> None:
     """Run `udb-gen <subcommand>` for the given config and write the result to output_file."""
-    output_file.parent.mkdir(parents=True, exist_ok=True)
     cmd = ["udb-gen", subcommand, "-c", str(udb_config_file), "-o", str(output_file)]
     try:
         _bundle_exec(cmd, check=True, capture_output=True)

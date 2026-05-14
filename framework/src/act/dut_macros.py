@@ -72,5 +72,4 @@ def generate_rvmodel_svh(dut_include_dir: Path, output_dir: Path) -> None:
             lines.append(f"`define {name} 64'h{hex_value}")
     lines += ["", f"`endif // {guard}", ""]
 
-    output_dir.mkdir(parents=True, exist_ok=True)
     output_svh.write_text("\n".join(lines))

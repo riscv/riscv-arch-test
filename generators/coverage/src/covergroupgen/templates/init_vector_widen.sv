@@ -1,3 +1,3 @@
-`ifndef ELENEFFEW
+`ifndef UDB_ELEN_EFFEW
     ARCHCASE_INSTRNODOT_cg = new(); ARCHCASE_INSTRNODOT_cg.set_inst_name("obj_ARCHCASE_INSTRNODOT");
 `endif

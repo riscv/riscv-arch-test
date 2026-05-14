@@ -110,6 +110,9 @@ def gen_compile_tasks(
 
     # Metadata — substitute ${XLEN} placeholder used by priv tests
     march = test_metadata.march.replace("${XLEN}", str(xlen))
+    # Always include zifencei so the trap handler's fence.i can be assembled.
+    if "zifencei" not in march.lower():
+        march += "_zifencei"
     test_flen = test_metadata.flen
     test_path = test_metadata.test_path
     mabi = f"{'i' if xlen == 32 else ''}lp{xlen}{'e' if test_metadata.e_ext else ''}"

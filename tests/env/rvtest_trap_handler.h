@@ -181,7 +181,7 @@
 //==========================================================================================
 
 #ifndef   RVMODEL_FENCEI        /**** if not defaulted must be a single op or a JAL to a rvmodel_fencei routine in rvmodel_boot ****/
-  #if !defined(ZIFENCEI_SUPPORTED) || !defined(__riscv_zifencei)
+  #ifndef ZIFENCEI_SUPPORTED
     #define RVMODEL_FENCEI nop                                // make sure ifetches get new code
   #else
     #define RVMODEL_FENCEI fence.i

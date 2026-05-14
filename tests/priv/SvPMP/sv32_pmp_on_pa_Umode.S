@@ -22,7 +22,7 @@
 # REQUIRED_EXTENSIONS: [I, Sv32, Sm]
 # params:
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv32i_zicsr
+# MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv32_pmp_on_pa_Umode.S"

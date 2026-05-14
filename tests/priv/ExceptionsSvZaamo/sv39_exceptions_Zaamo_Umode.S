@@ -29,7 +29,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv39, Zaamo]
-# MARCH: rv64i_zicsr_zaamo
+# MARCH: rv64i_zicsr_zifencei_zaamo
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv39_exceptions_Zaamo_Umode.S"

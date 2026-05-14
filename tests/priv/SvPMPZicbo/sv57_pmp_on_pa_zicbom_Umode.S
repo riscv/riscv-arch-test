@@ -22,7 +22,7 @@
 # REQUIRED_EXTENSIONS: [I, Sv57, Zicbom, Sm]
 # params:
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr_zicbom
+# MARCH: rv64i_zicsr_zifencei_zicbom
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv57_pmp_on_pa_zicbom_Umode.S"

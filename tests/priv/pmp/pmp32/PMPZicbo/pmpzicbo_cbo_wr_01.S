@@ -24,7 +24,7 @@
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv32i_zicsr_zicbom_zicboz
+# MARCH: rv32i_zicsr_zifencei_zicbom_zicboz
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "pmpzicbo_cbo_wr_01.S"

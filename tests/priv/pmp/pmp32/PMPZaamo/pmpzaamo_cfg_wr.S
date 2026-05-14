@@ -23,7 +23,7 @@
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv32i_zicsr_zaamo
+# MARCH: rv32i_zicsr_zifencei_zaamo
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "pmpzaamo_cfg_wr.S"

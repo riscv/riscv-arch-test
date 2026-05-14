@@ -28,7 +28,7 @@
 # REQUIRED_EXTENSIONS: [I, Sv39, Sm]
 # params:
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv39_pmp_on_pte_Smode.S"

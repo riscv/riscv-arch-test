@@ -24,7 +24,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr_zalrsc
+# MARCH: rv64i_zicsr_zifencei_zalrsc
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "pmpzalrsc_cfg_wrS"

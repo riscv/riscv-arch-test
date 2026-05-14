@@ -27,7 +27,7 @@
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv32i_zicsr_zcd
+# MARCH: rv32i_zicsr_zifencei_zcd
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "pmpzcd_legal_lwxr.S"

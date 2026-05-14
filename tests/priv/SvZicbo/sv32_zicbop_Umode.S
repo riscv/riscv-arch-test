@@ -13,7 +13,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv32, Zicbop]
-# MARCH: rv32i_zicsr_zicbop
+# MARCH: rv32i_zicsr_zifencei_zicbop
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv32_zicbop_Umode.S"

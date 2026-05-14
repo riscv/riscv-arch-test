@@ -20,49 +20,49 @@ implemented_extensions:
   - { name: U, version: "= 1.0.0" }
   - { name: S, version: "= 1.13.0" }
   - { name: Sm, version: "= 1.13.0" }
-  - { name: Zic64b, version: "= 1.0.0" }
-  - { name: Zicbom, version: "= 1.0.0" }
-  - { name: Zicbop, version: "= 1.0.0" }
-  - { name: Zicboz, version: "= 1.0.0" }
-  - { name: Ziccamoa, version: "= 1.0.0" }
-  - { name: Ziccif, version: "= 1.0.0" }
-  - { name: Zicclsm, version: "= 1.0.0" }
-  - { name: Ziccrse, version: "= 1.0.0" }
+  # - { name: Zic64b, version: "= 1.0.0" }
+  # - { name: Zicbom, version: "= 1.0.0" }
+  # - { name: Zicbop, version: "= 1.0.0" }
+  # - { name: Zicboz, version: "= 1.0.0" }
+  # - { name: Ziccamoa, version: "= 1.0.0" }
+  # - { name: Ziccif, version: "= 1.0.0" }
+  # - { name: Zicclsm, version: "= 1.0.0" }
+  # - { name: Ziccrse, version: "= 1.0.0" }
   - { name: Zicntr, version: "= 2.0" }
   - { name: Zicond, version: "= 1.0" }
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0.0" }
-  - { name: Zihintntl, version: "= 1.0.0" }
-  - { name: Zihintpause, version: "= 2.0.0" }
+  # - { name: Zihintntl, version: "= 1.0.0" }
+  # - { name: Zihintpause, version: "= 2.0.0" }
   - { name: Zihpm, version: "= 2.0.0" }
-  - { name: Zimop, version: "= 1.0.0" }
+  # - { name: Zimop, version: "= 1.0.0" }
   - { name: Zaamo, version: "= 1.0.0" }
   - { name: Zalrsc, version: "= 1.0.0" }
-  - { name: Za128rs, version: "= 1.0.0" }
-  - { name: Za64rs, version: "= 1.0.0" }
-  - { name: Zawrs, version: "= 1.0.1" }
-  - { name: Zfa, version: "= 1.0.0" }
+  # - { name: Za128rs, version: "= 1.0.0" }
+  # - { name: Za64rs, version: "= 1.0.0" }
+  # - { name: Zawrs, version: "= 1.0.1" }
+  # - { name: Zfa, version: "= 1.0.0" }
   - { name: Zca, version: "= 1.0.0" }
   - { name: Zcd, version: "= 1.0.0" }
   - { name: Zcb, version: "= 1.0.0" }
-  - { name: Zcmop, version: "= 1.0.0" }
+  # - { name: Zcmop, version: "= 1.0.0" }
   - { name: Zba, version: "= 1.0.0" }
   - { name: Zbb, version: "= 1.0.0" }
   - { name: Zbs, version: "= 1.0.0" }
-  - { name: Zkt, version: "= 1.0.0" }
-  - { name: Ssccptr, version: "= 1.0.0" }
-  - { name: Sscofpmf, version: "= 1.0.0" }
+  # - { name: Zkt, version: "= 1.0.0" }
+  # - { name: Ssccptr, version: "= 1.0.0" }
+  # - { name: Sscofpmf, version: "= 1.0.0" }
   - { name: Sscounterenw, version: "= 1.0.0" }
-  - { name: Sstc, version: "= 1.0.0" }
+  # - { name: Sstc, version: "= 1.0.0" }
   - { name: Sstvala, version: "= 1.0.0" }
   - { name: Sstvecd, version: "= 1.0.0" }
   - { name: Ssu64xl, version: "= 1.0.0" }
   - { name: Sv39, version: "= 1.13.0" }
-  - { name: Svade, version: "= 1.0.0" }
+  # - { name: Svade, version: "= 1.0.0" }
   - { name: Svbare, version: "= 1.0.0" }
-  - { name: Svinval, version: "= 1.0.0" }
-  - { name: Svnapot, version: "= 1.0.0" }
-  - { name: Svpbmt, version: "= 1.0.0" }
+  # - { name: Svinval, version: "= 1.0.0" }
+  # - { name: Svnapot, version: "= 1.0.0" }
+  # - { name: Svpbmt, version: "= 1.0.0" }
 
 params:
   # A params
@@ -88,8 +88,8 @@ params:
   #MUTABLE_MISA_V: false
   #HW_MSTATUS_VS_DIRTY_UPDATE: precise
   # CBO params
-  CACHE_BLOCK_SIZE: 64
-  FORCE_UPGRADE_CBO_INVAL_TO_FLUSH: false
+  # CACHE_BLOCK_SIZE: 64
+  # FORCE_UPGRADE_CBO_INVAL_TO_FLUSH: false
   # Zicntr params
   TIME_CSR_IMPLEMENTED: true
   # U params

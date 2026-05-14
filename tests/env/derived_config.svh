@@ -110,4 +110,16 @@
   `define MAXINDEXEEW8
 `endif
 
+// ---- MSECCFG_SUPPORTED ----
+// The mseccfg / mseccfgh CSRs exist when at least one of Zkr, Smmpm, Zicfilp, or Smepmp are implemented.
+`ifdef ZKR_SUPPORTED
+  `define MSECCFG_SUPPORTED
+`elsif SMMPM_SUPPORTED
+  `define MSECCFG_SUPPORTED
+`elsif ZICFILP_SUPPORTED
+  `define MSECCFG_SUPPORTED
+`elsif SMEPMP_SUPPORTED
+  `define MSECCFG_SUPPORTED
+`endif
+
 `endif // DERIVED_CONFIG_SVH

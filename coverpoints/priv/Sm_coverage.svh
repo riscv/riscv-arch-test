@@ -239,13 +239,13 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins mhpmevent29= {CSR_MHPMEVENT29};
         bins mhpmevent30= {CSR_MHPMEVENT30};
         bins mhpmevent31= {CSR_MHPMEVENT31};
-        `ifdef MSECCFG_SUPPORTED // update this in four places when UDB gives a name to this parameter
+        `ifdef MSECCFG_SUPPORTED
             bins mseccfg  = {CSR_MSECCFG};
         `endif
         `ifdef UDB_MXLEN_32
             bins mstatush = {CSR_MSTATUSH};
             bins menvcfgh = {CSR_MENVCFGH};
-            `ifdef MSECCFG_SUPPORTED // update this in four places when UDB gives a name to this parameter
+            `ifdef MSECCFG_SUPPORTED
                 bins mseccfgh = {CSR_MSECCFGH};
             `endif
             `ifdef S1P13P0_SUPPORTED

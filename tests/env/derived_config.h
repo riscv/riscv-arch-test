@@ -23,4 +23,10 @@
   #define MAXINDEXEEW 8
 #endif
 
+// MSECCFG_SUPPORTED: the mseccfg / mseccfgh CSRs exist when at least one of
+// Zkr, Smmpm, Zicfilp, or Smepmp are implemented.
+#if defined(ZKR_SUPPORTED) || defined(SMMPM_SUPPORTED) || defined(ZICFILP_SUPPORTED) || defined(SMEPMP_SUPPORTED)
+  #define MSECCFG_SUPPORTED
+#endif
+
 #endif // DERIVED_CONFIG_H

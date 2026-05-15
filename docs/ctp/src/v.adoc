@@ -105,7 +105,15 @@ tests
         Vf32
         Vf64
     priv
-        ...
+        ExceptionsVx
+        ExceptionsVls
+        ExceptionsVf16
+        ExceptionsVf32
+        MisalignV
+        SsstrictV
+        SmV
+        SmVF
+        UV
 ----
 
 When an instruction's EEW is not a supported SEW, the coverage files and tests exclude the instruction from testing.  For example, `vwadd.vv` is not supported when SEW=32 and ELEN = 32 because it cannot widen to 64 bits.

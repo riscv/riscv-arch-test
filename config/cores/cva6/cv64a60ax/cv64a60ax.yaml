@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
 # Copyright (c) 2026, 10xEngineers, Harvey Mudd College and Eclipse Foundation
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
-# UDB Architecture Configuration for the CV32A65X, a configuration of the CVA6 project.
+# UDB Architecture Configuration for the CV64A60AX, a configuration of the CVA6 project.
 
 ---
 $schema: config_schema.json#
@@ -196,7 +196,7 @@ params:
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
-  NUM_PMP_ENTRIES: 16
+  NUM_PMP_ENTRIES: 8
   PMP_GRANULARITY: 4
   HPM_COUNTER_EN:
     [

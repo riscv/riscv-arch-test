@@ -137,7 +137,7 @@ main:
 
   // This test case for root page table is skipped if G >= 10, because with PMP granularity ≥ 4KB,
   // the entire root page table will lose its read/write permissions, preventing entry into S-Mode.
-  .if (RVMODEL_PMP_GRAIN < 10)
+  .if (UDB_PMP_GRANULARITY < 12)
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                                    TESTS AT LEVEL 1
 //---------------------------------------------------------------------------------------------------------------------------------

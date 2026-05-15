@@ -28,6 +28,7 @@
 #define TEST_FILE "sv39_pmp_on_pa_Smode.S"
 #define SIGUPD_COUNT 35
 #define TRAP_SIGUPD_COUNT 60
+#define BOOT_TO_MMODE
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"

@@ -81,11 +81,7 @@ The execution environment must provide a Supervisor Binary Interface (SBI) that 
 
 RVA23 certification requires that the SBI provide methods of emulating every writable standard M-mode CSR field that can affect the behavior of lower privilege modes.  With a standard M-mode, the SBI may just write bitfields in the M-mode registers.  With custom M-mode, the SBI must make it appear to S-mode software that the field holds the value written by the SBI, even though the implementation might be different.
 
-Alternate: boot sets up most CSRs and we just test  S-mode with those.
-
-Require emulating all suitable m{e/i}deleg bits being set
-
-These CSRs are:
+These CSRs and memory-mapped I/O registers are:
 
 [options=header]
 [cols="1,5"]

@@ -2,6 +2,7 @@
 === Exceptions
 
 Exception tests are organized according to the privilege mode or extension supported.  For example, a configuration with Machine, Supervisor, User, and Floating-Point supported should run ExceptionsSm, ExceptionsS, ExceptionsU, and ExceptionsF.
+Note that vector exceptions are in <<Vector Privileged Test Suites>>.
 
 ==== ExceptionsSm Machine-Mode Exceptions
 
@@ -50,40 +51,6 @@ https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXP
 ,===
 
 include::norm/ExceptionsF_norm_rules.adoc[]
-
-==== ExceptionsVx Vector Integer Exceptions
-
-These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on mstatus.VS) related to vector integer instructions.
-
-[[t-ExceptionsVx-coverpoints]]
-.ExceptionsVx Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=1139310135#gid=1139310135[Google Sheet Testplan]
-,===
-
-==== ExceptionsVf Vector Floating-Point Exceptions
-
-These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on mstatus.VS) related to vector floating-point instructions.
-
-[[t-ExceptionsVf-coverpoints]]
-.ExceptionsVf Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=1839120623#gid=1839120623[Google Sheet Testplan]
-,===
-
-==== ExceptionsVls Vector Load/Store Exceptions
-
-These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on mstatus.VS) related to vector load/store instructions.
-
-[[t-ExceptionsVls-coverpoints]]
-.ExceptionsVls Coverpoints
-
-,===
-https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=1814229778#gid=1814229778[Google Sheet Testplan]
-
-,===
-
-*** Make sure ExceptionsVls includes misaligned vector load/store coverpoints.  Not yet in the testplan.
 
 ==== ExceptionsZalrsc Atomic LR/SC Exceptions
 

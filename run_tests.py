@@ -21,7 +21,10 @@ from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
 
-_SUMMARY_RE = re.compile(r'RVCP-SUMMARY: TEST (PASSED|FAILED|SIGRUN) - Test File ".*"')
+_SUMMARY_RE = re.compile(
+    r"^RVCP-SUMMARY: TEST (PASSED|FAILED|SIGRUN)\b.*$",
+    re.MULTILINE,
+)
 _DEBUG_PLACEHOLDER_RE = re.compile(r"\{debug:([^}]*)\}")
 _TRACEFILE_PLACEHOLDER = "__TRACEFILE__"
 _SUMMARYFILE_PLACEHOLDER = "__SUMMARYFILE__"
@@ -162,10 +165,11 @@ def run_test(
         summary_text = log_file.read_text(errors="replace")
     summaries = _SUMMARY_RE.findall(summary_text)
     rvcp_lines = [line for line in summary_text.splitlines() if "RVCP-SUMMARY:" in line]
-    rvcp_summary = rvcp_lines[0] if rvcp_lines else "No RVCP-SUMMARY line found"
-    summary_failed = "FAILED" in summaries
-    summary_sigrun = "SIGRUN" in summaries
-    no_summary = len(summaries) == 0
+    rvcp_summary = rvcp_lines[-1] if rvcp_lines else "No RVCP-SUMMARY line found"
+    actual_summary = summaries[-1] if summaries else None
+    summary_failed = actual_summary == "FAILED"
+    summary_sigrun = actual_summary == "SIGRUN"
+    no_summary = not summaries
 
     # Overall failure for test
     failed = exit_failed or summary_failed or summary_sigrun or no_summary

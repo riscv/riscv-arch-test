@@ -29,6 +29,11 @@ VERBOSE     ?=
 # COVERAGE_SIMULATOR is only used when collecting coverage (make coverage)
 COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa or vcs
 
+# SCAN_UNCOVERED, when non-empty, runs scan-uncovered after `make coverage` to
+# print the unique uncovered coverpoints (Extension_cp_*) parsed from
+# work/<config>/reports/*_uncovered.txt. Set to empty to skip.
+SCAN_UNCOVERED ?= True
+
 # WORKDIR is where all of the generated files are created
 WORKDIR     ?= work
 
@@ -151,7 +156,8 @@ help:
 	  'DEBUG'               'Emit objdump/trace/trap reports (slower)' \
 	  'FAST'                'Skip objdump for faster ELF builds' \
 	  'VERBOSE'             'Implies DEBUG, JOBS=1, prints each command' \
-	  'COVERAGE_SIMULATOR'  'questa or vcs (used with make coverage)'
+	  'COVERAGE_SIMULATOR'  'questa or vcs (used with make coverage)' \
+	  'SCAN_UNCOVERED'      'After make coverage, list unique uncovered coverpoints'
 	@printf '\n\033[1mExamples:\033[0m\n'
 	@printf '  make                                 # default: spike rv32+rv64\n'
 	@printf '  make spike-rv64-max                  # build & run a single config\n'
@@ -227,11 +233,17 @@ clean-tests:
 
 
 ########### Coverage ###########
-# Just sets some variables and then runs the standard elfs target
+# Just sets some variables and then runs the standard elfs target.
+# Set SCAN_UNCOVERED=True to additionally list unique uncovered coverpoints
+# from work/*/reports/*_uncovered.txt after the coverage run.
 .PHONY: coverage
 coverage: COVERAGE := True
 coverage: CONFIG_FILES := $(COVERAGE_CONFIG_FILES)
 coverage: elfs
+	@if [ -n "$(SCAN_UNCOVERED)" ]; then \
+		printf '\n\033[1mUncovered coverpoints:\033[0m\n'; \
+		$(UV_RUN) scan-uncovered --workdir $(WORKDIR); \
+	fi
 
 
 

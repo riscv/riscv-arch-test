@@ -20,6 +20,7 @@ dependencies = [
 
 [project.scripts]
 act = "act.act:main"
+scan-uncovered = "act.scan_uncovered:main"
 
 ##### BUILD #####
 [build-system]

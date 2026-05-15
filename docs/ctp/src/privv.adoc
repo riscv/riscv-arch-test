@@ -29,7 +29,7 @@ include::norm/SsstrictV_norm_rules.adoc[]
 
 The vector exception tests exercise everything else that might cause exceptions aside from misalignment and reserved instructions.
 
-These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on mstatus.VS) related to vector integer instructions. Some tests always trap, such as access faults. Other tests may either succeed or trap depending on a parameter.  For example, an implementation may trap on nonzero vstart values, or
+These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on `mstatus.VS`) related to vector integer instructions. Some tests always trap, such as access faults. Other tests may either succeed or trap depending on a parameter.  For example, an implementation may trap on nonzero `vstart` values, or may execute them in hardware.
 
 [[t-ExceptionsVx-coverpoints]]
 .ExceptionsVx Coverpoints
@@ -41,7 +41,7 @@ include::norm/ExceptionsVx_norm_rules.adoc[]
 
 ==== ExceptionsVf Vector Floating-Point Exceptions
 
-These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on mstatus.VS) related to vector floating-point instructions. They tests operations that may either succeed or trap depending on a parameter.
+These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on mstatus.VS) related to vector floating-point instructions. They test operations that may either succeed or trap depending on a parameter.
 
 [[t-ExceptionsVf-coverpoints]]
 .ExceptionsVf Coverpoints
@@ -53,7 +53,7 @@ include::norm/ExceptionsVf_norm_rules.adoc[]
 
 ==== ExceptionsVls Vector Load/Store Exceptions
 
-These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on mstatus.VS) related to vector load/store instructions. They tests operations that may either succeed or trap depending on a parameter.
+These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on mstatus.VS) related to vector load/store instructions. They test operations that may either succeed or trap depending on a parameter.
 
 [[t-ExceptionsVls-coverpoints]]
 .ExceptionsVls Coverpoints

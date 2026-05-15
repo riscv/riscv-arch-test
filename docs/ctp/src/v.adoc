@@ -110,7 +110,8 @@ tests
 
 When an instruction's EEW is not a supported SEW, the coverage files and tests exclude the instruction from testing.  For example, `vwadd.vv` is not supported when SEW=32 and ELEN = 32 because it cannot widen to 64 bits.
 
-The tests also account for unsupported register group overlap.  For example, a widening add `vwadd.wv v0, v2, v2`` is unsupported because the source registers cannot be read with different EEWs.  On the other hand `vwadd.vv v0, v1, v8`` with LMUL=1 is supported even though the destination vd=v0 widens to write [v0-v1], which overlaps with vs2=v1.  The tests exercise all supported overlaps, but do not attempt any unsupported overlaps because the behavior is reserved and unpredictable.
+The tests also account for unsupported register group overlap.  For example, a widening add `vwadd.wv v0, v2, v2`
+ is unsupported because the source registers cannot be read with different EEWs.  On the other hand `vwadd.vv v0, v1, v8` with LMUL=1 is supported even though the destination vd=v0 widens to write [v0-v1], which overlaps with vs2=v1.  The tests exercise all supported overlaps, but do not attempt any unsupported overlaps because the behavior is reserved and unpredictable.
 
 ==== Vector Configuration Parameters
 
@@ -255,7 +256,7 @@ include::{testplansdir}/Zvbb.adoc[]
 
 include::norm/Zvbb_norm_rules.adoc[]
 
-==== Zvbc Vector Caryless Multiplication Extension
+==== Zvbc Vector Carryless Multiplication Extension
 
 Zvbc only applies to SEW=64.
 

@@ -16,16 +16,13 @@ indexed SEGMENT loads, so those are excluded here.
 """
 
 import math
+from functools import partial
 from random import randint
 
 from coverpoint_registry import register
-import vector_testgen_common as common
 from vector_testgen_common import (
-    eew8_ins,
-    eew16_ins,
-    eew32_ins,
-    eew64_ins,
     getBaseSuiteTestCount,
+    getInstructionEEW,
     incrementBasetestCount,
     indexed_loads,
     indexed_stores,
@@ -43,18 +40,6 @@ def _aligned_random_base(align: int, footprint: int) -> int:
     if max_start < 0:
         raise ValueError("footprint exceeds register file")
     return randint(0, max_start // align) * align
-
-
-def _index_eew(instr: str) -> int | None:
-    if instr in eew64_ins:
-        return 64
-    if instr in eew32_ins:
-        return 32
-    if instr in eew16_ins:
-        return 16
-    if instr in eew8_ins:
-        return 8
-    return None
 
 
 def _emit(test: str, sew: int, lmul: int, label: str, **reg_overrides) -> None:
@@ -76,7 +61,7 @@ def _emit(test: str, sew: int, lmul: int, label: str, **reg_overrides) -> None:
 
 
 def _make(test: str, sew: int, expected_eew: int) -> None:
-    K = _index_eew(test)
+    K = getInstructionEEW(test)
     if K is None or K != expected_eew:
         return
     if test in segment_loads:
@@ -135,6 +120,4 @@ def _make(test: str, sew: int, expected_eew: int) -> None:
 
 
 for _K in (8, 16, 32, 64):
-    register(f"cp_custom_indexed_overlap_eew{_K}")(
-        (lambda eew: lambda test, sew: _make(test, sew, eew))(_K)
-    )
+    register(f"cp_custom_indexed_overlap_eew{_K}")(partial(_make, expected_eew=_K))

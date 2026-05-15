@@ -1123,14 +1123,57 @@ def genRandomVectorLS():
   vectordata += writeData("    .align 4")
   vectordata += writeData("// Corner Vectors")
 
-  num_words_either_side = int(maxELEN / 64) * 2 * 2 * maxVLEN # 2 times max vlen elements on either side of pointer (sewMAX = 64)
+  # Region sizing for vector LS test data. rs1 points at the `vector_ls_random_base`
+  # label; the `_header` block sits *before* the label so tests with negative offsets
+  # have valid data behind rs1. Size each side to the largest offset any generator
+  # in this codebase emits (no extra margin).
+  #
+  # Generators that consume this region (update bounds below if any generator's
+  # access footprint grows):
+  #   - Unit-stride LS         (vle*/vse*)            : forward = vlmax * sew/8
+  #   - Strided LS             (vlse*/vsse*)          : stride randomized as
+  #                                                     k * eew/8, k in [-2, 3]
+  #                                                     (see randomizeRegisterData,
+  #                                                     stride val for rs2)
+  #                                                     -> forward  = vlmax * 3 * eew/8
+  #                                                        backward = vlmax * 2 * eew/8
+  #   - Segment unit-stride    (vlseg*/vsseg*,
+  #                             vlsseg*/vssseg*)      : forward = nf * vlmax * sew/8
+  #                                                     (nf <= 8)
+  #   - Segment strided        (vlsseg*/vssseg*)      : forward  = vlmax*3*eew/8 + nf*sew/8
+  #                                                     backward = vlmax*2*eew/8
+  #   - Indexed LS             (vl[uo]xei*/vs[uo]xei*): forward only, vs2 elements
+  #                                                     clamped to [0, 2*vlmax) by
+  #                                                     vremu (see loadVectorReg);
+  #                                                     forward bound 2 * vlmax * eew/8 (worst:
+  #                                                                                      eew=8)
+  #
+  # Worst case across (VLEN<=maxVLEN, LMUL<=8, SEW>=8, nf<=8) with vlmax=VLEN*LMUL/SEW:
+  #
+  #   FORWARD  is bounded by SEGMENT UNIT-STRIDE:
+  #     nf_max * vlmax_max * sew_min/8
+  #       = 8 * (maxVLEN*8/sew_min) * sew_min/8
+  #       = 8 * maxVLEN bytes
+  #
+  #   BACKWARD is bounded by STRIDED LS (negative stride, k=-2):
+  #     vlmax_max * 2 * eew_max/8 with vlmax*eew = VLEN*LMUL (independent of sew)
+  #       = (maxVLEN*8) * 2 / 8
+  #       = 2 * maxVLEN bytes
+  #
+  # If a new generator with a larger footprint is added (e.g. wider stride range,
+  # nf>8, or negative-offset indexed access), recompute and bump the bounds here.
+  forward_bytes  = 8 * maxVLEN  # bound by segment unit-stride forward
+  backward_bytes = 2 * maxVLEN  # bound by strided LS backward
+
+  forward_words  = forward_bytes  // 4
+  backward_words = backward_bytes // 4
 
   vectordata += writeData("vector_ls_random_base_header:")
-  for i in range(num_words_either_side):
+  for i in range(backward_words):
       randomElem = getrandbits(32)
       vectordata += writeData(f"    .word 0x{randomElem:08x}")
   vectordata += writeData("vector_ls_random_base:")
-  for i in range(num_words_either_side):
+  for i in range(forward_words):
       randomElem = getrandbits(32)
       vectordata += writeData(f"    .word 0x{randomElem:08x}")
 
@@ -2850,6 +2893,10 @@ def randomizeRegister(instruction, eew, register_argument_name: str, reg_count: 
       raise ValueError(
         f"preset {register_argument_name}=v{register} with NF={register_data['segments']} "
         f"EMUL_field={emul_check} overflows past v{reg_count-1} for {instruction}"
+      )
+    if emul_check > 1 and register % emul_check != 0:
+      raise ValueError(
+        f"preset {register_argument_name}=v{register} not aligned to EMUL={emul_check} for {instruction}"
       )
 
   register_data['reg'] = register

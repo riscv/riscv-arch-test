@@ -1111,7 +1111,7 @@ def makeTest(coverpoints, test, sew=None):
 
 def coverpointInclusions(coverpoints):
   applicable_coverpoints = coverpoints
-  for coverpoint in coverpoints:
+  for coverpoint in list(coverpoints):
     if ((coverpoint in ['RV32', 'RV64', 'EFFEW8', 'EFFEW16', 'EFFEW32', 'EFFEW64']) or
         ("sample" in coverpoint))                                  : applicable_coverpoints.remove(coverpoint)
     elif coverpoint[:3] not in ["cp_", "cmp", "cr_"]               : applicable_coverpoints.remove(coverpoint) # skip all the helper coverpoints

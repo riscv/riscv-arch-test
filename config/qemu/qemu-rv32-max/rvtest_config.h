@@ -35,7 +35,7 @@
 #define VLEN 128
 #define SEWMIN 8
 #define ELEN 64
-#define MAXINDEXEEW 32 // sail only supports MAXINDEXEEW32
+#define MAXINDEXEEW 32 // Limited to 32 on RV32 because the Sail backend used for sigref only supports MAXINDEXEEW=32
 
 // Supported fractional LMULs for vector
 // all supported now should be generated based on config

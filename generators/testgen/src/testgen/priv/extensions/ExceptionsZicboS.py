@@ -222,7 +222,6 @@ def _generate_cbo_access_fault_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "nop",
-                    "# No need to gate prefectch instructions with ZICBOP_SUPPORTED because they are hints that fall back to defined behavior",
                     test_data.add_testcase(f"cbo.{cbo}_mode{mode}_access_fault_0", coverpoint, covergroup),
                     f"cbo.{cbo}    0(x{addr_reg})",
                     "nop",
@@ -253,6 +252,7 @@ def _generate_cbo_access_fault_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "nop",
+                    "# No need to gate prefetch instructions with ZICBOP_SUPPORTED because they are hints that fall back to defined behavior",
                     test_data.add_testcase(f"prefetch.{prefetch}_mode{mode}_access_fault_0", coverpoint, covergroup),
                     f"prefetch.{prefetch}    0(x{addr_reg})",
                     "nop",
@@ -336,7 +336,7 @@ def _generate_cbo_misaligned_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "nop",
-                    "# No need to gate prefectch instructions with ZICBOP_SUPPORTED because they are hints that fall back to defined behavior",
+                    "# No need to gate prefetch instructions with ZICBOP_SUPPORTED because they are hints that fall back to defined behavior",
                     test_data.add_testcase(f"prefetch.{prefetch}_mode{mode}_misaligned", coverpoint, covergroup),
                     f"prefetch.{prefetch}    0(x{addr_reg})",
                     "nop",

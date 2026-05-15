@@ -33,17 +33,13 @@
 // Total Expected Faults :: 36
 // --------------------------------------------------------------------------------------------------------------------------------
 
-// Remove NORUN once Sail supports Svpbmt
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Sv57, Svpbmt, NORUN]
+# REQUIRED_EXTENSIONS: [I, Sv57, Svpbmt]
 # MARCH: rv64i_zicsr
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv57_Svpbmt_nonleaf_Smode.S"
 #define SIGUPD_COUNT 45
-#define rvtest_mtrap_routine
-#define rvtest_strap_routine
-#define RVTEST_PRIV_TEST
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"

@@ -114,17 +114,13 @@
 // Total Expected Faults :: 132
 // --------------------------------------------------------------------------------------------------------------------------------
 
-// Remove NORUN once Sail version 0.11 is released
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Sv48, Zicbom, NORUN]
+# REQUIRED_EXTENSIONS: [I, Sv48, Zicbom]
 # MARCH: rv64i_zicsr_zicbom
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv48_zicbom_exceptions_Umode.S"
 #define SIGUPD_COUNT 165
-#define rvtest_mtrap_routine
-#define rvtest_strap_routine
-#define RVTEST_PRIV_TEST
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"

@@ -18,28 +18,28 @@ covergroup EndianU_cg with function sample(ins_t ins);
 
     // building blocks for the main coverpoints
     cp_sw: coverpoint ins.current.insn {
-        wildcard bins sw = {32'b????????????_?????_010_?????_0100011};
+        wildcard bins sw = {SW};
     }
     cp_sh: coverpoint ins.current.insn {
-        wildcard bins sh = {32'b????????????_?????_001_?????_0100011};
+        wildcard bins sh = {SH};
     }
     cp_sb: coverpoint ins.current.insn {
-        wildcard bins sb = {32'b????????????_?????_000_?????_0100011};
+        wildcard bins sb = {SB};
     }
     cp_lw: coverpoint ins.current.insn {
-        wildcard bins lw = {32'b????????????_?????_010_?????_0000011};
+        wildcard bins lw = {LW};
     }
     cp_lh: coverpoint ins.current.insn {
-        wildcard bins lh = {32'b????????????_?????_001_?????_0000011};
+        wildcard bins lh = {LH};
     }
     cp_lhu: coverpoint ins.current.insn {
-        wildcard bins lhu = {32'b????????????_?????_101_?????_0000011};
+        wildcard bins lhu = {LHU};
     }
     cp_lb: coverpoint ins.current.insn {
-        wildcard bins lb = {32'b????????????_?????_000_?????_0000011};
+        wildcard bins lb = {LB};
     }
     cp_lbu: coverpoint ins.current.insn {
-        wildcard bins lbu = {32'b????????????_?????_100_?????_0000011};
+        wildcard bins lbu = {LBU};
     }
     cp_byteoffset: coverpoint {ins.current.imm + ins.current.rs1_val}[2:0] {
         // all byte offsets
@@ -53,19 +53,19 @@ covergroup EndianU_cg with function sample(ins_t ins);
         wildcard ignore_bins b2 = {3'b?1?};
         // all word offsets
     }
-    mstatus_ube: coverpoint ins.current.csr[12'h300][6] { // ube is mstatus[6]
+    mstatus_ube: coverpoint ins.current.csr[CSR_MSTATUS][6] { // ube is mstatus[6]
     }
-    mstatus_mprv: coverpoint ins.current.csr[12'h300][17] { // mprv is mstatus[17]
+    mstatus_mprv: coverpoint ins.current.csr[CSR_MSTATUS][17] { // mprv is mstatus[17]
     }
-    mstatus_mpp: coverpoint ins.current.csr[12'h300][12:11] { // mprv is mstatus[12:11]
+    mstatus_mpp: coverpoint ins.current.csr[CSR_MSTATUS][12:11] { // mprv is mstatus[12:11]
         bins U_Mode = {2'b00};
         bins M_Mode = {2'b11};
     }
     `ifdef XLEN64
-        mstatus_mbe: coverpoint ins.current.csr[12'h300][37] { // mbe is mstatus[37] in RV64
+        mstatus_mbe: coverpoint ins.current.csr[CSR_MSTATUS][37] { // mbe is mstatus[37] in RV64
     }
     `else
-        mstatus_mbe: coverpoint ins.current.csr[12'h310][5] { // mbe is mstatush[5] in RV32
+        mstatus_mbe: coverpoint ins.current.csr[CSR_MSTATUSH][5] { // mbe is mstatush[5] in RV32
     }
     `endif
 
@@ -89,13 +89,13 @@ covergroup EndianU_cg with function sample(ins_t ins);
 
     `ifdef XLEN64
         cp_sd: coverpoint ins.current.insn {
-            wildcard bins sd = {32'b????????????_?????_011_?????_0100011};
+            wildcard bins sd = {SD};
         }
         cp_ld: coverpoint ins.current.insn {
-            wildcard bins ld = {32'b????????????_?????_011_?????_0000011};
+            wildcard bins ld = {LD};
         }
         cp_lwu: coverpoint ins.current.insn {
-            wildcard bins lwu = {32'b????????????_?????_110_?????_0000011};
+            wildcard bins lwu = {LWU};
         }
         cp_doubleoffset: coverpoint ins.current.imm[2:0] iff (ins.current.rs1_val[2:0] == 3'b000)  {
             bins zero = {3'b000};

@@ -16,16 +16,16 @@ covergroup EndianZaamo_cg with function sample(ins_t ins);
 
     // building blocks for the main coverpoints
     cp_amo: coverpoint ins.current.insn {
-        wildcard bins amoaddw = {32'b0000000_?????_?????_010_?????_0101111};
+        wildcard bins amoaddw = {AMOADD_W};
         `ifdef XLEN64
-            wildcard bins amoaddd = {32'b0000000_?????_?????_011_?????_0101111};
+            wildcard bins amoaddd = {AMOADD_D};
         `endif
     }
     `ifdef XLEN64
-        mstatus_mbe: coverpoint ins.current.csr[12'h300][37] { // mbe is mstatus[37] in RV64
+        mstatus_mbe: coverpoint ins.current.csr[CSR_MSTATUS][37] { // mbe is mstatus[37] in RV64
         }
     `else
-        mstatus_mbe: coverpoint ins.current.csr[12'h310][5] { // mbe is mstatush[5] in RV32
+        mstatus_mbe: coverpoint ins.current.csr[CSR_MSTATUSH][5] { // mbe is mstatush[5] in RV32
         }
     `endif
 

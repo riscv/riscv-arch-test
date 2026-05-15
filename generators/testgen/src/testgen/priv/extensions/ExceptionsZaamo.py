@@ -8,7 +8,7 @@
 
 """Zaamo extension exception test generator."""
 
-from testgen.asm.helpers import check_access_fault_address_defined, comment_banner, write_sigupd
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
 
@@ -104,6 +104,7 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
     addr_reg, dest_reg, source_reg = test_data.int_regs.get_registers(3)
 
     lines = [
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(coverpoint, "Test amo instructions on restricted memory and check for access fault"),
     ]
 
@@ -163,20 +164,20 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
         )
     lines.append("#endif")
 
+    lines.append("#endif")
     test_data.int_regs.return_registers([addr_reg, dest_reg, source_reg])
     return lines
 
 
 @add_priv_test_generator(
     "ExceptionsZaamo",
-    required_extensions=["I", "Zicsr", "Zaamo", "Sm"],
+    required_extensions=["Zaamo", "Sm"],
     march_extensions=["I", "Zicsr", "Zaamo", "Zabha"],
 )
 def make_exceptionszaamo(test_data: TestData) -> list[str]:
     """Main entry point for Zaamo exception test generation."""
     lines = []
 
-    lines.append(check_access_fault_address_defined(test_data))
     lines.extend(_generate_amo_address_misaligned_tests(test_data))
     lines.extend(_generate_amo_access_fault_tests(test_data))
     return lines

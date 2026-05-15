@@ -7,10 +7,13 @@
 # Parse UDB configuration file
 ##################################
 
+from __future__ import annotations
+
 import importlib.resources
 import shutil
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 import rich
@@ -47,10 +50,17 @@ def _ensure_udb_installed() -> None:
         pass  # Gems missing or wrong version — need to install (done below)
 
     print("UDB gem missing or out of date; running 'bundle install'...")
-    try:
-        subprocess.run(["bundle", "install"], check=True, cwd=gemfile.parent)
-    except subprocess.CalledProcessError as e:
-        raise RuntimeError("'bundle install' failed. Check Ruby and bundler installation.") from e
+    max_attempts = 3
+    for attempt in range(1, max_attempts + 1):
+        try:
+            subprocess.run(["bundle", "install"], check=True, cwd=gemfile.parent)
+            break
+        except subprocess.CalledProcessError as e:
+            if attempt == max_attempts:
+                raise RuntimeError("'bundle install' failed. Check Ruby and bundler installation.") from e
+            backoff = attempt * 10
+            print(f"'bundle install' attempt {attempt} failed. Retrying in {backoff}s...")
+            time.sleep(backoff)
 
     if shutil.which("udb") is None:
         raise RuntimeError("UDB command still not found after 'bundle install'.")

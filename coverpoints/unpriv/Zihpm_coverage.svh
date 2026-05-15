@@ -76,6 +76,7 @@ covergroup Zihpm_csrrc_cg with function sample(ins_t ins);
             bins hpmcounter31h = {12'hC9F};
         `endif
     }
+
 endgroup
 // ---------------------
 covergroup Zihpm_csrrs_cg with function sample(ins_t ins);
@@ -142,6 +143,7 @@ covergroup Zihpm_csrrs_cg with function sample(ins_t ins);
             bins hpmcounter31h = {12'hC9F};
         `endif
     }
+
 endgroup
 // ---------------------
 function void zihpm_sample(int hart, int issue, ins_t ins);

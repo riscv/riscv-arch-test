@@ -7,6 +7,8 @@
 # Parse test framework configuration files
 ##################################
 
+from __future__ import annotations
+
 import shutil
 import subprocess
 from enum import Enum
@@ -113,7 +115,7 @@ class Config(BaseModel):
 
 
 # Minimum required tool versions
-REQUIRED_SAIL_VERSION = "0.10"
+REQUIRED_SAIL_VERSION = "0.11"
 REQUIRED_GCC_MAJOR_VERSION = 15
 REQUIRED_CLANG_MAJOR_VERSION = 20
 

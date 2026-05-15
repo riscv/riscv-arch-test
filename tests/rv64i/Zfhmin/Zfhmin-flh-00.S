@@ -20,7 +20,7 @@
 #define SIGUPD_COUNT 178
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define RVTEST_FP
+
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -811,6 +811,8 @@ Zfhmin_flh_cg_cp_NaNBox_S_H_NaNBox:
   # Check if f25 contains the expected result. Also checks fflags. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x23, x8, x7, f4, f25, Zfhmin_flh_cg_cp_NaNBox_S_H_NaNBox, Zfhmin_flh_cg_cp_NaNBox_S_H_NaNBox_str)
   addi x9, x9, SIG_STRIDE # increment data_ptr
+
+  mv x2, x23 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

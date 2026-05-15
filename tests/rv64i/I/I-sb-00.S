@@ -2287,6 +2287,8 @@ I_sb_cg_cp_align_byte_b7:
 #endif
 
 
+  mv x2, x28 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

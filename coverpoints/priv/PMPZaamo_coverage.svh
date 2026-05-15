@@ -15,29 +15,29 @@ covergroup PMPZaamo_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
   rs1_in_region: coverpoint ins.current.rs1_val {
-    bins at_region = {`REGIONSTART};
+    bins at_region = {`PMP_SPECIAL_REGION_START};
   }
 
   atomic_intrs: coverpoint ins.current.insn {
-    wildcard bins amoswap_w  = {32'b00001????????????010?????0101111};
-    wildcard bins amoadd_w   = {32'b00000????????????010?????0101111};
-    wildcard bins amoxor_w   = {32'b00100????????????010?????0101111};
-    wildcard bins amoand_w   = {32'b01100????????????010?????0101111};
-    wildcard bins amoor_w    = {32'b01000????????????010?????0101111};
-    wildcard bins amomin_w   = {32'b10000????????????010?????0101111};
-    wildcard bins amomax_w   = {32'b10100????????????010?????0101111};
-    wildcard bins amominu_w  = {32'b11000????????????010?????0101111};
-    wildcard bins amomaxu_w  = {32'b11100????????????010?????0101111};
+    wildcard bins amoswap_w  = {AMOSWAP_W};
+    wildcard bins amoadd_w   = {AMOADD_W};
+    wildcard bins amoxor_w   = {AMOXOR_W};
+    wildcard bins amoand_w   = {AMOAND_W};
+    wildcard bins amoor_w    = {AMOOR_W};
+    wildcard bins amomin_w   = {AMOMIN_W};
+    wildcard bins amomax_w   = {AMOMAX_W};
+    wildcard bins amominu_w  = {AMOMINU_W};
+    wildcard bins amomaxu_w  = {AMOMAXU_W};
     `ifdef XLEN64
-      wildcard bins amoswap_d  = {32'b00001????????????011?????0101111};
-      wildcard bins amoadd_d   = {32'b00000????????????011?????0101111};
-      wildcard bins amoxor_d   = {32'b00100????????????011?????0101111};
-      wildcard bins amoand_d   = {32'b01100????????????011?????0101111};
-      wildcard bins amoor_d    = {32'b01000????????????011?????0101111};
-      wildcard bins amomin_d   = {32'b10000????????????011?????0101111};
-      wildcard bins amomax_d   = {32'b10100????????????011?????0101111};
-      wildcard bins amominu_d  = {32'b11000????????????011?????0101111};
-      wildcard bins amomaxu_d  = {32'b11100????????????011?????0101111};
+      wildcard bins amoswap_d  = {AMOSWAP_D};
+      wildcard bins amoadd_d   = {AMOADD_D};
+      wildcard bins amoxor_d   = {AMOXOR_D};
+      wildcard bins amoand_d   = {AMOAND_D};
+      wildcard bins amoor_d    = {AMOOR_D};
+      wildcard bins amomin_d   = {AMOMIN_D};
+      wildcard bins amomax_d   = {AMOMAX_D};
+      wildcard bins amominu_d  = {AMOMINU_D};
+      wildcard bins amomaxu_d  = {AMOMAXU_D};
     `endif
   }
 
@@ -63,7 +63,7 @@ function void pmpzaamo_sample(int hart, int issue, ins_t ins);
   `ifdef XLEN32
     // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
     for (int i = 0; i < 16; i++) begin
-        logic [31:0] cfg_word = ins.current.csr[12'h3A0 + i];
+        logic [31:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + i];
         pmpcfg[i*4 + 0] = cfg_word[7:0];
         pmpcfg[i*4 + 1] = cfg_word[15:8];
         pmpcfg[i*4 + 2] = cfg_word[23:16];
@@ -72,7 +72,7 @@ function void pmpzaamo_sample(int hart, int issue, ins_t ins);
   `elsif XLEN64
     // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
-      logic [63:0] cfg_word = ins.current.csr[12'h3A0 + 2*i];
+      logic [63:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + 2*i];
       pmpcfg[i*8 + 0] = cfg_word[7:0];
       pmpcfg[i*8 + 1] = cfg_word[15:8];
       pmpcfg[i*8 + 2] = cfg_word[23:16];
@@ -85,11 +85,11 @@ function void pmpzaamo_sample(int hart, int issue, ins_t ins);
   `endif
 
   for (int j = 0; j < 63; j++) begin
-    pmpaddr[j] = ins.current.csr[12'h3B0 + j];
+    pmpaddr[j] = ins.current.csr[CSR_PMPADDR0 + j];
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
-    pmp_hit[k] = (pmpaddr[k] == `STANDARD_REGION) || (pmpaddr[k] == `NON_STANDARD_REGION);
+    pmp_hit[k] = (pmpaddr[k] == `SPECIAL_STANDARD_REGION) || (pmpaddr[k] == `SPECIAL_NON_STANDARD_REGION);
   end
 
   PMPZaamo_cg.sample(ins, pmpcfg, pmp_hit);

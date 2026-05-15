@@ -31,7 +31,7 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I']
+# REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
@@ -42,9 +42,6 @@
 #define TEST_FILE "pmpsm_cfg_L_modify_tor.S"
 #define SIGUPD_COUNT 50
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 
@@ -163,12 +160,6 @@ main:
 
 // --------------------------------------------------------------------------------
 
-    j exit                                                      // Verification Complete, exit the test
-
-.align 10
-.align (RVMODEL_PMP_GRAIN+2)
-
-exit:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
@@ -189,6 +180,20 @@ test_11_str: .string "\"test: 11; cp: cp_cfg_L_modify\""
 test_12_str: .string "\"test: 12; cp: cp_cfg_L_modify\""
 test_13_str: .string "\"test: 13; cp: cp_cfg_L_modify\""
 test_14_str: .string "\"test: 14; cp: cp_cfg_L_modify\""
+
+.align 12
+TEST_FOR_EXECUTION_0:
+    jr ra
+
+TEST_FOR_EXECUTION:
+    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

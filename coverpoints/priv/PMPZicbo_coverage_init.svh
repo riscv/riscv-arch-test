@@ -8,5 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-PMPZicbo_cg = new();
-PMPZicbo_cg.set_inst_name("obj_PMPZicbo");
+    PMPZicbo_cg = new();         PMPZicbo_cg.set_inst_name("obj_PMPZicbo");

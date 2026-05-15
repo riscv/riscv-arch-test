@@ -2,7 +2,7 @@
     // cp_vs1_edges_f_emul2_sew32
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs1_edges_f_emul2_sew32 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)[63:0]  iff (ins.trap == 0 )  {
+    cp_vs1_edges_f_emul2_sew32 : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs1_val)[63:0]  iff (ins.trap == 0 )  {
         // (Double Precision)
         bins pos0                   = {64'h0000000000000000};
         bins neg0                   = {64'h8000000000000000};

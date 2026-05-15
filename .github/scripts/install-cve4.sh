@@ -9,7 +9,6 @@ set -euo pipefail
 
 INSTALL_DIR="${1:?Usage: install-cve4.sh <install-dir>}"
 CVE4_DV_REPO="https://github.com/openhwgroup/cv32e40p-dv-review.git"
-CVE4_DV_BRANCH="feat/run-cve4-multi-config"
 CVE4_DV_COMMIT="a1c4ec501e82f23987d1d74625b70a6cd1dfc2e1"
 VERILATOR_VERSION="v5.042"
 
@@ -27,11 +26,14 @@ git clone --depth 1 --branch "$VERILATOR_VERSION" https://github.com/verilator/v
 rm -rf "$INSTALL_DIR/verilator-src"
 export PATH="$INSTALL_DIR/bin:$PATH"
 
-# 2. Clone the cv32e40p-dv testbench (ACT4 CI branch)
-git clone --depth 1 --branch "$CVE4_DV_BRANCH" "$CVE4_DV_REPO" "$INSTALL_DIR/cv32e40p-dv"
+# 2. Clone the cv32e40p-dv testbench at the pinned commit (shallow).
+# Fetch by SHA (not branch tip) so the pin remains valid as upstream advances.
+git init "$INSTALL_DIR/cv32e40p-dv"
 (
   cd "$INSTALL_DIR/cv32e40p-dv"
-  git checkout "$CVE4_DV_COMMIT"
+  git remote add origin "$CVE4_DV_REPO"
+  git fetch --depth 1 origin "$CVE4_DV_COMMIT"
+  git checkout FETCH_HEAD
 )
 
 # 3. Build the Verilator binary for rv32imcf (only one in CI matrix for now).
@@ -41,6 +43,6 @@ make -C "$INSTALL_DIR/cv32e40p-dv/sim/core" \
     TEST=certification_rv32imcf \
     -j"$(nproc)"
 
-# 4. Drop the per-test warapper into $INSTALL_DIR/bin for easy invocation from CI
+# 4. Drop the per-test wrapper into $INSTALL_DIR/bin for easy invocation from CI
 install -m 0755 "$INSTALL_DIR/cv32e40p-dv/.github/scripts/run-cve4.sh" \
                 "$INSTALL_DIR/bin/run-cve4.sh"

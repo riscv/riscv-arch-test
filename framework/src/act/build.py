@@ -20,7 +20,6 @@ from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from dataclasses import dataclass, field
 from graphlib import TopologicalSorter
 from pathlib import Path
-from types import FrameType
 from typing import Any
 
 from rich.console import Console, Group
@@ -133,37 +132,12 @@ def is_stale(task: BuildTask) -> bool:
     return any(inp.exists() and inp.stat().st_mtime > oldest_output_mtime for inp in all_inputs)
 
 
-class _ProcTracker:
-    """Thread-safe registry of subprocess PGIDs for group-kill on cancellation or Ctrl+C."""
-
-    def __init__(self) -> None:
-        self._pgids: set[int] = set()
-        self._lock = threading.Lock()
-        self._shutting_down = False
-
-    def add(self, pgid: int) -> None:
-        with self._lock:
-            self._pgids.add(pgid)
-            if self._shutting_down:
-                # kill_all() already ran; kill this late-registrant immediately
-                with contextlib.suppress(ProcessLookupError, PermissionError):
-                    os.killpg(pgid, signal.SIGKILL)
-
-    def remove(self, pgid: int) -> None:
-        with self._lock:
-            self._pgids.discard(pgid)
-
-    def kill_all(self) -> None:
-        with self._lock:
-            self._shutting_down = True
-            pgids = set(self._pgids)
-        for pgid in pgids:
-            with contextlib.suppress(ProcessLookupError, PermissionError):
-                os.killpg(pgid, signal.SIGKILL)
-
-
 def execute_task(
-    task: BuildTask, *, verbose: bool = False, proc_tracker: _ProcTracker | None = None
+    task: BuildTask,
+    *,
+    verbose: bool = False,
+    active_pgids: set[int] | None = None,
+    pgids_lock: threading.Lock | None = None,
 ) -> BuildError | None:
     """Execute a single build task. Returns None on success, BuildError on failure."""
     if verbose:
@@ -181,13 +155,15 @@ def execute_task(
                 start_new_session=True,  # own process group so killpg reaches children
             )
             pgid = proc.pid  # start_new_session=True makes the child its own group leader
-            if proc_tracker is not None:
-                proc_tracker.add(pgid)
+            if active_pgids is not None and pgids_lock is not None:
+                with pgids_lock:
+                    active_pgids.add(pgid)
             try:
                 stdout, stderr = proc.communicate()
             finally:
-                if proc_tracker is not None:
-                    proc_tracker.remove(pgid)
+                if active_pgids is not None and pgids_lock is not None:
+                    with pgids_lock:
+                        active_pgids.discard(pgid)
             if action.stdout_file is not None:
                 action.stdout_file.write_text(stderr + stdout)
             if proc.returncode != 0:
@@ -261,26 +237,15 @@ def build(
     if not tasks:
         return result
 
-    tracker = _ProcTracker()
+    active_pgids: set[int] = set()
+    pgids_lock = threading.Lock()
 
-    # Install a SIGINT handler so Ctrl+C kills running subprocesses before the
-    # ThreadPoolExecutor waits for worker threads to finish.
-    # signal.signal() requires the main thread; skip silently if called from a worker.
-    _prev_sigint: signal._HANDLER = None
-    try:
-
-        def _sigint_handler(signum: int, frame: FrameType | None) -> None:
-            tracker.kill_all()
-            if callable(_prev_sigint):
-                _prev_sigint(signum, frame)
-                return
-            if _prev_sigint == signal.SIG_IGN:
-                return
-            signal.default_int_handler(signum, frame)
-
-        _prev_sigint = signal.signal(signal.SIGINT, _sigint_handler)
-    except ValueError:
-        pass  # not the main thread
+    def _kill_active() -> None:
+        with pgids_lock:
+            pgids = set(active_pgids)
+        for pgid in pgids:
+            with contextlib.suppress(ProcessLookupError, PermissionError):
+                os.killpg(pgid, signal.SIGKILL)
 
     # Build task lookup and dependency graph (keyed by primary output path)
     task_map: dict[Path, BuildTask] = {}
@@ -337,14 +302,14 @@ def build(
     )
     progress_task = progress.add_task("Building", total=len(tasks))
 
-    try:
-        with (
-            Live(Group(progress, status_text), console=progress.console, transient=True) as live,
-            ThreadPoolExecutor(max_workers=jobs) as executor,
-        ):
-            in_flight: dict[Path, Future[BuildError | None]] = {}
-            future_to_key: dict[Future[BuildError | None], Path] = {}
+    with (
+        Live(Group(progress, status_text), console=progress.console, transient=True) as live,
+        ThreadPoolExecutor(max_workers=jobs) as executor,
+    ):
+        in_flight: dict[Path, Future[BuildError | None]] = {}
+        future_to_key: dict[Future[BuildError | None], Path] = {}
 
+        try:
             while sorter.is_active():
                 # Submit all ready tasks
                 for key in sorter.get_ready():
@@ -374,7 +339,9 @@ def build(
                         continue
 
                     # Submit task to thread pool
-                    future = executor.submit(execute_task, task, verbose=verbose, proc_tracker=tracker)
+                    future = executor.submit(
+                        execute_task, task, verbose=verbose, active_pgids=active_pgids, pgids_lock=pgids_lock
+                    )
                     in_flight[key] = future
                     future_to_key[future] = key
 
@@ -398,8 +365,7 @@ def build(
                         failed_tasks.add(key)
                         _print_failure(live.console, task_map[key], error, verbose=verbose)
                         if not keep_going:
-                            # Kill running subprocesses before discarding in-flight threads
-                            tracker.kill_all()
+                            _kill_active()
                             executor.shutdown(wait=False, cancel_futures=True)
                             return result
                     else:
@@ -408,10 +374,10 @@ def build(
                     progress.advance(progress_task)
 
                 _update_status(in_flight)
-    finally:
-        tracker.kill_all()
-        if _prev_sigint is not None:
-            signal.signal(signal.SIGINT, _prev_sigint)
+        except KeyboardInterrupt:
+            _kill_active()
+            executor.shutdown(wait=False, cancel_futures=True)
+            raise
 
     return result
 

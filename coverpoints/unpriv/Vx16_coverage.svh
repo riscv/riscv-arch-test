@@ -3594,6 +3594,15 @@ covergroup Vx16_vcpop_m_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_eew1////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
@@ -4509,6 +4518,15 @@ covergroup Vx16_vfirst_m_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_eew1////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
@@ -5185,16 +5203,6 @@ covergroup Vx16_vmadc_vi_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -5260,6 +5268,15 @@ covergroup Vx16_vmadc_vi_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -5360,16 +5377,6 @@ covergroup Vx16_vmadc_vim_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -5454,6 +5461,15 @@ covergroup Vx16_vmadc_vim_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_nv0////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -5563,16 +5579,6 @@ covergroup Vx16_vmadc_vv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -5666,6 +5672,15 @@ covergroup Vx16_vmadc_vv_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -5765,16 +5780,6 @@ covergroup Vx16_vmadc_vvm_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -5889,6 +5894,15 @@ covergroup Vx16_vmadc_vvm_cg with function sample(ins_t ins);
 
     //// end cp_vs2_nv0////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
@@ -5975,16 +5989,6 @@ covergroup Vx16_vmadc_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -6085,6 +6089,15 @@ covergroup Vx16_vmadc_vx_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
@@ -6172,16 +6185,6 @@ covergroup Vx16_vmadc_vxm_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -6300,6 +6303,15 @@ covergroup Vx16_vmadc_vxm_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_nv0////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -6813,16 +6825,6 @@ covergroup Vx16_vmand_mm_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -6916,6 +6918,15 @@ covergroup Vx16_vmand_mm_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_eew1////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -7044,16 +7055,6 @@ covergroup Vx16_vmandn_mm_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -7147,6 +7148,15 @@ covergroup Vx16_vmandn_mm_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_eew1////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -9377,16 +9387,6 @@ covergroup Vx16_vmnand_mm_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -9480,6 +9480,15 @@ covergroup Vx16_vmnand_mm_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_eew1////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -9608,16 +9617,6 @@ covergroup Vx16_vmnor_mm_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -9711,6 +9710,15 @@ covergroup Vx16_vmnor_mm_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_eew1////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -9839,16 +9847,6 @@ covergroup Vx16_vmor_mm_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -9942,6 +9940,15 @@ covergroup Vx16_vmor_mm_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_eew1////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -10070,16 +10077,6 @@ covergroup Vx16_vmorn_mm_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -10173,6 +10170,15 @@ covergroup Vx16_vmorn_mm_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_eew1////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -10271,16 +10277,6 @@ covergroup Vx16_vmsbc_vv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -10374,6 +10370,15 @@ covergroup Vx16_vmsbc_vv_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -10473,16 +10478,6 @@ covergroup Vx16_vmsbc_vvm_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -10597,6 +10592,15 @@ covergroup Vx16_vmsbc_vvm_cg with function sample(ins_t ins);
 
     //// end cp_vs2_nv0////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
@@ -10683,16 +10687,6 @@ covergroup Vx16_vmsbc_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -10793,6 +10787,15 @@ covergroup Vx16_vmsbc_vx_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
@@ -10880,16 +10883,6 @@ covergroup Vx16_vmsbc_vxm_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -11009,6 +11002,15 @@ covergroup Vx16_vmsbc_vxm_cg with function sample(ins_t ins);
 
     //// end cp_vs2_nv0////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
@@ -11095,16 +11097,6 @@ covergroup Vx16_vmsbf_m_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -11175,6 +11167,15 @@ covergroup Vx16_vmsbf_m_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_eew1////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -11252,16 +11253,6 @@ covergroup Vx16_vmseq_vi_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -11345,6 +11336,15 @@ covergroup Vx16_vmseq_vi_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -11454,16 +11454,6 @@ covergroup Vx16_vmseq_vv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -11576,6 +11566,15 @@ covergroup Vx16_vmseq_vv_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
@@ -11662,16 +11661,6 @@ covergroup Vx16_vmseq_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -11790,6 +11779,15 @@ covergroup Vx16_vmseq_vx_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
@@ -11876,16 +11874,6 @@ covergroup Vx16_vmsgt_vi_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -11969,6 +11957,15 @@ covergroup Vx16_vmsgt_vi_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -12068,16 +12065,6 @@ covergroup Vx16_vmsgt_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -12196,6 +12183,15 @@ covergroup Vx16_vmsgt_vx_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
@@ -12282,16 +12278,6 @@ covergroup Vx16_vmsgtu_vi_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -12375,6 +12361,15 @@ covergroup Vx16_vmsgtu_vi_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -12474,16 +12469,6 @@ covergroup Vx16_vmsgtu_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -12602,6 +12587,15 @@ covergroup Vx16_vmsgtu_vx_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
@@ -12688,16 +12682,6 @@ covergroup Vx16_vmsif_m_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -12768,6 +12752,15 @@ covergroup Vx16_vmsif_m_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_eew1////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -12845,16 +12838,6 @@ covergroup Vx16_vmsle_vi_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -12938,6 +12921,15 @@ covergroup Vx16_vmsle_vi_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -13047,16 +13039,6 @@ covergroup Vx16_vmsle_vv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -13169,6 +13151,15 @@ covergroup Vx16_vmsle_vv_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
@@ -13255,16 +13246,6 @@ covergroup Vx16_vmsle_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -13383,6 +13364,15 @@ covergroup Vx16_vmsle_vx_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
@@ -13469,16 +13459,6 @@ covergroup Vx16_vmsleu_vi_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -13562,6 +13542,15 @@ covergroup Vx16_vmsleu_vi_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -13671,16 +13660,6 @@ covergroup Vx16_vmsleu_vv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -13793,6 +13772,15 @@ covergroup Vx16_vmsleu_vv_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
@@ -13879,16 +13867,6 @@ covergroup Vx16_vmsleu_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -14006,6 +13984,15 @@ covergroup Vx16_vmsleu_vx_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -14103,16 +14090,6 @@ covergroup Vx16_vmslt_vv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -14225,6 +14202,15 @@ covergroup Vx16_vmslt_vv_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
@@ -14311,16 +14297,6 @@ covergroup Vx16_vmslt_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -14438,6 +14414,15 @@ covergroup Vx16_vmslt_vx_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -14535,16 +14520,6 @@ covergroup Vx16_vmsltu_vv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -14657,6 +14632,15 @@ covergroup Vx16_vmsltu_vv_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
@@ -14743,16 +14727,6 @@ covergroup Vx16_vmsltu_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -14871,6 +14845,15 @@ covergroup Vx16_vmsltu_vx_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
@@ -14957,16 +14940,6 @@ covergroup Vx16_vmsne_vi_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -15050,6 +15023,15 @@ covergroup Vx16_vmsne_vi_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -15159,16 +15141,6 @@ covergroup Vx16_vmsne_vv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -15281,6 +15253,15 @@ covergroup Vx16_vmsne_vv_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
@@ -15367,16 +15348,6 @@ covergroup Vx16_vmsne_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -15495,6 +15466,15 @@ covergroup Vx16_vmsne_vx_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
@@ -15581,16 +15561,6 @@ covergroup Vx16_vmsof_m_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -15661,6 +15631,15 @@ covergroup Vx16_vmsof_m_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_eew1////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -17282,16 +17261,6 @@ covergroup Vx16_vmv_s_x_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins two = {1};
     }
@@ -17372,6 +17341,15 @@ covergroup Vx16_vmv_s_x_cg with function sample(ins_t ins);
 
     cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
     bins zero = {0};
+    }
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -17784,15 +17762,6 @@ covergroup Vx16_vmv_x_s_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_prev_vill_clear: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins vill_not_set = {0};
     }
@@ -17884,6 +17853,15 @@ covergroup Vx16_vmv_x_s_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -18578,16 +18556,6 @@ covergroup Vx16_vmxnor_mm_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -18681,6 +18649,15 @@ covergroup Vx16_vmxnor_mm_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_eew1////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -18809,16 +18786,6 @@ covergroup Vx16_vmxor_mm_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -18913,6 +18880,15 @@ covergroup Vx16_vmxor_mm_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges_eew1////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
@@ -19001,16 +18977,6 @@ covergroup Vx16_vnclip_wi_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -19203,6 +19169,15 @@ covergroup Vx16_vnclip_wi_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
@@ -19330,15 +19305,6 @@ covergroup Vx16_vnclip_wv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -19495,6 +19461,15 @@ covergroup Vx16_vnclip_wv_cg with function sample(ins_t ins);
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -19600,16 +19575,6 @@ covergroup Vx16_vnclip_wx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -19777,6 +19742,15 @@ covergroup Vx16_vnclip_wx_cg with function sample(ins_t ins);
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -19882,16 +19856,6 @@ covergroup Vx16_vnclipu_wi_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -20085,6 +20049,15 @@ covergroup Vx16_vnclipu_wi_cg with function sample(ins_t ins);
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -20211,15 +20184,6 @@ covergroup Vx16_vnclipu_wv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -20376,6 +20340,15 @@ covergroup Vx16_vnclipu_wv_cg with function sample(ins_t ins);
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -20481,16 +20454,6 @@ covergroup Vx16_vnclipu_wx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -20657,6 +20620,15 @@ covergroup Vx16_vnclipu_wx_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
@@ -21535,16 +21507,6 @@ covergroup Vx16_vnsra_wi_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -21737,6 +21699,15 @@ covergroup Vx16_vnsra_wi_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
@@ -21845,15 +21816,6 @@ covergroup Vx16_vnsra_wv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -22010,6 +21972,15 @@ covergroup Vx16_vnsra_wv_cg with function sample(ins_t ins);
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -22097,16 +22068,6 @@ covergroup Vx16_vnsra_wx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -22274,6 +22235,15 @@ covergroup Vx16_vnsra_wx_cg with function sample(ins_t ins);
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -22361,16 +22331,6 @@ covergroup Vx16_vnsrl_wi_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -22564,6 +22524,15 @@ covergroup Vx16_vnsrl_wi_cg with function sample(ins_t ins);
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -22671,15 +22640,6 @@ covergroup Vx16_vnsrl_wv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -22836,6 +22796,15 @@ covergroup Vx16_vnsrl_wv_cg with function sample(ins_t ins);
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -22923,16 +22892,6 @@ covergroup Vx16_vnsrl_wx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -23099,6 +23058,15 @@ covergroup Vx16_vnsrl_wx_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
@@ -23771,15 +23739,6 @@ covergroup Vx16_vredand_vs_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins two = {1};
     }
@@ -23975,6 +23934,15 @@ covergroup Vx16_vredand_vs_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -24102,15 +24070,6 @@ covergroup Vx16_vredmax_vs_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins two = {1};
     }
@@ -24306,6 +24265,15 @@ covergroup Vx16_vredmax_vs_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -24433,15 +24401,6 @@ covergroup Vx16_vredmaxu_vs_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins two = {1};
     }
@@ -24637,6 +24596,15 @@ covergroup Vx16_vredmaxu_vs_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -24764,15 +24732,6 @@ covergroup Vx16_vredmin_vs_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins two = {1};
     }
@@ -24968,6 +24927,15 @@ covergroup Vx16_vredmin_vs_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -25095,15 +25063,6 @@ covergroup Vx16_vredminu_vs_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins two = {1};
     }
@@ -25299,6 +25258,15 @@ covergroup Vx16_vredminu_vs_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -25426,15 +25394,6 @@ covergroup Vx16_vredor_vs_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins two = {1};
     }
@@ -25630,6 +25589,15 @@ covergroup Vx16_vredor_vs_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -25757,15 +25725,6 @@ covergroup Vx16_vredsum_vs_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins two = {1};
     }
@@ -25961,6 +25920,15 @@ covergroup Vx16_vredsum_vs_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -26088,15 +26056,6 @@ covergroup Vx16_vredxor_vs_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins two = {1};
     }
@@ -26292,6 +26251,15 @@ covergroup Vx16_vredxor_vs_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -27338,16 +27306,6 @@ covergroup Vx16_vrgather_vv_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector slidedown and gather instructions
 
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_sew_elemt_zero_vs1_all_ones_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)} {
         wildcard bins sew16     = {66'b01_????????_????????_????????_????????_????????_????????_11111111_11111111};
     }
@@ -27459,6 +27417,15 @@ covergroup Vx16_vrgather_vv_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
     //////////////////////////////////////////////////////////////////////////////////
@@ -27540,15 +27507,6 @@ covergroup Vx16_vrgather_vx_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vindexVX_rs1_not_truncated_64
     //////////////////////////////////////////////////////////////////////////////////
-
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
 
     vs2_element_zero_nonzero_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[15:0] {
         wildcard bins sew16     = {[16'b1111111_11111111:16'b00000000_00000001]};
@@ -27670,6 +27628,15 @@ covergroup Vx16_vrgather_vx_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -27799,16 +27766,6 @@ covergroup Vx16_vrgatherei16_vv_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector slidedown and gather instructions
 
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_sew_elemt_zero_vs1_all_ones_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)} {
         wildcard bins sew16     = {66'b01_????????_????????_????????_????????_????????_????????_11111111_11111111};
     }
@@ -27919,6 +27876,15 @@ covergroup Vx16_vrgatherei16_vv_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -29832,16 +29798,6 @@ covergroup Vx16_vsext_vf2_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins two = {1};
     }
@@ -29938,6 +29894,15 @@ covergroup Vx16_vsext_vf2_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_emulf2////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -30530,15 +30495,6 @@ covergroup Vx16_vslidedown_vx_cg with function sample(ins_t ins);
     // cp_custom_vindexVX_rs1_not_truncated_64
     //////////////////////////////////////////////////////////////////////////////////
 
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vs2_element_zero_nonzero_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[15:0] {
         wildcard bins sew16     = {[16'b1111111_11111111:16'b00000000_00000001]};
     }
@@ -30659,6 +30615,15 @@ covergroup Vx16_vslidedown_vx_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -31261,16 +31226,6 @@ covergroup Vx16_vsll_vv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vs1_top_bits_one_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)} {
         wildcard bins sew16     = {66'b01_????????_????????_????????_????????_????????_????????_11111111_1111????};
     }
@@ -31366,6 +31321,15 @@ covergroup Vx16_vsll_vv_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -31463,16 +31427,6 @@ covergroup Vx16_vsll_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     rs1_top_bits_one_cross_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  ins.current.rs1_val} {
         `ifdef XLEN32
         wildcard bins sew16     = {34'b01_????????_????????_11111111_1111????};
@@ -31579,6 +31533,15 @@ covergroup Vx16_vsll_vx_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -32285,16 +32248,6 @@ covergroup Vx16_vsra_vv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vs1_top_bits_one_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)} {
         wildcard bins sew16     = {66'b01_????????_????????_????????_????????_????????_????????_11111111_1111????};
     }
@@ -32390,6 +32343,15 @@ covergroup Vx16_vsra_vv_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -32487,16 +32449,6 @@ covergroup Vx16_vsra_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     rs1_top_bits_one_cross_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  ins.current.rs1_val} {
         `ifdef XLEN32
         wildcard bins sew16     = {34'b01_????????_????????_11111111_1111????};
@@ -32603,6 +32555,15 @@ covergroup Vx16_vsra_vx_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -32887,16 +32848,6 @@ covergroup Vx16_vsrl_vv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vs1_top_bits_one_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)} {
         wildcard bins sew16     = {66'b01_????????_????????_????????_????????_????????_????????_11111111_1111????};
     }
@@ -32992,6 +32943,15 @@ covergroup Vx16_vsrl_vv_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -33089,16 +33049,6 @@ covergroup Vx16_vsrl_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     rs1_top_bits_one_cross_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  ins.current.rs1_val} {
         `ifdef XLEN32
         wildcard bins sew16     = {34'b01_????????_????????_11111111_1111????};
@@ -33205,6 +33155,15 @@ covergroup Vx16_vsrl_vx_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -33507,16 +33466,6 @@ covergroup Vx16_vssra_vv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vs1_top_bits_one_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)} {
         wildcard bins sew16     = {66'b01_????????_????????_????????_????????_????????_????????_11111111_1111????};
     }
@@ -33612,6 +33561,15 @@ covergroup Vx16_vssra_vv_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -33727,16 +33685,6 @@ covergroup Vx16_vssra_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     rs1_top_bits_one_cross_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  ins.current.rs1_val} {
         `ifdef XLEN32
         wildcard bins sew16     = {34'b01_????????_????????_11111111_1111????};
@@ -33843,6 +33791,15 @@ covergroup Vx16_vssra_vx_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -34163,16 +34120,6 @@ covergroup Vx16_vssrl_vv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vs1_top_bits_one_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)} {
         wildcard bins sew16     = {66'b01_????????_????????_????????_????????_????????_????????_11111111_1111????};
     }
@@ -34268,6 +34215,15 @@ covergroup Vx16_vssrl_vv_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -34383,16 +34339,6 @@ covergroup Vx16_vssrl_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     rs1_top_bits_one_cross_sew16 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  ins.current.rs1_val} {
         `ifdef XLEN32
         wildcard bins sew16     = {34'b01_????????_????????_11111111_1111????};
@@ -34499,6 +34445,15 @@ covergroup Vx16_vssrl_vx_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16
@@ -35773,15 +35728,6 @@ covergroup Vx16_vwadd_vv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -35999,6 +35945,15 @@ covergroup Vx16_vwadd_vv_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -36086,15 +36041,6 @@ covergroup Vx16_vwadd_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -36266,6 +36212,15 @@ covergroup Vx16_vwadd_vx_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -36379,15 +36334,6 @@ covergroup Vx16_vwadd_wv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -36580,6 +36526,15 @@ covergroup Vx16_vwadd_wv_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
@@ -36908,15 +36863,6 @@ covergroup Vx16_vwaddu_vv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -37123,6 +37069,15 @@ covergroup Vx16_vwaddu_vv_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -37210,15 +37165,6 @@ covergroup Vx16_vwaddu_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -37382,6 +37328,15 @@ covergroup Vx16_vwaddu_vx_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -37495,15 +37450,6 @@ covergroup Vx16_vwaddu_wv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -37688,6 +37634,15 @@ covergroup Vx16_vwaddu_wv_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
@@ -39344,15 +39299,6 @@ covergroup Vx16_vwmul_vv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -39559,6 +39505,15 @@ covergroup Vx16_vwmul_vv_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -39646,15 +39601,6 @@ covergroup Vx16_vwmul_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -39817,6 +39763,15 @@ covergroup Vx16_vwmul_vx_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
@@ -39915,15 +39870,6 @@ covergroup Vx16_vwmulsu_vv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -40130,6 +40076,15 @@ covergroup Vx16_vwmulsu_vv_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -40217,15 +40172,6 @@ covergroup Vx16_vwmulsu_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -40388,6 +40334,15 @@ covergroup Vx16_vwmulsu_vx_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
@@ -40486,15 +40441,6 @@ covergroup Vx16_vwmulu_vv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -40701,6 +40647,15 @@ covergroup Vx16_vwmulu_vv_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -40788,15 +40743,6 @@ covergroup Vx16_vwmulu_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -40959,6 +40905,15 @@ covergroup Vx16_vwmulu_vx_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
@@ -41100,16 +41055,6 @@ covergroup Vx16_vwredsum_vs_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins two = {1};
     }
@@ -41318,6 +41263,15 @@ covergroup Vx16_vwredsum_vs_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
@@ -41459,16 +41413,6 @@ covergroup Vx16_vwredsumu_vs_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins two = {1};
     }
@@ -41678,6 +41622,15 @@ covergroup Vx16_vwredsumu_vs_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -41775,15 +41728,6 @@ covergroup Vx16_vwsub_vv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -41990,6 +41934,15 @@ covergroup Vx16_vwsub_vv_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -42077,15 +42030,6 @@ covergroup Vx16_vwsub_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -42249,6 +42193,15 @@ covergroup Vx16_vwsub_vx_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -42362,15 +42315,6 @@ covergroup Vx16_vwsub_wv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -42555,6 +42499,15 @@ covergroup Vx16_vwsub_wv_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
@@ -42883,15 +42836,6 @@ covergroup Vx16_vwsubu_vv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -43098,6 +43042,15 @@ covergroup Vx16_vwsubu_vv_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -43185,15 +43138,6 @@ covergroup Vx16_vwsubu_vx_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -43357,6 +43301,15 @@ covergroup Vx16_vwsubu_vx_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
     //////////////////////////////////////////////////////////////////////////////////
@@ -43470,15 +43423,6 @@ covergroup Vx16_vwsubu_wv_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one = {0};
     }
@@ -43663,6 +43607,15 @@ covergroup Vx16_vwsubu_wv_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_emul2////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
@@ -44525,16 +44478,6 @@ covergroup Vx16_vzext_vf2_cg with function sample(ins_t ins);
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins two = {1};
     }
@@ -44631,6 +44574,15 @@ covergroup Vx16_vzext_vf2_cg with function sample(ins_t ins);
     }
 
     //// end cp_vs2_edges_emulf2////////////////////////////////////////////////
+
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16

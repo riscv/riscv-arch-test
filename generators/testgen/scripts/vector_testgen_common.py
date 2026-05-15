@@ -643,6 +643,18 @@ ls_not_maskable = [
 
 vmvins          = vvrtype + vxtype + vitype + xvtype + vftype + fvtype + vvvxtype + vcompressins
 vd_widen_ins    = wvvins + wvxins + wwvins + wwxins + wvsins + fwvfins + fwwfins + fwcvt_ins
+# Widening multiply-accumulate instructions: vd is both destination (EEW=2*SEW) AND a source
+# operand (the accumulator, also read at EEW=2*SEW). Because vs1/vs2 are read at EEW=SEW, any
+# overlap between vd and vs1/vs2 would cause the same vector register to be read at two different
+# EEWs, which is reserved per V spec section 5.2 (norm:eew_emul). The standard widening
+# "lowest-numbered-part" overlap exception does NOT apply here, because vd is also read (not
+# just written). Therefore vd must have NO overlap with vs1/vs2 for these instructions.
+widening_mac_ins = [
+  "vwmacc.vv", "vwmaccu.vv", "vwmaccsu.vv",
+  "vwmacc.vx", "vwmaccu.vx", "vwmaccsu.vx", "vwmaccus.vx",
+  "vfwmacc.vv", "vfwnmacc.vv", "vfwmsac.vv", "vfwnmsac.vv",
+  "vfwmacc.vf", "vfwnmacc.vf", "vfwmsac.vf", "vfwnmsac.vf",
+]
 not_maskable    = vm_nomask_ins + mmins + vmvins + ls_not_maskable
 
 # "vl1re8.v", "vl1re16.v", "vl1re32.v", "vl1re64.v"
@@ -1111,14 +1123,57 @@ def genRandomVectorLS():
   vectordata += writeData("    .align 4")
   vectordata += writeData("// Corner Vectors")
 
-  num_words_either_side = int(maxELEN / 64) * 2 * 2 * maxVLEN # 2 times max vlen elements on either side of pointer (sewMAX = 64)
+  # Region sizing for vector LS test data. rs1 points at the `vector_ls_random_base`
+  # label; the `_header` block sits *before* the label so tests with negative offsets
+  # have valid data behind rs1. Size each side to the largest offset any generator
+  # in this codebase emits (no extra margin).
+  #
+  # Generators that consume this region (update bounds below if any generator's
+  # access footprint grows):
+  #   - Unit-stride LS         (vle*/vse*)            : forward = vlmax * sew/8
+  #   - Strided LS             (vlse*/vsse*)          : stride randomized as
+  #                                                     k * eew/8, k in [-2, 3]
+  #                                                     (see randomizeRegisterData,
+  #                                                     stride val for rs2)
+  #                                                     -> forward  = vlmax * 3 * eew/8
+  #                                                        backward = vlmax * 2 * eew/8
+  #   - Segment unit-stride    (vlseg*/vsseg*,
+  #                             vlsseg*/vssseg*)      : forward = nf * vlmax * sew/8
+  #                                                     (nf <= 8)
+  #   - Segment strided        (vlsseg*/vssseg*)      : forward  = vlmax*3*eew/8 + nf*sew/8
+  #                                                     backward = vlmax*2*eew/8
+  #   - Indexed LS             (vl[uo]xei*/vs[uo]xei*): forward only, vs2 elements
+  #                                                     clamped to [0, 2*vlmax) by
+  #                                                     vremu (see loadVectorReg);
+  #                                                     forward bound 2 * vlmax * eew/8 (worst:
+  #                                                                                      eew=8)
+  #
+  # Worst case across (VLEN<=maxVLEN, LMUL<=8, SEW>=8, nf<=8) with vlmax=VLEN*LMUL/SEW:
+  #
+  #   FORWARD  is bounded by SEGMENT UNIT-STRIDE:
+  #     nf_max * vlmax_max * sew_min/8
+  #       = 8 * (maxVLEN*8/sew_min) * sew_min/8
+  #       = 8 * maxVLEN bytes
+  #
+  #   BACKWARD is bounded by STRIDED LS (negative stride, k=-2):
+  #     vlmax_max * 2 * eew_max/8 with vlmax*eew = VLEN*LMUL (independent of sew)
+  #       = (maxVLEN*8) * 2 / 8
+  #       = 2 * maxVLEN bytes
+  #
+  # If a new generator with a larger footprint is added (e.g. wider stride range,
+  # nf>8, or negative-offset indexed access), recompute and bump the bounds here.
+  forward_bytes  = 8 * maxVLEN  # bound by segment unit-stride forward
+  backward_bytes = 2 * maxVLEN  # bound by strided LS backward
+
+  forward_words  = forward_bytes  // 4
+  backward_words = backward_bytes // 4
 
   vectordata += writeData("vector_ls_random_base_header:")
-  for i in range(num_words_either_side):
+  for i in range(backward_words):
       randomElem = getrandbits(32)
       vectordata += writeData(f"    .word 0x{randomElem:08x}")
   vectordata += writeData("vector_ls_random_base:")
-  for i in range(num_words_either_side):
+  for i in range(forward_words):
       randomElem = getrandbits(32)
       vectordata += writeData(f"    .word 0x{randomElem:08x}")
 
@@ -1412,7 +1467,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
       "Vf64":  ["Zve64d"],
     }
 
-    if test.startswith("ExceptionsV"):
+    if test.startswith(("ExceptionsV", "SsstrictV", "MisalignedV")):
       ext_parts_no_I = ['M', 'V', 'Zicsr']
       ext_str_no_I = "_M_V_Zicsr"
       # Vector-FP priv suites need scalar/vector FP extensions in -march so the
@@ -1961,19 +2016,14 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
       eew = getInstructionEEW(instruction)
       vs2_emul = math.ceil(lmul * eew / sew)
 
-      element_positive = 2 ** (eew-1) - 1
-
       writeLine(f"csrr x{vtypeReg}, vtype",                                     "# save vtype register for after load")
       writeLine(f"csrr x{avlReg}, vl",                                          "# save vl register for after load")
       writeLine(f"vsetvl x{vlmaxReg}, x0, x{vtypeReg}",                         "# set vl to vlmax")
       writeLine(f"add x{vlmaxReg}, x{vlmaxReg}, x{vlmaxReg}",                   "# save vlmax * 2")
       writeLine(f"vsetvli x0, x{avlReg}, e{eew}, m{getLmulFlag(vs2_emul)}, ta, ma", "# setting sew to vs2 eew")
-      if eew < xlen: # make sure the number is positive since it will be 0 extended to XLEN
-        element_positiv_reg = pickScalarScratch(scalar_registers_used)
-        scalar_registers_used.append(element_positiv_reg)
-        writeLine(f"li x{element_positiv_reg}, {element_positive}",             "#  make sure the number is positive since it will be 0 extended to XLEN")
-        writeLine(f"vand.vx v{register}, v{register}, x{element_positiv_reg}",  "#")
-      writeLine(f"vrem.vx v{register}, v{register}, x{vlmaxReg}",               "# ensure all values are within (-2*vlmax, 2*vlmax)")
+      # spec zero-extends index elements to XLEN; use unsigned remainder so
+      # offsets stay non-negative in [0, 2*vlmax) and never alias to huge addrs.
+      writeLine(f"vremu.vx v{register}, v{register}, x{vlmaxReg}",              "# ensure all values are within [0, 2*vlmax)")
       writeLine(f"vand.vi v{register}, v{register}, {sew_aligned}",             "# sew-aligning elements")
       writeLine(f"vsetvl x0, x{avlReg}, x{vtypeReg}",                           "# restore vl and vtype setting")
 
@@ -2266,6 +2316,55 @@ def getInstructionEEW(instruction):
   elif instruction in eew32_ins : return 32
   elif instruction in eew64_ins : return 64
   else                          : return None
+
+def encodeIndexedLSAsInsn(instruction, instruction_data, masked=False):
+  """Emit indexed LS as raw `.insn 0xXXXXXXXX` so the assembler accepts forms
+  (e.g. `vsoxseg7ei64.v` on RV32) that clang otherwise rejects with
+  "instruction requires the following: RV64I Base Instruction Set". The
+  encoding follows V-spec indexed LS layout; mnemonic appears as a trailing
+  comment for readability.
+  """
+  if instruction not in indexed_ls_ins:
+    raise ValueError(f"{instruction} is not an indexed LS instruction")
+  vec_data, scalar_data, _fp_data, _imm = instruction_data
+  rs1 = scalar_data['rs1']['reg']
+  vs2 = vec_data['vs2']['reg']
+  if instruction in indexed_stores:
+    dst    = vec_data['vs3']['reg']
+    opcode = 0b0100111  # STORE-FP
+  else:
+    dst    = vec_data['vd']['reg']
+    opcode = 0b0000111  # LOAD-FP
+  eew = getInstructionEEW(instruction)
+  width_map = {8: 0b000, 16: 0b101, 32: 0b110, 64: 0b111}
+  if eew not in width_map:
+    supported_eews = ", ".join(str(supported_eew) for supported_eew in sorted(width_map))
+    raise ValueError(
+      f"Unsupported EEW {eew!r} for indexed LS instruction {instruction}; "
+      f"supported EEWs: {supported_eews}"
+    )
+  width = width_map[eew]
+  # mop: 01 = indexed-unordered (vluxei/vsuxei), 11 = indexed-ordered (vloxei/vsoxei)
+  if instruction.startswith("vsox") or instruction.startswith("vlox"):
+    mop = 0b11
+  else:
+    mop = 0b01
+  nf = getInstructionSegments(instruction) - 1
+  vm = 0 if masked else 1
+  mew = 0
+  enc = (
+    (nf     << 29) |
+    (mew    << 28) |
+    (mop    << 26) |
+    (vm     << 25) |
+    (vs2    << 20) |
+    (rs1    << 15) |
+    (width  << 12) |
+    (dst    << 7 ) |
+    opcode
+  )
+  mnemonic_args = f"v{dst}, (x{rs1}), v{vs2}" + (", v0.t" if masked else "")
+  return f".insn 0x{enc:08x}    # {instruction} {mnemonic_args}"
 
 def prepMaskV(maskval, sew, tempReg, lmul):
   lmulflag = getLmulFlag(lmul)
@@ -2783,6 +2882,22 @@ def randomizeRegister(instruction, eew, register_argument_name: str, reg_count: 
         register = randint(1, reg_count-1) # 1 to maxreg, inclusive
       else: # "f" registers
         register = randint(0, reg_count-1) # 0 to maxreg, inclusive
+  elif register_type == "v":
+    # Preset vector register: verify the requested base register leaves room
+    # for the full segment group (NF * EMUL_field). Callers (e.g. make_vs3_vs2)
+    # iterate over v in range(32) and rely on ValueError to skip illegal vs.
+    emul_check = int(register_data['size_multiplier'] * lmul)
+    if register_data['reg_type'] == "scalar" or register_data['reg_type'] == "mask" or emul_check < 1:
+      emul_check = 1
+    if register + emul_check * register_data['segments'] > reg_count:
+      raise ValueError(
+        f"preset {register_argument_name}=v{register} with NF={register_data['segments']} "
+        f"EMUL_field={emul_check} overflows past v{reg_count-1} for {instruction}"
+      )
+    if emul_check > 1 and register % emul_check != 0:
+      raise ValueError(
+        f"preset {register_argument_name}=v{register} not aligned to EMUL={emul_check} for {instruction}"
+      )
 
   register_data['reg'] = register
 
@@ -2834,10 +2949,19 @@ def getVectorEmulMultipliers(instruction):
 
 #                  Example: no_overlap = [['vs1', 'vs2_top'], ['v0', 'vd_bottom']]
 #                  all values will be continued to be randomized until there is no overlap within lists
-def getInstructionRegisterOverlapConstraints (instruction, sew, lmul):
+def getInstructionRegisterOverlapConstraints (instruction, sew, lmul, masked=False):
   no_overlap = None
 
-  if   instruction in wvvins          : no_overlap = [['vd_bottom', 'vs2'], ['vd_bottom', 'vs1']]
+  # Widening MACs must be checked before the generic widening branches: vd is read+written at
+  # EEW=2*SEW (accumulator). For .vv forms, both vs1 and vs2 are EEW=SEW vector sources, so
+  # overlap with either would read the same vector register at two different EEWs (reserved per
+  # V spec §5.2). For .vx/.vf forms, the second source is scalar, so only constrain vd vs vs2.
+  if   instruction in widening_mac_ins:
+    if instruction.endswith(".vv"):
+      no_overlap = [['vd',        'vs2'], ['vd',        'vs1']]
+    else:
+      no_overlap = [['vd',        'vs2']]
+  elif instruction in wvvins          : no_overlap = [['vd_bottom', 'vs2'], ['vd_bottom', 'vs1']]
   elif instruction in vupgatherins    : no_overlap = [['vd',        'vs2'], ['vd',        'vs1']]
   elif instruction in vmlogicalins    : no_overlap = [['vd',        'vs2']                      ]
   elif instruction in viotains        : no_overlap = [['vd',        'vs2']                      ]
@@ -2866,19 +2990,39 @@ def getInstructionRegisterOverlapConstraints (instruction, sew, lmul):
   ls_indexed_vs2_eew = getInstructionEEW(instruction)
 
   if ls_indexed_vs2_eew is not None and not isinstance(sew, str):
-    if ls_indexed_vs2_eew > sew :
-      if lmul * ls_indexed_vs2_eew / sew <= 1: # if vs2 emul is <= 1 then all overlap is bottom thus we do not need the overlap constraint
-        pass
-      else:
-        no_overlap = addOverlap(no_overlap, [['vd','vs2_top']])
-    if ls_indexed_vs2_eew < sew :
-      if lmul * ls_indexed_vs2_eew / sew >= 1:
-        no_overlap = addOverlap(no_overlap, [['vd_bottom','vs2']])
-      else:
-        no_overlap = addOverlap(no_overlap, [['vd','vs2']])
+    # Indexed L/S: data EEW (= SEW) vs index EEW (= instruction EEW) may differ.
+    # V-spec §5.2 register-overlap rules between dest and source register groups:
+    #   (a) EEW_dest == EEW_src                -> any overlap legal
+    #   (b) EEW_dest <  EEW_src                -> overlap only at LOWEST part of source group
+    #   (c) EEW_dest >  EEW_src, EMUL_src >= 1 -> overlap only at HIGHEST part of dest group
+    # For non-segment indexed loads (dest=vd, src=vs2) we forbid the *illegal*
+    # overlap region:
+    #   K > SEW: vd must not overlap the TOP of vs2 group (only bottom legal -> rule b).
+    #   K < SEW: vs2 must not overlap the BOTTOM of vd group (only top legal -> rule c).
+    # Indexed segment loads keep the full no-overlap rule applied above
+    # (norm:vector_ls_seg_indexed_vreg_rsv).
+    # For indexed stores (any nf) both vs3 and vs2 are sources; vs3 == vs2 is only
+    # legal when EEW_idx == SEW (a single source register cannot be read at two EEWs).
+    if ls_indexed_vs2_eew != sew:
+      if instruction in indexed_stores:
+        no_overlap = addOverlap(no_overlap, [['vs3','vs2']])
+      elif instruction in indexed_loads and instruction not in segment_loads:
+        if ls_indexed_vs2_eew > sew:
+          no_overlap = addOverlap(no_overlap, [['vd','vs2_top']])
+        else:  # ls_indexed_vs2_eew < sew
+          no_overlap = addOverlap(no_overlap, [['vd_bottom','vs2']])
 
   if instruction in segment_loads:
+    # Indexed segment loads explicitly reserve any vd/vs2 overlap (V-spec
+    # norm:vector_ls_seg_indexed_vreg_rsv); non-indexed segment loads keep the
+    # same conservative rule.
     no_overlap = addOverlap(no_overlap, [['vd','vs2']])
+
+  # Masked indexed LS: vs2 (index, EEW = index EEW) cannot equal v0 (mask,
+  # EEW = 1) — spec forbids reading the same register at two different EEWs
+  # in a single instruction (v-spec norm:vreg_source_eew_rsv).
+  if masked and instruction in indexed_ls_ins:
+    no_overlap = addOverlap(no_overlap, [['v0', 'vs2']])
 
   return no_overlap
 
@@ -2906,10 +3050,10 @@ def randomizeOngroupVectorRegister(instruction, *preset_vreg, lmul=1, maskval=No
 # lmul               - the lmul set in vtype csr
 # **preset_variables - any value in preset_data can be set here, for example vd = 2 will ensure vd is set to the v2 register above all else
 # return             - returns an array of all randomized values following constraints
-def randomizeVectorInstructionData(instruction, sew, test_count, suite="base", lmul=1, additional_no_overlap = None, **preset_variables):
+def randomizeVectorInstructionData(instruction, sew, test_count, suite="base", lmul=1, additional_no_overlap = None, masked=False, **preset_variables):
   preset_variables.update(getVectorEmulMultipliers(instruction))
 
-  instruction_overlap_constaints  = getInstructionRegisterOverlapConstraints(instruction, sew, lmul)
+  instruction_overlap_constaints  = getInstructionRegisterOverlapConstraints(instruction, sew, lmul, masked=masked)
   no_overlap                      = addOverlap(instruction_overlap_constaints, additional_no_overlap)
 
   scalar_register_preset_data         = {
@@ -3191,7 +3335,7 @@ def readTestplans(priv=False):
         if file.endswith(".csv"):
             arch = re.search("(.*).csv", file).group(1)
             if (priv):
-                is_vector = (arch.startswith("ExceptionsV") or arch.startswith("SsstrictV") or arch.startswith("V") or arch.startswith("Zv"))
+                is_vector = (arch.startswith(("ExceptionsV", "SsstrictV", "MisalignedV", "V", "Zv")))
             else:
                 is_vector = (arch.startswith("V") or arch.startswith("Zv"))
             if is_vector:

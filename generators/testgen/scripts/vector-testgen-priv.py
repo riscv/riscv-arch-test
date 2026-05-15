@@ -28,6 +28,7 @@ from vector_testgen_common import (
   eew16_ins,
   eew32_ins,
   eew64_ins,
+  encodeIndexedLSAsInsn,
   finalizeSigupdCount,
   flen,
   genRandomVectorLS,
@@ -39,6 +40,7 @@ from vector_testgen_common import (
   getLengthSuiteTestCount,
   getSigSpace,
   handleSignaturePointerConflict,
+  indexed_ls_ins,
   insertTemplate,
   loadScalarReg,
   loadScalarAddress,
@@ -408,6 +410,12 @@ def writePrivTestLine(instruction, instruction_data, cp="cp_vill", vl=1, lmul=1,
         testline = testline + ", "
 
     testline = testline[:-2] # remove the ", " at the end of the test
+
+    # clang's RV32 frontend rejects indexed-segment ei{32,64} mnemonics
+    # ("requires RV64I"); emit raw `.insn` encoding to force assembly.
+    if instruction in indexed_ls_ins:
+        testline = encodeIndexedLSAsInsn(instruction, instruction_data,
+                                         masked=(maskval is not None))
 
     if vector_register_data['vd']['reg_type'] == "mask" or vector_register_data['vd']['reg_type'] == "scalar":
         sig_whole_register_store = True

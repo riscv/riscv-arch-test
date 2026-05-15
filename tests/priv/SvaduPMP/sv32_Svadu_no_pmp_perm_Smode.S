@@ -31,6 +31,7 @@
 
 #define TEST_FILE "sv32_Svadu_no_pmp_perm_Smode.S"
 #define SIGUPD_COUNT 30
+#define BOOT_TO_MMODE
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"

@@ -28,6 +28,7 @@
 #define TEST_FILE "sv57_pmp_on_pa_zicboz_Umode.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 30
+#define BOOT_TO_MMODE
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"

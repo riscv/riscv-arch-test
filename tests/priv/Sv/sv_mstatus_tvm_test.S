@@ -20,6 +20,7 @@
 #define TEST_FILE "vm_mstatus_tvm_test.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 30
+#define BOOT_TO_MMODE
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"

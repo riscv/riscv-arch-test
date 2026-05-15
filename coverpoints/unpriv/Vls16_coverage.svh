@@ -3566,38 +3566,71 @@ endgroup
 `ifdef MAXINDEXEEW_GE16
 covergroup Vls16_vloxei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    //////////////////////////////////////////////////////////////////////////////////
+    // cmp_vd_vs2_eew_eq_sew
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cmp_vd_vs2_eew_eq_sew : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.current.vd == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers (only meaningful when EEW == SEW;
+        // testgen filters generation accordingly so non-matching SEWs produce no hits).
+    }
+
+    //// end cmp_vd_vs2_eew_eq_sew////////////////////////////////////////////////
+
     cp_asm_count : coverpoint ins.ins_str == "vloxei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_indexed_overlap_eew16
+    //
+    // Index EEW = 16. Coverage for legal vd/vs2 register-group overlap per
+    // V-spec register overlap rules:
+    //   (a) EEW_dest == EEW_src           -> any overlap legal
+    //   (b) EEW_dest <  EEW_src           -> overlap in LOWEST part of source group
+    //   (c) EEW_dest >  EEW_src, EMUL_src>=1 -> overlap in HIGHEST part of destination group
+    // For indexed loads: dest = vd (EEW=SEW), src = vs2 (EEW=16).
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
+        // SEW=8, EEW=16 -> rule (b): vd group sits at lowest part of vs2 group
+        // (same starting register: vd == vs2). EMUL_src = 2*LMUL, EMUL_dest = LMUL.
+        cp_custom_indexed_overlap_eew16_sew8 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vd == ins.current.vs2) & (ins.trap == 0)
+        );
     `endif
 
     `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
+        // SEW=16, EEW=16 -> rule (a): vd == vs2 legal.
+        cp_custom_indexed_overlap_eew16_sew16 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vd == ins.current.vs2) & (ins.trap == 0)
+        );
     `endif
+
+    `ifdef COVER_VLS32
+        // SEW=32, EEW=16 -> rule (c): vs2 in upper part of vd group. LMUL >= 2.
+        cp_custom_indexed_overlap_eew16_sew32 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vs2 > ins.current.vd) &
+            (ins.current.vs2 < ins.current.vd + (1 << get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul"))) &
+            (ins.trap == 0)
+        );
+    `endif
+
+    `ifdef COVER_VLS64
+        // SEW=64, EEW=16 -> rule (c): vs2 in upper part of vd group. LMUL >= 4.
+        cp_custom_indexed_overlap_eew16_sew64 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vs2 > ins.current.vd) &
+            (ins.current.vs2 < ins.current.vd + (1 << get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul"))) &
+            (ins.trap == 0)
+        );
+    `endif
+
+    //// end cp_custom_indexed_overlap_eew16////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed
+    //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -3614,33 +3647,6 @@ covergroup Vls16_vloxei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -3773,32 +3779,51 @@ covergroup Vls16_vloxei32_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_indexed_overlap_eew32
+    //
+    // Index EEW = 32. Coverage for legal vd/vs2 register-group overlap per
+    // V-spec register overlap rules:
+    //   (a) EEW_dest == EEW_src           -> any overlap legal
+    //   (b) EEW_dest <  EEW_src           -> overlap in LOWEST part of source group
+    //   (c) EEW_dest >  EEW_src, EMUL_src>=1 -> overlap in HIGHEST part of destination group
+    // For indexed loads: dest = vd (EEW=SEW), src = vs2 (EEW=32).
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
+        // SEW=8, EEW=32 -> rule (b): vd at lowest of vs2 group (vd == vs2).
+        cp_custom_indexed_overlap_eew32_sew8 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vd == ins.current.vs2) & (ins.trap == 0)
+        );
     `endif
 
     `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
+        // SEW=16, EEW=32 -> rule (b): vd at lowest of vs2 group.
+        cp_custom_indexed_overlap_eew32_sew16 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vd == ins.current.vs2) & (ins.trap == 0)
+        );
     `endif
+
+    `ifdef COVER_VLS32
+        // SEW=32, EEW=32 -> rule (a): vd == vs2 legal.
+        cp_custom_indexed_overlap_eew32_sew32 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vd == ins.current.vs2) & (ins.trap == 0)
+        );
+    `endif
+
+    `ifdef COVER_VLS64
+        // SEW=64, EEW=32 -> rule (c): vs2 in upper part of vd group. LMUL >= 2.
+        cp_custom_indexed_overlap_eew32_sew64 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vs2 > ins.current.vd) &
+            (ins.current.vs2 < ins.current.vd + (1 << get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul"))) &
+            (ins.trap == 0)
+        );
+    `endif
+
+    //// end cp_custom_indexed_overlap_eew32////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed
+    //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -3815,33 +3840,6 @@ covergroup Vls16_vloxei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -3974,32 +3972,49 @@ covergroup Vls16_vloxei64_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_indexed_overlap_eew64
+    //
+    // Index EEW = 64. Coverage for legal vd/vs2 register-group overlap per
+    // V-spec register overlap rules:
+    //   (a) EEW_dest == EEW_src           -> any overlap legal
+    //   (b) EEW_dest <  EEW_src           -> overlap in LOWEST part of source group
+    //   (c) EEW_dest >  EEW_src, EMUL_src>=1 -> overlap in HIGHEST part of destination group
+    // For indexed loads: dest = vd (EEW=SEW), src = vs2 (EEW=64).
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
+        // SEW=8, EEW=64 -> rule (b): vd at lowest of vs2 group.
+        cp_custom_indexed_overlap_eew64_sew8 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vd == ins.current.vs2) & (ins.trap == 0)
+        );
     `endif
 
     `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
+        // SEW=16, EEW=64 -> rule (b): vd at lowest of vs2 group.
+        cp_custom_indexed_overlap_eew64_sew16 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vd == ins.current.vs2) & (ins.trap == 0)
+        );
     `endif
+
+    `ifdef COVER_VLS32
+        // SEW=32, EEW=64 -> rule (b): vd at lowest of vs2 group.
+        cp_custom_indexed_overlap_eew64_sew32 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vd == ins.current.vs2) & (ins.trap == 0)
+        );
+    `endif
+
+    `ifdef COVER_VLS64
+        // SEW=64, EEW=64 -> rule (a): vd == vs2 legal.
+        cp_custom_indexed_overlap_eew64_sew64 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vd == ins.current.vs2) & (ins.trap == 0)
+        );
+    `endif
+
+    //// end cp_custom_indexed_overlap_eew64////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed
+    //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -4016,33 +4031,6 @@ covergroup Vls16_vloxei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -4174,32 +4162,56 @@ covergroup Vls16_vloxei8_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_indexed_overlap_eew8
+    //
+    // Index EEW = 8. Coverage for legal vd/vs2 register-group overlap per
+    // V-spec register overlap rules:
+    //   (a) EEW_dest == EEW_src           -> any overlap legal
+    //   (b) EEW_dest <  EEW_src           -> overlap in LOWEST part of source group
+    //   (c) EEW_dest >  EEW_src, EMUL_src>=1 -> overlap in HIGHEST part of destination group
+    // For indexed loads: dest = vd (EEW=SEW), src = vs2 (EEW=8).
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
+        // SEW=8, EEW=8 -> rule (a): vd == vs2 legal.
+        cp_custom_indexed_overlap_eew8_sew8 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vd == ins.current.vs2) & (ins.trap == 0)
+        );
     `endif
 
     `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
+        // SEW=16, EEW=8 -> rule (c): vs2 sits in upper part of vd group
+        // (vd < vs2 < vd + LMUL). LMUL must be >= 2 for EMUL_src >= 1.
+        cp_custom_indexed_overlap_eew8_sew16 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vs2 > ins.current.vd) &
+            (ins.current.vs2 < ins.current.vd + (1 << get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul"))) &
+            (ins.trap == 0)
+        );
     `endif
+
+    `ifdef COVER_VLS32
+        // SEW=32, EEW=8 -> rule (c). LMUL must be >= 4 for EMUL_src >= 1.
+        cp_custom_indexed_overlap_eew8_sew32 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vs2 > ins.current.vd) &
+            (ins.current.vs2 < ins.current.vd + (1 << get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul"))) &
+            (ins.trap == 0)
+        );
+    `endif
+
+    `ifdef COVER_VLS64
+        // SEW=64, EEW=8 -> rule (c). LMUL must be 8 for EMUL_src >= 1.
+        cp_custom_indexed_overlap_eew8_sew64 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vs2 > ins.current.vd) &
+            (ins.current.vs2 < ins.current.vd + (1 << get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul"))) &
+            (ins.trap == 0)
+        );
+    `endif
+
+    //// end cp_custom_indexed_overlap_eew8////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed
+    //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -4216,33 +4228,6 @@ covergroup Vls16_vloxei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -4401,30 +4386,6 @@ covergroup Vls16_vloxseg2ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -4440,33 +4401,6 @@ covergroup Vls16_vloxseg2ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -4628,30 +4562,6 @@ covergroup Vls16_vloxseg2ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -4667,33 +4577,6 @@ covergroup Vls16_vloxseg2ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -4831,30 +4714,6 @@ covergroup Vls16_vloxseg2ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -4870,33 +4729,6 @@ covergroup Vls16_vloxseg2ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -5057,30 +4889,6 @@ covergroup Vls16_vloxseg2ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -5096,33 +4904,6 @@ covergroup Vls16_vloxseg2ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -5259,30 +5040,6 @@ covergroup Vls16_vloxseg3ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -5298,33 +5055,6 @@ covergroup Vls16_vloxseg3ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -5462,30 +5192,6 @@ covergroup Vls16_vloxseg3ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -5501,33 +5207,6 @@ covergroup Vls16_vloxseg3ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -5665,30 +5344,6 @@ covergroup Vls16_vloxseg3ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -5704,33 +5359,6 @@ covergroup Vls16_vloxseg3ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -5866,30 +5494,6 @@ covergroup Vls16_vloxseg3ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -5905,33 +5509,6 @@ covergroup Vls16_vloxseg3ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -6092,30 +5669,6 @@ covergroup Vls16_vloxseg4ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -6131,33 +5684,6 @@ covergroup Vls16_vloxseg4ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -6320,30 +5846,6 @@ covergroup Vls16_vloxseg4ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -6359,33 +5861,6 @@ covergroup Vls16_vloxseg4ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -6548,30 +6023,6 @@ covergroup Vls16_vloxseg4ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -6587,33 +6038,6 @@ covergroup Vls16_vloxseg4ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -6774,30 +6198,6 @@ covergroup Vls16_vloxseg4ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -6813,33 +6213,6 @@ covergroup Vls16_vloxseg4ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -6977,30 +6350,6 @@ covergroup Vls16_vloxseg5ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -7016,33 +6365,6 @@ covergroup Vls16_vloxseg5ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -7181,30 +6503,6 @@ covergroup Vls16_vloxseg5ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -7220,33 +6518,6 @@ covergroup Vls16_vloxseg5ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -7386,30 +6657,6 @@ covergroup Vls16_vloxseg5ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -7425,33 +6672,6 @@ covergroup Vls16_vloxseg5ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -7587,30 +6807,6 @@ covergroup Vls16_vloxseg5ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -7626,33 +6822,6 @@ covergroup Vls16_vloxseg5ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -7792,30 +6961,6 @@ covergroup Vls16_vloxseg6ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -7831,33 +6976,6 @@ covergroup Vls16_vloxseg6ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -7997,30 +7115,6 @@ covergroup Vls16_vloxseg6ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -8036,33 +7130,6 @@ covergroup Vls16_vloxseg6ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -8203,30 +7270,6 @@ covergroup Vls16_vloxseg6ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -8242,33 +7285,6 @@ covergroup Vls16_vloxseg6ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -8405,30 +7421,6 @@ covergroup Vls16_vloxseg6ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -8444,33 +7436,6 @@ covergroup Vls16_vloxseg6ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -8611,30 +7576,6 @@ covergroup Vls16_vloxseg7ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -8650,33 +7591,6 @@ covergroup Vls16_vloxseg7ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -8817,30 +7731,6 @@ covergroup Vls16_vloxseg7ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -8856,33 +7746,6 @@ covergroup Vls16_vloxseg7ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -9024,30 +7887,6 @@ covergroup Vls16_vloxseg7ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -9063,33 +7902,6 @@ covergroup Vls16_vloxseg7ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -9227,30 +8039,6 @@ covergroup Vls16_vloxseg7ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -9266,33 +8054,6 @@ covergroup Vls16_vloxseg7ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -9458,30 +8219,6 @@ covergroup Vls16_vloxseg8ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -9497,33 +8234,6 @@ covergroup Vls16_vloxseg8ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -9689,30 +8399,6 @@ covergroup Vls16_vloxseg8ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -9728,33 +8414,6 @@ covergroup Vls16_vloxseg8ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -9921,30 +8580,6 @@ covergroup Vls16_vloxseg8ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -9960,33 +8595,6 @@ covergroup Vls16_vloxseg8ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -10149,30 +8757,6 @@ covergroup Vls16_vloxseg8ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -10188,33 +8772,6 @@ covergroup Vls16_vloxseg8ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -17862,14 +16419,15 @@ endgroup
 covergroup Vls16_vluxei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vd_vs2
+    // cmp_vd_vs2_eew_eq_sew
     //////////////////////////////////////////////////////////////////////////////////
 
-    cmp_vd_vs2 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.current.vd == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers
+    cmp_vd_vs2_eew_eq_sew : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.current.vd == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers (only meaningful when EEW == SEW;
+        // testgen filters generation accordingly so non-matching SEWs produce no hits).
     }
 
-    //// end cmp_vd_vs2////////////////////////////////////////////////
+    //// end cmp_vd_vs2_eew_eq_sew////////////////////////////////////////////////
 
     cp_asm_count : coverpoint ins.ins_str == "vluxei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -17877,32 +16435,54 @@ covergroup Vls16_vluxei16_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_indexed_overlap_eew16
+    //
+    // Index EEW = 16. Coverage for legal vd/vs2 register-group overlap per
+    // V-spec register overlap rules:
+    //   (a) EEW_dest == EEW_src           -> any overlap legal
+    //   (b) EEW_dest <  EEW_src           -> overlap in LOWEST part of source group
+    //   (c) EEW_dest >  EEW_src, EMUL_src>=1 -> overlap in HIGHEST part of destination group
+    // For indexed loads: dest = vd (EEW=SEW), src = vs2 (EEW=16).
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
+        // SEW=8, EEW=16 -> rule (b): vd group sits at lowest part of vs2 group
+        // (same starting register: vd == vs2). EMUL_src = 2*LMUL, EMUL_dest = LMUL.
+        cp_custom_indexed_overlap_eew16_sew8 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vd == ins.current.vs2) & (ins.trap == 0)
+        );
     `endif
 
     `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
+        // SEW=16, EEW=16 -> rule (a): vd == vs2 legal.
+        cp_custom_indexed_overlap_eew16_sew16 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vd == ins.current.vs2) & (ins.trap == 0)
+        );
     `endif
+
+    `ifdef COVER_VLS32
+        // SEW=32, EEW=16 -> rule (c): vs2 in upper part of vd group. LMUL >= 2.
+        cp_custom_indexed_overlap_eew16_sew32 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vs2 > ins.current.vd) &
+            (ins.current.vs2 < ins.current.vd + (1 << get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul"))) &
+            (ins.trap == 0)
+        );
+    `endif
+
+    `ifdef COVER_VLS64
+        // SEW=64, EEW=16 -> rule (c): vs2 in upper part of vd group. LMUL >= 4.
+        cp_custom_indexed_overlap_eew16_sew64 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vs2 > ins.current.vd) &
+            (ins.current.vs2 < ins.current.vd + (1 << get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul"))) &
+            (ins.trap == 0)
+        );
+    `endif
+
+    //// end cp_custom_indexed_overlap_eew16////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed
+    //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -17919,33 +16499,6 @@ covergroup Vls16_vluxei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -18072,48 +16625,57 @@ endgroup
 `ifdef MAXINDEXEEW_GE32
 covergroup Vls16_vluxei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vd_vs2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vd_vs2 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.current.vd == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers
-    }
-
-    //// end cmp_vd_vs2////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vluxei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_indexed_overlap_eew32
+    //
+    // Index EEW = 32. Coverage for legal vd/vs2 register-group overlap per
+    // V-spec register overlap rules:
+    //   (a) EEW_dest == EEW_src           -> any overlap legal
+    //   (b) EEW_dest <  EEW_src           -> overlap in LOWEST part of source group
+    //   (c) EEW_dest >  EEW_src, EMUL_src>=1 -> overlap in HIGHEST part of destination group
+    // For indexed loads: dest = vd (EEW=SEW), src = vs2 (EEW=32).
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
+        // SEW=8, EEW=32 -> rule (b): vd at lowest of vs2 group (vd == vs2).
+        cp_custom_indexed_overlap_eew32_sew8 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vd == ins.current.vs2) & (ins.trap == 0)
+        );
     `endif
 
     `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
+        // SEW=16, EEW=32 -> rule (b): vd at lowest of vs2 group.
+        cp_custom_indexed_overlap_eew32_sew16 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vd == ins.current.vs2) & (ins.trap == 0)
+        );
     `endif
+
+    `ifdef COVER_VLS32
+        // SEW=32, EEW=32 -> rule (a): vd == vs2 legal.
+        cp_custom_indexed_overlap_eew32_sew32 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vd == ins.current.vs2) & (ins.trap == 0)
+        );
+    `endif
+
+    `ifdef COVER_VLS64
+        // SEW=64, EEW=32 -> rule (c): vs2 in upper part of vd group. LMUL >= 2.
+        cp_custom_indexed_overlap_eew32_sew64 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vs2 > ins.current.vd) &
+            (ins.current.vs2 < ins.current.vd + (1 << get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul"))) &
+            (ins.trap == 0)
+        );
+    `endif
+
+    //// end cp_custom_indexed_overlap_eew32////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed
+    //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -18130,33 +16692,6 @@ covergroup Vls16_vluxei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -18283,48 +16818,55 @@ endgroup
 `ifdef MAXINDEXEEW_GE64
 covergroup Vls16_vluxei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vd_vs2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vd_vs2 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.current.vd == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers
-    }
-
-    //// end cmp_vd_vs2////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vluxei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_indexed_overlap_eew64
+    //
+    // Index EEW = 64. Coverage for legal vd/vs2 register-group overlap per
+    // V-spec register overlap rules:
+    //   (a) EEW_dest == EEW_src           -> any overlap legal
+    //   (b) EEW_dest <  EEW_src           -> overlap in LOWEST part of source group
+    //   (c) EEW_dest >  EEW_src, EMUL_src>=1 -> overlap in HIGHEST part of destination group
+    // For indexed loads: dest = vd (EEW=SEW), src = vs2 (EEW=64).
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
+        // SEW=8, EEW=64 -> rule (b): vd at lowest of vs2 group.
+        cp_custom_indexed_overlap_eew64_sew8 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vd == ins.current.vs2) & (ins.trap == 0)
+        );
     `endif
 
     `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
+        // SEW=16, EEW=64 -> rule (b): vd at lowest of vs2 group.
+        cp_custom_indexed_overlap_eew64_sew16 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vd == ins.current.vs2) & (ins.trap == 0)
+        );
     `endif
+
+    `ifdef COVER_VLS32
+        // SEW=32, EEW=64 -> rule (b): vd at lowest of vs2 group.
+        cp_custom_indexed_overlap_eew64_sew32 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vd == ins.current.vs2) & (ins.trap == 0)
+        );
+    `endif
+
+    `ifdef COVER_VLS64
+        // SEW=64, EEW=64 -> rule (a): vd == vs2 legal.
+        cp_custom_indexed_overlap_eew64_sew64 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vd == ins.current.vs2) & (ins.trap == 0)
+        );
+    `endif
+
+    //// end cp_custom_indexed_overlap_eew64////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed
+    //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -18341,33 +16883,6 @@ covergroup Vls16_vluxei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -18499,32 +17014,56 @@ covergroup Vls16_vluxei8_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_ls_indexed
+    // cp_custom_indexed_overlap_eew8
+    //
+    // Index EEW = 8. Coverage for legal vd/vs2 register-group overlap per
+    // V-spec register overlap rules:
+    //   (a) EEW_dest == EEW_src           -> any overlap legal
+    //   (b) EEW_dest <  EEW_src           -> overlap in LOWEST part of source group
+    //   (c) EEW_dest >  EEW_src, EMUL_src>=1 -> overlap in HIGHEST part of destination group
+    // For indexed loads: dest = vd (EEW=SEW), src = vs2 (EEW=8).
     //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
+        // SEW=8, EEW=8 -> rule (a): vd == vs2 legal.
+        cp_custom_indexed_overlap_eew8_sew8 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vd == ins.current.vs2) & (ins.trap == 0)
+        );
     `endif
 
     `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
+        // SEW=16, EEW=8 -> rule (c): vs2 sits in upper part of vd group
+        // (vd < vs2 < vd + LMUL). LMUL must be >= 2 for EMUL_src >= 1.
+        cp_custom_indexed_overlap_eew8_sew16 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vs2 > ins.current.vd) &
+            (ins.current.vs2 < ins.current.vd + (1 << get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul"))) &
+            (ins.trap == 0)
+        );
     `endif
+
+    `ifdef COVER_VLS32
+        // SEW=32, EEW=8 -> rule (c). LMUL must be >= 4 for EMUL_src >= 1.
+        cp_custom_indexed_overlap_eew8_sew32 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vs2 > ins.current.vd) &
+            (ins.current.vs2 < ins.current.vd + (1 << get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul"))) &
+            (ins.trap == 0)
+        );
+    `endif
+
+    `ifdef COVER_VLS64
+        // SEW=64, EEW=8 -> rule (c). LMUL must be 8 for EMUL_src >= 1.
+        cp_custom_indexed_overlap_eew8_sew64 : coverpoint ins.get_vr_reg(ins.current.vd) iff (
+            (ins.current.vs2 > ins.current.vd) &
+            (ins.current.vs2 < ins.current.vd + (1 << get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul"))) &
+            (ins.trap == 0)
+        );
+    `endif
+
+    //// end cp_custom_indexed_overlap_eew8////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ls_indexed
+    //////////////////////////////////////////////////////////////////////////////////
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -18541,33 +17080,6 @@ covergroup Vls16_vluxei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -18726,30 +17238,6 @@ covergroup Vls16_vluxseg2ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -18765,33 +17253,6 @@ covergroup Vls16_vluxseg2ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -18953,30 +17414,6 @@ covergroup Vls16_vluxseg2ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -18992,33 +17429,6 @@ covergroup Vls16_vluxseg2ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -19156,30 +17566,6 @@ covergroup Vls16_vluxseg2ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -19195,33 +17581,6 @@ covergroup Vls16_vluxseg2ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -19382,30 +17741,6 @@ covergroup Vls16_vluxseg2ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -19421,33 +17756,6 @@ covergroup Vls16_vluxseg2ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -19584,30 +17892,6 @@ covergroup Vls16_vluxseg3ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -19623,33 +17907,6 @@ covergroup Vls16_vluxseg3ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -19787,30 +18044,6 @@ covergroup Vls16_vluxseg3ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -19826,33 +18059,6 @@ covergroup Vls16_vluxseg3ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -19990,30 +18196,6 @@ covergroup Vls16_vluxseg3ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -20029,33 +18211,6 @@ covergroup Vls16_vluxseg3ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -20191,30 +18346,6 @@ covergroup Vls16_vluxseg3ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -20230,33 +18361,6 @@ covergroup Vls16_vluxseg3ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -20417,30 +18521,6 @@ covergroup Vls16_vluxseg4ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -20456,33 +18536,6 @@ covergroup Vls16_vluxseg4ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -20645,30 +18698,6 @@ covergroup Vls16_vluxseg4ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -20684,33 +18713,6 @@ covergroup Vls16_vluxseg4ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -20873,30 +18875,6 @@ covergroup Vls16_vluxseg4ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -20912,33 +18890,6 @@ covergroup Vls16_vluxseg4ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -21099,30 +19050,6 @@ covergroup Vls16_vluxseg4ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -21138,33 +19065,6 @@ covergroup Vls16_vluxseg4ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -21302,30 +19202,6 @@ covergroup Vls16_vluxseg5ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -21341,33 +19217,6 @@ covergroup Vls16_vluxseg5ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -21506,30 +19355,6 @@ covergroup Vls16_vluxseg5ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -21545,33 +19370,6 @@ covergroup Vls16_vluxseg5ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -21711,30 +19509,6 @@ covergroup Vls16_vluxseg5ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -21750,33 +19524,6 @@ covergroup Vls16_vluxseg5ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -21912,30 +19659,6 @@ covergroup Vls16_vluxseg5ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -21951,33 +19674,6 @@ covergroup Vls16_vluxseg5ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -22117,30 +19813,6 @@ covergroup Vls16_vluxseg6ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -22156,33 +19828,6 @@ covergroup Vls16_vluxseg6ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -22322,30 +19967,6 @@ covergroup Vls16_vluxseg6ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -22361,33 +19982,6 @@ covergroup Vls16_vluxseg6ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -22528,30 +20122,6 @@ covergroup Vls16_vluxseg6ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -22567,33 +20137,6 @@ covergroup Vls16_vluxseg6ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -22730,30 +20273,6 @@ covergroup Vls16_vluxseg6ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -22769,33 +20288,6 @@ covergroup Vls16_vluxseg6ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -22936,30 +20428,6 @@ covergroup Vls16_vluxseg7ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -22975,33 +20443,6 @@ covergroup Vls16_vluxseg7ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -23142,30 +20583,6 @@ covergroup Vls16_vluxseg7ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -23181,33 +20598,6 @@ covergroup Vls16_vluxseg7ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -23349,30 +20739,6 @@ covergroup Vls16_vluxseg7ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -23388,33 +20754,6 @@ covergroup Vls16_vluxseg7ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -23552,30 +20891,6 @@ covergroup Vls16_vluxseg7ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -23591,33 +20906,6 @@ covergroup Vls16_vluxseg7ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -23783,30 +21071,6 @@ covergroup Vls16_vluxseg8ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -23822,33 +21086,6 @@ covergroup Vls16_vluxseg8ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -24014,30 +21251,6 @@ covergroup Vls16_vluxseg8ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -24053,33 +21266,6 @@ covergroup Vls16_vluxseg8ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -24246,30 +21432,6 @@ covergroup Vls16_vluxseg8ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -24285,33 +21447,6 @@ covergroup Vls16_vluxseg8ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -24474,30 +21609,6 @@ covergroup Vls16_vluxseg8ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -24513,33 +21624,6 @@ covergroup Vls16_vluxseg8ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -25838,14 +22922,15 @@ endgroup
 covergroup Vls16_vsoxei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2
+    // cmp_vs3_vs2_eew_eq_sew
     //////////////////////////////////////////////////////////////////////////////////
 
-    cmp_vs3_vs2 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers
+    cmp_vs3_vs2_eew_eq_sew : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers (only meaningful when EEW == SEW;
+        // testgen filters generation accordingly so non-matching SEWs produce no hits).
     }
 
-    //// end cmp_vs3_vs2////////////////////////////////////////////////
+    //// end cmp_vs3_vs2_eew_eq_sew////////////////////////////////////////////////
 
     cp_asm_count : coverpoint ins.ins_str == "vsoxei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -25855,30 +22940,6 @@ covergroup Vls16_vsoxei16_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -25895,33 +22956,6 @@ covergroup Vls16_vsoxei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -26048,16 +23082,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE32
 covergroup Vls16_vsoxei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers
-    }
-
-    //// end cmp_vs3_vs2////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -26066,30 +23090,6 @@ covergroup Vls16_vsoxei32_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -26106,33 +23106,6 @@ covergroup Vls16_vsoxei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -26259,16 +23232,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE64
 covergroup Vls16_vsoxei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers
-    }
-
-    //// end cmp_vs3_vs2////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -26277,30 +23240,6 @@ covergroup Vls16_vsoxei64_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -26317,33 +23256,6 @@ covergroup Vls16_vsoxei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -26469,16 +23381,6 @@ endgroup
 `endif
 covergroup Vls16_vsoxei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers
-    }
-
-    //// end cmp_vs3_vs2////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -26487,30 +23389,6 @@ covergroup Vls16_vsoxei8_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -26527,33 +23405,6 @@ covergroup Vls16_vsoxei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -26680,14 +23531,15 @@ endgroup
 covergroup Vls16_vsoxseg2ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte30
+    // cmp_vs3_vs2_eew_eq_sew
     //////////////////////////////////////////////////////////////////////////////////
 
-    cmp_vs3_vs2_lte30 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
+    cmp_vs3_vs2_eew_eq_sew : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers (only meaningful when EEW == SEW;
+        // testgen filters generation accordingly so non-matching SEWs produce no hits).
     }
 
-    //// end cmp_vs3_vs2_lte30////////////////////////////////////////////////
+    //// end cmp_vs3_vs2_eew_eq_sew////////////////////////////////////////////////
 
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg2ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -26722,30 +23574,6 @@ covergroup Vls16_vsoxseg2ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -26761,33 +23589,6 @@ covergroup Vls16_vsoxseg2ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -26916,16 +23717,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE32
 covergroup Vls16_vsoxseg2ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte30
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte30 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-    }
-
-    //// end cmp_vs3_vs2_lte30////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg2ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -26959,30 +23750,6 @@ covergroup Vls16_vsoxseg2ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -26998,33 +23765,6 @@ covergroup Vls16_vsoxseg2ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -27153,16 +23893,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE64
 covergroup Vls16_vsoxseg2ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte30
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte30 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-    }
-
-    //// end cmp_vs3_vs2_lte30////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg2ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -27171,30 +23901,6 @@ covergroup Vls16_vsoxseg2ei64_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -27211,33 +23917,6 @@ covergroup Vls16_vsoxseg2ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -27365,16 +24044,6 @@ endgroup
 `endif
 covergroup Vls16_vsoxseg2ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte30
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte30 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-    }
-
-    //// end cmp_vs3_vs2_lte30////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg2ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -27408,30 +24077,6 @@ covergroup Vls16_vsoxseg2ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -27447,33 +24092,6 @@ covergroup Vls16_vsoxseg2ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -27602,15 +24220,15 @@ endgroup
 covergroup Vls16_vsoxseg3ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte29
+    // cmp_vs3_vs2_eew_eq_sew
     //////////////////////////////////////////////////////////////////////////////////
 
-    cmp_vs3_vs2_lte29 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
+    cmp_vs3_vs2_eew_eq_sew : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers (only meaningful when EEW == SEW;
+        // testgen filters generation accordingly so non-matching SEWs produce no hits).
     }
 
-    //// end cmp_vs3_vs2_lte29////////////////////////////////////////////////
+    //// end cmp_vs3_vs2_eew_eq_sew////////////////////////////////////////////////
 
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg3ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -27620,30 +24238,6 @@ covergroup Vls16_vsoxseg3ei16_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -27660,33 +24254,6 @@ covergroup Vls16_vsoxseg3ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -27815,17 +24382,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE32
 covergroup Vls16_vsoxseg3ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte29
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte29 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-    }
-
-    //// end cmp_vs3_vs2_lte29////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg3ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -27834,30 +24390,6 @@ covergroup Vls16_vsoxseg3ei32_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -27874,33 +24406,6 @@ covergroup Vls16_vsoxseg3ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -28029,17 +24534,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE64
 covergroup Vls16_vsoxseg3ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte29
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte29 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-    }
-
-    //// end cmp_vs3_vs2_lte29////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg3ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -28048,30 +24542,6 @@ covergroup Vls16_vsoxseg3ei64_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -28088,33 +24558,6 @@ covergroup Vls16_vsoxseg3ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -28241,17 +24684,6 @@ endgroup
 `endif
 covergroup Vls16_vsoxseg3ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte29
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte29 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-    }
-
-    //// end cmp_vs3_vs2_lte29////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg3ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -28260,30 +24692,6 @@ covergroup Vls16_vsoxseg3ei8_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -28300,33 +24708,6 @@ covergroup Vls16_vsoxseg3ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -28455,16 +24836,15 @@ endgroup
 covergroup Vls16_vsoxseg4ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte28
+    // cmp_vs3_vs2_eew_eq_sew
     //////////////////////////////////////////////////////////////////////////////////
 
-    cmp_vs3_vs2_lte28 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
+    cmp_vs3_vs2_eew_eq_sew : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers (only meaningful when EEW == SEW;
+        // testgen filters generation accordingly so non-matching SEWs produce no hits).
     }
 
-    //// end cmp_vs3_vs2_lte28////////////////////////////////////////////////
+    //// end cmp_vs3_vs2_eew_eq_sew////////////////////////////////////////////////
 
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg4ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -28499,30 +24879,6 @@ covergroup Vls16_vsoxseg4ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -28538,33 +24894,6 @@ covergroup Vls16_vsoxseg4ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -28694,18 +25023,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE32
 covergroup Vls16_vsoxseg4ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte28
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte28 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-    }
-
-    //// end cmp_vs3_vs2_lte28////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg4ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -28739,30 +25056,6 @@ covergroup Vls16_vsoxseg4ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -28778,33 +25071,6 @@ covergroup Vls16_vsoxseg4ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -28934,18 +25200,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE64
 covergroup Vls16_vsoxseg4ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte28
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte28 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-    }
-
-    //// end cmp_vs3_vs2_lte28////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg4ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -28979,30 +25233,6 @@ covergroup Vls16_vsoxseg4ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -29018,33 +25248,6 @@ covergroup Vls16_vsoxseg4ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -29172,18 +25375,6 @@ endgroup
 `endif
 covergroup Vls16_vsoxseg4ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte28
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte28 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-    }
-
-    //// end cmp_vs3_vs2_lte28////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg4ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -29217,30 +25408,6 @@ covergroup Vls16_vsoxseg4ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -29256,33 +25423,6 @@ covergroup Vls16_vsoxseg4ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -29412,17 +25552,15 @@ endgroup
 covergroup Vls16_vsoxseg5ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte27
+    // cmp_vs3_vs2_eew_eq_sew
     //////////////////////////////////////////////////////////////////////////////////
 
-    cmp_vs3_vs2_lte27 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
+    cmp_vs3_vs2_eew_eq_sew : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers (only meaningful when EEW == SEW;
+        // testgen filters generation accordingly so non-matching SEWs produce no hits).
     }
 
-    //// end cmp_vs3_vs2_lte27////////////////////////////////////////////////
+    //// end cmp_vs3_vs2_eew_eq_sew////////////////////////////////////////////////
 
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg5ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -29432,30 +25570,6 @@ covergroup Vls16_vsoxseg5ei16_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -29472,33 +25586,6 @@ covergroup Vls16_vsoxseg5ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -29628,19 +25715,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE32
 covergroup Vls16_vsoxseg5ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte27
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte27 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-    }
-
-    //// end cmp_vs3_vs2_lte27////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg5ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -29649,30 +25723,6 @@ covergroup Vls16_vsoxseg5ei32_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -29689,33 +25739,6 @@ covergroup Vls16_vsoxseg5ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -29846,19 +25869,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE64
 covergroup Vls16_vsoxseg5ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte27
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte27 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-    }
-
-    //// end cmp_vs3_vs2_lte27////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg5ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -29867,30 +25877,6 @@ covergroup Vls16_vsoxseg5ei64_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -29907,33 +25893,6 @@ covergroup Vls16_vsoxseg5ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -30060,19 +26019,6 @@ endgroup
 `endif
 covergroup Vls16_vsoxseg5ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte27
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte27 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-    }
-
-    //// end cmp_vs3_vs2_lte27////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg5ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -30081,30 +26027,6 @@ covergroup Vls16_vsoxseg5ei8_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -30121,33 +26043,6 @@ covergroup Vls16_vsoxseg5ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -30279,18 +26174,15 @@ endgroup
 covergroup Vls16_vsoxseg6ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte26
+    // cmp_vs3_vs2_eew_eq_sew
     //////////////////////////////////////////////////////////////////////////////////
 
-    cmp_vs3_vs2_lte26 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
+    cmp_vs3_vs2_eew_eq_sew : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers (only meaningful when EEW == SEW;
+        // testgen filters generation accordingly so non-matching SEWs produce no hits).
     }
 
-        //// end cmp_vs3_vs2_lte26////////////////////////////////////////////////
+    //// end cmp_vs3_vs2_eew_eq_sew////////////////////////////////////////////////
 
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg6ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -30300,30 +26192,6 @@ covergroup Vls16_vsoxseg6ei16_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -30340,33 +26208,6 @@ covergroup Vls16_vsoxseg6ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -30497,20 +26338,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE32
 covergroup Vls16_vsoxseg6ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte26
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte26 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-    }
-
-        //// end cmp_vs3_vs2_lte26////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg6ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -30519,30 +26346,6 @@ covergroup Vls16_vsoxseg6ei32_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -30559,33 +26362,6 @@ covergroup Vls16_vsoxseg6ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -30717,20 +26493,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE64
 covergroup Vls16_vsoxseg6ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte26
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte26 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-    }
-
-        //// end cmp_vs3_vs2_lte26////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg6ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -30739,30 +26501,6 @@ covergroup Vls16_vsoxseg6ei64_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -30779,33 +26517,6 @@ covergroup Vls16_vsoxseg6ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -30933,20 +26644,6 @@ endgroup
 `endif
 covergroup Vls16_vsoxseg6ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte26
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte26 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-    }
-
-        //// end cmp_vs3_vs2_lte26////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg6ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -30955,30 +26652,6 @@ covergroup Vls16_vsoxseg6ei8_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -30995,33 +26668,6 @@ covergroup Vls16_vsoxseg6ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -31154,19 +26800,15 @@ endgroup
 covergroup Vls16_vsoxseg7ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte25
+    // cmp_vs3_vs2_eew_eq_sew
     //////////////////////////////////////////////////////////////////////////////////
 
-    cmp_vs3_vs2_lte25 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-        ignore_bins v26 = {v26};
+    cmp_vs3_vs2_eew_eq_sew : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers (only meaningful when EEW == SEW;
+        // testgen filters generation accordingly so non-matching SEWs produce no hits).
     }
 
-    //// end cmp_vs3_vs2_lte25////////////////////////////////////////////////
+    //// end cmp_vs3_vs2_eew_eq_sew////////////////////////////////////////////////
 
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg7ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -31176,30 +26818,6 @@ covergroup Vls16_vsoxseg7ei16_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -31216,33 +26834,6 @@ covergroup Vls16_vsoxseg7ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -31374,21 +26965,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE32
 covergroup Vls16_vsoxseg7ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte25
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte25 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-        ignore_bins v26 = {v26};
-    }
-
-    //// end cmp_vs3_vs2_lte25////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg7ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -31397,30 +26973,6 @@ covergroup Vls16_vsoxseg7ei32_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -31437,33 +26989,6 @@ covergroup Vls16_vsoxseg7ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -31596,21 +27121,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE64
 covergroup Vls16_vsoxseg7ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte25
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte25 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-        ignore_bins v26 = {v26};
-    }
-
-    //// end cmp_vs3_vs2_lte25////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg7ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -31619,30 +27129,6 @@ covergroup Vls16_vsoxseg7ei64_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -31659,33 +27145,6 @@ covergroup Vls16_vsoxseg7ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -31814,21 +27273,6 @@ endgroup
 `endif
 covergroup Vls16_vsoxseg7ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte25
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte25 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-        ignore_bins v26 = {v26};
-    }
-
-    //// end cmp_vs3_vs2_lte25////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg7ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -31837,30 +27281,6 @@ covergroup Vls16_vsoxseg7ei8_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -31877,33 +27297,6 @@ covergroup Vls16_vsoxseg7ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -32037,20 +27430,15 @@ endgroup
 covergroup Vls16_vsoxseg8ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte24
+    // cmp_vs3_vs2_eew_eq_sew
     //////////////////////////////////////////////////////////////////////////////////
 
-    cmp_vs3_vs2_lte24 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-        ignore_bins v26 = {v26};
-        ignore_bins v25 = {v25};
+    cmp_vs3_vs2_eew_eq_sew : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers (only meaningful when EEW == SEW;
+        // testgen filters generation accordingly so non-matching SEWs produce no hits).
     }
 
-    //// end cmp_vs3_vs2_lte24////////////////////////////////////////////////
+    //// end cmp_vs3_vs2_eew_eq_sew////////////////////////////////////////////////
 
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg8ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -32085,30 +27473,6 @@ covergroup Vls16_vsoxseg8ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -32124,33 +27488,6 @@ covergroup Vls16_vsoxseg8ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -32283,22 +27620,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE32
 covergroup Vls16_vsoxseg8ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte24
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte24 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-        ignore_bins v26 = {v26};
-        ignore_bins v25 = {v25};
-    }
-
-    //// end cmp_vs3_vs2_lte24////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg8ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -32332,30 +27653,6 @@ covergroup Vls16_vsoxseg8ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -32371,33 +27668,6 @@ covergroup Vls16_vsoxseg8ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -32531,22 +27801,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE64
 covergroup Vls16_vsoxseg8ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte24
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte24 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-        ignore_bins v26 = {v26};
-        ignore_bins v25 = {v25};
-    }
-
-    //// end cmp_vs3_vs2_lte24////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg8ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -32580,30 +27834,6 @@ covergroup Vls16_vsoxseg8ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -32619,33 +27849,6 @@ covergroup Vls16_vsoxseg8ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -32775,22 +27978,6 @@ endgroup
 `endif
 covergroup Vls16_vsoxseg8ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte24
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte24 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-        ignore_bins v26 = {v26};
-        ignore_bins v25 = {v25};
-    }
-
-    //// end cmp_vs3_vs2_lte24////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsoxseg8ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -32824,30 +28011,6 @@ covergroup Vls16_vsoxseg8ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -32863,33 +28026,6 @@ covergroup Vls16_vsoxseg8ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -37715,14 +32851,15 @@ endgroup
 covergroup Vls16_vsuxei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2
+    // cmp_vs3_vs2_eew_eq_sew
     //////////////////////////////////////////////////////////////////////////////////
 
-    cmp_vs3_vs2 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers
+    cmp_vs3_vs2_eew_eq_sew : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers (only meaningful when EEW == SEW;
+        // testgen filters generation accordingly so non-matching SEWs produce no hits).
     }
 
-    //// end cmp_vs3_vs2////////////////////////////////////////////////
+    //// end cmp_vs3_vs2_eew_eq_sew////////////////////////////////////////////////
 
     cp_asm_count : coverpoint ins.ins_str == "vsuxei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -37732,30 +32869,6 @@ covergroup Vls16_vsuxei16_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -37772,33 +32885,6 @@ covergroup Vls16_vsuxei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -37925,16 +33011,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE32
 covergroup Vls16_vsuxei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers
-    }
-
-    //// end cmp_vs3_vs2////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -37943,30 +33019,6 @@ covergroup Vls16_vsuxei32_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -37983,33 +33035,6 @@ covergroup Vls16_vsuxei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -38136,16 +33161,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE64
 covergroup Vls16_vsuxei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers
-    }
-
-    //// end cmp_vs3_vs2////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -38154,30 +33169,6 @@ covergroup Vls16_vsuxei64_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -38194,33 +33185,6 @@ covergroup Vls16_vsuxei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -38346,16 +33310,6 @@ endgroup
 `endif
 covergroup Vls16_vsuxei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers
-    }
-
-    //// end cmp_vs3_vs2////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -38364,30 +33318,6 @@ covergroup Vls16_vsuxei8_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -38404,33 +33334,6 @@ covergroup Vls16_vsuxei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -38557,14 +33460,15 @@ endgroup
 covergroup Vls16_vsuxseg2ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte30
+    // cmp_vs3_vs2_eew_eq_sew
     //////////////////////////////////////////////////////////////////////////////////
 
-    cmp_vs3_vs2_lte30 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
+    cmp_vs3_vs2_eew_eq_sew : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers (only meaningful when EEW == SEW;
+        // testgen filters generation accordingly so non-matching SEWs produce no hits).
     }
 
-    //// end cmp_vs3_vs2_lte30////////////////////////////////////////////////
+    //// end cmp_vs3_vs2_eew_eq_sew////////////////////////////////////////////////
 
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg2ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -38599,30 +33503,6 @@ covergroup Vls16_vsuxseg2ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -38638,33 +33518,6 @@ covergroup Vls16_vsuxseg2ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -38793,16 +33646,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE32
 covergroup Vls16_vsuxseg2ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte30
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte30 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-    }
-
-    //// end cmp_vs3_vs2_lte30////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg2ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -38836,30 +33679,6 @@ covergroup Vls16_vsuxseg2ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -38875,33 +33694,6 @@ covergroup Vls16_vsuxseg2ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -39030,16 +33822,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE64
 covergroup Vls16_vsuxseg2ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte30
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte30 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-    }
-
-    //// end cmp_vs3_vs2_lte30////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg2ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -39048,30 +33830,6 @@ covergroup Vls16_vsuxseg2ei64_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -39088,33 +33846,6 @@ covergroup Vls16_vsuxseg2ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -39242,16 +33973,6 @@ endgroup
 `endif
 covergroup Vls16_vsuxseg2ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte30
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte30 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-    }
-
-    //// end cmp_vs3_vs2_lte30////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg2ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -39285,30 +34006,6 @@ covergroup Vls16_vsuxseg2ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -39324,33 +34021,6 @@ covergroup Vls16_vsuxseg2ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -39479,15 +34149,15 @@ endgroup
 covergroup Vls16_vsuxseg3ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte29
+    // cmp_vs3_vs2_eew_eq_sew
     //////////////////////////////////////////////////////////////////////////////////
 
-    cmp_vs3_vs2_lte29 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
+    cmp_vs3_vs2_eew_eq_sew : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers (only meaningful when EEW == SEW;
+        // testgen filters generation accordingly so non-matching SEWs produce no hits).
     }
 
-    //// end cmp_vs3_vs2_lte29////////////////////////////////////////////////
+    //// end cmp_vs3_vs2_eew_eq_sew////////////////////////////////////////////////
 
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg3ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -39497,30 +34167,6 @@ covergroup Vls16_vsuxseg3ei16_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -39537,33 +34183,6 @@ covergroup Vls16_vsuxseg3ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -39692,17 +34311,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE32
 covergroup Vls16_vsuxseg3ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte29
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte29 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-    }
-
-    //// end cmp_vs3_vs2_lte29////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg3ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -39711,30 +34319,6 @@ covergroup Vls16_vsuxseg3ei32_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -39751,33 +34335,6 @@ covergroup Vls16_vsuxseg3ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -39906,17 +34463,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE64
 covergroup Vls16_vsuxseg3ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte29
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte29 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-    }
-
-    //// end cmp_vs3_vs2_lte29////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg3ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -39925,30 +34471,6 @@ covergroup Vls16_vsuxseg3ei64_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -39965,33 +34487,6 @@ covergroup Vls16_vsuxseg3ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -40118,17 +34613,6 @@ endgroup
 `endif
 covergroup Vls16_vsuxseg3ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte29
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte29 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-    }
-
-    //// end cmp_vs3_vs2_lte29////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg3ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -40137,30 +34621,6 @@ covergroup Vls16_vsuxseg3ei8_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -40177,33 +34637,6 @@ covergroup Vls16_vsuxseg3ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -40332,16 +34765,15 @@ endgroup
 covergroup Vls16_vsuxseg4ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte28
+    // cmp_vs3_vs2_eew_eq_sew
     //////////////////////////////////////////////////////////////////////////////////
 
-    cmp_vs3_vs2_lte28 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
+    cmp_vs3_vs2_eew_eq_sew : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers (only meaningful when EEW == SEW;
+        // testgen filters generation accordingly so non-matching SEWs produce no hits).
     }
 
-    //// end cmp_vs3_vs2_lte28////////////////////////////////////////////////
+    //// end cmp_vs3_vs2_eew_eq_sew////////////////////////////////////////////////
 
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg4ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -40376,30 +34808,6 @@ covergroup Vls16_vsuxseg4ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -40415,33 +34823,6 @@ covergroup Vls16_vsuxseg4ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -40571,18 +34952,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE32
 covergroup Vls16_vsuxseg4ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte28
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte28 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-    }
-
-    //// end cmp_vs3_vs2_lte28////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg4ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -40616,30 +34985,6 @@ covergroup Vls16_vsuxseg4ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -40655,33 +35000,6 @@ covergroup Vls16_vsuxseg4ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -40811,18 +35129,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE64
 covergroup Vls16_vsuxseg4ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte28
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte28 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-    }
-
-    //// end cmp_vs3_vs2_lte28////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg4ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -40856,30 +35162,6 @@ covergroup Vls16_vsuxseg4ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -40895,33 +35177,6 @@ covergroup Vls16_vsuxseg4ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -41049,18 +35304,6 @@ endgroup
 `endif
 covergroup Vls16_vsuxseg4ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte28
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte28 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-    }
-
-    //// end cmp_vs3_vs2_lte28////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg4ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -41094,30 +35337,6 @@ covergroup Vls16_vsuxseg4ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -41133,33 +35352,6 @@ covergroup Vls16_vsuxseg4ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -41289,17 +35481,15 @@ endgroup
 covergroup Vls16_vsuxseg5ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte27
+    // cmp_vs3_vs2_eew_eq_sew
     //////////////////////////////////////////////////////////////////////////////////
 
-    cmp_vs3_vs2_lte27 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
+    cmp_vs3_vs2_eew_eq_sew : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers (only meaningful when EEW == SEW;
+        // testgen filters generation accordingly so non-matching SEWs produce no hits).
     }
 
-    //// end cmp_vs3_vs2_lte27////////////////////////////////////////////////
+    //// end cmp_vs3_vs2_eew_eq_sew////////////////////////////////////////////////
 
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg5ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -41309,30 +35499,6 @@ covergroup Vls16_vsuxseg5ei16_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -41349,33 +35515,6 @@ covergroup Vls16_vsuxseg5ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -41505,19 +35644,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE32
 covergroup Vls16_vsuxseg5ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte27
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte27 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-    }
-
-    //// end cmp_vs3_vs2_lte27////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg5ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -41526,30 +35652,6 @@ covergroup Vls16_vsuxseg5ei32_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -41566,33 +35668,6 @@ covergroup Vls16_vsuxseg5ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -41723,19 +35798,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE64
 covergroup Vls16_vsuxseg5ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte27
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte27 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-    }
-
-    //// end cmp_vs3_vs2_lte27////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg5ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -41744,30 +35806,6 @@ covergroup Vls16_vsuxseg5ei64_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -41784,33 +35822,6 @@ covergroup Vls16_vsuxseg5ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -41937,19 +35948,6 @@ endgroup
 `endif
 covergroup Vls16_vsuxseg5ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte27
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte27 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-    }
-
-    //// end cmp_vs3_vs2_lte27////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg5ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -41958,30 +35956,6 @@ covergroup Vls16_vsuxseg5ei8_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -41998,33 +35972,6 @@ covergroup Vls16_vsuxseg5ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -42156,18 +36103,15 @@ endgroup
 covergroup Vls16_vsuxseg6ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte26
+    // cmp_vs3_vs2_eew_eq_sew
     //////////////////////////////////////////////////////////////////////////////////
 
-    cmp_vs3_vs2_lte26 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
+    cmp_vs3_vs2_eew_eq_sew : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers (only meaningful when EEW == SEW;
+        // testgen filters generation accordingly so non-matching SEWs produce no hits).
     }
 
-        //// end cmp_vs3_vs2_lte26////////////////////////////////////////////////
+    //// end cmp_vs3_vs2_eew_eq_sew////////////////////////////////////////////////
 
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg6ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -42177,30 +36121,6 @@ covergroup Vls16_vsuxseg6ei16_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -42217,33 +36137,6 @@ covergroup Vls16_vsuxseg6ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -42374,20 +36267,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE32
 covergroup Vls16_vsuxseg6ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte26
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte26 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-    }
-
-        //// end cmp_vs3_vs2_lte26////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg6ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -42396,30 +36275,6 @@ covergroup Vls16_vsuxseg6ei32_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -42436,33 +36291,6 @@ covergroup Vls16_vsuxseg6ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -42594,20 +36422,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE64
 covergroup Vls16_vsuxseg6ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte26
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte26 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-    }
-
-        //// end cmp_vs3_vs2_lte26////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg6ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -42616,30 +36430,6 @@ covergroup Vls16_vsuxseg6ei64_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -42656,33 +36446,6 @@ covergroup Vls16_vsuxseg6ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -42810,20 +36573,6 @@ endgroup
 `endif
 covergroup Vls16_vsuxseg6ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte26
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte26 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-    }
-
-        //// end cmp_vs3_vs2_lte26////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg6ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -42832,30 +36581,6 @@ covergroup Vls16_vsuxseg6ei8_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -42872,33 +36597,6 @@ covergroup Vls16_vsuxseg6ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -43031,19 +36729,15 @@ endgroup
 covergroup Vls16_vsuxseg7ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte25
+    // cmp_vs3_vs2_eew_eq_sew
     //////////////////////////////////////////////////////////////////////////////////
 
-    cmp_vs3_vs2_lte25 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-        ignore_bins v26 = {v26};
+    cmp_vs3_vs2_eew_eq_sew : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers (only meaningful when EEW == SEW;
+        // testgen filters generation accordingly so non-matching SEWs produce no hits).
     }
 
-    //// end cmp_vs3_vs2_lte25////////////////////////////////////////////////
+    //// end cmp_vs3_vs2_eew_eq_sew////////////////////////////////////////////////
 
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg7ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -43053,30 +36747,6 @@ covergroup Vls16_vsuxseg7ei16_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -43093,33 +36763,6 @@ covergroup Vls16_vsuxseg7ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -43251,21 +36894,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE32
 covergroup Vls16_vsuxseg7ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte25
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte25 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-        ignore_bins v26 = {v26};
-    }
-
-    //// end cmp_vs3_vs2_lte25////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg7ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -43274,30 +36902,6 @@ covergroup Vls16_vsuxseg7ei32_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -43314,33 +36918,6 @@ covergroup Vls16_vsuxseg7ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -43473,21 +37050,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE64
 covergroup Vls16_vsuxseg7ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte25
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte25 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-        ignore_bins v26 = {v26};
-    }
-
-    //// end cmp_vs3_vs2_lte25////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg7ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -43496,30 +37058,6 @@ covergroup Vls16_vsuxseg7ei64_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -43536,33 +37074,6 @@ covergroup Vls16_vsuxseg7ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -43691,21 +37202,6 @@ endgroup
 `endif
 covergroup Vls16_vsuxseg7ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte25
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte25 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-        ignore_bins v26 = {v26};
-    }
-
-    //// end cmp_vs3_vs2_lte25////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg7ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -43714,30 +37210,6 @@ covergroup Vls16_vsuxseg7ei8_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
-
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
 
     `ifdef XLEN32
     `ifdef COVER_VLS64
@@ -43754,33 +37226,6 @@ covergroup Vls16_vsuxseg7ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -43914,20 +37359,15 @@ endgroup
 covergroup Vls16_vsuxseg8ei16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte24
+    // cmp_vs3_vs2_eew_eq_sew
     //////////////////////////////////////////////////////////////////////////////////
 
-    cmp_vs3_vs2_lte24 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-        ignore_bins v26 = {v26};
-        ignore_bins v25 = {v25};
+    cmp_vs3_vs2_eew_eq_sew : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
+        // Compare assignments of all 32 registers (only meaningful when EEW == SEW;
+        // testgen filters generation accordingly so non-matching SEWs produce no hits).
     }
 
-    //// end cmp_vs3_vs2_lte24////////////////////////////////////////////////
+    //// end cmp_vs3_vs2_eew_eq_sew////////////////////////////////////////////////
 
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg8ei16.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -43962,30 +37402,6 @@ covergroup Vls16_vsuxseg8ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -44001,33 +37417,6 @@ covergroup Vls16_vsuxseg8ei16_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -44160,22 +37549,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE32
 covergroup Vls16_vsuxseg8ei32_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte24
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte24 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-        ignore_bins v26 = {v26};
-        ignore_bins v25 = {v25};
-    }
-
-    //// end cmp_vs3_vs2_lte24////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg8ei32.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -44209,30 +37582,6 @@ covergroup Vls16_vsuxseg8ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -44248,33 +37597,6 @@ covergroup Vls16_vsuxseg8ei32_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -44408,22 +37730,6 @@ endgroup
 `ifdef MAXINDEXEEW_GE64
 covergroup Vls16_vsuxseg8ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte24
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte24 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-        ignore_bins v26 = {v26};
-        ignore_bins v25 = {v25};
-    }
-
-    //// end cmp_vs3_vs2_lte24////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg8ei64.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -44457,30 +37763,6 @@ covergroup Vls16_vsuxseg8ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -44496,33 +37778,6 @@ covergroup Vls16_vsuxseg8ei64_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -44652,22 +37907,6 @@ endgroup
 `endif
 covergroup Vls16_vsuxseg8ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    //////////////////////////////////////////////////////////////////////////////////
-    // cmp_vs3_vs2_lte24
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cmp_vs3_vs2_lte24 : coverpoint ins.get_vr_reg(ins.current.vs3)  iff (ins.current.vs3 == ins.current.vs2 & ins.trap == 0 )  {
-        ignore_bins v31 = {v31};
-        ignore_bins v30 = {v30};
-        ignore_bins v29 = {v29};
-        ignore_bins v28 = {v28};
-        ignore_bins v27 = {v27};
-        ignore_bins v26 = {v26};
-        ignore_bins v25 = {v25};
-    }
-
-    //// end cmp_vs3_vs2_lte24////////////////////////////////////////////////
-
     cp_asm_count : coverpoint ins.ins_str == "vsuxseg8ei8.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
@@ -44701,30 +37940,6 @@ covergroup Vls16_vsuxseg8ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef COVER_VLS8
-    vs2_element_zero_minus1_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_????????_11111111};
-    }
-
-    vtype_sew_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e8 = {0};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew8   : cross std_vec, vs2_element_zero_minus1_sew8,  vtype_sew_8;
-    `endif
-
-    `ifdef COVER_VLS16
-    vs2_element_zero_minus1_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        wildcard bins target = {64'b????????_????????_11111111_11111111};
-    }
-
-    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
-        bins e16 = {1};
-    }
-
-    cp_custom_ls_indexed_zero_extended_sew16  : cross std_vec, vs2_element_zero_minus1_sew16, vtype_sew_16;
-    `endif
-
     `ifdef XLEN32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
@@ -44740,33 +37955,6 @@ covergroup Vls16_vsuxseg8ei8_v_cg with function sample(ins_t ins);
     `endif
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_vs2_v0
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // Verify indexed LS instructions run correctly when masked (vm=0) and
-    // vs2 (the index vector) is v0, so v0 serves as both mask and source.
-
-    // Masking enabled (vm=0, bit 25 = 0)
-    mask_enabled: coverpoint ins.current.insn[25] {
-        bins masked = {1'b0};
-    }
-
-    // vs2 is v0 (bits 24:20 = 0)
-    vs2_v0: coverpoint ins.current.insn[24:20] {
-        bins v0 = {5'b00000};
-    }
-
-    // vd is NOT v0 (required for most instructions when masked)
-    vd_not_v0: coverpoint ins.current.insn[11:7] {
-        bins not_v0 = {[1:31]};
-    }
-
-    // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
-    cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
-
-    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)

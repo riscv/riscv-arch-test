@@ -11,8 +11,10 @@
 `define VLEN128
 `define ELEN64
 
-// Maximum supported index EEW for indexed load/store
-`define MAXINDEXEEW64
+// Maximum supported index EEW for indexed load/store.
+// Intentionally use the RV32-specific form here: Sail only supports MAXINDEXEEW32
+// for this RV32 configuration, so the asymmetry with RV64 is deliberate.
+`define MAXINDEXEEW32
 
 // PMP Grain (G)
 // Set G as needed (e.g., 0, 1, 2, ...)
@@ -74,6 +76,3 @@
 `define LMULf8_SUPPORTED
 `define LMULf4_SUPPORTED
 `define LMULf2_SUPPORTED
-
-// Maximum supported index EEW for indexed load/store
-`define MAXINDEXEEW64

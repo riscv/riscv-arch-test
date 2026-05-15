@@ -52,7 +52,7 @@ obvious.  This section explains them in detail.
 
 RVA23 certification requires testing all of the behaviors defined in the profile at supervisor mode and below.  It also requires testing an `ecall` from supervisor mode to the execution environment as defined in the profile.
 
-RVA23 certification also requires testing all non-machine-mode interrupts (all interrupts except MTI, MEI, MSI).
+RVA23 certification also requires testing all non-machine-mode interrupts (all interrupts except MTI, MEI, MSI). [Ken take an action item of whether these are in scope].
 
 Although it is not explicitly stated in the profile, RVA23 certification requires testing exceptions and interrupts that are received by M-mode rather than delegated to lower modes.  The trap handler must be able to record the machine mode state (such as `mcause`, `mtval`) consistent with the standard M-mode specification. [Try to give cite to spec to justify this.]
 
@@ -61,6 +61,12 @@ Although it is not explicitly stated in the profile, RVA23 certification require
 It does not require testing of M-mode state that disables access to features in lower privilege modes, including `menvcfg`, `mseccfg`, and `mstateen` fields.  These are initialized at the start of the test to support the required and implemented optional features of the profile, and disabling these features from M-mode is OUT-OF-SCOPE.  The tests also assume a reasonable amount of cacheable coherent main memory is available to hold the test code and data, and that PMAs and PMPs permit access to this memory.  Testing PMA or PMP restrictions is OUT-OF-SCOPE. [Is there anything else to go here.  Alternative: test all this disabling, as given in CSR descriptions below.  Update this part or CSRs to match.]
 
 Discuss Allen's problem of unexpected traps. For example, trap on all aes instructions, or trap on fp instruction with subnorm inputs or results.  This break ACT trap logging in a severe way.
+
+Ken: M-mode trap handler has a jump to customer code that optionally does emulation, then returns to our trap handler.
+
+Alternate approach:
+Normally just test traps delegated to S-mode in the default trap handler.
+If the firmware needs to do something special, it can install a different boot code that traps to M-mode instead, intercepts what needs to happen, and then relays the trap to S-mode if it should have been visible by S-mode.
 
 === Custom M-mode
 

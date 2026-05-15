@@ -82,7 +82,6 @@ covergroup ExceptionsZicboS_cg with function sample(ins_t ins);
         illegal_address: coverpoint {ins.current.rs1_val[XLEN-1:1], 1'b0} {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
         }
-        // misaligned access fault should report the virtual address, not the base address
         cp_cbo_access_fault:        cross cbo_instrs,     illegal_address, adr_misaligned, priv_mode_m_s_u, menvcfg_all_enable, senvcfg_all_enable;
     `endif
 

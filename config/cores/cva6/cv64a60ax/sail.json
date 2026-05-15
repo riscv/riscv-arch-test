@@ -80,11 +80,11 @@
       "grain": 0,
       // This specifies the number of PMP entries present.
       // The value must be one of 0, 16, or 64.
-      "count": 16,
+      "count": 8,
       // This specifies the number of usable PMP entries.
       // Entries higher than this are read-only-zero.
       // The value must be less than or equal to `count`.
-      "usable_count": 16,
+      "usable_count": 8,
       "tor_supported": true,
       "na4_supported": true,
       "napot_supported": true
@@ -352,31 +352,31 @@
     // If you enable this you also need to ensure `platform.cache_block_size_exp`
     // is 6, otherwise you will get a config validation error.
     "Zic64b": {
-      "supported": true
+      "supported": false
     },
     "Zicbom": {
-      "supported": true
+      "supported": false
     },
     "Zicbop": {
-      "supported": true
+      "supported": false
     },
     "Zicboz": {
-      "supported": true
+      "supported": false
     },
     "Ziccamoa": {
-      "supported": true
+      "supported": false
     },
     "Ziccamoc": {
       "supported": false
     },
     "Ziccif": {
-      "supported": true
+      "supported": false
     },
     "Zicclsm": {
-      "supported": true
+      "supported": false
     },
     "Ziccrse": {
-      "supported": true
+      "supported": false
     },
     "Zicfilp": {
       "supported": false
@@ -397,22 +397,22 @@
       "supported": true
     },
     "Zihintntl": {
-      "supported": true
+      "supported": false
     },
     "Zihintpause": {
-      "supported": true
+      "supported": false
     },
     "Zihpm": {
       "supported": true
     },
     "Zimop": {
-      "supported": true
+      "supported": false
     },
     "Zmmul": {
       "supported": false
     },
     "Zaamo": {
-      "supported": false
+      "supported": true
     },
     "Zabha": {
       "supported": false
@@ -421,10 +421,10 @@
       "supported": false
     },
     "Zalrsc": {
-      "supported": false
+      "supported": true
     },
     "Zawrs": {
-      "supported": true,
+      "supported": false,
       "nto": {
         "is_nop": false
       },
@@ -433,7 +433,7 @@
       }
     },
     "Zfa": {
-      "supported": true
+      "supported": false
     },
     "Zfbfmin": {
       "supported": false
@@ -463,16 +463,16 @@
       "supported": true
     },
     "Zcmop": {
-      "supported": true
+      "supported": false
     },
     "Zba": {
-      "supported": false
+      "supported": true
     },
     "Zbb": {
-      "supported": false
+      "supported": true
     },
     "Zbs": {
-      "supported": false
+      "supported": true
     },
     "Zbc": {
       "supported": false
@@ -509,7 +509,7 @@
       "supported": false
     },
     "Zkt": {
-      "supported": true
+      "supported": false
     },
     "Zhinx": {
       "supported": false
@@ -563,16 +563,16 @@
       "supported": false
     },
     "Ssccptr": {
-      "supported": true
+      "supported": false
     },
     "Sscofpmf": {
-      "supported": true
+      "supported": false
     },
     "Sscounterenw": {
       "supported": true
     },
     "Sstc": {
-      "supported": true
+      "supported": false
     },
     // Enabling Sstvala requires that the exceptions specified in the extension
     // have their appropriate settings under `base.xtval_nonzero`.
@@ -580,19 +580,19 @@
       "supported": true
     },
     "Svade": {
-      "supported": true
+      "supported": false
     },
     "Svadu": {
       "supported": false
     },
     "Svinval": {
-      "supported": true
+      "supported": false
     },
     "Svrsw60t59b": {
       "supported": false
     },
     "Svnapot": {
-      "supported": true
+      "supported": false
     },
     "Smcntrpmf": {
       "supported": false
@@ -629,7 +629,7 @@
       "mcid_length": 12
     },
     "Svpbmt": {
-      "supported": true
+      "supported": false
     },
     "Svvptc": {
       "supported": false

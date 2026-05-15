@@ -32,7 +32,7 @@ COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa or vcs
 # SCAN_UNCOVERED, when non-empty, runs scan-uncovered after `make coverage` to
 # print the unique uncovered coverpoints (Extension_cp_*) parsed from
 # work/<config>/reports/*_uncovered.txt. Set to empty to skip.
-SCAN_UNCOVERED ?= True
+SCAN_UNCOVERED ?=
 
 # WORKDIR is where all of the generated files are created
 WORKDIR     ?= work
@@ -97,8 +97,8 @@ ifneq ($(MISE),)
 else ifneq ($(UV),)
   UV_RUN := $(UV) run
 else ifneq ($(VIRTUAL_ENV),)
-  # Activated venv without uv/mise: require the three CLIs on PATH.
-  MISSING_CLIS := $(strip $(foreach c,act testgen covergroupgen,\
+  # Activated venv without uv/mise: require the CLIs on PATH.
+  MISSING_CLIS := $(strip $(foreach c,act testgen covergroupgen scan-uncovered,\
                     $(if $(shell command -v $(c) 2> /dev/null),,$(c))))
   ifneq ($(MISSING_CLIS),)
     $(error Activated venv ($(VIRTUAL_ENV)) is missing required CLIs: $(MISSING_CLIS). Install with: pip install -e ./framework -e ./generators/testgen -e ./generators/coverage or use mise/uv)

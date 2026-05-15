@@ -49,8 +49,8 @@ def main() -> int:
         return 1
     reports = sorted(workdir.glob("*/reports/*_uncovered.txt"))
     if not reports:
-        print("no *_uncovered.txt reports found", file=sys.stderr)
-        return 1
+        print("warning: no *_uncovered.txt reports found", file=sys.stderr)
+        return 0
     all_cps: set[str] = set()
     for r in reports:
         all_cps |= scan(r)

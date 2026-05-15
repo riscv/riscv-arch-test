@@ -75,6 +75,7 @@ class BuildTask:
     action: BuildAction
     extra_inputs: tuple[Path, ...] = ()  # Source files not produced by other tasks (for staleness check)
     deps: tuple[Path, ...] = ()  # Primary output paths of predecessor BuildTasks
+    label: str | None = None  # Human-readable name for failure messages (defaults to outputs[0].stem)
 
     @property
     def name(self) -> str:
@@ -357,7 +358,7 @@ def _print_failure(console: Console, task: BuildTask, error: BuildError, verbose
     """
     max_output_lines = 30
     primary = task.outputs[0]
-    short_name = primary.stem  # e.g., "I-add-00.sig" -> "I-add-00"
+    short_name = task.label or primary.stem  # e.g., "I-add-00.sig" -> "I-add-00"
 
     console.print()  # blank line separator
     console.print(f"[bold red]✗ FAILED:[/] [bold]{short_name}[/]", soft_wrap=True, highlight=False)

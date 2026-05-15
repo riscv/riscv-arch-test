@@ -94,16 +94,24 @@ def validate_udb_config(udb_config_file: Path, marker: Path) -> None:
     DAG's staleness check, so the validate runs once whenever the UDB
     config has changed and is then reused as a dep by every UDB-gen task
     for that config.
+
+    On failure, raise so the build system reports the error through its
+    normal post-build failure path. This runs as a PythonAction inside
+    build()'s DAG executor, which owns the terminal via a transient rich
+    progress widget; writing to stdout/stderr (or sys.exit) here would
+    corrupt that widget and scramble the output.
     """
     try:
         _bundle_exec(["udb", "validate", "cfg", str(udb_config_file)], check=True, capture_output=True)
     except subprocess.CalledProcessError as e:
-        rprint(f"[bold red]✗ UDB configuration validation failed for {udb_config_file.name}[/]")
-        if e.stdout:
-            sys.stdout.buffer.write(e.stdout)
-        if e.stderr:
-            sys.stderr.buffer.write(e.stderr)
-        sys.exit(1)
+        # udb writes its info log to stderr *before* the validation result
+        # on stdout; keep that order so the message reads as it does when
+        # udb is run directly.
+        stderr = e.stderr.decode(errors="replace") if e.stderr else ""
+        stdout = e.stdout.decode(errors="replace") if e.stdout else ""
+        details = f"{stderr}{stdout}".strip()
+        message = f"UDB configuration validation failed for {udb_config_file.name}"
+        raise RuntimeError(f"{message}\n{details}" if details else message) from e
     marker.touch()
 
 
@@ -141,6 +149,7 @@ def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int) -> None
                 outputs=(marker,),
                 action=PythonAction(validate_udb_config, (src, marker)),
                 extra_inputs=(src,),
+                label=f"UDB config validation ({cfg.udb_config.stem})",
             )
         )
 
@@ -209,17 +218,23 @@ def get_implemented_extensions(extension_list_file: Path) -> set[str]:
 
 
 def _generate_one_dut_header(udb_config_file: Path, output_file: Path, subcommand: str) -> None:
-    """Run `udb-gen <subcommand>` for the given config and write the result to output_file."""
+    """Run `udb-gen <subcommand>` for the given config and write the result to output_file.
+
+    On failure, raise with the udb-gen output as the message so the build
+    system reports it through its normal post-build failure path. Like
+    validate_udb_config, this runs as a PythonAction while build()'s
+    transient progress widget owns the terminal, so writing to
+    stdout/stderr here would scramble the output.
+    """
     cmd = ["udb-gen", subcommand, "-c", str(udb_config_file), "-o", str(output_file)]
     try:
         _bundle_exec(cmd, check=True, capture_output=True)
     except subprocess.CalledProcessError as e:
-        rprint(f"[bold red]✗ Failed to generate {output_file.name} for {udb_config_file.stem}[/]")
-        if e.stdout:
-            sys.stdout.buffer.write(e.stdout)
-        if e.stderr:
-            sys.stderr.buffer.write(e.stderr)
-        raise
+        stderr = e.stderr.decode(errors="replace") if e.stderr else ""
+        stdout = e.stdout.decode(errors="replace") if e.stdout else ""
+        details = f"{stderr}{stdout}".strip()
+        message = f"Failed to generate {output_file.name} for {udb_config_file.stem}"
+        raise RuntimeError(f"{message}\n{details}" if details else message) from e
 
 
 # TODO: Generate Sail config file from UDB

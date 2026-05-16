@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZVKB32
-`define COVER_VFCUSTOM32
+`define COVER_ZVKBCUSTOM32
 `ifdef ELEN32
     `define SEW_32_EQ_ELEN
 `endif

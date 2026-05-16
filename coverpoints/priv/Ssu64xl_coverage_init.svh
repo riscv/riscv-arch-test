@@ -7,5 +7,4 @@
 //
 ///////////////////////////////////////////////
 
-Ssu64xl_cg = new();
-Ssu64xl_cg.set_inst_name("obj_Ssu64xl");
+    Ssu64xl_cg = new();         Ssu64xl_cg.set_inst_name("obj_Ssu64xl");

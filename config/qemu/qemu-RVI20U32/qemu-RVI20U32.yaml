@@ -28,7 +28,7 @@ params:
   LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
   LRSC_FAIL_ON_VA_SYNONYM: false
   LRSC_MISALIGNED_BEHAVIOR: "always raise access fault"
-  LRSC_FAIL_ON_NON_EXACT_LRSC: false
+  LRSC_FAIL_ON_NON_EXACT_LRSC: true
   MUTABLE_MISA_A: false
   # M params
   MUTABLE_MISA_M: false

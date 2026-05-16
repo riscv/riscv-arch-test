@@ -21,6 +21,14 @@
 # initializing custom state.
 //#define RVMODEL_BOOT
 
+// Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
+// if defined.  For most DUTs, the default should work and this macro
+// should not be defined.  If no M-mode or CSRs are implemented, define this
+// macro as blank to bypass the boot process.  If a nonconforming
+// M-mode is implemented, define this macro to set up the necessary
+// state in a fashion similar to RVTEST_BOOT_TO_MMODE.
+//#define RVMODEL_BOOT_TO_MMODE
+
 ##### TERMINATION #####
 
 // HTIF (Host-Target Interface) to terminate simulation.
@@ -87,7 +95,6 @@
 
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
-// TODO: need to implement external interrupts in SAIL
 #define RVMODEL_MEXT_ADDRESS  0x80000000  /* Address of a memory mapped machine external interrupt generator */
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)        \
   li _R1, 1;               \

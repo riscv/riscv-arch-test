@@ -34,9 +34,6 @@
 #define TEST_FILE "pmpzca_cret_napot.S"
 #define SIGUPD_COUNT 50
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 
@@ -92,7 +89,8 @@ main:
     csrw pmpaddr0, x5
 
     LA(x5, REGIONSTART)
-    addi x5, x5, REGION_SIZE
+    LI(x4, REGION_SIZE)
+    add x5, x5, x4
     srl x5, x5, PMP_SHIFT
     csrw pmpaddr1, x5
 
@@ -122,8 +120,8 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpzca_cret_napot_execute\""
 
-.align 12
-.skip (0x1000-2)
+.align 11
+.skip (0x802)
 TEST_FOR_EXECUTION_0:
     ret                                                         // Compressed return just before the start of region
 

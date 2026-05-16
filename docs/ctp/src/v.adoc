@@ -39,9 +39,14 @@ fcov
         Vf32_coverage.svh
         Vf64_coverage.svh
       priv
-        ExceptionsV_coverage.svh
-        V_coverage.svh ***reorganize
+        ExceptionsVx_coverage.svh
+        ExceptionsVls_coverage.svh
+        ExceptionsVf_coverage.svh
+        MisalignV_coverage.svh
         SsstrictV_coverage.svh
+        SmV_coverage.svh
+        SmVF_coverage.svh
+        UV_coverage.svh
 tests
     rv32
         Vx8
@@ -100,14 +105,21 @@ tests
         Vf32
         Vf64
     priv
-        ExceptionsV.S
-        V.S *** reorganize
-        SsstrictV.S
+        ExceptionsVx
+        ExceptionsVls
+        ExceptionsVf16
+        ExceptionsVf32
+        MisalignV
+        SsstrictV
+        SmV
+        SmVF
+        UV
 ----
 
-When an instruction's EEW is not a supported SEW, the coverage files and tests exclude the instruction from testing.  For example, vwadd.vv is not supported when SEW=32 and ELEN = 32 because it cannot widen to 64 bits.
+When an instruction's EEW is not a supported SEW, the coverage files and tests exclude the instruction from testing.  For example, `vwadd.vv` is not supported when SEW=32 and ELEN = 32 because it cannot widen to 64 bits.
 
-The tests also account for unsupported register group overlap.  For example, a widening add vwadd.wv v0, v2, v2 is unsupported because the source registers cannot be read with different EEWs.  On the other hand vwadd.vv v0, v1, v8 with LMUL=1 is supported even though the destination vd=v0 widens to write [v0-v1], which overlaps with vs2=v1.  The tests exercise all supported overlaps, but do not attempt any unsupported overlaps because the behavior is reserved and unpredictable.
+The tests also account for unsupported register group overlap.  For example, a widening add `vwadd.wv v0, v2, v2`
+ is unsupported because the source registers cannot be read with different EEWs.  On the other hand `vwadd.vv v0, v1, v8` with LMUL=1 is supported even though the destination vd=v0 widens to write [v0-v1], which overlaps with vs2=v1.  The tests exercise all supported overlaps, but do not attempt any unsupported overlaps because the behavior is reserved and unpredictable.
 
 ==== Vector Configuration Parameters
 
@@ -191,15 +203,30 @@ The Vx testplan is the same for SEW={8, 16, 32, 64}.  Each SEW has its own cover
 
 include::{testplansdir}/Vx.adoc[]
 
+include::norm/Vx_norm_rules.adoc[]
+
 ==== Vls
 
 include::{testplansdir}/Vls.adoc[]
 
+include::norm/Vls_norm_rules.adoc[]
+
 ==== Vf
+
 include::{testplansdir}/Vf.adoc[]
 
+include::norm/Vf_norm_rules.adoc[]
+
 [NOTE]
-vfredusum.vs is difficult to test because the results depend on the ordering.  It is not presently tested for multi-element vectors.
+vfredusum.vs is difficult to test because the results depend on the ordering.  It may eventually need to exclude testing for multi-element vectors, but is presently passing multi-element vectors on the simulators tested.
+
+[[skipped-vector-tests]]
+==== Temporarily Skipped Vector Tests
+
+Some vector tests are currently skipped pending fixes to the Sail RISC-V reference model.  These can be restored by uncommenting the corresponding generation lines or removing the hardcoded skips once the upstream issues are resolved:
+
+* `vstart` coverpoint tests — skipped pending link:https://github.com/riscv/sail-riscv/pull/1703[sail-riscv PR #1703].
+* `vmv<nr>r.v` tests — skipped because Sail behavior is incorrect; tracked in link:https://github.com/riscv/sail-riscv/issues/1709[sail-riscv issue #1709].
 
 ==== Zvfh Vector Half-Precision Floating-Point Extension
 
@@ -208,6 +235,7 @@ Half-precision vector floating-point is part of the Zvfh and Zvfhmin extensions,
 ==== Zvfhmin Half-Precision Conversions
 
 Zvfhmin only exercises the widening and narrowing conversions: `vfwcvt.f.f.v` and `vfncvt.f.f.w`.
+
 include::{testplansdir}/Zvfhmin.adoc[]
 
 include::norm/Zvfhmin_norm_rules.adoc[]
@@ -232,21 +260,25 @@ include::{testplansdir}/Zvfbfwma.adoc[]
 
 include::norm/Zvfbfwma_norm_rules.adoc[]
 
-
 === Zvb* Vector Bit Manipulation Extension
 
-Vector bit manipulation extensions include Zvbb and Zvbc.
+Vector bit manipulation extensions include Zvbb and Zvbc. They use the same coverpoint definitions as Vx.
 
 ==== Zvbb Vector Basic Bit Manipulation Extension
-[[t-Zvbb-coverpoints]]
-.Zvbb Instruction Coverpoints
-// include::{testplansdir}/Zvbb.adoc[]
 
-==== Zvbc Vector Caryless Multiplication Extension
+Zvbb is organized by SEW like other unprivileged vector extensions.
 
-[[t-Zvbc-coverpoints]]
-.Zvbc Instruction Coverpoints
-// include::{testplansdir}/Zvbc.adoc[]
+include::{testplansdir}/Zvbb.adoc[]
+
+include::norm/Zvbb_norm_rules.adoc[]
+
+==== Zvbc Vector Carryless Multiplication Extension
+
+Zvbc only applies to SEW=64.
+
+include::{testplansdir}/Zvbc64.adoc[]
+
+include::norm/Zvbc_norm_rules.adoc[]
 
 === Zvk* Vector Cryptography Extension
 
@@ -254,45 +286,58 @@ There are several Zvk* vector cryptography extensions.
 
 ==== Zvkb Vector Crypto Bit Manipulation Extension
 
-[[t-Zvkb-coverpoints]]
-.Zvkb Instruction Coverpoints
-// include::{testplansdir}/Zvkb.adoc[]
+Each SEW has its own suite.
+
+include::{testplansdir}/Zvkb.adoc[]
+
+include::norm/Zvkb_norm_rules.adoc[]
 
 ==== Zvkg Vector Crypto Galois Field Extension
 
-[[t-Zvkg-coverpoints]]
-.Zvkg Instruction Coverpoints
-// include::{testplansdir}/Zvkg.adoc[]
+Only SEW=32 is defined.
 
+//include::{testplansdir}/Zvkg.adoc[]
+
+include::norm/Zvkg_norm_rules.adoc[]
 
 ==== Zvkned Vector NIST Encryption and Decryption
 
-[[t-Zvkned-coverpoints]]
-.Zvkned Instruction Coverpoints
-// include::{testplansdir}/Zvkned.adoc[]
+Only SEW=32 is defined.
 
+//include::{testplansdir}/Zvkned.adoc[]
+
+include::norm/Zvkned_norm_rules.adoc[]
 
 ==== Zvknh{a/b} Vector NIST Hashing
 
+Both Zvknha32 and Zvknhb64 are defined.
+
 <<t-Zvknh-coverpoints>> lists the vector hashing instructions.  These apply to both Zknha and Zknhb.
 
-[[t-Zvknh-coverpoints]]
-.Zvknh Instruction Coverpoints
-// include::{testplansdir}/Zvknh.adoc[]
+//include::{testplansdir}/Zvknh.adoc[]
+
+include::norm/Zvknh_norm_rules.adoc[]
 
 ==== Zvksed Vector ShangMi SM4 Block Cipher
 
-[[t-Zvksed-coverpoints]]
-.Zvksed Instruction Coverpoints
-// include::{testplansdir}/Zvksed.adoc[]
+Only Zvksed32 is defined.
 
+//include::{testplansdir}/Zvksed.adoc[]
+
+include::norm/Zvksed_norm_rules.adoc[]
 
 ==== Zvksh Vector ShangMi SM3 Hashing
 
-[[t-Zvksh-coverpoints]]
-.Zvksh Instruction Coverpoints
-// include::{testplansdir}/Zvksh.adoc[]
+Only Zvksh32 is defined.
+
+//include::{testplansdir}/Zvksh.adoc[]
+
+include::norm/Zvksh_norm_rules.adoc[]
 
 ==== Zvkt Constant-Time Vector Instructions
 
 Not tested yet.
+
+==== MisalignedV
+
+TBD, Kaden moving over from SsstrictV

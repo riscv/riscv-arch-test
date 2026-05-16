@@ -51,6 +51,8 @@ COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa or vcs
 # Setting to 1 is helpful for debugging test hangs so that only a single test runs at a time.
 JOBS ?= $(or $(patsubst -j%,%,$(filter -j%,$(MAKEFLAGS))),0)
 
+# Use this flag to enable the generation of floating-point tests from the cover-float test suite
+COVER_FLOAT ?=
 
 
 ########## Directories ##########
@@ -146,7 +148,7 @@ $(STAMP_DIR)/covergroupgen.stamp: $(COVERGROUPGEN_DEPS) $(TESTPLANS) Makefile | 
 .PHONY: testgen
 testgen: $(STAMP_DIR)/testgen.stamp
 $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
-	@$(UV_RUN) testgen testplans -o tests --jobs $(JOBS) $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
+	@$(UV_RUN) testgen testplans -o tests --jobs $(JOBS) $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) $(if $(COVER_FLOAT), --with-cover-float)
 	@touch $@
 
 .PHONY: vector-testgen

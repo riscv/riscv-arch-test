@@ -13,6 +13,7 @@
 from __future__ import annotations
 
 import os
+import subprocess
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
@@ -39,6 +40,7 @@ class UnprivTask:
     testsuite: str
     testplan_dir: Path
     output_test_dir: Path
+    with_cover_float: bool
 
 
 @dataclass
@@ -67,6 +69,9 @@ def generate_all_tests(
         int,
         typer.Option("--jobs", "-j", help="Parallel build jobs (0 = auto-detect CPU count)"),
     ] = 0,
+    with_cover_float: Annotated[
+        bool, typer.Option("--with-cover-float", help="Build with floating point tests from cover-float")
+    ] = False,
 ) -> None:
     """
     Generate riscv-arch-test tests.
@@ -115,9 +120,20 @@ def generate_all_tests(
             for testsuite in sorted(unpriv_ext_list):
                 if E_ext and testsuite not in E_EXTENSION_TESTS:
                     continue
-                tasks.append(UnprivTask(xlen, E_ext, testsuite, testplan_dir, output_test_dir))
+                tasks.append(UnprivTask(xlen, E_ext, testsuite, testplan_dir, output_test_dir, with_cover_float))
 
     tasks.extend(PrivTask(testsuite, output_test_dir) for testsuite in sorted(priv_ext_list))
+
+    # If we need the cover-float tests, build them now, we cannot do them in the individual cp_ibm
+    # calls because we lose all benefits of parallelization, and we run into dangers with multiple
+    # calls to cover-float attempting to generate tests at the same time due to ACT4 parallelization
+    if with_cover_float:
+        cover_float_dir = Path(__file__).parent / "cover-float"
+        subprocess.run(
+            ["make", "-s", "-C", str(cover_float_dir), "AGGRESSIVENESS=0", "PROCESSED_ONLY=1", "processed-tests-only"],
+            stderr=subprocess.DEVNULL,
+            check=False,
+        )
 
     # Generate all tests in parallel
     with ProcessPoolExecutor(max_workers=jobs) as executor:
@@ -137,6 +153,7 @@ def _dispatch_test_gen(task: UnprivTask | PrivTask) -> None:
             testsuite=task.testsuite,
             testplan_dir=task.testplan_dir,
             output_test_dir=task.output_test_dir,
+            with_cover_float=task.with_cover_float,
         )
     elif isinstance(task, PrivTask):
         generate_priv_test(

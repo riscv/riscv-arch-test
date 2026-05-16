@@ -81,6 +81,13 @@ def _build_testline(instruction: str, instruction_data: list, *,
         testline += ", "
 
     testline = testline[:-2]
+
+    # clang's RV32 frontend rejects indexed-segment ei{32,64} mnemonics
+    # ("requires RV64I"); emit raw `.insn` encoding to force assembly.
+    if instruction in common.indexed_ls_ins:
+        testline = common.encodeIndexedLSAsInsn(instruction, instruction_data,
+                                                masked=(maskval is not None))
+
     vd = vec_data["vd"]["reg"]
     rd = scalar_data["rd"]["reg"]
     return testline, vd, rd

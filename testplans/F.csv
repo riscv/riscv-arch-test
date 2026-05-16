@@ -15,7 +15,7 @@ fle.s,FC,x,x,x,,x,,,x,x,,,x,x,,,,,,v,,x,,,x
 flt.s,FC,x,x,x,,x,,,x,x,,,x,x,,,,,,v,,x,,,x
 flw,FL,x,x,x,nx0,,,x,,,,x,,,,,,,,,,,,,
 fmadd.s,FR4,x,x,x,,,,,x,x,x,x,x,x,x,x,x,x,4,voun,x,frm4,frm4,,x
-fmax.s,FR,x,x,x,,,,,x,x,,x,x,x,,x,x,,,v,,x,,x,x
+fmax.s,FR,x,x,x,,,,,x,x,,x,x,x,,x,x,,,v,,x,,,x
 fmin.s,FR,x,x,x,,,,,x,x,,x,x,x,,x,x,,,v,,x,,,x
 fmsub.s,FR4,x,x,x,,,,,x,x,x,x,x,x,x,x,x,x,4,voun,x,frm4,frm4,,x
 fmul.s,FR,x,x,x,,,,,x,x,,x,x,x,,x,x,,3,voun,x,frm,,,x

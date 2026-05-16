@@ -79,6 +79,6 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     test_data.end_test_chunk()
 
     # Produce actual test file
-    extra_defines = [*get_priv_test_defines(testsuite), "#define RVTEST_PRIV_TEST"]
+    extra_defines = [*get_priv_test_defines(testsuite)]
     write_test_file(test_config, None, [tc], output_path, extra_defines=extra_defines)
     test_data.destroy()

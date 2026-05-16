@@ -57,7 +57,7 @@ covergroup ExceptionsSv_cg with function sample(ins_t ins);
     }
     medeleg_walk: coverpoint ins.current.csr[CSR_MEDELEG] {
         bins zeros                    = {16'b0000_0000_0000_0000};
-        `ifndef COVER_ZCA
+        `ifndef ZCA_SUPPORTED
             bins instrmisaligned_enabled  = {16'b0000_0000_0000_0001};
         `endif
         bins illegalinstr_enabled     = {16'b0000_0000_0000_0100};

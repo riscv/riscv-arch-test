@@ -190,8 +190,11 @@ RVTEST_DATA_BEGIN
 test_1_str:  .string "\"test: 1;  cp: pmpzalrc_cfg_wr_lr_w\""
 test_2_str:  .string "\"test: 2;  cp: pmpzalrc_cfg_wr_sc_w\""
 
-.align 13
+.align 12
 .align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    jr ra
+
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

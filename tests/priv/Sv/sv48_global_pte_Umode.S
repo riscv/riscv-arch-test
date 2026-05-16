@@ -34,9 +34,6 @@
 #define TEST_FILE "sv48_global_pte_Umode.S"
 #define SIGUPD_COUNT 30
 #define TRAP_SIGUPD_COUNT 10
-#define rvtest_mtrap_routine
-#define rvtest_strap_routine
-#define RVTEST_PRIV_TEST
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"

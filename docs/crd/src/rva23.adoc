@@ -1,0 +1,113 @@
+= RVA23 Certification Requirements Document (rev 0.1)
+:description: RVA23 CRD (Certificate Requirements Document)
+include::../../common/adoc_common.adoc[]
+
+_Contributors to all versions of the spec in alphabetical order_
+
+* Ken Dockser
+* David Harris
+
+_This document is released under a Creative Commons Attribution 4.0 International License._
+
+[Preface]
+== CRD Revision History
+
+History of documentation changes that eventually lead to releases.
+
+[cols="1,1,5"]
+|===
+| Date | Revision | Changes
+
+| April 29, 2026
+| 0.1
+a| * Initial draft
+
+|===
+
+// include::glossary.adoc[]
+
+== Introduction
+
+The RVA23 processor certificate is based on the https://riscv.github.io/riscv-isa-manual/snapshot/spec/#_rva23s64_profile[RVA23S64] profile. To
+qualify for a certificate, the processor must implement the RV64I base instruction set and all of the mandatory
+extensions of the profile.  It may implement any of the optional features of
+the profile.  It may implement ratified extensions that are not part of the profile. It may implement other unratified extensions, but must not implement
+unratified extensions outside the custom encoding spaces if the optional Ssstrict extension is implemented. Extensions outside the profile are not tested during
+certification.
+
+=== Related Specifications
+
+* https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html[Unprivileged ISA Specification] - Latest version
+* https://riscv.github.io/riscv-isa-manual/snapshot/privileged/index.html[Privileged ISA Specification] - Latest version
+
+== Discussion
+
+The RVA23S64 profile implies requirements that might not be immediately
+obvious.  This section explains them in detail.
+
+=== Custom M-mode
+
+The RVA23S64 profile purposefully excludes Machine mode (M-mode).  It does not require a _Standard M-mode_ consistent with the ratified M-mode specification.
+Therefore, certification does not run M-mode code directly.
+
+Custom M-mode is a supervisor execution environment that deviates from the M-mode specification.  For example, it might have a bug that affects M-mode behavior but is invisible from S-mode.  The firmware could work around this bug by not running M-mode instructions affected by the bug.  Alternatively, Custom M-mode might have some security features or proprietary CSRs that break compatibility with ratified M-mode.
+
+=== Execution Environment and Supervisor Binary Interface (SBI)
+
+Nevertheless, RVA23S64 runs within a supervisor execution environment.  For example, an `ECALL` from supervisor mode causes a requested trap to this execution environment. Similarly, the profile indicates that Sspm requires an execution environment providing a means to select PMLEN.
+
+RVA23 requires that the execution environment boot to a deterministic state that allows software to run in S-mode, and to handle traps to the execution environment that implements a test SBI (described below). If a custom M-mode execution environment does not directly implement a feature of standard M-mode in hardware, it must be able to emulate that feature in a way that is transparent to software running in lower privilege modes.  For example, if it does not support delegating interrupts to S-mode in hardware, it must accomplish the same purpose in software by trapping to the execution environment, which delivers the interrupt to S-mode.
+
+The execution environment must provide a Supervisor Binary Interface (SBI) that allows S-mode software to make requests of the execution environment.  These requests are made by placing commands in registers and performing an `ECALL`.
+
+=== SBI Control of M-mode CSRs
+
+RVA23 certification requires that the SBI provide methods of emulating every writable standard M-mode CSR field that can affect the behavior of lower privilege modes.  With a standard M-mode, the SBI may just write bitfields in the M-mode registers.  With custom M-mode, the SBI must make it appear to S-mode software that the field holds the value written by the SBI, even though the implementation might be different.
+
+These CSRs and memory-mapped I/O registers are:
+
+[options=header]
+[cols="1,5"]
+|===
+| CSR | Notes
+| `mstatus` | TSR, TW, TVM
+| `mcounteren` | All fields not hardwired to 0 must be controllable to allow testing of counter access from lower privilege modes.
+| `mcountinhibit` | All fields not hardwired to 0 must be controllable to allow testing of counter behavior from lower privilege modes.
+| `menvcfg` | STCE, PBMTE, ADUE, PMM, CBZE, CBCFE, CBIE, SSE, LPE, FIOM must be controllable to allow testing of the behavior of lower privilege modes with these features enabled and disabled. Note that some bits may be read-only zero. CDE, DTE are OUT-OF-SCOPE because they do not relate to RVA23 features. All writable fields must be controllable to allow testing of the behavior of lower privilege modes when certain features are disabled.
+| `mseccfg` | PMM, SSEED, and USEED must be controllable to allow testing of the behavior of lower privilege modes when certain features are disabled.  Note that some bits may be read-only zero. MLPE, RLB, MMWP, MML are OUT-OF-SCOPE of RVA23.
+| `mstateen` | SE0, ENVCFG, CONTEXT must be controllable to allow testing of the behavior of lower privilege modes when certain features are disabled. Note that some bits may be read-only zero.  Other fields are OUT-OF-SCOPE because they do not relate to RVA23 features.
+| `mhartid` | Must be readable to influence the behavior of multicore tests.
+| `mtime` | Must be readable to find the current time to set timer interrupts.
+|===
+
+The following M-mode CSRs/fields are OUT-OF-SCOPE:
+
+[options=header]
+[cols="1,5"]
+|===
+| CSR | Notes
+| `mstatus` | SD, SPELP, MXR, SUM, FS, VS, SPP, SPIE, SIE are accessible from `sstatus` and should not be tested through `mstatus` for RVA23 certification. GVA and MPV do not affect the behavior of lower privilege modes. XS, SDT, MBE, SBE, UBE, SXL, UXL OUT-OF-SCOPE for RVA23.
+| `medeleg` | All standard exceptions are delegated to S-mode except that `ecall` from S and M-mode must not be delegatable because the SBI must trap to M-mode.
+| `mideleg` | All supervisor interrupts are delegated including SEI, SSI, STI, VSEI, VSSI, VSTI, LCOFI, SGEI.  Machine interrupts MEI, MSI, MTI are OUT-OF_SCOPE and not delegated.
+| `mip` | MEIP, MSIP, MTIP are OUT-OF-SCOPE.  SEIP, STIP, SSIP, and LCOFIP are accessible from `sip` and SGEIP is controlled by `hgeip` and `hgeie`.
+| `mie` | No fields are used for RVA23 certification because all relevant fields are accessible from `sie` or `hie`.
+| `misa` | Not tested because the contents do not have a predictable effect on behavior.
+| `mvendorid` | Does not affect the behavior of lower privilege modes.
+| `marchid` | Does not affect the behavior of lower privilege modes.
+| `mimpid` | Does not affect the behavior of lower privilege modes.
+| `mconfigptr` | Does not affect the behavior of lower privilege modes.
+| `mtvec` | Trap vector must be set up during boot but is not modified through SBI.
+| `mepc` | Does not affect the behavior of lower privilege modes.
+| `mcause` | Does not affect the behavior of lower privilege modes.
+| `mscratch` | Does not affect the behavior of lower privilege modes.
+| `mtval` | Does not affect the behavior of lower privilege modes.
+| `mtinst` | Does not affect the behavior of lower privilege modes.
+| `mtval2` | Does not affect the behavior of lower privilege modes.
+| PMP CSRs | PMP restrictions on access are indistinguishable below M-mode from a PMA that imposes similar restrictions.
+|===
+
+If `mideleg` or `medeleg` fields that should be delegated to S-mode are read-only zero, the supervisor execution environment must respond by invoking the S-mode trap handler through software.
+
+=== Interrupts
+
+Supervisor, virtual supervisor, and counter overflow interrupts are IN-SCOPE and are tested.  Machine interrupts are OUT-OF-SCOPE and are not tested.

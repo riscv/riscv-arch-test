@@ -44,9 +44,7 @@
 #define TEST_FILE "sv32_exceptions_mprv_Mmode.S"
 #define SIGUPD_COUNT 115
 #define TRAP_SIGUPD_COUNT 180
-#define rvtest_mtrap_routine
-#define rvtest_strap_routine
-#define RVTEST_PRIV_TEST
+#define BOOT_TO_MMODE
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"

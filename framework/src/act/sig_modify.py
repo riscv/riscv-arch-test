@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 # Adds datatype to signatures.
-# Appends 'mtrap_sigptr' label if TRAP_CANARY is present
+# Appends 'trap_sigptr' label if TRAP_CANARY is present
 def process_signature_file(sig_file: Path, xlen: int) -> None:
     """Add datatype directive to each line of the signature file."""
     datatype = ".word" if xlen == 32 else ".quad"
@@ -23,4 +23,4 @@ def process_signature_file(sig_file: Path, xlen: int) -> None:
             if line.strip():  # Skip empty lines
                 outfile.write(f"{datatype} 0x{line}\n")
                 if trap_canary in line:
-                    outfile.write("mtrap_sigptr:\n")
+                    outfile.write("trap_sigptr:\n")

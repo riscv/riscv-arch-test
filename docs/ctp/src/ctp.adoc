@@ -26,7 +26,7 @@ include::cert.adoc[]
 include::profiles.adoc[]
 include::strategy.adoc[]
 include::req.adoc[]
-include::rvmodel.adoc[]
+include::abstraction.adoc[]
 include::coverage.adoc[]
 include::ref.adoc[]
 

@@ -8,5 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-PMPSM_cg = new();
-PMPSM_cg.set_inst_name("obj_PMPSm");
+    PMPSM_cg = new();         PMPSM_cg.set_inst_name("obj_PMPSm");

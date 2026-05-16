@@ -240,7 +240,10 @@ test_7_str: .string "\"test: 7; cp: pmps_cfg_XWR.S_lh\""
 test_8_str: .string "\"test: 8; cp: pmps_cfg_XWR.S_lhu\""
 test_9_str: .string "\"test: 9; cp: pmps_cfg_XWR.S_lw\""
 
-.align 13
+.align 12
+TEST_FOR_EXECUTION_0:
+    jr ra
+
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

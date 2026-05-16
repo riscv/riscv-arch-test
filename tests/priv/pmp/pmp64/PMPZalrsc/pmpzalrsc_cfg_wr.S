@@ -206,8 +206,11 @@ test_2_str:  .string "\"test: 2;  cp: pmpzalrc_cfg_wr_sc_w\""
 test_3_str:  .string "\"test: 3;  cp: pmpzalrc_cfg_wr_lr_f\""
 test_4_str:  .string "\"test: 4;  cp: pmpzalrc_cfg_wr_sc_d\""
 
-.align 13
+.align 12
 .align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION_0:
+    jr ra
+
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

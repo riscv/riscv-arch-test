@@ -31,7 +31,7 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
     covergroup = "SmF_fcsr_cg"
 
     # fp CSRs
-    csrs = ["fcsr", "frm", "fflags"]
+    fcsrs = [("fcsr", None), ("frm", None), ("fflags", None)]
     lines = []
 
     ######################################
@@ -49,38 +49,39 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
 
     for fs in range(4):
         coverpoint_full = f"{coverpoint}_fs{fs}"
-        for csr in csrs:
+        for csr in fcsrs:
+            csr_name, _mask = csr
             lines.extend(
                 [
-                    f"# Testcase: {csr} access with mstatus.FS={fs}: write 1s",
+                    f"# Testcase: {csr_name} access with mstatus.FS={fs}: write 1s",
                     _gen_fs_init(fs, temp_reg),
-                    f"CSRR(x{save_reg}, {csr})    # Save CSR",
-                    test_data.add_testcase(f"{csr}_csrrw1", coverpoint_full, covergroup),
-                    f"CSRW({csr}, x{ones_reg})    # Write all 1s to CSR",
-                    gen_csr_read_sigupd(check_reg, "mstatus", test_data),
+                    f"CSRR(x{save_reg}, {csr_name})    # Save CSR",
+                    test_data.add_testcase(f"{csr_name}_csrrw1", coverpoint_full, covergroup),
+                    f"CSRW({csr_name}, x{ones_reg})    # Write all 1s to CSR",
+                    gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
                     gen_csr_read_sigupd(check_reg, csr, test_data),
                     "",
-                    f"# Testcase: {csr} access with mstatus.FS={fs}: write 0s",
+                    f"# Testcase: {csr_name} access with mstatus.FS={fs}: write 0s",
                     _gen_fs_init(fs, temp_reg),
-                    test_data.add_testcase(f"{csr}_csrrw0", coverpoint_full, covergroup),
-                    f"CSRW({csr}, zero)   # Write all 0s to CSR",
-                    gen_csr_read_sigupd(check_reg, "mstatus", test_data),
+                    test_data.add_testcase(f"{csr_name}_csrrw0", coverpoint_full, covergroup),
+                    f"CSRW({csr_name}, zero)   # Write all 0s to CSR",
+                    gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
                     gen_csr_read_sigupd(check_reg, csr, test_data),
                     "",
-                    f"# Testcase: {csr} access with mstatus.FS={fs}: set all bits",
+                    f"# Testcase: {csr_name} access with mstatus.FS={fs}: set all bits",
                     _gen_fs_init(fs, temp_reg),
-                    test_data.add_testcase(f"{csr}_csrs_all", coverpoint_full, covergroup),
-                    f"CSRS({csr}, x{ones_reg})    # Set all CSR bits",
-                    gen_csr_read_sigupd(check_reg, "mstatus", test_data),
+                    test_data.add_testcase(f"{csr_name}_csrs_all", coverpoint_full, covergroup),
+                    f"CSRS({csr_name}, x{ones_reg})    # Set all CSR bits",
+                    gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
                     gen_csr_read_sigupd(check_reg, csr, test_data),
                     "",
-                    f"# Testcase: {csr} access with mstatus.FS={fs}: clear all bits",
+                    f"# Testcase: {csr_name} access with mstatus.FS={fs}: clear all bits",
                     _gen_fs_init(fs, temp_reg),
-                    test_data.add_testcase(f"{csr}_csrrc_all", coverpoint_full, covergroup),
-                    f"CSRC({csr}, x{ones_reg})    # Clear all CSR bits",
-                    gen_csr_read_sigupd(check_reg, "mstatus", test_data),
+                    test_data.add_testcase(f"{csr_name}_csrrc_all", coverpoint_full, covergroup),
+                    f"CSRC({csr_name}, x{ones_reg})    # Clear all CSR bits",
+                    gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
                     gen_csr_read_sigupd(check_reg, csr, test_data),
-                    f"CSRW({csr}, x{save_reg})       # Restore CSR",
+                    f"CSRW({csr_name}, x{save_reg})       # Restore CSR",
                     "",
                 ]
             )
@@ -147,7 +148,7 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
                     _gen_fs_init(fs, temp_reg),
                     test_data.add_testcase(f"{insn}", coverpoint_full, covergroup),
                     f"{insn} # execute instruction with mstatus.FS={fs}",
-                    gen_csr_read_sigupd(temp_reg, "mstatus", test_data),
+                    gen_csr_read_sigupd(temp_reg, ("mstatus", None), test_data),
                 ]
             )
         lines.append("\n#ifdef D_SUPPORTED")
@@ -159,7 +160,7 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
                     _gen_fs_init(fs, temp_reg),
                     test_data.add_testcase(f"{insn}", coverpoint_full, covergroup),
                     f"{insn} # execute instruction with mstatus.FS={fs}",
-                    gen_csr_read_sigupd(temp_reg, "mstatus", test_data),
+                    gen_csr_read_sigupd(temp_reg, ("mstatus", None), test_data),
                 ]
             )
         lines.extend(
@@ -177,7 +178,7 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
                     _gen_fs_init(fs, temp_reg),
                     test_data.add_testcase(f"{insn}", coverpoint_full, covergroup),
                     f"{insn} # execute instruction with mstatus.FS={fs}",
-                    gen_csr_read_sigupd(temp_reg, "mstatus", test_data),
+                    gen_csr_read_sigupd(temp_reg, ("mstatus", None), test_data),
                 ]
             )
         lines.extend(
@@ -197,7 +198,7 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
                     _gen_fs_init(fs, temp_reg),
                     test_data.add_testcase(f"{insn}", coverpoint_full, covergroup),
                     f"{insn} # execute instruction with mstatus.FS={fs}",
-                    gen_csr_read_sigupd(temp_reg, "mstatus", test_data),
+                    gen_csr_read_sigupd(temp_reg, ("mstatus", None), test_data),
                 ]
             )
         lines.append("\n#endif")
@@ -207,7 +208,7 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("SmF", required_extensions=["Sm", "U", "F", "Zicsr"], march_extensions=["F", "D", "Zfa"])
+@add_priv_test_generator("SmF", required_extensions=["Sm", "F"], march_extensions=["F", "D", "Zfa"])
 def make_smf(test_data: TestData) -> list[str]:
     """Generate tests for SmF machine-mode floating-point testsuite."""
     lines: list[str] = []

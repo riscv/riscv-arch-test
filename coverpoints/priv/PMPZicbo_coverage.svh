@@ -18,13 +18,13 @@ covergroup PMPZicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0]
         bins configuration = {4'b1111}; //menvcfg.CBIE, CBCFE, CBZE = 1
     }
 
-    pmpaddr_region: coverpoint  ((pmpaddr[0] == (`PMP_REGION_START>>2)) &&
-                                 (pmpaddr[1] == ((`PMP_REGION_START + 16'h1000) >>2))) {
+    pmpaddr_region: coverpoint  ((pmpaddr[0] == (`PMP_SPECIAL_REGION_START>>2)) &&
+                                 (pmpaddr[1] == ((`PMP_SPECIAL_REGION_START + 16'h1000) >>2))) {
         bins region = {1};
     }
 
     addr_in_region: coverpoint ins.current.rs1_val {
-        bins address = {`PMP_REGION_START};
+        bins address = {`PMP_SPECIAL_REGION_START};
     }
 
     cbo_clean_instr: coverpoint ins.current.insn {
@@ -117,7 +117,7 @@ function void pmpzicbo_sample(int hart, int issue, ins_t ins);
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
-    pmp_hit[k] = (pmpaddr[k] == `STANDARD_REGION) || (pmpaddr[k] == `NON_STANDARD_REGION);
+    pmp_hit[k] = (pmpaddr[k] == `SPECIAL_STANDARD_REGION) || (pmpaddr[k] == `SPECIAL_NON_STANDARD_REGION);
   end
 
   PMPZicbo_cg.sample(ins, pmpcfg, pmp_hit, pmpaddr);

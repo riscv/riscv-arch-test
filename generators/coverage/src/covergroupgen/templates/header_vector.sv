@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ARCHUPPER
-`define COVER_VFCUSTOMEFFEW
+`define COVER_ARCHPREFIXUPPERCUSTOMEFFEW
 `ifdef ELENEFFEW
     `define SEW_EFFEW_EQ_ELEN
 `endif

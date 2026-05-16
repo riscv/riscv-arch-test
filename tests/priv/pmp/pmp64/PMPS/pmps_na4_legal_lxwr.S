@@ -54,6 +54,7 @@ RVTEST_BEGIN                                // Encoded Instruction of nop (64 bi
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
 
+    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     addi a4, a4, -4                     // REGIONSTART - 4
     LA(x1, 2f)                            // Store the return Address in x1
     \TEST_CASE\()_2:
@@ -63,6 +64,7 @@ RVTEST_BEGIN                                // Encoded Instruction of nop (64 bi
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
 
+    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     addi a4, a4, 8                      // REGIONSTART + 4
     LA(x1, 3f)                            // Store the return Address in x1
     \TEST_CASE\()_3:
@@ -241,9 +243,7 @@ test_9_str: .string "\"test: 9; cp: pmps_cfg_A_off_all_lw_address+4\""
 .align 12
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION_0:
-    .rept 1024
-    nop
-    .endr
+    jr ra
 
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

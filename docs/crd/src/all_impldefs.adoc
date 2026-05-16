@@ -481,7 +481,7 @@
 | When rs2=x0, then an implementation is allowed, but not required, to perform fewer memory operations than the number of active elements, and may perform different numbers of memory operations across different dynamic executions of the same static instruction.
 
 | V
-| `VECTOR_LS_MISSALIGNED_EXCEPTION`
+| `VECTOR_LS_MISALIGNED_EXCEPTION`
 | If an element accessed by a vector memory instruction is not naturally aligned to the size of the element, either the element is transferred successfully or an address-misaligned exception is raised on that element.
 
 | V
@@ -501,7 +501,7 @@
 | All vector loads and stores may generate and accept a non-zero vstart value.
 
 | V
-| `VECTOR_LS_WHOLEREG_MISSALIGNED_EXCEPTION`
+| `VECTOR_LS_WHOLEREG_MISALIGNED_EXCEPTION`
 | Implementations are allowed to raise a misaligned address exception on whole register loads and stores if the base address is not naturally aligned to the larger of the size of the encoded EEW in bytes (EEW/8) or the implementation&#8217;s smallest supported SEW size in bytes (SEWMIN/8).
 
 | V

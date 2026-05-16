@@ -1,1 +1,1 @@
-../imperas-rv64-max/rvmodel_macros.h
+../imperas-RVI20U64/rvmodel_macros.h

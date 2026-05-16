@@ -1,1 +1,1 @@
-../qemu-rv64-max/rvmodel_macros.h
+../qemu-RVI20U64/rvmodel_macros.h

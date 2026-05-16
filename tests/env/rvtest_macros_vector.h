@@ -40,5 +40,28 @@
     #endif
 #endif
 
+// Per-test fractional LMUL support based on RVTEST_SEW (set in each test) and ELEN.
+// The testgen-emitted #if guards in the test source run BEFORE this header is included,
+// at which point ELEN is still undefined, so the test-source defines never fire.
+// Defining them here (after ELEN is in scope) ensures #ifdef TEST_LMULfN_SUPPORTED
+// in the test body works correctly.
+#if defined(RVTEST_SEW) && defined(ELEN)
+    #if (RVTEST_SEW <= ELEN / 2)
+        #ifndef TEST_LMULf2_SUPPORTED
+            #define TEST_LMULf2_SUPPORTED
+        #endif
+    #endif
+    #if (RVTEST_SEW <= ELEN / 4)
+        #ifndef TEST_LMULf4_SUPPORTED
+            #define TEST_LMULf4_SUPPORTED
+        #endif
+    #endif
+    #if (RVTEST_SEW <= ELEN / 8)
+        #ifndef TEST_LMULf8_SUPPORTED
+            #define TEST_LMULf8_SUPPORTED
+        #endif
+    #endif
+#endif
+
 
 #endif // RISCV_TEST_SUITE_TEST_MACROS_VECTOR_H

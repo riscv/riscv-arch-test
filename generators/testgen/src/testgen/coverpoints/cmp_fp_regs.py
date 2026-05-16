@@ -92,7 +92,7 @@ def make_cmp_fd_fs3(instr_name: str, instr_type: str, coverpoint: str, test_data
 
 @add_coverpoint_generator("cmp_fs1_fs2")
 def make_cmp_fs1_fs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
-    """Generate tests where fd = fs2."""
+    """Generate tests where fs1 = fs2."""
     # Determine which fd registers to test based on coverpoint variant
     if coverpoint == "cmp_fs1_fs2":
         regs = range(test_data.float_regs.reg_count)
@@ -118,11 +118,11 @@ def make_cmp_fs1_fs2(instr_name: str, instr_type: str, coverpoint: str, test_dat
 @add_coverpoint_generator("cmp_fd_fs1_fs2")
 def make_cmp_fd_fs1_fs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests where fd = fs1 = fs2."""
-    # Determine which rd registers to test based on coverpoint variant
+    # Determine which fd registers to test based on coverpoint variant
     if coverpoint == "cmp_fd_fs1_fs2":
-        regs = range(test_data.int_regs.reg_count)
+        regs = range(test_data.float_regs.reg_count)
     elif coverpoint.endswith("_nx0"):
-        regs = range(1, test_data.int_regs.reg_count)  # Exclude x0
+        regs = range(1, test_data.float_regs.reg_count)  # Exclude f0
     else:
         raise ValueError(f"Unknown cmp_fd_fs1_fs2 coverpoint variant: {coverpoint} for {instr_name}")
 

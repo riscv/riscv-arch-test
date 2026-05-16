@@ -1,13 +1,19 @@
 normative_rule_definitions:
   # store, store-conditional, and AMO instructions generate store/AMO exceptions.
   - name: mcause_exccode_st_sc_amo
-    coverpoint: [""]
+    coverpoint:
+      [
+        "ExceptionsZalrsc_cg/{cp_store_access_fault,cp_store_address_misaligned_illegal_w}",
+      ]
 
   - name: sc_retire_permission
-    coverpoint: [""]
+    coverpoint: ["ExceptionsZalrsc_cg/cp_store_access_fault"]
 
   - name: sc_failed_as_store
-    coverpoint: [""]
+    coverpoint: ["ExceptionsZalrsc_cg/cp_store_access_fault"]
 
   - name: lr_sc_alignment
-    coverpoint: [""]
+    coverpoint:
+      [
+        "ExceptionsZalrsc_cg/{cp_load_address_misaligned,cp_store_address_misaligned}",
+      ]

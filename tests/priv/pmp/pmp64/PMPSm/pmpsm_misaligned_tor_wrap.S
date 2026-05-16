@@ -35,9 +35,6 @@
 #define TEST_FILE "pmpsm_mislaigned_tor_wrap.S"
 #define SIGUPD_COUNT 50
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -133,9 +130,7 @@ test_2_str: .string "\"test: 1; cp: pmpm_mislaigned_na4_wrap_ld\""
 .align 12
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION_0:
-    .rept 1024
-    nop
-    .endr
+    jr ra
 
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

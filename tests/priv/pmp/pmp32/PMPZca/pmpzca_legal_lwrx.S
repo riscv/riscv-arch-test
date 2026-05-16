@@ -34,9 +34,6 @@
 #define TEST_FILE "pmpzca_legal_lxwr.S"
 #define SIGUPD_COUNT 50
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 
@@ -244,7 +241,10 @@ test_2_str: .string "\"test: 1; cp: pmpzca_legal_lxwr_lw\""
 test_3_str: .string "\"test: 1; cp: pmpzca_legal_lxwr_c.swsp\""
 test_4_str: .string "\"test: 1; cp: pmpzca_legal_lxwr_c.lwsp\""
 
-.align 13
+.align 12
+TEST_FOR_EXECUTION_0:
+    jalr x0, x1, 0
+
 TEST_FOR_EXECUTION:
     .rept (1<<RVMODEL_PMP_GRAIN+2)
     c.nop

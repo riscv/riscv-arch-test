@@ -17,7 +17,7 @@
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "Zalrsc-sc.w-00.S"
-#define SIGUPD_COUNT 655
+#define SIGUPD_COUNT 557
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -3467,1188 +3467,489 @@ Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl:
   # Check if x15 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x15, Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl, Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl_str)
 
-# Testcase: cp_custom_sc_lrsc with prev lr.d
+# Testcase: cp_custom_sc_lr with prev lr.w
   RVTEST_TESTDATA_LOAD_INT(x16, x30) # load rs2: x30 = 0x393804ce8c074f50
   LA(x26, scratch) # rs1 = base address
-  lr.d x0, (x26) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_lrsc_prev_lr_lr_d:
+  lr.w x0, (x26) # establish reservation
+Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w:
   sc.w x7, x30, (x26) # perform operation
   # Check if x7 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_lrsc_prev_lr_lr_d, Zalrsc_sc_w_cg_cp_custom_sc_lrsc_prev_lr_lr_d_str)
+  RVTEST_SIGUPD(x21, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_str)
   LA(x26, scratch) # reload base address
   LREG x14, 0(x26) # load stored value
   # Check if x14 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x14, Zalrsc_sc_w_cg_cp_custom_sc_lrsc_prev_lr_lr_d, Zalrsc_sc_w_cg_cp_custom_sc_lrsc_prev_lr_lr_d_str)
+  RVTEST_SIGUPD(x21, x5, x4, x14, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_str)
 
-# Testcase: cp_custom_sc_lrsc with prev lr.w
+# Testcase: cp_custom_sc_lr with prev lr.w first to matching address and then to a different address
+# This test is not described with a coverpoint because it involves three consecutive instructions
+#  Addresses sc_pairs_latest_lr normative rule
+  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load rs2: x30 = 0x393804ce8c074f50
+  LA(x26, scratch) # rs1 = base address
+  lr.w x0, (x26) # establish reservation
+  addi x26, x26, 256 # change reservation address
+  lr.w x0, (x26) # establish reservation at a different address that should not match sc
+  addi x26, x26, -256 # restore reservation address
+Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr:
+  sc.w x7, x30, (x26) # perform store conditional
+  # Check if x7 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr_str)
+  LA(x26, scratch) # reload base address
+  LREG x14, 0(x26) # load stored value
+  # Check if x14 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x14, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr_str)
+
+# Testcase: cp_custom_sc_after_sc (should fail because of intervening sc)
   RVTEST_TESTDATA_LOAD_INT(x16, x8) # load rs2: x8 = 0x48e056d79028a9c8
+  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load temp_reg: x11 = 0x13b1c8bfc2279394
   LA(x31, scratch) # rs1 = base address
   lr.w x0, (x31) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_lrsc_prev_lr_lr_w:
+Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true:
   sc.w x19, x8, (x31) # perform operation
+  sc.w x11, x11, (x31) # perform operation again, should fail
+  # Check destination of both sc instructions:
   # Check if x19 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x19, Zalrsc_sc_w_cg_cp_custom_sc_lrsc_prev_lr_lr_w, Zalrsc_sc_w_cg_cp_custom_sc_lrsc_prev_lr_lr_w_str)
+  RVTEST_SIGUPD(x21, x5, x4, x19, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true_str)
+  # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true_str)
+  # Check that stored value is from first sc:
   LA(x31, scratch) # reload base address
   LREG x11, 0(x31) # load stored value
   # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_lrsc_prev_lr_lr_w, Zalrsc_sc_w_cg_cp_custom_sc_lrsc_prev_lr_lr_w_str)
+  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true_str)
 
-# Testcase: cp_custom_sc_after_sc (should fail because of intervening sc)
+# Testcase: cp_custom_sc_addresses (address difference of 8)
   RVTEST_TESTDATA_LOAD_INT(x16, x3) # load rs2: x3 = 0xe9e30d0730793a60
-  RVTEST_TESTDATA_LOAD_INT(x16, x29) # load temp_reg: x29 = 0xff54b1f2efb20555
-  LA(x9, scratch) # rs1 = base address
-  lr.w x0, (x9) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true:
+  LA(x29, scratch) # rs1 = base address
+  addi x9, x29, 8 # offset rs1 by 8
+  lr.w x0, (x29) # establish reservation
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8:
   sc.w x27, x3, (x9) # perform operation
-  sc.w x29, x29, (x9) # perform operation again, should fail
-  # Check destination of both sc instructions:
   # Check if x27 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x27, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true_str)
-  # Check if x29 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x29, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true_str)
-  # Check that stored value is from first sc:
+  RVTEST_SIGUPD(x21, x5, x4, x27, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8_str)
   LA(x9, scratch) # reload base address
-  LREG x29, 0(x9) # load stored value
+  LREG x29, 8(x9) # load stored value
   # Check if x29 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x29, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true_str)
+  RVTEST_SIGUPD(x21, x5, x4, x29, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8_str)
 
-# Testcase: cp_custom_sc_after_store (sb)
+# Testcase: cp_custom_sc_addresses (address difference of 16)
   RVTEST_TESTDATA_LOAD_INT(x16, x11) # load rs2: x11 = 0xe18fbd8390d77b31
-  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load temp_reg: x15 = 0xfff0947de13a1685
-  LA(x19, scratch) # rs1 = base address
-  lr.w x0, (x19) # establish reservation
-  sb x15, 3(x19) # intervening store
-Zalrsc_sc_w_cg_cp_custom_sc_after_store_sb:
+  LA(x15, scratch) # rs1 = base address
+  addi x19, x15, 16 # offset rs1 by 16
+  lr.w x0, (x15) # establish reservation
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16:
   sc.w x28, x11, (x19) # perform operation
   # Check if x28 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x28, Zalrsc_sc_w_cg_cp_custom_sc_after_store_sb, Zalrsc_sc_w_cg_cp_custom_sc_after_store_sb_str)
+  RVTEST_SIGUPD(x21, x5, x4, x28, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16_str)
   LA(x19, scratch) # reload base address
-  LREG x15, 0(x19) # load stored value
+  LREG x15, 16(x19) # load stored value
   # Check if x15 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x15, Zalrsc_sc_w_cg_cp_custom_sc_after_store_sb, Zalrsc_sc_w_cg_cp_custom_sc_after_store_sb_str)
+  RVTEST_SIGUPD(x21, x5, x4, x15, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16_str)
 
-# Testcase: cp_custom_sc_after_store (sh)
+# Testcase: cp_custom_sc_addresses (address difference of 24)
   RVTEST_TESTDATA_LOAD_INT(x16, x25) # load rs2: x25 = 0x75caa5ed7a167753
-  RVTEST_TESTDATA_LOAD_INT(x16, x19) # load temp_reg: x19 = 0xb797c4677cbe635f
-  LA(x9, scratch) # rs1 = base address
-  lr.w x0, (x9) # establish reservation
-  sh x19, 2(x9) # intervening store
-Zalrsc_sc_w_cg_cp_custom_sc_after_store_sh:
+  LA(x19, scratch) # rs1 = base address
+  addi x9, x19, 24 # offset rs1 by 24
+  lr.w x0, (x19) # establish reservation
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24:
   sc.w x18, x25, (x9) # perform operation
   # Check if x18 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x18, Zalrsc_sc_w_cg_cp_custom_sc_after_store_sh, Zalrsc_sc_w_cg_cp_custom_sc_after_store_sh_str)
+  RVTEST_SIGUPD(x21, x5, x4, x18, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24_str)
   LA(x9, scratch) # reload base address
-  LREG x19, 0(x9) # load stored value
+  LREG x19, 24(x9) # load stored value
   # Check if x19 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x19, Zalrsc_sc_w_cg_cp_custom_sc_after_store_sh, Zalrsc_sc_w_cg_cp_custom_sc_after_store_sh_str)
+  RVTEST_SIGUPD(x21, x5, x4, x19, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24_str)
 
-# Testcase: cp_custom_sc_after_store (sw)
+# Testcase: cp_custom_sc_addresses (address difference of 32)
   RVTEST_TESTDATA_LOAD_INT(x16, x1) # load rs2: x1 = 0xb123d82e3b8c2467
-  RVTEST_TESTDATA_LOAD_INT(x16, x18) # load temp_reg: x18 = 0x332a0e022a9828eb
-  LA(x19, scratch) # rs1 = base address
-  lr.w x0, (x19) # establish reservation
-  sw x18, 0(x19) # intervening store
-Zalrsc_sc_w_cg_cp_custom_sc_after_store_sw:
+  LA(x18, scratch) # rs1 = base address
+  addi x19, x18, 32 # offset rs1 by 32
+  lr.w x0, (x18) # establish reservation
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32:
   sc.w x2, x1, (x19) # perform operation
   # Check if x2 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x2, Zalrsc_sc_w_cg_cp_custom_sc_after_store_sw, Zalrsc_sc_w_cg_cp_custom_sc_after_store_sw_str)
+  RVTEST_SIGUPD(x21, x5, x4, x2, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32_str)
   LA(x19, scratch) # reload base address
-  LREG x18, 0(x19) # load stored value
+  LREG x18, 32(x19) # load stored value
   # Check if x18 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x18, Zalrsc_sc_w_cg_cp_custom_sc_after_store_sw, Zalrsc_sc_w_cg_cp_custom_sc_after_store_sw_str)
+  RVTEST_SIGUPD(x21, x5, x4, x18, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32_str)
 
-# Testcase: cp_custom_sc_after_store (sd)
+# Testcase: cp_custom_sc_addresses (address difference of 40)
   RVTEST_TESTDATA_LOAD_INT(x16, x20) # load rs2: x20 = 0xfa75761c08c8963d
-  RVTEST_TESTDATA_LOAD_INT(x16, x6) # load temp_reg: x6 = 0xd56e90511677d179
-  LA(x13, scratch) # rs1 = base address
-  lr.w x0, (x13) # establish reservation
-  sd x6, 0(x13) # intervening store
-Zalrsc_sc_w_cg_cp_custom_sc_after_store_sd:
+  LA(x6, scratch) # rs1 = base address
+  addi x13, x6, 40 # offset rs1 by 40
+  lr.w x0, (x6) # establish reservation
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40:
   sc.w x24, x20, (x13) # perform operation
   # Check if x24 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x24, Zalrsc_sc_w_cg_cp_custom_sc_after_store_sd, Zalrsc_sc_w_cg_cp_custom_sc_after_store_sd_str)
+  RVTEST_SIGUPD(x21, x5, x4, x24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40_str)
   LA(x13, scratch) # reload base address
-  LREG x6, 0(x13) # load stored value
+  LREG x6, 40(x13) # load stored value
   # Check if x6 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x6, Zalrsc_sc_w_cg_cp_custom_sc_after_store_sd, Zalrsc_sc_w_cg_cp_custom_sc_after_store_sd_str)
+  RVTEST_SIGUPD(x21, x5, x4, x6, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40_str)
 
-# Testcase: cp_custom_sc_after_load (lb, offset = 3)
+# Testcase: cp_custom_sc_addresses (address difference of 48)
   RVTEST_TESTDATA_LOAD_INT(x16, x13) # load rs2: x13 = 0x5881d9efb3161e80
-  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load temp_reg: x11 = 0x5cb96ca0d1c5f05d
-  LA(x15, scratch) # rs1 = base address
-  lr.w x0, (x15) # establish reservation
-  lb x11, 3(x15) # intervening load
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lb_offset_3:
+  LA(x11, scratch) # rs1 = base address
+  addi x15, x11, 48 # offset rs1 by 48
+  lr.w x0, (x11) # establish reservation
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48:
   sc.w x8, x13, (x15) # perform operation
   # Check if x8 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x8, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lb_offset_3, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lb_offset_3_str)
+  RVTEST_SIGUPD(x21, x5, x4, x8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48_str)
   LA(x15, scratch) # reload base address
-  LREG x11, 0(x15) # load stored value
+  LREG x11, 48(x15) # load stored value
   # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lb_offset_3, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lb_offset_3_str)
+  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48_str)
 
-# Testcase: cp_custom_sc_after_load (lb, offset = 128)
+# Testcase: cp_custom_sc_addresses (address difference of 56)
   RVTEST_TESTDATA_LOAD_INT(x16, x25) # load rs2: x25 = 0x21c12bcd8160e2cb
-  RVTEST_TESTDATA_LOAD_INT(x16, x1) # load temp_reg: x1 = 0xe83236ea195623dd
-  LA(x26, scratch) # rs1 = base address
-  lr.w x0, (x26) # establish reservation
-  lb x1, 128(x26) # intervening load
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lb_offset_128:
+  LA(x1, scratch) # rs1 = base address
+  addi x26, x1, 56 # offset rs1 by 56
+  lr.w x0, (x1) # establish reservation
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56:
   sc.w x22, x25, (x26) # perform operation
   # Check if x22 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x22, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lb_offset_128, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lb_offset_128_str)
+  RVTEST_SIGUPD(x21, x5, x4, x22, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56_str)
   LA(x26, scratch) # reload base address
-  LREG x1, 0(x26) # load stored value
+  LREG x1, 56(x26) # load stored value
   # Check if x1 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x1, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lb_offset_128, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lb_offset_128_str)
+  RVTEST_SIGUPD(x21, x5, x4, x1, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56_str)
 
-# Testcase: cp_custom_sc_after_load (lbu, offset = 2)
+# Testcase: cp_custom_sc_addresses (address difference of 64)
   RVTEST_TESTDATA_LOAD_INT(x16, x17) # load rs2: x17 = 0xf0a7d8085e621708
-  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load temp_reg: x22 = 0x303f1aa6f2a9671e
-  LA(x19, scratch) # rs1 = base address
-  lr.w x0, (x19) # establish reservation
-  lbu x22, 2(x19) # intervening load
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lbu_offset_2:
-  sc.w x26, x17, (x19) # perform operation
-  # Check if x26 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x26, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lbu_offset_2, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lbu_offset_2_str)
-  LA(x19, scratch) # reload base address
-  LREG x22, 0(x19) # load stored value
-  # Check if x22 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x22, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lbu_offset_2, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lbu_offset_2_str)
-
-# Testcase: cp_custom_sc_after_load (lbu, offset = 128)
-  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load rs2: x13 = 0x475ffff553aafaab
-  RVTEST_TESTDATA_LOAD_INT(x16, x10) # load temp_reg: x10 = 0x1c6fea00edf0be86
-  LA(x6, scratch) # rs1 = base address
-  lr.w x0, (x6) # establish reservation
-  lbu x10, 128(x6) # intervening load
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lbu_offset_128:
-  sc.w x27, x13, (x6) # perform operation
-  # Check if x27 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x27, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lbu_offset_128, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lbu_offset_128_str)
-  LA(x6, scratch) # reload base address
-  LREG x10, 0(x6) # load stored value
-  # Check if x10 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x10, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lbu_offset_128, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lbu_offset_128_str)
-
-# Testcase: cp_custom_sc_after_load (lh, offset = 2)
-  RVTEST_TESTDATA_LOAD_INT(x16, x1) # load rs2: x1 = 0x9784280595410e63
-  RVTEST_TESTDATA_LOAD_INT(x16, x9) # load temp_reg: x9 = 0x73b443a549ac5270
-  LA(x7, scratch) # rs1 = base address
-  lr.w x0, (x7) # establish reservation
-  lh x9, 2(x7) # intervening load
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lh_offset_2:
-  sc.w x24, x1, (x7) # perform operation
-  # Check if x24 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x24, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lh_offset_2, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lh_offset_2_str)
-  LA(x7, scratch) # reload base address
-  LREG x9, 0(x7) # load stored value
-  # Check if x9 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x9, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lh_offset_2, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lh_offset_2_str)
-
-# Testcase: cp_custom_sc_after_load (lh, offset = 128)
-  RVTEST_TESTDATA_LOAD_INT(x16, x19) # load rs2: x19 = 0xb8ab5c983296c965
-  RVTEST_TESTDATA_LOAD_INT(x16, x18) # load temp_reg: x18 = 0x390ee191f3b3c968
-  LA(x23, scratch) # rs1 = base address
-  lr.w x0, (x23) # establish reservation
-  lh x18, 128(x23) # intervening load
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lh_offset_128:
-  sc.w x25, x19, (x23) # perform operation
-  # Check if x25 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x25, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lh_offset_128, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lh_offset_128_str)
-  LA(x23, scratch) # reload base address
-  LREG x18, 0(x23) # load stored value
-  # Check if x18 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x18, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lh_offset_128, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lh_offset_128_str)
-
-# Testcase: cp_custom_sc_after_load (lhu, offset = 0)
-  RVTEST_TESTDATA_LOAD_INT(x16, x29) # load rs2: x29 = 0x530e6fa4fb677b72
-  RVTEST_TESTDATA_LOAD_INT(x16, x19) # load temp_reg: x19 = 0x5f919a03ddfef480
-  LA(x6, scratch) # rs1 = base address
-  lr.w x0, (x6) # establish reservation
-  lhu x19, 0(x6) # intervening load
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lhu_offset_0:
-  sc.w x20, x29, (x6) # perform operation
-  # Check if x20 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x20, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lhu_offset_0, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lhu_offset_0_str)
-  LA(x6, scratch) # reload base address
-  LREG x19, 0(x6) # load stored value
-  # Check if x19 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x19, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lhu_offset_0, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lhu_offset_0_str)
-
-# Testcase: cp_custom_sc_after_load (lhu, offset = 128)
-  RVTEST_TESTDATA_LOAD_INT(x16, x18) # load rs2: x18 = 0x6fd5e506936cfc03
-  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load temp_reg: x3 = 0x6d743e08f77b8f24
-  LA(x1, scratch) # rs1 = base address
-  lr.w x0, (x1) # establish reservation
-  lhu x3, 128(x1) # intervening load
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lhu_offset_128:
-  sc.w x2, x18, (x1) # perform operation
-  # Check if x2 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x2, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lhu_offset_128, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lhu_offset_128_str)
-  LA(x1, scratch) # reload base address
-  LREG x3, 0(x1) # load stored value
-  # Check if x3 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lhu_offset_128, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lhu_offset_128_str)
-
-# Testcase: cp_custom_sc_after_load (lw, offset = 0)
-  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load rs2: x30 = 0xa570dccb87b41544
-  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load temp_reg: x13 = 0x4fa5be9ec3d4d038
-  LA(x31, scratch) # rs1 = base address
-  lr.w x0, (x31) # establish reservation
-  lw x13, 0(x31) # intervening load
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lw_offset_0:
-  sc.w x23, x30, (x31) # perform operation
-  # Check if x23 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x23, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lw_offset_0, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lw_offset_0_str)
-  LA(x31, scratch) # reload base address
-  LREG x13, 0(x31) # load stored value
-  # Check if x13 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x13, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lw_offset_0, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lw_offset_0_str)
-
-# Testcase: cp_custom_sc_after_load (lw, offset = 128)
-  RVTEST_TESTDATA_LOAD_INT(x16, x25) # load rs2: x25 = 0x8551f448dc16698e
-  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load temp_reg: x3 = 0x119c1c1c0559a14e
-  LA(x23, scratch) # rs1 = base address
-  lr.w x0, (x23) # establish reservation
-  lw x3, 128(x23) # intervening load
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lw_offset_128:
-  sc.w x1, x25, (x23) # perform operation
-  # Check if x1 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x1, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lw_offset_128, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lw_offset_128_str)
-  LA(x23, scratch) # reload base address
-  LREG x3, 0(x23) # load stored value
-  # Check if x3 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lw_offset_128, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lw_offset_128_str)
-
-# Testcase: cp_custom_sc_after_load (lwu, offset = 0)
-  RVTEST_TESTDATA_LOAD_INT(x16, x1) # load rs2: x1 = 0x148663a4144a8b05
-  RVTEST_TESTDATA_LOAD_INT(x16, x24) # load temp_reg: x24 = 0x041895b6ca2ebd3a
-  LA(x26, scratch) # rs1 = base address
-  lr.w x0, (x26) # establish reservation
-  lwu x24, 0(x26) # intervening load
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lwu_offset_0:
-  sc.w x12, x1, (x26) # perform operation
-  # Check if x12 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x12, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lwu_offset_0, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lwu_offset_0_str)
-  LA(x26, scratch) # reload base address
-  LREG x24, 0(x26) # load stored value
-  # Check if x24 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x24, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lwu_offset_0, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lwu_offset_0_str)
-
-# Testcase: cp_custom_sc_after_load (lwu, offset = 128)
-  RVTEST_TESTDATA_LOAD_INT(x16, x19) # load rs2: x19 = 0xbd1aa674d9bfdea2
-  RVTEST_TESTDATA_LOAD_INT(x16, x17) # load temp_reg: x17 = 0xcb33a8c8619fb57a
-  LA(x2, scratch) # rs1 = base address
-  lr.w x0, (x2) # establish reservation
-  lwu x17, 128(x2) # intervening load
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lwu_offset_128:
-  sc.w x9, x19, (x2) # perform operation
-  # Check if x9 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x9, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lwu_offset_128, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lwu_offset_128_str)
-  LA(x2, scratch) # reload base address
-  LREG x17, 0(x2) # load stored value
-  # Check if x17 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x17, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lwu_offset_128, Zalrsc_sc_w_cg_cp_custom_sc_after_load_lwu_offset_128_str)
-
-# Testcase: cp_custom_sc_after_load (ld, offset = 0)
-  RVTEST_TESTDATA_LOAD_INT(x16, x29) # load rs2: x29 = 0x06496af0da2c8abe
-  RVTEST_TESTDATA_LOAD_INT(x16, x7) # load temp_reg: x7 = 0xb6d9c9600fddb522
-  LA(x28, scratch) # rs1 = base address
-  lr.w x0, (x28) # establish reservation
-  ld x7, 0(x28) # intervening load
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_ld_offset_0:
-  sc.w x11, x29, (x28) # perform operation
-  # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_after_load_ld_offset_0, Zalrsc_sc_w_cg_cp_custom_sc_after_load_ld_offset_0_str)
-  LA(x28, scratch) # reload base address
-  LREG x7, 0(x28) # load stored value
-  # Check if x7 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_after_load_ld_offset_0, Zalrsc_sc_w_cg_cp_custom_sc_after_load_ld_offset_0_str)
-
-# Testcase: cp_custom_sc_after_load (ld, offset = 128)
-  RVTEST_TESTDATA_LOAD_INT(x16, x10) # load rs2: x10 = 0xe7a44303feaf4928
-  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load temp_reg: x23 = 0x9b66929b4f6c6dd5
-  LA(x6, scratch) # rs1 = base address
-  lr.w x0, (x6) # establish reservation
-  ld x23, 128(x6) # intervening load
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_ld_offset_128:
-  sc.w x27, x10, (x6) # perform operation
-  # Check if x27 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x27, Zalrsc_sc_w_cg_cp_custom_sc_after_load_ld_offset_128, Zalrsc_sc_w_cg_cp_custom_sc_after_load_ld_offset_128_str)
-  LA(x6, scratch) # reload base address
-  LREG x23, 0(x6) # load stored value
-  # Check if x23 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x23, Zalrsc_sc_w_cg_cp_custom_sc_after_load_ld_offset_128, Zalrsc_sc_w_cg_cp_custom_sc_after_load_ld_offset_128_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 8)
-  RVTEST_TESTDATA_LOAD_INT(x16, x7) # load rs2: x7 = 0xfb20ac09f7054b31
-  LA(x8, scratch) # rs1 = base address
-  addi x30, x8, 8 # offset rs1 by 8
-  lr.d x0, (x8) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_8:
-  sc.w x15, x7, (x30) # perform operation
-  # Check if x15 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x15, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_8_str)
-  LA(x30, scratch) # reload base address
-  LREG x8, 8(x30) # load stored value
-  # Check if x8 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_8_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 16)
-  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load rs2: x23 = 0xa4cc15ffcf651698
-  LA(x11, scratch) # rs1 = base address
-  addi x13, x11, 16 # offset rs1 by 16
-  lr.d x0, (x11) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_16:
-  sc.w x12, x23, (x13) # perform operation
-  # Check if x12 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x12, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_16, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_16_str)
-  LA(x13, scratch) # reload base address
-  LREG x11, 16(x13) # load stored value
-  # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_16, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_16_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 24)
-  RVTEST_TESTDATA_LOAD_INT(x16, x26) # load rs2: x26 = 0x1ce68c033c862409
-  LA(x17, scratch) # rs1 = base address
-  addi x30, x17, 24 # offset rs1 by 24
-  lr.d x0, (x17) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_24:
-  sc.w x9, x26, (x30) # perform operation
-  # Check if x9 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x9, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_24_str)
-  LA(x30, scratch) # reload base address
-  LREG x17, 24(x30) # load stored value
-  # Check if x17 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x17, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_24_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 32)
-  RVTEST_TESTDATA_LOAD_INT(x16, x8) # load rs2: x8 = 0xdbb339997d2d6d17
-  LA(x6, scratch) # rs1 = base address
-  addi x10, x6, 32 # offset rs1 by 32
-  lr.d x0, (x6) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_32:
-  sc.w x7, x8, (x10) # perform operation
-  # Check if x7 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_32, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_32_str)
-  LA(x10, scratch) # reload base address
-  LREG x6, 32(x10) # load stored value
-  # Check if x6 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x6, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_32, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_32_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 40)
-  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load rs2: x30 = 0x36a7cf052f2c7021
-  LA(x24, scratch) # rs1 = base address
-  addi x25, x24, 40 # offset rs1 by 40
-  lr.d x0, (x24) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_40:
-  sc.w x20, x30, (x25) # perform operation
-  # Check if x20 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x20, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_40, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_40_str)
-  LA(x25, scratch) # reload base address
-  LREG x24, 40(x25) # load stored value
-  # Check if x24 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_40, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_40_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 48)
-  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load rs2: x13 = 0xfac45266aec5fdac
-  LA(x7, scratch) # rs1 = base address
-  addi x10, x7, 48 # offset rs1 by 48
-  lr.d x0, (x7) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_48:
-  sc.w x28, x13, (x10) # perform operation
-  # Check if x28 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x28, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_48, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_48_str)
-  LA(x10, scratch) # reload base address
-  LREG x7, 48(x10) # load stored value
-  # Check if x7 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_48, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_48_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 56)
-  RVTEST_TESTDATA_LOAD_INT(x16, x6) # load rs2: x6 = 0x7273d3ef9226aa06
-  LA(x12, scratch) # rs1 = base address
-  addi x23, x12, 56 # offset rs1 by 56
-  lr.d x0, (x12) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_56:
-  sc.w x27, x6, (x23) # perform operation
-  # Check if x27 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x27, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_56, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_56_str)
-  LA(x23, scratch) # reload base address
-  LREG x12, 56(x23) # load stored value
-  # Check if x12 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x12, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_56, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_56_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 64)
-  RVTEST_TESTDATA_LOAD_INT(x16, x2) # load rs2: x2 = 0xbea4b89cd7059e23
-  LA(x29, scratch) # rs1 = base address
-  addi x14, x29, 64 # offset rs1 by 64
-  lr.d x0, (x29) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_64:
-  sc.w x8, x2, (x14) # perform operation
-  # Check if x8 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_64, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_64_str)
-  LA(x14, scratch) # reload base address
-  LREG x29, 64(x14) # load stored value
-  # Check if x29 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x29, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_64, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_64_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 72)
-  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load rs2: x22 = 0x4b4d16ea24b21455
-  LA(x25, scratch) # rs1 = base address
-  addi x20, x25, 72 # offset rs1 by 72
-  lr.d x0, (x25) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_72:
-  sc.w x3, x22, (x20) # perform operation
-  # Check if x3 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_72, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_72_str)
-  LA(x20, scratch) # reload base address
-  LREG x25, 72(x20) # load stored value
-  # Check if x25 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x25, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_72, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_72_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 80)
-  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load rs2: x15 = 0x4b85e3cf799fc088
-  LA(x17, scratch) # rs1 = base address
-  addi x8, x17, 80 # offset rs1 by 80
-  lr.d x0, (x17) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_80:
-  sc.w x14, x15, (x8) # perform operation
-  # Check if x14 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x14, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_80, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_80_str)
-  LA(x8, scratch) # reload base address
-  LREG x17, 80(x8) # load stored value
-  # Check if x17 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x17, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_80, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_80_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 88)
-  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load rs2: x11 = 0xee7c4e5fe0028532
-  LA(x24, scratch) # rs1 = base address
-  addi x12, x24, 88 # offset rs1 by 88
-  lr.d x0, (x24) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_88:
-  sc.w x2, x11, (x12) # perform operation
-  # Check if x2 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x2, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_88, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_88_str)
-  LA(x12, scratch) # reload base address
-  LREG x24, 88(x12) # load stored value
-  # Check if x24 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_88, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_88_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 96)
-  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load rs2: x22 = 0x16902fdaa5d446dc
-  LA(x20, scratch) # rs1 = base address
-  addi x29, x20, 96 # offset rs1 by 96
-  lr.d x0, (x20) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_96:
-  sc.w x23, x22, (x29) # perform operation
-  # Check if x23 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x23, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_96, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_96_str)
-  LA(x29, scratch) # reload base address
-  LREG x20, 96(x29) # load stored value
-  # Check if x20 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x20, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_96, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_96_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 104)
-  RVTEST_TESTDATA_LOAD_INT(x16, x24) # load rs2: x24 = 0xfb2ab9ba94c22576
-  LA(x13, scratch) # rs1 = base address
-  addi x1, x13, 104 # offset rs1 by 104
-  lr.d x0, (x13) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_104:
-  sc.w x23, x24, (x1) # perform operation
-  # Check if x23 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x23, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_104, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_104_str)
-  LA(x1, scratch) # reload base address
-  LREG x13, 104(x1) # load stored value
-  # Check if x13 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x13, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_104, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_104_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 112)
-  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load rs2: x11 = 0x048eee4173af1f39
-  LA(x26, scratch) # rs1 = base address
-  addi x31, x26, 112 # offset rs1 by 112
-  lr.d x0, (x26) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_112:
-  sc.w x25, x11, (x31) # perform operation
-  # Check if x25 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x25, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_112, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_112_str)
-  LA(x31, scratch) # reload base address
-  LREG x26, 112(x31) # load stored value
-  # Check if x26 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x26, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_112, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_112_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 120)
-  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load rs2: x22 = 0x9c3a5abe58cfc0ce
-  LA(x6, scratch) # rs1 = base address
-  addi x26, x6, 120 # offset rs1 by 120
-  lr.d x0, (x6) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_120:
-  sc.w x1, x22, (x26) # perform operation
-  # Check if x1 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x1, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_120, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_120_str)
-  LA(x26, scratch) # reload base address
-  LREG x6, 120(x26) # load stored value
-  # Check if x6 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x6, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_120, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_120_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 128)
-  RVTEST_TESTDATA_LOAD_INT(x16, x18) # load rs2: x18 = 0x54aa002b653a571d
-  LA(x3, scratch) # rs1 = base address
-  addi x30, x3, 128 # offset rs1 by 128
-  lr.d x0, (x3) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_128:
-  sc.w x12, x18, (x30) # perform operation
-  # Check if x12 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x12, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_128, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_128_str)
-  LA(x30, scratch) # reload base address
-  LREG x3, 128(x30) # load stored value
-  # Check if x3 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_128, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_128_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 136)
-  RVTEST_TESTDATA_LOAD_INT(x16, x1) # load rs2: x1 = 0xc9d1c8f206b77bb5
-  LA(x9, scratch) # rs1 = base address
-  addi x17, x9, 136 # offset rs1 by 136
-  lr.d x0, (x9) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_136:
-  sc.w x6, x1, (x17) # perform operation
-  # Check if x6 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x6, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_136, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_136_str)
-  LA(x17, scratch) # reload base address
-  LREG x9, 136(x17) # load stored value
-  # Check if x9 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x9, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_136, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_136_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 144)
-  RVTEST_TESTDATA_LOAD_INT(x16, x1) # load rs2: x1 = 0x2c99e8ab550b9773
-  LA(x13, scratch) # rs1 = base address
-  addi x23, x13, 144 # offset rs1 by 144
-  lr.d x0, (x13) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_144:
-  sc.w x30, x1, (x23) # perform operation
-  # Check if x30 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x30, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_144, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_144_str)
-  LA(x23, scratch) # reload base address
-  LREG x13, 144(x23) # load stored value
-  # Check if x13 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x13, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_144, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_144_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 152)
-  RVTEST_TESTDATA_LOAD_INT(x16, x6) # load rs2: x6 = 0x78a542ccc38b0e48
-  LA(x26, scratch) # rs1 = base address
-  addi x12, x26, 152 # offset rs1 by 152
-  lr.d x0, (x26) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_152:
-  sc.w x13, x6, (x12) # perform operation
-  # Check if x13 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x13, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_152, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_152_str)
-  LA(x12, scratch) # reload base address
-  LREG x26, 152(x12) # load stored value
-  # Check if x26 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x26, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_152, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_152_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 160)
-  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load rs2: x11 = 0xdf0b904d51bed545
-  LA(x17, scratch) # rs1 = base address
-  addi x22, x17, 160 # offset rs1 by 160
-  lr.d x0, (x17) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_160:
-  sc.w x12, x11, (x22) # perform operation
-  # Check if x12 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x12, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_160, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_160_str)
-  LA(x22, scratch) # reload base address
-  LREG x17, 160(x22) # load stored value
-  # Check if x17 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x17, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_160, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_160_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 168)
-  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load rs2: x22 = 0x2f6a49d74763483e
-  LA(x6, scratch) # rs1 = base address
-  addi x13, x6, 168 # offset rs1 by 168
-  lr.d x0, (x6) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_168:
-  sc.w x27, x22, (x13) # perform operation
-  # Check if x27 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x27, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_168, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_168_str)
-  LA(x13, scratch) # reload base address
-  LREG x6, 168(x13) # load stored value
-  # Check if x6 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x6, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_168, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_168_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 176)
-  RVTEST_TESTDATA_LOAD_INT(x16, x25) # load rs2: x25 = 0x41121eec6b43c457
-  LA(x3, scratch) # rs1 = base address
-  addi x23, x3, 176 # offset rs1 by 176
-  lr.d x0, (x3) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_176:
-  sc.w x19, x25, (x23) # perform operation
-  # Check if x19 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x19, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_176, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_176_str)
-  LA(x23, scratch) # reload base address
-  LREG x3, 176(x23) # load stored value
-  # Check if x3 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_176, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_176_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 184)
-  RVTEST_TESTDATA_LOAD_INT(x16, x12) # load rs2: x12 = 0x9040f91c2a684fb6
-  LA(x11, scratch) # rs1 = base address
-  addi x1, x11, 184 # offset rs1 by 184
-  lr.d x0, (x11) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_184:
-  sc.w x29, x12, (x1) # perform operation
-  # Check if x29 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x29, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_184, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_184_str)
-  LA(x1, scratch) # reload base address
-  LREG x11, 184(x1) # load stored value
-  # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_184, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_184_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 192)
-  RVTEST_TESTDATA_LOAD_INT(x16, x8) # load rs2: x8 = 0x9c49e056ecb1f76f
-  LA(x18, scratch) # rs1 = base address
-  addi x13, x18, 192 # offset rs1 by 192
-  lr.d x0, (x18) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_192:
-  sc.w x19, x8, (x13) # perform operation
-  # Check if x19 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x19, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_192, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_192_str)
-  LA(x13, scratch) # reload base address
-  LREG x18, 192(x13) # load stored value
-  # Check if x18 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x18, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_192, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_192_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 200)
-  RVTEST_TESTDATA_LOAD_INT(x16, x26) # load rs2: x26 = 0x29c1377d5fbb2e73
-  LA(x11, scratch) # rs1 = base address
-  addi x7, x11, 200 # offset rs1 by 200
-  lr.d x0, (x11) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_200:
-  sc.w x3, x26, (x7) # perform operation
-  # Check if x3 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_200, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_200_str)
-  LA(x7, scratch) # reload base address
-  LREG x11, 200(x7) # load stored value
-  # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_200, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_200_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 208)
-  RVTEST_TESTDATA_LOAD_INT(x16, x24) # load rs2: x24 = 0x2290f3a02ad08eae
-  LA(x12, scratch) # rs1 = base address
-  addi x1, x12, 208 # offset rs1 by 208
-  lr.d x0, (x12) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_208:
-  sc.w x18, x24, (x1) # perform operation
-  # Check if x18 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x18, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_208, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_208_str)
-  LA(x1, scratch) # reload base address
-  LREG x12, 208(x1) # load stored value
-  # Check if x12 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x12, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_208, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_208_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 216)
-  RVTEST_TESTDATA_LOAD_INT(x16, x26) # load rs2: x26 = 0xf1bddd20de6b6a32
-  LA(x19, scratch) # rs1 = base address
-  addi x15, x19, 216 # offset rs1 by 216
-  lr.d x0, (x19) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_216:
-  sc.w x8, x26, (x15) # perform operation
-  # Check if x8 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_216, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_216_str)
-  LA(x15, scratch) # reload base address
-  LREG x19, 216(x15) # load stored value
-  # Check if x19 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x19, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_216, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_216_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 224)
-  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load rs2: x22 = 0x85b65e31b764d7f1
-  LA(x30, scratch) # rs1 = base address
-  addi x14, x30, 224 # offset rs1 by 224
-  lr.d x0, (x30) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_224:
-  sc.w x25, x22, (x14) # perform operation
-  # Check if x25 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x25, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_224, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_224_str)
-  LA(x14, scratch) # reload base address
-  LREG x30, 224(x14) # load stored value
-  # Check if x30 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x30, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_224, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_224_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 232)
-  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load rs2: x3 = 0x63614cd4e0027757
-  LA(x26, scratch) # rs1 = base address
-  addi x22, x26, 232 # offset rs1 by 232
-  lr.d x0, (x26) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_232:
-  sc.w x11, x3, (x22) # perform operation
-  # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_232, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_232_str)
-  LA(x22, scratch) # reload base address
-  LREG x26, 232(x22) # load stored value
-  # Check if x26 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x26, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_232, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_232_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 240)
-  RVTEST_TESTDATA_LOAD_INT(x16, x25) # load rs2: x25 = 0x6541e554520ae520
-  LA(x12, scratch) # rs1 = base address
-  addi x8, x12, 240 # offset rs1 by 240
-  lr.d x0, (x12) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_240:
-  sc.w x19, x25, (x8) # perform operation
-  # Check if x19 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x19, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_240, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_240_str)
-  LA(x8, scratch) # reload base address
-  LREG x12, 240(x8) # load stored value
-  # Check if x12 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x12, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_240, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_240_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 248)
-  RVTEST_TESTDATA_LOAD_INT(x16, x10) # load rs2: x10 = 0x27dc278fa78b6844
-  LA(x7, scratch) # rs1 = base address
-  addi x27, x7, 248 # offset rs1 by 248
-  lr.d x0, (x7) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_248:
-  sc.w x3, x10, (x27) # perform operation
-  # Check if x3 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_248, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_248_str)
-  LA(x27, scratch) # reload base address
-  LREG x7, 248(x27) # load stored value
-  # Check if x7 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_248, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_248_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 8)
-  RVTEST_TESTDATA_LOAD_INT(x16, x6) # load rs2: x6 = 0x584a836fdf97ae3f
-  LA(x14, scratch) # rs1 = base address
-  addi x12, x14, 8 # offset rs1 by 8
-  lr.w x0, (x14) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8:
-  sc.w x7, x6, (x12) # perform operation
-  # Check if x7 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8_str)
-  LA(x12, scratch) # reload base address
-  LREG x14, 8(x12) # load stored value
-  # Check if x14 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x14, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 16)
-  RVTEST_TESTDATA_LOAD_INT(x16, x12) # load rs2: x12 = 0x988813cf8c0d0583
-  LA(x11, scratch) # rs1 = base address
-  addi x20, x11, 16 # offset rs1 by 16
-  lr.w x0, (x11) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16:
-  sc.w x23, x12, (x20) # perform operation
-  # Check if x23 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x23, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16_str)
-  LA(x20, scratch) # reload base address
-  LREG x11, 16(x20) # load stored value
-  # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 24)
-  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load rs2: x22 = 0x1f70f28fb8ef8a4b
-  LA(x9, scratch) # rs1 = base address
-  addi x24, x9, 24 # offset rs1 by 24
-  lr.w x0, (x9) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24:
-  sc.w x18, x22, (x24) # perform operation
-  # Check if x18 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x18, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24_str)
-  LA(x24, scratch) # reload base address
-  LREG x9, 24(x24) # load stored value
-  # Check if x9 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x9, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 32)
-  RVTEST_TESTDATA_LOAD_INT(x16, x24) # load rs2: x24 = 0xbb297267506ecae8
-  LA(x9, scratch) # rs1 = base address
-  addi x20, x9, 32 # offset rs1 by 32
-  lr.w x0, (x9) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32:
-  sc.w x10, x24, (x20) # perform operation
-  # Check if x10 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x10, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32_str)
-  LA(x20, scratch) # reload base address
-  LREG x9, 32(x20) # load stored value
-  # Check if x9 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x9, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 40)
-  RVTEST_TESTDATA_LOAD_INT(x16, x14) # load rs2: x14 = 0xaef45990de1684d9
   LA(x22, scratch) # rs1 = base address
-  addi x1, x22, 40 # offset rs1 by 40
-  lr.w x0, (x22) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40:
-  sc.w x8, x14, (x1) # perform operation
-  # Check if x8 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40_str)
-  LA(x1, scratch) # reload base address
-  LREG x22, 40(x1) # load stored value
-  # Check if x22 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x22, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 48)
-  RVTEST_TESTDATA_LOAD_INT(x16, x1) # load rs2: x1 = 0x576c483dd2fae33b
-  LA(x26, scratch) # rs1 = base address
-  addi x31, x26, 48 # offset rs1 by 48
-  lr.w x0, (x26) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48:
-  sc.w x12, x1, (x31) # perform operation
-  # Check if x12 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x12, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48_str)
-  LA(x31, scratch) # reload base address
-  LREG x26, 48(x31) # load stored value
-  # Check if x26 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x26, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 56)
-  RVTEST_TESTDATA_LOAD_INT(x16, x26) # load rs2: x26 = 0xf669096c4d0eefe4
-  LA(x20, scratch) # rs1 = base address
-  addi x10, x20, 56 # offset rs1 by 56
-  lr.w x0, (x20) # establish reservation
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56:
-  sc.w x17, x26, (x10) # perform operation
-  # Check if x17 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x17, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56_str)
-  LA(x10, scratch) # reload base address
-  LREG x20, 56(x10) # load stored value
-  # Check if x20 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x20, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 64)
-  RVTEST_TESTDATA_LOAD_INT(x16, x24) # load rs2: x24 = 0xd5ad8fac69930097
-  LA(x22, scratch) # rs1 = base address
-  addi x28, x22, 64 # offset rs1 by 64
+  addi x19, x22, 64 # offset rs1 by 64
   lr.w x0, (x22) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64:
-  sc.w x27, x24, (x28) # perform operation
-  # Check if x27 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x27, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64_str)
-  LA(x28, scratch) # reload base address
-  LREG x22, 64(x28) # load stored value
+  sc.w x26, x17, (x19) # perform operation
+  # Check if x26 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x26, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64_str)
+  LA(x19, scratch) # reload base address
+  LREG x22, 64(x19) # load stored value
   # Check if x22 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x22, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 72)
-  RVTEST_TESTDATA_LOAD_INT(x16, x14) # load rs2: x14 = 0x00e56556bc268df3
-  LA(x18, scratch) # rs1 = base address
-  addi x12, x18, 72 # offset rs1 by 72
-  lr.w x0, (x18) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load rs2: x13 = 0x475ffff553aafaab
+  LA(x10, scratch) # rs1 = base address
+  addi x6, x10, 72 # offset rs1 by 72
+  lr.w x0, (x10) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72:
-  sc.w x13, x14, (x12) # perform operation
-  # Check if x13 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x13, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72_str)
-  LA(x12, scratch) # reload base address
-  LREG x18, 72(x12) # load stored value
-  # Check if x18 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x18, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72_str)
+  sc.w x27, x13, (x6) # perform operation
+  # Check if x27 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x27, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72_str)
+  LA(x6, scratch) # reload base address
+  LREG x10, 72(x6) # load stored value
+  # Check if x10 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x10, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 80)
-  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load rs2: x15 = 0x1c6b746b0d89d310
-  LA(x26, scratch) # rs1 = base address
-  addi x7, x26, 80 # offset rs1 by 80
-  lr.w x0, (x26) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x1) # load rs2: x1 = 0x9784280595410e63
+  LA(x9, scratch) # rs1 = base address
+  addi x7, x9, 80 # offset rs1 by 80
+  lr.w x0, (x9) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80:
-  sc.w x30, x15, (x7) # perform operation
-  # Check if x30 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x30, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80_str)
+  sc.w x24, x1, (x7) # perform operation
+  # Check if x24 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80_str)
   LA(x7, scratch) # reload base address
-  LREG x26, 80(x7) # load stored value
-  # Check if x26 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x26, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80_str)
+  LREG x9, 80(x7) # load stored value
+  # Check if x9 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x9, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 88)
-  RVTEST_TESTDATA_LOAD_INT(x16, x8) # load rs2: x8 = 0xe3104c2f757defcb
-  LA(x10, scratch) # rs1 = base address
-  addi x6, x10, 88 # offset rs1 by 88
-  lr.w x0, (x10) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x19) # load rs2: x19 = 0xb8ab5c983296c965
+  LA(x18, scratch) # rs1 = base address
+  addi x23, x18, 88 # offset rs1 by 88
+  lr.w x0, (x18) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88:
-  sc.w x13, x8, (x6) # perform operation
-  # Check if x13 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x13, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88_str)
-  LA(x6, scratch) # reload base address
-  LREG x10, 88(x6) # load stored value
-  # Check if x10 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x10, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88_str)
+  sc.w x25, x19, (x23) # perform operation
+  # Check if x25 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x25, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88_str)
+  LA(x23, scratch) # reload base address
+  LREG x18, 88(x23) # load stored value
+  # Check if x18 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x18, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 96)
-  RVTEST_TESTDATA_LOAD_INT(x16, x12) # load rs2: x12 = 0x979451eb9b8b077c
-  LA(x18, scratch) # rs1 = base address
-  addi x3, x18, 96 # offset rs1 by 96
-  lr.w x0, (x18) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x29) # load rs2: x29 = 0x530e6fa4fb677b72
+  LA(x19, scratch) # rs1 = base address
+  addi x6, x19, 96 # offset rs1 by 96
+  lr.w x0, (x19) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96:
-  sc.w x19, x12, (x3) # perform operation
+  sc.w x20, x29, (x6) # perform operation
+  # Check if x20 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x20, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96_str)
+  LA(x6, scratch) # reload base address
+  LREG x19, 96(x6) # load stored value
   # Check if x19 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x19, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96_str)
-  LA(x3, scratch) # reload base address
-  LREG x18, 96(x3) # load stored value
-  # Check if x18 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x18, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 104)
-  RVTEST_TESTDATA_LOAD_INT(x16, x8) # load rs2: x8 = 0xccee67c27b14f0a0
-  LA(x28, scratch) # rs1 = base address
-  addi x11, x28, 104 # offset rs1 by 104
-  lr.w x0, (x28) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x18) # load rs2: x18 = 0x6fd5e506936cfc03
+  LA(x3, scratch) # rs1 = base address
+  addi x1, x3, 104 # offset rs1 by 104
+  lr.w x0, (x3) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104:
-  sc.w x10, x8, (x11) # perform operation
-  # Check if x10 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x10, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104_str)
-  LA(x11, scratch) # reload base address
-  LREG x28, 104(x11) # load stored value
-  # Check if x28 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x28, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104_str)
+  sc.w x2, x18, (x1) # perform operation
+  # Check if x2 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x2, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104_str)
+  LA(x1, scratch) # reload base address
+  LREG x3, 104(x1) # load stored value
+  # Check if x3 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 112)
-  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load rs2: x23 = 0x32ae2bc25b084eb4
-  LA(x24, scratch) # rs1 = base address
-  addi x10, x24, 112 # offset rs1 by 112
-  lr.w x0, (x24) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load rs2: x30 = 0xa570dccb87b41544
+  LA(x13, scratch) # rs1 = base address
+  addi x31, x13, 112 # offset rs1 by 112
+  lr.w x0, (x13) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112:
-  sc.w x7, x23, (x10) # perform operation
-  # Check if x7 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112_str)
-  LA(x10, scratch) # reload base address
-  LREG x24, 112(x10) # load stored value
-  # Check if x24 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112_str)
+  sc.w x23, x30, (x31) # perform operation
+  # Check if x23 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x23, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112_str)
+  LA(x31, scratch) # reload base address
+  LREG x13, 112(x31) # load stored value
+  # Check if x13 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x13, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 120)
-  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load rs2: x13 = 0xcb9c37fa4e30a198
-  LA(x10, scratch) # rs1 = base address
-  addi x28, x10, 120 # offset rs1 by 120
-  lr.w x0, (x10) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x25) # load rs2: x25 = 0x8551f448dc16698e
+  LA(x3, scratch) # rs1 = base address
+  addi x23, x3, 120 # offset rs1 by 120
+  lr.w x0, (x3) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120:
-  sc.w x14, x13, (x28) # perform operation
-  # Check if x14 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x14, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120_str)
-  LA(x28, scratch) # reload base address
-  LREG x10, 120(x28) # load stored value
-  # Check if x10 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x10, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120_str)
+  sc.w x1, x25, (x23) # perform operation
+  # Check if x1 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x1, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120_str)
+  LA(x23, scratch) # reload base address
+  LREG x3, 120(x23) # load stored value
+  # Check if x3 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 128)
-  RVTEST_TESTDATA_LOAD_INT(x16, x18) # load rs2: x18 = 0xc8cd2c19c529754e
-  LA(x9, scratch) # rs1 = base address
-  addi x3, x9, 128 # offset rs1 by 128
-  lr.w x0, (x9) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x1) # load rs2: x1 = 0x148663a4144a8b05
+  LA(x24, scratch) # rs1 = base address
+  addi x26, x24, 128 # offset rs1 by 128
+  lr.w x0, (x24) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128:
-  sc.w x12, x18, (x3) # perform operation
+  sc.w x12, x1, (x26) # perform operation
   # Check if x12 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x12, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128_str)
-  LA(x3, scratch) # reload base address
-  LREG x9, 128(x3) # load stored value
-  # Check if x9 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x9, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128_str)
+  LA(x26, scratch) # reload base address
+  LREG x24, 128(x26) # load stored value
+  # Check if x24 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 136)
-  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load rs2: x15 = 0xe3d6f52ecd56bf99
-  LA(x27, scratch) # rs1 = base address
-  addi x17, x27, 136 # offset rs1 by 136
-  lr.w x0, (x27) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x19) # load rs2: x19 = 0xbd1aa674d9bfdea2
+  LA(x17, scratch) # rs1 = base address
+  addi x2, x17, 136 # offset rs1 by 136
+  lr.w x0, (x17) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136:
-  sc.w x8, x15, (x17) # perform operation
-  # Check if x8 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136_str)
-  LA(x17, scratch) # reload base address
-  LREG x27, 136(x17) # load stored value
-  # Check if x27 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x27, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136_str)
+  sc.w x9, x19, (x2) # perform operation
+  # Check if x9 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x9, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136_str)
+  LA(x2, scratch) # reload base address
+  LREG x17, 136(x2) # load stored value
+  # Check if x17 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x17, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 144)
-  RVTEST_TESTDATA_LOAD_INT(x16, x27) # load rs2: x27 = 0xebcf5af5e093ea51
-  LA(x11, scratch) # rs1 = base address
-  addi x12, x11, 144 # offset rs1 by 144
-  lr.w x0, (x11) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x29) # load rs2: x29 = 0x06496af0da2c8abe
+  LA(x7, scratch) # rs1 = base address
+  addi x28, x7, 144 # offset rs1 by 144
+  lr.w x0, (x7) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144:
-  sc.w x3, x27, (x12) # perform operation
-  # Check if x3 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144_str)
-  LA(x12, scratch) # reload base address
-  LREG x11, 144(x12) # load stored value
+  sc.w x11, x29, (x28) # perform operation
   # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144_str)
+  LA(x28, scratch) # reload base address
+  LREG x7, 144(x28) # load stored value
+  # Check if x7 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 152)
-  RVTEST_TESTDATA_LOAD_INT(x16, x2) # load rs2: x2 = 0x8c76a7598c9f5bf6
-  LA(x26, scratch) # rs1 = base address
-  addi x20, x26, 152 # offset rs1 by 152
-  lr.w x0, (x26) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x10) # load rs2: x10 = 0xe7a44303feaf4928
+  LA(x23, scratch) # rs1 = base address
+  addi x6, x23, 152 # offset rs1 by 152
+  lr.w x0, (x23) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152:
-  sc.w x3, x2, (x20) # perform operation
-  # Check if x3 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152_str)
-  LA(x20, scratch) # reload base address
-  LREG x26, 152(x20) # load stored value
-  # Check if x26 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x26, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152_str)
+  sc.w x27, x10, (x6) # perform operation
+  # Check if x27 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x27, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152_str)
+  LA(x6, scratch) # reload base address
+  LREG x23, 152(x6) # load stored value
+  # Check if x23 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x23, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 160)
-  RVTEST_TESTDATA_LOAD_INT(x16, x28) # load rs2: x28 = 0xe3dea4354b42e2a6
-  LA(x23, scratch) # rs1 = base address
-  addi x13, x23, 160 # offset rs1 by 160
-  lr.w x0, (x23) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x7) # load rs2: x7 = 0xfb20ac09f7054b31
+  LA(x8, scratch) # rs1 = base address
+  addi x30, x8, 160 # offset rs1 by 160
+  lr.w x0, (x8) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160:
-  sc.w x3, x28, (x13) # perform operation
-  # Check if x3 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160_str)
-  LA(x13, scratch) # reload base address
-  LREG x23, 160(x13) # load stored value
-  # Check if x23 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x23, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160_str)
+  sc.w x15, x7, (x30) # perform operation
+  # Check if x15 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x15, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160_str)
+  LA(x30, scratch) # reload base address
+  LREG x8, 160(x30) # load stored value
+  # Check if x8 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 168)
-  RVTEST_TESTDATA_LOAD_INT(x16, x29) # load rs2: x29 = 0x1d652f5b51b423d3
-  LA(x15, scratch) # rs1 = base address
-  addi x12, x15, 168 # offset rs1 by 168
-  lr.w x0, (x15) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load rs2: x23 = 0xa4cc15ffcf651698
+  LA(x11, scratch) # rs1 = base address
+  addi x13, x11, 168 # offset rs1 by 168
+  lr.w x0, (x11) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168:
-  sc.w x30, x29, (x12) # perform operation
-  # Check if x30 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x30, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168_str)
-  LA(x12, scratch) # reload base address
-  LREG x15, 168(x12) # load stored value
-  # Check if x15 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x15, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168_str)
+  sc.w x12, x23, (x13) # perform operation
+  # Check if x12 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x12, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168_str)
+  LA(x13, scratch) # reload base address
+  LREG x11, 168(x13) # load stored value
+  # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 176)
-  RVTEST_TESTDATA_LOAD_INT(x16, x28) # load rs2: x28 = 0xad2c8403753ad1a2
-  LA(x8, scratch) # rs1 = base address
-  addi x26, x8, 176 # offset rs1 by 176
-  lr.w x0, (x8) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x26) # load rs2: x26 = 0x1ce68c033c862409
+  LA(x17, scratch) # rs1 = base address
+  addi x30, x17, 176 # offset rs1 by 176
+  lr.w x0, (x17) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176:
-  sc.w x3, x28, (x26) # perform operation
-  # Check if x3 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176_str)
-  LA(x26, scratch) # reload base address
-  LREG x8, 176(x26) # load stored value
-  # Check if x8 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176_str)
+  sc.w x9, x26, (x30) # perform operation
+  # Check if x9 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x9, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176_str)
+  LA(x30, scratch) # reload base address
+  LREG x17, 176(x30) # load stored value
+  # Check if x17 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x17, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 184)
-  RVTEST_TESTDATA_LOAD_INT(x16, x18) # load rs2: x18 = 0x9bd96d2b5261f0ba
-  LA(x19, scratch) # rs1 = base address
-  addi x28, x19, 184 # offset rs1 by 184
-  lr.w x0, (x19) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x8) # load rs2: x8 = 0xdbb339997d2d6d17
+  LA(x6, scratch) # rs1 = base address
+  addi x10, x6, 184 # offset rs1 by 184
+  lr.w x0, (x6) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184:
-  sc.w x12, x18, (x28) # perform operation
-  # Check if x12 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x12, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184_str)
-  LA(x28, scratch) # reload base address
-  LREG x19, 184(x28) # load stored value
-  # Check if x19 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x19, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184_str)
+  sc.w x7, x8, (x10) # perform operation
+  # Check if x7 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184_str)
+  LA(x10, scratch) # reload base address
+  LREG x6, 184(x10) # load stored value
+  # Check if x6 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x6, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 192)
-  RVTEST_TESTDATA_LOAD_INT(x16, x9) # load rs2: x9 = 0x084439380725301c
-  LA(x15, scratch) # rs1 = base address
-  addi x11, x15, 192 # offset rs1 by 192
-  lr.w x0, (x15) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load rs2: x30 = 0x36a7cf052f2c7021
+  LA(x24, scratch) # rs1 = base address
+  addi x25, x24, 192 # offset rs1 by 192
+  lr.w x0, (x24) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192:
-  sc.w x25, x9, (x11) # perform operation
-  # Check if x25 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x25, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192_str)
-  LA(x11, scratch) # reload base address
-  LREG x15, 192(x11) # load stored value
-  # Check if x15 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x15, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192_str)
+  sc.w x20, x30, (x25) # perform operation
+  # Check if x20 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x20, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192_str)
+  LA(x25, scratch) # reload base address
+  LREG x24, 192(x25) # load stored value
+  # Check if x24 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 200)
-  RVTEST_TESTDATA_LOAD_INT(x16, x27) # load rs2: x27 = 0x24a4466e26609e05
-  LA(x8, scratch) # rs1 = base address
-  addi x10, x8, 200 # offset rs1 by 200
-  lr.w x0, (x8) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load rs2: x13 = 0xfac45266aec5fdac
+  LA(x7, scratch) # rs1 = base address
+  addi x10, x7, 200 # offset rs1 by 200
+  lr.w x0, (x7) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200:
-  sc.w x24, x27, (x10) # perform operation
-  # Check if x24 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200_str)
+  sc.w x28, x13, (x10) # perform operation
+  # Check if x28 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x28, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200_str)
   LA(x10, scratch) # reload base address
-  LREG x8, 200(x10) # load stored value
-  # Check if x8 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200_str)
+  LREG x7, 200(x10) # load stored value
+  # Check if x7 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 208)
-  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load rs2: x13 = 0xe5fee897f7107034
-  LA(x11, scratch) # rs1 = base address
-  addi x23, x11, 208 # offset rs1 by 208
-  lr.w x0, (x11) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x6) # load rs2: x6 = 0x7273d3ef9226aa06
+  LA(x12, scratch) # rs1 = base address
+  addi x23, x12, 208 # offset rs1 by 208
+  lr.w x0, (x12) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208:
-  sc.w x7, x13, (x23) # perform operation
-  # Check if x7 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208_str)
+  sc.w x27, x6, (x23) # perform operation
+  # Check if x27 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x27, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208_str)
   LA(x23, scratch) # reload base address
-  LREG x11, 208(x23) # load stored value
-  # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208_str)
+  LREG x12, 208(x23) # load stored value
+  # Check if x12 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x12, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 216)
-  RVTEST_TESTDATA_LOAD_INT(x16, x26) # load rs2: x26 = 0x6f3ea7c022119bf8
-  LA(x6, scratch) # rs1 = base address
-  addi x29, x6, 216 # offset rs1 by 216
-  lr.w x0, (x6) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x2) # load rs2: x2 = 0xbea4b89cd7059e23
+  LA(x29, scratch) # rs1 = base address
+  addi x14, x29, 216 # offset rs1 by 216
+  lr.w x0, (x29) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216:
-  sc.w x30, x26, (x29) # perform operation
-  # Check if x30 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x30, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216_str)
-  LA(x29, scratch) # reload base address
-  LREG x6, 216(x29) # load stored value
-  # Check if x6 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x6, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216_str)
+  sc.w x8, x2, (x14) # perform operation
+  # Check if x8 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216_str)
+  LA(x14, scratch) # reload base address
+  LREG x29, 216(x14) # load stored value
+  # Check if x29 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x29, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 224)
-  RVTEST_TESTDATA_LOAD_INT(x16, x27) # load rs2: x27 = 0x4186bd76cc719c20
-  LA(x18, scratch) # rs1 = base address
-  addi x10, x18, 224 # offset rs1 by 224
-  lr.w x0, (x18) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load rs2: x22 = 0x4b4d16ea24b21455
+  LA(x25, scratch) # rs1 = base address
+  addi x20, x25, 224 # offset rs1 by 224
+  lr.w x0, (x25) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224:
-  sc.w x22, x27, (x10) # perform operation
-  # Check if x22 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x22, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224_str)
-  LA(x10, scratch) # reload base address
-  LREG x18, 224(x10) # load stored value
-  # Check if x18 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x18, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224_str)
+  sc.w x3, x22, (x20) # perform operation
+  # Check if x3 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224_str)
+  LA(x20, scratch) # reload base address
+  LREG x25, 224(x20) # load stored value
+  # Check if x25 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x25, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 232)
-  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load rs2: x11 = 0x20ebccc0a0b606fd
-  LA(x7, scratch) # rs1 = base address
-  addi x25, x7, 232 # offset rs1 by 232
-  lr.w x0, (x7) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load rs2: x15 = 0x4b85e3cf799fc088
+  LA(x17, scratch) # rs1 = base address
+  addi x8, x17, 232 # offset rs1 by 232
+  lr.w x0, (x17) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232:
-  sc.w x12, x11, (x25) # perform operation
-  # Check if x12 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x12, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232_str)
-  LA(x25, scratch) # reload base address
-  LREG x7, 232(x25) # load stored value
-  # Check if x7 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232_str)
+  sc.w x14, x15, (x8) # perform operation
+  # Check if x14 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x14, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232_str)
+  LA(x8, scratch) # reload base address
+  LREG x17, 232(x8) # load stored value
+  # Check if x17 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x17, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 240)
-  RVTEST_TESTDATA_LOAD_INT(x16, x7) # load rs2: x7 = 0xeb3e920ad9e1f3ee
-  LA(x18, scratch) # rs1 = base address
-  addi x17, x18, 240 # offset rs1 by 240
-  lr.w x0, (x18) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load rs2: x11 = 0xee7c4e5fe0028532
+  LA(x24, scratch) # rs1 = base address
+  addi x12, x24, 240 # offset rs1 by 240
+  lr.w x0, (x24) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240:
-  sc.w x12, x7, (x17) # perform operation
-  # Check if x12 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x12, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240_str)
-  LA(x17, scratch) # reload base address
-  LREG x18, 240(x17) # load stored value
-  # Check if x18 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x18, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240_str)
+  sc.w x2, x11, (x12) # perform operation
+  # Check if x2 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x2, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240_str)
+  LA(x12, scratch) # reload base address
+  LREG x24, 240(x12) # load stored value
+  # Check if x24 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 248)
-  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load rs2: x30 = 0xb60e9e7389f5d43f
-  LA(x25, scratch) # rs1 = base address
-  addi x27, x25, 248 # offset rs1 by 248
-  lr.w x0, (x25) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load rs2: x22 = 0x16902fdaa5d446dc
+  LA(x20, scratch) # rs1 = base address
+  addi x29, x20, 248 # offset rs1 by 248
+  lr.w x0, (x20) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248:
-  sc.w x11, x30, (x27) # perform operation
-  # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248_str)
-  LA(x27, scratch) # reload base address
-  LREG x25, 248(x27) # load stored value
-  # Check if x25 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x25, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248_str)
+  sc.w x23, x22, (x29) # perform operation
+  # Check if x23 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x23, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248_str)
+  LA(x29, scratch) # reload base address
+  LREG x20, 248(x29) # load stored value
+  # Check if x20 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x21, x5, x4, x20, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248_str)
 
 
   mv x2, x21 # restore signature pointer to default register for teardown
@@ -4900,45 +4201,28 @@ RVTEST_DATA_BEGIN
 .dword 0x383ff64e2faa3c00
 .dword 0xaba1570644e32802
 .dword 0x393804ce8c074f50
+.dword 0x393804ce8c074f50
 .dword 0x48e056d79028a9c8
+.dword 0x13b1c8bfc2279394
 .dword 0xe9e30d0730793a60
-.dword 0xff54b1f2efb20555
 .dword 0xe18fbd8390d77b31
-.dword 0xfff0947de13a1685
 .dword 0x75caa5ed7a167753
-.dword 0xb797c4677cbe635f
 .dword 0xb123d82e3b8c2467
-.dword 0x332a0e022a9828eb
 .dword 0xfa75761c08c8963d
-.dword 0xd56e90511677d179
 .dword 0x5881d9efb3161e80
-.dword 0x5cb96ca0d1c5f05d
 .dword 0x21c12bcd8160e2cb
-.dword 0xe83236ea195623dd
 .dword 0xf0a7d8085e621708
-.dword 0x303f1aa6f2a9671e
 .dword 0x475ffff553aafaab
-.dword 0x1c6fea00edf0be86
 .dword 0x9784280595410e63
-.dword 0x73b443a549ac5270
 .dword 0xb8ab5c983296c965
-.dword 0x390ee191f3b3c968
 .dword 0x530e6fa4fb677b72
-.dword 0x5f919a03ddfef480
 .dword 0x6fd5e506936cfc03
-.dword 0x6d743e08f77b8f24
 .dword 0xa570dccb87b41544
-.dword 0x4fa5be9ec3d4d038
 .dword 0x8551f448dc16698e
-.dword 0x119c1c1c0559a14e
 .dword 0x148663a4144a8b05
-.dword 0x041895b6ca2ebd3a
 .dword 0xbd1aa674d9bfdea2
-.dword 0xcb33a8c8619fb57a
 .dword 0x06496af0da2c8abe
-.dword 0xb6d9c9600fddb522
 .dword 0xe7a44303feaf4928
-.dword 0x9b66929b4f6c6dd5
 .dword 0xfb20ac09f7054b31
 .dword 0xa4cc15ffcf651698
 .dword 0x1ce68c033c862409
@@ -4951,56 +4235,6 @@ RVTEST_DATA_BEGIN
 .dword 0x4b85e3cf799fc088
 .dword 0xee7c4e5fe0028532
 .dword 0x16902fdaa5d446dc
-.dword 0xfb2ab9ba94c22576
-.dword 0x048eee4173af1f39
-.dword 0x9c3a5abe58cfc0ce
-.dword 0x54aa002b653a571d
-.dword 0xc9d1c8f206b77bb5
-.dword 0x2c99e8ab550b9773
-.dword 0x78a542ccc38b0e48
-.dword 0xdf0b904d51bed545
-.dword 0x2f6a49d74763483e
-.dword 0x41121eec6b43c457
-.dword 0x9040f91c2a684fb6
-.dword 0x9c49e056ecb1f76f
-.dword 0x29c1377d5fbb2e73
-.dword 0x2290f3a02ad08eae
-.dword 0xf1bddd20de6b6a32
-.dword 0x85b65e31b764d7f1
-.dword 0x63614cd4e0027757
-.dword 0x6541e554520ae520
-.dword 0x27dc278fa78b6844
-.dword 0x584a836fdf97ae3f
-.dword 0x988813cf8c0d0583
-.dword 0x1f70f28fb8ef8a4b
-.dword 0xbb297267506ecae8
-.dword 0xaef45990de1684d9
-.dword 0x576c483dd2fae33b
-.dword 0xf669096c4d0eefe4
-.dword 0xd5ad8fac69930097
-.dword 0x00e56556bc268df3
-.dword 0x1c6b746b0d89d310
-.dword 0xe3104c2f757defcb
-.dword 0x979451eb9b8b077c
-.dword 0xccee67c27b14f0a0
-.dword 0x32ae2bc25b084eb4
-.dword 0xcb9c37fa4e30a198
-.dword 0xc8cd2c19c529754e
-.dword 0xe3d6f52ecd56bf99
-.dword 0xebcf5af5e093ea51
-.dword 0x8c76a7598c9f5bf6
-.dword 0xe3dea4354b42e2a6
-.dword 0x1d652f5b51b423d3
-.dword 0xad2c8403753ad1a2
-.dword 0x9bd96d2b5261f0ba
-.dword 0x084439380725301c
-.dword 0x24a4466e26609e05
-.dword 0xe5fee897f7107034
-.dword 0x6f3ea7c022119bf8
-.dword 0x4186bd76cc719c20
-.dword 0x20ebccc0a0b606fd
-.dword 0xeb3e920ad9e1f3ee
-.dword 0xb60e9e7389f5d43f
 
 // Testcase strings
 Zalrsc_sc_w_cg_cp_rs1_nx0_b1_str: .string "\"test: 1; cg: Zalrsc_sc.w_cg; cp: cp_rs1_nx0; bin: b1\""
@@ -5242,89 +4476,40 @@ Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b31_str: .string "\"test: 236; cg: Zalrsc_sc.w
 Zalrsc_sc_w_cg_cp_custom_aqrl_str: .string "\"test: 237; cg: Zalrsc_sc.w_cg; cp: cp_custom_aqrl; bin: \""
 Zalrsc_sc_w_cg_cp_custom_aqrl_rl_str: .string "\"test: 238; cg: Zalrsc_sc.w_cg; cp: cp_custom_aqrl; bin: .rl\""
 Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl_str: .string "\"test: 239; cg: Zalrsc_sc.w_cg; cp: cp_custom_aqrl; bin: .aqrl\""
-Zalrsc_sc_w_cg_cp_custom_sc_lrsc_prev_lr_lr_d_str: .string "\"test: 240; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_lrsc; bin: prev_lr_lr.d\""
-Zalrsc_sc_w_cg_cp_custom_sc_lrsc_prev_lr_lr_w_str: .string "\"test: 241; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_lrsc; bin: prev_lr_lr.w\""
+Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_str: .string "\"test: 240; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_lr; bin: prev_lr_lr.w\""
+Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr_str: .string "\"test: 241; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_lr; bin: prev_lr_lr.w_sc_pairs_latest_lrr\""
 Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true_str: .string "\"test: 242; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_sc; bin: true\""
-Zalrsc_sc_w_cg_cp_custom_sc_after_store_sb_str: .string "\"test: 243; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_store; bin: sb\""
-Zalrsc_sc_w_cg_cp_custom_sc_after_store_sh_str: .string "\"test: 244; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_store; bin: sh\""
-Zalrsc_sc_w_cg_cp_custom_sc_after_store_sw_str: .string "\"test: 245; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_store; bin: sw\""
-Zalrsc_sc_w_cg_cp_custom_sc_after_store_sd_str: .string "\"test: 246; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_store; bin: sd\""
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lb_offset_3_str: .string "\"test: 247; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_load; bin: lb_offset_3\""
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lb_offset_128_str: .string "\"test: 248; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_load; bin: lb_offset_128\""
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lbu_offset_2_str: .string "\"test: 249; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_load; bin: lbu_offset_2\""
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lbu_offset_128_str: .string "\"test: 250; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_load; bin: lbu_offset_128\""
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lh_offset_2_str: .string "\"test: 251; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_load; bin: lh_offset_2\""
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lh_offset_128_str: .string "\"test: 252; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_load; bin: lh_offset_128\""
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lhu_offset_0_str: .string "\"test: 253; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_load; bin: lhu_offset_0\""
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lhu_offset_128_str: .string "\"test: 254; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_load; bin: lhu_offset_128\""
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lw_offset_0_str: .string "\"test: 255; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_load; bin: lw_offset_0\""
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lw_offset_128_str: .string "\"test: 256; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_load; bin: lw_offset_128\""
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lwu_offset_0_str: .string "\"test: 257; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_load; bin: lwu_offset_0\""
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_lwu_offset_128_str: .string "\"test: 258; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_load; bin: lwu_offset_128\""
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_ld_offset_0_str: .string "\"test: 259; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_load; bin: ld_offset_0\""
-Zalrsc_sc_w_cg_cp_custom_sc_after_load_ld_offset_128_str: .string "\"test: 260; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_load; bin: ld_offset_128\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_8_str: .string "\"test: 261; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_8\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_16_str: .string "\"test: 262; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_16\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_24_str: .string "\"test: 263; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_24\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_32_str: .string "\"test: 264; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_32\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_40_str: .string "\"test: 265; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_40\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_48_str: .string "\"test: 266; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_48\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_56_str: .string "\"test: 267; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_56\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_64_str: .string "\"test: 268; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_64\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_72_str: .string "\"test: 269; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_72\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_80_str: .string "\"test: 270; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_80\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_88_str: .string "\"test: 271; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_88\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_96_str: .string "\"test: 272; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_96\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_104_str: .string "\"test: 273; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_104\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_112_str: .string "\"test: 274; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_112\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_120_str: .string "\"test: 275; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_120\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_128_str: .string "\"test: 276; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_128\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_136_str: .string "\"test: 277; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_136\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_144_str: .string "\"test: 278; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_144\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_152_str: .string "\"test: 279; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_152\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_160_str: .string "\"test: 280; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_160\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_168_str: .string "\"test: 281; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_168\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_176_str: .string "\"test: 282; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_176\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_184_str: .string "\"test: 283; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_184\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_192_str: .string "\"test: 284; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_192\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_200_str: .string "\"test: 285; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_200\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_208_str: .string "\"test: 286; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_208\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_216_str: .string "\"test: 287; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_216\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_224_str: .string "\"test: 288; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_224\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_232_str: .string "\"test: 289; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_232\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_240_str: .string "\"test: 290; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_240\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_248_str: .string "\"test: 291; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.d & address_difference_248\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8_str: .string "\"test: 292; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_8\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16_str: .string "\"test: 293; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_16\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24_str: .string "\"test: 294; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_24\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32_str: .string "\"test: 295; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_32\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40_str: .string "\"test: 296; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_40\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48_str: .string "\"test: 297; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_48\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56_str: .string "\"test: 298; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_56\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64_str: .string "\"test: 299; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_64\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72_str: .string "\"test: 300; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_72\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80_str: .string "\"test: 301; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_80\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88_str: .string "\"test: 302; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_88\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96_str: .string "\"test: 303; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_96\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104_str: .string "\"test: 304; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_104\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112_str: .string "\"test: 305; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_112\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120_str: .string "\"test: 306; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_120\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128_str: .string "\"test: 307; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_128\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136_str: .string "\"test: 308; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_136\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144_str: .string "\"test: 309; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_144\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152_str: .string "\"test: 310; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_152\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160_str: .string "\"test: 311; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_160\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168_str: .string "\"test: 312; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_168\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176_str: .string "\"test: 313; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_176\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184_str: .string "\"test: 314; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_184\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192_str: .string "\"test: 315; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_192\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200_str: .string "\"test: 316; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_200\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208_str: .string "\"test: 317; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_208\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216_str: .string "\"test: 318; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_216\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224_str: .string "\"test: 319; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_224\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232_str: .string "\"test: 320; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_232\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240_str: .string "\"test: 321; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_240\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248_str: .string "\"test: 322; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_248\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8_str: .string "\"test: 243; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_8\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16_str: .string "\"test: 244; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_16\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24_str: .string "\"test: 245; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_24\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32_str: .string "\"test: 246; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_32\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40_str: .string "\"test: 247; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_40\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48_str: .string "\"test: 248; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_48\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56_str: .string "\"test: 249; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_56\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64_str: .string "\"test: 250; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_64\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72_str: .string "\"test: 251; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_72\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80_str: .string "\"test: 252; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_80\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88_str: .string "\"test: 253; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_88\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96_str: .string "\"test: 254; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_96\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104_str: .string "\"test: 255; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_104\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112_str: .string "\"test: 256; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_112\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120_str: .string "\"test: 257; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_120\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128_str: .string "\"test: 258; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_128\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136_str: .string "\"test: 259; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_136\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144_str: .string "\"test: 260; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_144\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152_str: .string "\"test: 261; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_152\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160_str: .string "\"test: 262; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_160\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168_str: .string "\"test: 263; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_168\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176_str: .string "\"test: 264; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_176\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184_str: .string "\"test: 265; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_184\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192_str: .string "\"test: 266; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_192\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200_str: .string "\"test: 267; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_200\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208_str: .string "\"test: 268; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_208\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216_str: .string "\"test: 269; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_216\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224_str: .string "\"test: 270; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_224\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232_str: .string "\"test: 271; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_232\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240_str: .string "\"test: 272; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_240\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248_str: .string "\"test: 273; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_248\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

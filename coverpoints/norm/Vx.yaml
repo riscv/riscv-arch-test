@@ -601,12 +601,12 @@ normative_rule_definitions:
 
   # Support for misaligned vector memory accesses is independent of an
   # implementation&#8217;s support for misaligned scalar memory accesses.
-  - name: vector_ls_scalar_missaligned_independence
+  - name: vector_ls_scalar_misaligned_independence
     coverpoint: [""]
 
   # Vector misaligned memory accesses follow the same rules for atomicity as scalar
   # misaligned memory accesses.
-  - name: vector_ls_scalar_missaligned_dependence
+  - name: vector_ls_scalar_misaligned_dependence
     coverpoint: [""]
 
   # However, even for the ordered form, accesses to the fields within an individual
@@ -920,13 +920,13 @@ normative_rule_definitions:
   # register loads and stores if the base address is not naturally aligned to the
   # larger of the size of the encoded EEW in bytes (EEW/8) or the
   # implementation&#8217;s smallest supported SEW size in bytes (SEWMIN/8).
-  - name: vector_ls_wholereg_missaligned_exception
+  - name: vector_ls_wholereg_misaligned_exception
     coverpoint: [""]
 
   # If an element accessed by a vector memory instruction is not naturally aligned
   # to the size of the element, either the element is transferred successfully or an
   # address-misaligned exception is raised on that element.
-  - name: vector_ls_missaligned_exception
+  - name: vector_ls_misaligned_exception
     coverpoint: [""]
 
   # Vector memory instructions appear to execute in program order on the local hart.

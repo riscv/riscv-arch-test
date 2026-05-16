@@ -1,1 +1,1 @@
-../spike-rv64-max/rvmodel_macros.h
+../spike-RVI20U64/rvmodel_macros.h

@@ -47,8 +47,6 @@ How to handle interrupts that don't get evaluated immediately after the macro se
 macro could spin until they fire, but needs to know if they should fire (e.g. not blocked by xstatus.xIE).
 ====
 
-
-
 ==== U User-Mode CSRs and Instructions
 
 These test additional CSRs that exist in user mode, and privileged instructions in user mode.
@@ -73,26 +71,6 @@ https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88Mtc
 
 include::norm/SmF_norm_rules.adoc[]
 
-==== SmV Vector CSRs and Instructions
-
-These test additional CSRs and vset* instructions that exist when vector is supported.
-
-[[t-SmV-coverpoints]]
-.SmV Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=416753800#gid=416753800[Google Sheet Testplan]
-,===
-
-==== SmVF Vector Floating-Point CSRs
-
-These test additional CSRs that exist when vector floating-point is supported.
-
-[[t-SmVF-coverpoints]]
-.SmVF Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=1892166886#gid=1892166886[Google Sheet Testplan]
-,===
-
 ==== UF User-Mode Floating-Point CSRs
 
 These test additional CSR scenarios that exist when floating-point and user mode are supported.
@@ -104,16 +82,6 @@ https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88Mtc
 ,===
 
 include::norm/UF_norm_rules.adoc[]
-
-==== UV User-Mode Vector CSRs
-
-These test additional CSR scenarios that exist when vector and user mode are supported.
-
-[[t-UV-coverpoints]]
-.UV Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1488477674#gid=1488477674[Google Sheet Testplan]
-,===
 
 ==== Zkr Entropy CSR
 

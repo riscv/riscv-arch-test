@@ -64,15 +64,7 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
 
             lines.extend(
                 [
-                    f"    LI(x{r_scratch}, 2500)",  # 2500 iterations × 2 instructions = 5000 cycles
-                    f"1:  addi x{r_scratch}, x{r_scratch}, -1",
-                    f"    bnez x{r_scratch}, 1b",
-                ]
-            )
-
-            lines.extend(
-                [
-                    "RVTEST_IDLE_FOR_INTERRUPT",
+                    f"RVTEST_IDLE_FOR_INTERRUPT(x{r_scratch})",
                     "RVTEST_GOTO_MMODE",
                     "nop",
                     *clr_mtimer_int(r_temp, r_mtimecmp),
@@ -131,15 +123,7 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
 
             lines.extend(
                 [
-                    f"    LI(x{r_scratch}, 2500)",  # 2500 iterations × 2 instructions = 5000 cycles
-                    f"1:  addi x{r_scratch}, x{r_scratch}, -1",
-                    f"    bnez x{r_scratch}, 1b",
-                ]
-            )
-
-            lines.extend(
-                [
-                    "RVTEST_IDLE_FOR_INTERRUPT",
+                    f"RVTEST_IDLE_FOR_INTERRUPT(x{r_scratch})",
                     "RVTEST_GOTO_MMODE",
                     "nop",
                     "RVTEST_CLR_MSW_INT",
@@ -193,7 +177,7 @@ def _generate_user_mei_tests(test_data: TestData) -> list[str]:
                     "RVTEST_GOTO_LOWER_MODE Umode",
                     test_data.add_testcase(binname, coverpoint, covergroup),
                     "RVTEST_SET_MEXT_INT",
-                    "RVTEST_IDLE_FOR_INTERRUPT",
+                    f"RVTEST_IDLE_FOR_INTERRUPT(x{r_scratch})",
                     "RVTEST_GOTO_MMODE",
                     "nop",
                     "RVTEST_CLR_MEXT_INT",
@@ -334,7 +318,7 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("InterruptsU", required_extensions=["Sm", "U", "I", "Zicsr"])
+@add_priv_test_generator("InterruptsU", required_extensions=["U"])
 def make_interruptsu(test_data: TestData) -> list[str]:
     """Generate tests for InterruptsU user-mode interrupt behavior."""
 

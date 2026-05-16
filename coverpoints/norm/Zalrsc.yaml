@@ -5,7 +5,7 @@ normative_rule_definitions:
     coverpoint: ["Zalrsc_lr_w_cg/cp_custom_aqrl"]
 
   - name: a_domain_specific_ordering
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint: ["OUT-OF-SCOPE for single hart without defined I/O domains"]
 
   - name: a_no_aq_rl
     coverpoint: ["OUT-OF-SCOPE for single hart"]
@@ -23,10 +23,10 @@ normative_rule_definitions:
     coverpoint: ["Zalrsc_lr_w_cg/{cp_rs1_nx0, cp_rd}"]
 
   - name: sc_w_success
-    coverpoint: ["Zalrsc_sc_w_cg/cp_sc_fail"]
+    coverpoint: ["Zalrsc_sc_w_cg/cp_sc_pass_fail"]
 
   - name: sc_w_failure
-    coverpoint: ["Zalrsc_sc_w_cg/cp_sc_fail"]
+    coverpoint: ["Zalrsc_sc_w_cg/cp_sc_pass_fail"]
 
   - name: sc_failed_side_effects
     coverpoint: ["NONE: Behavior is UNSPECIFIED and OUT-OF-SCOPE"]
@@ -36,16 +36,16 @@ normative_rule_definitions:
 
   - name: lr_sc_rv64
     coverpoint:
-      ["Zalrsc_lr_d_cg/{cp_rs1_nx0, cp_rd}, Zalrsc_sc_d_cg/cp_sc_fail"]
+      ["Zalrsc_lr_d_cg/{cp_rs1_nx0, cp_rd}, Zalrsc_sc_d_cg/cp_sc_pass_fail"]
 
   - name: sc_failure_code
-    coverpoint: ["Zalrsc_sc_w_cg/cp_sc_fail"]
+    coverpoint: ["Zalrsc_sc_w_cg/cp_sc_pass_fail"]
 
   - name: lr_reservation_set_size
-    coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_addresseses"]
+    coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_addresses"]
 
   - name: sc_pairs_latest_lr
-    coverpoint: ["TODO"]
+    coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_lr"]
 
   - name: sc_success_conditions
     coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_after_sc; multihart not tested"]
@@ -54,7 +54,7 @@ normative_rule_definitions:
     coverpoint: ["OUT-OF-SCOPE: device writes not modeled"]
 
   - name: sc_addr_not_in_reservation_fail
-    coverpoint: ["Zalrsc_sc_w_cg/cp_sc_fail"]
+    coverpoint: ["Zalrsc_sc_w_cg/cp_sc_pass_fail"]
 
   - name: sc_other_hart_store_fail
     coverpoint: ["OUT-OF-SCOPE for single hart"]
@@ -87,10 +87,10 @@ normative_rule_definitions:
     coverpoint: ["Untested"]
 
   - name: lrsc_eventuality_region
-    coverpoint: ["Untested"]
+    coverpoint: ["PMAs not tested"]
 
   - name: lrsc_same_address_and_size
     coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_addresses"]
 
   - name: unconstrained_lrsc_no_progress
-    coverpoint: ["Untested"]
+    coverpoint: ["Behavior is unconstrained"]

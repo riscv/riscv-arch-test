@@ -64,25 +64,12 @@ def _generate_mstatus_ie_tests(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "ExceptionsSm",
-    required_extensions=["I", "Zicsr", "Sm"],
+    required_extensions=["Sm"],
     extra_defines=["#define SKIP_MEPC"],
 )
 def make_exceptionssm(test_data: TestData) -> list[str]:
     """Main entry point for Sm exception test generation (refactored)."""
     lines: list[str] = []
-
-    lines.extend(
-        [
-            "# Initialize scratch memory with test data",
-            "LA(x10, scratch)",
-            "LI(x11, 0xDEADBEEF)",
-            "sw x11, 0(x10)",
-            "sw x11, 4(x10)",
-            "sw x11, 8(x10)",
-            "sw x11, 12(x10)",
-            "",
-        ]
-    )
 
     lines.extend(generate_instr_adr_misaligned_branch_tests(test_data, _CG))
     lines.extend(generate_instr_adr_misaligned_branch_nottaken(test_data, _CG))

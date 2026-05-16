@@ -35,9 +35,6 @@
 #define TEST_FILE "pmpzca_misaligned_napot.S"
 #define SIGUPD_COUNT 50
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 
@@ -150,7 +147,10 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpzca_misaligned_napot_execute\""
 
-.align 13
+.align 12
+TEST_FOR_EXECUTION_0:
+    jalr x0, x1, 0
+
 TEST_FOR_EXECUTION_1:
     .rept ((REGION_SIZE / 2) -1)
     nop

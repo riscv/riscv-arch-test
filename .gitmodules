@@ -1,3 +1,6 @@
 [submodule "docs/docs-resources"]
   path = docs/docs-resources
   url = https://github.com/riscv/docs-resources
+[submodule "generators/testgen/src/testgen/cover-float"]
+  path = generators/testgen/src/testgen/cover-float
+  url = https://github.com/coreyqh/cover-float.git

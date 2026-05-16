@@ -23,18 +23,17 @@ from testgen.formatters.params import generate_random_params
 from testgen.formatters.registry import get_instr_type_config
 
 # IBM testcase data files live alongside this generator inside the testgen package.
-IBM_DATA_DIR = Path(__file__).resolve().parent / "ibm"
+IBM_DATA_DIR = Path(__file__).resolve().parent.parent / "cover-float" / "tests" / "processed"
 
 # Valid rounding mode names accepted in the frm column of IBM CSV files.
 VALID_FRM_NAMES = frozenset({"rne", "rtz", "rdn", "rup", "rmm"})
 
 # Input operand value columns that may appear in an IBM CSV. The subset actually
 # required for a given instruction is determined from its formatter config.
-INPUT_VALUE_KEYS = frozenset({"fs1val", "fs2val", "fs3val", "rs1val", "rs2val", "rs3val"})
+INPUT_VALUE_KEYS = frozenset({"fs1val", "fs2val", "fs3val", "rs1val", "rs2val", "rs3val", "fdval", "rdval", "fflags"})
 
-# Expected-result columns that the CSV may include for DUT verification. These are
-# accepted in the header but currently unused by the test generator.
-IGNORED_OUTPUT_KEYS = frozenset({"fdval", "rdval", "fflags"})
+# Operations that do not need a rounding mode covered in this coverpoint
+NO_ROUNDING_MODE_OPS = frozenset({"fclass", "feq", "fle", "flt", "fmax", "fmin", "fsgnj", "fsgnjn", "fsgnjx"})
 
 
 @add_coverpoint_generator("cp_ibm")
@@ -53,12 +52,19 @@ def make_cp_ibm(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
         raise ValueError(f"cp_ibm coverpoint must be of the form 'cp_ibm_b<N>', got {coverpoint!r}")
     group = coverpoint[len("cp_ibm_") :]  # extract IBM group (b1, b2, etc.)
 
-    required_params = get_instr_type_config(instr_type).required_params or set()
-    required_input_cols = INPUT_VALUE_KEYS & required_params
+    # TODO: Remove this when the b14 covergroup fix gets merged
+    if group == "b14":
+        return []
 
-    data_file = IBM_DATA_DIR / instr_name / f"{group}.csv"
+    common_name = instr_name[: instr_name.find(".")]
+    rounding_op = frozenset({"frm"}) if common_name not in NO_ROUNDING_MODE_OPS else frozenset({})
+
+    required_params = get_instr_type_config(instr_type).required_params or set()
+    required_input_cols = INPUT_VALUE_KEYS & required_params | rounding_op
+
+    data_file = IBM_DATA_DIR / instr_name / f"{group.upper()}.csv"
     if not data_file.is_file():
-        raise FileNotFoundError(f"cp_ibm data file not found for {instr_name} {group}: {data_file}")
+        return []  # This just means that there are no ibm tests for this operand in this model
 
     test_chunks: list[TestChunk] = []
     with data_file.open(newline="") as f:
@@ -68,14 +74,12 @@ def make_cp_ibm(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
         header = [col.strip() for col in reader.fieldnames]
         reader.fieldnames = header
 
-        if "frm" not in header:
-            raise ValueError(f"{data_file}: CSV header must include a 'frm' column (got {header})")
         missing = required_input_cols - set(header)
         if missing:
             raise ValueError(
                 f"{data_file}: missing required operand columns for {instr_name} ({instr_type}): {sorted(missing)}"
             )
-        unknown = set(header) - INPUT_VALUE_KEYS - IGNORED_OUTPUT_KEYS - {"frm"}
+        unknown = set(header) - INPUT_VALUE_KEYS - {"frm"}
         if unknown:
             raise ValueError(f"{data_file}: unrecognized columns in header: {sorted(unknown)}")
 
@@ -85,9 +89,7 @@ def make_cp_ibm(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
             lineno = reader.line_num
 
             frm_mode = (row.get("frm") or "").strip()
-            if not frm_mode:
-                raise ValueError(f"{data_file}:{lineno}: empty 'frm' cell")
-            if frm_mode not in VALID_FRM_NAMES:
+            if frm_mode not in VALID_FRM_NAMES and common_name not in NO_ROUNDING_MODE_OPS:
                 raise ValueError(
                     f"{data_file}:{lineno}: invalid frm value {frm_mode!r} (must be one of {sorted(VALID_FRM_NAMES)})"
                 )
@@ -101,14 +103,14 @@ def make_cp_ibm(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
                     continue
                 values[col] = int(cell, 0)
 
-            params = generate_random_params(test_data, instr_type, exclude_regs=[0], frm=frm_mode, **values)
+            params = generate_random_params(test_data, instr_type, exclude_regs=[0], **values)
 
             operand_desc = " ".join(
                 f"{key} = {(test_data.xlen_format_str if key.startswith('rs') else test_data.flen_format_str).format(v)}"
                 for key, v in values.items()
             )
-            desc = f"{coverpoint} ({data_file.name}:{lineno} Test source {operand_desc}, frm = {frm_mode})"
-            bin_name = f"{coverpoint}_{lineno}"
+            desc = f"{coverpoint}_b{group} ({data_file.name}:{lineno} Test source {operand_desc}, frm = {frm_mode})"
+            bin_name = f"{coverpoint}_b{group}_{lineno}"
             tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
             test_chunks.append(tc)
             return_test_regs(test_data, params)

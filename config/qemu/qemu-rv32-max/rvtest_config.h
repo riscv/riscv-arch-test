@@ -36,6 +36,13 @@
 #define SEWMIN 8
 #define ELEN 64
 #define MAXINDEXEEW 32 // Limited to 32 on RV32 because the Sail backend used for sigref only supports MAXINDEXEEW=32
+// MAXINDEXEEW_PRIV_TESTING: cap for indexed-LS EEW in the priv test suite, separate
+// from MAXINDEXEEW so it can be tightened independently. Currently restricted
+// to 32 on qemu-rv32-max because Sail RV32 takes an illegal-instruction trap
+// on EEW=64 indexed LS while QEMU takes a load access fault, producing a
+// mismatched mcause in the signature. Switch back to 64 once
+// https://github.com/riscv/sail-riscv/issues/1719 is resolved.
+#define MAXINDEXEEW_PRIV_TESTING 32
 
 // Supported fractional LMULs for vector
 // all supported now should be generated based on config

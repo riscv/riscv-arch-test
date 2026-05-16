@@ -267,16 +267,23 @@ def _indexed_ls_eew(instr: str) -> int | None:
     return int(m.group(3)) if m else None
 
 
-def _should_gate_maxindexeew(arch: str, instr: str) -> int | None:
-    """Return the index EEW to gate on, or None if no gate should be emitted.
+def _should_gate_maxindexeew(arch: str, instr: str) -> tuple[int, str] | None:
+    """Return (eew, macro_prefix) to gate on, or None if no gate should be emitted.
 
-    Only unpriv per-SEW Vls{N} arches gate indexed LS covergroups behind
-    MAXINDEXEEW_GE{eew}; priv (ExceptionsVls) and Vx (vrgather) never gate.
+    Unpriv per-SEW Vls{N} arches gate indexed LS covergroups behind
+    MAXINDEXEEW_GE{eew}. Priv MisalignedV / ExceptionsVls covergroups gate
+    behind MAXINDEXEEW_PRIV_TESTING_GE{eew} so they vanish when the priv suite
+    skips that EEW (e.g. sail-riscv issue 1719 caps RV32 priv at EEW=32 even
+    when the DUT supports EEW=64). Vx (vrgather) never gates.
     """
-    if arch not in _VLS_PER_SEW_ARCHES:
-        return None
     eew = _indexed_ls_eew(instr)
-    return eew if eew and eew > 8 else None
+    if not eew or eew <= 8:
+        return None
+    if arch in _VLS_PER_SEW_ARCHES:
+        return (eew, "MAXINDEXEEW_GE")
+    if arch == "MisalignedV" or arch == "ExceptionsVls":
+        return (eew, "MAXINDEXEEW_PRIV_TESTING_GE")
+    return None
 
 
 def _ffLS_feasible(instr: str, sew: int) -> bool:
@@ -324,15 +331,17 @@ def _gen_instrs(
 
         vectorwiden = _is_vector_widen(arch, instr)
 
-        # Gate indexed LS covergroups by MAXINDEXEEW only for unpriv per-SEW
-        # Vls{N} arches: those are legal-path coverage of instructions that
-        # don't exist when MAXINDEXEEW is too small. Priv (ExceptionsVls) and
-        # Vx (vrgather) never gate — priv wants to confirm traps, and Vx
-        # isn't load/store so MAXINDEXEEW doesn't apply.
-        idx_eew = _should_gate_maxindexeew(arch, instr)
-        if idx_eew:
-            covergroup_lines.append(f"`ifdef MAXINDEXEEW_GE{idx_eew}\n")
-            init_lines.append(f"`ifdef MAXINDEXEEW_GE{idx_eew}\n")
+        # Gate indexed LS covergroups by MAXINDEXEEW for unpriv per-SEW
+        # Vls{N} arches, and by MAXINDEXEEW_PRIV_TESTING for priv MisalignedV /
+        # ExceptionsVls. Without the priv gate, covergroups for ei64 indexed
+        # LS get instantiated on configs whose priv suite caps EEW lower
+        # (e.g. sail-rv32-max), producing permanently-0% covergroups because
+        # no test ever samples them. Vx (vrgather) never gates.
+        gate = _should_gate_maxindexeew(arch, instr)
+        if gate:
+            idx_eew, macro_prefix = gate
+            covergroup_lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
+            init_lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
 
         # Instruction header
         if vectorwiden:
@@ -408,7 +417,7 @@ def _gen_instrs(
         else:
             covergroup_lines.append(customize_template(templates, "endgroup", arch, instr))
 
-        if idx_eew:
+        if gate:
             covergroup_lines.append("`endif\n")
             init_lines.append("`endif\n")
 
@@ -430,9 +439,10 @@ def _gen_covergroup_samples(
         if not _matches_xlen(cps, has_rv32, has_rv64):
             continue
 
-        idx_eew = _should_gate_maxindexeew(arch, instr)
-        if idx_eew:
-            lines.append(f"`ifdef MAXINDEXEEW_GE{idx_eew}\n")
+        gate = _should_gate_maxindexeew(arch, instr)
+        if gate:
+            idx_eew, macro_prefix = gate
+            lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
 
         if arch.startswith(VECTOR_WIDEN_PREFIXES):
             if _is_vector_widen(arch, instr):
@@ -443,7 +453,7 @@ def _gen_covergroup_samples(
         elif arch != "E":  # E currently breaks coverage
             lines.append(customize_template(templates, "covergroup_sample", arch, instr))
 
-        if idx_eew:
+        if gate:
             lines.append("`endif\n")
 
     return "".join(lines)

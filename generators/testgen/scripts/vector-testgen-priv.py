@@ -189,6 +189,12 @@ def make_vstart(instruction, maxlmul = 8):
     # Further cap for EEW-driven load/store and segmented variants so that
     # EMUL of every operand stays ≤ 8 (LMUL * size_mult * segments ≤ 8).
     maxlmul = min(maxlmul, _max_lmul_for_instruction(instruction))
+    # Whole-register move (vmv<nr>r.v) is reserved when vstart >= evl, where
+    # evl = NREG * VLEN/SEW. cp_vstart picks vstart in [1, vlmax) and
+    # vlmax = LMUL * VLEN/SEW. Cap LMUL <= NREG so vlmax <= evl, guaranteeing
+    # vstart < evl and the instruction is never reserved (testable).
+    if instruction in whole_register_move:
+        maxlmul = min(maxlmul, int(instruction[3]))
     vstartvals = ["one", "vlmaxm1", "vlmaxd2", "random"]
     for vstartval in vstartvals:
         if maxlmul <= 1:
@@ -448,11 +454,15 @@ def writePrivTestLine(instruction, instruction_data, cp="cp_vill", vl=1, lmul=1,
     # Always-trapping cases:
     #   - cp_vill: vill=1 forces illegal-instruction on every test.
     #   - cp_vstart_gt_vl: vstart > vl is reserved → illegal.
-    #   - cp_vstart on whole_register_move: vmv{1,2,4,8}r.v require vstart=0,
-    #     and cp_vstart sets vstart != 0, so they always trap illegal.
+    #   - cp_vstart on vstart_zero_required: spec marks vstart!=0 reserved.
+    #   - cp_vstart on vector_stores: stores have no architectural vd; the
+    #     SIGUPD_V vd is a random unused reg, comparison non-deterministic.
+    # whole_register_move (vmv<nr>r.v): per V spec reserved only when
+    # vstart >= evl (= NREG*VLEN/SEW). make_vstart caps LMUL <= NREG so
+    # vlmax <= evl and the cp_vstart picks (vstart < vlmax) always satisfy
+    # vstart < evl -- the instruction executes legally and SIGUPD_V is valid.
     skip_sigupd = (
         cp in ("cp_vill", "cp_vstart_gt_vl")
-        or (cp == "cp_vstart" and instruction in whole_register_move)
         or (cp == "cp_vstart" and instruction in vector_stores)
         or (cp == "cp_vstart" and instruction in vstart_zero_required)
     )

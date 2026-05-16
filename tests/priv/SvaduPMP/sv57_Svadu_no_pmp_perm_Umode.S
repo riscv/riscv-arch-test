@@ -55,6 +55,7 @@
 
 #define TEST_FILE "sv57_Svadu_no_pmp_perm_Umode.S"
 #define SIGUPD_COUNT 65
+#define BOOT_TO_MMODE
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"

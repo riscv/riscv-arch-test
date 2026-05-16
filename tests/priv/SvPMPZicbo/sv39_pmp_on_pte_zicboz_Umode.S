@@ -34,6 +34,7 @@
 #define TEST_FILE "sv39_pmp_on_pte_zicboz_Umode.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 50
+#define BOOT_TO_MMODE
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"
@@ -114,9 +115,6 @@ main:
   CSRS(menvcfg, t0)                                                      // Allow execution of cbo.zero in S-Mode
   CSRS(senvcfg, t0)                                                      // Further delegate the permission to U-Mode
 
-  // This test case for root page table is skipped if G >= 10, because with PMP granularity ≥ 4KB,
-  // the entire root page table will lose its read/write permissions, preventing entry into U-Mode.
-  .if (RVMODEL_PMP_GRAIN < 10)
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                 Configure level 2 PTE as NAPOT region with X permission
@@ -133,6 +131,9 @@ main:
   write_pmpcfg0:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, write_pmpcfg0, write_pmpcfg0_str)
 
+  // This test case for root page table is skipped if G >= 10, because with PMP granularity ≥ 4KB,
+  // the entire root page table will lose its read/write permissions, preventing entry into S-Mode.
+  .if (RVMODEL_PMP_GRAIN < 10)
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                                    TESTS AT LEVEL 2
 //---------------------------------------------------------------------------------------------------------------------------------

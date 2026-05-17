@@ -4,7 +4,6 @@
 #define RVMODEL_PMP_GRAIN 10
 #define RVMODEL_NUM_PMPS 64
 
-
 #define XLEN32
 #define FLEN64
 #define VLEN256
@@ -16,7 +15,6 @@
 
 #define CLINT_BASE_ADDRESS 0x02000000
 #define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
-
 
 #define A_SUPPORTED
 #define B_SUPPORTED

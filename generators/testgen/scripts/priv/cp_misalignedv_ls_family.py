@@ -32,13 +32,33 @@ def _emit_vsetvli_str(scratch: int, vl: int, sew: int, lmul_flag: str) -> None:
 def _init_operand_regs(instruction: str, vec_data: dict, sew: int, scratch: int,
                        *, regs: Iterable[str] = ("vd", "vs2", "vs3"),
                        label: str = "random_mask_0") -> None:
-    """Initialize operand vector registers that exist in the instruction's signature."""
+    """Initialize operand vector registers that exist in the instruction's signature.
+
+    Whole-register LS span NF architectural registers (NF parsed from mnemonic
+    char index 2 — ``vs2r.v`` / ``vl2re8.v`` → 2). Init every register in the
+    group so signature capture observes deterministic content, not boot state.
+    """
     args = common.getInstructionArguments(instruction)
     common.writeLine(f"la x{scratch}, {label}", f"# scratch <- &{label}")
+    is_whole = instruction in common.whole_register_ls
+    nf = int(instruction[2]) if is_whole else 1
     for r in regs:
-        if r in args and r in vec_data:
-            reg = vec_data[r]["reg"]
-            common.writeLine(f"vle{sew}.v v{reg}, (x{scratch})", f"# init {r} (v{reg})")
+        if r not in vec_data:
+            continue
+        # SIGUPD_V always compares vd, so vd must be deterministically initialized
+        # even if the instruction itself does not list it as an operand (e.g. vs<NF>r.v
+        # stores omit vd). Without this, vd holds stale state that diverges between
+        # the sig-gen and selfcheck runs once any prior SIGUPD_V loaded sig data into
+        # a temporary that downstream tests read as vd.
+        if r != "vd" and r not in args:
+            continue
+        base_reg = vec_data[r]["reg"]
+        for i in range(nf):
+            reg = base_reg + i
+            if is_whole:
+                common.writeLine(f"vl1re8.v v{reg}, (x{scratch})", f"# init {r}[{i}] (v{reg}) full VLEN preload")
+            else:
+                common.writeLine(f"vle{sew}.v v{reg}, (x{scratch})", f"# init {r} (v{reg})")
 
 
 def _build_testline(instruction: str, instruction_data: list, *,
@@ -81,6 +101,13 @@ def _build_testline(instruction: str, instruction_data: list, *,
         testline += ", "
 
     testline = testline[:-2]
+
+    # clang's RV32 frontend rejects indexed-segment ei{32,64} mnemonics
+    # ("requires RV64I"); emit raw `.insn` encoding to force assembly.
+    if instruction in common.indexed_ls_ins:
+        testline = common.encodeIndexedLSAsInsn(instruction, instruction_data,
+                                                masked=(maskval is not None))
+
     vd = vec_data["vd"]["reg"]
     rd = scalar_data["rd"]["reg"]
     return testline, vd, rd
@@ -101,11 +128,30 @@ def _ls_test(instruction: str, cp: str, sew: int, lmul_flag: str, *,
     )
     common.remapPrivScalarRegs(instruction_data, instruction)
 
+    # For indexed LS, gate emission on XLEN so EEW=64 indexed-LS priv tests
+    # are skipped on RV32. Sail RV32 takes illegal-instruction on EEW=64
+    # indexed LS while other sims take a load access fault, producing a
+    # mismatched mcause in the signature (see sail-riscv issue 1719).
+    indexed = instruction in common.indexed_ls_ins
+    index_eew = common.getInstructionEEW(instruction) if indexed else None
+    if indexed and index_eew is not None:
+        common.writeLine(f"#if __riscv_xlen >= {index_eew}")
+
     common.writeLine(f"\n# Testcase {cp} (sew={sew}, lmul={lmul_flag}, vd_off={override_vd}, addr_off={addr_offset})")
     scratch = common.pickPrivScratch(instruction_data[1])
 
     _emit_vsetvli_str(scratch, vl=vl, sew=sew, lmul_flag=lmul_flag)
-    _init_operand_regs(instruction, instruction_data[0], sew, scratch, regs=("vs2", "vs3"))
+    # Init vd as well so SIGUPD_V observes a deterministic register on trap
+    # (the trapping load leaves vd unchanged; without init it inherits stale state).
+    _init_operand_regs(instruction, instruction_data[0], sew, scratch, regs=("vd", "vs2", "vs3"))
+    # For indexed LS, element addr = rs1 + vs2[i]. With random vs2 the per-element
+    # address is random, so the sim-defined misaligned-vector trap behavior diverges
+    # across simulators. Zero vs2 so element[0] addr = rs1 + 0 = misaligned rs1,
+    # making the misalignment under test deterministic and sim-agnostic.
+    if indexed:
+        vs2_reg = instruction_data[0]["vs2"]["reg"]
+        common.writeLine(f"vxor.vv v{vs2_reg}, v{vs2_reg}, v{vs2_reg}",
+                          "# zero vs2 so indexed addr = rs1 (deterministic misalign)")
     _emit_vsetvli_str(scratch, vl=vl, sew=sew, lmul_flag=lmul_flag)
 
     rs1_reg = None
@@ -129,8 +175,11 @@ def _ls_test(instruction: str, cp: str, sew: int, lmul_flag: str, *,
         instruction, cp, vd, sew, testline,
         test=instruction, rd=rd, vl=vl, lmul=1,
         sig_lmul=1, sig_whole_register_store=True,
-        priv=True, skip_sigupd=True,
+        priv=True, skip_sigupd=False,
     )
+
+    if indexed and index_eew is not None:
+        common.writeLine("#endif")
 
 
 def _eew(instruction: str) -> int:

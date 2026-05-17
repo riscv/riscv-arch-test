@@ -37,14 +37,24 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
             and params.rs2val is not None
             and params.temp_reg is not None
         )
+        label_line = test_data.add_testcase(suffix, "cp_custom_aqrl")
+        label = test_data.current_testcase_label
+        retry_label = f"{label}_retry"
+        success_label = f"{label}_success"
         test_lines.extend(
             [
                 f"# Testcase: cp_custom_aqrl with suffix '{suffix}'",
                 load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                 f"LA(x{params.rs1}, scratch) # rs1 = base address",
+                f"LI(x{params.temp_reg}, 100) # retry counter for constrained LR/SC loop",
+                f"{retry_label}:",
                 f"{lr_insn} x0, (x{params.rs1}) # establish reservation",
-                test_data.add_testcase(suffix, "cp_custom_aqrl"),
+                label_line,
                 f"{instr_name}{suffix} x{params.rd}, x{params.rs2}, (x{params.rs1}) # perform operation",
+                f"beqz x{params.rd}, {success_label} # SC succeeded, skip retry",
+                f"addi x{params.temp_reg}, x{params.temp_reg}, -1 # decrement retry count",
+                f"bnez x{params.temp_reg}, {retry_label} # retry LR/SC if not exhausted",
+                f"{success_label}:",
                 write_sigupd(params.rd, test_data),
                 f"LA(x{params.rs1}, scratch) # reload base address",
                 f"LREG x{params.temp_reg}, 0(x{params.rs1}) # load stored value",
@@ -66,14 +76,24 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         and params.rs2val is not None
         and params.temp_reg is not None
     )
+    sc_lr_label_line = test_data.add_testcase(f"prev_lr_{lr_insn}", "cp_custom_sc_lr")
+    sc_lr_label = test_data.current_testcase_label
+    sc_lr_retry_label = f"{sc_lr_label}_retry"
+    sc_lr_success_label = f"{sc_lr_label}_success"
     test_lines.extend(
         [
             f"# Testcase: cp_custom_sc_lr with prev {lr_insn}",
             load_int_reg("rs2", params.rs2, params.rs2val, test_data),
             f"LA(x{params.rs1}, scratch) # rs1 = base address",
+            f"LI(x{params.temp_reg}, 100) # retry counter for constrained LR/SC loop",
+            f"{sc_lr_retry_label}:",
             f"{lr_insn} x0, (x{params.rs1}) # establish reservation",
-            test_data.add_testcase(f"prev_lr_{lr_insn}", "cp_custom_sc_lr"),
+            sc_lr_label_line,
             f"{instr_name} x{params.rd}, x{params.rs2}, (x{params.rs1}) # perform operation",
+            f"beqz x{params.rd}, {sc_lr_success_label} # SC succeeded, skip retry",
+            f"addi x{params.temp_reg}, x{params.temp_reg}, -1 # decrement retry count",
+            f"bnez x{params.temp_reg}, {sc_lr_retry_label} # retry LR/SC if not exhausted",
+            f"{sc_lr_success_label}:",
             write_sigupd(params.rd, test_data),
             f"LA(x{params.rs1}, scratch) # reload base address",
             f"LREG x{params.temp_reg}, 0(x{params.rs1}) # load stored value",

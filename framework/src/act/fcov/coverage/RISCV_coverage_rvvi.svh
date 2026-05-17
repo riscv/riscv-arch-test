@@ -36,7 +36,7 @@ function void save_rvvi_data(bit trap, int hart, int issue, string disass);
   bit [31:0] mask;
   int idx;
   if (inst_name == "illegal") begin
-    inst_name = ssstrictv_decode_vector(this.rvvi.insn[hart][issue]);
+    inst_name = disasm_fallback_vector(this.rvvi.insn[hart][issue]);
   end
 
   // Load initial prev values to use for checking register values during first (sampled) instruction

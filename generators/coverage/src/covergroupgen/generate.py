@@ -15,6 +15,7 @@ import math
 import re
 from difflib import get_close_matches
 from pathlib import Path
+from types import ModuleType
 
 from rich import print as rprint
 from rich.progress import track
@@ -24,21 +25,53 @@ def _load_ssstrictv_skip_combinations() -> dict[str, set[str]]:
     """Load the SsstrictV (column, instruction) skip table.
 
     Single source of truth lives in
-    ``generators/testgen/scripts/ssstrictv_skip_combinations.py``; this loader
-    avoids creating an inter-package import dependency by exec-ing the small
-    pure-data module directly. Returns ``{csv_column: set(instructions)}``.
+    ``generators/testgen/scripts/ssstrictv_skip_combinations.py``. The testgen
+    scripts dir is not a Python package, so load it by file path via
+    ``importlib``. Returns ``{csv_column: set(instructions)}``.
     """
+    import importlib.util
+
     repo_root = Path(__file__).resolve().parents[4]
     skip_path = repo_root / "generators" / "testgen" / "scripts" / "ssstrictv_skip_combinations.py"
     if not skip_path.exists():
         return {}
-    namespace: dict = {}
-    exec(compile(skip_path.read_text(), str(skip_path), "exec"), namespace)  # noqa: S102
-    raw = namespace.get("SKIP_COMBINATIONS", {})
+    spec = importlib.util.spec_from_file_location("ssstrictv_skip_combinations", skip_path)
+    if spec is None or spec.loader is None:
+        return {}
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    raw = getattr(module, "SKIP_COMBINATIONS", {})
     return {col: set(instrs) for col, instrs in raw.items()}
 
 
 SSSTRICTV_SKIP_COMBINATIONS = _load_ssstrictv_skip_combinations()
+
+
+_VECTOR_TESTGEN_COMMON = None
+
+
+def _load_vector_testgen_common() -> ModuleType | None:
+    """Lazy-load the testgen ``vector_testgen_common`` module by file path."""
+    global _VECTOR_TESTGEN_COMMON
+    if _VECTOR_TESTGEN_COMMON is not None:
+        return _VECTOR_TESTGEN_COMMON
+    import importlib.util
+
+    repo_root = Path(__file__).resolve().parents[4]
+    mod_path = repo_root / "generators" / "testgen" / "scripts" / "vector_testgen_common.py"
+    if not mod_path.exists():
+        return None
+    spec = importlib.util.spec_from_file_location("vector_testgen_common", mod_path)
+    if spec is None or spec.loader is None:
+        return None
+    module = importlib.util.module_from_spec(spec)
+    try:
+        spec.loader.exec_module(module)
+    except Exception:  # noqa: BLE001
+        return None
+    _VECTOR_TESTGEN_COMMON = module
+    return module
+
 
 # Coverpoints whose template name depends on the SEW (element width).
 SEW_DEPENDENT_CPS = {
@@ -125,14 +158,8 @@ def _max_legal_lmul_for_instruction(instr: str) -> int:
       capping LMUL at 4.
     * Otherwise LMUL ≤ 8.
     """
-    try:
-        import sys as _sys
-
-        _scripts = Path(__file__).resolve().parents[4] / "generators" / "testgen" / "scripts"
-        if str(_scripts) not in _sys.path:
-            _sys.path.insert(0, str(_scripts))
-        import vector_testgen_common as _c  # type: ignore
-    except Exception:  # noqa: BLE001
+    _c = _load_vector_testgen_common()
+    if _c is None:
         return 8
     nf = _c.getInstructionSegments(instr) if hasattr(_c, "getInstructionSegments") else 1
     if nf and nf > 1:

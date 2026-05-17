@@ -267,16 +267,27 @@ def _indexed_ls_eew(instr: str) -> int | None:
     return int(m.group(3)) if m else None
 
 
-def _should_gate_maxindexeew(arch: str, instr: str) -> int | None:
-    """Return the index EEW to gate on, or None if no gate should be emitted.
+def _should_gate_maxindexeew(arch: str, instr: str) -> tuple[int, str] | None:
+    """Return (eew, macro_prefix) to gate on, or None if no gate should be emitted.
 
-    Only unpriv per-SEW Vls{N} arches gate indexed LS covergroups behind
-    MAXINDEXEEW_GE{eew}; priv (ExceptionsVls) and Vx (vrgather) never gate.
+    Unpriv per-SEW Vls{N} arches gate indexed LS covergroups behind
+    MAXINDEXEEW_GE{eew}. Priv MisalignedV / ExceptionsVls covergroups gate
+    behind XLEN{eew} so EEW=64 indexed-LS coverage is suppressed on RV32
+    (see sail-riscv issue 1719: Sail RV32 takes illegal-instruction on
+    EEW=64 indexed LS while other sims take a load access fault, producing
+    mismatched mcause in the signature). Vx (vrgather) never gates.
     """
-    if arch not in _VLS_PER_SEW_ARCHES:
-        return None
     eew = _indexed_ls_eew(instr)
-    return eew if eew and eew > 8 else None
+    if not eew or eew <= 8:
+        return None
+    if arch in _VLS_PER_SEW_ARCHES:
+        return (eew, "MAXINDEXEEW_GE")
+    if arch == "MisalignedV" or arch == "ExceptionsVls":
+        # XLEN16 macro does not exist; XLEN is always >= 32, so only gate eew=64.
+        if eew >= 64:
+            return (eew, "XLEN")
+        return None
+    return None
 
 
 def _ffLS_feasible(instr: str, sew: int) -> bool:
@@ -324,15 +335,17 @@ def _gen_instrs(
 
         vectorwiden = _is_vector_widen(arch, instr)
 
-        # Gate indexed LS covergroups by MAXINDEXEEW only for unpriv per-SEW
-        # Vls{N} arches: those are legal-path coverage of instructions that
-        # don't exist when MAXINDEXEEW is too small. Priv (ExceptionsVls) and
-        # Vx (vrgather) never gate — priv wants to confirm traps, and Vx
-        # isn't load/store so MAXINDEXEEW doesn't apply.
-        idx_eew = _should_gate_maxindexeew(arch, instr)
-        if idx_eew:
-            covergroup_lines.append(f"`ifdef MAXINDEXEEW_GE{idx_eew}\n")
-            init_lines.append(f"`ifdef MAXINDEXEEW_GE{idx_eew}\n")
+        # Gate indexed LS covergroups by MAXINDEXEEW for unpriv per-SEW
+        # Vls{N} arches, and by XLEN for priv MisalignedV / ExceptionsVls.
+        # Priv ei64 covergroups are suppressed on RV32 because Sail RV32
+        # takes illegal-instruction on EEW=64 indexed LS while other sims
+        # take a load access fault (see sail-riscv issue 1719). Vx (vrgather)
+        # never gates.
+        gate = _should_gate_maxindexeew(arch, instr)
+        if gate:
+            idx_eew, macro_prefix = gate
+            covergroup_lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
+            init_lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
 
         # Instruction header
         if vectorwiden:
@@ -408,7 +421,7 @@ def _gen_instrs(
         else:
             covergroup_lines.append(customize_template(templates, "endgroup", arch, instr))
 
-        if idx_eew:
+        if gate:
             covergroup_lines.append("`endif\n")
             init_lines.append("`endif\n")
 
@@ -430,9 +443,10 @@ def _gen_covergroup_samples(
         if not _matches_xlen(cps, has_rv32, has_rv64):
             continue
 
-        idx_eew = _should_gate_maxindexeew(arch, instr)
-        if idx_eew:
-            lines.append(f"`ifdef MAXINDEXEEW_GE{idx_eew}\n")
+        gate = _should_gate_maxindexeew(arch, instr)
+        if gate:
+            idx_eew, macro_prefix = gate
+            lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
 
         if arch.startswith(VECTOR_WIDEN_PREFIXES):
             if _is_vector_widen(arch, instr):
@@ -443,7 +457,7 @@ def _gen_covergroup_samples(
         elif arch != "E":  # E currently breaks coverage
             lines.append(customize_template(templates, "covergroup_sample", arch, instr))
 
-        if idx_eew:
+        if gate:
             lines.append("`endif\n")
 
     return "".join(lines)

@@ -384,6 +384,12 @@ def _gen_instrs(
             if any(sew_cp in cp for sew_cp in SEW_DEPENDENT_CPS):
                 cp = cp + "_sew" + _get_effew(arch)
 
+            # Handle eew_eq_sew variants: only emit when indexed-LS EEW == arch SEW
+            if cp.endswith("_eew_eq_sew"):
+                eew = _indexed_ls_eew(instr)
+                if eew is not None and _is_vector(arch) and int(_get_effew(arch)) != eew:
+                    continue
+
             # Handle conditional SEW inclusion
             if "sew_lte" in cp:
                 effew = _get_effew(arch)

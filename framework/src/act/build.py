@@ -138,6 +138,7 @@ def execute_task(
     verbose: bool = False,
     active_pgids: set[int] | None = None,
     pgids_lock: threading.Lock | None = None,
+    shutting_down: list[bool] | None = None,
 ) -> BuildError | None:
     """Execute a single build task. Returns None on success, BuildError on failure."""
     if verbose:
@@ -156,8 +157,14 @@ def execute_task(
             )
             pgid = proc.pid  # start_new_session=True makes the child its own group leader
             if active_pgids is not None and pgids_lock is not None:
+                kill_now = False
                 with pgids_lock:
                     active_pgids.add(pgid)
+                    if shutting_down is not None and shutting_down[0]:
+                        kill_now = True
+                if kill_now:
+                    with contextlib.suppress(ProcessLookupError, PermissionError):
+                        os.killpg(pgid, signal.SIGKILL)
             try:
                 stdout, stderr = proc.communicate()
             finally:
@@ -239,9 +246,11 @@ def build(
 
     active_pgids: set[int] = set()
     pgids_lock = threading.Lock()
+    shutting_down: list[bool] = [False]
 
     def _kill_active() -> None:
         with pgids_lock:
+            shutting_down[0] = True
             pgids = set(active_pgids)
         for pgid in pgids:
             with contextlib.suppress(ProcessLookupError, PermissionError):
@@ -340,7 +349,12 @@ def build(
 
                     # Submit task to thread pool
                     future = executor.submit(
-                        execute_task, task, verbose=verbose, active_pgids=active_pgids, pgids_lock=pgids_lock
+                        execute_task,
+                        task,
+                        verbose=verbose,
+                        active_pgids=active_pgids,
+                        pgids_lock=pgids_lock,
+                        shutting_down=shutting_down,
                     )
                     in_flight[key] = future
                     future_to_key[future] = key

@@ -32,7 +32,6 @@
 #define SEWMIN 8
 #define ELEN 64
 #define MAXINDEXEEW 32
-#define MAXINDEXEEW_PRIV_TESTING 64  // Cap priv-suite indexed EEW at 32 on RV32 until sail-riscv issue 1719 resolved
 
 // Supported fractional LMULs for vector
 // all supported now should be generated based on config

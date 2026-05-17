@@ -213,32 +213,6 @@
   `define MAXINDEXEEW_GE8
 `endif
 
-// MAXINDEXEEW_PRIV_TESTING — priv-suite cap on indexed-LS index EEW. May be
-// tighter than MAXINDEXEEW when the priv sigref disagrees with the DUT on
-// unsupported-EEW traps (see sail-riscv issue 1719). Covergroups for priv
-// indexed-LS instructions are gated by MAXINDEXEEW_PRIV_TESTING_GE{N} so they
-// are not instantiated when the priv suite skips that EEW.
-// Config should define one of: MAXINDEXEEW_PRIV_TESTING64/32/16/8.
-`ifdef MAXINDEXEEW_PRIV_TESTING64
-  `define MAXINDEXEEW_PRIV_TESTING 64
-  `define MAXINDEXEEW_PRIV_TESTING_GE8
-  `define MAXINDEXEEW_PRIV_TESTING_GE16
-  `define MAXINDEXEEW_PRIV_TESTING_GE32
-  `define MAXINDEXEEW_PRIV_TESTING_GE64
-`elsif MAXINDEXEEW_PRIV_TESTING32
-  `define MAXINDEXEEW_PRIV_TESTING 32
-  `define MAXINDEXEEW_PRIV_TESTING_GE8
-  `define MAXINDEXEEW_PRIV_TESTING_GE16
-  `define MAXINDEXEEW_PRIV_TESTING_GE32
-`elsif MAXINDEXEEW_PRIV_TESTING16
-  `define MAXINDEXEEW_PRIV_TESTING 16
-  `define MAXINDEXEEW_PRIV_TESTING_GE8
-  `define MAXINDEXEEW_PRIV_TESTING_GE16
-`elsif MAXINDEXEEW_PRIV_TESTING8
-  `define MAXINDEXEEW_PRIV_TESTING 8
-  `define MAXINDEXEEW_PRIV_TESTING_GE8
-`endif
-
 // Set register type length
 `define XLEN_BITS         bit        [`XLEN-1:0]
 `define SIGNED_XLEN_BITS  bit signed [`XLEN-1:0]

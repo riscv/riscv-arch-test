@@ -12,8 +12,6 @@
 
 // Maximum supported index EEW for indexed load/store
 `define MAXINDEXEEW64
-// Priv-suite cap on indexed-LS index EEW (see sail-riscv issue 1719)
-`define MAXINDEXEEW_PRIV_TESTING64
 
 // Virtual Memory Modes
 `define SV39_SUPPORTED

@@ -272,9 +272,10 @@ def _should_gate_maxindexeew(arch: str, instr: str) -> tuple[int, str] | None:
 
     Unpriv per-SEW Vls{N} arches gate indexed LS covergroups behind
     MAXINDEXEEW_GE{eew}. Priv MisalignedV / ExceptionsVls covergroups gate
-    behind MAXINDEXEEW_PRIV_TESTING_GE{eew} so they vanish when the priv suite
-    skips that EEW (e.g. sail-riscv issue 1719 caps RV32 priv at EEW=32 even
-    when the DUT supports EEW=64). Vx (vrgather) never gates.
+    behind XLEN{eew} so EEW=64 indexed-LS coverage is suppressed on RV32
+    (see sail-riscv issue 1719: Sail RV32 takes illegal-instruction on
+    EEW=64 indexed LS while other sims take a load access fault, producing
+    mismatched mcause in the signature). Vx (vrgather) never gates.
     """
     eew = _indexed_ls_eew(instr)
     if not eew or eew <= 8:
@@ -282,7 +283,10 @@ def _should_gate_maxindexeew(arch: str, instr: str) -> tuple[int, str] | None:
     if arch in _VLS_PER_SEW_ARCHES:
         return (eew, "MAXINDEXEEW_GE")
     if arch == "MisalignedV" or arch == "ExceptionsVls":
-        return (eew, "MAXINDEXEEW_PRIV_TESTING_GE")
+        # XLEN16 macro does not exist; XLEN is always >= 32, so only gate eew=64.
+        if eew >= 64:
+            return (eew, "XLEN")
+        return None
     return None
 
 
@@ -332,11 +336,11 @@ def _gen_instrs(
         vectorwiden = _is_vector_widen(arch, instr)
 
         # Gate indexed LS covergroups by MAXINDEXEEW for unpriv per-SEW
-        # Vls{N} arches, and by MAXINDEXEEW_PRIV_TESTING for priv MisalignedV /
-        # ExceptionsVls. Without the priv gate, covergroups for ei64 indexed
-        # LS get instantiated on configs whose priv suite caps EEW lower
-        # (e.g. sail-rv32-max), producing permanently-0% covergroups because
-        # no test ever samples them. Vx (vrgather) never gates.
+        # Vls{N} arches, and by XLEN for priv MisalignedV / ExceptionsVls.
+        # Priv ei64 covergroups are suppressed on RV32 because Sail RV32
+        # takes illegal-instruction on EEW=64 indexed LS while other sims
+        # take a load access fault (see sail-riscv issue 1719). Vx (vrgather)
+        # never gates.
         gate = _should_gate_maxindexeew(arch, instr)
         if gate:
             idx_eew, macro_prefix = gate

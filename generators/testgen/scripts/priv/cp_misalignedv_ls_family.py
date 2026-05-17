@@ -128,14 +128,14 @@ def _ls_test(instruction: str, cp: str, sew: int, lmul_flag: str, *,
     )
     common.remapPrivScalarRegs(instruction_data, instruction)
 
-    # For indexed LS, gate emission on the per-config priv-test cap.
-    # MAXINDEXEEW_PRIV_TESTING exists separately from MAXINDEXEEW so the priv suite can
-    # be capped below the DUT's true MAXINDEXEEW when the Sail sigref disagrees
-    # on the trap taken for unsupported EEW (see sail-riscv issue 1719).
+    # For indexed LS, gate emission on XLEN so EEW=64 indexed-LS priv tests
+    # are skipped on RV32. Sail RV32 takes illegal-instruction on EEW=64
+    # indexed LS while other sims take a load access fault, producing a
+    # mismatched mcause in the signature (see sail-riscv issue 1719).
     indexed = instruction in common.indexed_ls_ins
     index_eew = common.getInstructionEEW(instruction) if indexed else None
     if indexed and index_eew is not None:
-        common.writeLine(f"#if MAXINDEXEEW_PRIV_TESTING >= {index_eew}")
+        common.writeLine(f"#if __riscv_xlen >= {index_eew}")
 
     common.writeLine(f"\n# Testcase {cp} (sew={sew}, lmul={lmul_flag}, vd_off={override_vd}, addr_off={addr_offset})")
     scratch = common.pickPrivScratch(instruction_data[1])

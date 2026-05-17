@@ -15,8 +15,6 @@
 // Intentionally use the RV32-specific form here: Sail only supports MAXINDEXEEW32
 // for this RV32 configuration, so the asymmetry with RV64 is deliberate.
 `define MAXINDEXEEW32
-// Priv-suite cap on indexed-LS index EEW (see sail-riscv issue 1719)
-`define MAXINDEXEEW_PRIV_TESTING32
 
 // PMP Grain (G)
 // Set G as needed (e.g., 0, 1, 2, ...)

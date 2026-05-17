@@ -4,11 +4,8 @@ include::../../common/adoc_common.adoc[]
 
 _Contributors to all versions of the spec in alphabetical order_
 
-* Allen Baum
-* Jordan Carlin
 * Ken Dockser
 * David Harris
-
 
 _This document is released under a Creative Commons Attribution 4.0 International License._
 
@@ -48,32 +45,12 @@ certification.
 The RVA23S64 profile implies requirements that might not be immediately
 obvious.  This section explains them in detail.
 
-=== Scope of Testing
-
-RVA23 certification requires testing all of the behaviors defined in the profile at supervisor mode and below.  It also requires testing an `ecall` from supervisor mode to the execution environment as defined in the profile.
-
-RVA23 certification also requires testing all non-machine-mode interrupts (all interrupts except MTI, MEI, MSI). [Ken take an action item of whether these are in scope].
-
-Although it is not explicitly stated in the profile, RVA23 certification requires testing exceptions and interrupts that are received by M-mode rather than delegated to lower modes.  The trap handler must be able to record the machine mode state (such as `mcause`, `mtval`) consistent with the standard M-mode specification. [Try to give cite to spec to justify this.]
-
-Although it is not explicitly stated in the profile, RVA23 certification requires testing certain machine-mode CSR fields that affect the behavior of lower privilege mode. In particular, it requires testing `mstatus.TSR`, `mstatus.TW`, and `mstatus.TVM`.  [Is this everything]?
-
-It does not require testing of M-mode state that disables access to features in lower privilege modes, including `menvcfg`, `mseccfg`, and `mstateen` fields.  These are initialized at the start of the test to support the required and implemented optional features of the profile, and disabling these features from M-mode is OUT-OF-SCOPE.  The tests also assume a reasonable amount of cacheable coherent main memory is available to hold the test code and data, and that PMAs and PMPs permit access to this memory.  Testing PMA or PMP restrictions is OUT-OF-SCOPE. [Is there anything else to go here.  Alternative: test all this disabling, as given in CSR descriptions below.  Update this part or CSRs to match.]
-
-Discuss Allen's problem of unexpected traps. For example, trap on all aes instructions, or trap on fp instruction with subnorm inputs or results.  This break ACT trap logging in a severe way.
-
-Ken: M-mode trap handler has a jump to customer code that optionally does emulation, then returns to our trap handler.
-
-Alternate approach:
-Normally just test traps delegated to S-mode in the default trap handler.
-If the firmware needs to do something special, it can install a different boot code that traps to M-mode instead, intercepts what needs to happen, and then relays the trap to S-mode if it should have been visible by S-mode.
-
 === Custom M-mode
 
 The RVA23S64 profile purposefully excludes Machine mode (M-mode).  It does not require a _Standard M-mode_ consistent with the ratified M-mode specification.
 Therefore, certification does not run M-mode code directly.
 
-Custom M-mode is an supervisor execution environment that deviates from the M-mode specification.  For example, it might have a bug that affects M-mode behavior but is invisible from S-mode.  The firmware could work around this bug by not running M-mode instructions affected by the bug.  Alternatively, Custom M-mode might have some security features or proprietary CSRs that break compatibility with ratified M-mode.
+Custom M-mode is a supervisor execution environment that deviates from the M-mode specification.  For example, it might have a bug that affects M-mode behavior but is invisible from S-mode.  The firmware could work around this bug by not running M-mode instructions affected by the bug.  Alternatively, Custom M-mode might have some security features or proprietary CSRs that break compatibility with ratified M-mode.
 
 === Execution Environment and Supervisor Binary Interface (SBI)
 
@@ -96,28 +73,36 @@ These CSRs and memory-mapped I/O registers are:
 | `mstatus` | TSR, TW, TVM
 | `mcounteren` | All fields not hardwired to 0 must be controllable to allow testing of counter access from lower privilege modes.
 | `mcountinhibit` | All fields not hardwired to 0 must be controllable to allow testing of counter behavior from lower privilege modes.
-| `menvcfg` | STCE, PBMTE, ADUE, PMM, CBZE, CBCFE, CBIE, SSE, LPE, FIOM must be controllable to allow testing of the behavior of lower privilege modes with these features enabled and disabled. Note that some bits may be read-only zero. CDE, DTE, are OUT-OF-SCOPE because they do not relate to RVA23 features.
-All writable fields must be controllable to allow testing of the behavior of lower privilege modes when certain features are disabled.
+| `menvcfg` | STCE, PBMTE, ADUE, PMM, CBZE, CBCFE, CBIE, SSE, LPE, FIOM must be controllable to allow testing of the behavior of lower privilege modes with these features enabled and disabled. Note that some bits may be read-only zero. CDE, DTE are OUT-OF-SCOPE because they do not relate to RVA23 features. All writable fields must be controllable to allow testing of the behavior of lower privilege modes when certain features are disabled.
 | `mseccfg` | PMM, SSEED, and USEED must be controllable to allow testing of the behavior of lower privilege modes when certain features are disabled.  Note that some bits may be read-only zero. MLPE, RLB, MMWP, MML are OUT-OF-SCOPE of RVA23.
 | `mstateen` | SE0, ENVCFG, CONTEXT must be controllable to allow testing of the behavior of lower privilege modes when certain features are disabled. Note that some bits may be read-only zero.  Other fields are OUT-OF-SCOPE because they do not relate to RVA23 features.
-| `medeleg` | All standard exceptions are tested both with delegation to S and M mode.  When delegated to S mode, `sstatus.SPP/SIE/SPIE`, `sepc`, `scause`, and `stval` must have the values defined by the spec.  If the hardware does not support delegating certain exceptions to S-mode, the M-mode trap handler must be aware of this and emulate delegation to S-mode by invoking the S-mode trap handler through software.  When not delegated to S-mode, the M-mode trap handler must record `mstatus.MPP/MIE/MPIE`, `mepc`, `mcause`, and `mtval`.  If a custom M-mode does not write values to these fields as defined by the M-mode spec, it must emulate the standard behavior by recording what standard M-mode would have written to these CSRs.  TODO: may also need `mtinst`, `mtval2`, `htinst`, check all xstatus bit fields of interest are recorded.
-| `mideleg` | Do the same delegation to M and S mode as in `medeleg`for SEI, SSI, STI, LCOFI, SGEI.  MEI, MSI, MTI are OUT-OF-SCOPE and note tested.| `mhartid` | Must be readable to influence the behavior of multicore tests.
+| `mhartid` | Must be readable to influence the behavior of multicore tests.
 | `mtime` | Must be readable to find the current time to set timer interrupts.
-| `mtimecmp` | Must be controllable to set timer interrupts.
 |===
 
-The following M-mode CSRs are OUT-OF-SCOPE:
+The following M-mode CSRs/fields are OUT-OF-SCOPE:
 
 [options=header]
 [cols="1,5"]
 |===
 | CSR | Notes
 | `mstatus` | SD, SPELP, MXR, SUM, FS, VS, SPP, SPIE, SIE are accessible from `sstatus` and should not be tested through `mstatus` for RVA23 certification. GVA and MPV do not affect the behavior of lower privilege modes. XS, SDT, MBE, SBE, UBE, SXL, UXL OUT-OF-SCOPE for RVA23.
+| `medeleg` | All standard exceptions are delegated to S-mode except that `ecall` from S and M-mode must not be delegatable because the SBI must trap to M-mode.
+| `mideleg` | All supervisor interrupts are delegated including SEI, SSI, STI, VSEI, VSSI, VSTI, LCOFI, SGEI.  Machine interrupts MEI, MSI, MTI are OUT-OF_SCOPE and not delegated.
+| `mip` | MEIP, MSIP, MTIP are OUT-OF-SCOPE.  SEIP, STIP, SSIP, and LCOFIP are accessible from `sip` and SGEIP is controlled by `hgeip` and `hgeie`.
+| `mie` | No fields are used for RVA23 certification because all relevant fields are accessible from `sie` or `hie`.
 | `misa` | Not tested because the contents do not have a predictable effect on behavior.
 | `mvendorid` | Does not affect the behavior of lower privilege modes.
 | `marchid` | Does not affect the behavior of lower privilege modes.
 | `mimpid` | Does not affect the behavior of lower privilege modes.
 | `mconfigptr` | Does not affect the behavior of lower privilege modes.
+| `mtvec` | Trap vector must be set up during boot but is not modified through SBI.
+| `mepc` | Does not affect the behavior of lower privilege modes.
+| `mcause` | Does not affect the behavior of lower privilege modes.
+| `mscratch` | Does not affect the behavior of lower privilege modes.
+| `mtval` | Does not affect the behavior of lower privilege modes.
+| `mtinst` | Does not affect the behavior of lower privilege modes.
+| `mtval2` | Does not affect the behavior of lower privilege modes.
 | PMP CSRs | PMP restrictions on access are indistinguishable below M-mode from a PMA that imposes similar restrictions.
 |===
 

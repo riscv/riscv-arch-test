@@ -5,7 +5,7 @@
 #ifndef _COMPLIANCE_MODEL_H
 #define _COMPLIANCE_MODEL_H
 
-#define RVMODEL_DATA_SECTION 
+#define RVMODEL_DATA_SECTION
 
 ##### STARTUP #####
 
@@ -63,8 +63,9 @@
 
 ##### Machine Timer #####
 
-#define RVMODEL_MTIME_ADDRESS    0x0200BFF8
-#define RVMODEL_MTIMECMP_ADDRESS 0x02004000
+# MTIME is not implemented on this DUT. Comment out to prevent testing them.
+//#define RVMODEL_MTIME_ADDRESS    0x0200BFF8
+//#define RVMODEL_MTIMECMP_ADDRESS 0x02004000
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
 ##### Machine Interrupts #####

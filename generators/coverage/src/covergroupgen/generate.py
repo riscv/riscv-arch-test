@@ -41,7 +41,7 @@ SEW_DEPENDENT_CPS = {
 VECTOR_PREFIXES = ("Vx", "Zv", "Vls", "Vf")
 
 # Subset of vector prefixes that support widening instructions.
-VECTOR_WIDEN_PREFIXES = ("Vx", "Vls", "Vf")
+VECTOR_WIDEN_PREFIXES = ("Vx", "Vls", "Vf", "Zvfhmin", "Zvfbfmin", "Zvfbfwma")
 
 
 def _write_if_changed(path: Path, content: str) -> None:

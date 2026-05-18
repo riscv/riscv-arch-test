@@ -484,42 +484,43 @@ def generate_vector_illegal_instr(
     lines.append(comment_banner("Vector load reserved encodings", "Reserved mew/width/lumop for vector loads"))
 
     _emit_vector_init(lines)
+    # Vector loads — rs1 fixed to x8 (scratch base)
     # mew=0, reserved width values
-    emit_raw_words(lines, "cp_vl_0_000", "RRR0RRRRRRRRRRRRR000RRRRR0000111")
-    emit_raw_words(lines, "cp_vl_0_101", "RRR0RRRRRRRRRRRRR101RRRRR0000111")
-    emit_raw_words(lines, "cp_vl_0_110", "RRR0RRRRRRRRRRRRR110RRRRR0000111")
-    emit_raw_words(lines, "cp_vl_0_111", "RRR0RRRRRRRRRRRRR111RRRRR0000111")
+    emit_raw_words(lines, "cp_vl_0_000", "RRR0RRRRRRRR01000000RRRRR0000111")
+    emit_raw_words(lines, "cp_vl_0_101", "RRR0RRRRRRRR01000101RRRRR0000111")
+    emit_raw_words(lines, "cp_vl_0_110", "RRR0RRRRRRRR01000110RRRRR0000111")
+    emit_raw_words(lines, "cp_vl_0_111", "RRR0RRRRRRRR01000111RRRRR0000111")
     # mew=1, reserved width values
-    emit_raw_words(lines, "cp_vl_1_000", "RRR1RRRRRRRRRRRRR000RRRRR0000111")
-    emit_raw_words(lines, "cp_vl_1_101", "RRR1RRRRRRRRRRRRR101RRRRR0000111")
-    emit_raw_words(lines, "cp_vl_1_110", "RRR1RRRRRRRRRRRRR110RRRRR0000111")
-    emit_raw_words(lines, "cp_vl_1_111", "RRR1RRRRRRRRRRRRR111RRRRR0000111")
+    emit_raw_words(lines, "cp_vl_1_000", "RRR1RRRRRRRR01000000RRRRR0000111")
+    emit_raw_words(lines, "cp_vl_1_101", "RRR1RRRRRRRR01000101RRRRR0000111")
+    emit_raw_words(lines, "cp_vl_1_110", "RRR1RRRRRRRR01000110RRRRR0000111")
+    emit_raw_words(lines, "cp_vl_1_111", "RRR1RRRRRRRR01000111RRRRR0000111")
     # Reserved lumop values per width
-    emit_raw_words(lines, "cp_vl_lumop_8", "RRR0RR1EEEEERRRRR000RRRRR0000111")
-    emit_raw_words(lines, "cp_vl_lumop_16", "RRR0RR1EEEEERRRRR101RRRRR0000111")
-    emit_raw_words(lines, "cp_vl_lumop_32", "RRR0RR1EEEEERRRRR110RRRRR0000111")
-    emit_raw_words(lines, "cp_vl_lumop_64", "RRR0RR1EEEEERRRRR111RRRRR0000111")
+    emit_raw_words(lines, "cp_vl_lumop_8", "RRR0001EEEEE01000000RRRRR0000111")
+    emit_raw_words(lines, "cp_vl_lumop_16", "RRR0001EEEEE01000101RRRRR0000111")
+    emit_raw_words(lines, "cp_vl_lumop_32", "RRR0001EEEEE01000110RRRRR0000111")
+    emit_raw_words(lines, "cp_vl_lumop_64", "RRR0001EEEEE01000111RRRRR0000111")
 
     # ── Reserved vector stores ────────────────────────────────────────
     lines.append(comment_banner("Vector store reserved encodings", "Reserved mew/width/lumop for vector stores"))
 
     _emit_vector_init(lines)
     # mew=0, reserved width values
-    emit_raw_words(lines, "cp_vs_0_000", "RRR0RRRRRRRRRRRRR000RRRRR0100111")
-    emit_raw_words(lines, "cp_vs_0_101", "RRR0RRRRRRRRRRRRR101RRRRR0100111")
-    emit_raw_words(lines, "cp_vs_0_110", "RRR0RRRRRRRRRRRRR110RRRRR0100111")
-    emit_raw_words(lines, "cp_vs_0_111", "RRR0RRRRRRRRRRRRR111RRRRR0100111")
+    # Vector stores — rs1 fixed to x8 (scratch base)
+    emit_raw_words(lines, "cp_vs_0_000", "RRR0RRRRRRRR01000000RRRRR0100111")
+    emit_raw_words(lines, "cp_vs_0_101", "RRR0RRRRRRRR01000101RRRRR0100111")
+    emit_raw_words(lines, "cp_vs_0_110", "RRR0RRRRRRRR01000110RRRRR0100111")
+    emit_raw_words(lines, "cp_vs_0_111", "RRR0RRRRRRRR01000111RRRRR0100111")
     # mew=1, reserved width values
-    emit_raw_words(lines, "cp_vs_1_000", "RRR1RRRRRRRRRRRRR000RRRRR0100111")
-    emit_raw_words(lines, "cp_vs_1_101", "RRR1RRRRRRRRRRRRR101RRRRR0100111")
-    emit_raw_words(lines, "cp_vs_1_110", "RRR1RRRRRRRRRRRRR110RRRRR0100111")
-    emit_raw_words(lines, "cp_vs_1_111", "RRR1RRRRRRRRRRRRR111RRRRR0100111")
+    emit_raw_words(lines, "cp_vs_1_000", "RRR1RRRRRRRR01000000RRRRR0100111")
+    emit_raw_words(lines, "cp_vs_1_101", "RRR1RRRRRRRR01000101RRRRR0100111")
+    emit_raw_words(lines, "cp_vs_1_110", "RRR1RRRRRRRR01000110RRRRR0100111")
+    emit_raw_words(lines, "cp_vs_1_111", "RRR1RRRRRRRR01000111RRRRR0100111")
     # Reserved lumop values per width
-    emit_raw_words(lines, "cp_vs_lumop_8", "RRR0RR1EEEEERRRRR000RRRRR0100111")
-    emit_raw_words(lines, "cp_vs_lumop_16", "RRR0RR1EEEEERRRRR101RRRRR0100111")
-    emit_raw_words(lines, "cp_vs_lumop_32", "RRR0RR1EEEEERRRRR110RRRRR0100111")
-    emit_raw_words(lines, "cp_vs_lumop_64", "RRR0RR1EEEEERRRRR111RRRRR0100111")
-
+    emit_raw_words(lines, "cp_vs_lumop_8", "RRR0001EEEEE01000000RRRRR0100111")
+    emit_raw_words(lines, "cp_vs_lumop_16", "RRR0001EEEEE01000101RRRRR0100111")
+    emit_raw_words(lines, "cp_vs_lumop_32", "RRR0001EEEEE01000110RRRRR0100111")
+    emit_raw_words(lines, "cp_vs_lumop_64", "RRR0001EEEEE01000111RRRRR0100111")
     # ── Vector arithmetic per-SEW sweeps ──────────────────────────────
     # Each SEW needs its own vsetivli so the vector unit is configured
     # correctly when the illegal encodings are executed.

@@ -1,9 +1,8 @@
 // rvtest_config.h for cv64a60ax
 #define CONFORMING_SM_SUPPORTED
-#define RVMODEL_PMP_GRAIN 4
-#define RVMODEL_NUM_PMPS 16
+#define RVMODEL_PMP_GRAIN 1
+#define RVMODEL_NUM_PMPS 8
 #define D_SUPPORTED
-#define ZFA_SUPPORTED
 #define F_SUPPORTED
 #define ZBB_SUPPORTED
 #define ZBA_SUPPORTED
@@ -14,9 +13,6 @@
 #define ZCA_SUPPORTED
 #define ZCB_SUPPORTED
 #define ZCD_SUPPORTED
-#define ZICBOM_SUPPORTED
-#define ZICBOZ_SUPPORTED
-#define ZICBOP_SUPPORTED
 #define S_SUPPORTED
 #define U_SUPPORTED
 #define SV39_SUPPORTED

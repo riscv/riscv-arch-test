@@ -719,7 +719,6 @@
 
 #endif // RVTEST_VECTOR
 
-
     failedtest_saveresults_common:
         # After the jal instruction there are two XLEN-sized pointers: the instruction address and the test string pointer
         # The jal returns to DEFAULT_LINK_REG, which points to the data after jal  (i.e., the first pointer itself)
@@ -775,6 +774,11 @@
       print_newline_str:
         LA(a0, newlinestr)
         call rvmodel_io_write_str
+
+        # Trap abort sentinel: skip instruction/address/register/value fields
+        LREG a0, failing_value
+        LI(a1, 0xBAD0DEAD)
+        beq a0, a1, failedtest_report_traphandler
 
         # Print failing instruction (detect 16-bit compressed vs 32-bit)
         LA(a0, inststr)

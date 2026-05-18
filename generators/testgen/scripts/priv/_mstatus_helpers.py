@@ -17,7 +17,7 @@ import vector_testgen_common as common
 from .cp_exceptionsv_LS import _build_testline, _emit_setup, _sig_params
 
 _FS_MASK = 3 << 13  # mstatus.FS = bits [14:13]
-_VS_MASK = 3 << 9   # mstatus.VS = bits [10:9]
+_VS_MASK = 3 << 9  # mstatus.VS = bits [10:9]
 
 
 def emit_set_fs_vs(fs: int, vs: int, scratch: int) -> None:
@@ -26,11 +26,6 @@ def emit_set_fs_vs(fs: int, vs: int, scratch: int) -> None:
     common.writeLine(f"csrc mstatus, x{scratch}", "# clear FS and VS")
     common.writeLine(f"li x{scratch}, {(fs << 13) | (vs << 9)}", f"# set FS={fs} VS={vs}")
     common.writeLine(f"csrs mstatus, x{scratch}", "# write FS|VS into mstatus")
-
-
-def emit_seed_misa(scratch: int) -> None:
-    """Sail only emits misa to rvvi when an instruction touches it."""
-    common.writeLine(f"csrr x{scratch}, misa", "# seed misa into rvvi trace")
 
 
 def _pick_priv_fp_sew(instruction: str) -> int | None:
@@ -51,9 +46,13 @@ def _pick_priv_fp_sew(instruction: str) -> int | None:
     if file_sew is not None:
         return file_sew
     # Widening FP (vd EEW = 2*SEW): pick SEW=16 so vd EEW=32 (single precision).
-    if instruction in common.fwvvins or instruction in common.fwvfins \
-            or instruction in common.fwwvins or instruction in common.fwwfins \
-            or instruction in common.fwcvt_ins:
+    if (
+        instruction in common.fwvvins
+        or instruction in common.fwvfins
+        or instruction in common.fwwvins
+        or instruction in common.fwwfins
+        or instruction in common.fwcvt_ins
+    ):
         return 16
     # Narrowing FP (vs2 EEW = 2*SEW): pick SEW=16 so input EEW=32.
     if instruction in common.fcvt_w_ins:
@@ -87,7 +86,9 @@ def run_under_fs_vs(
         sew = eew
 
     instruction_data = common.randomizeVectorInstructionData(
-        instruction, sew, common.getBaseSuiteTestCount(),
+        instruction,
+        sew,
+        common.getBaseSuiteTestCount(),
         vd_val_pointer="vector_random",
         vs2_val_pointer="vector_random",
         vs1_val_pointer="vector_random",
@@ -105,7 +106,6 @@ def run_under_fs_vs(
     # Re-pick scratch in case _emit_setup consumed/clobbered ours.
     scratch = common.pickPrivScratch(instruction_data[1])
     emit_set_fs_vs(fs=fs, vs=vs, scratch=scratch)
-    emit_seed_misa(scratch)
 
     testline, vd, rd = _build_testline(instruction, instruction_data)
     sig_lmul, sig_wr = _sig_params(instruction, instruction_data)
@@ -124,8 +124,18 @@ def run_under_fs_vs(
 
     common.add_testcase_string(cp, instruction)
     common.writeVecTest(
-        instruction, cp, vd, sew, testline,
-        test=instruction, rd=rd, fd=fd, vl=1, sig_lmul=sig_lmul,
-        sig_whole_register_store=sig_wr, priv=True, skip_sigupd=skip_sigupd,
+        instruction,
+        cp,
+        vd,
+        sew,
+        testline,
+        test=instruction,
+        rd=rd,
+        fd=fd,
+        vl=1,
+        sig_lmul=sig_lmul,
+        sig_whole_register_store=sig_wr,
+        priv=True,
+        skip_sigupd=skip_sigupd,
         post_instruction_lines=post_lines,
     )

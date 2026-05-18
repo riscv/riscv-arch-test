@@ -95,7 +95,7 @@ params:
 
   # HPM Counters (VERIFIED — User Manual, Performance Counters)
   # NUM_MHPMCOUNTERS=1 (default) → only mhpmcounter3 active; counters 4-31 hardwired to 0
-  HPM_EVENTS: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15] # VERIFIED — events 0-15 per perf_counters.rst event table
+  HPM_EVENTS: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15] # VERIFIED — events 0-15 per User Manual, Performance Counters event table
   HPM_COUNTER_EN: # VERIFIED — NUM_MHPMCOUNTERS=1; only mhpmcounter3 active; others read-only zero
     [
       false, # index 0 (CY — must be false per UDB schema)

@@ -66,11 +66,7 @@ CBO_EXCLUSIONS: list[str] = []
 AMO_EXCLUSIONS: list[str] = [
     "01001XXXXXXXXXXXX01X010010101111",  # ssamoswap (Ssamoswap)
 ]
-ADDUW_EXCLUSIONS: list[str] = [
-    # TODO: Exclude funct3=000 entirely until Sail add.uw decoder bug is fixed.
-    # Sail incorrectly decodes multiple funct7 values as add.uw.
-    "XXXXXXX0011100111000001110111011",
-]
+ADDUW_EXCLUSIONS: list[str] = []
 
 # Privileged/SYSTEM instruction exclusions shared by all modes.
 PRIVILEGED_000_EXCLUSIONS: list[str] = [
@@ -480,10 +476,9 @@ def generate_vector_illegal_instr(
     _emit_vector_init(lines)
     emit_raw_words(lines, "cp_v_vsetvl", "10EEEEERRRRRRRRRR111RRRRR1010111")
     emit_raw_words(lines, "cp_v_vsetvli_sew", "0000RR1EERRRRRRRR111RRRRR1010111")
-    # TODO: Restore once Sail vsetvli reserved-vtype behavior is resolved
-    # emit_raw_words(lines, "cp_v_vsetvli_res", "EEE0RR0RRRRRRRRRR111RRRRR1010111")
-    # emit_raw_words(lines, "cp_v_vsetivli_sew", "1100RR1EERRRRRRRR111RRRRR1010111")
-    # emit_raw_words(lines, "cp_v_vsetivli_res", "11EERR0RRRRRRRRRR111RRRRR1010111")
+    emit_raw_words(lines, "cp_v_vsetvli_res", "EEE0RR0RRRRRRRRRR111RRRRR1010111")
+    emit_raw_words(lines, "cp_v_vsetivli_sew", "1100RR1EERRRRRRRR111RRRRR1010111")
+    emit_raw_words(lines, "cp_v_vsetivli_res", "11EERR0RRRRRRRRRR111RRRRR1010111")
 
     # ── Reserved vector loads ─────────────────────────────────────────
     lines.append(comment_banner("Vector load reserved encodings", "Reserved mew/width/lumop for vector loads"))

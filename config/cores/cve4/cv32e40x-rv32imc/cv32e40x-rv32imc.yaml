@@ -101,7 +101,7 @@ params:
       false, # index 0 (CY — must be false per UDB schema)
       false, # index 1 (TM — must be false per UDB schema)
       false, # index 2 (IR — must be false per UDB schema)
-      true,  # index 3 (MHPMCOUNTER3 — only active counter with NUM_MHPMCOUNTERS=1)
+      true, # index 3 (MHPMCOUNTER3 — only active counter with NUM_MHPMCOUNTERS=1)
       false, # 4
       false,
       false,
@@ -133,10 +133,10 @@ params:
     ]
   COUNTINHIBIT_EN: # VERIFIED — User Manual, Performance Counters: bit 0=mcycle, bit 2=minstret, bit X=mhpmcounterX
     [
-      true,  # index 0 (MCYCLE inhibit — supported)
+      true, # index 0 (MCYCLE inhibit — supported)
       false, # index 1 (TM — always false per UDB)
-      true,  # index 2 (MINSTRET inhibit — supported)
-      true,  # index 3 (MHPMCOUNTER3 inhibit — supported)
+      true, # index 2 (MINSTRET inhibit — supported)
+      true, # index 3 (MHPMCOUNTER3 inhibit — supported)
       false, # 4
       false,
       false,

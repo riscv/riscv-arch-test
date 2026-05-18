@@ -108,43 +108,107 @@ params:
 
   # HPM Counters
   HPM_EVENTS: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-  HPM_COUNTER_EN:
-    [
+  HPM_COUNTER_EN: [
       false, # index 0 (CY — must be false per UDB schema)
       false, # index 1 (TM — must be false per UDB schema)
       false, # index 2 (IR — must be false per UDB schema)
-      true,  # index 3 (MHPMCOUNTER3 — only active counter with NUM_MHPMCOUNTERS=1)
-      false, false, false, false, # 4..7
-      false, false, false, false, # 8..11
-      false, false, false, false, # 12..15
-      false, false, false, false, # 16..19
-      false, false, false, false, # 20..23
-      false, false, false, false, # 24..27
-      false, false, false, false, # 28..31
+      true, # index 3 (MHPMCOUNTER3 — only active counter with NUM_MHPMCOUNTERS=1)
+      false,
+      false,
+      false,
+      false, # 4..7
+      false,
+      false,
+      false,
+      false, # 8..11
+      false,
+      false,
+      false,
+      false, # 12..15
+      false,
+      false,
+      false,
+      false, # 16..19
+      false,
+      false,
+      false,
+      false, # 20..23
+      false,
+      false,
+      false,
+      false, # 24..27
+      false,
+      false,
+      false,
+      false, # 28..31
     ]
-  COUNTINHIBIT_EN:
-    [
-      true,  # index 0 (MCYCLE inhibit)
+  COUNTINHIBIT_EN: [
+      true, # index 0 (MCYCLE inhibit)
       false, # index 1 (TM — always false per UDB)
-      true,  # index 2 (MINSTRET inhibit)
-      true,  # index 3 (MHPMCOUNTER3 inhibit)
-      false, false, false, false, # 4..7
-      false, false, false, false, # 8..11
-      false, false, false, false, # 12..15
-      false, false, false, false, # 16..19
-      false, false, false, false, # 20..23
-      false, false, false, false, # 24..27
-      false, false, false, false, # 28..31
+      true, # index 2 (MINSTRET inhibit)
+      true, # index 3 (MHPMCOUNTER3 inhibit)
+      false,
+      false,
+      false,
+      false, # 4..7
+      false,
+      false,
+      false,
+      false, # 8..11
+      false,
+      false,
+      false,
+      false, # 12..15
+      false,
+      false,
+      false,
+      false, # 16..19
+      false,
+      false,
+      false,
+      false, # 20..23
+      false,
+      false,
+      false,
+      false, # 24..27
+      false,
+      false,
+      false,
+      false, # 28..31
     ]
   MCOUNTENABLE_EN: # NOTE: CV32E40X has no mcounteren (M-mode only); values satisfy UDB schema
     [
-      true, true, true, true,
-      false, false, false, false,
-      false, false, false, false,
-      false, false, false, false,
-      false, false, false, false,
-      false, false, false, false,
-      false, false, false, false,
-      false, false, false, false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
     ]
 # end

@@ -32,10 +32,10 @@ $ make -j$(nproc) CONFIG_FILES=config/cores/cve4/cv32e40p-v1-rv32imc/test_config
 
 Two configurations are provided:
 
-| Config                | ISA        | Notes                          |
-| --------------------- | ---------- | ------------------------------ |
-| `cv32e40x-rv32imc`    | RV32IMC    | v0.10.0, base configuration    |
-| `cv32e40x-rv32imcab`  | RV32IMCZba | v0.10.0, with B extension      |
+| Config               | ISA        | Notes                       |
+| -------------------- | ---------- | --------------------------- |
+| `cv32e40x-rv32imc`   | RV32IMC    | v0.10.0, base configuration |
+| `cv32e40x-rv32imcab` | RV32IMCZba | v0.10.0, with B extension   |
 
 To build the UDB configuration, coverage files and ELFs, run one of the following
 commands from the top of your working copy of this repo:

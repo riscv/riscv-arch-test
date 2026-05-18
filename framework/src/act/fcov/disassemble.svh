@@ -1426,7 +1426,7 @@ function string disassemble (logic [31:0] instrRaw);
     VFWCVTBF16_F_F_V: $sformat(decoded, "vfwcvtbf16.f.f.v %s, %s%s",    vd, vs2, vm);
     VFNCVTBF16_F_F_W: $sformat(decoded, "vfncvtbf16.f.f.w %s, %s%s",    vd, vs2, vm);
 
-    // V Extension: BF16 Widening Multiply Add 
+    // V Extension: BF16 Widening Multiply Add
     VFWMACCBF16_VV:  $sformat(decoded, "vfwmaccbf16.vv %s, %s, %s%s",     vd, vs1, vs2, vm);
     VFWMACCBF16_VF:  $sformat(decoded, "vfwmaccbf16.vf %s, %s, %s%s",     vd, fs1, vs2, vm);
 

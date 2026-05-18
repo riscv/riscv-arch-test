@@ -159,6 +159,8 @@ def execute_task(
             if shutdown_event.is_set():
                 with contextlib.suppress(ProcessLookupError, PermissionError):
                     os.killpg(pgid, signal.SIGKILL)
+                with contextlib.suppress(ProcessLookupError, PermissionError):
+                    proc.kill()
             else:
                 with pgids_lock:
                     active_pgids.add(pgid)

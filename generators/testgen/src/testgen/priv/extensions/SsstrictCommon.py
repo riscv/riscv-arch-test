@@ -66,6 +66,12 @@ CBO_EXCLUSIONS: list[str] = []
 AMO_EXCLUSIONS: list[str] = [
     "01001XXXXXXXXXXXX01X010010101111",  # ssamoswap (Ssamoswap)
 ]
+ADDUW_EXCLUSIONS: list[str] = [
+    # TODO: Exclude funct3=000 entirely until Sail add.uw decoder bug is fixed.
+    # Sail incorrectly decodes multiple funct7 values as add.uw.
+    "XXXXXXX0011100111000001110111011",
+]
+
 # Privileged/SYSTEM instruction exclusions shared by all modes.
 PRIVILEGED_000_EXCLUSIONS: list[str] = [
     "1XXX11XXXXXX00000000000001110011",  # custom system
@@ -362,7 +368,7 @@ def generate_illegal_instr(
 
     # ── R-type / RW-type ──────────────────────────────────────────────
     emit_raw_words(lines, "cp_rtype", "EEEEEEE0011100111EEE001110110011")
-    emit_raw_words(lines, "cp_rwtype", "EEEEEEE0011100111EEE001110111011")
+    emit_raw_words(lines, "cp_rwtype", "EEEEEEE0011100111EEE001110111011", exclusion=ADDUW_EXCLUSIONS)
 
     # ── FP ────────────────────────────────────────────────────────────
     emit_raw_words(lines, "cp_ftype", "EEEEERR0011100111EEE001111010011")

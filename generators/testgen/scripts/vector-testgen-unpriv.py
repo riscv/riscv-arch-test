@@ -42,6 +42,7 @@ from vector_testgen_common import (
   getSigReg,
   getFlen,
   fedges,
+  fedgesBF16,
   fedgesD,
   fedgesH,
   freg_count,
@@ -359,6 +360,8 @@ def make_rs1_edges_v(instruction, sew, redgesv):
 def make_fs1_edges_v(instruction, sew):
   if sew == 64:
     fedgesv = fedgesD
+  elif sew == 16 and 'bf16' in instruction:
+    fedgesv = fedgesBF16
   elif sew == 16:
     fedgesv = fedgesH
   else:
@@ -394,6 +397,8 @@ def make_vs2_rs1_edges(instruction, sew, vs2edges):
 def make_vs2_fs1_edges(instruction, sew, vs2edges):
   if sew == 64:
     fedgesv = fedgesD
+  elif sew == 16 and 'bf16' in instruction:
+    fedgesv = fedgesBF16
   elif sew == 16:
     fedgesv = fedgesH
   else:
@@ -470,6 +475,8 @@ def _get_fflags_pairs(instruction: str, sew: int) -> list[tuple[str, dict[str, o
   """
   if sew == 64:
     edge_dict = fedgesD
+  elif sew == 16 and 'bf16' in instruction:
+    edge_dict = fedgesBF16
   elif sew == 16:
     edge_dict = fedgesH
   else:
@@ -528,6 +535,22 @@ def _get_fflags_pairs(instruction: str, sew: int) -> list[tuple[str, dict[str, o
     pairs.append(("NX", {"vs2_val_pointer": "vs_corner_f_pos1p5_emul1"}))
     # OF: rec7(min_subnorm) overflows
     pairs.append(("OF", {"vs2_val_pointer": "vs_corner_f_min_subnorm_emul1"}))
+
+  elif base_name == "vfwcvtbf16":
+    # NV: sNaN conversion
+    pairs.append(("NV", { "vs2_val_pointer": "vs_corner_f_sNaN_payload1_emul1" }))
+
+  elif base_name == "vfncvtbf16":
+    # NV: sNaN conversion
+    pairs.append(("NV", { "vs2_val_pointer": "vs_corner_f_sNaN_payload1_emul2" }))
+    # UF: Only something below bf16 minsubnorm (which has the same exponent as f32) can underflow here
+    pairs.append(("UF", { "vs2_val_pointer": "vs_corner_f_min_subnorm_emul2" }))
+    # OF: Only something above bf16 maxnorm (which has the same exponent as f32) can overflow here
+    pairs.append(("OF", { "vs2_val_pointer": "vs_corner_f_negmaxnorm_emul2" }))
+
+  elif base_name == "vfncvt":
+    # NV: sNaN conversion
+    pairs.append(("NV", { "vs2_val_pointer": "vs_corner_f_sNaN_payload1_emul2" }))
 
   return pairs
 
@@ -900,6 +923,7 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cp_rs2_edges_ls_e64"        : make_rs2_edges_v(test, sew, redges_ls_e64, lmul = getBaseLmul(test, sew))
     elif coverpoint == "cp_rs1_edges"               : make_rs1_edges_v(test, sew, redgesv)
     elif coverpoint == "cp_fs1_edges_v"             : make_fs1_edges_v(test, sew)
+    elif coverpoint == "cp_fs1_edges_v_bf16"        : make_fs1_edges_v(test, sew)
     elif coverpoint == "cmp_rs1_rs2"                  : make_rs1_rs2_v(test, sew, range(xreg_count))
     elif coverpoint == "cp_imm_5bit"                  : make_imm_v(test, sew)
     elif coverpoint == "cp_imm_5bit_u"                : make_imm_v(test, sew)
@@ -970,22 +994,26 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cp_vs2_edges_eew1"          : make_vs2_edges(test, sew, vedgeseew1, vl=8)  # assume vl = 8 for mask logical instr
     elif coverpoint == "cp_vs2_edges_ls"            : make_vs2_edges(test, sew, v_edges_ls, lmul=getBaseLmul(test, sew))
     elif coverpoint == "cp_vs2_edges_f"             : make_vs2_edges(test, sew, vfedgesemul1)
+    elif coverpoint == "cp_vs2_edges_f_bf16"        : make_vs2_edges(test, sew, vfedgesemul1)
     elif coverpoint == "cp_vs2_edges_f_emul2"       : make_vs2_edges(test, sew, vfedgesemul2)
     elif coverpoint == "cp_vs1_edges"               : make_vs1_edges(test, sew, vedgesemul1)
     elif coverpoint == "cp_vs1_edges_emul2"         : make_vs1_edges(test, sew, vedgesemul2)
     elif coverpoint == "cp_vs1_edges_eew1"          : make_vs1_edges(test, sew, vedgeseew1, vl=8)  # assume vl = 8 for mask logical instr
     elif coverpoint == "cp_vs1_edges_f"             : make_vs1_edges(test, sew, vfedgesemul1)
+    elif coverpoint == "cp_vs1_edges_f_bf16"        : make_vs1_edges(test, sew, vfedgesemul1)
     elif coverpoint == "cp_vs1_edges_f_emul2"       : make_vs1_edges(test, sew, vfedgesemul2)
     elif coverpoint == "cr_vs2_vs1_edges"           : make_vs2_vs1_edges(test, sew, vedgesemul1, vedgesemul1)
     elif coverpoint == "cr_vs2_vs1_edges_wv"        : make_vs2_vs1_edges(test, sew, vedgesemul2, vedgesemul1)
     elif coverpoint == "cr_vs2_vs1_edges_wred"      : make_vs2_vs1_edges(test, sew, vedgesemul1, vedgesemul2)
     elif coverpoint == "cr_vs2_vs1_edges_mm"        : make_vs2_vs1_edges(test, sew, vedgeseew1, vedgeseew1, vl=8)
     elif coverpoint == "cr_vs2_vs1_edges_f"         : make_vs2_vs1_edges(test, sew, vfedgesemul1, vfedgesemul1)
+    elif coverpoint == "cr_vs2_vs1_edges_f_bf16"    : make_vs2_vs1_edges(test, sew, vfedgesemul1, vfedgesemul1)
     elif coverpoint == "cr_vs2_vs1_edges_fwv"       : make_vs2_vs1_edges(test, sew, vfedgesemul2, vfedgesemul1)
     elif coverpoint == "cr_vs2_vs1_edges_fwred"     : make_vs2_vs1_edges(test, sew, vfedgesemul1, vfedgesemul2)
     elif coverpoint == "cr_vs2_rs1_edges"           : make_vs2_rs1_edges(test, sew, vedgesemul1)
     elif coverpoint == "cr_vs2_rs1_edges_wx"        : make_vs2_rs1_edges(test, sew, vedgesemul2)
     elif coverpoint == "cr_vs2_fs1_edges"           : make_vs2_fs1_edges(test, sew, vfedgesemul1)
+    elif coverpoint == "cr_vs2_fs1_edges_bf16"      : make_vs2_fs1_edges(test, sew, vfedgesemul1)
     elif coverpoint == "cr_vs2_fs1_edges_wf"        : make_vs2_fs1_edges(test, sew, vfedgesemul2)
     elif coverpoint == "cr_vs2_imm_edges"           : make_vs2_imm_edges(test, sew, vedgesemul1)
     elif coverpoint == "cr_vs2_imm_edges_u"         : make_vs2_imm_edges(test, sew, vedgesemul1)
@@ -1313,7 +1341,13 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
         sew = int(match.group(1))
         break
   else:
-    sew = 8
+    for pattern in [r'/Zvfbfmin$', r'/Zvfhmin$', r'/Zvfbfwma$']:
+      match = re.search(pattern, pathname)
+      if match:
+        sew = 16
+        break
+    else:
+      sew = 8
 
   instructions = list(testplans[extension].keys())
   applicable_instructions = list(testplans[extension].keys())
@@ -1351,7 +1385,13 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
           sew = int(sew_match.group(1))
           break
     else:
-      sew = 8
+      for pattern in [r'/Zvfbfmin$', r'/Zvfhmin$', r'/Zvfbfwma$']:
+        match = re.search(pattern, pathname)
+        if match:
+          sew = 16
+          break
+      else:
+        sew = 8
 
     if extension.startswith(("VfCustom", "Vf")) and sew > 32:
       setFlen(sew)

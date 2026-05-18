@@ -145,6 +145,27 @@ fedgesH  = {"pos0":                 0x0000, # 0
               "negNoncanonicalQNaN":  0xFFFF, # noncanonical quiet NaN
               "sNaN_payload1":        0x7D01} # signaling NaN with lsb set
 
+fedgesBF16 = {"pos0":                 0x0000, # 0
+              "neg0":                 0x8000, # -0
+              "pos1":                 0x3f80, # 1.0
+              "neg1":                 0xbf80, # -1.0
+              "posminnorm":           0x0080, # smallest positive normalized
+              "negmaxnorm":           0xff7f, # most negative
+              "posinfinity":          0x7f80, # positive infinity
+              "neginfinity":          0xff80, # negative infinity
+              "pos0p5":               0x3f00, # 0.5
+              "pos1p5":               0x3fc0, # 1.5
+              "neg2":                 0xC000, # 2.0
+              "pi":                   0x4049, # pi
+              "twoToEmax":            0x7f00, # 2^emax
+              "onePulp":              0x3f81, # 1 + ulp
+              "largestsubnorm":       0x007f, # largest positive subnorm
+              "negSubnormLeadingOne": 0x8040, # positive subnorm with leading 1
+              "min_subnorm":          0x0001, # smallest positive subnorm
+              "canonicalQNaN":        0x7fc0, # canonical quiet NaN
+              "negNoncanonicalQNaN":  0xffff, # noncanonical quiet NaN
+              "sNaN_payload1":        0x7f81} # signaling NaN with lsb set
+
 # fedgesQ = [] # TODO: Fill out quad precision F edges
 
 vectoredges = ["vs_corner_zero", "vs_corner_one", "vs_corner_two", "vs_corner_ones", "vs_corner_onesm1", "vs_corner_min", "vs_corner_minm1",
@@ -487,12 +508,12 @@ vvfmtype     = ["vfadd.vf", "vfwadd.vf", "vfwadd.wf", "vfsub.vf", "vfwsub.vf", "
                 "vmfeq.vf", "vmfne.vf", "vmflt.vf", "vmfle.vf", "vmfgt.vf", "vmfge.vf",
                 "vfslide1up.vf", "vfslide1down.vf"]
 vvfvtype     = ["vfmerge.vfm"]
-vvvmr_f_type = ["vfmacc.vv", "vfnmacc.vv", "vfmsac.vv", "vfnmsac.vv", "vfmadd.vv", "vfnmadd.vv", "vfmsub.vv", "vfnmsub.vv", "vfwmacc.vv", "vfwnmacc.vv", "vfwmsac.vv", "vfwnmsac.vv"]
-vfvmtype     = ["vfmacc.vf", "vfnmacc.vf", "vfmsac.vf", "vfnmsac.vf", "vfmadd.vf", "vfnmadd.vf", "vfmsub.vf", "vfnmsub.vf", "vfwmacc.vf", "vfwnmacc.vf", "vfwmsac.vf", "vfwnmsac.vf"]
+vvvmr_f_type = ["vfmacc.vv", "vfnmacc.vv", "vfmsac.vv", "vfnmsac.vv", "vfmadd.vv", "vfnmadd.vv", "vfmsub.vv", "vfnmsub.vv", "vfwmacc.vv", "vfwnmacc.vv", "vfwmsac.vv", "vfwnmsac.vv", "vfwmaccbf16.vv"]
+vfvmtype     = ["vfmacc.vf", "vfnmacc.vf", "vfmsac.vf", "vfnmsac.vf", "vfmadd.vf", "vfnmadd.vf", "vfmsub.vf", "vfnmsub.vf", "vfwmacc.vf", "vfwnmacc.vf", "vfwmsac.vf", "vfwnmsac.vf", "vfwmaccbf16.vf"]
 vvm_f_type   = ["vfsqrt.v", "vfrsqrt7.v", "vfrec7.v",
                 "vfcvt.xu.f.v", "vfwcvt.xu.f.v", "vfncvt.xu.f.w", "vfcvt.x.f.v", "vfwcvt.x.f.v", "vfncvt.x.f.w", "vfcvt.rtz.xu.f.v", "vfwcvt.rtz.xu.f.v", "vfncvt.rtz.xu.f.w",
                 "vfcvt.rtz.x.f.v", "vfwcvt.rtz.x.f.v", "vfncvt.rtz.x.f.w", "vfcvt.f.xu.v", "vfwcvt.f.xu.v", "vfncvt.f.xu.w", "vfcvt.f.x.v", "vfwcvt.f.x.v", "vfncvt.f.x.w",
-                "vfwcvt.f.f.v", "vfncvt.f.f.w", "vfncvt.rod.f.f.w", "vfclass.v"]
+                "vfwcvt.f.f.v", "vfncvt.f.f.w", "vfncvt.rod.f.f.w", "vfclass.v", "vfwcvtbf16.f.f.v", "vfncvtbf16.f.f.w"]
 vftype       = ["vfmv.v.f", "vfmv.s.f"]
 fvtype       = ["vfmv.f.s"]
 
@@ -558,18 +579,18 @@ viins  = ["vadd.vi", "vrsub.vi", "vand.vi", "vor.vi", "vxor.vi", "vsll.vi", "vsr
 wvins = ["vnsrl.wv", "vnsra.wv", "vnclip.wv", "vnclipu.wv"]
 wxins = ["vnsrl.wx", "vnsra.wx", "vnclip.wx", "vnclipu.wx"]
 wiins = ["vnsrl.wi", "vnsra.wi", "vnclip.wi", "vnclipu.wi"]
-fcvt_w_ins = ["vfncvt.xu.f.w", "vfncvt.x.f.w", "vfncvt.rtz.xu.f.w", "vfncvt.rtz.x.f.w", "vfncvt.f.xu.w", "vfncvt.f.x.w", "vfncvt.f.f.w", "vfncvt.rod.f.f.w"]
+fcvt_w_ins = ["vfncvt.xu.f.w", "vfncvt.x.f.w", "vfncvt.rtz.xu.f.w", "vfncvt.rtz.x.f.w", "vfncvt.f.xu.w", "vfncvt.f.x.w", "vfncvt.f.f.w", "vfncvt.rod.f.f.w", "vfncvtbf16.f.f.w"]
 narrowins = wvins + wxins + wiins + fcvt_w_ins
 # widening
-fwvvins = ["vfwadd.vv", "vfwsub.vv", "vfwmul.vv", "vfwmacc.vv", "vfwnmacc.vv", "vfwmsac.vv", "vfwnmsac.vv"]
-fwvfins = ["vfwadd.vf", "vfwsub.vf", "vfwmul.vf", "vfwmacc.vf", "vfwnmacc.vf", "vfwmsac.vf", "vfwnmsac.vf"]
+fwvvins = ["vfwadd.vv", "vfwsub.vv", "vfwmul.vv", "vfwmacc.vv", "vfwnmacc.vv", "vfwmsac.vv", "vfwnmsac.vv", "vfwmaccbf16.vv"]
+fwvfins = ["vfwadd.vf", "vfwsub.vf", "vfwmul.vf", "vfwmacc.vf", "vfwnmacc.vf", "vfwmsac.vf", "vfwnmsac.vf", "vfwmaccbf16.vf"]
 fwwvins = ["vfwadd.wv", "vfwsub.wv"]
 fwwfins = ["vfwadd.wf", "vfwsub.wf"]
 wvvins  = ["vwadd.vv", "vwaddu.vv", "vwsub.vv", "vwsubu.vv", "vwmul.vv", "vwmulu.vv", "vwmulsu.vv", "vwmacc.vv", "vwmaccu.vv", "vwmaccsu.vv"] + fwvvins + bwvvins
 wvxins  = ["vwadd.vx", "vwaddu.vx", "vwsub.vx", "vwsubu.vx", "vwmul.vx", "vwmulu.vx", "vwmulsu.vx", "vwmacc.vx", "vwmaccu.vx", "vwmaccsu.vx", "vwmaccus.vx"]
 wwvins  = ["vwadd.wv", "vwaddu.wv", "vwsub.wv", "vwsubu.wv"] + fwwvins
 wwxins  = ["vwadd.wx", "vwaddu.wx", "vwsub.wx", "vwsubu.wx"]
-fwcvt_ins  = ["vfwcvt.xu.f.v", "vfwcvt.x.f.v", "vfwcvt.rtz.xu.f.v", "vfwcvt.rtz.x.f.v", "vfwcvt.f.xu.v", "vfwcvt.f.x.v", "vfwcvt.f.f.v"]
+fwcvt_ins  = ["vfwcvt.xu.f.v", "vfwcvt.x.f.v", "vfwcvt.rtz.xu.f.v", "vfwcvt.rtz.x.f.v", "vfwcvt.f.xu.v", "vfwcvt.f.x.v", "vfwcvt.f.f.v", "vfwcvtbf16.f.f.v"]
 vs2_widen_ins = narrowins + wwvins + wwxins + fwwfins
 # masking
 vvmins = ["vadc.vvm", "vsbc.vvm", "vmerge.vvm"]
@@ -1185,6 +1206,8 @@ def genVsedgesFP(test, sew, emul):
   # so widening instructions (emul=2) use the correct precision edges.
   if eew == 64:
     vs_edges_f = fedgesD
+  elif eew == 16 and 'bf16' in test:
+    vs_edges_f = fedgesBF16
   elif eew == 16:
     vs_edges_f = fedgesH
   else:
@@ -1392,7 +1415,10 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
         if ext == "V" and matched_alias is not None:
           ext_str_no_I += "_" + ext
           continue
-        if ext in ["Zvbb", "Zvbc", "Zvkb"]: # Bit Manipulation, Carryless Multiplication, and Crypto Bit Manipulation
+        if ext.startswith("Zv"):
+          ext_str_no_I += "_" + ext
+        # Bit Manipulation, Carryless Multiplication, and Crypto Bit Manipulation
+        if ext in ["Zvbb", "Zvbc", "Zvkb"]:
           zve_extension = f"Zve{max(32, sew, vdsew)}x"
           ext_str_no_I += "_" + ext + "_" + zve_extension.lower() # Ensure that we can handle either sew
           ext_parts_no_I.append(zve_extension)

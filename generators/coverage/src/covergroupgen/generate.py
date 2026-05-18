@@ -212,6 +212,8 @@ def _get_effew(arch: str) -> str:
         return match.group(1)
     if arch in ("Zvfhmin", "Zvfbfmin", "Zvfbfwma"):
         return "16"
+    if arch.startswith("Zvk") and arch != "Zvkb":
+        return "32"
     raise ValueError(f"Arch does not contain an expected integer: '{arch}'")
 
 

@@ -2489,6 +2489,15 @@
             ins.add_vm(3);
             ins.add_v0();
         end
+        "vghsh.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vs1(2);
+        end
+        "vgmul.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+        end
         "vid.v"     : begin
             ins.add_vd(0);
             ins.add_vm(1);

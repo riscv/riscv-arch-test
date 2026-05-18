@@ -488,3 +488,6 @@
 `ifdef ZVKB8_COVERAGE
   `include "Zvkb8_coverage.svh"
 `endif
+`ifdef ZVKG_COVERAGE
+  `include "Zvkg_coverage.svh"
+`endif

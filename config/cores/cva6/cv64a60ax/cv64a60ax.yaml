@@ -64,10 +64,6 @@ implemented_extensions:
   # - { name: Svnapot, version: "= 1.0.0" }
   # - { name: Svpbmt, version: "= 1.0.0" }
 
-# H extension: Not supported by cv64a60ax (RVH=0 in RTL)
-  # Added to show gap against RVA23S64 (mandatory) and RVB23S64 (optional expansion)
-  - { name: H, version: "= 1.0.0" }
-
 params:
   # A params
   MISALIGNED_AMO: false
@@ -274,96 +270,6 @@ params:
       true,
     ]
   MCOUNTENABLE_EN:
-    [
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-    ]
-
-# H params
-  MUTABLE_MISA_H: false
-  VSXLEN: [64]
-  VUXLEN: [64]
-  VMID_WIDTH: 14
-  VS_MODE_ENDIANNESS: little
-  VU_MODE_ENDIANNESS: little
-  GSTAGE_MODE_BARE: true
-  VSSTAGE_MODE_BARE: true
-  VSTVEC_MODE_DIRECT: true
-  VSTVEC_MODE_VECTORED: true
-  # HSTATEEN_ENVCFG_TYPE: rw  # requires Ssstateen — not supported by cv64a60ax
-  IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
-  NUM_EXTERNAL_GUEST_INTERRUPTS: 63
-  REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION: true
-  REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION: true
-  REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT: true
-  REPORT_GPA_IN_TVAL_ON_INSTRUCTION_GUEST_PAGE_FAULT: true
-  REPORT_GPA_IN_TVAL_ON_INTERMEDIATE_GUEST_PAGE_FAULT: true
-  REPORT_GPA_IN_TVAL_ON_LOAD_GUEST_PAGE_FAULT: true
-  REPORT_GPA_IN_TVAL_ON_STORE_AMO_GUEST_PAGE_FAULT: true
-  REPORT_VA_IN_VSTVAL_ON_BREAKPOINT: true
-  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
-  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_MISALIGNED: true
-  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT: true
-  REPORT_VA_IN_VSTVAL_ON_LOAD_ACCESS_FAULT: true
-  REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED: true
-  REPORT_VA_IN_VSTVAL_ON_LOAD_PAGE_FAULT: true
-  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_ACCESS_FAULT: true
-  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED: true
-  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT: true
-  SV39_VSMODE_TRANSLATION: true
-  SV39X4_TRANSLATION: true
-  SV48_VSMODE_TRANSLATION: false
-  SV48X4_TRANSLATION: false
-  SV57_VSMODE_TRANSLATION: false
-  SV57X4_TRANSLATION: false
-  TINST_VALUE_ON_BREAKPOINT: "always zero"
-  TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT: "always zero"
-  TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT: "always zero"
-  TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT: "always zero"
-  TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED: "always zero"
-  TINST_VALUE_ON_LOAD_ACCESS_FAULT: "always zero"
-  TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED: "always zero"
-  TINST_VALUE_ON_LOAD_PAGE_FAULT: "always zero"
-  TINST_VALUE_ON_MCALL: "always zero"
-  TINST_VALUE_ON_SCALL: "always zero"
-  TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT: "always zero"
-  TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED: "always zero"
-  TINST_VALUE_ON_STORE_AMO_PAGE_FAULT: "always zero"
-  TINST_VALUE_ON_UCALL: "always zero"
-  TINST_VALUE_ON_VIRTUAL_INSTRUCTION: "always zero"
-  TINST_VALUE_ON_VSCALL: "always zero"
-  TRAP_ON_ECALL_FROM_VS: true
-  HCOUNTENABLE_EN:
     [
       true,
       true,

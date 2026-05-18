@@ -364,7 +364,7 @@ def generate_illegal_instr(
 
     # ── R-type / RW-type ──────────────────────────────────────────────
     # R-type / RW-type — no memory access, safe to randomize registers
-    emit_raw_words(lines, "cp_rtype",  "EEEEEEERRRRRRRRRREEERRRRR0110011")
+    emit_raw_words(lines, "cp_rtype", "EEEEEEERRRRRRRRRREEERRRRR0110011")
     emit_raw_words(lines, "cp_rwtype", "EEEEEEERRRRRRRRRREEERRRRR0111011", exclusion=ADDUW_EXCLUSIONS)
 
     # ── FP ────────────────────────────────────────────────────────────

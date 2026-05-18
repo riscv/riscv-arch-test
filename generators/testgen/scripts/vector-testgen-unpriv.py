@@ -1115,7 +1115,7 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cp_custom_vshiftn_upperbits_rs1_ones"         : make_custom_vshift_upperbits_r1_ones(test, sew, "rs1", narrow=True)
     elif coverpoint == "cp_custom_vindexedges_index_ge_vlmax"         : make_custom_vindexedges_index_ge_vlmax(test, sew)
     elif coverpoint == "cp_custom_vindexedges_index_gt_vl_lt_vlmax"   : make_custom_vindexedges_index_gt_vl_lt_vlmax(test, sew)
-    elif coverpoint[:2] != "cp"                                       : pass # skip all the helper coverpoints
+    elif coverpoint[:2] not in ("cp", "cr")                           : pass # skip all the helper coverpoints
     elif coverpoint in REGISTRY                                       : setCurrentCoverpoint(coverpoint); REGISTRY[coverpoint](test, sew)   # call the registered function (cp_custom_**)
     else:
       print("Warning: " + coverpoint + " not implemented yet for " + test)

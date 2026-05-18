@@ -184,7 +184,12 @@ def make_vd_vs2(instruction, sew, rng, lmul = 1):
   for v in rng:
     description = f"cmp_vd_vs2 (Test vd = vs2 = v{v})"
     cp = f"cp_vd_vs2_b{v}"
-    instruction_data = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), lmul = lmul, vd = v, vs2 = v)
+    try:
+      instruction_data = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), lmul = lmul, vd = v, vs2 = v)
+    except ValueError:
+      # Spec forbids this overlap at this v (e.g., indexed LS with EEW != SEW
+      # where partial overlap rules exclude this register). Skip.
+      continue
 
     writeTest(description, instruction, cp, instruction_data, sew=sew, lmul = lmul)
     incrementBasetestCount()
@@ -228,7 +233,11 @@ def make_vs3_vs2(instruction, sew, rng, lmul = 1):
   for v in rng:
     description       = "cmp_vs3_vs2 (Test vs3 = vs2 = v" + str(v) + ")"
     cp = f"cp_vs3_vs2_b{v}"
-    instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), lmul = lmul, vs3 = v, vs2 = v)
+    try:
+      instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), lmul = lmul, vs3 = v, vs2 = v)
+    except ValueError:
+      # Spec forbids this overlap at this v (partial-overlap rules). Skip.
+      continue
 
     writeTest(description, instruction, cp, instruction_data, sew=sew, lmul = lmul)
     incrementBasetestCount()
@@ -939,6 +948,10 @@ def makeTest(coverpoints, test, sew=None):
       max_sew = int(coverpoint.split("_")[-1])
       if sew <= max_sew:
         make_vd_vs2(test, sew, range(vreg_count), getBaseLmul(test, sew))
+    elif coverpoint == "cmp_vd_vs2_eew_eq_sew":
+      eew = getInstructionEEW(test)
+      if eew is None or eew == sew:
+        make_vd_vs2(test, sew, range(vreg_count), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vd_vs2_nv0"               : make_vd_vs2(test, sew, range(1,vreg_count), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vd_vs2_emul2"             : make_vd_vs2(test, sew, range(0,vreg_count,2), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vd_vs2_emul4"             : make_vd_vs2(test, sew, range(0,vreg_count,4), getBaseLmul(test, sew))
@@ -953,6 +966,10 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cmp_vd_vs1_vs2"               : make_vd_vs1_vs2(test, sew, range(vreg_count))
     elif coverpoint == "cmp_vd_vs1_vs2_nv0"           : make_vd_vs1_vs2(test, sew, range(1,vreg_count))
     elif coverpoint == "cmp_vs3_vs2"                  : make_vs3_vs2(test, sew, range(vreg_count), getBaseLmul(test, sew))
+    elif coverpoint == "cmp_vs3_vs2_eew_eq_sew":
+      eew = getInstructionEEW(test)
+      if eew is None or eew == sew:
+        make_vs3_vs2(test, sew, range(vreg_count), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vs3_vs2_lte30"            : make_vs3_vs2(test, sew, range(vreg_count-1), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vs3_vs2_lte29"            : make_vs3_vs2(test, sew, range(vreg_count-2), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vs3_vs2_lte28"            : make_vs3_vs2(test, sew, range(vreg_count-3), getBaseLmul(test, sew))
@@ -1094,7 +1111,7 @@ def makeTest(coverpoints, test, sew=None):
 
 def coverpointInclusions(coverpoints):
   applicable_coverpoints = coverpoints
-  for coverpoint in coverpoints:
+  for coverpoint in list(coverpoints):
     if ((coverpoint in ['RV32', 'RV64', 'EFFEW8', 'EFFEW16', 'EFFEW32', 'EFFEW64']) or
         ("sample" in coverpoint))                                  : applicable_coverpoints.remove(coverpoint)
     elif coverpoint[:3] not in ["cp_", "cmp", "cr_"]               : applicable_coverpoints.remove(coverpoint) # skip all the helper coverpoints

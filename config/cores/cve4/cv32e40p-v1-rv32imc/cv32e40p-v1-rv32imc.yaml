@@ -75,7 +75,7 @@ params:
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true # ASSUMED — exceptions_interrupts.rst: "core sets mepc to the current program counter" implies synchronous precision
   MARCHID_IMPLEMENTED: true # VERIFIED — control_status_registers.rst § "Machine Architecture ID (marchid)": CSR (0xF12) implemented with value 0x4
   MIMPID_IMPLEMENTED: true # VERIFIED — control_status_registers.rst § "Machine Implementation ID (mimpid)": CSR (0xF13) implemented; core_versions.rst § "cv32e40p_v1.0.0": returns 0x0, deliberate version encoding for this certified parameter set
-  PMA_GRANULARITY: 2 # QUESTIONABLE — intro.rst § "Introduction": "CV32E40P core does not support... the PMP anymore"; no PMA hardware; load_store_unit.rst § "Misaligned Accesses": 32-bit OBI bus with byte enables => 4-byte (2^2) natural minimum
+  PMA_GRANULARITY: 2 # QUESTIONABLE — load_store_unit.rst § "Misaligned Accesses": 32-bit OBI bus with byte-enable granularity => 4-byte (2^2) natural minimum; no PMA hardware or explicit granularity documented in manual
   # Zicntr params
   TIME_CSR_IMPLEMENTED: false # VERIFIED — perf_counters.rst:121-127: "user mode time(h) registers are not implemented, any access to these registers will cause an illegal instruction trap"
 

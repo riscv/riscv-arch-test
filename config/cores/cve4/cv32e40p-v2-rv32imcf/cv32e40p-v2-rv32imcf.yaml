@@ -79,7 +79,7 @@ params:
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true # ASSUMED — exceptions_interrupts.rst § "Exceptions and Interrupts": "core sets mepc to the current program counter" implies synchronous precision
   MARCHID_IMPLEMENTED: true # VERIFIED — control_status_registers.rst § "Machine Architecture ID (marchid)": CSR (0xF12) implemented
   MIMPID_IMPLEMENTED: true # VERIFIED — control_status_registers.rst § "Machine Implementation ID (mimpid)": CSR (0xF13) implemented with conditional value; core_versions.rst § "Core Versions and RTL Freeze Rules": mimpid=1 for FPU=1 config
-  PMA_GRANULARITY: 2 # QUESTIONABLE — intro.rst § "Introduction": "CV32E40P core does not support... the PMP anymore"; no PMA hardware; load_store_unit.rst § "Misaligned Accesses": 32-bit OBI bus with byte enables => 4-byte (2^2) natural minimum
+  PMA_GRANULARITY: 2 # QUESTIONABLE — load_store_unit.rst § "Misaligned Accesses": 32-bit OBI bus with byte-enable granularity => 4-byte (2^2) natural minimum; no PMA hardware or explicit granularity documented in manual
   # Zicntr params
   TIME_CSR_IMPLEMENTED: false # VERIFIED — perf_counters.rst:130-133: "user mode time(h) registers are not implemented, any access will cause an illegal instruction trap"
 
@@ -88,7 +88,7 @@ params:
   MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3] # VERIFIED — control_status_registers.rst § "Machine Status (mstatus)": all 4 FS states (OFF=0, INITIAL=1, CLEAN=2, DIRTY=3) documented as RW with no masking
 
   # HPM Counters (Section 8 — HPM Counters)
-  HPM_EVENTS: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] # VERIFIED — perf_counters.rst § "Event Selector": 16 events defined; events 0-10 (CYCLES..COMP_INSTR); events 11-15 (APU/FPU, active when FPU=1 per integration.rst § "Parameters")
+  HPM_EVENTS: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] # VERIFIED — perf_counters.rst § "Event Selector": events 0-10 (CYCLES..COMP_INSTR)
   HPM_COUNTER_EN: # VERIFIED — integration.rst § "Parameters": NUM_MHPMCOUNTERS default=1; perf_counters.rst § "Performance Counters": only mhpmcounter3 active; UDB requires indices 0-2 false
     [
       false, # index 0 (CY — must be false per UDB schema)

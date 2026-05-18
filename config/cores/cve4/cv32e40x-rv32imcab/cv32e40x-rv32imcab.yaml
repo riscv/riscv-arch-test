@@ -1,0 +1,150 @@
+# Copyright (c) 2026, Marin Radic, Harvey Mudd College and Eclipse Foundation
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+# UDB Architecture Configuration for the CV32E40X v0.10.0 with A and B extensions.
+# Manual: https://github.com/openhwgroup/cv32e40x/tree/main/docs/user_manual
+# Parameters: RV32=RV32I, M_EXT=M, A_EXT=A, B_EXT=ZBA_ZBB_ZBC_ZBS, X_EXT=0,
+#             NUM_MHPMCOUNTERS=1, PMA_NUM_REGIONS=0.
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: cv32e40x_rv32imcab
+description: CV32E40X v0.10.0 (CORE-V security) - RV32IMCAB configuration (A_EXT=A, B_EXT=ZBA_ZBB_ZBC_ZBS, X_EXT=0)
+implemented_extensions: # VERIFIED against User Manual (Introduction)
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: A, version: "= 2.1" } # VERIFIED — A_EXT=A; full A extension (LR/SC + AMO)
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zcb, version: "= 1.0.0" } # VERIFIED — always enabled per User Manual, Introduction
+  - { name: Zcmp, version: "= 1.0.0" } # VERIFIED — always enabled per User Manual, Introduction
+  - { name: Zcmt, version: "= 1.0.0" } # VERIFIED — always enabled per User Manual, Introduction
+  - { name: Zkt, version: "= 1.0.0" } # VERIFIED — always enabled per User Manual, Introduction
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Zifencei, version: "= 2.0" }
+  - { name: Zicntr, version: "= 2.0" }
+  - { name: Zalrsc, version: "= 1.0" } # VERIFIED — A_EXT=A includes LR.W/SC.W (Atomic doc)
+  - { name: Zaamo, version: "= 1.0" } # VERIFIED — A_EXT=A includes AMO instructions (Atomic doc)
+  - { name: Zba, version: "= 1.0.0" } # VERIFIED — B_EXT=ZBA_ZBB_ZBC_ZBS (User Manual, Introduction)
+  - { name: Zbb, version: "= 1.0.0" } # VERIFIED — B_EXT=ZBA_ZBB_ZBC_ZBS
+  - { name: Zbc, version: "= 1.0.0" } # VERIFIED — B_EXT=ZBA_ZBB_ZBC_ZBS
+  - { name: Zbs, version: "= 1.0.0" } # VERIFIED — B_EXT=ZBA_ZBB_ZBC_ZBS
+  - { name: Zbkc, version: "= 1.0.0" } # VERIFIED — enabled with B_EXT that includes Zbc (User Manual, Introduction)
+  - { name: Sm, version: "= 1.12.0" }
+
+params:
+  MXLEN: 32
+  PHYS_ADDR_WIDTH: 32
+
+  # MISA
+  MUTABLE_MISA_M: false
+  MUTABLE_MISA_C: false
+  MUTABLE_MISA_A: false # VERIFIED — A bit hardwired based on A_EXT parameter; not writable at runtime
+  MISA_CSR_IMPLEMENTED: true
+
+  # A extension (Zalrsc / Zaamo) params (VERIFIED — User Manual, Atomics and Exceptions and Interrupts)
+  MISALIGNED_AMO: false # VERIFIED — misaligned AMO raises store/AMO address misaligned exception (code 6)
+  LRSC_MISALIGNED_BEHAVIOR: "always raise misaligned exception" # VERIFIED — misaligned LR.W raises code 4, misaligned SC.W raises code 6
+  LRSC_FAIL_ON_VA_SYNONYM: false # VERIFIED — no MMU; VA synonyms cannot occur
+  LRSC_FAIL_ON_NON_EXACT_LRSC: true # ASSUMED — reservation managed externally (atomics.rst); conservative exact-match assumed
+  LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access" # ASSUMED — external subsystem; standard simulation behaviour
+
+  M_MODE_ENDIANNESS: little
+
+  # trap/exception behavior
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_EBREAK: true
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  TRAP_ON_ILLEGAL_WLRL: false
+
+  # MTVAL reporting (VERIFIED — mtval hardwired to 0)
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false
+  MTVAL_WIDTH: 32
+
+  # Misaligned load/store (non-atomic — hardware handled)
+  MISALIGNED_LDST: true # VERIFIED — regular misaligned loads/stores handled in hardware (main memory)
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low # VERIFIED — no misaligned exception for regular loads/stores
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0
+  MISALIGNED_SPLIT_STRATEGY: custom # VERIFIED — lowest address first
+
+  # CSR / implementation IDs
+  ARCH_ID_VALUE: 0x00000014 # VERIFIED — marchid = 0x14 (20 decimal)
+  IMP_ID_VALUE: 0x0
+  VENDOR_ID_BANK: 0xC
+  VENDOR_ID_OFFSET: 0x2
+  CONFIG_PTR_ADDRESS: 0 # VERIFIED — mconfigptr hardwired to 0x0
+
+  # MTVEC
+  MTVEC_MODES: [0, 1]
+  MTVEC_ACCESS: rw
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
+  MTVEC_BASE_ALIGNMENT_VECTORED: 128 # VERIFIED — bits[6:2] hardwired 0; 2^7 = 128-byte alignment
+  MTVEC_BASE_ALIGNMENT_DIRECT: 128
+
+  # Sm params
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  MARCHID_IMPLEMENTED: true
+  MIMPID_IMPLEMENTED: true
+  PMA_GRANULARITY: 2
+  NUM_PMP_ENTRIES: 0
+
+  # Zcmt params
+  JVT_BASE_TYPE: mask
+  JVT_READ_ONLY: false
+  JVT_BASE_MASK: 0x7FFFFFC0
+
+  # Zicntr
+  TIME_CSR_IMPLEMENTED: true # VERIFIED — time/timeh CSRs shadow time_i input
+
+  # HPM Counters
+  HPM_EVENTS: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+  HPM_COUNTER_EN:
+    [
+      false, # index 0 (CY — must be false per UDB schema)
+      false, # index 1 (TM — must be false per UDB schema)
+      false, # index 2 (IR — must be false per UDB schema)
+      true,  # index 3 (MHPMCOUNTER3 — only active counter with NUM_MHPMCOUNTERS=1)
+      false, false, false, false, # 4..7
+      false, false, false, false, # 8..11
+      false, false, false, false, # 12..15
+      false, false, false, false, # 16..19
+      false, false, false, false, # 20..23
+      false, false, false, false, # 24..27
+      false, false, false, false, # 28..31
+    ]
+  COUNTINHIBIT_EN:
+    [
+      true,  # index 0 (MCYCLE inhibit)
+      false, # index 1 (TM — always false per UDB)
+      true,  # index 2 (MINSTRET inhibit)
+      true,  # index 3 (MHPMCOUNTER3 inhibit)
+      false, false, false, false, # 4..7
+      false, false, false, false, # 8..11
+      false, false, false, false, # 12..15
+      false, false, false, false, # 16..19
+      false, false, false, false, # 20..23
+      false, false, false, false, # 24..27
+      false, false, false, false, # 28..31
+    ]
+  MCOUNTENABLE_EN: # NOTE: CV32E40X has no mcounteren (M-mode only); values satisfy UDB schema
+    [
+      true, true, true, true,
+      false, false, false, false,
+      false, false, false, false,
+      false, false, false, false,
+      false, false, false, false,
+      false, false, false, false,
+      false, false, false, false,
+      false, false, false, false,
+    ]
+# end

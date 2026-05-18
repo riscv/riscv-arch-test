@@ -247,6 +247,27 @@ def remapPrivScalarRegs(instruction_data, instruction):
     in_use.add(new_reg)
 
 
+def pickScalarScratch(used=(), *, candidates=None):
+  """Pick a uniformly random scalar X-register that is not in `used`.
+
+  Always-reserved (added implicitly): x0 (zero), sigReg (signature pointer).
+  Use this anywhere a helper needs a temporary X-register; never hardcode an
+  initial value and fall through to randomization on collision -- that pattern
+  silently picks the hardcoded register whenever the caller's `used` set
+  happens not to include it (the cause of the priv-flow x2/x4 corruption bug).
+
+  `candidates` may restrict the pool (default: all of x1..x31).
+  Raises RuntimeError if no register is free.
+  """
+  used = set(used)
+  used.add(0)
+  used.add(sigReg)
+  pool = [r for r in (candidates if candidates is not None else range(1, xreg_count)) if r not in used]
+  if not pool:
+    raise RuntimeError("pickScalarScratch: no free scalar register available")
+  return pool[randint(0, len(pool) - 1)]
+
+
 def pickPrivScratch(scalar_register_data=None, exclude=()):
   """Pick a scratch xreg that doesn't collide with framework-reserved regs,
   the live signature pointer, any chosen rd/rs1/rs2 operands, or caller-supplied
@@ -622,6 +643,18 @@ ls_not_maskable = [
 
 vmvins          = vvrtype + vxtype + vitype + xvtype + vftype + fvtype + vvvxtype + vcompressins
 vd_widen_ins    = wvvins + wvxins + wwvins + wwxins + wvsins + fwvfins + fwwfins + fwcvt_ins
+# Widening multiply-accumulate instructions: vd is both destination (EEW=2*SEW) AND a source
+# operand (the accumulator, also read at EEW=2*SEW). Because vs1/vs2 are read at EEW=SEW, any
+# overlap between vd and vs1/vs2 would cause the same vector register to be read at two different
+# EEWs, which is reserved per V spec section 5.2 (norm:eew_emul). The standard widening
+# "lowest-numbered-part" overlap exception does NOT apply here, because vd is also read (not
+# just written). Therefore vd must have NO overlap with vs1/vs2 for these instructions.
+widening_mac_ins = [
+  "vwmacc.vv", "vwmaccu.vv", "vwmaccsu.vv",
+  "vwmacc.vx", "vwmaccu.vx", "vwmaccsu.vx", "vwmaccus.vx",
+  "vfwmacc.vv", "vfwnmacc.vv", "vfwmsac.vv", "vfwnmsac.vv",
+  "vfwmacc.vf", "vfwnmacc.vf", "vfwmsac.vf", "vfwnmsac.vf",
+]
 not_maskable    = vm_nomask_ins + mmins + vmvins + ls_not_maskable
 
 # "vl1re8.v", "vl1re16.v", "vl1re32.v", "vl1re64.v"
@@ -629,6 +662,28 @@ not_maskable    = vm_nomask_ins + mmins + vmvins + ls_not_maskable
 
 whole_register_move = ["vmv1r.v", "vmv2r.v", "vmv4r.v", "vmv8r.v"]
 whole_register_stores = ["vs1r.v", "vs2r.v", "vs4r.v", "vs8r.v"]
+
+# Instructions that require vstart=0; non-zero vstart is reserved and traps
+# illegal-instruction. cp_vstart sets vstart != 0, so these always trap.
+vstart_zero_required = [
+    # scalar-move instructions
+    "vmv.x.s", "vmv.s.x", "vfmv.f.s", "vfmv.s.f",
+    # integer reductions
+    "vredsum.vs", "vredand.vs", "vredor.vs", "vredxor.vs",
+    "vredminu.vs", "vredmin.vs", "vredmaxu.vs", "vredmax.vs",
+    "vwredsumu.vs", "vwredsum.vs",
+    # FP reductions
+    "vfredosum.vs", "vfredusum.vs", "vfredmax.vs", "vfredmin.vs",
+    "vfwredosum.vs", "vfwredusum.vs",
+    # mask population/find-first
+    "vcpop.m", "vfirst.m",
+    # mask set-before/including/only-first
+    "vmsbf.m", "vmsif.m", "vmsof.m",
+    # iota / id
+    "viota.m", "vid.v",
+    # compress
+    "vcompress.vm",
+]
 
 strided_loads= [
     "vlse8.v", "vlse16.v", "vlse32.v", "vlse64.v",
@@ -1068,14 +1123,57 @@ def genRandomVectorLS():
   vectordata += writeData("    .align 4")
   vectordata += writeData("// Corner Vectors")
 
-  num_words_either_side = int(maxELEN / 64) * 2 * 2 * maxVLEN # 2 times max vlen elements on either side of pointer (sewMAX = 64)
+  # Region sizing for vector LS test data. rs1 points at the `vector_ls_random_base`
+  # label; the `_header` block sits *before* the label so tests with negative offsets
+  # have valid data behind rs1. Size each side to the largest offset any generator
+  # in this codebase emits (no extra margin).
+  #
+  # Generators that consume this region (update bounds below if any generator's
+  # access footprint grows):
+  #   - Unit-stride LS         (vle*/vse*)            : forward = vlmax * sew/8
+  #   - Strided LS             (vlse*/vsse*)          : stride randomized as
+  #                                                     k * eew/8, k in [-2, 3]
+  #                                                     (see randomizeRegisterData,
+  #                                                     stride val for rs2)
+  #                                                     -> forward  = vlmax * 3 * eew/8
+  #                                                        backward = vlmax * 2 * eew/8
+  #   - Segment unit-stride    (vlseg*/vsseg*,
+  #                             vlsseg*/vssseg*)      : forward = nf * vlmax * sew/8
+  #                                                     (nf <= 8)
+  #   - Segment strided        (vlsseg*/vssseg*)      : forward  = vlmax*3*eew/8 + nf*sew/8
+  #                                                     backward = vlmax*2*eew/8
+  #   - Indexed LS             (vl[uo]xei*/vs[uo]xei*): forward only, vs2 elements
+  #                                                     clamped to [0, 2*vlmax) by
+  #                                                     vremu (see loadVectorReg);
+  #                                                     forward bound 2 * vlmax * eew/8 (worst:
+  #                                                                                      eew=8)
+  #
+  # Worst case across (VLEN<=maxVLEN, LMUL<=8, SEW>=8, nf<=8) with vlmax=VLEN*LMUL/SEW:
+  #
+  #   FORWARD  is bounded by SEGMENT UNIT-STRIDE:
+  #     nf_max * vlmax_max * sew_min/8
+  #       = 8 * (maxVLEN*8/sew_min) * sew_min/8
+  #       = 8 * maxVLEN bytes
+  #
+  #   BACKWARD is bounded by STRIDED LS (negative stride, k=-2):
+  #     vlmax_max * 2 * eew_max/8 with vlmax*eew = VLEN*LMUL (independent of sew)
+  #       = (maxVLEN*8) * 2 / 8
+  #       = 2 * maxVLEN bytes
+  #
+  # If a new generator with a larger footprint is added (e.g. wider stride range,
+  # nf>8, or negative-offset indexed access), recompute and bump the bounds here.
+  forward_bytes  = 8 * maxVLEN  # bound by segment unit-stride forward
+  backward_bytes = 2 * maxVLEN  # bound by strided LS backward
+
+  forward_words  = forward_bytes  // 4
+  backward_words = backward_bytes // 4
 
   vectordata += writeData("vector_ls_random_base_header:")
-  for i in range(num_words_either_side):
+  for i in range(backward_words):
       randomElem = getrandbits(32)
       vectordata += writeData(f"    .word 0x{randomElem:08x}")
   vectordata += writeData("vector_ls_random_base:")
-  for i in range(num_words_either_side):
+  for i in range(forward_words):
       randomElem = getrandbits(32)
       vectordata += writeData(f"    .word 0x{randomElem:08x}")
 
@@ -1369,9 +1467,28 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
       "Vf64":  ["Zve64d"],
     }
 
-    if test.startswith("ExceptionsV"):
-      march = f"rv{xlen}i_m_v_zicsr"
+    if test.startswith(("ExceptionsV", "SsstrictV", "MisalignedV")):
       ext_parts_no_I = ['M', 'V', 'Zicsr']
+      ext_str_no_I = "_M_V_Zicsr"
+      # Vector-FP priv suites need scalar/vector FP extensions in -march so the
+      # assembler accepts flh/flw/fld and the matching SEW vector-FP ops. Mirror
+      # the unpriv vfloat path: F + Zfhmin (+ D when flen>32) for SEW>=16, plus
+      # Zvfh for SEW=16 vector half-FP. ExceptionsVfmin runs at SEW=16.
+      vf_match = re.search(r"ExceptionsVf(\d+)$", test)
+      is_vfmin = (test == "ExceptionsVfmin")
+      if vf_match or is_vfmin:
+        sew = int(vf_match.group(1)) if vf_match else 16
+        fp_exts = ['F', 'Zfhmin']
+        fp_exts_str = "_F_Zfhmin"
+        if flen > 32:
+          fp_exts = ['F', 'D', 'Zfhmin']
+          fp_exts_str = "_F_D_Zfhmin"
+        if sew == 16:
+          fp_exts.append('Zvfh')
+          fp_exts_str += "_Zvfh"
+        ext_parts_no_I = fp_exts + ext_parts_no_I
+        ext_str_no_I = fp_exts_str + ext_str_no_I
+      march = f"rv{xlen}i{ext_str_no_I}".lower()
     else:
       matched_alias = None
       derived_exts = []
@@ -1393,13 +1510,17 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
           ext_str_no_I += "_" + ext
           continue
         if ext in ["Zvbb", "Zvbc", "Zvkb"]: # Bit Manipulation, Carryless Multiplication, and Crypto Bit Manipulation
+          # Assemblers require an explicit Zve base when only Zv* sub-extensions
+          # are listed. Pick the smallest Zve that covers the active SEW/VDSEW.
           zve_extension = f"Zve{max(32, sew, vdsew)}x"
-          ext_str_no_I += "_" + ext + "_" + zve_extension.lower() # Ensure that we can handle either sew
           ext_parts_no_I.append(zve_extension)
-
+          ext_str_no_I += "_" + zve_extension.lower()
         ext_parts_no_I.append(ext)
+        ext_str_no_I += "_" + ext
 
       ext_parts_no_I.extend(derived_exts)
+      for ext in derived_exts:
+        ext_str_no_I += "_" + ext
 
       has_vector = (
         "V" in ext_parts_no_I or
@@ -1452,11 +1573,14 @@ def writeSIGUPD(inst_ptr, rd):
     global sigupd_count  # Allow modification of global variable
     sigupd_count += 1    # Increment counter on each call
     str_ptr = "test_" + str(testcase_count) + "_str"
-    linkReg = 5
-    linkOptions = [5, 8, 13]
-    while linkReg == sigReg or linkReg - 1 == sigReg or linkReg == rd or linkReg - 1 == rd:
-      linkInd = randint(0,2)
-      linkReg = linkOptions[linkInd - 1]
+    # SIGUPD macro convention: tempReg = linkReg - 1. Both must avoid sigReg
+    # and rd. linkReg must come from {5, 8, 13} (the only values the macro
+    # supports given its tempReg layout); pick randomly among the legal options.
+    linkOptions = [lr for lr in (5, 8, 13)
+                   if lr != sigReg and lr - 1 != sigReg and lr != rd and lr - 1 != rd]
+    if not linkOptions:
+      raise RuntimeError(f"writeSIGUPD: no legal linkReg given sigReg={sigReg} rd={rd}")
+    linkReg = linkOptions[randint(0, len(linkOptions) - 1)]
     tempReg = linkReg - 1
     writeLine(f"RVTEST_SIGUPD(x{sigReg}, x{linkReg}, x{tempReg}, x{rd}, {inst_ptr}, {str_ptr})", f"# store x{rd} in signature")
 
@@ -1466,11 +1590,12 @@ def writeSIGUPD_F(fd):
     sigupd_count += 1    # Increment counter for floating point signature since SIGUPD_F macro stores FCSR as SREG
     sigupd_countF += 1   # Increment counter on each call since SIGUPD_F macro stores FREG
     str_ptr = "test_" + str(testcase_count)
-    linkReg = 5
-    linkOptions = [5, 8, 13]
-    while linkReg == sigReg or linkReg - 1 == sigReg or linkReg == fd or linkReg - 1 == fd:
-      linkInd = randint(0,2)
-      linkReg = linkOptions[linkInd - 1]
+    # See writeSIGUPD: linkReg must be in {5, 8, 13} (macro tempReg = linkReg-1).
+    linkOptions = [lr for lr in (5, 8, 13)
+                   if lr != sigReg and lr - 1 != sigReg and lr != fd and lr - 1 != fd]
+    if not linkOptions:
+      raise RuntimeError(f"writeSIGUPD_F: no legal linkReg given sigReg={sigReg} fd={fd}")
+    linkReg = linkOptions[randint(0, len(linkOptions) - 1)]
     tempReg = linkReg - 1
     ftempReg = tempReg
     writeLine(f"csrr x{tempReg}, fcsr", f"# save fcsr into x{tempReg} for signature")                                 # Get fcsr into a temp register
@@ -1519,7 +1644,7 @@ def writeSIGUPD_F(fd):
 #         writeLine(f"RVTEST_SIGUPD_V(x{sigReg}, x{tempReg}, {sew}, {offset}, v{vd})", f"# stores v{vd} (sew = {sew}, AVL = {avl}) in signature with base (x{sigReg}) and helper (x{tempReg}) register")
 
 
-def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_whole_register_store = False, vd_mask = False, testtype = "base", masked = False, lmul = 1):
+def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_whole_register_store = False, vd_mask = False, testtype = "base", masked = False, lmul = 1, scalar_dst = False):
 
     global sigupd_count
 
@@ -1548,16 +1673,15 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, load_testline = Non
 
     str_ptr = "test_" + str(testcase_count) + "_str"
 
-    linkReg = 5
-    linkOptions = [5, 8, 13]
-    while linkReg == sigReg or linkReg - 1 == sigReg or linkReg == vd or linkReg - 1 == vd:
-      linkInd = randint(0,2)
-      linkReg = linkOptions[linkInd - 1]
+    # See writeSIGUPD: linkReg must be in {5, 8, 13} (macro tempReg = linkReg-1).
+    linkOptions = [lr for lr in (5, 8, 13)
+                   if lr != sigReg and lr - 1 != sigReg and lr != vd and lr - 1 != vd]
+    if not linkOptions:
+      raise RuntimeError(f"writeSIGUPD_V: no legal linkReg given sigReg={sigReg} vd={vd}")
+    linkReg = linkOptions[randint(0, len(linkOptions) - 1)]
     tempReg = linkReg - 1
 
-    maskReg = randint(1,31)
-    while maskReg == sigReg or maskReg == tempReg or maskReg == linkReg:
-      maskReg = randint(1,31)
+    maskReg = pickScalarScratch([tempReg, linkReg])
 
     # -------------------------------------------------
     # Determine vd register group (robust LMUL handling)
@@ -1633,15 +1757,16 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, load_testline = Non
       masked_flag = 1
 
     if length_macro:
-      writeLine(f"# RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _VTMP, _MTMP2, _MTMP, _VR, _MASKPROD_FLAG, _MASKED_FLAG, _VD_EEW, _LMUL, _INST_PTR, _STR_PTR)")
+      scalar_dst_flag = 1 if scalar_dst else 0
+      writeLine(f"# RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _VTMP, _MTMP2, _MTMP, _VR, _MASKPROD_FLAG, _MASKED_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR)")
       if vd_mask:
         writeLine(
-        f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 1, {masked_flag}, 8, {emul}, {inst_ptr}, {str_ptr})")
+        f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 1, {masked_flag}, 8, {emul}, 0, {inst_ptr}, {str_ptr})")
         writeLine(
         f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
       else:
         writeLine(
-        f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 0, {masked_flag}, {sew}, {emul}, {inst_ptr}, {str_ptr})")
+        f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 0, {masked_flag}, {sew}, {emul}, {scalar_dst_flag}, {inst_ptr}, {str_ptr})")
         writeLine(
         f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
     else:
@@ -1757,14 +1882,10 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
       load_unique_vtype = True
 
     if load_unique_vtype:
-      vtypeReg = 1
-      while vtypeReg in scalar_registers_used:
-        vtypeReg = randint(1,31)
+      vtypeReg = pickScalarScratch(scalar_registers_used)
       scalar_registers_used.append(vtypeReg)
 
-      avlReg = 9
-      while avlReg in scalar_registers_used:
-        avlReg = randint(1,31)
+      avlReg = pickScalarScratch(scalar_registers_used)
       scalar_registers_used.append(avlReg)
 
       # When test vl is 0, we cannot use the `vsetvli x0, x0` form to switch
@@ -1773,9 +1894,7 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
       # source loads) change the ratio, which sets vill=1 and traps the next
       # vector instruction. Allocate a scratch dst so we can use the
       # `vsetvli xScratch, x0, ...` form (sets vl = new VLMAX).
-      vlmaxReg = 11
-      while vlmaxReg in scalar_registers_used:
-        vlmaxReg = randint(1,31)
+      vlmaxReg = pickScalarScratch(scalar_registers_used)
       scalar_registers_used.append(vlmaxReg)
 
       writeLine(f"csrr x{vtypeReg}, vtype", "# save vtype register for after load")
@@ -1802,9 +1921,7 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
           # initialized, so set VL=VLMAX with LMUL=NF. Use a separate temp register
           # to avoid clobbering avlReg (which holds the saved VL needed for restore).
           nf = int(instruction[2])  # vs2r.v -> 2
-          vlmaxTempReg = 10
-          while vlmaxTempReg in scalar_registers_used:
-            vlmaxTempReg = randint(1,31)
+          vlmaxTempReg = pickScalarScratch(scalar_registers_used)
           scalar_registers_used.append(vlmaxTempReg)
           writeLine(f"vsetvli x{vlmaxTempReg}, x0, e{register_sew}, m{nf}, tu, mu", f"# set lmul={nf}, VL=VLMAX for whole-reg store vs3 load")
         elif register_argument_name != "vd":
@@ -1836,9 +1953,7 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
 
     if load_vls_random_corner: register_val_pointer = "vector_ls_random_base"
 
-    tempReg = 4
-    while tempReg in scalar_registers_used:
-      tempReg = randint(1,31)
+    tempReg = pickScalarScratch(scalar_registers_used)
     scalar_registers_used.append(tempReg)
 
     # Segment destinations / sources must be fully prefilled so every element of
@@ -1868,9 +1983,7 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
       if register_val_pointer == "vs_corner_zero_emul8":
         writeLine(f"vl1re{getInstructionEEW(instruction)}.v v{register}, (x{tempReg})",               "# zero register")
       elif nf_prefill > 1:
-        strideReg = 6
-        while strideReg in scalar_registers_used:
-          strideReg = randint(1,31)
+        strideReg = pickScalarScratch(scalar_registers_used)
         scalar_registers_used.append(strideReg)
         writeLine(f"csrr x{strideReg}, vlenb", "# VLENB: bytes per vector register")
         if emul_field > 1:
@@ -1886,19 +1999,13 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
       writeLine(f"vsetvl x0, x{avlReg}, x{vtypeReg}", "# restore vl and vtype setting")
 
     if register_argument_name == 'vs2' and instruction in vector_ls_ins: # make sure elements in vs2 are within VLMAX and sew aligned
-      vtypeReg = 1
-      while vtypeReg in scalar_registers_used:
-        vtypeReg = randint(1,31)
+      vtypeReg = pickScalarScratch(scalar_registers_used)
       scalar_registers_used.append(vtypeReg)
 
-      vlmaxReg = 10
-      while vlmaxReg in scalar_registers_used:
-        vlmaxReg = randint(1,31)
+      vlmaxReg = pickScalarScratch(scalar_registers_used)
       scalar_registers_used.append(vlmaxReg)
 
-      avlReg = 9
-      while avlReg in scalar_registers_used:
-        avlReg = randint(1,31)
+      avlReg = pickScalarScratch(scalar_registers_used)
       scalar_registers_used.append(avlReg)
 
       if   sew == 8  : sew_aligned = -1#"0x1F"
@@ -1909,21 +2016,14 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
       eew = getInstructionEEW(instruction)
       vs2_emul = math.ceil(lmul * eew / sew)
 
-      element_positive = 2 ** (eew-1) - 1
-
       writeLine(f"csrr x{vtypeReg}, vtype",                                     "# save vtype register for after load")
       writeLine(f"csrr x{avlReg}, vl",                                          "# save vl register for after load")
       writeLine(f"vsetvl x{vlmaxReg}, x0, x{vtypeReg}",                         "# set vl to vlmax")
       writeLine(f"add x{vlmaxReg}, x{vlmaxReg}, x{vlmaxReg}",                   "# save vlmax * 2")
       writeLine(f"vsetvli x0, x{avlReg}, e{eew}, m{getLmulFlag(vs2_emul)}, ta, ma", "# setting sew to vs2 eew")
-      if eew < xlen: # make sure the number is positive since it will be 0 extended to XLEN
-        element_positiv_reg = 15
-        while element_positiv_reg in scalar_registers_used:
-          element_positiv_reg = randint(1,31)
-        scalar_registers_used.append(element_positiv_reg)
-        writeLine(f"li x{element_positiv_reg}, {element_positive}",             "#  make sure the number is positive since it will be 0 extended to XLEN")
-        writeLine(f"vand.vx v{register}, v{register}, x{element_positiv_reg}",  "#")
-      writeLine(f"vrem.vx v{register}, v{register}, x{vlmaxReg}",               "# ensure all values are within (-2*vlmax, 2*vlmax)")
+      # spec zero-extends index elements to XLEN; use unsigned remainder so
+      # offsets stay non-negative in [0, 2*vlmax) and never alias to huge addrs.
+      writeLine(f"vremu.vx v{register}, v{register}, x{vlmaxReg}",              "# ensure all values are within [0, 2*vlmax)")
       writeLine(f"vand.vi v{register}, v{register}, {sew_aligned}",             "# sew-aligning elements")
       writeLine(f"vsetvl x0, x{avlReg}, x{vtypeReg}",                           "# restore vl and vtype setting")
 
@@ -1936,14 +2036,10 @@ def loadFloatReg(sew, register_argument_name: str, floating_point_register_data,
   register          = register_data['reg']
   register_value    = register_data['val']
 
-  scratchReg = 2
-  while scratchReg in scalar_registers_used:
-    scratchReg = randint(1,31)
+  scratchReg = pickScalarScratch(scalar_registers_used)
   scalar_registers_used.append(scratchReg)
 
-  memoryReg = 4
-  while memoryReg in scalar_registers_used:
-    memoryReg = randint(1,31)
+  memoryReg = pickScalarScratch(scalar_registers_used)
   scalar_registers_used.append(memoryReg)
 
   if sew == 16:
@@ -2023,9 +2119,7 @@ def resolveScalarSigConflict(instruction_arguments, scalar_register_data):
 def allocScratchRegs(n, scalar_registers_used):
   picks = []
   for _ in range(n):
-    r = randint(1, 31)
-    while r == 0 or r in scalar_registers_used or r in picks:
-      r = randint(1, 31)
+    r = pickScalarScratch(list(scalar_registers_used) + picks)
     picks.append(r)
     scalar_registers_used.append(r)
   return picks
@@ -2116,9 +2210,7 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
       writeLine(load_testline, "# load value stored in memory to check against signature")
 
     if (test in vfloattypes) and (test not in fvtype):
-      fcsrsaveReg = 2
-      while fcsrsaveReg in scalar_registers_used or fcsrsaveReg == sigReg:
-        fcsrsaveReg = randint(1,31)
+      fcsrsaveReg = pickScalarScratch(scalar_registers_used)
       scalar_registers_used.append(fcsrsaveReg)
       writeLine(f"csrr x{fcsrsaveReg}, fcsr", f"# save fcsr into x{fcsrsaveReg} for signature")
       writeSIGUPD(inst_ptr, fcsrsaveReg)
@@ -2129,7 +2221,7 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
       # cross-model comparison still observes the trap event when one occurs.
       pass
     elif (test in vd_widen_ins) and (test not in wvsins):
-      writeSIGUPD_V(inst_ptr, vd, 2*sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked, lmul=lmul)  # EEW of vd = 2 * SEW for widening (incl. vwred)
+      writeSIGUPD_V(inst_ptr, vd, 2*sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked, lmul=lmul, scalar_dst=(test in vredins))  # EEW of vd = 2 * SEW for widening (incl. vwred)
     elif (test in maskprodins):
       writeSIGUPD_V(inst_ptr, vd, 8, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, vd_mask = True, testtype=testtype, masked=masked, lmul=lmul)      # EEW of vd = 1 for mask
     elif (test in xvtype) or (test in xvmtype):
@@ -2137,15 +2229,13 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
     elif (test in fvtype):
       writeSIGUPD_F(fd)
     else:
-      writeSIGUPD_V(inst_ptr, vd, sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked, lmul=lmul)
+      writeSIGUPD_V(inst_ptr, vd, sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked, lmul=lmul, scalar_dst=(test in vredins or test == "vmv.s.x"))
 
 # TODO : Make this works with vector FP
 def loadFrmRoundingMode(frm, *scalar_registers_used):
   scalar_registers_used = list(scalar_registers_used)
 
-  tempReg = 13
-  while tempReg in scalar_registers_used:
-    tempReg = randint(1,31)
+  tempReg = pickScalarScratch(scalar_registers_used)
   scalar_registers_used.append(tempReg)
 
   writeLine(f"li x{tempReg}, {frmList[frm]}", "# generate mask for desired frm")
@@ -2155,9 +2245,7 @@ def loadFrmRoundingMode(frm, *scalar_registers_used):
 def loadVxrmRoundingMode(vxrm, *scalar_registers_used):
   scalar_registers_used = list(scalar_registers_used)
 
-  tempReg3 = 13
-  while tempReg3 in scalar_registers_used:
-    tempReg3 = randint(1,31)
+  tempReg3 = pickScalarScratch(scalar_registers_used)
   scalar_registers_used.append(tempReg3)
 
   writeLine(f"li x{tempReg3}, {vxrmList[vxrm]}", "# generate mask for desired frm")
@@ -2228,6 +2316,55 @@ def getInstructionEEW(instruction):
   elif instruction in eew32_ins : return 32
   elif instruction in eew64_ins : return 64
   else                          : return None
+
+def encodeIndexedLSAsInsn(instruction, instruction_data, masked=False):
+  """Emit indexed LS as raw `.insn 0xXXXXXXXX` so the assembler accepts forms
+  (e.g. `vsoxseg7ei64.v` on RV32) that clang otherwise rejects with
+  "instruction requires the following: RV64I Base Instruction Set". The
+  encoding follows V-spec indexed LS layout; mnemonic appears as a trailing
+  comment for readability.
+  """
+  if instruction not in indexed_ls_ins:
+    raise ValueError(f"{instruction} is not an indexed LS instruction")
+  vec_data, scalar_data, _fp_data, _imm = instruction_data
+  rs1 = scalar_data['rs1']['reg']
+  vs2 = vec_data['vs2']['reg']
+  if instruction in indexed_stores:
+    dst    = vec_data['vs3']['reg']
+    opcode = 0b0100111  # STORE-FP
+  else:
+    dst    = vec_data['vd']['reg']
+    opcode = 0b0000111  # LOAD-FP
+  eew = getInstructionEEW(instruction)
+  width_map = {8: 0b000, 16: 0b101, 32: 0b110, 64: 0b111}
+  if eew not in width_map:
+    supported_eews = ", ".join(str(supported_eew) for supported_eew in sorted(width_map))
+    raise ValueError(
+      f"Unsupported EEW {eew!r} for indexed LS instruction {instruction}; "
+      f"supported EEWs: {supported_eews}"
+    )
+  width = width_map[eew]
+  # mop: 01 = indexed-unordered (vluxei/vsuxei), 11 = indexed-ordered (vloxei/vsoxei)
+  if instruction.startswith("vsox") or instruction.startswith("vlox"):
+    mop = 0b11
+  else:
+    mop = 0b01
+  nf = getInstructionSegments(instruction) - 1
+  vm = 0 if masked else 1
+  mew = 0
+  enc = (
+    (nf     << 29) |
+    (mew    << 28) |
+    (mop    << 26) |
+    (vm     << 25) |
+    (vs2    << 20) |
+    (rs1    << 15) |
+    (width  << 12) |
+    (dst    << 7 ) |
+    opcode
+  )
+  mnemonic_args = f"v{dst}, (x{rs1}), v{vs2}" + (", v0.t" if masked else "")
+  return f".insn 0x{enc:08x}    # {instruction} {mnemonic_args}"
 
 def prepMaskV(maskval, sew, tempReg, lmul):
   lmulflag = getLmulFlag(lmul)
@@ -2392,9 +2529,7 @@ def writeTest(description, instruction, cp, instruction_data=None,
         rs2_reg=scalar_register_data['rs2']['reg']
       )
 
-    tempReg = 6
-    while tempReg in scalar_registers_used:
-      tempReg = randint(1,31)
+    tempReg = pickScalarScratch(scalar_registers_used)
     scalar_registers_used.append(tempReg)
 
     handleSignaturePointerConflict(*scalar_registers_used)
@@ -2447,9 +2582,7 @@ def writeTest(description, instruction, cp, instruction_data=None,
     vd_preloaded = False
     if (suite == "length" and (instruction not in xvtype and instruction not in xvmtype)) or (suite == "base" and instruction in wvsins):
       # pick temporary regs avoiding conflicts
-      tempReg = 7
-      while tempReg in scalar_registers_used:
-        tempReg = randint(1,31)
+      tempReg = pickScalarScratch(scalar_registers_used)
       scalar_registers_used.append(tempReg)
 
       # For non-indexed LS instructions with EEW, vd occupies EMUL = LMUL × EEW/SEW
@@ -2499,14 +2632,10 @@ def writeTest(description, instruction, cp, instruction_data=None,
     vs2_preloaded = False
     if suite == "length" and ((instruction in whole_register_move) or (instruction in vslidedownins) or (instruction in vrgatherins)):
       # pick temporary regs avoiding conflicts
-      tempVlmax = 7
-      while tempVlmax in scalar_registers_used:
-        tempVlmax = randint(1,31)
+      tempVlmax = pickScalarScratch(scalar_registers_used)
       scalar_registers_used.append(tempVlmax)
 
-      tempReg2 = 5
-      while tempReg2 in scalar_registers_used:
-        tempReg2 = randint(1,31)
+      tempReg2 = pickScalarScratch(scalar_registers_used)
       scalar_registers_used.append(tempReg2)
 
       # set vtype to VLMAX for vd load
@@ -2568,9 +2697,7 @@ def writeTest(description, instruction, cp, instruction_data=None,
 
     # Set vill AFTER all operand loading so scaffolding vector loads don't trap
     if force_vill:
-      villReg = 3
-      while villReg in scalar_registers_used:
-        villReg = randint(1,31)
+      villReg = pickScalarScratch(scalar_registers_used)
       scalar_registers_used.append(villReg)
       writeLine(f"li x{villReg}, {1 << (xlen - 1)}",                               "# Load vtype value with vill bit set")
       writeLine(f"vsetvl x0, x0, x{villReg}",                                       "# Set vtype with vill=1 via vsetvl")
@@ -2617,15 +2744,9 @@ def writeTest(description, instruction, cp, instruction_data=None,
       # Fix: zero load_vd before the reload so undisturbed/tail elements
       # are deterministic in both builds.
       if instruction in mask_ls_ins or maskval is not None or suite == "length":
-        mi_t1 = 3
-        while mi_t1 in scalar_registers_used:
-          mi_t1 = randint(1, 31)
-        mi_t2 = 11
-        while mi_t2 in scalar_registers_used or mi_t2 == mi_t1:
-          mi_t2 = randint(1, 31)
-        mi_t3 = 14
-        while mi_t3 in scalar_registers_used or mi_t3 == mi_t1 or mi_t3 == mi_t2:
-          mi_t3 = randint(1, 31)
+        mi_t1 = pickScalarScratch(scalar_registers_used)
+        mi_t2 = pickScalarScratch(list(scalar_registers_used) + [mi_t1])
+        mi_t3 = pickScalarScratch(list(scalar_registers_used) + [mi_t1, mi_t2])
         # Zero the FULL signature register group of load_vd. The reload only
         # writes vl elements (length suite) or unmasked elements (masked); the
         # remaining elements within SIGUPD_V_LEN's _LMUL group must be
@@ -2707,14 +2828,10 @@ def prepBaseV(sew, lmul, vl=1, vstart=0, ta=0, ma=0, force_vill=False, vector_re
   elif ta == 1:
     taflag = ", ta"
 
-  tempReg2 = 5
-  while tempReg2 in scalar_registers_used:
-    tempReg2 = randint(1,31)
+  tempReg2 = pickScalarScratch(scalar_registers_used)
   scalar_registers_used.append(tempReg2)
 
-  vlmaxReg = 7
-  while vlmaxReg in scalar_registers_used:
-    vlmaxReg = randint(1,31)
+  vlmaxReg = pickScalarScratch(scalar_registers_used)
   scalar_registers_used.append(vlmaxReg)
 
   if vl == "random":
@@ -2765,6 +2882,22 @@ def randomizeRegister(instruction, eew, register_argument_name: str, reg_count: 
         register = randint(1, reg_count-1) # 1 to maxreg, inclusive
       else: # "f" registers
         register = randint(0, reg_count-1) # 0 to maxreg, inclusive
+  elif register_type == "v":
+    # Preset vector register: verify the requested base register leaves room
+    # for the full segment group (NF * EMUL_field). Callers (e.g. make_vs3_vs2)
+    # iterate over v in range(32) and rely on ValueError to skip illegal vs.
+    emul_check = int(register_data['size_multiplier'] * lmul)
+    if register_data['reg_type'] == "scalar" or register_data['reg_type'] == "mask" or emul_check < 1:
+      emul_check = 1
+    if register + emul_check * register_data['segments'] > reg_count:
+      raise ValueError(
+        f"preset {register_argument_name}=v{register} with NF={register_data['segments']} "
+        f"EMUL_field={emul_check} overflows past v{reg_count-1} for {instruction}"
+      )
+    if emul_check > 1 and register % emul_check != 0:
+      raise ValueError(
+        f"preset {register_argument_name}=v{register} not aligned to EMUL={emul_check} for {instruction}"
+      )
 
   register_data['reg'] = register
 
@@ -2816,10 +2949,19 @@ def getVectorEmulMultipliers(instruction):
 
 #                  Example: no_overlap = [['vs1', 'vs2_top'], ['v0', 'vd_bottom']]
 #                  all values will be continued to be randomized until there is no overlap within lists
-def getInstructionRegisterOverlapConstraints (instruction, sew, lmul):
+def getInstructionRegisterOverlapConstraints (instruction, sew, lmul, masked=False):
   no_overlap = None
 
-  if   instruction in wvvins          : no_overlap = [['vd_bottom', 'vs2'], ['vd_bottom', 'vs1']]
+  # Widening MACs must be checked before the generic widening branches: vd is read+written at
+  # EEW=2*SEW (accumulator). For .vv forms, both vs1 and vs2 are EEW=SEW vector sources, so
+  # overlap with either would read the same vector register at two different EEWs (reserved per
+  # V spec §5.2). For .vx/.vf forms, the second source is scalar, so only constrain vd vs vs2.
+  if   instruction in widening_mac_ins:
+    if instruction.endswith(".vv"):
+      no_overlap = [['vd',        'vs2'], ['vd',        'vs1']]
+    else:
+      no_overlap = [['vd',        'vs2']]
+  elif instruction in wvvins          : no_overlap = [['vd_bottom', 'vs2'], ['vd_bottom', 'vs1']]
   elif instruction in vupgatherins    : no_overlap = [['vd',        'vs2'], ['vd',        'vs1']]
   elif instruction in vmlogicalins    : no_overlap = [['vd',        'vs2']                      ]
   elif instruction in viotains        : no_overlap = [['vd',        'vs2']                      ]
@@ -2848,19 +2990,39 @@ def getInstructionRegisterOverlapConstraints (instruction, sew, lmul):
   ls_indexed_vs2_eew = getInstructionEEW(instruction)
 
   if ls_indexed_vs2_eew is not None and not isinstance(sew, str):
-    if ls_indexed_vs2_eew > sew :
-      if lmul * ls_indexed_vs2_eew / sew <= 1: # if vs2 emul is <= 1 then all overlap is bottom thus we do not need the overlap constraint
-        pass
-      else:
-        no_overlap = addOverlap(no_overlap, [['vd','vs2_top']])
-    if ls_indexed_vs2_eew < sew :
-      if lmul * ls_indexed_vs2_eew / sew >= 1:
-        no_overlap = addOverlap(no_overlap, [['vd_bottom','vs2']])
-      else:
-        no_overlap = addOverlap(no_overlap, [['vd','vs2']])
+    # Indexed L/S: data EEW (= SEW) vs index EEW (= instruction EEW) may differ.
+    # V-spec §5.2 register-overlap rules between dest and source register groups:
+    #   (a) EEW_dest == EEW_src                -> any overlap legal
+    #   (b) EEW_dest <  EEW_src                -> overlap only at LOWEST part of source group
+    #   (c) EEW_dest >  EEW_src, EMUL_src >= 1 -> overlap only at HIGHEST part of dest group
+    # For non-segment indexed loads (dest=vd, src=vs2) we forbid the *illegal*
+    # overlap region:
+    #   K > SEW: vd must not overlap the TOP of vs2 group (only bottom legal -> rule b).
+    #   K < SEW: vs2 must not overlap the BOTTOM of vd group (only top legal -> rule c).
+    # Indexed segment loads keep the full no-overlap rule applied above
+    # (norm:vector_ls_seg_indexed_vreg_rsv).
+    # For indexed stores (any nf) both vs3 and vs2 are sources; vs3 == vs2 is only
+    # legal when EEW_idx == SEW (a single source register cannot be read at two EEWs).
+    if ls_indexed_vs2_eew != sew:
+      if instruction in indexed_stores:
+        no_overlap = addOverlap(no_overlap, [['vs3','vs2']])
+      elif instruction in indexed_loads and instruction not in segment_loads:
+        if ls_indexed_vs2_eew > sew:
+          no_overlap = addOverlap(no_overlap, [['vd','vs2_top']])
+        else:  # ls_indexed_vs2_eew < sew
+          no_overlap = addOverlap(no_overlap, [['vd_bottom','vs2']])
 
   if instruction in segment_loads:
+    # Indexed segment loads explicitly reserve any vd/vs2 overlap (V-spec
+    # norm:vector_ls_seg_indexed_vreg_rsv); non-indexed segment loads keep the
+    # same conservative rule.
     no_overlap = addOverlap(no_overlap, [['vd','vs2']])
+
+  # Masked indexed LS: vs2 (index, EEW = index EEW) cannot equal v0 (mask,
+  # EEW = 1) — spec forbids reading the same register at two different EEWs
+  # in a single instruction (v-spec norm:vreg_source_eew_rsv).
+  if masked and instruction in indexed_ls_ins:
+    no_overlap = addOverlap(no_overlap, [['v0', 'vs2']])
 
   return no_overlap
 
@@ -2888,10 +3050,10 @@ def randomizeOngroupVectorRegister(instruction, *preset_vreg, lmul=1, maskval=No
 # lmul               - the lmul set in vtype csr
 # **preset_variables - any value in preset_data can be set here, for example vd = 2 will ensure vd is set to the v2 register above all else
 # return             - returns an array of all randomized values following constraints
-def randomizeVectorInstructionData(instruction, sew, test_count, suite="base", lmul=1, additional_no_overlap = None, **preset_variables):
+def randomizeVectorInstructionData(instruction, sew, test_count, suite="base", lmul=1, additional_no_overlap = None, masked=False, **preset_variables):
   preset_variables.update(getVectorEmulMultipliers(instruction))
 
-  instruction_overlap_constaints  = getInstructionRegisterOverlapConstraints(instruction, sew, lmul)
+  instruction_overlap_constaints  = getInstructionRegisterOverlapConstraints(instruction, sew, lmul, masked=masked)
   no_overlap                      = addOverlap(instruction_overlap_constaints, additional_no_overlap)
 
   scalar_register_preset_data         = {
@@ -3173,7 +3335,7 @@ def readTestplans(priv=False):
         if file.endswith(".csv"):
             arch = re.search("(.*).csv", file).group(1)
             if (priv):
-                is_vector = (arch.startswith("ExceptionsV") or arch.startswith("SsstrictV") or arch.startswith("V") or arch.startswith("Zv"))
+                is_vector = (arch.startswith(("ExceptionsV", "SsstrictV", "MisalignedV", "V", "Zv")))
             else:
                 is_vector = (arch.startswith("V") or arch.startswith("Zv"))
             if is_vector:

@@ -222,7 +222,11 @@ def _generate_cbo_access_fault_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "nop",
-                    test_data.add_testcase(f"cbo.{cbo}_mode{mode}_access_fault", coverpoint, covergroup),
+                    test_data.add_testcase(f"cbo.{cbo}_mode{mode}_access_fault_0", coverpoint, covergroup),
+                    f"cbo.{cbo}    0(x{addr_reg})",
+                    "nop",
+                    f"addi x{addr_reg}, x{addr_reg}, 1  # attempt access again with misalignment, check misaligned address is reported in mtval if applicable",
+                    test_data.add_testcase(f"cbo.{cbo}_mode{mode}_access_fault_1", coverpoint, covergroup),
                     f"cbo.{cbo}    0(x{addr_reg})",
                     "nop",
                     "#endif",
@@ -248,7 +252,12 @@ def _generate_cbo_access_fault_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "nop",
-                    test_data.add_testcase(f"prefetch.{prefetch}_mode{mode}_access_fault", coverpoint, covergroup),
+                    "# No need to gate prefetch instructions with ZICBOP_SUPPORTED because they are hints that fall back to defined behavior",
+                    test_data.add_testcase(f"prefetch.{prefetch}_mode{mode}_access_fault_0", coverpoint, covergroup),
+                    f"prefetch.{prefetch}    0(x{addr_reg})",
+                    "nop",
+                    f"addi x{addr_reg}, x{addr_reg}, 1  # attempt access again with misalignment",
+                    test_data.add_testcase(f"prefetch.{prefetch}_mode{mode}_access_fault_1", coverpoint, covergroup),
                     f"prefetch.{prefetch}    0(x{addr_reg})",
                     "nop",
                 ]
@@ -300,7 +309,7 @@ def _generate_cbo_misaligned_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "nop",
-                    test_data.add_testcase(f"cbo.{cbo}_mode{mode}_access_fault", coverpoint, covergroup),
+                    test_data.add_testcase(f"cbo.{cbo}_mode{mode}_misaligned", coverpoint, covergroup),
                     f"cbo.{cbo}    0(x{addr_reg})",
                     "nop",
                     "#endif",
@@ -327,7 +336,8 @@ def _generate_cbo_misaligned_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "nop",
-                    test_data.add_testcase(f"prefetch.{prefetch}_mode{mode}_access_fault", coverpoint, covergroup),
+                    "# No need to gate prefetch instructions with ZICBOP_SUPPORTED because they are hints that fall back to defined behavior",
+                    test_data.add_testcase(f"prefetch.{prefetch}_mode{mode}_misaligned", coverpoint, covergroup),
                     f"prefetch.{prefetch}    0(x{addr_reg})",
                     "nop",
                 ]
@@ -339,7 +349,7 @@ def _generate_cbo_misaligned_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "ExceptionsZicboS",
     required_extensions=["S"],
-    march_extensions=["Zicsr", "Zicbom", "Zicboz", "Zicbop"],
+    march_extensions=["Zicbom", "Zicboz", "Zicbop"],
 )
 def make_exceptionszicbos(test_data: TestData) -> list[str]:
     """Generate tests for ExceptionsZicboS coverpoints"""

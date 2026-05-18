@@ -40,6 +40,11 @@ SEW_DEPENDENT_CPS = {
 # Vector extension prefixes used to identify vector architectures.
 VECTOR_PREFIXES = ("Vx", "Zv", "Vls", "Vf")
 
+# Priv-side architectures that need vector-flavored covergroups (header_vector etc.).
+# These priv testplans use the same vector helpers as unpriv vector covergroups
+# but do not undergo per-SEW expansion.
+PRIV_VECTOR_PREFIXES = ("ExceptionsV", "MisalignedV")
+
 # Subset of vector prefixes that support widening instructions.
 VECTOR_WIDEN_PREFIXES = ("Vx", "Vls", "Vf")
 
@@ -219,10 +224,15 @@ def _is_vector_widen(arch: str, instr: str) -> bool:
     return arch.startswith(VECTOR_WIDEN_PREFIXES) and (instr.startswith(("vw", "vfw")) or ".w" in instr)
 
 
+def _has_effew_suffix(arch: str) -> bool:
+    """Whether *arch* uses the per-SEW EFFEW{N} testplan filter."""
+    return _is_vector(arch) or bool(re.match(r"ExceptionsVf\d+$", arch))
+
+
 def _get_sorted_instr_keys(tp: dict[tuple[str, str], list[str]], arch: str) -> list[tuple[str, str]]:
-    """Get sorted instruction keys, filtering by EFFEW for vector architectures."""
+    """Get sorted instruction keys, filtering by EFFEW for vector/per-SEW priv arches."""
     keys = sorted(tp.keys())
-    if _is_vector(arch):
+    if _has_effew_suffix(arch):
         effew = _get_effew(arch)
         keys = [k for k in keys if f"EFFEW{effew}" in tp[k]]
     return keys
@@ -257,16 +267,27 @@ def _indexed_ls_eew(instr: str) -> int | None:
     return int(m.group(3)) if m else None
 
 
-def _should_gate_maxindexeew(arch: str, instr: str) -> int | None:
-    """Return the index EEW to gate on, or None if no gate should be emitted.
+def _should_gate_maxindexeew(arch: str, instr: str) -> tuple[int, str] | None:
+    """Return (eew, macro_prefix) to gate on, or None if no gate should be emitted.
 
-    Only unpriv per-SEW Vls{N} arches gate indexed LS covergroups behind
-    MAXINDEXEEW_GE{eew}; priv (ExceptionsVls) and Vx (vrgather) never gate.
+    Unpriv per-SEW Vls{N} arches gate indexed LS covergroups behind
+    MAXINDEXEEW_GE{eew}. Priv MisalignedV / ExceptionsVls covergroups gate
+    behind XLEN{eew} so EEW=64 indexed-LS coverage is suppressed on RV32
+    (see sail-riscv issue 1719: Sail RV32 takes illegal-instruction on
+    EEW=64 indexed LS while other sims take a load access fault, producing
+    mismatched mcause in the signature). Vx (vrgather) never gates.
     """
-    if arch not in _VLS_PER_SEW_ARCHES:
-        return None
     eew = _indexed_ls_eew(instr)
-    return eew if eew and eew > 8 else None
+    if not eew or eew <= 8:
+        return None
+    if arch in _VLS_PER_SEW_ARCHES:
+        return (eew, "MAXINDEXEEW_GE")
+    if arch == "MisalignedV" or arch == "ExceptionsVls":
+        # XLEN16 macro does not exist; XLEN is always >= 32, so only gate eew=64.
+        if eew >= 64:
+            return (eew, "XLEN")
+        return None
+    return None
 
 
 def _ffLS_feasible(instr: str, sew: int) -> bool:
@@ -314,15 +335,17 @@ def _gen_instrs(
 
         vectorwiden = _is_vector_widen(arch, instr)
 
-        # Gate indexed LS covergroups by MAXINDEXEEW only for unpriv per-SEW
-        # Vls{N} arches: those are legal-path coverage of instructions that
-        # don't exist when MAXINDEXEEW is too small. Priv (ExceptionsVls) and
-        # Vx (vrgather) never gate — priv wants to confirm traps, and Vx
-        # isn't load/store so MAXINDEXEEW doesn't apply.
-        idx_eew = _should_gate_maxindexeew(arch, instr)
-        if idx_eew:
-            covergroup_lines.append(f"`ifdef MAXINDEXEEW_GE{idx_eew}\n")
-            init_lines.append(f"`ifdef MAXINDEXEEW_GE{idx_eew}\n")
+        # Gate indexed LS covergroups by MAXINDEXEEW for unpriv per-SEW
+        # Vls{N} arches, and by XLEN for priv MisalignedV / ExceptionsVls.
+        # Priv ei64 covergroups are suppressed on RV32 because Sail RV32
+        # takes illegal-instruction on EEW=64 indexed LS while other sims
+        # take a load access fault (see sail-riscv issue 1719). Vx (vrgather)
+        # never gates.
+        gate = _should_gate_maxindexeew(arch, instr)
+        if gate:
+            idx_eew, macro_prefix = gate
+            covergroup_lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
+            init_lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
 
         # Instruction header
         if vectorwiden:
@@ -332,6 +355,19 @@ def _gen_instrs(
         else:
             covergroup_lines.append(customize_template(templates, "instruction", arch, instr))
             init_lines.append(customize_template(templates, "init", arch, instr))
+
+        # SsstrictV templates reference a small set of helpers (vtype_lmul_*,
+        # std_trap_vec, mask_enabled, vd_v0, vd/vs1/vs2_all_reg_unaligned_lmul_*,
+        # vstart_zero, vl_nonzero, vtype_prev_vill_*, vtype_all_lmulge1).
+        # We include a SsstrictV-scoped header rather than the full standard
+        # vector header so the SsstrictV covergroups don't pick up dozens of
+        # unrelated 32-bin sweeps (vd_all_reg, vs1_all_reg, etc.) that aren't in
+        # SsstrictV's testplan and would inflate the corpus past the linker's
+        # ±1MiB JAL range. Other priv vector arches (ExceptionsVx/Vls/Vf)
+        # intentionally use a small, focused set of coverpoints (cp_vill /
+        # cp_vstart / cp_vstart_gt_vl) and must not pull in either header.
+        if arch.startswith("SsstrictV"):
+            covergroup_lines.append('    `include "general/RISCV_coverage_ssstrictv_helpers.svh"\n')
 
         # Coverpoint entries (skip metadata columns: sample_*, RV32, RV64, EFFEW*)
         # VCS requires coverpoints to be declared before they are referenced by cross coverpoints.
@@ -361,6 +397,12 @@ def _gen_instrs(
             if any(sew_cp in cp for sew_cp in SEW_DEPENDENT_CPS):
                 cp = cp + "_sew" + _get_effew(arch)
 
+            # Handle eew_eq_sew variants: only emit when indexed-LS EEW == arch SEW
+            if cp.endswith("_eew_eq_sew"):
+                eew = _indexed_ls_eew(instr)
+                if eew is not None and _is_vector(arch) and int(_get_effew(arch)) != eew:
+                    continue
+
             # Handle conditional SEW inclusion
             if "sew_lte" in cp:
                 effew = _get_effew(arch)
@@ -379,7 +421,7 @@ def _gen_instrs(
         else:
             covergroup_lines.append(customize_template(templates, "endgroup", arch, instr))
 
-        if idx_eew:
+        if gate:
             covergroup_lines.append("`endif\n")
             init_lines.append("`endif\n")
 
@@ -401,9 +443,10 @@ def _gen_covergroup_samples(
         if not _matches_xlen(cps, has_rv32, has_rv64):
             continue
 
-        idx_eew = _should_gate_maxindexeew(arch, instr)
-        if idx_eew:
-            lines.append(f"`ifdef MAXINDEXEEW_GE{idx_eew}\n")
+        gate = _should_gate_maxindexeew(arch, instr)
+        if gate:
+            idx_eew, macro_prefix = gate
+            lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
 
         if arch.startswith(VECTOR_WIDEN_PREFIXES):
             if _is_vector_widen(arch, instr):
@@ -414,7 +457,7 @@ def _gen_covergroup_samples(
         elif arch != "E":  # E currently breaks coverage
             lines.append(customize_template(templates, "covergroup_sample", arch, instr))
 
-        if idx_eew:
+        if gate:
             lines.append("`endif\n")
 
     return "".join(lines)
@@ -457,8 +500,8 @@ def _write_extension_files(
     an EFFEW substitution is made available in the header, and the instruction
     key list is filtered to the matching SEW.
     """
-    effew = _get_effew(arch) if vector else ""
-    instr_keys = _get_sorted_instr_keys(tp, arch) if vector else sorted(tp.keys())
+    effew = _get_effew(arch) if (vector or _has_effew_suffix(arch)) else ""
+    instr_keys = _get_sorted_instr_keys(tp, arch) if (vector or _has_effew_suffix(arch)) else sorted(tp.keys())
 
     header_tmpl = "header_vector" if vector else "header"
     sample_header_tmpl = "covergroup_sample_header_vector" if vector else "covergroup_sample_header"
@@ -619,8 +662,9 @@ def write_priv_covergroups(
 
     # Mirror the unpriv per-SEW expansion for ExceptionsVf so a single
     # ExceptionsVf.csv produces ExceptionsVf{16,32,64} covergroup files (one
-    # per non-reserved vector-FP SEW). The testgen driver applies the matching
-    # EFFEW{N} filter when emitting tests.
+    # per non-reserved vector-FP SEW). Per-instruction filtering is driven by
+    # the EFFEW{N} columns in the testplan via _get_sorted_instr_keys, so this
+    # block doesn't need to drop any rows itself.
     if "ExceptionsVf" in priv_plans:
         ex_vf_tp = priv_plans["ExceptionsVf"]
         for effew in ("16", "32", "64"):

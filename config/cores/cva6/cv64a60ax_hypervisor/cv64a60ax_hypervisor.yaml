@@ -64,8 +64,9 @@ implemented_extensions:
   # - { name: Svnapot, version: "= 1.0.0" }
   # - { name: Svpbmt, version: "= 1.0.0" }
 
-  # H extension: Not supported by cv64a60ax (RVH=0 in RTL)
-  # Added to show gap against RVA23S64 (mandatory) and RVB23S64 (optional expansion)
+  # H extension: Added for RVB23+Hypervisor target config
+  # cv64a60ax does not currently support H (RVH=0 in RTL)
+  # Ssstateen: partially supported per Bruno (RTL modifications expected)
   - { name: H, version: "= 1.0.0" }
 
   - { name: Sha, version: "= 1.0.0" }

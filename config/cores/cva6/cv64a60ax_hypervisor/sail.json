@@ -618,7 +618,7 @@
         "supported": false
       },
       "Ssstateen": {
-        "supported": false
+        "supported": true
       },
       "C_readonly_zero": true,
       "SE0_readonly_zero": false

@@ -156,14 +156,17 @@ def execute_task(
                 start_new_session=True,  # own process group so killpg reaches children
             )
             pgid = proc.pid  # start_new_session=True makes the child its own group leader
-            if shutdown_event.is_set():
+            kill_immediately = False
+            with pgids_lock:
+                if shutdown_event.is_set():
+                    kill_immediately = True
+                else:
+                    active_pgids.add(pgid)
+            if kill_immediately:
                 with contextlib.suppress(ProcessLookupError, PermissionError):
                     os.killpg(pgid, signal.SIGKILL)
                 with contextlib.suppress(ProcessLookupError, PermissionError):
                     proc.kill()
-            else:
-                with pgids_lock:
-                    active_pgids.add(pgid)
             try:
                 stdout, stderr = proc.communicate()
             finally:

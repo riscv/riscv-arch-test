@@ -65,3 +65,15 @@ normative_rule_definitions:
   # exception otherwise.
   - name: cbz_unperm_fault
     coverpoint: ["ExceptionsZicboU_cg/cp_cbo_access"]
+
+  - name: cbo-zero_unaligned
+    coverpoint:
+      ["ExceptionsZicboU_cg/{cp_cbo_access_fault, cp_cbo_address_misaligned}"]
+
+  - name: cbo-flush_unaligned
+    coverpoint:
+      ["ExceptionsZicboU_cg/{cp_cbo_access_fault, cp_cbo_address_misaligned}"]
+
+  - name: cbo-inval_unaligned
+    coverpoint:
+      ["ExceptionsZicboU_cg/{cp_cbo_access_fault, cp_cbo_address_misaligned}"]

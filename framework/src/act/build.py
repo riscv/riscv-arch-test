@@ -408,6 +408,8 @@ def _short_path(path: Path) -> str:
 _NOISE_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"^\s*using .+ for test-signature output\.\s*$"),
     re.compile(r"^\s*setting signature-granularity to \d+ bytes\s*$"),
+    re.compile(r"^\s*HTIF located at 0x[0-9a-fA-F]+\s*$"),
+    re.compile(r"^\s*Entry point: 0x[0-9a-fA-F]+\s*$"),
 )
 
 

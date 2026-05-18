@@ -45,7 +45,6 @@ params:
   TRAP_ON_UNIMPLEMENTED_CSR: true # VERIFIED — exceptions_interrupts.rst § "Exceptions": FPU=0 causes illegal trap on F CSR access; undefined CSRs raise illegal instruction exception
   TRAP_ON_ILLEGAL_WLRL: false # VERIFIED — control_status_registers.rst § "Machine Trap-Vector Base Address (mtvec)": WARL masking ensures only valid modes stored; no illegal-value trap
 
-
   # MTVAL reporting (Section 6 — mtval CSR)
   REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false # VERIFIED — control_status_registers.rst § "Machine Trap Value (mtval)": reads return 0 (RO hardwired)
   REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false # VERIFIED — control_status_registers.rst § "Machine Trap Value (mtval)": reads return 0 (RO hardwired)

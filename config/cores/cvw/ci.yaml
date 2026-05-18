@@ -8,3 +8,4 @@ exclude_extensions: "Sm,InterruptsSm,InterruptsS,InterruptsU,InterruptsSstc,PMPS
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cvw.sh"
 setup_script: ".github/scripts/setup-cvw.sh"
+shards: 3

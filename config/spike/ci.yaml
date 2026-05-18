@@ -9,3 +9,4 @@ ci_enabled: true
 exclude_extensions: "Sm,InterruptsS,InterruptsU,ExceptionsZaamo,ExceptionsZicboS,ExceptionsZicboU,PMPSm,Zama16b,ExceptionsVx"
 install_script: ".github/scripts/install-spike.sh"
 apt_packages: "device-tree-compiler libboost-regex-dev libboost-system-dev"
+shards: 1

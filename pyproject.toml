@@ -3,11 +3,14 @@
 # Jordan Carlin jcarlin@hmc.edu October 2025
 # SPDX-License-Identifier: Apache-2.0
 
+[tool.uv]
+exclude-newer = "7 days"
+
 [tool.uv.workspace]
 members = ["framework", "generators/testgen", "generators/coverage"]
 
 [dependency-groups]
-dev = ["pyright==1.1.409", "ruff==0.15.13"]
+dev = ["pyright==1.1.409", "ruff==0.15.12"]
 
 ###### RUFF CONFIG #####
 [tool.ruff]

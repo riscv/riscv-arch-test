@@ -98,7 +98,7 @@ main:
 
     LA(x4, REGIONSTART)
     li t0, g
-    add x4, x4, g
+    add x4, x4, t0
     srl x4, x4, PMP_SHIFT
     csrw pmpaddr1, x4
 

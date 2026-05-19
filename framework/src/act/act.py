@@ -112,7 +112,7 @@ def run_act(
     loaded_configs: list[tuple[Config, Path]] = []
     for config_file in config_files:
         config = load_config(config_file)
-        config_dir = workdir / config.udb_config.stem
+        config_dir = workdir / config.name
         loaded_configs.append((config, config_dir))
 
     prepare_dut_outputs([cfg for cfg, _ in loaded_configs], workdir, jobs)

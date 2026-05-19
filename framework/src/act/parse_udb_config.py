@@ -138,7 +138,7 @@ def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int) -> None
 
     tasks: list[BuildTask] = []
     for cfg in configs:
-        config_dir = workdir / cfg.udb_config.stem
+        config_dir = workdir / cfg.name
         src = cfg.udb_config
         marker = config_dir / ".validated"
 
@@ -149,7 +149,7 @@ def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int) -> None
                 outputs=(marker,),
                 action=PythonAction(validate_udb_config, (src, marker)),
                 extra_inputs=(src,),
-                label=f"UDB config validation ({cfg.udb_config.stem})",
+                label=f"UDB config validation ({cfg.name})",
             )
         )
 

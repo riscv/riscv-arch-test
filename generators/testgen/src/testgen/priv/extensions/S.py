@@ -571,7 +571,11 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
         ),
     )
     for csr in (
-        list(range(0x300, 0x400)) + list(range(0x700, 0x800)) + list(range(0xB00, 0xC00)) + list(range(0xF00, 0x1000))
+        list(range(0x300, 0x400))
+        + list(range(0x700, 0x7AA))  # exclude 0x7AA mscontext, which is accessible from S-mode
+        + list(range(0x7AB, 0x800))
+        + list(range(0xB00, 0xC00))
+        + list(range(0xF00, 0x1000))
     ):
         lines.extend(
             [

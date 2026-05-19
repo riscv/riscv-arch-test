@@ -704,7 +704,9 @@
    .if     ((\LMODE\()==VUmode) || (\LMODE\()==VSmode))
      LI    T2, (1<<MPV_LSB)
 #if (UDB_MXLEN==32)
+  #ifndef SM1P11P0_SUPPORTED
      csrs  CSR_MSTATUSH, T2     /* set V RV32                   */
+  #endif
 #else
      slli T2, T2, 32
      csrs  CSR_MSTATUS,  T2     /* set V RV64                   */
@@ -712,7 +714,9 @@
    .elseif ((\LMODE\()==HSmode))
      LI    T2, (1<<MPV_LSB)
 #if (UDB_MXLEN==32)
-     csrc  CSR_MSTATUSH, T2     /* clr V RV32                   */
+  #ifndef SM1P11P0_SUPPORTED
+    csrc  CSR_MSTATUSH, T2     /* clr V RV32                   */
+  #endif
 #else
      slli   T2, T2, 32
      csrc   CSR_MSTATUS, T2     /* clr V  RV64                  */
@@ -1246,7 +1250,11 @@ sv_\__MODE__\()vect:                            // **FIXME?: breaks if tramp cro
   #if (UDB_MXLEN==64)
         srli    T4, T4, UDB_MXLEN-32                 // align to mstatush
   #else
-        csrr    T4, CSR_MSTATUSH
+        #ifndef SM1P11P0_SUPPORTED
+          csrr    T4, CSR_MSTATUSH
+        #else
+          li      T4, 0                   // no H: GVA/MPV/xPV always 0
+        #endif
   #endif
 .else
   .ifc \__MODE__ , H
@@ -1373,7 +1381,11 @@ common_\__MODE__\()excpt_handler:
         #if (UDB_MXLEN==64)
                 csrr    T6, CSR_MSTATUS
         #else
-                csrr    T6, CSR_MSTATUSH
+          #ifndef SM1P11P0_SUPPORTED
+            csrr    T6, CSR_MSTATUSH
+          #else
+            li      T6, 0                   // no H: MPV always 0
+          #endif
         #endif
         slli    T2, T6, WDSZ-MPV_LSB-1
         bgez    T2, vmem_adj_\__MODE__\()epc
@@ -1791,7 +1803,11 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
         addi    sp, sp, sv_area_sz      //preadjust svarea ptr to avoid to large offset
 
   #if (UDB_MXLEN==32)
-        csrr    T2, CSR_MSTATUSH        /* find Vbit  if RV32                   */
+        #ifndef SM1P11P0_SUPPORTED
+          csrr    T2, CSR_MSTATUSH        /* find Vbit  if RV32                   */
+        #else
+          li      T2, 0                   // no H: V always 0
+        #endif
   #else
         csrr    T2, CSR_MSTATUS
   #endif

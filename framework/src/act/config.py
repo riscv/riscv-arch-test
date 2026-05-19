@@ -197,13 +197,19 @@ def check_ref_model_version(config: Config) -> None:
     elif config.ref_model_type == RefModelType.SPIKE:
         # Spike has no stable --version flag; perform a lightweight startup check instead.
         try:
-            subprocess.run(
+            result = subprocess.run(
                 [str(config.ref_model_exe), "--help"],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
+                capture_output=True,
+                text=True,
                 check=False,
                 timeout=5,
             )
+            if result.returncode != 0:
+                error_output = result.stderr.strip() or result.stdout.strip()
+                details = f": {error_output}" if error_output else ""
+                raise RuntimeError(
+                    f"Spike reference model exited with status {result.returncode} during startup check{details}",
+                )
         except OSError as e:
             raise RuntimeError(f"Failed to start Spike reference model: {e}") from e
         except subprocess.TimeoutExpired as e:

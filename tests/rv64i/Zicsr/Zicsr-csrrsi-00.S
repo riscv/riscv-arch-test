@@ -47,7 +47,7 @@ RVTEST_BEGIN
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x18
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b0:
@@ -57,11 +57,11 @@ Zicsr_csrrsi_cg_cp_rd_b0:
 #elif defined(V_SUPPORTED)
   csrrsi x0, vxsat, 20
 #elif !defined(U_SUPPORTED)
-  csrrsi x0, mepc, 20
+  csrrsi x0, mscratch, 20
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x0, instret, 20
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x0 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -76,7 +76,7 @@ Zicsr_csrrsi_cg_cp_rd_b0:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x18, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -95,7 +95,7 @@ Zicsr_csrrsi_cg_cp_rd_b0:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x10
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b1:
@@ -105,11 +105,11 @@ Zicsr_csrrsi_cg_cp_rd_b1:
 #elif defined(V_SUPPORTED)
   csrrsi x1, vxsat, 11
 #elif !defined(U_SUPPORTED)
-  csrrsi x1, mepc, 11
+  csrrsi x1, mscratch, 11
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x1, instret, 11
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -124,7 +124,7 @@ Zicsr_csrrsi_cg_cp_rd_b1:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x10, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -144,7 +144,7 @@ Zicsr_csrrsi_cg_cp_rd_b1:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x24
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b2:
@@ -154,11 +154,11 @@ Zicsr_csrrsi_cg_cp_rd_b2:
 #elif defined(V_SUPPORTED)
   csrrsi x2, vxsat, 14
 #elif !defined(U_SUPPORTED)
-  csrrsi x2, mepc, 14
+  csrrsi x2, mscratch, 14
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x2, instret, 14
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -173,7 +173,7 @@ Zicsr_csrrsi_cg_cp_rd_b2:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x24, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -193,7 +193,7 @@ Zicsr_csrrsi_cg_cp_rd_b2:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x10
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b3:
@@ -203,11 +203,11 @@ Zicsr_csrrsi_cg_cp_rd_b3:
 #elif defined(V_SUPPORTED)
   csrrsi x3, vxsat, 0
 #elif !defined(U_SUPPORTED)
-  csrrsi x3, mepc, 0
+  csrrsi x3, mscratch, 0
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x3, instret, 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -222,7 +222,7 @@ Zicsr_csrrsi_cg_cp_rd_b3:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x10, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x10 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -243,7 +243,7 @@ Zicsr_csrrsi_cg_cp_rd_b3:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x9
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b4:
@@ -253,11 +253,11 @@ Zicsr_csrrsi_cg_cp_rd_b4:
 #elif defined(V_SUPPORTED)
   csrrsi x4, vxsat, 21
 #elif !defined(U_SUPPORTED)
-  csrrsi x4, mepc, 21
+  csrrsi x4, mscratch, 21
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x4, instret, 21
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x4 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -272,7 +272,7 @@ Zicsr_csrrsi_cg_cp_rd_b4:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x9, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x9 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -291,7 +291,7 @@ Zicsr_csrrsi_cg_cp_rd_b4:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x13
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b5:
@@ -301,11 +301,11 @@ Zicsr_csrrsi_cg_cp_rd_b5:
 #elif defined(V_SUPPORTED)
   csrrsi x5, vxsat, 10
 #elif !defined(U_SUPPORTED)
-  csrrsi x5, mepc, 10
+  csrrsi x5, mscratch, 10
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x5, instret, 10
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x5 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -320,7 +320,7 @@ Zicsr_csrrsi_cg_cp_rd_b5:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x13, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x13 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -339,7 +339,7 @@ Zicsr_csrrsi_cg_cp_rd_b5:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x15
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b6:
@@ -349,11 +349,11 @@ Zicsr_csrrsi_cg_cp_rd_b6:
 #elif defined(V_SUPPORTED)
   csrrsi x6, vxsat, 4
 #elif !defined(U_SUPPORTED)
-  csrrsi x6, mepc, 4
+  csrrsi x6, mscratch, 4
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x6, instret, 4
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x6 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -368,7 +368,7 @@ Zicsr_csrrsi_cg_cp_rd_b6:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x15, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x15 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -389,7 +389,7 @@ Zicsr_csrrsi_cg_cp_rd_b6:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x3
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b7:
@@ -399,11 +399,11 @@ Zicsr_csrrsi_cg_cp_rd_b7:
 #elif defined(V_SUPPORTED)
   csrrsi x7, vxsat, 8
 #elif !defined(U_SUPPORTED)
-  csrrsi x7, mepc, 8
+  csrrsi x7, mscratch, 8
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x7, instret, 8
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x7 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -418,7 +418,7 @@ Zicsr_csrrsi_cg_cp_rd_b7:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x3, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -437,7 +437,7 @@ Zicsr_csrrsi_cg_cp_rd_b7:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x13
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b8:
@@ -447,11 +447,11 @@ Zicsr_csrrsi_cg_cp_rd_b8:
 #elif defined(V_SUPPORTED)
   csrrsi x8, vxsat, 18
 #elif !defined(U_SUPPORTED)
-  csrrsi x8, mepc, 18
+  csrrsi x8, mscratch, 18
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x8, instret, 18
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -466,7 +466,7 @@ Zicsr_csrrsi_cg_cp_rd_b8:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x13, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -485,7 +485,7 @@ Zicsr_csrrsi_cg_cp_rd_b8:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x30
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b9:
@@ -495,11 +495,11 @@ Zicsr_csrrsi_cg_cp_rd_b9:
 #elif defined(V_SUPPORTED)
   csrrsi x9, vxsat, 13
 #elif !defined(U_SUPPORTED)
-  csrrsi x9, mepc, 13
+  csrrsi x9, mscratch, 13
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x9, instret, 13
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x9 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -514,7 +514,7 @@ Zicsr_csrrsi_cg_cp_rd_b9:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x30, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x30 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -533,7 +533,7 @@ Zicsr_csrrsi_cg_cp_rd_b9:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x19
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b10:
@@ -543,11 +543,11 @@ Zicsr_csrrsi_cg_cp_rd_b10:
 #elif defined(V_SUPPORTED)
   csrrsi x10, vxsat, 23
 #elif !defined(U_SUPPORTED)
-  csrrsi x10, mepc, 23
+  csrrsi x10, mscratch, 23
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x10, instret, 23
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x10 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -562,7 +562,7 @@ Zicsr_csrrsi_cg_cp_rd_b10:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x19, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -581,7 +581,7 @@ Zicsr_csrrsi_cg_cp_rd_b10:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x25
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b11:
@@ -591,11 +591,11 @@ Zicsr_csrrsi_cg_cp_rd_b11:
 #elif defined(V_SUPPORTED)
   csrrsi x11, vxsat, 20
 #elif !defined(U_SUPPORTED)
-  csrrsi x11, mepc, 20
+  csrrsi x11, mscratch, 20
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x11, instret, 20
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -610,7 +610,7 @@ Zicsr_csrrsi_cg_cp_rd_b11:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x25, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -629,7 +629,7 @@ Zicsr_csrrsi_cg_cp_rd_b11:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x27
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b12:
@@ -639,11 +639,11 @@ Zicsr_csrrsi_cg_cp_rd_b12:
 #elif defined(V_SUPPORTED)
   csrrsi x12, vxsat, 20
 #elif !defined(U_SUPPORTED)
-  csrrsi x12, mepc, 20
+  csrrsi x12, mscratch, 20
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x12, instret, 20
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -658,7 +658,7 @@ Zicsr_csrrsi_cg_cp_rd_b12:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x27, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -677,7 +677,7 @@ Zicsr_csrrsi_cg_cp_rd_b12:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x9
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b13:
@@ -687,11 +687,11 @@ Zicsr_csrrsi_cg_cp_rd_b13:
 #elif defined(V_SUPPORTED)
   csrrsi x13, vxsat, 25
 #elif !defined(U_SUPPORTED)
-  csrrsi x13, mepc, 25
+  csrrsi x13, mscratch, 25
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x13, instret, 25
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -706,7 +706,7 @@ Zicsr_csrrsi_cg_cp_rd_b13:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x9, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x9 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -725,7 +725,7 @@ Zicsr_csrrsi_cg_cp_rd_b13:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x2
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b14:
@@ -735,11 +735,11 @@ Zicsr_csrrsi_cg_cp_rd_b14:
 #elif defined(V_SUPPORTED)
   csrrsi x14, vxsat, 26
 #elif !defined(U_SUPPORTED)
-  csrrsi x14, mepc, 26
+  csrrsi x14, mscratch, 26
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x14, instret, 26
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -754,7 +754,7 @@ Zicsr_csrrsi_cg_cp_rd_b14:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x2, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -773,7 +773,7 @@ Zicsr_csrrsi_cg_cp_rd_b14:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x14
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b15:
@@ -783,11 +783,11 @@ Zicsr_csrrsi_cg_cp_rd_b15:
 #elif defined(V_SUPPORTED)
   csrrsi x15, vxsat, 14
 #elif !defined(U_SUPPORTED)
-  csrrsi x15, mepc, 14
+  csrrsi x15, mscratch, 14
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x15, instret, 14
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -802,7 +802,7 @@ Zicsr_csrrsi_cg_cp_rd_b15:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x14, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -821,7 +821,7 @@ Zicsr_csrrsi_cg_cp_rd_b15:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x7
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b16:
@@ -831,11 +831,11 @@ Zicsr_csrrsi_cg_cp_rd_b16:
 #elif defined(V_SUPPORTED)
   csrrsi x16, vxsat, 27
 #elif !defined(U_SUPPORTED)
-  csrrsi x16, mepc, 27
+  csrrsi x16, mscratch, 27
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x16, instret, 27
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x16 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -850,7 +850,7 @@ Zicsr_csrrsi_cg_cp_rd_b16:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x7, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x7 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -869,7 +869,7 @@ Zicsr_csrrsi_cg_cp_rd_b16:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x18
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b17:
@@ -879,11 +879,11 @@ Zicsr_csrrsi_cg_cp_rd_b17:
 #elif defined(V_SUPPORTED)
   csrrsi x17, vxsat, 24
 #elif !defined(U_SUPPORTED)
-  csrrsi x17, mepc, 24
+  csrrsi x17, mscratch, 24
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x17, instret, 24
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -898,7 +898,7 @@ Zicsr_csrrsi_cg_cp_rd_b17:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x18, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x18 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -917,7 +917,7 @@ Zicsr_csrrsi_cg_cp_rd_b17:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x10
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b18:
@@ -927,11 +927,11 @@ Zicsr_csrrsi_cg_cp_rd_b18:
 #elif defined(V_SUPPORTED)
   csrrsi x18, vxsat, 2
 #elif !defined(U_SUPPORTED)
-  csrrsi x18, mepc, 2
+  csrrsi x18, mscratch, 2
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x18, instret, 2
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x18 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -946,7 +946,7 @@ Zicsr_csrrsi_cg_cp_rd_b18:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x10, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x10 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -965,7 +965,7 @@ Zicsr_csrrsi_cg_cp_rd_b18:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x13
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b19:
@@ -975,11 +975,11 @@ Zicsr_csrrsi_cg_cp_rd_b19:
 #elif defined(V_SUPPORTED)
   csrrsi x19, vxsat, 25
 #elif !defined(U_SUPPORTED)
-  csrrsi x19, mepc, 25
+  csrrsi x19, mscratch, 25
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x19, instret, 25
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -994,7 +994,7 @@ Zicsr_csrrsi_cg_cp_rd_b19:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x13, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1013,7 +1013,7 @@ Zicsr_csrrsi_cg_cp_rd_b19:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x25
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b20:
@@ -1023,11 +1023,11 @@ Zicsr_csrrsi_cg_cp_rd_b20:
 #elif defined(V_SUPPORTED)
   csrrsi x20, vxsat, 1
 #elif !defined(U_SUPPORTED)
-  csrrsi x20, mepc, 1
+  csrrsi x20, mscratch, 1
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x20, instret, 1
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1042,7 +1042,7 @@ Zicsr_csrrsi_cg_cp_rd_b20:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x25, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1062,7 +1062,7 @@ Zicsr_csrrsi_cg_cp_rd_b20:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b21:
@@ -1072,11 +1072,11 @@ Zicsr_csrrsi_cg_cp_rd_b21:
 #elif defined(V_SUPPORTED)
   csrrsi x21, vxsat, 28
 #elif !defined(U_SUPPORTED)
-  csrrsi x21, mepc, 28
+  csrrsi x21, mscratch, 28
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x21, instret, 28
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1091,7 +1091,7 @@ Zicsr_csrrsi_cg_cp_rd_b21:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x0, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x0 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1110,7 +1110,7 @@ Zicsr_csrrsi_cg_cp_rd_b21:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x13
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b22:
@@ -1120,11 +1120,11 @@ Zicsr_csrrsi_cg_cp_rd_b22:
 #elif defined(V_SUPPORTED)
   csrrsi x22, vxsat, 15
 #elif !defined(U_SUPPORTED)
-  csrrsi x22, mepc, 15
+  csrrsi x22, mscratch, 15
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x22, instret, 15
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x22 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1139,7 +1139,7 @@ Zicsr_csrrsi_cg_cp_rd_b22:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x13, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1159,7 +1159,7 @@ Zicsr_csrrsi_cg_cp_rd_b22:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x31
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b23:
@@ -1169,11 +1169,11 @@ Zicsr_csrrsi_cg_cp_rd_b23:
 #elif defined(V_SUPPORTED)
   csrrsi x23, vxsat, 11
 #elif !defined(U_SUPPORTED)
-  csrrsi x23, mepc, 11
+  csrrsi x23, mscratch, 11
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x23, instret, 11
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1188,7 +1188,7 @@ Zicsr_csrrsi_cg_cp_rd_b23:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x31, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x31 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1207,7 +1207,7 @@ Zicsr_csrrsi_cg_cp_rd_b23:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x22
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b24:
@@ -1217,11 +1217,11 @@ Zicsr_csrrsi_cg_cp_rd_b24:
 #elif defined(V_SUPPORTED)
   csrrsi x24, vxsat, 26
 #elif !defined(U_SUPPORTED)
-  csrrsi x24, mepc, 26
+  csrrsi x24, mscratch, 26
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x24, instret, 26
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1236,7 +1236,7 @@ Zicsr_csrrsi_cg_cp_rd_b24:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x22, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x22 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1255,7 +1255,7 @@ Zicsr_csrrsi_cg_cp_rd_b24:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x24
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b25:
@@ -1265,11 +1265,11 @@ Zicsr_csrrsi_cg_cp_rd_b25:
 #elif defined(V_SUPPORTED)
   csrrsi x25, vxsat, 17
 #elif !defined(U_SUPPORTED)
-  csrrsi x25, mepc, 17
+  csrrsi x25, mscratch, 17
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x25, instret, 17
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1284,7 +1284,7 @@ Zicsr_csrrsi_cg_cp_rd_b25:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x24, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1303,7 +1303,7 @@ Zicsr_csrrsi_cg_cp_rd_b25:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x31
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b26:
@@ -1313,11 +1313,11 @@ Zicsr_csrrsi_cg_cp_rd_b26:
 #elif defined(V_SUPPORTED)
   csrrsi x26, vxsat, 20
 #elif !defined(U_SUPPORTED)
-  csrrsi x26, mepc, 20
+  csrrsi x26, mscratch, 20
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x26, instret, 20
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1332,7 +1332,7 @@ Zicsr_csrrsi_cg_cp_rd_b26:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x31, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x31 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1351,7 +1351,7 @@ Zicsr_csrrsi_cg_cp_rd_b26:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x6
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b27:
@@ -1361,11 +1361,11 @@ Zicsr_csrrsi_cg_cp_rd_b27:
 #elif defined(V_SUPPORTED)
   csrrsi x27, vxsat, 9
 #elif !defined(U_SUPPORTED)
-  csrrsi x27, mepc, 9
+  csrrsi x27, mscratch, 9
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x27, instret, 9
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1380,7 +1380,7 @@ Zicsr_csrrsi_cg_cp_rd_b27:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x6, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x6 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1400,7 +1400,7 @@ Zicsr_csrrsi_cg_cp_rd_b27:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b28:
@@ -1410,11 +1410,11 @@ Zicsr_csrrsi_cg_cp_rd_b28:
 #elif defined(V_SUPPORTED)
   csrrsi x28, vxsat, 20
 #elif !defined(U_SUPPORTED)
-  csrrsi x28, mepc, 20
+  csrrsi x28, mscratch, 20
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x28, instret, 20
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x28 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1429,7 +1429,7 @@ Zicsr_csrrsi_cg_cp_rd_b28:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x0, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x0 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1448,7 +1448,7 @@ Zicsr_csrrsi_cg_cp_rd_b28:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x6
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b29:
@@ -1458,11 +1458,11 @@ Zicsr_csrrsi_cg_cp_rd_b29:
 #elif defined(V_SUPPORTED)
   csrrsi x29, vxsat, 5
 #elif !defined(U_SUPPORTED)
-  csrrsi x29, mepc, 5
+  csrrsi x29, mscratch, 5
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x29, instret, 5
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x29 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1477,7 +1477,7 @@ Zicsr_csrrsi_cg_cp_rd_b29:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x6, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x6 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1496,7 +1496,7 @@ Zicsr_csrrsi_cg_cp_rd_b29:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x18
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b30:
@@ -1506,11 +1506,11 @@ Zicsr_csrrsi_cg_cp_rd_b30:
 #elif defined(V_SUPPORTED)
   csrrsi x30, vxsat, 23
 #elif !defined(U_SUPPORTED)
-  csrrsi x30, mepc, 23
+  csrrsi x30, mscratch, 23
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x30, instret, 23
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x30 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1525,7 +1525,7 @@ Zicsr_csrrsi_cg_cp_rd_b30:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x18, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x18 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1544,7 +1544,7 @@ Zicsr_csrrsi_cg_cp_rd_b30:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x29
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_rd_b31:
@@ -1554,11 +1554,11 @@ Zicsr_csrrsi_cg_cp_rd_b31:
 #elif defined(V_SUPPORTED)
   csrrsi x31, vxsat, 0
 #elif !defined(U_SUPPORTED)
-  csrrsi x31, mepc, 0
+  csrrsi x31, mscratch, 0
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x31, instret, 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x31 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1573,7 +1573,7 @@ Zicsr_csrrsi_cg_cp_rd_b31:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x29, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x29 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1596,7 +1596,7 @@ Zicsr_csrrsi_cg_cp_rd_b31:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x16
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm0:
@@ -1606,11 +1606,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm0:
 #elif defined(V_SUPPORTED)
   csrrsi x14, vxsat, 0
 #elif !defined(U_SUPPORTED)
-  csrrsi x14, mepc, 0
+  csrrsi x14, mscratch, 0
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x14, instret, 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x14 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1625,7 +1625,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm0:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x16, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x16 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1644,7 +1644,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm0:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x16
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm1:
@@ -1654,11 +1654,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm1:
 #elif defined(V_SUPPORTED)
   csrrsi x0, vxsat, 1
 #elif !defined(U_SUPPORTED)
-  csrrsi x0, mepc, 1
+  csrrsi x0, mscratch, 1
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x0, instret, 1
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x0 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1673,7 +1673,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm1:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x16, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x16 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1692,7 +1692,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm1:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x15
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm2:
@@ -1702,11 +1702,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm2:
 #elif defined(V_SUPPORTED)
   csrrsi x7, vxsat, 2
 #elif !defined(U_SUPPORTED)
-  csrrsi x7, mepc, 2
+  csrrsi x7, mscratch, 2
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x7, instret, 2
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x7 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1721,7 +1721,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm2:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x15, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x15 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1740,7 +1740,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm2:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x23
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm3:
@@ -1750,11 +1750,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm3:
 #elif defined(V_SUPPORTED)
   csrrsi x3, vxsat, 3
 #elif !defined(U_SUPPORTED)
-  csrrsi x3, mepc, 3
+  csrrsi x3, mscratch, 3
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x3, instret, 3
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x3 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1769,7 +1769,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm3:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x23, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x23 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1788,7 +1788,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm3:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x7
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm4:
@@ -1798,11 +1798,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm4:
 #elif defined(V_SUPPORTED)
   csrrsi x31, vxsat, 4
 #elif !defined(U_SUPPORTED)
-  csrrsi x31, mepc, 4
+  csrrsi x31, mscratch, 4
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x31, instret, 4
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x31 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1817,7 +1817,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm4:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x7, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x7 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1836,7 +1836,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm4:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x30
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm5:
@@ -1846,11 +1846,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm5:
 #elif defined(V_SUPPORTED)
   csrrsi x7, vxsat, 5
 #elif !defined(U_SUPPORTED)
-  csrrsi x7, mepc, 5
+  csrrsi x7, mscratch, 5
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x7, instret, 5
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x7 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1865,7 +1865,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm5:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x30, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x30 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1884,7 +1884,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm5:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x21
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm6:
@@ -1894,11 +1894,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm6:
 #elif defined(V_SUPPORTED)
   csrrsi x22, vxsat, 6
 #elif !defined(U_SUPPORTED)
-  csrrsi x22, mepc, 6
+  csrrsi x22, mscratch, 6
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x22, instret, 6
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x22 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1913,7 +1913,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm6:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x21, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x21 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1932,7 +1932,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm6:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x24
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm7:
@@ -1942,11 +1942,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm7:
 #elif defined(V_SUPPORTED)
   csrrsi x0, vxsat, 7
 #elif !defined(U_SUPPORTED)
-  csrrsi x0, mepc, 7
+  csrrsi x0, mscratch, 7
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x0, instret, 7
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x0 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1961,7 +1961,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm7:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x24, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x24 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1980,7 +1980,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm7:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x25
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm8:
@@ -1990,11 +1990,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm8:
 #elif defined(V_SUPPORTED)
   csrrsi x1, vxsat, 8
 #elif !defined(U_SUPPORTED)
-  csrrsi x1, mepc, 8
+  csrrsi x1, mscratch, 8
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x1, instret, 8
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x1 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2009,7 +2009,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm8:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x25, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x25 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2028,7 +2028,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm8:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x13
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm9:
@@ -2038,11 +2038,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm9:
 #elif defined(V_SUPPORTED)
   csrrsi x16, vxsat, 9
 #elif !defined(U_SUPPORTED)
-  csrrsi x16, mepc, 9
+  csrrsi x16, mscratch, 9
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x16, instret, 9
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x16 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2057,7 +2057,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm9:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x13, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x13 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2076,7 +2076,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm9:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x9
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm10:
@@ -2086,11 +2086,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm10:
 #elif defined(V_SUPPORTED)
   csrrsi x15, vxsat, 10
 #elif !defined(U_SUPPORTED)
-  csrrsi x15, mepc, 10
+  csrrsi x15, mscratch, 10
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x15, instret, 10
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x15 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2105,7 +2105,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm10:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x9, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x9 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2124,7 +2124,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm10:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x20
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm11:
@@ -2134,11 +2134,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm11:
 #elif defined(V_SUPPORTED)
   csrrsi x25, vxsat, 11
 #elif !defined(U_SUPPORTED)
-  csrrsi x25, mepc, 11
+  csrrsi x25, mscratch, 11
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x25, instret, 11
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x25 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2153,7 +2153,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm11:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x20, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x20 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2172,7 +2172,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm11:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x27
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm12:
@@ -2182,11 +2182,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm12:
 #elif defined(V_SUPPORTED)
   csrrsi x8, vxsat, 12
 #elif !defined(U_SUPPORTED)
-  csrrsi x8, mepc, 12
+  csrrsi x8, mscratch, 12
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x8, instret, 12
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x8 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2201,7 +2201,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm12:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x27, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x27 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2220,7 +2220,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm12:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x22
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm13:
@@ -2230,11 +2230,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm13:
 #elif defined(V_SUPPORTED)
   csrrsi x30, vxsat, 13
 #elif !defined(U_SUPPORTED)
-  csrrsi x30, mepc, 13
+  csrrsi x30, mscratch, 13
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x30, instret, 13
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x30 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2249,7 +2249,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm13:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x22, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x22 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2268,7 +2268,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm13:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x2
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm14:
@@ -2278,11 +2278,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm14:
 #elif defined(V_SUPPORTED)
   csrrsi x15, vxsat, 14
 #elif !defined(U_SUPPORTED)
-  csrrsi x15, mepc, 14
+  csrrsi x15, mscratch, 14
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x15, instret, 14
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x15 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2297,7 +2297,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm14:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x2, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x2 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2316,7 +2316,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm14:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x14
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm15:
@@ -2326,11 +2326,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm15:
 #elif defined(V_SUPPORTED)
   csrrsi x11, vxsat, 15
 #elif !defined(U_SUPPORTED)
-  csrrsi x11, mepc, 15
+  csrrsi x11, mscratch, 15
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x11, instret, 15
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x11 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2345,7 +2345,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm15:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x14, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x14 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2364,7 +2364,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm15:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x27
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm16:
@@ -2374,11 +2374,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm16:
 #elif defined(V_SUPPORTED)
   csrrsi x28, vxsat, 16
 #elif !defined(U_SUPPORTED)
-  csrrsi x28, mepc, 16
+  csrrsi x28, mscratch, 16
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x28, instret, 16
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x28 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2393,7 +2393,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm16:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x27, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x27 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2412,7 +2412,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm16:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x10
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm17:
@@ -2422,11 +2422,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm17:
 #elif defined(V_SUPPORTED)
   csrrsi x25, vxsat, 17
 #elif !defined(U_SUPPORTED)
-  csrrsi x25, mepc, 17
+  csrrsi x25, mscratch, 17
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x25, instret, 17
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x25 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2441,7 +2441,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm17:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x10, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x10 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2460,7 +2460,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm17:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x12
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm18:
@@ -2470,11 +2470,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm18:
 #elif defined(V_SUPPORTED)
   csrrsi x29, vxsat, 18
 #elif !defined(U_SUPPORTED)
-  csrrsi x29, mepc, 18
+  csrrsi x29, mscratch, 18
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x29, instret, 18
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x29 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2489,7 +2489,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm18:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x12, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x12 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2508,7 +2508,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm18:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x13
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm19:
@@ -2518,11 +2518,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm19:
 #elif defined(V_SUPPORTED)
   csrrsi x21, vxsat, 19
 #elif !defined(U_SUPPORTED)
-  csrrsi x21, mepc, 19
+  csrrsi x21, mscratch, 19
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x21, instret, 19
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x21 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2537,7 +2537,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm19:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x13, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x13 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2556,7 +2556,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm19:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x15
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm20:
@@ -2566,11 +2566,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm20:
 #elif defined(V_SUPPORTED)
   csrrsi x22, vxsat, 20
 #elif !defined(U_SUPPORTED)
-  csrrsi x22, mepc, 20
+  csrrsi x22, mscratch, 20
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x22, instret, 20
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x22 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2585,7 +2585,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm20:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x15, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x15 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2604,7 +2604,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm20:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm21:
@@ -2614,11 +2614,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm21:
 #elif defined(V_SUPPORTED)
   csrrsi x28, vxsat, 21
 #elif !defined(U_SUPPORTED)
-  csrrsi x28, mepc, 21
+  csrrsi x28, mscratch, 21
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x28, instret, 21
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x28 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2633,7 +2633,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm21:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x0, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x0 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2652,7 +2652,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm21:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x15
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm22:
@@ -2662,11 +2662,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm22:
 #elif defined(V_SUPPORTED)
   csrrsi x9, vxsat, 22
 #elif !defined(U_SUPPORTED)
-  csrrsi x9, mepc, 22
+  csrrsi x9, mscratch, 22
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x9, instret, 22
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x9 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2681,7 +2681,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm22:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x15, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x15 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2700,7 +2700,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm22:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x9
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm23:
@@ -2710,11 +2710,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm23:
 #elif defined(V_SUPPORTED)
   csrrsi x15, vxsat, 23
 #elif !defined(U_SUPPORTED)
-  csrrsi x15, mepc, 23
+  csrrsi x15, mscratch, 23
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x15, instret, 23
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x15 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2729,7 +2729,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm23:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x9, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x9 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2748,7 +2748,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm23:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x25
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm24:
@@ -2758,11 +2758,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm24:
 #elif defined(V_SUPPORTED)
   csrrsi x3, vxsat, 24
 #elif !defined(U_SUPPORTED)
-  csrrsi x3, mepc, 24
+  csrrsi x3, mscratch, 24
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x3, instret, 24
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x3 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2777,7 +2777,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm24:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x25, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x25 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2796,7 +2796,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm24:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x13
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm25:
@@ -2806,11 +2806,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm25:
 #elif defined(V_SUPPORTED)
   csrrsi x14, vxsat, 25
 #elif !defined(U_SUPPORTED)
-  csrrsi x14, mepc, 25
+  csrrsi x14, mscratch, 25
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x14, instret, 25
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x14 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2825,7 +2825,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm25:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x13, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x13 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2844,7 +2844,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm25:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x14
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm26:
@@ -2854,11 +2854,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm26:
 #elif defined(V_SUPPORTED)
   csrrsi x30, vxsat, 26
 #elif !defined(U_SUPPORTED)
-  csrrsi x30, mepc, 26
+  csrrsi x30, mscratch, 26
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x30, instret, 26
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x30 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2873,7 +2873,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm26:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x14, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x14 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2892,7 +2892,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm26:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x15
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm27:
@@ -2902,11 +2902,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm27:
 #elif defined(V_SUPPORTED)
   csrrsi x20, vxsat, 27
 #elif !defined(U_SUPPORTED)
-  csrrsi x20, mepc, 27
+  csrrsi x20, mscratch, 27
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x20, instret, 27
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x20 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2921,7 +2921,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm27:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x15, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x15 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2940,7 +2940,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm27:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x3
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm28:
@@ -2950,11 +2950,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm28:
 #elif defined(V_SUPPORTED)
   csrrsi x0, vxsat, 28
 #elif !defined(U_SUPPORTED)
-  csrrsi x0, mepc, 28
+  csrrsi x0, mscratch, 28
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x0, instret, 28
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x0 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2969,7 +2969,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm28:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x3, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x3 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2988,7 +2988,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm28:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x19
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm29:
@@ -2998,11 +2998,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm29:
 #elif defined(V_SUPPORTED)
   csrrsi x9, vxsat, 29
 #elif !defined(U_SUPPORTED)
-  csrrsi x9, mepc, 29
+  csrrsi x9, mscratch, 29
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x9, instret, 29
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x9 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3017,7 +3017,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm29:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x19, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x19 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3036,7 +3036,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm29:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x2
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm30:
@@ -3046,11 +3046,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm30:
 #elif defined(V_SUPPORTED)
   csrrsi x29, vxsat, 30
 #elif !defined(U_SUPPORTED)
-  csrrsi x29, mepc, 30
+  csrrsi x29, mscratch, 30
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x29, instret, 30
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x29 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3065,7 +3065,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm30:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x2, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x2 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3084,7 +3084,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm30:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x7
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrsi_cg_cp_uimm_5_uimm31:
@@ -3094,11 +3094,11 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm31:
 #elif defined(V_SUPPORTED)
   csrrsi x1, vxsat, 31
 #elif !defined(U_SUPPORTED)
-  csrrsi x1, mepc, 31
+  csrrsi x1, mscratch, 31
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x1, instret, 31
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x1 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3113,7 +3113,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm31:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x7, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x7 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.

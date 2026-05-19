@@ -350,6 +350,9 @@
 `ifdef ZCMOP_COVERAGE
   `include "Zcmop_coverage.svh"
 `endif
+`ifdef ZCMP_COVERAGE
+  `include "Zcmp_coverage.svh"
+`endif
 `ifdef ZFAD_COVERAGE
   `include "ZfaD_coverage.svh"
 `endif

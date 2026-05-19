@@ -1,0 +1,7 @@
+Instruction,Type,RV32,RV64,cp_zcmp_mva01s,cp_zcmp_mvsa01,cp_zcmp_push_rlist,cp_zcmp_pop_rlist,cp_zcmp_popret_rlist,cp_zcmp_popretz_rlist
+cm.mva01s,CN,x,x,x,,,,,
+cm.mvsa01,CN,x,x,,x,,,,
+cm.push,CN,x,x,,,x,,,
+cm.pop,CN,x,x,,,,x,,
+cm.popret,CN,x,x,,,,,x,
+cm.popretz,CN,x,x,,,,,,x

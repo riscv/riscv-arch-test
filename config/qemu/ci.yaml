@@ -8,6 +8,7 @@ ci_enabled: true
 # TODO: Remove Zama16b when Qemu starts supporting it.
 # TODO: Remove UV when Qemu VXRM register issue is fixed
 # ExceptionsZicboU/S fail because of https://gitlab.com/qemu-project/qemu/-/work_items/3380
-exclude_extensions: "Sm,S,Zacas,ZacasZabha,InterruptsS,InterruptsU,PMPSm,PMPZalrsc,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,SvaduPMP,Svpbmt,SvZicbo,Svinval,ExceptionsZaamo,ExceptionsSvZaamo,ExceptionsSvZalrsc,Zama16b,UV"
+# Zicntr fails on QEMU11.0.0 due to https://gitlab.com/qemu-project/qemu/-/work_items/3498, https://gitlab.com/qemu-project/qemu/-/work_items/3504
+exclude_extensions: "Sm,S,Zicntr,Zacas,ZacasZabha,InterruptsS,InterruptsU,PMPSm,PMPZalrsc,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,SvaduPMP,Svpbmt,SvZicbo,Svinval,ExceptionsZaamo,ExceptionsSvZaamo,ExceptionsSvZalrsc,Zama16b,UV"
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"

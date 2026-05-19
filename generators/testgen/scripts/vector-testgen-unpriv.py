@@ -39,6 +39,7 @@ from rich.progress import (
 import vector_testgen_common as common
 from vector_testgen_common import (
   ARCH_VERIF,
+  bf16_instructions,
   getSigReg,
   getFlen,
   fedges,
@@ -369,7 +370,7 @@ def make_rs1_edges_v(instruction, sew, redgesv):
 def make_fs1_edges_v(instruction, sew):
   if sew == 64:
     fedgesv = fedgesD
-  elif sew == 16 and 'bf16' in instruction:
+  elif sew == 16 and instruction in bf16_instructions:
     fedgesv = fedgesBF16
   elif sew == 16:
     fedgesv = fedgesH
@@ -406,7 +407,7 @@ def make_vs2_rs1_edges(instruction, sew, vs2edges):
 def make_vs2_fs1_edges(instruction, sew, vs2edges):
   if sew == 64:
     fedgesv = fedgesD
-  elif sew == 16 and 'bf16' in instruction:
+  elif sew == 16 and instruction in bf16_instructions:
     fedgesv = fedgesBF16
   elif sew == 16:
     fedgesv = fedgesH
@@ -484,7 +485,7 @@ def _get_fflags_pairs(instruction: str, sew: int) -> list[tuple[str, dict[str, o
   """
   if sew == 64:
     edge_dict = fedgesD
-  elif sew == 16 and 'bf16' in instruction:
+  elif sew == 16 and instruction in bf16_instructions:
     edge_dict = fedgesBF16
   elif sew == 16:
     edge_dict = fedgesH
@@ -557,7 +558,18 @@ def _get_fflags_pairs(instruction: str, sew: int) -> list[tuple[str, dict[str, o
     # OF: Only something above bf16 maxnorm (which has the same exponent as f32) can overflow here
     pairs.append(("OF", { "vs2_val_pointer": "vs_corner_f_negmaxnorm_emul2" }))
 
-  elif base_name == "vfncvt":
+  elif base_name == "vfwmaccbf16":
+    kwargs = {
+      "vd_val_pointer": "vs_corner_f_pos0_emul2",
+      "vs2_val_pointer": "vs_corner_f_min_subnorm_emul1",
+    }
+    if suffix == "vv":
+      kwargs["vs1_val_pointer"] = "vs_corner_f_min_subnorm_emul1"
+    else:
+      kwargs["fs1_val"] = edge_dict["min_subnorm"]
+    pairs.append(("UF", kwargs))
+
+  elif base_name == "vfncvt" and suffix == "f":
     # NV: sNaN conversion
     pairs.append(("NV", { "vs2_val_pointer": "vs_corner_f_sNaN_payload1_emul2" }))
 
@@ -1305,6 +1317,19 @@ def _setup_worker() -> None:
   common.writeLine = writeLine
   import_all_modules(custom)
 
+def _detect_sew(pathname: str) -> int:
+  for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$', r'/VlsCustom(\d+)$', r'/VfCustom(\d+)$', r'/Zvbb(\d+)$', r'/Zvkb(\d+)$', r'/Zvbc(\d+)$']:
+    match = re.search(pattern, pathname)
+    if match:
+        return int(match.group(1))
+
+  for pattern in [r'/Zvfbfmin$', r'/Zvfhmin$', r'/Zvfbfwma$']:
+    match = re.search(pattern, pathname)
+    if match:
+      return 16
+
+  return 8
+
 
 def generate_extension(xlen_arg: int, extension_arg: str) -> str:
   """Generate every test file for a single (xlen, extension) pair.
@@ -1352,19 +1377,7 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
 
   os.makedirs(pathname, exist_ok=True)  # noqa: PTH103
 
-  for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$', r'/VlsCustom(\d+)$', r'/VfCustom(\d+)$', r'/Zvbb(\d+)$', r'/Zvkb(\d+)$', r'/Zvbc(\d+)$']:
-    match = re.search(pattern, pathname)
-    if match:
-        sew = int(match.group(1))
-        break
-  else:
-    for pattern in [r'/Zvfbfmin$', r'/Zvfhmin$', r'/Zvfbfwma$']:
-      match = re.search(pattern, pathname)
-      if match:
-        sew = 16
-        break
-    else:
-      sew = 8
+  sew = _detect_sew(pathname)
 
   instructions = list(testplans[extension].keys())
   applicable_instructions = list(testplans[extension].keys())
@@ -1395,20 +1408,6 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
     if test in vfloattypes:
       float_en = "\n# set mstatus.FS to 10 to enable fp\nli t0,0x4000\ncsrs mstatus, t0\n\n"
       f.write(float_en)
-
-    for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$', r'/VlsCustom(\d+)$', r'/VfCustom(\d+)$', r'/Zvbb(\d+)$', r'/Zvkb(\d+)$', r'/Zvbc(\d+)$']:
-      sew_match = re.search(pattern, pathname)
-      if sew_match:
-          sew = int(sew_match.group(1))
-          break
-    else:
-      for pattern in [r'/Zvfbfmin$', r'/Zvfhmin$', r'/Zvfbfwma$']:
-        match = re.search(pattern, pathname)
-        if match:
-          sew = 16
-          break
-      else:
-        sew = 8
 
     if extension.startswith(("VfCustom", "Vf")) and sew > 32:
       setFlen(sew)

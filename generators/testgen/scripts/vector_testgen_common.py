@@ -675,6 +675,7 @@ widening_mac_ins = [
   "vwmacc.vx", "vwmaccu.vx", "vwmaccsu.vx", "vwmaccus.vx",
   "vfwmacc.vv", "vfwnmacc.vv", "vfwmsac.vv", "vfwnmsac.vv",
   "vfwmacc.vf", "vfwnmacc.vf", "vfwmsac.vf", "vfwnmsac.vf",
+  "vfwmaccbf16.vv", "vfwmaccbf16.vf",
 ]
 not_maskable    = vm_nomask_ins + mmins + vmvins + ls_not_maskable
 
@@ -727,6 +728,8 @@ strided_stores = [
     "vssseg7e8.v", "vssseg7e16.v", "vssseg7e32.v", "vssseg7e64.v",
     "vssseg8e8.v", "vssseg8e16.v", "vssseg8e32.v", "vssseg8e64.v"
 ]
+
+bf16_instructions = ["vfwmaccbf16.vv", "vfwmaccbf16.vf", "vfncvtbf16.f.f.w", "vfwcvtbf16.f.f.v"]
 
 
 # ─── Segment length 2 ──────────────────────────────────────────────
@@ -1431,6 +1434,9 @@ def genVtestdata(test, sew):
         test_data += genVsedges(test, sew, test[-2:])
       elif (test in xvmtype) or (test in maskopins):
         test_data += genVsedges(test, sew, "eew1")
+      elif (test in widening_mac_ins):
+        test_data += genVsedgesFP(test, sew, "1")
+        test_data += genVsedgesFP(test, sew, "2")
       elif (test in vfloattypes):
         test_data += genVsedgesFP(test, sew, "1")
       else:

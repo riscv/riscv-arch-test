@@ -6,6 +6,8 @@
   "labels": ["dependencies"],
   "prHourlyLimit": 4,
   "prConcurrentLimit": 10,
+  "minimumReleaseAge": "7 days",
+  "internalChecksFilter": "strict",
   "git-submodules": {
     "enabled": true
   },
@@ -83,6 +85,17 @@
   ],
   "packageRules": [
     {
+      "description": "Always use the latest version of specified packages",
+      "matchDepNames": [
+        "tenstorrent/whisper",
+        "udb",
+        "udb-gen",
+        "idlc",
+        "udb_helpers"
+      ],
+      "minimumReleaseAge": null
+    },
+    {
       "description": "Do not update Ruby language versions",
       "matchDepNames": ["ruby"],
       "enabled": false
@@ -131,12 +144,6 @@
       ],
       "matchUpdateTypes": ["major"],
       "groupName": "pre-commit hooks (major)",
-      "schedule": ["before 6am on monday"]
-    },
-    {
-      "description": "Pyright moves fast; keep it in its own PR",
-      "matchPackageNames": ["pyright"],
-      "groupName": "pyright",
       "schedule": ["before 6am on monday"]
     }
   ]

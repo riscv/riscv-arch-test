@@ -251,7 +251,9 @@ covergroup S_scsr_cg with function sample(ins_t ins);
 
     csr_machine: coverpoint ins.current.insn[31:20]  {
         bins machine_0[] = {[12'h300:12'h3FF]};
-        bins machine_1[] = {[12'h700:12'h7FF]};
+        bins machine_1a[] = {[12'h700:12'h7A9]};
+        // ignore mscontext at 0x7aa, which is accessible from S mode
+        bins machine_1b[] = {[12'h7AB:12'h7FF]};
         bins machine_2[] = {[12'hB00:12'hBFF]};
         bins machine_3[] = {[12'hF00:12'hFFF]};
     }

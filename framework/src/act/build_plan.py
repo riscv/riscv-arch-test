@@ -80,6 +80,8 @@ def _ref_model_sig_cmd(
         return cmd
     if config.ref_model_type == RefModelType.SPIKE:
         cmd = [str(config.ref_model_exe), f"--isa={spike_isa_string(xlen)}"]
+        if debug:
+            cmd.extend(["-l", "--log-commits", f"--log={sig_trace_file}"])
         cmd.extend(config.ref_model_type.signature_flags(sig_file, xlen // 8))
         cmd.append(str(sig_elf))
         return cmd

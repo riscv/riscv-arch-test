@@ -138,10 +138,13 @@ class Config(BaseModel):
             ref_model_str = str(ref_model_exe) if isinstance(ref_model_exe, (str, Path)) else None
             if ref_model_str is None:
                 raise ValueError("Unable to infer reference model type from ref_model_exe.")
-            if "spike" in ref_model_str:
+            executable_name = Path(ref_model_str).name.lower()
+            if "spike" in executable_name:
                 data["ref_model_type"] = RefModelType.SPIKE
-            else:
+            elif "sail" in executable_name:
                 data["ref_model_type"] = RefModelType.SAIL
+            else:
+                raise ValueError(f"Unable to infer reference model type from ref_model_exe: {ref_model_exe}")
         return data
 
     @field_validator("udb_config", "linker_script", "dut_include_dir", mode="before")

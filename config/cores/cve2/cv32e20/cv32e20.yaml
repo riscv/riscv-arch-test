@@ -17,6 +17,7 @@ implemented_extensions:
   - { name: Zca, version: "= 1.0.0" }
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0" }
+  - { name: U, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.12.0" }
 
 params:

@@ -21,15 +21,11 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv32]
 # MARCH: rv32i_zicsr
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv32_spage_mstatus_sum_set_Smode.S"
 #define SIGUPD_COUNT 25
 #define TRAP_SIGUPD_COUNT 50
-#define rvtest_mtrap_routine
-#define rvtest_strap_routine
-#define RVTEST_PRIV_TEST
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"

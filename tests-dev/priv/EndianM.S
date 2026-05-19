@@ -13,7 +13,6 @@
 # params:
 #   MXLEN: 32
 # MARCH: rv32i_zicsr
-# CONFIG_DEPENDENT: false
 ##### END_TEST_CONFIG #####
 
 

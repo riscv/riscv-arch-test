@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # /// script
-# requires-python = ">=3.12"
+# requires-python = ">=3.10"
 # ///
 
 import csv

@@ -34,5 +34,12 @@ def format_f2x_type(
     test = [
         f"{instr_name} x{params.rd}, f{params.fs1}{frm} # perform operation",
     ]
-    check = [write_sigupd(params.rd, test_data)]
+    check = [
+        write_sigupd(params.rd, test_data, "int"),
+        write_sigupd(None, test_data, "fflags"),
+    ]
+    if params.frm == "dyn":
+        assert params.csr_frm_val is not None
+        setup.append(f"fsrmi {params.csr_frm_val}")
+        check.append("fsrmi 0x0")
     return (setup, test, check)

@@ -46,6 +46,4 @@ def generate_test_string_section(data_strings: list[str]) -> str:
     Returns:
         Assembly code for the .data section
     """
-    lines: list[str] = list(data_strings)
-
-    return "\n".join(lines)
+    return "\n".join(data_strings)

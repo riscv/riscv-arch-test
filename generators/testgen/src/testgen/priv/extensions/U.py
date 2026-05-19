@@ -56,7 +56,7 @@ def _generate_ucsr_tests(test_data: TestData) -> list[str]:
             "Attempt to read non-user-mode registers.  Should throw illegal instruction",
         ),
     ]
-    temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
+    temp_reg = test_data.int_regs.get_register()
     for csr in (
         list(range(0x100, 0x400)) + list(range(0x500, 0x800)) + list(range(0x900, 0xC00)) + list(range(0xD00, 0x1000))
     ):
@@ -94,7 +94,7 @@ def _generate_ucsr_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("U", required_extensions=["Sm", "U", "Zicsr"])
+@add_priv_test_generator("U", required_extensions=["U", "Zicsr"])
 def make_u(test_data: TestData) -> list[str]:
     """Generate tests for U user-mode testsuite."""
     lines: list[str] = []

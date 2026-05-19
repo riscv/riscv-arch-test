@@ -45,7 +45,7 @@ def format_cfls_type(
     assert test_data.test_chunk is not None
     test_data.test_chunk.data_values.append(params.temp_val)
 
-    setup: list[str] = []
+    setup: list[str] = ["fsflagsi 0b00000 # clear all fflags"]
     # sp (x2) is used as the base pointer for CFLS instructions
     # Ensure sp is allocated
     asm = test_data.int_regs.consume_registers([2])

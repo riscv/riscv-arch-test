@@ -3,8 +3,8 @@
 # Jordan Carlin jcarlin@hmc.edu Jan 2026 and David_Harris@hmc.edu March 2026
 # SPDX-License-Identifier: BSD-3-Clause
 
-#ifndef _COMPLIANCE_MODEL_H
-#define _COMPLIANCE_MODEL_H
+#ifndef _RVMODEL_MACROS_H
+#define _RVMODEL_MACROS_H
 
 #define CLINT_BASE_ADDRESS 0x02000000
 
@@ -16,8 +16,18 @@
 
 ##### STARTUP #####
 
-# Perform boot operations. Can be empty.
-#define RVMODEL_BOOT
+# Perform boot operations. Can be empty or left undefined unless needed for
+# DUT-specific behavior such as turning on a memory controller or
+# initializing custom state.
+//#define RVMODEL_BOOT
+
+// Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
+// if defined.  For most DUTs, the default should work and this macro
+// should not be defined.  If no M-mode or CSRs are implemented, define this
+// macro as blank to bypass the boot process.  If a nonconforming
+// M-mode is implemented, define this macro to set up the necessary
+// state in a fashion similar to RVTEST_BOOT_TO_MMODE.
+//#define RVMODEL_BOOT_TO_MMODE
 
 ##### TERMINATION #####
 
@@ -49,7 +59,8 @@
 # Initialization steps needed prior to writing to the console
 # _R1, _R2, and _R3 can be used as temporary registers if needed.
 # Do not modify any other registers (or make sure to restore them).
-#define RVMODEL_IO_INIT(_R1, _R2, _R3)
+# Can be empty or left undefined if no initialization is needed.
+//#define RVMODEL_IO_INIT(_R1, _R2, _R3)
 
 
 # Prints a null-terminated string using a DUT specific mechanism.
@@ -84,7 +95,6 @@
 
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
-// TODO: need to implement external interrupts in SAIL
 #define RVMODEL_MEXT_ADDRESS  0x80000000  /* Address of a memory mapped machine external interrupt generator */
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)        \
   li _R1, 1;               \
@@ -97,16 +107,16 @@
   sw zero, 0(_R2)            ; /* Clear MEXT interrupt */ \
 
 
-#define MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
+#define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 
 #define RVMODEL_SET_MSW_INT(_R1, _R2)        \
   li _R1, 1;                 \
-  li _R2, MSIP_ADDRESS;              \
+  li _R2, RVMODEL_MSIP_ADDRESS;              \
   sw _R1, 0(_R2);
 
 
 #define RVMODEL_CLR_MSW_INT(_R1, _R2)        \
-  li _R2, MSIP_ADDRESS;              \
+  li _R2, RVMODEL_MSIP_ADDRESS;              \
   sw zero, 0(_R2);
 
 
@@ -138,4 +148,4 @@
   li _R2, CLINT_SSIP_ADDRESS;              \
   sw zero, 0(_R2);
 
-#endif // _COMPLIANCE_MODEL_H
+#endif // _RVMODEL_MACROS_H

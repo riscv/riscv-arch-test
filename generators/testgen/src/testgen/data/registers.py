@@ -313,7 +313,7 @@ class IntegerRegisterFile(RegisterFile):
             # Restrict link register to specific set
             available_temp_regs = [reg for reg in self.temp_regs if reg + 1 in self.reg_list]
             self._temp_reg = self.get_register(reg_range=available_temp_regs)
-            self._link_reg = self._temp_reg + 1  # temp register is always the next register after the link register
+            self._link_reg = self._temp_reg + 1  # link register is always the next register after the temp register
             # Use super to avoid recursive checking for special reg conflicts
             super().consume_registers([self._link_reg])
             lines.append(f"mv x{self._temp_reg}, x{old_temp_reg} # switch temp register to avoid conflict with test")
@@ -371,4 +371,4 @@ class FloatRegisterFile(RegisterFile):
         # Reallocate special registers to new locations
         if temp_conflict:
             # Restrict link register to specific set
-            self._temp_reg = self.get_register(reg_range=[reg for reg in self.temp_regs])
+            self._temp_reg = self.get_register(reg_range=list(self.temp_regs))

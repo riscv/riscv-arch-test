@@ -54,54 +54,54 @@ covergroup Svpbmt_cg with function sample(ins_t ins);
         wildcard bins pbmt_3 = {8'b11?11111} iff (ins.current.pte_d[62:61] == 2'b11);
     }
 
-    PBMTE_set: coverpoint ins.current.csr[12'h30A][62] {
+    PBMTE_set: coverpoint ins.current.csr[CSR_MENVCFG][62] {
             bins PBMTE_set = {1'b1};
     }
 
     PageType_i: coverpoint ins.current.page_type_i {
         `ifdef SV48_SUPPORTED
-            bins sv48_tera = {2'b11} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
-            bins sv48_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
-            bins sv48_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
-            bins sv48_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
+            bins sv48_tera = {2'b11} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
+            bins sv48_giga = {2'b10} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
+            bins sv48_mega = {2'b01} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
+            bins sv48_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
         `endif
         `ifdef SV39_SUPPORTED
-            bins sv39_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
-            bins sv39_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
-            bins sv39_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
+            bins sv39_giga = {2'b10} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
+            bins sv39_mega = {2'b01} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
+            bins sv39_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
         `endif
     }
     PageType_d: coverpoint ins.current.page_type_d {
         `ifdef SV48_SUPPORTED
-            bins sv48_tera = {2'b11} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
-            bins sv48_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
-            bins sv48_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
-            bins sv48_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
+            bins sv48_tera = {2'b11} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
+            bins sv48_giga = {2'b10} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
+            bins sv48_mega = {2'b01} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
+            bins sv48_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
         `endif
         `ifdef SV39_SUPPORTED
-            bins sv39_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
-            bins sv39_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
-            bins sv39_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
+            bins sv39_giga = {2'b10} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
+            bins sv39_mega = {2'b01} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
+            bins sv39_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
         `endif
     }
 
     jalr: coverpoint ins.prev.insn {
-        wildcard bins jalr = {32'b????????????_?????_000_?????_1100111};
+        wildcard bins jalr = {JALR};
     }
     lw: coverpoint ins.current.insn {
-        wildcard bins lw = {32'b????????????_?????_010_?????_0000011};
+        wildcard bins lw = {LW};
     }
     sw: coverpoint ins.current.insn {
-        wildcard bins sw = {32'b????????????_?????_010_?????_0100011};
+        wildcard bins sw = {SW};
     }
 
-    ins_page_fault: coverpoint  ins.current.csr[12'h342][31:0] {
+    ins_page_fault: coverpoint  ins.current.csr[CSR_MCAUSE][31:0] {
         bins ins_page_fault = {32'd12} iff (ins.current.trap);
     }
-    load_page_fault: coverpoint  ins.current.csr[12'h342][31:0] {
+    load_page_fault: coverpoint  ins.current.csr[CSR_MCAUSE][31:0] {
         bins load_page_fault = {32'd13} iff (ins.current.trap);
     }
-    store_page_fault: coverpoint  ins.current.csr[12'h342][31:0] {
+    store_page_fault: coverpoint  ins.current.csr[CSR_MCAUSE][31:0] {
         bins store_amo_page_fault = {32'd15} iff (ins.current.trap);
     }
 

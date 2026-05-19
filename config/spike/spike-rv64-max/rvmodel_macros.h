@@ -3,8 +3,8 @@
 # Jordan Carlin jcarlin@hmc.edu Jan 2026
 # SPDX-License-Identifier: BSD-3-Clause
 
-#ifndef _COMPLIANCE_MODEL_H
-#define _COMPLIANCE_MODEL_H
+#ifndef _RVMODEL_MACROS_H
+#define _RVMODEL_MACROS_H
 
 #define RVMODEL_DATA_SECTION \
         .pushsection .tohost,"aw",@progbits;                \
@@ -14,8 +14,18 @@
 
 ##### STARTUP #####
 
-# Perform boot operations. Can be empty.
-#define RVMODEL_BOOT
+# Perform boot operations. Can be empty or left undefined unless needed for
+# DUT-specific behavior such as turning on a memory controller or
+# initializing custom state.
+//#define RVMODEL_BOOT
+
+// Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
+// if defined.  For most DUTs, the default should work and this macro
+// should not be defined.  If no M-mode or CSRs are implemented, define this
+// macro as blank to bypass the boot process.  If a nonconforming
+// M-mode is implemented, define this macro to set up the necessary
+// state in a fashion similar to RVTEST_BOOT_TO_MMODE.
+//#define RVMODEL_BOOT_TO_MMODE
 
 ##### TERMINATION #####
 
@@ -52,6 +62,7 @@
 # Initialization steps needed prior to writing to the console
 # _R1, _R2, and _R3 can be used as temporary registers if needed.
 # Do not modify any other registers (or make sure to restore them).
+# Can be empty or left undefined if no initialization is needed.
 #define RVMODEL_IO_INIT(_R1, _R2, _R3)    \
   uart_init:                ;\
     li _R1, UART_LCR         ; /* Load address of UART LCR */    \
@@ -91,24 +102,68 @@
 
 ##### Machine Interrupts #####
 
-#define RVMODEL_INTERRUPT_LATENCY 10
+#define RVMODEL_INTERRUPT_LATENCY 2000
 
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
+// Spike ticks the CLINT timer every 100 instructions (default --insns-per-tick).
+// The default RVTEST_IDLE_FOR_TIMER_INTERRUPT spins RVMODEL_TIMER_INT_SOON_DELAY iterations
+// (200 instructions), which only advances mtime by ~2 ticks — far less than the 100-tick
+// stimecmp offset. Override with a 200x multiplier so the spin outlasts the timer delay.
+#define RVTEST_IDLE_FOR_TIMER_INTERRUPT(_R1) \
+    LI(_R1, RVMODEL_TIMER_INT_SOON_DELAY * 200); \
+    99: addi _R1, _R1, -1; \
+        bnez _R1, 99b;
+
 #define CLINT_BASE_ADDRESS 0x02000000
-#define MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
+#define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 
-#define RVMODEL_SET_MEXT_INT(_R1, _R2)
+#define PLIC_BASE_ADDRESS    0x0c000000
+#define PLIC_ENABLE_ADDRESS  0x0c002000
+#define PLIC_THRESH_ADDRESS  0x0c200000
+#define PLIC_CLAIM_ADDRESS   0x0c200004
+#define NS16550_BASE_ADDRESS 0x10000000
+#define UART_INT_SRC         1            /* NS16550 interrupt source ID in Spike */
 
-#define RVMODEL_CLR_MEXT_INT(_R1, _R2)
+/* Generates machine external interrupt via PLIC + NS16550 UART transmitter interrupt.
+ * The UART throws an interrupt because the THR (Transmit Holding Register) defaults to empty.
+ * Steps:
+ * - Configures PLIC UART_INT_SRC to priority 7
+ * - Enables UART_INT_SRC in PLIC
+ * - Sets PLIC priority threshold to 0
+ * - Sets UART IER.ETBEI (Interrupt Enable Register - Enable Transmitter Holding Register Empty Interrupt)
+ * The PLIC sees that the UART source is enabled and has priority greater than the threshold,
+ * so PLIC asserts Machine External Interrupt. */
+#define RVMODEL_SET_MEXT_INT(_R1, _R2)          \
+  li _R1, 7;                                     \
+  li _R2, PLIC_BASE_ADDRESS;                     \
+  sw _R1, (4*UART_INT_SRC)(_R2);                 \
+  li _R1, (1 << UART_INT_SRC);                   \
+  li _R2, PLIC_ENABLE_ADDRESS;                   \
+  sw _R1, 0(_R2);                                \
+  li _R2, PLIC_THRESH_ADDRESS;                   \
+  sw zero, 0(_R2);                               \
+  li _R1, 0x02;                                  \
+  li _R2, NS16550_BASE_ADDRESS;                  \
+  sb _R1, 1(_R2);
+
+/* Clears machine external interrupt:
+ * - Turns off UART interrupt by disabling IER.ETBEI
+ * - Reads the PLIC Claim register and writes it back to deassert Machine External Interrupt */
+#define RVMODEL_CLR_MEXT_INT(_R1, _R2)          \
+  li _R2, NS16550_BASE_ADDRESS;                  \
+  sb zero, 1(_R2);                               \
+  li _R2, PLIC_CLAIM_ADDRESS;                    \
+  lw _R1, 0(_R2);                               \
+  sw _R1, 0(_R2);
 
 #define RVMODEL_SET_MSW_INT(_R1, _R2) \
   li _R1, 1; \
-  li _R2, MSIP_ADDRESS; \
+  li _R2, RVMODEL_MSIP_ADDRESS; \
   sw _R1, 0(_R2);
 
 #define RVMODEL_CLR_MSW_INT(_R1, _R2) \
-  li _R2, MSIP_ADDRESS; \
+  li _R2, RVMODEL_MSIP_ADDRESS; \
   sw zero, 0(_R2);
 
 ##### Supervisor Interrupts #####
@@ -128,4 +183,4 @@
   li _R2, SPIKE_SSIP_ADDRESS; \
   sw zero, 0(_R2);
 
-#endif // _COMPLIANCE_MODEL_H
+#endif // _RVMODEL_MACROS_H

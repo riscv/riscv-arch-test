@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: Apache-2.0
+# Jordan Carlin jcarlin@hmc.edu April 2026
+# CI configuration for Imperas simulator
+# Imperas is proprietary and cannot run in public CI.
+
+ci_enabled: false
+exclude_extensions: ""

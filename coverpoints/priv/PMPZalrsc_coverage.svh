@@ -15,15 +15,15 @@ covergroup PMPZalrsc_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0]
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
   rs1_in_region: coverpoint ins.current.rs1_val {
-    bins at_region = {`REGIONSTART};
+    bins at_region = {`PMP_REGION_START};
   }
 
   atomic_intrs: coverpoint ins.current.insn {
-    wildcard bins lr_w  = {32'b00010??00000?????010?????0101111};
-    wildcard bins sc_w  = {32'b00011????????????010?????0101111};
+    wildcard bins lr_w  = {LR_W};
+    wildcard bins sc_w  = {SC_W};
     `ifdef XLEN64
-      wildcard bins lr_d  = {32'b00010??00000?????011?????0101111};
-      wildcard bins sc_d  = {32'b00011????????????011?????0101111};
+      wildcard bins lr_d  = {LR_D};
+      wildcard bins sc_d  = {SC_D};
     `endif
   }
 
@@ -49,7 +49,7 @@ function void pmpzalrsc_sample(int hart, int issue, ins_t ins);
   `ifdef XLEN32
       // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
       for (int i = 0; i < 16; i++) begin
-          logic [31:0] cfg_word = ins.current.csr[12'h3A0 + i];
+          logic [31:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + i];
           pmpcfg[i*4 + 0] = cfg_word[7:0];
           pmpcfg[i*4 + 1] = cfg_word[15:8];
           pmpcfg[i*4 + 2] = cfg_word[23:16];
@@ -58,7 +58,7 @@ function void pmpzalrsc_sample(int hart, int issue, ins_t ins);
   `elsif XLEN64
       // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
-        logic [63:0] cfg_word = ins.current.csr[12'h3A0 + 2*i];
+        logic [63:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + 2*i];
         pmpcfg[i*8 + 0] = cfg_word[7:0];
         pmpcfg[i*8 + 1] = cfg_word[15:8];
         pmpcfg[i*8 + 2] = cfg_word[23:16];
@@ -71,7 +71,7 @@ function void pmpzalrsc_sample(int hart, int issue, ins_t ins);
   `endif
 
   for (int j = 0; j < 63; j++) begin
-    pmpaddr[j] = ins.current.csr[12'h3B0 + j];
+    pmpaddr[j] = ins.current.csr[CSR_PMPADDR0 + j];
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions

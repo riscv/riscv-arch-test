@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../../../external/riscv-unified-db/spec/schemas/config_schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
 ---
 $schema: config_schema.json#
 kind: architecture configuration
@@ -32,10 +32,8 @@ implemented_extensions:
   - { name: Smctr, version: "= 1.0.0" }
   - { name: Smdbltrp, version: "= 1.0.0" }
   - { name: Smepmp, version: "= 1.0.0" }
-  - { name: Smhpm, version: "= 1.13.0" }
   - { name: Smmpm, version: "= 1.0.0" }
   - { name: Smnpm, version: "= 1.0.0" }
-  - { name: Smpmp, version: "= 1.13.0" }
   - { name: Smrnmi, version: "= 1.0.0" }
   - { name: Smstateen, version: "= 1.0.0" }
   - { name: Ssaia, version: "= 1.0.0" }
@@ -150,9 +148,6 @@ implemented_extensions:
   - { name: Zvl32b, version: "= 1.0.0" }
   - { name: Zvl64b, version: "= 1.0.0" }
   - { name: Zvl128b, version: "= 1.0.0" }
-  - { name: Zvl256b, version: "= 1.0.0" }
-  - { name: Zvl512b, version: "= 1.0.0" }
-  - { name: Zvl1024b, version: "= 1.0.0" }
 
 params:
   # A params
@@ -160,7 +155,7 @@ params:
   LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
   LRSC_FAIL_ON_VA_SYNONYM: false
   LRSC_MISALIGNED_BEHAVIOR: "always raise access fault"
-  LRSC_FAIL_ON_NON_EXACT_LRSC: false
+  LRSC_FAIL_ON_NON_EXACT_LRSC: true
   MUTABLE_MISA_A: false
   # M params
   MUTABLE_MISA_M: false
@@ -248,7 +243,6 @@ params:
   STVEC_MODE_VECTORED: true
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true
-  TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY: true
   MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
   MSTATUS_TVM_IMPLEMENTED: true
   # Sm params
@@ -257,11 +251,11 @@ params:
   TRAP_ON_ECALL_FROM_M: true
   TRAP_ON_EBREAK: true
   MARCHID_IMPLEMENTED: true
-  ARCH_ID_VALUE: 0x24
+  ARCH_ID_VALUE: 5
   MIMPID_IMPLEMENTED: true
-  IMP_ID_VALUE: 0x100
-  VENDOR_ID_BANK: 0xC
-  VENDOR_ID_OFFSET: 0x2
+  IMP_ID_VALUE: 0
+  VENDOR_ID_BANK: 0
+  VENDOR_ID_OFFSET: 0
   MISALIGNED_LDST: true
   MISALIGNED_LDST_EXCEPTION_PRIORITY: low
   MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4096
@@ -289,10 +283,8 @@ params:
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
-  # Smpmp params
   NUM_PMP_ENTRIES: 16
   PMP_GRANULARITY: 2
-  # Smhpm params
   HPM_COUNTER_EN:
     [
       false,
@@ -401,7 +393,7 @@ params:
     ]
   # Vector params
   MUTABLE_MISA_V: false
-  VLEN: 1024
+  VLEN: 128
   ELEN: 64
   FOLLOW_VTYPE_RESET_RECOMMENDATION: true
   HW_MSTATUS_VS_DIRTY_UPDATE: precise
@@ -547,3 +539,21 @@ params:
   MSTATEEN_AIA_TYPE: rw
   MSTATEEN_IMSIC_TYPE: rw
   HSTATEEN_IMSIC_TYPE: rw
+  # Smctr params
+  MCTRCTL_CORSWAPINH_IMPLEMENTED: true
+  MCTRCTL_CUSTOM_IMPLEMENTED: false
+  MCTRCTL_DIRCALLINH_IMPLEMENTED: true
+  MCTRCTL_DIRJMPINH_IMPLEMENTED: true
+  MCTRCTL_DIRLJMPINH_IMPLEMENTED: true
+  MCTRCTL_EXCINH_IMPLEMENTED: true
+  MCTRCTL_INDCALLINH_IMPLEMENTED: true
+  MCTRCTL_INDJMPINH_IMPLEMENTED: true
+  MCTRCTL_INDLJMPINH_IMPLEMENTED: true
+  MCTRCTL_INTRINH_IMPLEMENTED: true
+  MCTRCTL_MTE_IMPLEMENTED: true
+  MCTRCTL_NTBREN_IMPLEMENTED: true
+  MCTRCTL_RASEMU_IMPLEMENTED: true
+  MCTRCTL_RETINH_IMPLEMENTED: true
+  MCTRCTL_STE_IMPLEMENTED: true
+  MCTRCTL_TKBRINH_IMPLEMENTED: true
+  MCTRCTL_TRETINH_IMPLEMENTED: true

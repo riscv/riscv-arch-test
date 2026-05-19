@@ -1,0 +1,1 @@
+../cv32e40p-v2-rv32imc/rvtest_config.svh

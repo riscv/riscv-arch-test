@@ -1,0 +1,61 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  # The NTL.P1 instruction indicates that the target instruction does not exhibit
+  # temporal locality within the capacity of the innermost level of private cache in
+  # the memory hierarchy.
+  - name: C-NTL-P1_op
+    coverpoint: ["Zihintntl_ntl_p1_cg/cp_asm_count"]
+  # NTL.P1 is encoded as ADD x0, x0, x2.
+  - name: NTL-P1_enc
+    coverpoint: ["Zihintntl_ntl_p1_cg/cp_asm_count"]
+  # The NTL.ALL instruction indicates that the target instruction does not exhibit
+  # temporal locality within the capacity of any level of cache in the memory
+  # hierarchy.
+  - name: C-NTL-ALL_op
+    coverpoint: ["Zihintntl_ntl_all_cg/cp_asm_count"]
+  # NTL.ALL is encoded as ADD x0, x0, x5.
+  - name: C-NTL-ALL_end
+    coverpoint: ["Zihintntl_ntl_all_cg/cp_asm_count"]
+  # The NTL.PALL instruction indicates that the target instruction does not exhibit
+  # temporal locality within the capacity of any level of private cache in the
+  # memory hierarchy.
+  - name: C-NTL-PALL_op
+    coverpoint: ["Zihintntl_ntl_pall_cg/cp_asm_count"]
+  # NTL.PALL is encoded as ADD x0, x0, x3.
+  - name: C-NTL-PALL_enc
+    coverpoint: ["Zihintntl_ntl_pall_cg/cp_asm_count"]
+  # The NTL.S1 instruction indicates that the target instruction does not exhibit
+  # temporal locality within the capacity of the innermost level of shared cache in
+  # the memory hierarchy.
+  - name: C-NTL-S1_op
+    coverpoint: ["Zihintntl_ntl_s1_cg/cp_asm_count"]
+  # NTL.S1 is encoded as ADD x0, x0, x4.
+  - name: C-NTL-S1_enc
+    coverpoint: ["Zihintntl_ntl_s1_cg/cp_asm_count"]
+
+  # The NTL instructions do not change architectural state, nor do they alter the
+  # architecturally visible effects of the target instruction.
+  - name: NTL-target_definition
+    coverpoint: ["Untested - hint"]
+
+  # The NTL instructions affect all memory-access instructions except the
+  # cache-management instructions in the Zicbom extension.
+  - name: NTL_range
+    coverpoint: ["not tested - no architectural observable effects"]
+
+  # When an NTL instruction is applied to a prefetch hint in the Zicbop extension,
+  # it indicates that a cache line should be prefetched into a cache that is outer
+  # from the level specified by the NTL.
+  - name: NTL_Zicob_prefetch_outer
+    coverpoint: ["not tested - no architectural observable effects"]
+
+  - name: NTL_TRAP_BEHAVIOR
+    coverpoint: ["TODO"]
+
+  # Since the NTL instructions are encoded as ADDs, they can be used within LR/SC
+  # loops without voiding the forward-progress guarantee. But, since using other
+  # loads and stores within an LR/SC loop does void the forward-progress guarantee,
+  # the only reason to use an NTL within such a loop is to modify the LR or the SC.
+  - name: NTL-LR_SC_exception
+    coverpoint: ["TODO"]

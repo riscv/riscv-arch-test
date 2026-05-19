@@ -1,11 +1,68 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # If the C or Zca extension is provided, compressed variants of these HINTs are
+  # also provided: C.NTL.P1 is encoded as C.ADD x0, x2; C.NTL.PALL is encoded as
+  # C.ADD x0, x3; C.NTL.S1 is encoded as C.ADD x0, x4; and C.NTL.ALL is encoded as
+  # C.ADD x0, x5.
   - name: C-NTL-P1_op
-    coverpoint: ["Zca_c_hint_cg/cp_chint_add"]
-  - name: C-NTL-ALL_op
-    coverpoint: ["Zca_c_hint_cg/cp_chint_add"]
+    coverpoint: ["ZihintntlZca_c_ntl_p1_cg/cp_asm_count"]
+
+  # If the C or Zca extension is provided, compressed variants of these HINTs are
+  # also provided: C.NTL.P1 is encoded as C.ADD x0, x2; C.NTL.PALL is encoded as
+  # C.ADD x0, x3; C.NTL.S1 is encoded as C.ADD x0, x4; and C.NTL.ALL is encoded as
+  # C.ADD x0, x5.
+  - name: C-NTL-P1_enc
+    coverpoint: ["ZihintntlZca_c_ntl_p1_cg/cp_asm_count"]
+
+  # If the C or Zca extension is provided, compressed variants of these HINTs are
+  # also provided: C.NTL.P1 is encoded as C.ADD x0, x2; C.NTL.PALL is encoded as
+  # C.ADD x0, x3; C.NTL.S1 is encoded as C.ADD x0, x4; and C.NTL.ALL is encoded as
+  # C.ADD x0, x5.
   - name: C-NTL-PALL_op
-    coverpoint: ["Zca_c_hint_cg/cp_chint_add"]
+    coverpoint: ["ZihintntlZca_c_ntl_pall_cg/cp_asm_count"]
+
+  # If the C or Zca extension is provided, compressed variants of these HINTs are
+  # also provided: C.NTL.P1 is encoded as C.ADD x0, x2; C.NTL.PALL is encoded as
+  # C.ADD x0, x3; C.NTL.S1 is encoded as C.ADD x0, x4; and C.NTL.ALL is encoded as
+  # C.ADD x0, x5.
+  - name: C-NTL-PALL_enc
+    coverpoint: ["ZihintntlZca_c_ntl_pall_cg/cp_asm_count"]
+
+  # If the C or Zca extension is provided, compressed variants of these HINTs are
+  # also provided: C.NTL.P1 is encoded as C.ADD x0, x2; C.NTL.PALL is encoded as
+  # C.ADD x0, x3; C.NTL.S1 is encoded as C.ADD x0, x4; and C.NTL.ALL is encoded as
+  # C.ADD x0, x5.
   - name: C-NTL-S1_op
-    coverpoint: ["Zca_c_hint_cg/cp_chint_add"]
+    coverpoint: ["ZihintntlZca_c_ntl_s1_cg/cp_asm_count"]
+
+  # If the C or Zca extension is provided, compressed variants of these HINTs are
+  # also provided: C.NTL.P1 is encoded as C.ADD x0, x2; C.NTL.PALL is encoded as
+  # C.ADD x0, x3; C.NTL.S1 is encoded as C.ADD x0, x4; and C.NTL.ALL is encoded as
+  # C.ADD x0, x5.
+  - name: C-NTL-S1_enc
+    coverpoint: ["ZihintntlZca_c_ntl_s1_cg/cp_asm_count"]
+
+  # If the C or Zca extension is provided, compressed variants of these HINTs are
+  # also provided: C.NTL.P1 is encoded as C.ADD x0, x2; C.NTL.PALL is encoded as
+  # C.ADD x0, x3; C.NTL.S1 is encoded as C.ADD x0, x4; and C.NTL.ALL is encoded as
+  # C.ADD x0, x5.
+  - name: C-NTL-ALL_op
+    coverpoint: ["ZihintntlZca_c_ntl_all_cg/cp_asm_count"]
+
+  # If the C or Zca extension is provided, compressed variants of these HINTs are
+  # also provided: C.NTL.P1 is encoded as C.ADD x0, x2; C.NTL.PALL is encoded as
+  # C.ADD x0, x3; C.NTL.S1 is encoded as C.ADD x0, x4; and C.NTL.ALL is encoded as
+  # C.ADD x0, x5.
+  - name: C-NTL-ALL_enc
+    coverpoint: ["ZihintntlZca_c_ntl_all_cg/cp_asm_count"]
+
+  # If the C or Zca extension is provided, compressed variants of these HINTs are
+  # also provided: C.NTL.P1 is encoded as C.ADD x0, x2; C.NTL.PALL is encoded as
+  # C.ADD x0, x3; C.NTL.S1 is encoded as C.ADD x0, x4; and C.NTL.ALL is encoded as
+  # C.ADD x0, x5.
+  - name: C-NTL-availability
+    coverpoint:
+      [
+        "{ZihintntlZca_c_ntl_p1_cg, ZihintntlZca_c_ntl_pall_cg, ZihintntlZca_c_ntl_s1_cg, ZihintntlZca_c_ntl_all_cg}/cp_asm_count",
+      ]

@@ -89,7 +89,7 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
 
     // satp.mode for coverage of SV32, SV39, SV48 & SV57
     `ifdef XLEN64
-        mode: coverpoint ins.current.csr[12'h180][63:60] {
+        mode: coverpoint ins.current.csr[CSR_SATP][63:60] {
             `ifdef SV57_SUPPORTED
                 bins sv57 = {4'b1010};
             `endif
@@ -101,7 +101,7 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
             `endif
         }
     `else
-        mode: coverpoint ins.current.csr[12'h180][31] {
+        mode: coverpoint ins.current.csr[CSR_SATP][31] {
             bins sv32 = {1'b1};
         }
     `endif
@@ -109,21 +109,21 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
     `ifdef XLEN64
         PageType_d: coverpoint ins.current.page_type_d {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera = {2'b11} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
-                bins sv48_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
-                bins sv48_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
-                bins sv48_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
+                bins sv48_tera = {2'b11} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
+                bins sv48_giga = {2'b10} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
+                bins sv48_mega = {2'b01} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
+                bins sv48_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
-                bins sv39_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
-                bins sv39_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
+                bins sv39_giga = {2'b10} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
+                bins sv39_mega = {2'b01} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
+                bins sv39_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1000);
             `endif
         }
     `else
         PageType_d: coverpoint ins.current.page_type_d {
-            bins sv32_mega = {2'b01} iff (ins.current.csr[12'h180][31] == 1'b1);
-            bins sv32_kilo = {2'b00} iff (ins.current.csr[12'h180][31] == 1'b1);
+            bins sv32_mega = {2'b01} iff (ins.current.csr[CSR_SATP][31] == 1'b1);
+            bins sv32_kilo = {2'b00} iff (ins.current.csr[CSR_SATP][31] == 1'b1);
         }
     `endif
 
@@ -134,41 +134,31 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
     `ifdef XLEN64
         misaligned_PPN_d: coverpoint ins.current.page_type_d {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera_misaligned = {2'b11} iff ((ins.current.ppn_d[26:0] != 27'b0) && (ins.current.csr[12'h180][63:60] == 4'b1001));
-                bins sv48_giga_misaligned = {2'b10} iff ((ins.current.ppn_d[17:0] != 18'b0) && (ins.current.csr[12'h180][63:60] == 4'b1001));
-                bins sv48_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[8:0]  !=  9'b0) && (ins.current.csr[12'h180][63:60] == 4'b1001));
+                bins sv48_tera_misaligned = {2'b11} iff ((ins.current.ppn_d[26:0] != 27'b0) && (ins.current.csr[CSR_SATP][63:60] == 4'b1001));
+                bins sv48_giga_misaligned = {2'b10} iff ((ins.current.ppn_d[17:0] != 18'b0) && (ins.current.csr[CSR_SATP][63:60] == 4'b1001));
+                bins sv48_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[8:0]  !=  9'b0) && (ins.current.csr[CSR_SATP][63:60] == 4'b1001));
             `endif
             `ifdef SV39_SUPPORTED
-                bins sv39_giga_misaligned = {2'b10} iff ((ins.current.ppn_d[17:0] != 18'b0) && (ins.current.csr[12'h180][63:60] == 4'b1000));
-                bins sv39_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[8:0]  !=  9'b0) && (ins.current.csr[12'h180][63:60] == 4'b1000));
+                bins sv39_giga_misaligned = {2'b10} iff ((ins.current.ppn_d[17:0] != 18'b0) && (ins.current.csr[CSR_SATP][63:60] == 4'b1000));
+                bins sv39_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[8:0]  !=  9'b0) && (ins.current.csr[CSR_SATP][63:60] == 4'b1000));
             `endif
         }
     `else
         misaligned_PPN_d: coverpoint ins.current.page_type_d {
-            bins sv32_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[9:0] != 10'b0) && (ins.current.csr[12'h180][31] == 1'b1));
+            bins sv32_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[9:0] != 10'b0) && (ins.current.csr[CSR_SATP][31] == 1'b1));
         }
     `endif
 
-    store_page_fault: coverpoint  ins.current.csr[12'h342] iff (ins.trap == 1) {
+    store_page_fault: coverpoint  ins.current.csr[CSR_MCAUSE] iff (ins.trap == 1) {
         bins store_amo_page_fault = {64'd15};
     }
-    store_acc_fault: coverpoint  ins.current.csr[12'h342] iff (ins.trap == 1) {
+    store_acc_fault: coverpoint  ins.current.csr[CSR_MCAUSE] iff (ins.trap == 1) {
         bins store_amo_access_fault = {64'd7};
     }
-    sum_sstatus: coverpoint ins.current.csr[12'h100][18]{
+    sum_sstatus: coverpoint ins.current.csr[CSR_SSTATUS][18]{
         bins notset = {0};
         bins set = {1};
     }
-
-    `ifdef XLEN64
-        d_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
-            bins non_existent_pa = {1};
-        }
-    `else
-        d_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
-            bins non_existent_pa = {1};
-        }
-    `endif
 
     cbo_ins: coverpoint ins.current.insn {
         `ifdef ZICBOM_SUPPORTED
@@ -275,27 +265,39 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
         ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_s);
     }
 
-    // PTE points to a non existent physical address
-    cp_leaf_PTE_to_nonexistent_pa_cbo_s: cross PTE_RWX_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s {
-        ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_u);
-    }
-    cp_leaf_PTE_to_nonexistent_pa_cbo_u: cross PTE_RWX_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_u {
-        ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_s);
-    }
-
-    // Non leaf PTE points to a non existatant phys addr instead of next page table. Store access fault required during walk
-    // Example: Setup a giga page in sv48, lvl 3 pte (tera) should point to lvl2 page table, but it points to non existent PA
-    cp_nonleaf_PTE_to_nonexistent_pa_cbo: cross pointer_PTE_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s_u {
-        `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_tera); `endif     // Here PageType_d will be the page being pointed towards
-        `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_giga); `endif
-        `ifdef XLEN32         ignore_bins ig3 = binsof(PageType_d.sv32_mega); `endif
-    }
-
     cp_PTE_nonleaf_DAU_cbo: cross PTE_DAU_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s_u {
         `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_kilo); `endif
         `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_kilo); `endif
         `ifdef XLEN32         ignore_bins ig3 = binsof(PageType_d.sv32_kilo); `endif
     }
+
+    // access fault coverpoints
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        `ifdef XLEN64
+            d_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+                bins non_existent_pa = {1};
+            }
+        `else
+            d_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+                bins non_existent_pa = {1};
+            }
+        `endif
+        // PTE points to a non existent physical address
+        cp_leaf_PTE_to_nonexistent_pa_cbo_s: cross PTE_RWX_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s {
+            ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_u);
+        }
+        cp_leaf_PTE_to_nonexistent_pa_cbo_u: cross PTE_RWX_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_u {
+            ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_s);
+        }
+
+        // Non leaf PTE points to a non existatant phys addr instead of next page table. Store access fault required during walk
+        // Example: Setup a giga page in sv48, lvl 3 pte (tera) should point to lvl2 page table, but it points to non existent PA
+        cp_nonleaf_PTE_to_nonexistent_pa_cbo: cross pointer_PTE_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s_u {
+            `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_tera); `endif     // Here PageType_d will be the page being pointed towards
+            `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_giga); `endif
+            `ifdef XLEN32         ignore_bins ig3 = binsof(PageType_d.sv32_mega); `endif
+        }
+    `endif
 
 endgroup
 

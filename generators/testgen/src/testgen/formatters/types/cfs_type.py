@@ -49,6 +49,7 @@ def format_cfs_type(
     # Move sig_reg to rs1
     setup = [
         load_float_reg("fs2", params.fs2, params.fs2val, test_data),
+        "fsflagsi 0b00000 # clear all fflags",
     ]
     if params.rs1 != test_data.int_regs.sig_reg:
         setup.append(
@@ -78,4 +79,5 @@ def format_cfs_type(
     ]
     assert test_data.test_chunk is not None
     test_data.test_chunk.sigupd_count += 1
+    check.append(write_sigupd(None, test_data, "fflags"))
     return (setup, test, check)

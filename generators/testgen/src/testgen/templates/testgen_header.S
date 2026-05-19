@@ -12,7 +12,6 @@
 # REQUIRED_EXTENSIONS: @EXTENSION_LIST@
 # @PARAMS@
 # MARCH: @MARCH@
-# CONFIG_DEPENDENT: @CONFIG_DEPENDENT@
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region

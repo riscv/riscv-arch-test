@@ -3,21 +3,19 @@
 # Jordan Carlin jcarlin@hmc.edu October 2025
 # SPDX-License-Identifier: Apache-2.0
 
+[tool.uv]
+exclude-newer = "7 days"
+
 [tool.uv.workspace]
 members = ["framework", "generators/testgen", "generators/coverage"]
 
 [dependency-groups]
-dev = [
-    "pre-commit>=4.5.1",
-    "pyright==1.1.408",
-    "ruff==0.15.8",
-]
+dev = ["pyright==1.1.409", "ruff==0.15.12"]
 
 ###### RUFF CONFIG #####
 [tool.ruff]
 line-length = 120
 extend-exclude = [
-  "external",
   "docs/docs-resources",
   "generators/testgen/scripts", # Old scripts that still need to be updated
 ]
@@ -43,7 +41,6 @@ ignore = [
 
 [tool.ty.src]
 exclude = [
-  "external",
   "generators/testgen/scripts", # Old scripts that still need to be updated
 ]
 
@@ -54,8 +51,8 @@ exclude = [
   "**/node_modules",
   "**/.*",
   ".venv",
-  "external",
   "docs/docs-resources",
   "generators/testgen/scripts", # Old scripts that still need to be updated
 ]
 typeCheckingMode = "standard"
+pythonVersion = "3.10"

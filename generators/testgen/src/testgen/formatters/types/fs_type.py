@@ -36,6 +36,7 @@ def format_fs_type(
     # load test value
     setup = [
         load_float_reg("fs2", params.fs2, params.fs2val, test_data, params.fp_load_type),
+        "fsflagsi 0b00000 # clear all fflags",
     ]
 
     # Move sig_reg to rs1
@@ -76,4 +77,5 @@ def format_fs_type(
     ]
     assert test_data.test_chunk is not None
     test_data.test_chunk.sigupd_count += 1
+    check.append(write_sigupd(None, test_data, "fflags"))
     return (setup, test, check)

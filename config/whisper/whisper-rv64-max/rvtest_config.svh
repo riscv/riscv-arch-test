@@ -10,14 +10,17 @@
 `define FLEN64
 `define VLEN256
 
+// Maximum supported index EEW for indexed load/store
+`define MAXINDEXEEW64
+
 // Virtual Memory Modes
-`define SV39
-`define SV48
-`define SV57
+`define SV39_SUPPORTED
+`define SV48_SUPPORTED
+`define SV57_SUPPORTED
 
 // PMP Grain (G)
 // Set G as needed (e.g., 0, 1, 2, ...)
-`define G 8
+`define G 10
 
 // Uncomment below if G = 0
 // `define G_IS_0
@@ -39,7 +42,7 @@
 `define C_SUPPORTED
 `define D_SUPPORTED
 `define F_SUPPORTED
-`define H_SUPPORTED
+// `define H_SUPPORTED // H not yet turned on in YAML
 `define I_SUPPORTED
 `define M_SUPPORTED
 `define N_SUPPORTED
@@ -49,8 +52,8 @@
 `define SMDBLTRP_SUPPORTED
 `define SMMPM_SUPPORTED
 `define SMNPM_SUPPORTED
-`define SMRNMI_SUPPORTED
 `define SMSTATEEN_SUPPORTED
+`define SSSTATEEN_SUPPORTED
 `define SSAIA_SUPPORTED
 `define SSCOFPMF_SUPPORTED
 `define SSNPM_SUPPORTED
@@ -79,7 +82,6 @@
 `define ZCA_SUPPORTED
 `define ZCB_SUPPORTED
 `define ZCD_SUPPORTED
-`define ZCF_SUPPORTED
 `define ZCLSD_SUPPORTED
 `define ZCMOP_SUPPORTED
 `define ZFA_SUPPORTED
@@ -137,3 +139,16 @@
 `define COUNTINHIBIT_EN_0
 `define COUNTINHIBIT_EN_2
 `define TIME_CSR_IMPLEMENTED
+
+// Supported SEWs for vector
+// all supported now should be generated based on config (SEWMIN and ELEN)
+`define SEW8_SUPPORTED
+`define SEW16_SUPPORTED
+`define SEW32_SUPPORTED
+`define SEW64_SUPPORTED
+
+// Supported fractional LMULs for vector
+// all supported now should be generated based on config (SEWMIN and ELEN)
+`define LMULf8_SUPPORTED
+`define LMULf4_SUPPORTED
+`define LMULf2_SUPPORTED

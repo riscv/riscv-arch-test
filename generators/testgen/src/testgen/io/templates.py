@@ -8,6 +8,8 @@
 
 """Template loading and insertion for test files."""
 
+from __future__ import annotations
+
 import importlib.resources
 import re
 from pathlib import Path
@@ -60,10 +62,9 @@ def insert_header_template(
         template.replace("@TEST_PATH@", f"{test_file}")
         .replace("@TEST_FILE_NAME@", f"{test_file.name}")
         .replace("@EXTENSION_LIST@", f"{ext_components}")
-        .replace("@PARAMS@", format_params(params))
+        .replace("@PARAMS@", format_params(params, ext_components))
         .replace("@MARCH@", march)
         .replace("@EXTRA_DEFINES@", "\n".join(extra_defines))
-        .replace("@CONFIG_DEPENDENT@", str(test_config.config_dependent).lower())
         .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(sigupd_count))
     )
     return template
@@ -107,8 +108,6 @@ def canonicalize_extensions(
         ext_components.append("D")  # Add D if Zcd is present
     if any(ext in ext_components for ext in ["Zcf", "D", "Zfh", "Zfhmin", "Zfa", "Zfbfmin"]):
         ext_components.append("F")  # Add F if any floating point extension is present
-    if any(ext in ext_components for ext in ["Sm", "S", "U", "H"]):
-        ext_components.append("Zicsr")  # Add Zicsr if any priv extension is present
     if any(ext in ext_components for ext in ["V", "Zvfh"]):
         ext_components.append("M")  # Add M if V is present (required for gcc 15)
 
@@ -169,6 +168,14 @@ def generate_march_string(ext_components: list[str], xlen: int) -> str:
         else:
             multi_letter.append(ext)
 
+    # Always include Zicsr so boot code CSR instructions can compile
+    if "Zicsr" not in multi_letter:
+        multi_letter.append("Zicsr")
+
+    # workaround for https://github.com/llvm/llvm-project/issues/190910; can be removed when this is resolved
+    if ("Zihintntl" in multi_letter) and ("Zca" in multi_letter):
+        single_letter.append("C")
+
     # Sort single-letter extensions in canonical order (I/E, M, A, F, D, Q, C, B, V, H)
     single_letter.sort(key=_single_letter_sort_key)
     # Sort multi-letter extensions in canonical order (Z by subgroup then alpha, S alpha, others alpha)
@@ -184,11 +191,15 @@ def generate_march_string(ext_components: list[str], xlen: int) -> str:
     return march
 
 
-def format_params(params: list[str]) -> str:
+def format_params(params: list[str], ext_components: list[str]) -> str:
     """Format parameters for insertion into template."""
-    if not params:
-        return "# # no param constraints"  # Extra comment symbol necessary because YAML parser strips initial comment
     param_lines = ["params:"]
+    if False:  # any(ext in ext_components for ext in ["Sm", "H", "S", "U"]):  # might need hack to require standard Sm for all priv tests until custom trap handler setup works
+        param_lines.append(
+            "#    STANDARD_SM_SUPPORTED: True"
+        )  # dh 4/23/26 seems to need true, not in UDB, not sure how to handle yet
+    elif not params:
+        return "# # no param constraints"  # Extra comment symbol necessary because YAML parser strips initial comment
     param_lines.extend(f"#   {param}" for param in params)
     return "\n".join(param_lines)
 
@@ -196,17 +207,10 @@ def format_params(params: list[str]) -> str:
 def generate_defines_from_extensions(ext_components: list[str]) -> list[str]:
     """Generate extra #define statements from extension components."""
     extra_defines: list[str] = []
-    # Enable floating point if needed
-    if "F" in ext_components:
-        extra_defines.append("#define RVTEST_FP")
-    # TODO: Enable vector extension if needed when vector testgen is integrated
 
-    # Enable trap handlers if needed
-    if "H" in ext_components:
-        extra_defines.append("#define rvtest_vtrap_routine")
     if any(ext in ext_components for ext in ["H", "S"]):
-        extra_defines.append("#define rvtest_strap_routine")
-    if any(ext in ext_components for ext in ["Sm", "H", "S", "U"]):
-        extra_defines.append("#define rvtest_mtrap_routine")
+        extra_defines.append("#define BOOT_TO_SMODE")
+    elif "Sm" in ext_components:
+        extra_defines.append("#define BOOT_TO_MMODE")
 
     return extra_defines

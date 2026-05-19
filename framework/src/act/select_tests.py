@@ -7,6 +7,8 @@
 # Select tests to run based on UDB config and test list
 ##################################
 
+from __future__ import annotations
+
 import re
 
 from act.parse_test_constraints import TestMetadata

@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-SvZicbo_cg = new(); SvZicbo_cg.set_inst_name("obj_SvZicbo");
+    SvZicbo_cg = new(); SvZicbo_cg.set_inst_name("obj_SvZicbo");

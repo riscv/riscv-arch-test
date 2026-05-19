@@ -1,0 +1,9 @@
+Instruction,Type,RV32,RV64,cp_asm_count
+c.mop.1,CN,x,x,x
+c.mop.3,CN,x,x,x
+c.mop.5,CN,x,x,x
+c.mop.7,CN,x,x,x
+c.mop.9,CN,x,x,x
+c.mop.11,CN,x,x,x
+c.mop.13,CN,x,x,x
+c.mop.15,CN,x,x,x

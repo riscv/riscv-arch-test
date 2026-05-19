@@ -9,6 +9,7 @@
 `define XLEN32
 `define FLEN128
 `define VLEN128
+`define ELEN64
 
 // PMP Grain (G)
 // Set G as needed (e.g., 0, 1, 2, ...)
@@ -33,6 +34,7 @@
 `define ZFA_SUPPORTED
 `define F_SUPPORTED
 `define ZFH_SUPPORTED
+`define ZFHMIN_SUPPORTED
 `define ZBB_SUPPORTED
 `define ZBA_SUPPORTED
 `define ZBS_SUPPORTED
@@ -47,7 +49,28 @@
 `define ZICBOZ_SUPPORTED
 `define ZICBOM_SUPPORTED
 `define ZICBOP_SUPPORTED
+`define ZICFILP_SUPPORTED
+`define ZICFISS_SUPPORTED
+`define S_SUPPORTED
+`define SMSTATEEN_SUPPORTED
+`define SSSTATEEN_SUPPORTED
 
 `define COUNTINHIBIT_EN_0
 `define COUNTINHIBIT_EN_2
 `define TIME_CSR_IMPLEMENTED
+
+// Supported SEWs for vector
+// all supported now should be generated based on config (SEWMIN and ELEN)
+`define SEW8_SUPPORTED
+`define SEW16_SUPPORTED
+`define SEW32_SUPPORTED
+`define SEW64_SUPPORTED
+
+// Supported fractional LMULs for vector
+// all supported now should be generated based on config (SEWMIN and ELEN)
+`define LMULf8_SUPPORTED
+`define LMULf4_SUPPORTED
+`define LMULf2_SUPPORTED
+
+// Maximum supported index EEW for indexed load/store
+`define MAXINDEXEEW64

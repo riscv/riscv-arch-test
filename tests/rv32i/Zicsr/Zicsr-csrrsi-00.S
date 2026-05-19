@@ -57,7 +57,7 @@ Zicsr_csrrsi_cg_cp_rd_b0:
 #elif defined(V_SUPPORTED)
   csrrsi x0, vxsat, 30
 #elif !defined(U_SUPPORTED)
-  csrrsi x0, mscratch, 30
+  csrrsi x0, mepc, 30
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x0, instret, 30
 #else
@@ -105,7 +105,7 @@ Zicsr_csrrsi_cg_cp_rd_b1:
 #elif defined(V_SUPPORTED)
   csrrsi x1, vxsat, 15
 #elif !defined(U_SUPPORTED)
-  csrrsi x1, mscratch, 15
+  csrrsi x1, mepc, 15
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x1, instret, 15
 #else
@@ -154,7 +154,7 @@ Zicsr_csrrsi_cg_cp_rd_b2:
 #elif defined(V_SUPPORTED)
   csrrsi x2, vxsat, 25
 #elif !defined(U_SUPPORTED)
-  csrrsi x2, mscratch, 25
+  csrrsi x2, mepc, 25
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x2, instret, 25
 #else
@@ -203,7 +203,7 @@ Zicsr_csrrsi_cg_cp_rd_b3:
 #elif defined(V_SUPPORTED)
   csrrsi x3, vxsat, 30
 #elif !defined(U_SUPPORTED)
-  csrrsi x3, mscratch, 30
+  csrrsi x3, mepc, 30
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x3, instret, 30
 #else
@@ -253,7 +253,7 @@ Zicsr_csrrsi_cg_cp_rd_b4:
 #elif defined(V_SUPPORTED)
   csrrsi x4, vxsat, 27
 #elif !defined(U_SUPPORTED)
-  csrrsi x4, mscratch, 27
+  csrrsi x4, mepc, 27
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x4, instret, 27
 #else
@@ -301,7 +301,7 @@ Zicsr_csrrsi_cg_cp_rd_b5:
 #elif defined(V_SUPPORTED)
   csrrsi x5, vxsat, 30
 #elif !defined(U_SUPPORTED)
-  csrrsi x5, mscratch, 30
+  csrrsi x5, mepc, 30
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x5, instret, 30
 #else
@@ -349,7 +349,7 @@ Zicsr_csrrsi_cg_cp_rd_b6:
 #elif defined(V_SUPPORTED)
   csrrsi x6, vxsat, 13
 #elif !defined(U_SUPPORTED)
-  csrrsi x6, mscratch, 13
+  csrrsi x6, mepc, 13
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x6, instret, 13
 #else
@@ -397,7 +397,7 @@ Zicsr_csrrsi_cg_cp_rd_b7:
 #elif defined(V_SUPPORTED)
   csrrsi x7, vxsat, 21
 #elif !defined(U_SUPPORTED)
-  csrrsi x7, mscratch, 21
+  csrrsi x7, mepc, 21
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x7, instret, 21
 #else
@@ -445,7 +445,7 @@ Zicsr_csrrsi_cg_cp_rd_b8:
 #elif defined(V_SUPPORTED)
   csrrsi x8, vxsat, 29
 #elif !defined(U_SUPPORTED)
-  csrrsi x8, mscratch, 29
+  csrrsi x8, mepc, 29
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x8, instret, 29
 #else
@@ -493,7 +493,7 @@ Zicsr_csrrsi_cg_cp_rd_b9:
 #elif defined(V_SUPPORTED)
   csrrsi x9, vxsat, 2
 #elif !defined(U_SUPPORTED)
-  csrrsi x9, mscratch, 2
+  csrrsi x9, mepc, 2
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x9, instret, 2
 #else
@@ -541,7 +541,7 @@ Zicsr_csrrsi_cg_cp_rd_b10:
 #elif defined(V_SUPPORTED)
   csrrsi x10, vxsat, 30
 #elif !defined(U_SUPPORTED)
-  csrrsi x10, mscratch, 30
+  csrrsi x10, mepc, 30
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x10, instret, 30
 #else
@@ -589,7 +589,7 @@ Zicsr_csrrsi_cg_cp_rd_b11:
 #elif defined(V_SUPPORTED)
   csrrsi x11, vxsat, 17
 #elif !defined(U_SUPPORTED)
-  csrrsi x11, mscratch, 17
+  csrrsi x11, mepc, 17
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x11, instret, 17
 #else
@@ -639,7 +639,7 @@ Zicsr_csrrsi_cg_cp_rd_b12:
 #elif defined(V_SUPPORTED)
   csrrsi x12, vxsat, 6
 #elif !defined(U_SUPPORTED)
-  csrrsi x12, mscratch, 6
+  csrrsi x12, mepc, 6
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x12, instret, 6
 #else
@@ -687,7 +687,7 @@ Zicsr_csrrsi_cg_cp_rd_b13:
 #elif defined(V_SUPPORTED)
   csrrsi x13, vxsat, 21
 #elif !defined(U_SUPPORTED)
-  csrrsi x13, mscratch, 21
+  csrrsi x13, mepc, 21
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x13, instret, 21
 #else
@@ -735,7 +735,7 @@ Zicsr_csrrsi_cg_cp_rd_b14:
 #elif defined(V_SUPPORTED)
   csrrsi x14, vxsat, 26
 #elif !defined(U_SUPPORTED)
-  csrrsi x14, mscratch, 26
+  csrrsi x14, mepc, 26
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x14, instret, 26
 #else
@@ -783,7 +783,7 @@ Zicsr_csrrsi_cg_cp_rd_b15:
 #elif defined(V_SUPPORTED)
   csrrsi x15, vxsat, 24
 #elif !defined(U_SUPPORTED)
-  csrrsi x15, mscratch, 24
+  csrrsi x15, mepc, 24
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x15, instret, 24
 #else
@@ -831,7 +831,7 @@ Zicsr_csrrsi_cg_cp_rd_b16:
 #elif defined(V_SUPPORTED)
   csrrsi x16, vxsat, 13
 #elif !defined(U_SUPPORTED)
-  csrrsi x16, mscratch, 13
+  csrrsi x16, mepc, 13
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x16, instret, 13
 #else
@@ -879,7 +879,7 @@ Zicsr_csrrsi_cg_cp_rd_b17:
 #elif defined(V_SUPPORTED)
   csrrsi x17, vxsat, 5
 #elif !defined(U_SUPPORTED)
-  csrrsi x17, mscratch, 5
+  csrrsi x17, mepc, 5
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x17, instret, 5
 #else
@@ -927,7 +927,7 @@ Zicsr_csrrsi_cg_cp_rd_b18:
 #elif defined(V_SUPPORTED)
   csrrsi x18, vxsat, 31
 #elif !defined(U_SUPPORTED)
-  csrrsi x18, mscratch, 31
+  csrrsi x18, mepc, 31
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x18, instret, 31
 #else
@@ -975,7 +975,7 @@ Zicsr_csrrsi_cg_cp_rd_b19:
 #elif defined(V_SUPPORTED)
   csrrsi x19, vxsat, 2
 #elif !defined(U_SUPPORTED)
-  csrrsi x19, mscratch, 2
+  csrrsi x19, mepc, 2
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x19, instret, 2
 #else
@@ -1023,7 +1023,7 @@ Zicsr_csrrsi_cg_cp_rd_b20:
 #elif defined(V_SUPPORTED)
   csrrsi x20, vxsat, 25
 #elif !defined(U_SUPPORTED)
-  csrrsi x20, mscratch, 25
+  csrrsi x20, mepc, 25
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x20, instret, 25
 #else
@@ -1071,7 +1071,7 @@ Zicsr_csrrsi_cg_cp_rd_b21:
 #elif defined(V_SUPPORTED)
   csrrsi x21, vxsat, 13
 #elif !defined(U_SUPPORTED)
-  csrrsi x21, mscratch, 13
+  csrrsi x21, mepc, 13
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x21, instret, 13
 #else
@@ -1119,7 +1119,7 @@ Zicsr_csrrsi_cg_cp_rd_b22:
 #elif defined(V_SUPPORTED)
   csrrsi x22, vxsat, 22
 #elif !defined(U_SUPPORTED)
-  csrrsi x22, mscratch, 22
+  csrrsi x22, mepc, 22
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x22, instret, 22
 #else
@@ -1167,7 +1167,7 @@ Zicsr_csrrsi_cg_cp_rd_b23:
 #elif defined(V_SUPPORTED)
   csrrsi x23, vxsat, 14
 #elif !defined(U_SUPPORTED)
-  csrrsi x23, mscratch, 14
+  csrrsi x23, mepc, 14
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x23, instret, 14
 #else
@@ -1215,7 +1215,7 @@ Zicsr_csrrsi_cg_cp_rd_b24:
 #elif defined(V_SUPPORTED)
   csrrsi x24, vxsat, 5
 #elif !defined(U_SUPPORTED)
-  csrrsi x24, mscratch, 5
+  csrrsi x24, mepc, 5
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x24, instret, 5
 #else
@@ -1263,7 +1263,7 @@ Zicsr_csrrsi_cg_cp_rd_b25:
 #elif defined(V_SUPPORTED)
   csrrsi x25, vxsat, 12
 #elif !defined(U_SUPPORTED)
-  csrrsi x25, mscratch, 12
+  csrrsi x25, mepc, 12
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x25, instret, 12
 #else
@@ -1311,7 +1311,7 @@ Zicsr_csrrsi_cg_cp_rd_b26:
 #elif defined(V_SUPPORTED)
   csrrsi x26, vxsat, 20
 #elif !defined(U_SUPPORTED)
-  csrrsi x26, mscratch, 20
+  csrrsi x26, mepc, 20
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x26, instret, 20
 #else
@@ -1360,7 +1360,7 @@ Zicsr_csrrsi_cg_cp_rd_b27:
 #elif defined(V_SUPPORTED)
   csrrsi x27, vxsat, 2
 #elif !defined(U_SUPPORTED)
-  csrrsi x27, mscratch, 2
+  csrrsi x27, mepc, 2
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x27, instret, 2
 #else
@@ -1408,7 +1408,7 @@ Zicsr_csrrsi_cg_cp_rd_b28:
 #elif defined(V_SUPPORTED)
   csrrsi x28, vxsat, 25
 #elif !defined(U_SUPPORTED)
-  csrrsi x28, mscratch, 25
+  csrrsi x28, mepc, 25
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x28, instret, 25
 #else
@@ -1456,7 +1456,7 @@ Zicsr_csrrsi_cg_cp_rd_b29:
 #elif defined(V_SUPPORTED)
   csrrsi x29, vxsat, 31
 #elif !defined(U_SUPPORTED)
-  csrrsi x29, mscratch, 31
+  csrrsi x29, mepc, 31
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x29, instret, 31
 #else
@@ -1504,7 +1504,7 @@ Zicsr_csrrsi_cg_cp_rd_b30:
 #elif defined(V_SUPPORTED)
   csrrsi x30, vxsat, 15
 #elif !defined(U_SUPPORTED)
-  csrrsi x30, mscratch, 15
+  csrrsi x30, mepc, 15
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x30, instret, 15
 #else
@@ -1552,7 +1552,7 @@ Zicsr_csrrsi_cg_cp_rd_b31:
 #elif defined(V_SUPPORTED)
   csrrsi x31, vxsat, 2
 #elif !defined(U_SUPPORTED)
-  csrrsi x31, mscratch, 2
+  csrrsi x31, mepc, 2
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x31, instret, 2
 #else
@@ -1604,7 +1604,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm0:
 #elif defined(V_SUPPORTED)
   csrrsi x15, vxsat, 0
 #elif !defined(U_SUPPORTED)
-  csrrsi x15, mscratch, 0
+  csrrsi x15, mepc, 0
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x15, instret, 0
 #else
@@ -1652,7 +1652,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm1:
 #elif defined(V_SUPPORTED)
   csrrsi x28, vxsat, 1
 #elif !defined(U_SUPPORTED)
-  csrrsi x28, mscratch, 1
+  csrrsi x28, mepc, 1
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x28, instret, 1
 #else
@@ -1700,7 +1700,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm2:
 #elif defined(V_SUPPORTED)
   csrrsi x16, vxsat, 2
 #elif !defined(U_SUPPORTED)
-  csrrsi x16, mscratch, 2
+  csrrsi x16, mepc, 2
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x16, instret, 2
 #else
@@ -1748,7 +1748,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm3:
 #elif defined(V_SUPPORTED)
   csrrsi x3, vxsat, 3
 #elif !defined(U_SUPPORTED)
-  csrrsi x3, mscratch, 3
+  csrrsi x3, mepc, 3
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x3, instret, 3
 #else
@@ -1796,7 +1796,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm4:
 #elif defined(V_SUPPORTED)
   csrrsi x21, vxsat, 4
 #elif !defined(U_SUPPORTED)
-  csrrsi x21, mscratch, 4
+  csrrsi x21, mepc, 4
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x21, instret, 4
 #else
@@ -1844,7 +1844,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm5:
 #elif defined(V_SUPPORTED)
   csrrsi x22, vxsat, 5
 #elif !defined(U_SUPPORTED)
-  csrrsi x22, mscratch, 5
+  csrrsi x22, mepc, 5
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x22, instret, 5
 #else
@@ -1892,7 +1892,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm6:
 #elif defined(V_SUPPORTED)
   csrrsi x30, vxsat, 6
 #elif !defined(U_SUPPORTED)
-  csrrsi x30, mscratch, 6
+  csrrsi x30, mepc, 6
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x30, instret, 6
 #else
@@ -1940,7 +1940,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm7:
 #elif defined(V_SUPPORTED)
   csrrsi x31, vxsat, 7
 #elif !defined(U_SUPPORTED)
-  csrrsi x31, mscratch, 7
+  csrrsi x31, mepc, 7
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x31, instret, 7
 #else
@@ -1988,7 +1988,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm8:
 #elif defined(V_SUPPORTED)
   csrrsi x15, vxsat, 8
 #elif !defined(U_SUPPORTED)
-  csrrsi x15, mscratch, 8
+  csrrsi x15, mepc, 8
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x15, instret, 8
 #else
@@ -2036,7 +2036,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm9:
 #elif defined(V_SUPPORTED)
   csrrsi x12, vxsat, 9
 #elif !defined(U_SUPPORTED)
-  csrrsi x12, mscratch, 9
+  csrrsi x12, mepc, 9
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x12, instret, 9
 #else
@@ -2084,7 +2084,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm10:
 #elif defined(V_SUPPORTED)
   csrrsi x0, vxsat, 10
 #elif !defined(U_SUPPORTED)
-  csrrsi x0, mscratch, 10
+  csrrsi x0, mepc, 10
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x0, instret, 10
 #else
@@ -2132,7 +2132,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm11:
 #elif defined(V_SUPPORTED)
   csrrsi x16, vxsat, 11
 #elif !defined(U_SUPPORTED)
-  csrrsi x16, mscratch, 11
+  csrrsi x16, mepc, 11
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x16, instret, 11
 #else
@@ -2180,7 +2180,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm12:
 #elif defined(V_SUPPORTED)
   csrrsi x17, vxsat, 12
 #elif !defined(U_SUPPORTED)
-  csrrsi x17, mscratch, 12
+  csrrsi x17, mepc, 12
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x17, instret, 12
 #else
@@ -2228,7 +2228,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm13:
 #elif defined(V_SUPPORTED)
   csrrsi x24, vxsat, 13
 #elif !defined(U_SUPPORTED)
-  csrrsi x24, mscratch, 13
+  csrrsi x24, mepc, 13
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x24, instret, 13
 #else
@@ -2276,7 +2276,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm14:
 #elif defined(V_SUPPORTED)
   csrrsi x10, vxsat, 14
 #elif !defined(U_SUPPORTED)
-  csrrsi x10, mscratch, 14
+  csrrsi x10, mepc, 14
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x10, instret, 14
 #else
@@ -2324,7 +2324,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm15:
 #elif defined(V_SUPPORTED)
   csrrsi x26, vxsat, 15
 #elif !defined(U_SUPPORTED)
-  csrrsi x26, mscratch, 15
+  csrrsi x26, mepc, 15
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x26, instret, 15
 #else
@@ -2372,7 +2372,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm16:
 #elif defined(V_SUPPORTED)
   csrrsi x28, vxsat, 16
 #elif !defined(U_SUPPORTED)
-  csrrsi x28, mscratch, 16
+  csrrsi x28, mepc, 16
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x28, instret, 16
 #else
@@ -2420,7 +2420,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm17:
 #elif defined(V_SUPPORTED)
   csrrsi x9, vxsat, 17
 #elif !defined(U_SUPPORTED)
-  csrrsi x9, mscratch, 17
+  csrrsi x9, mepc, 17
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x9, instret, 17
 #else
@@ -2468,7 +2468,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm18:
 #elif defined(V_SUPPORTED)
   csrrsi x30, vxsat, 18
 #elif !defined(U_SUPPORTED)
-  csrrsi x30, mscratch, 18
+  csrrsi x30, mepc, 18
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x30, instret, 18
 #else
@@ -2516,7 +2516,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm19:
 #elif defined(V_SUPPORTED)
   csrrsi x5, vxsat, 19
 #elif !defined(U_SUPPORTED)
-  csrrsi x5, mscratch, 19
+  csrrsi x5, mepc, 19
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x5, instret, 19
 #else
@@ -2564,7 +2564,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm20:
 #elif defined(V_SUPPORTED)
   csrrsi x3, vxsat, 20
 #elif !defined(U_SUPPORTED)
-  csrrsi x3, mscratch, 20
+  csrrsi x3, mepc, 20
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x3, instret, 20
 #else
@@ -2612,7 +2612,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm21:
 #elif defined(V_SUPPORTED)
   csrrsi x27, vxsat, 21
 #elif !defined(U_SUPPORTED)
-  csrrsi x27, mscratch, 21
+  csrrsi x27, mepc, 21
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x27, instret, 21
 #else
@@ -2660,7 +2660,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm22:
 #elif defined(V_SUPPORTED)
   csrrsi x12, vxsat, 22
 #elif !defined(U_SUPPORTED)
-  csrrsi x12, mscratch, 22
+  csrrsi x12, mepc, 22
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x12, instret, 22
 #else
@@ -2708,7 +2708,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm23:
 #elif defined(V_SUPPORTED)
   csrrsi x20, vxsat, 23
 #elif !defined(U_SUPPORTED)
-  csrrsi x20, mscratch, 23
+  csrrsi x20, mepc, 23
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x20, instret, 23
 #else
@@ -2756,7 +2756,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm24:
 #elif defined(V_SUPPORTED)
   csrrsi x28, vxsat, 24
 #elif !defined(U_SUPPORTED)
-  csrrsi x28, mscratch, 24
+  csrrsi x28, mepc, 24
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x28, instret, 24
 #else
@@ -2804,7 +2804,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm25:
 #elif defined(V_SUPPORTED)
   csrrsi x17, vxsat, 25
 #elif !defined(U_SUPPORTED)
-  csrrsi x17, mscratch, 25
+  csrrsi x17, mepc, 25
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x17, instret, 25
 #else
@@ -2852,7 +2852,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm26:
 #elif defined(V_SUPPORTED)
   csrrsi x19, vxsat, 26
 #elif !defined(U_SUPPORTED)
-  csrrsi x19, mscratch, 26
+  csrrsi x19, mepc, 26
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x19, instret, 26
 #else
@@ -2900,7 +2900,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm27:
 #elif defined(V_SUPPORTED)
   csrrsi x26, vxsat, 27
 #elif !defined(U_SUPPORTED)
-  csrrsi x26, mscratch, 27
+  csrrsi x26, mepc, 27
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x26, instret, 27
 #else
@@ -2948,7 +2948,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm28:
 #elif defined(V_SUPPORTED)
   csrrsi x31, vxsat, 28
 #elif !defined(U_SUPPORTED)
-  csrrsi x31, mscratch, 28
+  csrrsi x31, mepc, 28
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x31, instret, 28
 #else
@@ -2996,7 +2996,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm29:
 #elif defined(V_SUPPORTED)
   csrrsi x27, vxsat, 29
 #elif !defined(U_SUPPORTED)
-  csrrsi x27, mscratch, 29
+  csrrsi x27, mepc, 29
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x27, instret, 29
 #else
@@ -3044,7 +3044,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm30:
 #elif defined(V_SUPPORTED)
   csrrsi x26, vxsat, 30
 #elif !defined(U_SUPPORTED)
-  csrrsi x26, mscratch, 30
+  csrrsi x26, mepc, 30
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x26, instret, 30
 #else
@@ -3092,7 +3092,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm31:
 #elif defined(V_SUPPORTED)
   csrrsi x22, vxsat, 31
 #elif !defined(U_SUPPORTED)
-  csrrsi x22, mscratch, 31
+  csrrsi x22, mepc, 31
 #elif defined(ZICNTR_SUPPORTED)
   csrrsi x22, instret, 31
 #else

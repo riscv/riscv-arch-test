@@ -149,6 +149,7 @@ def execute_task(
         try:
             proc = subprocess.Popen(
                 action.cmd,
+                stdin=subprocess.DEVNULL,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,

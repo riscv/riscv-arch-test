@@ -195,7 +195,20 @@ def check_ref_model_version(config: Config) -> None:
         except subprocess.TimeoutExpired as e:
             raise RuntimeError(f"Timeout while checking Sail version: {e}") from e
     elif config.ref_model_type == RefModelType.SPIKE:
-        # Spike has no stable --version flag; just verify the executable runs.
+        # Spike has no stable --version flag; perform a lightweight startup check instead.
+        try:
+            subprocess.run(
+                [str(config.ref_model_exe), "--help"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=False,
+                timeout=5,
+            )
+        except OSError as e:
+            raise RuntimeError(f"Failed to start Spike reference model: {e}") from e
+        except subprocess.TimeoutExpired as e:
+            raise RuntimeError(f"Timeout while starting Spike reference model: {e}") from e
+
         rich.print(
             "[yellow][bold]WARNING:[/bold] Using Spike as the reference model "
             f"([cyan]{config.ref_model_exe}[/cyan]). Coverage generation is not supported with Spike.[/yellow]"

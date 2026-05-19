@@ -219,8 +219,9 @@ def check_ref_model_version(config: Config) -> None:
             raise RuntimeError(f"Timeout while starting Spike reference model: {e}") from e
 
         rich.print(
-            "[yellow][bold]WARNING:[/bold] Using Spike as the reference model "
-            f"([cyan]{config.ref_model_exe}[/cyan]). Coverage generation is not supported with Spike.[/yellow]"
+            f"[yellow][bold]WARNING:[/bold] Using Spike as the reference model ([cyan]{config.ref_model_exe}[/cyan]). "
+            "The reference model will not be configured to match your DUT and many privileged tests will likely mismatch. "
+            "Coverage generation is not supported with Spike.[/yellow]"
         )
 
 

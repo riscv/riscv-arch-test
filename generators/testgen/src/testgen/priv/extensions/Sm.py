@@ -403,7 +403,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     lines.extend(csr_access_test(test_data, ("mseccfgh", None), covergroup, coverpoint))
     lines.append("#endif // MSECCFG")
     lines.append("\n#ifdef SM1P13P0_SUPPORTED")
-    lines.extend(csr_access_test(test_data, ("medelegh", None), covergroup, coverpoint))
+    lines.extend(csr_access_test(test_data, ("CSR_MEDELEGH", None), covergroup, coverpoint))
     lines.extend(
         [
             "#endif // SM1P13P0_SUPPORTED",

@@ -52,7 +52,7 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
         // auto fills 0 through 15
     }
     walking_ones : coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
-        bins b_1[] = { [0:`XLEN-1] };
+        bins b_1[] = { [0:`UDB_MXLEN-1] };
     }
 
     fadd: coverpoint ins.current.insn {

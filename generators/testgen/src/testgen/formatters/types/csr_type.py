@@ -28,7 +28,7 @@ def zicsr_acccess(instr_name: str, rd: int, rs1: int) -> str:
         "#elif defined(ZICNTR_SUPPORTED)\n"
         f"{instr_name} x{rd}, instret, x{rs1}\n"
         "#else\n"
-        f"  Error: no CSR known for testing\n"
+        f"  #error no CSR known for testing\n"
         "#endif\n"
     )
 

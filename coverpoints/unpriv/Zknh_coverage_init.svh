@@ -14,7 +14,7 @@
     Zknh_sha256sig1_cg = new(); Zknh_sha256sig1_cg.set_inst_name("obj_Zknh_sha256sig1");
     Zknh_sha256sum0_cg = new(); Zknh_sha256sum0_cg.set_inst_name("obj_Zknh_sha256sum0");
     Zknh_sha256sum1_cg = new(); Zknh_sha256sum1_cg.set_inst_name("obj_Zknh_sha256sum1");
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
     Zknh_sha512sig0h_cg = new(); Zknh_sha512sig0h_cg.set_inst_name("obj_Zknh_sha512sig0h");
     Zknh_sha512sig0l_cg = new(); Zknh_sha512sig0l_cg.set_inst_name("obj_Zknh_sha512sig0l");
     Zknh_sha512sig1h_cg = new(); Zknh_sha512sig1h_cg.set_inst_name("obj_Zknh_sha512sig1h");
@@ -22,7 +22,7 @@
     Zknh_sha512sum0r_cg = new(); Zknh_sha512sum0r_cg.set_inst_name("obj_Zknh_sha512sum0r");
     Zknh_sha512sum1r_cg = new(); Zknh_sha512sum1r_cg.set_inst_name("obj_Zknh_sha512sum1r");
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     Zknh_sha512sig0_cg = new(); Zknh_sha512sig0_cg.set_inst_name("obj_Zknh_sha512sig0");
     Zknh_sha512sig1_cg = new(); Zknh_sha512sig1_cg.set_inst_name("obj_Zknh_sha512sig1");
     Zknh_sha512sum0_cg = new(); Zknh_sha512sum0_cg.set_inst_name("obj_Zknh_sha512sum0");

@@ -175,11 +175,17 @@
     `ifdef COVER_SMVF
         smvf_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SMSTATEEN
+        smstateen_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SSCCPTR
         ssccptr_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SSCOUNTERENW
         sscounterenw_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSSTATEEN
+        ssstateen_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SSSTRICTS
         ssstricts_sample(hart, issue, ins);

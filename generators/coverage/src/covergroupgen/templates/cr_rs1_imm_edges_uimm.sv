@@ -4,7 +4,7 @@
         bins b_19 = {19};
         bins b_30 = {30};
         bins b_31 = {31};
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             bins b_32 = {32};
             bins b_33 = {33};
             bins b_45 = {45};

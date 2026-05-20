@@ -13,10 +13,10 @@
 
 `define COVER_EXCEPTIONSVF16
 `define COVER_EXCEPTIONSVFCUSTOM16
-`ifdef ELEN16
+`ifdef UDB_ELEN_16
     `define SEW_16_EQ_ELEN
 `endif
-`ifdef ELEN32
+`ifdef UDB_ELEN_32
     `define SEW_16_EQ_ELEN_DIV_2
 `endif
 covergroup ExceptionsVf16_vfadd_vf_cg with function sample(ins_t ins);

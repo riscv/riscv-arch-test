@@ -13,10 +13,10 @@
 
 `define COVER_VF64
 `define COVER_VFCUSTOM64
-`ifdef ELEN64
+`ifdef UDB_ELEN_64
     `define SEW_64_EQ_ELEN
 `endif
-`ifdef ELEN128
+`ifdef UDB_ELEN_128
     `define SEW_64_EQ_ELEN_DIV_2
 `endif
 covergroup Vf64_vfadd_vf_cg with function sample(ins_t ins);
@@ -74,7 +74,7 @@ covergroup Vf64_vfadd_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -104,7 +104,7 @@ covergroup Vf64_vfadd_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx_of : cross std_vec, cp_csr_fflags_vdoun_nv_nx_of;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx_of : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -134,7 +134,7 @@ covergroup Vf64_vfadd_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -402,7 +402,7 @@ covergroup Vf64_vfadd_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -432,7 +432,7 @@ covergroup Vf64_vfadd_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx_of : cross std_vec, cp_csr_fflags_vdoun_nv_nx_of;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx_of : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -462,7 +462,7 @@ covergroup Vf64_vfadd_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -680,7 +680,7 @@ covergroup Vf64_vfclass_v_cg with function sample(ins_t ins);
 
     cp_custom_vfclass_onehot : cross std_vec, vfclass_64onehot;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vfclass_64onehot: coverpoint $clog2(get_vr_element_zero(ins.hart, ins.issue, ins.current.vd_val))
                       iff ($onehot(get_vr_element_zero(ins.hart, ins.issue, ins.current.vd_val))) {
         bins b_1[] = { [0:9] };
@@ -710,7 +710,7 @@ covergroup Vf64_vfclass_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -900,7 +900,7 @@ covergroup Vf64_vfcvt_f_x_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -929,7 +929,7 @@ covergroup Vf64_vfcvt_f_x_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nx : cross std_vec, cp_csr_fflags_vdoun_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NX   = (5'b????0 => 5'b????1);
         wildcard bins NX1  = (5'b????1 => 5'b????1);
@@ -1119,7 +1119,7 @@ covergroup Vf64_vfcvt_f_xu_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -1148,7 +1148,7 @@ covergroup Vf64_vfcvt_f_xu_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nx : cross std_vec, cp_csr_fflags_vdoun_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NX   = (5'b????0 => 5'b????1);
         wildcard bins NX1  = (5'b????1 => 5'b????1);
@@ -1330,7 +1330,7 @@ covergroup Vf64_vfcvt_rtz_x_f_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -1358,7 +1358,7 @@ covergroup Vf64_vfcvt_rtz_x_f_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -1386,7 +1386,7 @@ covergroup Vf64_vfcvt_rtz_x_f_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -1568,7 +1568,7 @@ covergroup Vf64_vfcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -1596,7 +1596,7 @@ covergroup Vf64_vfcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -1624,7 +1624,7 @@ covergroup Vf64_vfcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -1816,7 +1816,7 @@ covergroup Vf64_vfcvt_x_f_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -1844,7 +1844,7 @@ covergroup Vf64_vfcvt_x_f_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -1872,7 +1872,7 @@ covergroup Vf64_vfcvt_x_f_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -2064,7 +2064,7 @@ covergroup Vf64_vfcvt_xu_f_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -2092,7 +2092,7 @@ covergroup Vf64_vfcvt_xu_f_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -2120,7 +2120,7 @@ covergroup Vf64_vfcvt_xu_f_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -2324,7 +2324,7 @@ covergroup Vf64_vfdiv_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -2354,7 +2354,7 @@ covergroup Vf64_vfdiv_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx_dz : cross std_vec, cp_csr_fflags_vdoun_nv_nx_dz;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx_dz : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -2384,7 +2384,7 @@ covergroup Vf64_vfdiv_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -2662,7 +2662,7 @@ covergroup Vf64_vfdiv_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -2692,7 +2692,7 @@ covergroup Vf64_vfdiv_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx_dz : cross std_vec, cp_csr_fflags_vdoun_nv_nx_dz;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx_dz : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -2722,7 +2722,7 @@ covergroup Vf64_vfdiv_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -2968,7 +2968,7 @@ covergroup Vf64_vfmacc_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -2996,7 +2996,7 @@ covergroup Vf64_vfmacc_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -3024,7 +3024,7 @@ covergroup Vf64_vfmacc_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -3294,7 +3294,7 @@ covergroup Vf64_vfmacc_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -3322,7 +3322,7 @@ covergroup Vf64_vfmacc_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -3350,7 +3350,7 @@ covergroup Vf64_vfmacc_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -3596,7 +3596,7 @@ covergroup Vf64_vfmadd_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -3624,7 +3624,7 @@ covergroup Vf64_vfmadd_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -3652,7 +3652,7 @@ covergroup Vf64_vfmadd_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -3922,7 +3922,7 @@ covergroup Vf64_vfmadd_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -3950,7 +3950,7 @@ covergroup Vf64_vfmadd_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -3978,7 +3978,7 @@ covergroup Vf64_vfmadd_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -4208,7 +4208,7 @@ covergroup Vf64_vfmax_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -4235,7 +4235,7 @@ covergroup Vf64_vfmax_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv : cross std_vec, cp_csr_fflags_vdoun_nv;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -4261,7 +4261,7 @@ covergroup Vf64_vfmax_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -4515,7 +4515,7 @@ covergroup Vf64_vfmax_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -4542,7 +4542,7 @@ covergroup Vf64_vfmax_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv : cross std_vec, cp_csr_fflags_vdoun_nv;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -4568,7 +4568,7 @@ covergroup Vf64_vfmax_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -4793,7 +4793,7 @@ covergroup Vf64_vfmerge_vfm_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -5019,7 +5019,7 @@ covergroup Vf64_vfmin_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -5046,7 +5046,7 @@ covergroup Vf64_vfmin_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv : cross std_vec, cp_csr_fflags_vdoun_nv;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -5072,7 +5072,7 @@ covergroup Vf64_vfmin_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -5326,7 +5326,7 @@ covergroup Vf64_vfmin_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -5353,7 +5353,7 @@ covergroup Vf64_vfmin_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv : cross std_vec, cp_csr_fflags_vdoun_nv;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -5379,7 +5379,7 @@ covergroup Vf64_vfmin_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -5625,7 +5625,7 @@ covergroup Vf64_vfmsac_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -5653,7 +5653,7 @@ covergroup Vf64_vfmsac_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -5681,7 +5681,7 @@ covergroup Vf64_vfmsac_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -5951,7 +5951,7 @@ covergroup Vf64_vfmsac_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -5979,7 +5979,7 @@ covergroup Vf64_vfmsac_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -6007,7 +6007,7 @@ covergroup Vf64_vfmsac_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -6253,7 +6253,7 @@ covergroup Vf64_vfmsub_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -6281,7 +6281,7 @@ covergroup Vf64_vfmsub_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -6309,7 +6309,7 @@ covergroup Vf64_vfmsub_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -6579,7 +6579,7 @@ covergroup Vf64_vfmsub_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -6607,7 +6607,7 @@ covergroup Vf64_vfmsub_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -6635,7 +6635,7 @@ covergroup Vf64_vfmsub_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -6881,7 +6881,7 @@ covergroup Vf64_vfmul_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -6913,7 +6913,7 @@ covergroup Vf64_vfmul_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx_of_uf : cross std_vec, cp_csr_fflags_vdoun_nv_nx_of_uf;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx_of_uf : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -6945,7 +6945,7 @@ covergroup Vf64_vfmul_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -7215,7 +7215,7 @@ covergroup Vf64_vfmul_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -7247,7 +7247,7 @@ covergroup Vf64_vfmul_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx_of_uf : cross std_vec, cp_csr_fflags_vdoun_nv_nx_of_uf;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx_of_uf : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -7279,7 +7279,7 @@ covergroup Vf64_vfmul_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -7505,7 +7505,7 @@ covergroup Vf64_vfmv_f_s_cg with function sample(ins_t ins);
     cp_custom_fmv_fs_vs2_all_lmul_regs: cross std_vec, vs2_all_regs;
     cp_custom_fmv_fs_vs2_all_lmul_lmuls: cross std_vec, vtype_all_lmul;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vtype_all_lmul: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -7538,7 +7538,7 @@ covergroup Vf64_vfmv_f_s_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -7727,7 +7727,7 @@ covergroup Vf64_vfmv_s_f_cg with function sample(ins_t ins);
     cp_custom_fmv_sf_vd_all_lmul_regs: cross std_vec, vd_all_regs;
     cp_custom_fmv_sf_vd_all_lmul_lmuls: cross std_vec, vtype_all_lmul;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vtype_all_lmul: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};
         bins two    = {1};
@@ -8032,7 +8032,7 @@ covergroup Vf64_vfnmacc_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -8060,7 +8060,7 @@ covergroup Vf64_vfnmacc_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -8088,7 +8088,7 @@ covergroup Vf64_vfnmacc_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -8358,7 +8358,7 @@ covergroup Vf64_vfnmacc_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -8386,7 +8386,7 @@ covergroup Vf64_vfnmacc_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -8414,7 +8414,7 @@ covergroup Vf64_vfnmacc_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -8660,7 +8660,7 @@ covergroup Vf64_vfnmadd_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -8688,7 +8688,7 @@ covergroup Vf64_vfnmadd_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -8716,7 +8716,7 @@ covergroup Vf64_vfnmadd_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -8986,7 +8986,7 @@ covergroup Vf64_vfnmadd_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -9014,7 +9014,7 @@ covergroup Vf64_vfnmadd_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -9042,7 +9042,7 @@ covergroup Vf64_vfnmadd_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -9288,7 +9288,7 @@ covergroup Vf64_vfnmsac_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -9316,7 +9316,7 @@ covergroup Vf64_vfnmsac_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -9344,7 +9344,7 @@ covergroup Vf64_vfnmsac_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -9614,7 +9614,7 @@ covergroup Vf64_vfnmsac_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -9642,7 +9642,7 @@ covergroup Vf64_vfnmsac_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -9670,7 +9670,7 @@ covergroup Vf64_vfnmsac_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -9916,7 +9916,7 @@ covergroup Vf64_vfnmsub_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -9944,7 +9944,7 @@ covergroup Vf64_vfnmsub_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -9972,7 +9972,7 @@ covergroup Vf64_vfnmsub_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -10242,7 +10242,7 @@ covergroup Vf64_vfnmsub_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -10270,7 +10270,7 @@ covergroup Vf64_vfnmsub_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -10298,7 +10298,7 @@ covergroup Vf64_vfnmsub_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -10552,7 +10552,7 @@ covergroup Vf64_vfrdiv_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -10582,7 +10582,7 @@ covergroup Vf64_vfrdiv_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx_dz : cross std_vec, cp_csr_fflags_vdoun_nv_nx_dz;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx_dz : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -10612,7 +10612,7 @@ covergroup Vf64_vfrdiv_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -10857,7 +10857,7 @@ covergroup Vf64_vfrec7_v_cg with function sample(ins_t ins);
     cp_custom_FpRecipEst_edges: cross std_vec, FpRecEst_sig_in;
     `endif
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     FpRecEst_sig_in : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[51:45] {
         // all bins
     }
@@ -10928,7 +10928,7 @@ covergroup Vf64_vfrec7_v_cg with function sample(ins_t ins);
 
     cp_custom_FpRecipEst_flag_edges: cross std_vec, vs2_0_recip7_edges, fp_flags_clear;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     fp_flags_clear : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags") {
             bins clear = {0};
     }
@@ -10982,7 +10982,7 @@ covergroup Vf64_vfrec7_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -11010,7 +11010,7 @@ covergroup Vf64_vfrec7_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_dz : cross std_vec, cp_csr_fflags_vdoun_nv_dz;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_dz : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -11038,7 +11038,7 @@ covergroup Vf64_vfrec7_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -11248,7 +11248,7 @@ covergroup Vf64_vfredmax_vs_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -11275,7 +11275,7 @@ covergroup Vf64_vfredmax_vs_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv : cross std_vec, cp_csr_fflags_vdoun_nv;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -11301,7 +11301,7 @@ covergroup Vf64_vfredmax_vs_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -11561,7 +11561,7 @@ covergroup Vf64_vfredmin_vs_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -11588,7 +11588,7 @@ covergroup Vf64_vfredmin_vs_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv : cross std_vec, cp_csr_fflags_vdoun_nv;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -11614,7 +11614,7 @@ covergroup Vf64_vfredmin_vs_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -11888,7 +11888,7 @@ covergroup Vf64_vfredosum_vs_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -11916,7 +11916,7 @@ covergroup Vf64_vfredosum_vs_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -11944,7 +11944,7 @@ covergroup Vf64_vfredosum_vs_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -12000,7 +12000,7 @@ covergroup Vf64_vfredosum_vs_cg with function sample(ins_t ins);
 
         cp_custom_vfredosum_NAN_vl0 : cross fp_flags_clear, vtype_prev_vill_clear, vl_zero, vstart_zero, vs1_0_qNAN iff (ins.trap == 0);
 `else
-        `ifdef FLEN64
+        `ifdef D_SUPPORTED
         vs1_0_qNAN : coverpoint
                 (get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val) inside {
                         [64'h7FF8_0000_0000_0000:64'h7FFF_FFFF_FFFF_FFFF]
@@ -12061,7 +12061,7 @@ covergroup Vf64_vfredosum_vs_cg with function sample(ins_t ins);
 
     cp_custom_vfredosum_ordered_sum : cross std_vec, vl_ge_2, vs1_0_maxNorm, vs2_0_neg_maxNorm, vtype_lmul_2 iff (ins.trap == 0);
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     // Ordered sum cancellation: (maxNorm + (-maxNorm)) + small = small, not 0
     vs1_0_maxNorm : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val) {
         bins maxNorm = {64'h7FEFFFFFFFFFFFFF};
@@ -12347,7 +12347,7 @@ covergroup Vf64_vfredusum_vs_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -12375,7 +12375,7 @@ covergroup Vf64_vfredusum_vs_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -12403,7 +12403,7 @@ covergroup Vf64_vfredusum_vs_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -12650,7 +12650,7 @@ covergroup Vf64_vfrsqrt7_v_cg with function sample(ins_t ins);
     cp_custom_FpRecSqrtEst_edges: cross std_vec, FpRecSqrtEst_all_inputs_vs2_0;
     `endif
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     FpRecSqrtEst_all_inputs_vs2_0 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[52:46] {
         // all bins
     }
@@ -12665,7 +12665,7 @@ covergroup Vf64_vfrsqrt7_v_cg with function sample(ins_t ins);
     // cp_custom_FPrecSqrt_flag_edges
     //////////////////////////////////////////////////////////////////////////////////
 `ifdef COVER_VFCUSTOM64
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     fp_flags_clear : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags") {
             bins clear = {0};
     }
@@ -12764,7 +12764,7 @@ covergroup Vf64_vfrsqrt7_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -12811,7 +12811,7 @@ covergroup Vf64_vfrsqrt7_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_inactive_not_set : cross std_vec, vl_one, mask_enabled, v0_element_1_active, vfsqrt_flag_set, vfp_flags_fp_flags_clear;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     mask_enabled: coverpoint ins.current.insn[25] {
         bins unmasked = {1'b0};
     }
@@ -12854,7 +12854,7 @@ covergroup Vf64_vfrsqrt7_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_dz : cross std_vec, cp_csr_fflags_vdoun_nv_dz;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_dz : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -12882,7 +12882,7 @@ covergroup Vf64_vfrsqrt7_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -13076,7 +13076,7 @@ covergroup Vf64_vfrsub_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -13104,7 +13104,7 @@ covergroup Vf64_vfrsub_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -13132,7 +13132,7 @@ covergroup Vf64_vfrsub_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -13350,7 +13350,7 @@ covergroup Vf64_vfsgnj_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -13598,7 +13598,7 @@ covergroup Vf64_vfsgnj_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -13822,7 +13822,7 @@ covergroup Vf64_vfsgnjn_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -14070,7 +14070,7 @@ covergroup Vf64_vfsgnjn_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -14294,7 +14294,7 @@ covergroup Vf64_vfsgnjx_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -14542,7 +14542,7 @@ covergroup Vf64_vfsgnjx_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -14766,7 +14766,7 @@ covergroup Vf64_vfslide1down_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -14974,7 +14974,7 @@ covergroup Vf64_vfslide1up_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -15210,7 +15210,7 @@ covergroup Vf64_vfsqrt_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -15238,7 +15238,7 @@ covergroup Vf64_vfsqrt_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -15266,7 +15266,7 @@ covergroup Vf64_vfsqrt_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -15460,7 +15460,7 @@ covergroup Vf64_vfsub_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -15488,7 +15488,7 @@ covergroup Vf64_vfsub_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -15516,7 +15516,7 @@ covergroup Vf64_vfsub_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -15784,7 +15784,7 @@ covergroup Vf64_vfsub_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -15812,7 +15812,7 @@ covergroup Vf64_vfsub_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv_nx : cross std_vec, cp_csr_fflags_vdoun_nv_nx;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv_nx : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -15840,7 +15840,7 @@ covergroup Vf64_vfsub_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -16060,7 +16060,7 @@ covergroup Vf64_vmfeq_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -16087,7 +16087,7 @@ covergroup Vf64_vmfeq_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv : cross std_vec, cp_csr_fflags_vdoun_nv;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -16113,7 +16113,7 @@ covergroup Vf64_vmfeq_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -16337,7 +16337,7 @@ covergroup Vf64_vmfeq_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -16364,7 +16364,7 @@ covergroup Vf64_vmfeq_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv : cross std_vec, cp_csr_fflags_vdoun_nv;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -16390,7 +16390,7 @@ covergroup Vf64_vmfeq_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -16610,7 +16610,7 @@ covergroup Vf64_vmfge_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -16637,7 +16637,7 @@ covergroup Vf64_vmfge_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv : cross std_vec, cp_csr_fflags_vdoun_nv;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -16663,7 +16663,7 @@ covergroup Vf64_vmfge_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -16877,7 +16877,7 @@ covergroup Vf64_vmfgt_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -16904,7 +16904,7 @@ covergroup Vf64_vmfgt_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv : cross std_vec, cp_csr_fflags_vdoun_nv;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -16930,7 +16930,7 @@ covergroup Vf64_vmfgt_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -17144,7 +17144,7 @@ covergroup Vf64_vmfle_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -17171,7 +17171,7 @@ covergroup Vf64_vmfle_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv : cross std_vec, cp_csr_fflags_vdoun_nv;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -17197,7 +17197,7 @@ covergroup Vf64_vmfle_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -17421,7 +17421,7 @@ covergroup Vf64_vmfle_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -17448,7 +17448,7 @@ covergroup Vf64_vmfle_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv : cross std_vec, cp_csr_fflags_vdoun_nv;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -17474,7 +17474,7 @@ covergroup Vf64_vmfle_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -17694,7 +17694,7 @@ covergroup Vf64_vmflt_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -17721,7 +17721,7 @@ covergroup Vf64_vmflt_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv : cross std_vec, cp_csr_fflags_vdoun_nv;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -17747,7 +17747,7 @@ covergroup Vf64_vmflt_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -17971,7 +17971,7 @@ covergroup Vf64_vmflt_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -17998,7 +17998,7 @@ covergroup Vf64_vmflt_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv : cross std_vec, cp_csr_fflags_vdoun_nv;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -18024,7 +18024,7 @@ covergroup Vf64_vmflt_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -18244,7 +18244,7 @@ covergroup Vf64_vmfne_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -18271,7 +18271,7 @@ covergroup Vf64_vmfne_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv : cross std_vec, cp_csr_fflags_vdoun_nv;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -18297,7 +18297,7 @@ covergroup Vf64_vmfne_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -18521,7 +18521,7 @@ covergroup Vf64_vmfne_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
@@ -18548,7 +18548,7 @@ covergroup Vf64_vmfne_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_nv : cross std_vec, cp_csr_fflags_vdoun_nv;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
@@ -18574,7 +18574,7 @@ covergroup Vf64_vmfne_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_set : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);

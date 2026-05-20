@@ -396,7 +396,7 @@ def generate_illegal_instr(
 
     # ── amocas odd-register sweep ─────────────────────────────────────
     _emit_reg_init(lines)
-    emit_raw_words(lines, "cp_amocas_odd", "00101RRRRRRRRRRRREEERRREE0101111", exclusion=X2_RD_EXCLUSION)
+    emit_raw_words(lines, "cp_amocas_odd", "00101RRRRRRE01000EEERRRRE0101111", exclusion=X2_RD_EXCLUSION)
 
     # ── I-type / IW-type — all registers randomized ───────────────────
     emit_raw_words(lines, "cp_Itype", "EEEEEEEEEEEERRRRRE01RRRRR0010011", exclusion=X2_RD_EXCLUSION)

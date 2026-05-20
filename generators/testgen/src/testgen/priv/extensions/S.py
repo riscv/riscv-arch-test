@@ -153,7 +153,7 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "",
-            "#ifdef SS1P13_SUPPORTED",
+            "#ifdef S1P13P0_SUPPORTED",
             "#if __riscv_xlen == 64",
             comment_banner(
                 f"{coverpoint}",
@@ -184,8 +184,8 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
         [
             "",
             f"CSRW(sstatus, x{save_reg})        # restore sstatus after Ss1p13 UXL tests",
-            "#endif // XLEN64",
-            "#endif // SS1P13_SUPPORTED",
+            "#endif // UDB_MXLEN_64",
+            "#endif // S1P13P0_SUPPORTED",
         ]
     )
 

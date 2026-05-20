@@ -45,7 +45,7 @@
         bins c01[] = {[0:14'b00011111111111]};
         ignore_bins c_jal = {[14'b00100000000000:14'b00111111111111]};
         bins c01b[] = {[14'b01000000000000:14'b10001_111111111]};
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             ignore_bins c_srli_srai_custom = {[14'b10010_000000000:14'b10010_111111111]}; // reserved for custom use in RV32Zca; behavior is unpredictable
         `else
             bins c_srli_srai_rv64[] = {[14'b10010_000000000:14'b10010_111111111]}; // RV64Zca c.srli/srai with shift amount of 32-63
@@ -58,7 +58,7 @@
         // exhaustive test of 2^14 compressed instructions with op = 10
         //bins c10a[] = {[0:14'b01111111111111]};
         bins c10a[]           = {[0:14'b0000_1111111111]};
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             ignore_bins c_slii_custom = {[14'b0001_0000000000:14'b0001_1111111111]}; // reserved for custom use in RV32Zca; behavior is unpredictable
         `else
             bins c_slli_rv64[] = {[14'b0001_0000000000:14'b0001_1111111111]}; // RV64Zca c.slli with shift amount of 32-63

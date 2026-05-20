@@ -13,10 +13,10 @@
 
 `define COVER_EXCEPTIONSVF32
 `define COVER_EXCEPTIONSVFCUSTOM32
-`ifdef ELEN32
+`ifdef UDB_ELEN_32
     `define SEW_32_EQ_ELEN
 `endif
-`ifdef ELEN64
+`ifdef UDB_ELEN_64
     `define SEW_32_EQ_ELEN_DIV_2
 `endif
 covergroup ExceptionsVf32_vfadd_vf_cg with function sample(ins_t ins);

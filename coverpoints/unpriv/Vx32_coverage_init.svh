@@ -109,46 +109,22 @@
     Vx32_vmv8r_v_cg = new(); Vx32_vmv8r_v_cg.set_inst_name("obj_Vx32_vmv8r_v");
     Vx32_vmxnor_mm_cg = new(); Vx32_vmxnor_mm_cg.set_inst_name("obj_Vx32_vmxnor_mm");
     Vx32_vmxor_mm_cg = new(); Vx32_vmxor_mm_cg.set_inst_name("obj_Vx32_vmxor_mm");
-`ifndef ELEN32
     Vx32_vnclip_wi_cg = new(); Vx32_vnclip_wi_cg.set_inst_name("obj_Vx32_vnclip_wi");
-`endif
-`ifndef ELEN32
     Vx32_vnclip_wv_cg = new(); Vx32_vnclip_wv_cg.set_inst_name("obj_Vx32_vnclip_wv");
-`endif
-`ifndef ELEN32
     Vx32_vnclip_wx_cg = new(); Vx32_vnclip_wx_cg.set_inst_name("obj_Vx32_vnclip_wx");
-`endif
-`ifndef ELEN32
     Vx32_vnclipu_wi_cg = new(); Vx32_vnclipu_wi_cg.set_inst_name("obj_Vx32_vnclipu_wi");
-`endif
-`ifndef ELEN32
     Vx32_vnclipu_wv_cg = new(); Vx32_vnclipu_wv_cg.set_inst_name("obj_Vx32_vnclipu_wv");
-`endif
-`ifndef ELEN32
     Vx32_vnclipu_wx_cg = new(); Vx32_vnclipu_wx_cg.set_inst_name("obj_Vx32_vnclipu_wx");
-`endif
     Vx32_vnmsac_vv_cg = new(); Vx32_vnmsac_vv_cg.set_inst_name("obj_Vx32_vnmsac_vv");
     Vx32_vnmsac_vx_cg = new(); Vx32_vnmsac_vx_cg.set_inst_name("obj_Vx32_vnmsac_vx");
     Vx32_vnmsub_vv_cg = new(); Vx32_vnmsub_vv_cg.set_inst_name("obj_Vx32_vnmsub_vv");
     Vx32_vnmsub_vx_cg = new(); Vx32_vnmsub_vx_cg.set_inst_name("obj_Vx32_vnmsub_vx");
-`ifndef ELEN32
     Vx32_vnsra_wi_cg = new(); Vx32_vnsra_wi_cg.set_inst_name("obj_Vx32_vnsra_wi");
-`endif
-`ifndef ELEN32
     Vx32_vnsra_wv_cg = new(); Vx32_vnsra_wv_cg.set_inst_name("obj_Vx32_vnsra_wv");
-`endif
-`ifndef ELEN32
     Vx32_vnsra_wx_cg = new(); Vx32_vnsra_wx_cg.set_inst_name("obj_Vx32_vnsra_wx");
-`endif
-`ifndef ELEN32
     Vx32_vnsrl_wi_cg = new(); Vx32_vnsrl_wi_cg.set_inst_name("obj_Vx32_vnsrl_wi");
-`endif
-`ifndef ELEN32
     Vx32_vnsrl_wv_cg = new(); Vx32_vnsrl_wv_cg.set_inst_name("obj_Vx32_vnsrl_wv");
-`endif
-`ifndef ELEN32
     Vx32_vnsrl_wx_cg = new(); Vx32_vnsrl_wx_cg.set_inst_name("obj_Vx32_vnsrl_wx");
-`endif
     Vx32_vor_vi_cg = new(); Vx32_vor_vi_cg.set_inst_name("obj_Vx32_vor_vi");
     Vx32_vor_vv_cg = new(); Vx32_vor_vv_cg.set_inst_name("obj_Vx32_vor_vv");
     Vx32_vor_vx_cg = new(); Vx32_vor_vx_cg.set_inst_name("obj_Vx32_vor_vx");
@@ -167,9 +143,7 @@
     Vx32_vrgather_vi_cg = new(); Vx32_vrgather_vi_cg.set_inst_name("obj_Vx32_vrgather_vi");
     Vx32_vrgather_vv_cg = new(); Vx32_vrgather_vv_cg.set_inst_name("obj_Vx32_vrgather_vv");
     Vx32_vrgather_vx_cg = new(); Vx32_vrgather_vx_cg.set_inst_name("obj_Vx32_vrgather_vx");
-`ifdef MAXINDEXEEW_GE16
     Vx32_vrgatherei16_vv_cg = new(); Vx32_vrgatherei16_vv_cg.set_inst_name("obj_Vx32_vrgatherei16_vv");
-`endif
     Vx32_vrsub_vi_cg = new(); Vx32_vrsub_vi_cg.set_inst_name("obj_Vx32_vrsub_vi");
     Vx32_vrsub_vx_cg = new(); Vx32_vrsub_vx_cg.set_inst_name("obj_Vx32_vrsub_vx");
     Vx32_vsadd_vi_cg = new(); Vx32_vsadd_vi_cg.set_inst_name("obj_Vx32_vsadd_vi");
@@ -211,99 +185,37 @@
     Vx32_vssubu_vx_cg = new(); Vx32_vssubu_vx_cg.set_inst_name("obj_Vx32_vssubu_vx");
     Vx32_vsub_vv_cg = new(); Vx32_vsub_vv_cg.set_inst_name("obj_Vx32_vsub_vv");
     Vx32_vsub_vx_cg = new(); Vx32_vsub_vx_cg.set_inst_name("obj_Vx32_vsub_vx");
-`ifndef ELEN32
     Vx32_vwadd_vv_cg = new(); Vx32_vwadd_vv_cg.set_inst_name("obj_Vx32_vwadd_vv");
-`endif
-`ifndef ELEN32
     Vx32_vwadd_vx_cg = new(); Vx32_vwadd_vx_cg.set_inst_name("obj_Vx32_vwadd_vx");
-`endif
-`ifndef ELEN32
     Vx32_vwadd_wv_cg = new(); Vx32_vwadd_wv_cg.set_inst_name("obj_Vx32_vwadd_wv");
-`endif
-`ifndef ELEN32
     Vx32_vwadd_wx_cg = new(); Vx32_vwadd_wx_cg.set_inst_name("obj_Vx32_vwadd_wx");
-`endif
-`ifndef ELEN32
     Vx32_vwaddu_vv_cg = new(); Vx32_vwaddu_vv_cg.set_inst_name("obj_Vx32_vwaddu_vv");
-`endif
-`ifndef ELEN32
     Vx32_vwaddu_vx_cg = new(); Vx32_vwaddu_vx_cg.set_inst_name("obj_Vx32_vwaddu_vx");
-`endif
-`ifndef ELEN32
     Vx32_vwaddu_wv_cg = new(); Vx32_vwaddu_wv_cg.set_inst_name("obj_Vx32_vwaddu_wv");
-`endif
-`ifndef ELEN32
     Vx32_vwaddu_wx_cg = new(); Vx32_vwaddu_wx_cg.set_inst_name("obj_Vx32_vwaddu_wx");
-`endif
-`ifndef ELEN32
     Vx32_vwmacc_vv_cg = new(); Vx32_vwmacc_vv_cg.set_inst_name("obj_Vx32_vwmacc_vv");
-`endif
-`ifndef ELEN32
     Vx32_vwmacc_vx_cg = new(); Vx32_vwmacc_vx_cg.set_inst_name("obj_Vx32_vwmacc_vx");
-`endif
-`ifndef ELEN32
     Vx32_vwmaccsu_vv_cg = new(); Vx32_vwmaccsu_vv_cg.set_inst_name("obj_Vx32_vwmaccsu_vv");
-`endif
-`ifndef ELEN32
     Vx32_vwmaccsu_vx_cg = new(); Vx32_vwmaccsu_vx_cg.set_inst_name("obj_Vx32_vwmaccsu_vx");
-`endif
-`ifndef ELEN32
     Vx32_vwmaccu_vv_cg = new(); Vx32_vwmaccu_vv_cg.set_inst_name("obj_Vx32_vwmaccu_vv");
-`endif
-`ifndef ELEN32
     Vx32_vwmaccu_vx_cg = new(); Vx32_vwmaccu_vx_cg.set_inst_name("obj_Vx32_vwmaccu_vx");
-`endif
-`ifndef ELEN32
     Vx32_vwmaccus_vx_cg = new(); Vx32_vwmaccus_vx_cg.set_inst_name("obj_Vx32_vwmaccus_vx");
-`endif
-`ifndef ELEN32
     Vx32_vwmul_vv_cg = new(); Vx32_vwmul_vv_cg.set_inst_name("obj_Vx32_vwmul_vv");
-`endif
-`ifndef ELEN32
     Vx32_vwmul_vx_cg = new(); Vx32_vwmul_vx_cg.set_inst_name("obj_Vx32_vwmul_vx");
-`endif
-`ifndef ELEN32
     Vx32_vwmulsu_vv_cg = new(); Vx32_vwmulsu_vv_cg.set_inst_name("obj_Vx32_vwmulsu_vv");
-`endif
-`ifndef ELEN32
     Vx32_vwmulsu_vx_cg = new(); Vx32_vwmulsu_vx_cg.set_inst_name("obj_Vx32_vwmulsu_vx");
-`endif
-`ifndef ELEN32
     Vx32_vwmulu_vv_cg = new(); Vx32_vwmulu_vv_cg.set_inst_name("obj_Vx32_vwmulu_vv");
-`endif
-`ifndef ELEN32
     Vx32_vwmulu_vx_cg = new(); Vx32_vwmulu_vx_cg.set_inst_name("obj_Vx32_vwmulu_vx");
-`endif
-`ifndef ELEN32
     Vx32_vwredsum_vs_cg = new(); Vx32_vwredsum_vs_cg.set_inst_name("obj_Vx32_vwredsum_vs");
-`endif
-`ifndef ELEN32
     Vx32_vwredsumu_vs_cg = new(); Vx32_vwredsumu_vs_cg.set_inst_name("obj_Vx32_vwredsumu_vs");
-`endif
-`ifndef ELEN32
     Vx32_vwsub_vv_cg = new(); Vx32_vwsub_vv_cg.set_inst_name("obj_Vx32_vwsub_vv");
-`endif
-`ifndef ELEN32
     Vx32_vwsub_vx_cg = new(); Vx32_vwsub_vx_cg.set_inst_name("obj_Vx32_vwsub_vx");
-`endif
-`ifndef ELEN32
     Vx32_vwsub_wv_cg = new(); Vx32_vwsub_wv_cg.set_inst_name("obj_Vx32_vwsub_wv");
-`endif
-`ifndef ELEN32
     Vx32_vwsub_wx_cg = new(); Vx32_vwsub_wx_cg.set_inst_name("obj_Vx32_vwsub_wx");
-`endif
-`ifndef ELEN32
     Vx32_vwsubu_vv_cg = new(); Vx32_vwsubu_vv_cg.set_inst_name("obj_Vx32_vwsubu_vv");
-`endif
-`ifndef ELEN32
     Vx32_vwsubu_vx_cg = new(); Vx32_vwsubu_vx_cg.set_inst_name("obj_Vx32_vwsubu_vx");
-`endif
-`ifndef ELEN32
     Vx32_vwsubu_wv_cg = new(); Vx32_vwsubu_wv_cg.set_inst_name("obj_Vx32_vwsubu_wv");
-`endif
-`ifndef ELEN32
     Vx32_vwsubu_wx_cg = new(); Vx32_vwsubu_wx_cg.set_inst_name("obj_Vx32_vwsubu_wx");
-`endif
     Vx32_vxor_vi_cg = new(); Vx32_vxor_vi_cg.set_inst_name("obj_Vx32_vxor_vi");
     Vx32_vxor_vv_cg = new(); Vx32_vxor_vv_cg.set_inst_name("obj_Vx32_vxor_vv");
     Vx32_vxor_vx_cg = new(); Vx32_vxor_vx_cg.set_inst_name("obj_Vx32_vxor_vx");

@@ -230,7 +230,7 @@
         },
         "size": {
           "len": 64,
-          "value": "0x80000000"
+          "value": "0x08000000"
         },
         "attributes": {
           "mem_type": "MainMemory",
@@ -304,7 +304,7 @@
     // Note: it is also legal for these instructions to spuriously
     // retire successfully at any point, but there is currently no
     // configuration option for this behaviour.
-    "max_time_to_wait": 10
+    "max_time_to_wait": 200
   },
   "extensions": {
     "M": {

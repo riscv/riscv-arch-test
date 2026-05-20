@@ -49,7 +49,7 @@ covergroup Zama16b_cg with function sample(ins_t ins);
     cp_lhu_load: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? LHU) {
         bins offsets[] = {[0:14]};
     }
-    `ifdef COVER_ZFH
+    `ifdef ZFH_SUPPORTED
         cp_flh_load: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? FLH) {
             bins offsets[] = {[0:14]};
         }
@@ -64,7 +64,7 @@ covergroup Zama16b_cg with function sample(ins_t ins);
             bins offsets[] = {[0:12]};
         }
     `endif
-    `ifdef COVER_F
+    `ifdef F_SUPPORTED
         cp_flw_load: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? FLW) {
             bins offsets[] = {[0:12]};
         }
@@ -76,14 +76,14 @@ covergroup Zama16b_cg with function sample(ins_t ins);
             bins offsets[] = {[0:8]};
         }
     `endif
-    `ifdef COVER_D
+    `ifdef D_SUPPORTED
         cp_fld_load: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? FLD) {
             bins offsets[] = {[0:8]};
         }
     `endif
 
     // ---- 16-byte loads: offsets [0:0] ----
-    `ifdef COVER_Q
+    `ifdef Q_SUPPORTED
         cp_flq_load: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? FLQ) {
             bins offsets[] = {[0:0]};
         }
@@ -102,7 +102,7 @@ covergroup Zama16b_cg with function sample(ins_t ins);
     cp_sh_store: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? SH) {
         bins offsets[] = {[0:14]};
     }
-    `ifdef COVER_ZFH
+    `ifdef ZFH_SUPPORTED
         cp_fsh_store: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? FSH) {
             bins offsets[] = {[0:14]};
         }
@@ -112,7 +112,7 @@ covergroup Zama16b_cg with function sample(ins_t ins);
     cp_sw_store: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? SW) {
         bins offsets[] = {[0:12]};
     }
-    `ifdef COVER_F
+    `ifdef F_SUPPORTED
         cp_fsw_store: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? FSW) {
             bins offsets[] = {[0:12]};
         }
@@ -124,14 +124,14 @@ covergroup Zama16b_cg with function sample(ins_t ins);
             bins offsets[] = {[0:8]};
         }
     `endif
-    `ifdef COVER_D
+    `ifdef D_SUPPORTED
         cp_fsd_store: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? FSD) {
             bins offsets[] = {[0:8]};
-    }
+        }
     `endif
 
     // ---- 16-byte stores: offsets [0:0] ----
-    `ifdef COVER_Q
+    `ifdef Q_SUPPORTED
         cp_fsq_store: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) iff (ins.current.insn ==? FSQ) {
             bins offsets[] = {[0:0]};
         }
@@ -140,9 +140,9 @@ covergroup Zama16b_cg with function sample(ins_t ins);
     // ================================================================
     // cp_zama16b_amo
     // ================================================================
-    `ifdef COVER_ZAAMO
+    `ifdef ZAAMO_SUPPORTED
         // ---- 1-byte AMOs (Zabha): offsets [0:15] ----
-        `ifdef COVER_ZABHA
+        `ifdef ZABHA_SUPPORTED
             cp_amoswap_b_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOSWAP_B) {
                 bins offsets[] = {[0:15]};
             }
@@ -199,7 +199,7 @@ covergroup Zama16b_cg with function sample(ins_t ins);
             cp_amominu_h_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMINU_H) {
                 bins offsets[] = {[0:14]};
             }
-        `endif // COVER_ZABHA
+        `endif // ZABHA_SUPPORTED
 
         // ---- 4-byte AMOs: offsets [0:12] ----
         cp_amoswap_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOSWAP_W) {
@@ -229,11 +229,11 @@ covergroup Zama16b_cg with function sample(ins_t ins);
         cp_amominu_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMINU_W) {
             bins offsets[] = {[0:12]};
         }
-        `ifdef COVER_ZACAS
+        `ifdef ZACAS_SUPPORTED
             cp_amocas_w_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOCAS_W) {
                 bins offsets[] = {[0:12]};
             }
-        `endif // COVER_ZACAS
+        `endif // ZACAS_SUPPORTED
 
         // ---- 8-byte AMOs (RV64): offsets [0:8] ----
         `ifdef XLEN64
@@ -264,17 +264,18 @@ covergroup Zama16b_cg with function sample(ins_t ins);
             cp_amominu_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOMINU_D) {
                 bins offsets[] = {[0:8]};
             }
-            `ifdef COVER_ZACAS
-                // ---- 16-byte AMO (Zacas, RV64): offsets [0:0] ----
+            `ifdef ZACAS_SUPPORTED
+                // ---- 8-byte AMO CAS (Zacas, RV64): offsets [0:8] ----
                 cp_amocas_d_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOCAS_D) {
                     bins offsets[] = {[0:8]};
                 }
+                // ---- 16-byte AMO CAS (Zacas, RV64): offset [0:0] ----
                 cp_amocas_q_amo: coverpoint (ins.current.rs1_val & 4'hF) iff (ins.current.insn ==? AMOCAS_Q) {
                     bins offsets[] = {[0:0]};
                 }
-            `endif // COVER_ZACAS
+            `endif // ZACAS_SUPPORTED
         `endif // XLEN64
-    `endif // COVER_ZAAMO
+    `endif // ZAAMO_SUPPORTED
 
 
 endgroup

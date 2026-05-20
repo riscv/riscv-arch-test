@@ -3,9 +3,22 @@
 # CI configuration for QEMU simulator
 # Shared across all QEMU configs
 
+# SsstrictS & SsstrictU excluded as they are not supported by the old trap handler
+# SsstrictSm excluded because of Sail bugs
+# 1. incorrect decoding of add.uw instruction) Link: https://github.com/riscv/sail-riscv/issues/1711
+# 2. vmv<nr>r.v instructions fail to trap when vill=1 Link: https://github.com/riscv/sail-riscv/issues/1709
+# 3. Add configuration parameter for vsetvli/vsetvl behavior on reserved vtype values Link: https://github.com/riscv/sail-riscv/issues/1699
+# 4. Spike mtval reports cache-block-aligned address on CBO access fault instead of faulting virtual address, Link: https://github.com/riscv-software-src/riscv-isa-sim/issues/2296
+# 5. RISC-V: CBO instructions (cbo.clean/flush/inval) decoded as `lq` instead of cache block operations, Link: https://gitlab.com/qemu-project/qemu/-/work_items/3480
+# 6. RISC-V: Reserved opcode 1111111 (op31) causes infinite trap loop instead of illegal instruction trap, Link: https://gitlab.com/qemu-project/qemu/-/work_items/3479
+# 7. QEMU is not Ssstrict compliant, and does not raise illegal exceptions on M-mode read only CSRs, which causes some tests to fail.
 ci_enabled: true
 # TODO: Priv tests mismatch due to config issues. Atomics failure still needs to be diagnosed.
 # TODO: Remove Zama16b when Qemu starts supporting it.
-exclude_extensions: "Sm,S,Zalrsc,Zacas,ZacasZabha,InterruptsSm,PMPSm,PMPZalrsc,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,Sv,Svade,SvPMP,SvaduPMP,Svpbmt,Svnapot,SvZicbo,SvPMPZicbo,Svinval,ExceptionsZaamo,ExceptionsSvZaamo,ExceptionsSvZalrsc,Zama16b"
+# TODO: Remove UV when Qemu VXRM register issue is fixed
+# TODO: Remove SsstrictV when sail SsstrictV is implemented
+# ExceptionsZicboU/S fail because of https://gitlab.com/qemu-project/qemu/-/work_items/3380
+# Zicntr fails on QEMU11.0.0 due to https://gitlab.com/qemu-project/qemu/-/work_items/3498, https://gitlab.com/qemu-project/qemu/-/work_items/3504
+exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zicntr,Zacas,ZacasZabha,InterruptsS,InterruptsU,PMPSm,PMPZalrsc,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,SvaduPMP,Svpbmt,SvZicbo,Svinval,ExceptionsZaamo,ExceptionsSvZaamo,ExceptionsSvZalrsc,Zama16b,UV,SsstrictV"
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"

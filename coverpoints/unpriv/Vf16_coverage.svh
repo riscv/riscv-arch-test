@@ -8149,7 +8149,6 @@ covergroup Vf16_vfmv_v_f_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfncvt_f_x_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.f.x.w"  iff (ins.trap == 0 )  {
@@ -8174,6 +8173,60 @@ covergroup Vf16_vfncvt_f_x_w_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector shift and clip instructions with wi operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vd_eq_vs2 : coverpoint ins.current.insn[24:20] == ins.current.insn[11:7] {
+        bins true = {1'b1};
+    }
+
+    vs2_reg_aligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_2 = {5'b????0};
+    }
+
+    vs2_reg_aligned_lmul_4: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_4 = {5'b???00};
+    }
+
+    vs2_reg_aligned_lmul_8: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_8 = {5'b??000};
+    }
+
+    cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1: cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_eq_vs2, vs2_reg_aligned_lmul_2;
+    cp_custom_vdOverlapBtmVs2_vd_vs2_lmul2: cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_eq_vs2, vs2_reg_aligned_lmul_4;
+    cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4: cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_eq_vs2, vs2_reg_aligned_lmul_8;
+
+    //// end cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -8379,9 +8432,7 @@ covergroup Vf16_vfncvt_f_x_w_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfncvt_f_xu_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.f.xu.w"  iff (ins.trap == 0 )  {
@@ -8406,6 +8457,60 @@ covergroup Vf16_vfncvt_f_xu_w_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector shift and clip instructions with wi operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vd_eq_vs2 : coverpoint ins.current.insn[24:20] == ins.current.insn[11:7] {
+        bins true = {1'b1};
+    }
+
+    vs2_reg_aligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_2 = {5'b????0};
+    }
+
+    vs2_reg_aligned_lmul_4: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_4 = {5'b???00};
+    }
+
+    vs2_reg_aligned_lmul_8: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_8 = {5'b??000};
+    }
+
+    cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1: cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_eq_vs2, vs2_reg_aligned_lmul_2;
+    cp_custom_vdOverlapBtmVs2_vd_vs2_lmul2: cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_eq_vs2, vs2_reg_aligned_lmul_4;
+    cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4: cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_eq_vs2, vs2_reg_aligned_lmul_8;
+
+    //// end cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -8611,9 +8716,7 @@ covergroup Vf16_vfncvt_f_xu_w_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfncvt_rod_f_f_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.rod.f.f.w"  iff (ins.trap == 0 )  {
@@ -8632,6 +8735,60 @@ covergroup Vf16_vfncvt_rod_f_f_w_cg with function sample(ins_t ins);
         wildcard bins NX   = (5'b????0 => 5'b????1);
         wildcard bins NX1  = (5'b????1 => 5'b????1);
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector shift and clip instructions with wi operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vd_eq_vs2 : coverpoint ins.current.insn[24:20] == ins.current.insn[11:7] {
+        bins true = {1'b1};
+    }
+
+    vs2_reg_aligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_2 = {5'b????0};
+    }
+
+    vs2_reg_aligned_lmul_4: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_4 = {5'b???00};
+    }
+
+    vs2_reg_aligned_lmul_8: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_8 = {5'b??000};
+    }
+
+    cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1: cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_eq_vs2, vs2_reg_aligned_lmul_2;
+    cp_custom_vdOverlapBtmVs2_vd_vs2_lmul2: cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_eq_vs2, vs2_reg_aligned_lmul_4;
+    cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4: cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_eq_vs2, vs2_reg_aligned_lmul_8;
+
+    //// end cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
 
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vfncvt_rod_overflow
@@ -8928,9 +9085,7 @@ covergroup Vf16_vfncvt_rod_f_f_w_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfncvt_rtz_x_f_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.rtz.x.f.w"  iff (ins.trap == 0 )  {
@@ -8947,6 +9102,60 @@ covergroup Vf16_vfncvt_rtz_x_f_w_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector shift and clip instructions with wi operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vd_eq_vs2 : coverpoint ins.current.insn[24:20] == ins.current.insn[11:7] {
+        bins true = {1'b1};
+    }
+
+    vs2_reg_aligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_2 = {5'b????0};
+    }
+
+    vs2_reg_aligned_lmul_4: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_4 = {5'b???00};
+    }
+
+    vs2_reg_aligned_lmul_8: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_8 = {5'b??000};
+    }
+
+    cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1: cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_eq_vs2, vs2_reg_aligned_lmul_2;
+    cp_custom_vdOverlapBtmVs2_vd_vs2_lmul2: cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_eq_vs2, vs2_reg_aligned_lmul_4;
+    cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4: cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_eq_vs2, vs2_reg_aligned_lmul_8;
+
+    //// end cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -9179,9 +9388,7 @@ covergroup Vf16_vfncvt_rtz_x_f_w_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfncvt_rtz_xu_f_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.rtz.xu.f.w"  iff (ins.trap == 0 )  {
@@ -9198,6 +9405,60 @@ covergroup Vf16_vfncvt_rtz_xu_f_w_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector shift and clip instructions with wi operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vd_eq_vs2 : coverpoint ins.current.insn[24:20] == ins.current.insn[11:7] {
+        bins true = {1'b1};
+    }
+
+    vs2_reg_aligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_2 = {5'b????0};
+    }
+
+    vs2_reg_aligned_lmul_4: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_4 = {5'b???00};
+    }
+
+    vs2_reg_aligned_lmul_8: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_8 = {5'b??000};
+    }
+
+    cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1: cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_eq_vs2, vs2_reg_aligned_lmul_2;
+    cp_custom_vdOverlapBtmVs2_vd_vs2_lmul2: cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_eq_vs2, vs2_reg_aligned_lmul_4;
+    cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4: cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_eq_vs2, vs2_reg_aligned_lmul_8;
+
+    //// end cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -9430,9 +9691,7 @@ covergroup Vf16_vfncvt_rtz_xu_f_w_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfncvt_x_f_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.x.f.w"  iff (ins.trap == 0 )  {
@@ -9459,6 +9718,60 @@ covergroup Vf16_vfncvt_x_f_w_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector shift and clip instructions with wi operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vd_eq_vs2 : coverpoint ins.current.insn[24:20] == ins.current.insn[11:7] {
+        bins true = {1'b1};
+    }
+
+    vs2_reg_aligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_2 = {5'b????0};
+    }
+
+    vs2_reg_aligned_lmul_4: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_4 = {5'b???00};
+    }
+
+    vs2_reg_aligned_lmul_8: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_8 = {5'b??000};
+    }
+
+    cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1: cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_eq_vs2, vs2_reg_aligned_lmul_2;
+    cp_custom_vdOverlapBtmVs2_vd_vs2_lmul2: cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_eq_vs2, vs2_reg_aligned_lmul_4;
+    cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4: cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_eq_vs2, vs2_reg_aligned_lmul_8;
+
+    //// end cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -9691,9 +10004,7 @@ covergroup Vf16_vfncvt_x_f_w_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfncvt_xu_f_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.xu.f.w"  iff (ins.trap == 0 )  {
@@ -9720,6 +10031,60 @@ covergroup Vf16_vfncvt_xu_f_w_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector shift and clip instructions with wi operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vd_eq_vs2 : coverpoint ins.current.insn[24:20] == ins.current.insn[11:7] {
+        bins true = {1'b1};
+    }
+
+    vs2_reg_aligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_2 = {5'b????0};
+    }
+
+    vs2_reg_aligned_lmul_4: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_4 = {5'b???00};
+    }
+
+    vs2_reg_aligned_lmul_8: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_8 = {5'b??000};
+    }
+
+    cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1: cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_eq_vs2, vs2_reg_aligned_lmul_2;
+    cp_custom_vdOverlapBtmVs2_vd_vs2_lmul2: cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_eq_vs2, vs2_reg_aligned_lmul_4;
+    cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4: cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_eq_vs2, vs2_reg_aligned_lmul_8;
+
+    //// end cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -9952,7 +10317,6 @@ covergroup Vf16_vfncvt_xu_f_w_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
 covergroup Vf16_vfnmacc_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
@@ -18170,7 +18534,6 @@ covergroup Vf16_vfsub_vv_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwadd_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwadd.vf"  iff (ins.trap == 0 )  {
@@ -18278,6 +18641,76 @@ covergroup Vf16_vfwadd_vf_cg with function sample(ins_t ins);
 `endif
 
     //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector widening operations with vx operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vd_all_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins odd = {5'b????1};
+    }
+
+    vd_all_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b???01};
+        wildcard ignore_bins end_2 = {5'b???10};
+        wildcard ignore_bins end_3 = {5'b???11};
+    }
+
+    vd_all_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b??001};
+        wildcard ignore_bins end_2 = {5'b??010};
+        wildcard ignore_bins end_3 = {5'b??011};
+        wildcard ignore_bins end_4 = {5'b??101};
+        wildcard ignore_bins end_5 = {5'b??110};
+        wildcard ignore_bins end_6 = {5'b??111};
+        wildcard ignore_bins end_7 = {5'b??100};
+    }
+
+    vs2_reg_unaligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard bins odd = {5'b????1};
+    }
+
+    vs2_mod4_2: coverpoint ins.current.insn[21:20] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs2_mod8_4: coverpoint ins.current.insn[22:20] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1 : cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs2_reg_unaligned_lmul_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2 : cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs2_mod4_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul4 : cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs2_mod8_4;
+
+    //// end cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -18470,9 +18903,7 @@ covergroup Vf16_vfwadd_vf_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwadd_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -18590,6 +19021,128 @@ covergroup Vf16_vfwadd_vv_cg with function sample(ins_t ins);
 `endif
 
     //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector widening operations with vv operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_no_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_vd_no_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_vd_no_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b0};
+    }
+
+    vd_all_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins odd = {5'b????1};
+    }
+
+    vd_all_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b???01};
+        wildcard ignore_bins end_2 = {5'b???10};
+        wildcard ignore_bins end_3 = {5'b???11};
+    }
+
+    vd_all_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b??001};
+        wildcard ignore_bins end_2 = {5'b??010};
+        wildcard ignore_bins end_3 = {5'b??011};
+        wildcard ignore_bins end_4 = {5'b??101};
+        wildcard ignore_bins end_5 = {5'b??110};
+        wildcard ignore_bins end_6 = {5'b??111};
+        wildcard ignore_bins end_7 = {5'b??100};
+    }
+
+    vs2_reg_unaligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard bins odd = {5'b????1};
+    }
+
+    vs2_mod4_2: coverpoint ins.current.insn[21:20] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs2_mod8_4: coverpoint ins.current.insn[22:20] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1 : cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs1_vd_no_overlap_lmul1, vs2_reg_unaligned_lmul_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2 : cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs1_vd_no_overlap_lmul2, vs2_mod4_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul4 : cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs1_vd_no_overlap_lmul4, vs2_mod8_4;
+
+    vs1_vd_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_no_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vs1_no_overlap_lmul1: coverpoint (ins.current.insn[24:20] == ins.current.insn[11:7]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_mod4_2: coverpoint ins.current.insn[16:15] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs1_mod8_4: coverpoint ins.current.insn[17:15] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1 : cross std_vec, vtype_lmul_1, vs1_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs2_vd_no_overlap_lmul1, vs2_vs1_no_overlap_lmul1;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul2 : cross std_vec, vtype_lmul_2, vs1_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs2_vd_no_overlap_lmul2, vs1_mod4_2;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul4 : cross std_vec, vtype_lmul_4, vs1_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs2_vd_no_overlap_lmul4, vs1_mod8_4;
+
+    //// end cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -18788,9 +19341,7 @@ covergroup Vf16_vfwadd_vv_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwadd_wf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -19135,9 +19686,7 @@ covergroup Vf16_vfwadd_wf_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwadd_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -19274,6 +19823,88 @@ covergroup Vf16_vfwadd_wv_cg with function sample(ins_t ins);
 `endif
 
     //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector widening operations with wv operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vs1_vd_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_no_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b0};
+    }
+
+    vd_all_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins odd = {5'b????1};
+    }
+
+    vd_all_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b???01};
+        wildcard ignore_bins end_2 = {5'b???10};
+        wildcard ignore_bins end_3 = {5'b???11};
+    }
+
+    vd_all_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b??001};
+        wildcard ignore_bins end_2 = {5'b??010};
+        wildcard ignore_bins end_3 = {5'b??011};
+        wildcard ignore_bins end_4 = {5'b??101};
+        wildcard ignore_bins end_5 = {5'b??110};
+        wildcard ignore_bins end_6 = {5'b??111};
+        wildcard ignore_bins end_7 = {5'b??100};
+    }
+
+    vs1_reg_unaligned_lmul_2: coverpoint ins.current.insn[19:15] {
+        wildcard bins odd = {5'b????1};
+    }
+
+    vs1_mod4_2: coverpoint ins.current.insn[16:15] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs1_mod8_4: coverpoint ins.current.insn[17:15] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1 : cross std_vec, vtype_lmul_1, vs1_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs2_vd_no_overlap_lmul1, vs1_reg_unaligned_lmul_2;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul2 : cross std_vec, vtype_lmul_2, vs1_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs2_vd_no_overlap_lmul2, vs1_mod4_2;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul4 : cross std_vec, vtype_lmul_4, vs1_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs2_vd_no_overlap_lmul4, vs1_mod8_4;
+
+    //// end cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -19488,9 +20119,7 @@ covergroup Vf16_vfwadd_wv_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwcvt_f_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwcvt.f.f.v"  iff (ins.trap == 0 )  {
@@ -19587,6 +20216,128 @@ covergroup Vf16_vfwcvt_f_f_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector widening operations with vv operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_no_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_vd_no_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_vd_no_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b0};
+    }
+
+    vd_all_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins odd = {5'b????1};
+    }
+
+    vd_all_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b???01};
+        wildcard ignore_bins end_2 = {5'b???10};
+        wildcard ignore_bins end_3 = {5'b???11};
+    }
+
+    vd_all_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b??001};
+        wildcard ignore_bins end_2 = {5'b??010};
+        wildcard ignore_bins end_3 = {5'b??011};
+        wildcard ignore_bins end_4 = {5'b??101};
+        wildcard ignore_bins end_5 = {5'b??110};
+        wildcard ignore_bins end_6 = {5'b??111};
+        wildcard ignore_bins end_7 = {5'b??100};
+    }
+
+    vs2_reg_unaligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard bins odd = {5'b????1};
+    }
+
+    vs2_mod4_2: coverpoint ins.current.insn[21:20] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs2_mod8_4: coverpoint ins.current.insn[22:20] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1 : cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs1_vd_no_overlap_lmul1, vs2_reg_unaligned_lmul_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2 : cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs1_vd_no_overlap_lmul2, vs2_mod4_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul4 : cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs1_vd_no_overlap_lmul4, vs2_mod8_4;
+
+    vs1_vd_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_no_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vs1_no_overlap_lmul1: coverpoint (ins.current.insn[24:20] == ins.current.insn[11:7]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_mod4_2: coverpoint ins.current.insn[16:15] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs1_mod8_4: coverpoint ins.current.insn[17:15] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1 : cross std_vec, vtype_lmul_1, vs1_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs2_vd_no_overlap_lmul1, vs2_vs1_no_overlap_lmul1;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul2 : cross std_vec, vtype_lmul_2, vs1_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs2_vd_no_overlap_lmul2, vs1_mod4_2;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul4 : cross std_vec, vtype_lmul_4, vs1_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs2_vd_no_overlap_lmul4, vs1_mod8_4;
+
+    //// end cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -19734,9 +20485,7 @@ covergroup Vf16_vfwcvt_f_f_v_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwcvt_f_x_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwcvt.f.x.v"  iff (ins.trap == 0 )  {
@@ -19774,6 +20523,128 @@ covergroup Vf16_vfwcvt_f_x_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector widening operations with vv operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_no_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_vd_no_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_vd_no_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b0};
+    }
+
+    vd_all_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins odd = {5'b????1};
+    }
+
+    vd_all_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b???01};
+        wildcard ignore_bins end_2 = {5'b???10};
+        wildcard ignore_bins end_3 = {5'b???11};
+    }
+
+    vd_all_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b??001};
+        wildcard ignore_bins end_2 = {5'b??010};
+        wildcard ignore_bins end_3 = {5'b??011};
+        wildcard ignore_bins end_4 = {5'b??101};
+        wildcard ignore_bins end_5 = {5'b??110};
+        wildcard ignore_bins end_6 = {5'b??111};
+        wildcard ignore_bins end_7 = {5'b??100};
+    }
+
+    vs2_reg_unaligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard bins odd = {5'b????1};
+    }
+
+    vs2_mod4_2: coverpoint ins.current.insn[21:20] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs2_mod8_4: coverpoint ins.current.insn[22:20] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1 : cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs1_vd_no_overlap_lmul1, vs2_reg_unaligned_lmul_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2 : cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs1_vd_no_overlap_lmul2, vs2_mod4_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul4 : cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs1_vd_no_overlap_lmul4, vs2_mod8_4;
+
+    vs1_vd_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_no_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vs1_no_overlap_lmul1: coverpoint (ins.current.insn[24:20] == ins.current.insn[11:7]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_mod4_2: coverpoint ins.current.insn[16:15] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs1_mod8_4: coverpoint ins.current.insn[17:15] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1 : cross std_vec, vtype_lmul_1, vs1_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs2_vd_no_overlap_lmul1, vs2_vs1_no_overlap_lmul1;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul2 : cross std_vec, vtype_lmul_2, vs1_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs2_vd_no_overlap_lmul2, vs1_mod4_2;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul4 : cross std_vec, vtype_lmul_4, vs1_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs2_vd_no_overlap_lmul4, vs1_mod8_4;
+
+    //// end cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -19921,9 +20792,7 @@ covergroup Vf16_vfwcvt_f_x_v_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwcvt_f_xu_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwcvt.f.xu.v"  iff (ins.trap == 0 )  {
@@ -19961,6 +20830,128 @@ covergroup Vf16_vfwcvt_f_xu_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector widening operations with vv operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_no_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_vd_no_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_vd_no_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b0};
+    }
+
+    vd_all_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins odd = {5'b????1};
+    }
+
+    vd_all_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b???01};
+        wildcard ignore_bins end_2 = {5'b???10};
+        wildcard ignore_bins end_3 = {5'b???11};
+    }
+
+    vd_all_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b??001};
+        wildcard ignore_bins end_2 = {5'b??010};
+        wildcard ignore_bins end_3 = {5'b??011};
+        wildcard ignore_bins end_4 = {5'b??101};
+        wildcard ignore_bins end_5 = {5'b??110};
+        wildcard ignore_bins end_6 = {5'b??111};
+        wildcard ignore_bins end_7 = {5'b??100};
+    }
+
+    vs2_reg_unaligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard bins odd = {5'b????1};
+    }
+
+    vs2_mod4_2: coverpoint ins.current.insn[21:20] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs2_mod8_4: coverpoint ins.current.insn[22:20] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1 : cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs1_vd_no_overlap_lmul1, vs2_reg_unaligned_lmul_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2 : cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs1_vd_no_overlap_lmul2, vs2_mod4_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul4 : cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs1_vd_no_overlap_lmul4, vs2_mod8_4;
+
+    vs1_vd_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_no_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vs1_no_overlap_lmul1: coverpoint (ins.current.insn[24:20] == ins.current.insn[11:7]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_mod4_2: coverpoint ins.current.insn[16:15] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs1_mod8_4: coverpoint ins.current.insn[17:15] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1 : cross std_vec, vtype_lmul_1, vs1_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs2_vd_no_overlap_lmul1, vs2_vs1_no_overlap_lmul1;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul2 : cross std_vec, vtype_lmul_2, vs1_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs2_vd_no_overlap_lmul2, vs1_mod4_2;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul4 : cross std_vec, vtype_lmul_4, vs1_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs2_vd_no_overlap_lmul4, vs1_mod8_4;
+
+    //// end cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -20108,9 +21099,7 @@ covergroup Vf16_vfwcvt_f_xu_v_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwcvt_rtz_x_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwcvt.rtz.x.f.v"  iff (ins.trap == 0 )  {
@@ -20212,6 +21201,128 @@ covergroup Vf16_vfwcvt_rtz_x_f_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector widening operations with vv operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_no_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_vd_no_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_vd_no_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b0};
+    }
+
+    vd_all_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins odd = {5'b????1};
+    }
+
+    vd_all_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b???01};
+        wildcard ignore_bins end_2 = {5'b???10};
+        wildcard ignore_bins end_3 = {5'b???11};
+    }
+
+    vd_all_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b??001};
+        wildcard ignore_bins end_2 = {5'b??010};
+        wildcard ignore_bins end_3 = {5'b??011};
+        wildcard ignore_bins end_4 = {5'b??101};
+        wildcard ignore_bins end_5 = {5'b??110};
+        wildcard ignore_bins end_6 = {5'b??111};
+        wildcard ignore_bins end_7 = {5'b??100};
+    }
+
+    vs2_reg_unaligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard bins odd = {5'b????1};
+    }
+
+    vs2_mod4_2: coverpoint ins.current.insn[21:20] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs2_mod8_4: coverpoint ins.current.insn[22:20] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1 : cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs1_vd_no_overlap_lmul1, vs2_reg_unaligned_lmul_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2 : cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs1_vd_no_overlap_lmul2, vs2_mod4_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul4 : cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs1_vd_no_overlap_lmul4, vs2_mod8_4;
+
+    vs1_vd_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_no_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vs1_no_overlap_lmul1: coverpoint (ins.current.insn[24:20] == ins.current.insn[11:7]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_mod4_2: coverpoint ins.current.insn[16:15] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs1_mod8_4: coverpoint ins.current.insn[17:15] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1 : cross std_vec, vtype_lmul_1, vs1_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs2_vd_no_overlap_lmul1, vs2_vs1_no_overlap_lmul1;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul2 : cross std_vec, vtype_lmul_2, vs1_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs2_vd_no_overlap_lmul2, vs1_mod4_2;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul4 : cross std_vec, vtype_lmul_4, vs1_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs2_vd_no_overlap_lmul4, vs1_mod8_4;
+
+    //// end cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -20359,9 +21470,7 @@ covergroup Vf16_vfwcvt_rtz_x_f_v_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwcvt.rtz.xu.f.v"  iff (ins.trap == 0 )  {
@@ -20463,6 +21572,128 @@ covergroup Vf16_vfwcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector widening operations with vv operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_no_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_vd_no_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_vd_no_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b0};
+    }
+
+    vd_all_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins odd = {5'b????1};
+    }
+
+    vd_all_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b???01};
+        wildcard ignore_bins end_2 = {5'b???10};
+        wildcard ignore_bins end_3 = {5'b???11};
+    }
+
+    vd_all_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b??001};
+        wildcard ignore_bins end_2 = {5'b??010};
+        wildcard ignore_bins end_3 = {5'b??011};
+        wildcard ignore_bins end_4 = {5'b??101};
+        wildcard ignore_bins end_5 = {5'b??110};
+        wildcard ignore_bins end_6 = {5'b??111};
+        wildcard ignore_bins end_7 = {5'b??100};
+    }
+
+    vs2_reg_unaligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard bins odd = {5'b????1};
+    }
+
+    vs2_mod4_2: coverpoint ins.current.insn[21:20] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs2_mod8_4: coverpoint ins.current.insn[22:20] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1 : cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs1_vd_no_overlap_lmul1, vs2_reg_unaligned_lmul_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2 : cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs1_vd_no_overlap_lmul2, vs2_mod4_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul4 : cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs1_vd_no_overlap_lmul4, vs2_mod8_4;
+
+    vs1_vd_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_no_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vs1_no_overlap_lmul1: coverpoint (ins.current.insn[24:20] == ins.current.insn[11:7]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_mod4_2: coverpoint ins.current.insn[16:15] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs1_mod8_4: coverpoint ins.current.insn[17:15] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1 : cross std_vec, vtype_lmul_1, vs1_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs2_vd_no_overlap_lmul1, vs2_vs1_no_overlap_lmul1;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul2 : cross std_vec, vtype_lmul_2, vs1_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs2_vd_no_overlap_lmul2, vs1_mod4_2;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul4 : cross std_vec, vtype_lmul_4, vs1_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs2_vd_no_overlap_lmul4, vs1_mod8_4;
+
+    //// end cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -20610,9 +21841,7 @@ covergroup Vf16_vfwcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwcvt_x_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwcvt.x.f.v"  iff (ins.trap == 0 )  {
@@ -20724,6 +21953,128 @@ covergroup Vf16_vfwcvt_x_f_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector widening operations with vv operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_no_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_vd_no_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_vd_no_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b0};
+    }
+
+    vd_all_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins odd = {5'b????1};
+    }
+
+    vd_all_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b???01};
+        wildcard ignore_bins end_2 = {5'b???10};
+        wildcard ignore_bins end_3 = {5'b???11};
+    }
+
+    vd_all_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b??001};
+        wildcard ignore_bins end_2 = {5'b??010};
+        wildcard ignore_bins end_3 = {5'b??011};
+        wildcard ignore_bins end_4 = {5'b??101};
+        wildcard ignore_bins end_5 = {5'b??110};
+        wildcard ignore_bins end_6 = {5'b??111};
+        wildcard ignore_bins end_7 = {5'b??100};
+    }
+
+    vs2_reg_unaligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard bins odd = {5'b????1};
+    }
+
+    vs2_mod4_2: coverpoint ins.current.insn[21:20] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs2_mod8_4: coverpoint ins.current.insn[22:20] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1 : cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs1_vd_no_overlap_lmul1, vs2_reg_unaligned_lmul_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2 : cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs1_vd_no_overlap_lmul2, vs2_mod4_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul4 : cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs1_vd_no_overlap_lmul4, vs2_mod8_4;
+
+    vs1_vd_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_no_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vs1_no_overlap_lmul1: coverpoint (ins.current.insn[24:20] == ins.current.insn[11:7]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_mod4_2: coverpoint ins.current.insn[16:15] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs1_mod8_4: coverpoint ins.current.insn[17:15] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1 : cross std_vec, vtype_lmul_1, vs1_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs2_vd_no_overlap_lmul1, vs2_vs1_no_overlap_lmul1;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul2 : cross std_vec, vtype_lmul_2, vs1_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs2_vd_no_overlap_lmul2, vs1_mod4_2;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul4 : cross std_vec, vtype_lmul_4, vs1_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs2_vd_no_overlap_lmul4, vs1_mod8_4;
+
+    //// end cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -20871,9 +22222,7 @@ covergroup Vf16_vfwcvt_x_f_v_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwcvt_xu_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwcvt.xu.f.v"  iff (ins.trap == 0 )  {
@@ -20985,6 +22334,128 @@ covergroup Vf16_vfwcvt_xu_f_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector widening operations with vv operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_no_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_vd_no_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_vd_no_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b0};
+    }
+
+    vd_all_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins odd = {5'b????1};
+    }
+
+    vd_all_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b???01};
+        wildcard ignore_bins end_2 = {5'b???10};
+        wildcard ignore_bins end_3 = {5'b???11};
+    }
+
+    vd_all_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b??001};
+        wildcard ignore_bins end_2 = {5'b??010};
+        wildcard ignore_bins end_3 = {5'b??011};
+        wildcard ignore_bins end_4 = {5'b??101};
+        wildcard ignore_bins end_5 = {5'b??110};
+        wildcard ignore_bins end_6 = {5'b??111};
+        wildcard ignore_bins end_7 = {5'b??100};
+    }
+
+    vs2_reg_unaligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard bins odd = {5'b????1};
+    }
+
+    vs2_mod4_2: coverpoint ins.current.insn[21:20] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs2_mod8_4: coverpoint ins.current.insn[22:20] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1 : cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs1_vd_no_overlap_lmul1, vs2_reg_unaligned_lmul_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2 : cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs1_vd_no_overlap_lmul2, vs2_mod4_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul4 : cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs1_vd_no_overlap_lmul4, vs2_mod8_4;
+
+    vs1_vd_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_no_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vs1_no_overlap_lmul1: coverpoint (ins.current.insn[24:20] == ins.current.insn[11:7]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_mod4_2: coverpoint ins.current.insn[16:15] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs1_mod8_4: coverpoint ins.current.insn[17:15] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1 : cross std_vec, vtype_lmul_1, vs1_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs2_vd_no_overlap_lmul1, vs2_vs1_no_overlap_lmul1;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul2 : cross std_vec, vtype_lmul_2, vs1_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs2_vd_no_overlap_lmul2, vs1_mod4_2;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul4 : cross std_vec, vtype_lmul_4, vs1_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs2_vd_no_overlap_lmul4, vs1_mod8_4;
+
+    //// end cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4 ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -21132,9 +22603,7 @@ covergroup Vf16_vfwcvt_xu_f_v_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwmacc_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwmacc.vf"  iff (ins.trap == 0 )  {
@@ -21437,9 +22906,7 @@ covergroup Vf16_vfwmacc_vf_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwmacc_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -21758,9 +23225,7 @@ covergroup Vf16_vfwmacc_vv_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwmsac_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwmsac.vf"  iff (ins.trap == 0 )  {
@@ -22063,9 +23528,7 @@ covergroup Vf16_vfwmsac_vf_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwmsac_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -22384,9 +23847,7 @@ covergroup Vf16_vfwmsac_vv_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwmul_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwmul.vf"  iff (ins.trap == 0 )  {
@@ -22492,6 +23953,76 @@ covergroup Vf16_vfwmul_vf_cg with function sample(ins_t ins);
 `endif
 
     //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector widening operations with vx operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vd_all_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins odd = {5'b????1};
+    }
+
+    vd_all_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b???01};
+        wildcard ignore_bins end_2 = {5'b???10};
+        wildcard ignore_bins end_3 = {5'b???11};
+    }
+
+    vd_all_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b??001};
+        wildcard ignore_bins end_2 = {5'b??010};
+        wildcard ignore_bins end_3 = {5'b??011};
+        wildcard ignore_bins end_4 = {5'b??101};
+        wildcard ignore_bins end_5 = {5'b??110};
+        wildcard ignore_bins end_6 = {5'b??111};
+        wildcard ignore_bins end_7 = {5'b??100};
+    }
+
+    vs2_reg_unaligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard bins odd = {5'b????1};
+    }
+
+    vs2_mod4_2: coverpoint ins.current.insn[21:20] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs2_mod8_4: coverpoint ins.current.insn[22:20] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1 : cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs2_reg_unaligned_lmul_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2 : cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs2_mod4_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul4 : cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs2_mod8_4;
+
+    //// end cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -22684,9 +24215,7 @@ covergroup Vf16_vfwmul_vf_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwmul_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -22802,6 +24331,128 @@ covergroup Vf16_vfwmul_vv_cg with function sample(ins_t ins);
 `endif
 
     //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector widening operations with vv operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_no_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_vd_no_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_vd_no_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b0};
+    }
+
+    vd_all_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins odd = {5'b????1};
+    }
+
+    vd_all_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b???01};
+        wildcard ignore_bins end_2 = {5'b???10};
+        wildcard ignore_bins end_3 = {5'b???11};
+    }
+
+    vd_all_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b??001};
+        wildcard ignore_bins end_2 = {5'b??010};
+        wildcard ignore_bins end_3 = {5'b??011};
+        wildcard ignore_bins end_4 = {5'b??101};
+        wildcard ignore_bins end_5 = {5'b??110};
+        wildcard ignore_bins end_6 = {5'b??111};
+        wildcard ignore_bins end_7 = {5'b??100};
+    }
+
+    vs2_reg_unaligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard bins odd = {5'b????1};
+    }
+
+    vs2_mod4_2: coverpoint ins.current.insn[21:20] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs2_mod8_4: coverpoint ins.current.insn[22:20] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1 : cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs1_vd_no_overlap_lmul1, vs2_reg_unaligned_lmul_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2 : cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs1_vd_no_overlap_lmul2, vs2_mod4_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul4 : cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs1_vd_no_overlap_lmul4, vs2_mod8_4;
+
+    vs1_vd_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_no_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vs1_no_overlap_lmul1: coverpoint (ins.current.insn[24:20] == ins.current.insn[11:7]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_mod4_2: coverpoint ins.current.insn[16:15] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs1_mod8_4: coverpoint ins.current.insn[17:15] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1 : cross std_vec, vtype_lmul_1, vs1_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs2_vd_no_overlap_lmul1, vs2_vs1_no_overlap_lmul1;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul2 : cross std_vec, vtype_lmul_2, vs1_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs2_vd_no_overlap_lmul2, vs1_mod4_2;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul4 : cross std_vec, vtype_lmul_4, vs1_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs2_vd_no_overlap_lmul4, vs1_mod8_4;
+
+    //// end cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -23000,9 +24651,7 @@ covergroup Vf16_vfwmul_vv_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwnmacc_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwnmacc.vf"  iff (ins.trap == 0 )  {
@@ -23305,9 +24954,7 @@ covergroup Vf16_vfwnmacc_vf_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwnmacc_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -23626,9 +25273,7 @@ covergroup Vf16_vfwnmacc_vv_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwnmsac_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwnmsac.vf"  iff (ins.trap == 0 )  {
@@ -23931,9 +25576,7 @@ covergroup Vf16_vfwnmsac_vf_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwnmsac_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -24252,9 +25895,7 @@ covergroup Vf16_vfwnmsac_vv_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwredosum_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -24465,6 +26106,104 @@ covergroup Vf16_vfwredosum_vs_cg with function sample(ins_t ins);
     `endif
 `endif
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_wred
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector reduction widening instructions
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vtype_lmul_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {3};
+    }
+
+    vd_all_reg_unaligned_lmul_2: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins divisible_by_2 = {5'b????0};
+    }
+
+    vd_all_reg_unaligned_lmul_4: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins divisible_by_4 = {5'b???00};
+    }
+
+    vs1_reg_aligned_lmul_2: coverpoint ins.current.insn[19:15] {
+        wildcard bins divisible_by_2 = {5'b????0};
+    }
+
+    vs1_reg_aligned_lmul_4: coverpoint ins.current.insn[19:15] {
+        wildcard bins divisible_by_4 = {5'b???00};
+    }
+
+    vs2_reg_aligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_2 = {5'b????0};
+    }
+
+    vs2_reg_aligned_lmul_4: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_4 = {5'b???00};
+    }
+
+    vd_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
+        wildcard bins divisible_by_2 = {5'b????0};
+    }
+
+    vd_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
+        wildcard bins divisible_by_4 = {5'b???00};
+    }
+
+    vs1_all_reg_unaligned_lmul_2: coverpoint ins.current.insn[19:15] {
+        wildcard ignore_bins divisible_by_2 = {5'b????0};
+    }
+
+    vs1_all_reg_unaligned_lmul_4: coverpoint ins.current.insn[19:15] {
+        wildcard ignore_bins divisible_by_4 = {5'b???00};
+    }
+
+    cp_custom_voffgroup_vd_lmul2:     cross std_vec, vtype_lmul_2, vd_all_reg_unaligned_lmul_2,     vs1_reg_aligned_lmul_2,         vs2_reg_aligned_lmul_2;
+    cp_custom_voffgroup_vd_lmul4:     cross std_vec, vtype_lmul_4, vd_all_reg_unaligned_lmul_4,     vs1_reg_aligned_lmul_4,         vs2_reg_aligned_lmul_4;
+
+    cp_custom_voffgroup_vs1_lmul2:    cross std_vec, vtype_lmul_2, vd_reg_aligned_lmul_2,           vs1_all_reg_unaligned_lmul_2,   vs2_reg_aligned_lmul_2;
+    cp_custom_voffgroup_vs1_lmul4:    cross std_vec, vtype_lmul_4, vd_reg_aligned_lmul_4,           vs1_all_reg_unaligned_lmul_4,   vs2_reg_aligned_lmul_4;
+
+
+    vl_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+        // Any value between max and 1
+        bins one = {1};
+    }
+
+    v0_element0_masked : coverpoint (ins.current.v0_val[0]) {
+        bins one = {1};
+    }
+
+    vd_ne_vs1 : coverpoint (ins.current.insn[19:15] != ins.current.insn[11:7]) {
+        bins target = {1'b1};
+    }
+
+    cp_custom_element0Masked : cross std_vec, vl_one, v0_element0_masked, vd_ne_vs1;
+
+
+    // cp_custom_vreductionw_vd_vs1_emul_16 :      cross std_vec, vtype_lmul_8;
+
+
+    vd_v0: coverpoint ins.current.insn[11:7] {
+        bins zero = {5'b00000};
+    }
+
+    mask_enabled: coverpoint ins.current.insn[25] {
+        bins enabled = {1'b0};
+    }
+
+    cp_custom_vmask_write_v0_masked:    cross std_vec, vd_v0, mask_enabled;
+
+    //// end cp_custom_wred ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -24678,9 +26417,7 @@ covergroup Vf16_vfwredosum_vs_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwredusum_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -24818,6 +26555,104 @@ covergroup Vf16_vfwredusum_vs_cg with function sample(ins_t ins);
 
     //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_wred
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector reduction widening instructions
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vtype_lmul_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {3};
+    }
+
+    vd_all_reg_unaligned_lmul_2: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins divisible_by_2 = {5'b????0};
+    }
+
+    vd_all_reg_unaligned_lmul_4: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins divisible_by_4 = {5'b???00};
+    }
+
+    vs1_reg_aligned_lmul_2: coverpoint ins.current.insn[19:15] {
+        wildcard bins divisible_by_2 = {5'b????0};
+    }
+
+    vs1_reg_aligned_lmul_4: coverpoint ins.current.insn[19:15] {
+        wildcard bins divisible_by_4 = {5'b???00};
+    }
+
+    vs2_reg_aligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_2 = {5'b????0};
+    }
+
+    vs2_reg_aligned_lmul_4: coverpoint ins.current.insn[24:20] {
+        wildcard bins divisible_by_4 = {5'b???00};
+    }
+
+    vd_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
+        wildcard bins divisible_by_2 = {5'b????0};
+    }
+
+    vd_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
+        wildcard bins divisible_by_4 = {5'b???00};
+    }
+
+    vs1_all_reg_unaligned_lmul_2: coverpoint ins.current.insn[19:15] {
+        wildcard ignore_bins divisible_by_2 = {5'b????0};
+    }
+
+    vs1_all_reg_unaligned_lmul_4: coverpoint ins.current.insn[19:15] {
+        wildcard ignore_bins divisible_by_4 = {5'b???00};
+    }
+
+    cp_custom_voffgroup_vd_lmul2:     cross std_vec, vtype_lmul_2, vd_all_reg_unaligned_lmul_2,     vs1_reg_aligned_lmul_2,         vs2_reg_aligned_lmul_2;
+    cp_custom_voffgroup_vd_lmul4:     cross std_vec, vtype_lmul_4, vd_all_reg_unaligned_lmul_4,     vs1_reg_aligned_lmul_4,         vs2_reg_aligned_lmul_4;
+
+    cp_custom_voffgroup_vs1_lmul2:    cross std_vec, vtype_lmul_2, vd_reg_aligned_lmul_2,           vs1_all_reg_unaligned_lmul_2,   vs2_reg_aligned_lmul_2;
+    cp_custom_voffgroup_vs1_lmul4:    cross std_vec, vtype_lmul_4, vd_reg_aligned_lmul_4,           vs1_all_reg_unaligned_lmul_4,   vs2_reg_aligned_lmul_4;
+
+
+    vl_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+        // Any value between max and 1
+        bins one = {1};
+    }
+
+    v0_element0_masked : coverpoint (ins.current.v0_val[0]) {
+        bins one = {1};
+    }
+
+    vd_ne_vs1 : coverpoint (ins.current.insn[19:15] != ins.current.insn[11:7]) {
+        bins target = {1'b1};
+    }
+
+    cp_custom_element0Masked : cross std_vec, vl_one, v0_element0_masked, vd_ne_vs1;
+
+
+    // cp_custom_vreductionw_vd_vs1_emul_16 :      cross std_vec, vtype_lmul_8;
+
+
+    vd_v0: coverpoint ins.current.insn[11:7] {
+        bins zero = {5'b00000};
+    }
+
+    mask_enabled: coverpoint ins.current.insn[25] {
+        bins enabled = {1'b0};
+    }
+
+    cp_custom_vmask_write_v0_masked:    cross std_vec, vd_v0, mask_enabled;
+
+    //// end cp_custom_wred ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -25031,9 +26866,7 @@ covergroup Vf16_vfwredusum_vs_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwsub_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwsub.vf"  iff (ins.trap == 0 )  {
@@ -25141,6 +26974,76 @@ covergroup Vf16_vfwsub_vf_cg with function sample(ins_t ins);
 `endif
 
     //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector widening operations with vx operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vd_all_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins odd = {5'b????1};
+    }
+
+    vd_all_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b???01};
+        wildcard ignore_bins end_2 = {5'b???10};
+        wildcard ignore_bins end_3 = {5'b???11};
+    }
+
+    vd_all_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b??001};
+        wildcard ignore_bins end_2 = {5'b??010};
+        wildcard ignore_bins end_3 = {5'b??011};
+        wildcard ignore_bins end_4 = {5'b??101};
+        wildcard ignore_bins end_5 = {5'b??110};
+        wildcard ignore_bins end_6 = {5'b??111};
+        wildcard ignore_bins end_7 = {5'b??100};
+    }
+
+    vs2_reg_unaligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard bins odd = {5'b????1};
+    }
+
+    vs2_mod4_2: coverpoint ins.current.insn[21:20] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs2_mod8_4: coverpoint ins.current.insn[22:20] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1 : cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs2_reg_unaligned_lmul_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2 : cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs2_mod4_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul4 : cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs2_mod8_4;
+
+    //// end cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
@@ -25333,9 +27236,7 @@ covergroup Vf16_vfwsub_vf_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwsub_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -25453,6 +27354,128 @@ covergroup Vf16_vfwsub_vv_cg with function sample(ins_t ins);
 `endif
 
     //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector widening operations with vv operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_no_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_vd_no_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_vd_no_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b0};
+    }
+
+    vd_all_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins odd = {5'b????1};
+    }
+
+    vd_all_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b???01};
+        wildcard ignore_bins end_2 = {5'b???10};
+        wildcard ignore_bins end_3 = {5'b???11};
+    }
+
+    vd_all_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b??001};
+        wildcard ignore_bins end_2 = {5'b??010};
+        wildcard ignore_bins end_3 = {5'b??011};
+        wildcard ignore_bins end_4 = {5'b??101};
+        wildcard ignore_bins end_5 = {5'b??110};
+        wildcard ignore_bins end_6 = {5'b??111};
+        wildcard ignore_bins end_7 = {5'b??100};
+    }
+
+    vs2_reg_unaligned_lmul_2: coverpoint ins.current.insn[24:20] {
+        wildcard bins odd = {5'b????1};
+    }
+
+    vs2_mod4_2: coverpoint ins.current.insn[21:20] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs2_mod8_4: coverpoint ins.current.insn[22:20] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1 : cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs1_vd_no_overlap_lmul1, vs2_reg_unaligned_lmul_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2 : cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs1_vd_no_overlap_lmul2, vs2_mod4_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul4 : cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs1_vd_no_overlap_lmul4, vs2_mod8_4;
+
+    vs1_vd_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_no_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vs1_no_overlap_lmul1: coverpoint (ins.current.insn[24:20] == ins.current.insn[11:7]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs1_mod4_2: coverpoint ins.current.insn[16:15] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs1_mod8_4: coverpoint ins.current.insn[17:15] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1 : cross std_vec, vtype_lmul_1, vs1_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs2_vd_no_overlap_lmul1, vs2_vs1_no_overlap_lmul1;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul2 : cross std_vec, vtype_lmul_2, vs1_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs2_vd_no_overlap_lmul2, vs1_mod4_2;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul4 : cross std_vec, vtype_lmul_4, vs1_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs2_vd_no_overlap_lmul4, vs1_mod8_4;
+
+    //// end cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -25651,9 +27674,7 @@ covergroup Vf16_vfwsub_vv_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwsub_wf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -25998,9 +28019,7 @@ covergroup Vf16_vfwsub_wf_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Vf16_vfwsub_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -26137,6 +28156,88 @@ covergroup Vf16_vfwsub_wv_cg with function sample(ins_t ins);
 `endif
 
     //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector widening operations with wv operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins one = {0};
+    }
+
+    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {2};
+    }
+
+    vs1_vd_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs1_vd_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_vd_no_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul2: coverpoint (ins.current.insn[24:22] == ins.current.insn[11:9]) {
+        bins overlapping = {1'b0};
+    }
+
+    vs2_vd_no_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b0};
+    }
+
+    vd_all_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins odd = {5'b????1};
+    }
+
+    vd_all_reg_aligned_lmul_4: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b???01};
+        wildcard ignore_bins end_2 = {5'b???10};
+        wildcard ignore_bins end_3 = {5'b???11};
+    }
+
+    vd_all_reg_aligned_lmul_8: coverpoint ins.current.insn[11:7] {
+        wildcard ignore_bins end_1 = {5'b??001};
+        wildcard ignore_bins end_2 = {5'b??010};
+        wildcard ignore_bins end_3 = {5'b??011};
+        wildcard ignore_bins end_4 = {5'b??101};
+        wildcard ignore_bins end_5 = {5'b??110};
+        wildcard ignore_bins end_6 = {5'b??111};
+        wildcard ignore_bins end_7 = {5'b??100};
+    }
+
+    vs1_reg_unaligned_lmul_2: coverpoint ins.current.insn[19:15] {
+        wildcard bins odd = {5'b????1};
+    }
+
+    vs1_mod4_2: coverpoint ins.current.insn[16:15] {
+        bins mod4_2 = {2'b10};
+    }
+
+    vs1_mod8_4: coverpoint ins.current.insn[17:15] {
+        bins mod8_4 = {3'b100};
+    }
+
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1 : cross std_vec, vtype_lmul_1, vs1_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs2_vd_no_overlap_lmul1, vs1_reg_unaligned_lmul_2;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul2 : cross std_vec, vtype_lmul_2, vs1_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs2_vd_no_overlap_lmul2, vs1_mod4_2;
+    cp_custom_allVdOverlapTopVs1_vd_vs1_lmul4 : cross std_vec, vtype_lmul_4, vs1_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs2_vd_no_overlap_lmul4, vs1_mod8_4;
+
+    //// end cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1/2/4 ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -26351,7 +28452,6 @@ covergroup Vf16_vfwsub_wv_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
 covergroup Vf16_vmfeq_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
@@ -29241,41 +31341,27 @@ function void vf16_sample(int hart, int issue, ins_t ins);
             "vfmv.v.f"     : begin
                 Vf16_vfmv_v_f_cg.sample(ins);
             end
-        `ifndef ELEN16
             "vfncvt.f.x.w"     : begin
                 Vf16_vfncvt_f_x_w_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfncvt.f.xu.w"     : begin
                 Vf16_vfncvt_f_xu_w_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfncvt.rod.f.f.w"     : begin
                 Vf16_vfncvt_rod_f_f_w_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfncvt.rtz.x.f.w"     : begin
                 Vf16_vfncvt_rtz_x_f_w_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfncvt.rtz.xu.f.w"     : begin
                 Vf16_vfncvt_rtz_xu_f_w_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfncvt.x.f.w"     : begin
                 Vf16_vfncvt_x_f_w_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfncvt.xu.f.w"     : begin
                 Vf16_vfncvt_xu_f_w_cg.sample(ins);
             end
-        `endif
             "vfnmacc.vf"     : begin
                 Vf16_vfnmacc_vf_cg.sample(ins);
             end
@@ -29357,141 +31443,87 @@ function void vf16_sample(int hart, int issue, ins_t ins);
             "vfsub.vv"     : begin
                 Vf16_vfsub_vv_cg.sample(ins);
             end
-        `ifndef ELEN16
             "vfwadd.vf"     : begin
                 Vf16_vfwadd_vf_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwadd.vv"     : begin
                 Vf16_vfwadd_vv_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwadd.wf"     : begin
                 Vf16_vfwadd_wf_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwadd.wv"     : begin
                 Vf16_vfwadd_wv_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwcvt.f.f.v"     : begin
                 Vf16_vfwcvt_f_f_v_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwcvt.f.x.v"     : begin
                 Vf16_vfwcvt_f_x_v_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwcvt.f.xu.v"     : begin
                 Vf16_vfwcvt_f_xu_v_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwcvt.rtz.x.f.v"     : begin
                 Vf16_vfwcvt_rtz_x_f_v_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwcvt.rtz.xu.f.v"     : begin
                 Vf16_vfwcvt_rtz_xu_f_v_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwcvt.x.f.v"     : begin
                 Vf16_vfwcvt_x_f_v_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwcvt.xu.f.v"     : begin
                 Vf16_vfwcvt_xu_f_v_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwmacc.vf"     : begin
                 Vf16_vfwmacc_vf_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwmacc.vv"     : begin
                 Vf16_vfwmacc_vv_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwmsac.vf"     : begin
                 Vf16_vfwmsac_vf_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwmsac.vv"     : begin
                 Vf16_vfwmsac_vv_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwmul.vf"     : begin
                 Vf16_vfwmul_vf_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwmul.vv"     : begin
                 Vf16_vfwmul_vv_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwnmacc.vf"     : begin
                 Vf16_vfwnmacc_vf_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwnmacc.vv"     : begin
                 Vf16_vfwnmacc_vv_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwnmsac.vf"     : begin
                 Vf16_vfwnmsac_vf_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwnmsac.vv"     : begin
                 Vf16_vfwnmsac_vv_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwredosum.vs"     : begin
                 Vf16_vfwredosum_vs_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwredusum.vs"     : begin
                 Vf16_vfwredusum_vs_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwsub.vf"     : begin
                 Vf16_vfwsub_vf_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwsub.vv"     : begin
                 Vf16_vfwsub_vv_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwsub.wf"     : begin
                 Vf16_vfwsub_wf_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwsub.wv"     : begin
                 Vf16_vfwsub_wv_cg.sample(ins);
             end
-        `endif
             "vmfeq.vf"     : begin
                 Vf16_vmfeq_vf_cg.sample(ins);
             end

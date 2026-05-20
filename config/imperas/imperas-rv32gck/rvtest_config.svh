@@ -8,10 +8,10 @@
 // Define XLEN, used in covergroups
 `define XLEN32
 `define FLEN128
-`define VLEN1024
+`define VLEN512
 
 // Maximum supported index EEW for indexed load/store
-`define MAXINDEXEEW64
+`define MAXINDEXEEW32
 
 // PMP Grain (G)
 // Set G as needed (e.g., 0, 1, 2, ...)
@@ -49,6 +49,11 @@
 `define ZICBOZ_SUPPORTED
 `define ZICBOM_SUPPORTED
 `define ZICBOP_SUPPORTED
+`define ZICFILP_SUPPORTED
+`define ZICFISS_SUPPORTED
+`define S_SUPPORTED
+`define SMSTATEEN_SUPPORTED
+`define SSSTATEEN_SUPPORTED
 
 `define COUNTINHIBIT_EN_0
 `define COUNTINHIBIT_EN_2

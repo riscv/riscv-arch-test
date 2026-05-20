@@ -190,6 +190,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |SmV|Vector CSRs|<<t-SmV-coverpoints>>|||o|o|x
 |SmVF|Vector FP CSRs|<<t-SmVF-coverpoints>>|||o|o|x
 |UV|User Vector CSRs|<<t-UV-coverpoints>>|||o|o|x
+|MisalignV|Vector Misalignment|<<t-MisalignV-coverpoints>>|||o|o|o
 |SsstrictV|Vector Strict|<<t-SsstrictV-coverpoints>>|||o|o|o
 8+^|Hypervisor
 |H|Hypervisor Instructions|<<t-H-coverpoints>>|||o|o|x

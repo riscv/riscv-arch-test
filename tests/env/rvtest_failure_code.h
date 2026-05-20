@@ -508,7 +508,7 @@
         # --------------------------------------------------
         # Save failing instruction, address and vd
         # --------------------------------------------------
-    #if __riscv_xlen == 64
+    #if (UDB_MXLEN == 64)
         lwu x6, 0(DEFAULT_LINK_REG)      # load lower 32 bits of instruction address
         lw  x7, 4(DEFAULT_LINK_REG)      # load upper 32 bits
         slli x7, x7, 32
@@ -754,7 +754,7 @@
         //--------------------------------------------------------------
         // Load the failure string pointer from the embedded data
         //--------------------------------------------------------------
-    #if __riscv_xlen == 64
+    #if (UDB_MXLEN == 64)
         lwu x6, REGWIDTH(DEFAULT_LINK_REG)
         lw  x7, REGWIDTH+4(DEFAULT_LINK_REG)
         slli x7, x7, 32
@@ -768,7 +768,7 @@
         //--------------------------------------------------------------
         // Load the address of the failing check (instruction pointer)
         //--------------------------------------------------------------
-    #if __riscv_xlen == 64
+    #if (UDB_MXLEN == 64)
         lwu x6, 0(DEFAULT_LINK_REG)
         lw  x7, 4(DEFAULT_LINK_REG)
         slli x7, x7, 32
@@ -1070,12 +1070,12 @@
 
 
     failedtest_saveresults_common:
-        # After the jal instruction there are two XLEN-sized pointers: the instruction address and the test string pointer
+        # After the jal instruction there are two UDB_MXLEN-sized pointers: the instruction address and the test string pointer
         # The jal returns to DEFAULT_LINK_REG, which points to the data after jal  (i.e., the first pointer itself)
 
         # Save failing address (loaded from embedded instruction pointer after jal)
         # Only guaranteed to be 4-byte aligned, so need to load in 4-byte chunks on rv64
-    #if __riscv_xlen == 64
+    #if (UDB_MXLEN == 64)
         lwu x6, 0(DEFAULT_LINK_REG)      # load lower 32 bits of instruction address
         lw  x7, 4(DEFAULT_LINK_REG)      # load upper 32 bits
         slli x7, x7, 32
@@ -1099,7 +1099,7 @@
 
         # Get pointer to failure string (loaded from second embedded pointer after jal)
         # Only guaranteed to be 4-byte aligned, so need to load in 4-byte chunks on rv64
-    #if __riscv_xlen == 64
+    #if (UDB_MXLEN == 64)
         lwu x6, REGWIDTH(DEFAULT_LINK_REG)       # load lower 32 bits of string pointer
         lw  x7, REGWIDTH+4(DEFAULT_LINK_REG)      # load upper 32 bits
         slli x7, x7, 32
@@ -1144,11 +1144,11 @@
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
 
-        # Print failing address (XLEN-bit)
+        # Print failing address (UDB_MXLEN-bit)
         LA(a0, addrstr)
         call rvmodel_io_write_str
         LREG a0, failing_addr
-        li a1, __riscv_xlen
+        li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -1235,7 +1235,7 @@
         LA(a0, vlstr)
         call rvmodel_io_write_str
         LREG a0, failing_vl
-        li a1, __riscv_xlen
+        li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -1244,7 +1244,7 @@
         LA(a0, vtypestr)
         call rvmodel_io_write_str
         LREG a0, failing_vtype
-        li a1, __riscv_xlen
+        li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -1253,7 +1253,7 @@
         LA(a0, badvalstr)
         call rvmodel_io_write_str
         lw t0, failing_sew_bits
-        li t1, __riscv_xlen
+        li t1, UDB_MXLEN
         ble t0, t1, failing_value_normal_print
         # 64-bit case on RV32
         la t0, failing_value   # load address of failing_value
@@ -1273,7 +1273,7 @@
         LA(a0, expvalstr)
         call rvmodel_io_write_str
         lw t0, failing_sew_bits
-        li t1, __riscv_xlen
+        li t1, UDB_MXLEN
         ble t0, t1, expected_value_normal_print
         # 64-bit case on RV32
         la t0, expected_value   # load address of expected_value
@@ -1350,21 +1350,21 @@
         li a1, 1
         bne a0, a1, failedtest_report_badval_not_fp
     #if defined(F_SUPPORTED) && CONFIG_FLEN > UDB_MXLEN
-        # FP with CONFIG_FLEN > XLEN: combined hex "0xUPPER_LOWER"
+        # FP with CONFIG_FLEN > UDB_MXLEN: combined hex "0xUPPER_LOWER"
         LREG a0, failing_value_upper
         LREG a1, failing_value
         jal failedtest_combined_hex_to_str
     #else
-        # FP with CONFIG_FLEN <= XLEN (or CONFIG_FLEN not defined): standard hex
+        # FP with CONFIG_FLEN <= UDB_MXLEN (or CONFIG_FLEN not defined): standard hex
         LREG a0, failing_value
-        li a1, __riscv_xlen
+        li a1, UDB_MXLEN
         jal failedtest_hex_to_str
     #endif
         j failedtest_report_badval_done
     failedtest_report_badval_not_fp:
-        # Integer or fflags: standard XLEN-bit hex
+        # Integer or fflags: standard UDB_MXLEN-bit hex
         LREG a0, failing_value
-        li a1, __riscv_xlen
+        li a1, UDB_MXLEN
         jal failedtest_hex_to_str
     failedtest_report_badval_done:
         LA(a0, ascii_buffer)
@@ -1377,21 +1377,21 @@
         li a1, 1
         bne a0, a1, failedtest_report_expval_not_fp
     #if defined(F_SUPPORTED) && CONFIG_FLEN > UDB_MXLEN
-        # FP with CONFIG_FLEN > XLEN: combined hex "0xUPPER_LOWER"
+        # FP with CONFIG_FLEN > UDB_MXLEN: combined hex "0xUPPER_LOWER"
         LREG a0, expected_value_upper
         LREG a1, expected_value
         jal failedtest_combined_hex_to_str
     #else
-        # FP with CONFIG_FLEN <= XLEN (or CONFIG_FLEN not defined): standard hex
+        # FP with CONFIG_FLEN <= UDB_MXLEN (or CONFIG_FLEN not defined): standard hex
         LREG a0, expected_value
-        li a1, __riscv_xlen
+        li a1, UDB_MXLEN
         jal failedtest_hex_to_str
     #endif
         j failedtest_report_expval_done
     failedtest_report_expval_not_fp:
-        # Integer or fflags: standard XLEN-bit hex
+        # Integer or fflags: standard UDB_MXLEN-bit hex
         LREG a0, expected_value
-        li a1, __riscv_xlen
+        li a1, UDB_MXLEN
         jal failedtest_hex_to_str
     failedtest_report_expval_done:
         LA(a0, ascii_buffer)
@@ -1450,7 +1450,7 @@
         LA(a0, trap_diag_expected_offset_str)
         call rvmodel_io_write_str
         LREG a0, trap_diag_expected_offset
-        li a1, __riscv_xlen
+        li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -1459,7 +1459,7 @@
         LA(a0, trap_diag_actual_offset_str)
         call rvmodel_io_write_str
         LREG a0, trap_diag_actual_offset
-        li a1, __riscv_xlen
+        li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -1486,7 +1486,7 @@
         LREG x6, trap_diag_actual_offset
         LREG x7, trap_diag_expected_offset
         sub a0, x6, x7
-        li a1, __riscv_xlen
+        li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -1505,7 +1505,7 @@
         LREG x6, trap_diag_expected_offset
         LREG x7, trap_diag_actual_offset
         sub a0, x6, x7
-        li a1, __riscv_xlen
+        li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -1597,7 +1597,7 @@
         LA(a0, trap_diag_expected_str)
         call rvmodel_io_write_str
         LREG a0, trap_diag_expected_value
-        li a1, __riscv_xlen
+        li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -1606,7 +1606,7 @@
         LA(a0, trap_diag_actual_str)
         call rvmodel_io_write_str
         LREG a0, trap_diag_actual_value
-        li a1, __riscv_xlen
+        li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -1642,7 +1642,7 @@
         LA(a0, trap_diag_curr_xepc_str)
         call rvmodel_io_write_str
         csrr a0, mepc
-        li a1, __riscv_xlen
+        li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -1699,7 +1699,7 @@
         LA(a0, xepcstr)
         call rvmodel_io_write_str
         csrr a0, mepc
-        li a1, __riscv_xlen
+        li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -1746,7 +1746,7 @@
         // Index into exception name pointer table
         la a1, trap_excpt_name_tbl
         slli a2, a0, 2                           # cause * 4 (pointer size on RV32)
-    #if __riscv_xlen == 64
+    #if (UDB_MXLEN == 64)
         slli a2, a0, 3                           # cause * 8 (pointer size on RV64)
     #endif
         add a1, a1, a2
@@ -1756,14 +1756,14 @@
     trap_cause_interrupt:
         // Interrupt causes (MSB=1), mask off MSB
         li a1, 1
-        slli a1, a1, (XLEN-1)
+        slli a1, a1, (UDB_MXLEN-1)
         xor a0, a0, a1                           # clear MSB to get cause number
         li a1, 16                                # max known interrupt cause
         bge a0, a1, trap_cause_unknown
 
         la a1, trap_int_name_tbl
         slli a2, a0, 2
-    #if __riscv_xlen == 64
+    #if (UDB_MXLEN == 64)
         slli a2, a0, 3
     #endif
         add a1, a1, a2
@@ -1847,9 +1847,9 @@
 
 
 #if defined(F_SUPPORTED) && CONFIG_FLEN > UDB_MXLEN || defined(RVTEST_VECTOR)
-    # Convert two XLEN-wide values to combined hex string: "0xUPPER_LOWER\n\0"
-    # a0: upper XLEN-bit value
-    # a1: lower XLEN-bit value
+    # Convert two UDB_MXLEN-wide values to combined hex string: "0xUPPER_LOWER\n\0"
+    # a0: upper UDB_MXLEN-bit value
+    # a1: lower UDB_MXLEN-bit value
     failedtest_combined_hex_to_str:
         LA(a2, ascii_buffer)     # buffer pointer
         LI(a3, '0')
@@ -1858,7 +1858,7 @@
         sb a3, 1(a2)
         addi a2, a2, 2          # past "0x"
         # Convert upper half nibbles
-        li a3, __riscv_xlen
+        li a3, UDB_MXLEN
     failedtest_combined_upper_loop:
         addi a3, a3, -4
         srl a4, a0, a3
@@ -1875,7 +1875,7 @@
         bnez a3, failedtest_combined_upper_loop
         # Convert lower half nibbles
         mv a0, a1
-        li a3, __riscv_xlen
+        li a3, UDB_MXLEN
     failedtest_combined_lower_loop:
         addi a3, a3, -4
         srl a4, a0, a3

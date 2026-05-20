@@ -1,0 +1,14 @@
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_vmv8r_reg_align
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // vmv8r.v (simm=7): both vd and vs2 must be divisible by 8
+    simm_vmv8r_align: coverpoint ins.current.insn[19:15] {
+        bins nreg8 = {5'b00111};
+    }
+
+    // Both vd and vs2 unaligned for vmv8r.v
+    cp_ssstrictv_vmv8r_both_unaligned: cross std_trap_vec, simm_vmv8r_align, vd_all_reg_unaligned_lmul_8, vs2_all_reg_unaligned_lmul_8;
+
+//// end cp_ssstrictv_vmv8r_reg_align /////////////////////////////////////////////////////////////

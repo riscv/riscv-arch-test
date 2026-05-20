@@ -1,9 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 [tools]
-prek = "0.3.11"
+prek = "0.4.0"
 ruby = "3.4.9"
-uv = "0.11.8"
+uv = "0.11.14"
+"gem:bundler" = "4.0.11"
 
 [settings.ruby]
 compile = false

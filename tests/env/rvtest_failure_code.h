@@ -427,8 +427,8 @@
 
   #if defined(F_SUPPORTED) || defined(ZFINX_SUPPORTED)
     failedtest_saveresults_fflags:
-        # Re-read fcsr for bad value (hasn't changed since failure)
-        csrr x6, fcsr
+        # Re-read fflags for bad value (hasn't changed since failure).
+        csrr x6, fflags
         SREG x6, 272(DEFAULT_TEMP_REG)    # failing_value
 
         # Extract load instruction at -12 for expected value (same approach as integer)
@@ -719,7 +719,6 @@
 
 #endif // RVTEST_VECTOR
 
-
     failedtest_saveresults_common:
         # After the jal instruction there are two XLEN-sized pointers: the instruction address and the test string pointer
         # The jal returns to DEFAULT_LINK_REG, which points to the data after jal  (i.e., the first pointer itself)
@@ -775,6 +774,11 @@
       print_newline_str:
         LA(a0, newlinestr)
         call rvmodel_io_write_str
+
+        # Trap abort sentinel: skip instruction/address/register/value fields
+        LREG a0, failing_value
+        LI(a1, 0xBAD0DEAD)
+        beq a0, a1, failedtest_report_traphandler
 
         # Print failing instruction (detect 16-bit compressed vs 32-bit)
         LA(a0, inststr)
@@ -1288,13 +1292,13 @@
     trap_sig_offset_mismatch:
         .string "\"Mismatch in trap signature pointer offset! The test likely observed an incorrect number of traps.\"";
     sv_Mvect_str:
-        .string "\"Mismatch in trap vector signature! Trap was being handled in M-Mode.\"";
+        .string "\"Mismatch in trap signature! Trap was being handled in M-Mode.\"";
     sv_Svect_str:
-        .string "\"Mismatch in trap vector signature! Trap was being handled in S-Mode.\"";
+        .string "\"Mismatch in trap signature! Trap was being handled in S-Mode.\"";
     sv_Hvect_str:
-        .string "\"Mismatch in trap vector signature! Trap was being handled in HS-Mode.\"";
+        .string "\"Mismatch in trap signature! Trap was being handled in HS-Mode.\"";
     sv_Vvect_str:
-        .string "\"Mismatch in trap vector signature! Trap was being handled in VS-Mode.\"";
+        .string "\"Mismatch in trap signature! Trap was being handled in VS-Mode.\"";
     sv_Mcause_str:
         .string "\"Mismatch in mcause value! Trap was being handled in M-Mode.\"";
     sv_Scause_str:

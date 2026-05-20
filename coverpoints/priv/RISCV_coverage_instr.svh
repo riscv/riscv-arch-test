@@ -245,8 +245,8 @@
     amocas_odd : coverpoint ins.current.insn {
         wildcard bins amocas_d_odd_rd  = {32'b00101????????????_011_????1_0101111};
         wildcard bins amocas_q_odd_rd  = {32'b00101????????????_100_????1_0101111};
-        wildcard bins amocas_d_odd_rs1 = {32'b00101???????????1_011_?????_0101111};
-        wildcard bins amocas_q_odd_rs1 = {32'b00101???????????1_100_?????_0101111};
+        wildcard bins amocas_d_odd_rs2 = {32'b00101??????1?????_011_?????_0101111};
+        wildcard bins amocas_q_odd_rs2 = {32'b00101??????1?????_100_?????_0101111};
     }
 
     // fadd with dynamic rounding mode is reserved for frm = 5, 6, 7
@@ -254,8 +254,3 @@
                     iff (ins.current.insn[6:0] == 7'b1010011 & ins.current.insn[31:27] == 5'b00000 & ins.current.insn[14:12] == 3'b111) {
         // check all bins
     }
-
-    // *** TODO add all misa_ext_disable tests to all versions of Ssstrict
-
-    // `ifdef MUTABLE_MISA_A
-    // `end

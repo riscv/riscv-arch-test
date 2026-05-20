@@ -2,7 +2,6 @@
 // cp_ssstrictv_ls_idx_emul_lt_f8
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // Index EMUL = (index_EEW / SEW) * LMUL < 1/8 (reserved) for indexed load/store
     vtype_width_idx_emul_lt_f8 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],

@@ -220,6 +220,7 @@ def _emit_vector_init(lines: list[str]) -> None:
     lines.append("\tvsetivli x0, 0, e8, m1, ta, ma")
     lines.append("")
 
+
 def emit_raw_words(
     lines: list[str],
     comment: str,

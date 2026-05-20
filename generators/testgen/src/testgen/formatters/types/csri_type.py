@@ -19,6 +19,9 @@ csri_config = InstructionTypeConfig(
 
 def zicsr_acccess_setup(rs2: int) -> str:
     """Helper to initialize CSR or sample 'before' counter value."""
+    # Use writable unprivileged extension CSRs if any exist,
+    # else use mepc if U is not supported
+    # else use instret (which is not writable, but at least can be accessed)
     return (
         "#if defined(F_SUPPORTED)\n"
         f"csrrw x0, fflags, x{rs2}\n"

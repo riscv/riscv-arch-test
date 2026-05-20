@@ -16,6 +16,9 @@ csr_config = InstructionTypeConfig(required_params={"rd", "rs1", "rs1val", "rs2"
 
 def zicsr_acccess_setup(rs2: int) -> str:
     """Helper to initialize CSR or sample 'before' counter value."""
+    # Use writable unprivileged extension CSRs if any exist,
+    # else use mepc if U is not supported
+    # else use instret (which is not writable, but at least can be accessed)
     return (
         "#if defined(F_SUPPORTED)\n"
         f"csrrw x0, fflags, x{rs2}\n"
@@ -72,7 +75,6 @@ def format_csr_type(
         if scratch_reg is None:
             raise RuntimeError("Allocator returned non-unique registers violating contract.")
 
-        # Generate Assembly Sections
         setup = [
             load_int_reg("rs1", params.rs1, params.rs1val, test_data),
             load_int_reg("temp reg", params.rs2, params.rs2val, test_data),
@@ -116,6 +118,5 @@ def format_csr_type(
         return (setup, test, check)
 
     finally:
-        # Explicit clean-up directly back to the active pool allocator state
         if allocated:
             test_data.int_regs.return_registers(allocated)

@@ -216,8 +216,9 @@ def _emit_vector_init(lines: list[str]) -> None:
     lines.append("\t# Enable vector extension: mstatus.VS = 11 (Initial/Dirty)")
     lines.append("\tli t2, 0x00000600  # VS field bitmask [14:13]")
     lines.append("\tcsrs mstatus, t2")
+    lines.append("\t# Set vl=0 so valid vector loads/stores are no-ops")
+    lines.append("\tvsetivli x0, 0, e8, m1, ta, ma")
     lines.append("")
-
 
 def emit_raw_words(
     lines: list[str],

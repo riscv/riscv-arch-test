@@ -59,7 +59,7 @@ params:
   # C params
   MUTABLE_MISA_C: false
   # B params
-  MUTABLE_MISA_B: true
+  MUTABLE_MISA_B: false
   # Zicntr params
   TIME_CSR_IMPLEMENTED: true
   # U params
@@ -155,7 +155,7 @@ params:
   REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
   MTVAL_WIDTH: 64
   CONFIG_PTR_ADDRESS: 0
-  PMA_GRANULARITY: 3
+  PMA_GRANULARITY: 12
   PHYS_ADDR_WIDTH: 56
   M_MODE_ENDIANNESS: little
   MISA_CSR_IMPLEMENTED: true

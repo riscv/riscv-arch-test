@@ -12,6 +12,13 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_EXCEPTIONSVF64
+`define COVER_EXCEPTIONSVFCUSTOM64
+`ifdef ELEN64
+    `define SEW_64_EQ_ELEN
+`endif
+`ifdef ELEN128
+    `define SEW_64_EQ_ELEN_DIV_2
+`endif
 covergroup ExceptionsVf64_vfadd_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -10375,8 +10382,12 @@ covergroup ExceptionsVf64_vmfne_vv_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 function void exceptionsvf64_sample(int hart, int issue, ins_t ins);
-
-    case (traceDataQ[hart][issue][0].inst_name)
+    // Want to sample only if the SEW matches the target SEW of the file, some tests require
+    // testing when vill is set, if vill=1 all other vtype bits are set to 0 so there is no
+    // associated sew with these tests
+    if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3 ||
+        get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
+        case (traceDataQ[hart][issue][0].inst_name)
         "vfadd.vf"     : begin
             ExceptionsVf64_vfadd_vf_cg.sample(ins);
         end
@@ -10575,5 +10586,6 @@ function void exceptionsvf64_sample(int hart, int issue, ins_t ins);
         "vmfne.vv"     : begin
             ExceptionsVf64_vmfne_vv_cg.sample(ins);
         end
-    endcase
+        endcase
+    end
 endfunction

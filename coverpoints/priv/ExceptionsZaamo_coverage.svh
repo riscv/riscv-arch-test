@@ -26,6 +26,7 @@ covergroup ExceptionsZaamo_cg with function sample(ins_t ins);
         wildcard bins amomin_w  = {AMOMIN_W};
         wildcard bins amominu_w = {AMOMINU_W};
         wildcard bins amocas_w  = {AMOCAS_W};
+        wildcard bins amocas_d  = {AMOCAS_D};
         `ifdef XLEN64
             wildcard bins amoswap_d = {AMOSWAP_D};
             wildcard bins amoadd_d  = {AMOADD_D};
@@ -36,7 +37,6 @@ covergroup ExceptionsZaamo_cg with function sample(ins_t ins);
             wildcard bins amomaxu_d = {AMOMAXU_D};
             wildcard bins amomin_d  = {AMOMIN_D};
             wildcard bins amominu_d = {AMOMINU_D};
-            wildcard bins amocas_d  = {AMOCAS_D};
             wildcard bins amocas_q  = {AMOCAS_Q};
         `endif
         `ifdef ZABHA_SUPPORTED

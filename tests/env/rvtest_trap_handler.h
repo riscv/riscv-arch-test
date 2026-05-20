@@ -1726,7 +1726,8 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 
 \__MODE__\()clr_Mext_int:               // int11 default to just return after saving IntID in T3
         RVMODEL_CLR_MEXT_INT(T2, T5)
-        TRAP_SIGUPD(T4, T3, 3, \__MODE__\()clr_Mext_int, \__MODE__\()clr_Mext_int_str)  // Save intID
+        // TRAP_SIGUPD(T4, T3, 3, \__MODE__\()clr_Mext_int, \__MODE__\()clr_Mext_int_str)  // Save intID
+        // removed because cause mepc might be different across different DUTs
         j       resto_\__MODE__\()rtn
 
 //------------- [H]SMode----------------

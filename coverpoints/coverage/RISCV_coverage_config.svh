@@ -176,11 +176,17 @@
 `ifdef SMVF_COVERAGE
   `include "SmVF_coverage.svh"
 `endif
+`ifdef SMSTATEEN_COVERAGE
+  `include "Smstateen_coverage.svh"
+`endif
 `ifdef SSCCPTR_COVERAGE
   `include "Ssccptr_coverage.svh"
 `endif
 `ifdef SSCOUNTERENW_COVERAGE
   `include "Sscounterenw_coverage.svh"
+`endif
+`ifdef SSSTATEEN_COVERAGE
+  `include "Ssstateen_coverage.svh"
 `endif
 `ifdef SSSTRICTS_COVERAGE
   `include "SsstrictS_coverage.svh"

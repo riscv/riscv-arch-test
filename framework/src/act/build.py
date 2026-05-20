@@ -78,6 +78,7 @@ class BuildTask:
     action: BuildAction
     extra_inputs: tuple[Path, ...] = ()  # Source files not produced by other tasks (for staleness check)
     deps: tuple[Path, ...] = ()  # Primary output paths of predecessor BuildTasks
+    label: str | None = None  # Human-readable name for failure messages (defaults to outputs[0].stem)
 
     @property
     def name(self) -> str:
@@ -228,6 +229,7 @@ def build(
     keep_going: bool = False,
     dry_run: bool = False,
     verbose: bool = False,
+    phase_label: str = "Building",
 ) -> BuildResult:
     """Execute a DAG of build tasks using TopologicalSorter + ThreadPoolExecutor.
 
@@ -237,6 +239,8 @@ def build(
         keep_going: If True, continue building independent tasks after a failure.
         dry_run: If True, print what would be built without executing.
         verbose: If True, print each command as it is issued.
+        phase_label: Label shown in the transient progress widget (e.g.
+            "Building", "Preparing DUT configs"). Trailing "..." is appended.
 
     Returns:
         BuildResult with counts and any errors.
@@ -304,14 +308,14 @@ def build(
 
     progress = Progress(
         SpinnerColumn(),
-        TextColumn("[cyan]Building..."),
+        TextColumn(f"[cyan]{phase_label}..."),
         BarColumn(),
         MofNCompleteColumn(),
         TaskProgressColumn(),
         TextColumn("elapsed:"),
         TimeElapsedColumn(),
     )
-    progress_task = progress.add_task("Building", total=len(tasks))
+    progress_task = progress.add_task(phase_label, total=len(tasks))
 
     with (
         Live(Group(progress, status_text), console=progress.console, transient=True) as live,
@@ -407,7 +411,7 @@ def _print_failure(console: Console, task: BuildTask, error: BuildError, verbose
     """
     max_output_lines = 30
     primary = task.outputs[0]
-    short_name = primary.stem  # e.g., "I-add-00.sig" -> "I-add-00"
+    short_name = task.label or primary.stem  # e.g., "I-add-00.sig" -> "I-add-00"
 
     console.print()  # blank line separator
     console.print(f"[bold red]✗ FAILED:[/] [bold]{short_name}[/]", soft_wrap=True, highlight=False)

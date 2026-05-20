@@ -4,6 +4,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 #include "rvtest_config.h"
+#undef H_SUPPORTED // TODO: Remove this once Sail supports Hypervisor
+#include "derived_config.h"
 #include "encoding.h"
 #include "utils.h"
 #include "rvmodel_macros.h"

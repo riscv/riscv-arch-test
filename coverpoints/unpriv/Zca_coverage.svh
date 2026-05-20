@@ -30,7 +30,7 @@ covergroup Zca_c_add_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -69,7 +69,7 @@ covergroup Zca_c_add_cg with function sample(ins_t ins);
     }
 
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -126,7 +126,7 @@ covergroup Zca_c_addi_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -229,7 +229,7 @@ covergroup Zca_c_and_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -267,7 +267,7 @@ covergroup Zca_c_and_cg with function sample(ins_t ins);
     }
 
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -318,7 +318,7 @@ covergroup Zca_c_andi_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -390,7 +390,7 @@ covergroup Zca_c_beqz_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -443,7 +443,7 @@ covergroup Zca_c_bnez_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -708,7 +708,7 @@ covergroup Zca_c_mv_cg with function sample(ins_t ins);
     }
 
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -775,7 +775,7 @@ covergroup Zca_c_or_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -813,7 +813,7 @@ covergroup Zca_c_or_cg with function sample(ins_t ins);
     }
 
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -864,7 +864,7 @@ covergroup Zca_c_slli_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -903,7 +903,7 @@ covergroup Zca_c_slli_cg with function sample(ins_t ins);
     }
 
     cp_uimm : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
-        bins uimm[] = {[1:`XLEN - 1]}; // 5/6 bit immediates, skip 0
+        bins uimm[] = {[1:`UDB_MXLEN - 1]}; // 5/6 bit immediates, skip 0
     }
 
     cp_imm_edges_c : coverpoint unsigned'(ins.current.imm[5:0])  iff (ins.trap == 0 )  {
@@ -918,7 +918,7 @@ covergroup Zca_c_slli_cg with function sample(ins_t ins);
         bins b_17 = {17};
         bins b_30 = {30};
         bins b_31 = {31};
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             bins b_32 = {32};
             bins b_33 = {33};
             bins b_48 = {48};
@@ -940,7 +940,7 @@ covergroup Zca_c_srai_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -978,7 +978,7 @@ covergroup Zca_c_srai_cg with function sample(ins_t ins);
     }
 
     cp_uimm : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
-        bins uimm[] = {[1:`XLEN - 1]}; // 5/6 bit immediates, skip 0
+        bins uimm[] = {[1:`UDB_MXLEN - 1]}; // 5/6 bit immediates, skip 0
     }
 
     cp_imm_edges_c : coverpoint unsigned'(ins.current.imm[5:0])  iff (ins.trap == 0 )  {
@@ -993,7 +993,7 @@ covergroup Zca_c_srai_cg with function sample(ins_t ins);
         bins b_17 = {17};
         bins b_30 = {30};
         bins b_31 = {31};
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             bins b_32 = {32};
             bins b_33 = {33};
             bins b_48 = {48};
@@ -1015,7 +1015,7 @@ covergroup Zca_c_srli_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -1053,7 +1053,7 @@ covergroup Zca_c_srli_cg with function sample(ins_t ins);
     }
 
     cp_uimm : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
-        bins uimm[] = {[1:`XLEN - 1]}; // 5/6 bit immediates, skip 0
+        bins uimm[] = {[1:`UDB_MXLEN - 1]}; // 5/6 bit immediates, skip 0
     }
 
     cp_imm_edges_c : coverpoint unsigned'(ins.current.imm[5:0])  iff (ins.trap == 0 )  {
@@ -1068,7 +1068,7 @@ covergroup Zca_c_srli_cg with function sample(ins_t ins);
         bins b_17 = {17};
         bins b_30 = {30};
         bins b_31 = {31};
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             bins b_32 = {32};
             bins b_33 = {33};
             bins b_48 = {48};
@@ -1094,7 +1094,7 @@ covergroup Zca_c_sub_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -1132,7 +1132,7 @@ covergroup Zca_c_sub_cg with function sample(ins_t ins);
     }
 
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -1192,7 +1192,7 @@ covergroup Zca_c_sw_cg with function sample(ins_t ins);
     }
 
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -1248,7 +1248,7 @@ covergroup Zca_c_swsp_cg with function sample(ins_t ins);
     }
 
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -1295,7 +1295,7 @@ covergroup Zca_c_xor_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -1333,7 +1333,7 @@ covergroup Zca_c_xor_cg with function sample(ins_t ins);
     }
 
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -1376,7 +1376,7 @@ covergroup Zca_c_xor_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
 covergroup Zca_c_jal_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "c.jal"  iff (ins.trap == 0 )  {
@@ -1419,7 +1419,7 @@ covergroup Zca_c_jal_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
 covergroup Zca_c_addiw_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "c.addiw"  iff (ins.trap == 0 )  {
@@ -1428,7 +1428,7 @@ covergroup Zca_c_addiw_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -1499,7 +1499,7 @@ covergroup Zca_c_addw_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -1537,7 +1537,7 @@ covergroup Zca_c_addw_cg with function sample(ins_t ins);
     }
 
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -1642,7 +1642,7 @@ covergroup Zca_c_sd_cg with function sample(ins_t ins);
     }
 
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -1698,7 +1698,7 @@ covergroup Zca_c_sdsp_cg with function sample(ins_t ins);
     }
 
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -1745,7 +1745,7 @@ covergroup Zca_c_subw_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -1783,7 +1783,7 @@ covergroup Zca_c_subw_cg with function sample(ins_t ins);
     }
 
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -1905,12 +1905,12 @@ function void zca_sample(int hart, int issue, ins_t ins);
         "c.xor"     : begin
             Zca_c_xor_cg.sample(ins);
         end
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
         "c.jal"     : begin
             Zca_c_jal_cg.sample(ins);
         end
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
         "c.addiw"     : begin
             Zca_c_addiw_cg.sample(ins);
         end

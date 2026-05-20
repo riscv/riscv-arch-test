@@ -1240,9 +1240,9 @@ def getcovergroups(coverdefdir, coverfiles, xlen):
         ingroup = True
       if (re.search("endgroup", line)):
         ingroup = False
-      if ((not ingroup) and re.search('`ifdef XLEN32', line)):
+      if ((not ingroup) and re.search('`ifdef UDB_MXLEN_32', line)):
         mode = 32
-      if ((not ingroup) and re.search('`ifdef XLEN64', line)):
+      if ((not ingroup) and re.search('`ifdef UDB_MXLEN_64', line)):
         mode = 64
       # only look for coverpoints if we are of the proper xlen
       #print("mode: " + str(mode) + " xlen: " + str(xlen) + " " + line)

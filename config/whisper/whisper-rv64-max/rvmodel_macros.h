@@ -7,6 +7,8 @@
         .align 8; .global fromhost; fromhost: .dword 0;     \
         .popsection;
 
+#define STANDARD_SM_SUPPORTED
+
 ##### STARTUP #####
 
 # Perform boot operations. Can be empty or left undefined unless needed for
@@ -103,6 +105,8 @@
   addi x0, x21, 0; /* whisper uses the hint instruction where "addi x0, x21, imm" sets the value of MIP to value in x21*/\
   mv x21, _R1; /* restore the original value of x21*/
 
+#define CLINT_BASE_ADDRESS 0x02000000
+#define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 #define RVMODEL_SET_MSW_INT(_R1, _R2) \
   mv _R1, x21;     /* saving the value stored in x21 */ \
   csrr _R2, mip;   \

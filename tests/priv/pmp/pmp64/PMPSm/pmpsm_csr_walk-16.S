@@ -29,7 +29,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -65,7 +65,7 @@ main:
     // --- pmpcfg even walking ones, bit 41 ---
 
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
 1:  li t2, (1 << 41)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_101_str)
     .set pmpcfgi, pmpcfgi+2
@@ -74,7 +74,7 @@ main:
     // --- pmpcfg even walking ones, bit 42 ---
 
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
 1:  li t2, (1 << 42)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_102_str)
     .set pmpcfgi, pmpcfgi+2
@@ -83,7 +83,7 @@ main:
     // --- pmpcfg even walking ones, bit 43 ---
 
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
 1:  li t2, (1 << 43)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_103_str)
     .set pmpcfgi, pmpcfgi+2
@@ -92,7 +92,7 @@ main:
     // --- pmpcfg even walking ones, bit 45 ---
 
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
 1:  li t2, (1 << 45)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_104_str)
     .set pmpcfgi, pmpcfgi+2
@@ -101,7 +101,7 @@ main:
     // --- pmpcfg even walking ones, bit 46 ---
 
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
 1:  li t2, (1 << 46)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_105_str)
     .set pmpcfgi, pmpcfgi+2
@@ -110,7 +110,7 @@ main:
     // --- pmpcfg even walking ones, bit 47 ---
 
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
 1:  li t2, (1 << 47)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_106_str)
     .set pmpcfgi, pmpcfgi+2
@@ -130,12 +130,12 @@ test_105_str: .string "\"test: 105; cp: cp_csr_walk_test_105\""
 test_106_str: .string "\"test: 106; cp: cp_csr_walk_test_106\""
 
 .align 12
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jr ra
 
 TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept (1<<(UDB_PMP_GRANULARITY))
     nop
     .endr
 

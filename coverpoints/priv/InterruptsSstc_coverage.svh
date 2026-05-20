@@ -53,7 +53,7 @@ covergroup InterruptsSstc_cg with function sample(ins_t ins);
     mcounteren_tm: coverpoint ins.current.csr[CSR_MCOUNTEREN][1] {
         // autofill 0/1
     }
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         menvcfg_stce: coverpoint ins.current.csr[CSR_MENVCFG][63] {
             // autofill 0/1
         }

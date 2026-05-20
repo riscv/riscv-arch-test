@@ -61,7 +61,7 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
         wildcard bins lhu = {LHU};
         wildcard bins lb  = {LB};
         wildcard bins lbu = {LBU};
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             wildcard bins ld  = {LD};
             wildcard bins lwu = {LWU};
         `endif
@@ -70,7 +70,7 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
         wildcard bins sb = {SB};
         wildcard bins sh = {SH};
         wildcard bins sw = {SW};
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             wildcard bins sd = {SD};
         `endif
     }
@@ -122,14 +122,14 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
         illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
         }
-        illegal_address_priority: coverpoint {{ins.current.imm + ins.current.rs1_val}[XLEN-1:3], 3'b000} {
+        illegal_address_priority: coverpoint {{ins.current.imm + ins.current.rs1_val}[`UDB_MXLEN-1:3], 3'b000} {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
         }
         i_phys_adr_misaligned: coverpoint {ins.current.imm + ins.current.rs1_val}[1:0] {
             bins aligned    = {2'b00};
             bins misaligned = {2'b10};
         }
-        `ifdef XLEN64 // Number of physical address bits is different by XLEN, either 34 or 56
+        `ifdef UDB_MXLEN_64 // Number of physical address bits is different by XLEN, either 34 or 56
             i_phys_address_nonexistent: coverpoint ({{ins.current.imm + ins.current.rs1_val}[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
                 // auto fill 1/0 for the physical address being valid
             }

@@ -10,11 +10,11 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
     Zkne_aes32esi_cg = new(); Zkne_aes32esi_cg.set_inst_name("obj_Zkne_aes32esi");
     Zkne_aes32esmi_cg = new(); Zkne_aes32esmi_cg.set_inst_name("obj_Zkne_aes32esmi");
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     Zkne_aes64es_cg = new(); Zkne_aes64es_cg.set_inst_name("obj_Zkne_aes64es");
     Zkne_aes64esm_cg = new(); Zkne_aes64esm_cg.set_inst_name("obj_Zkne_aes64esm");
     Zkne_aes64ks1i_cg = new(); Zkne_aes64ks1i_cg.set_inst_name("obj_Zkne_aes64ks1i");

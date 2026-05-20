@@ -42,7 +42,7 @@
 
         cp_custom_vfredosum_NAN_vl0 : cross fp_flags_clear, vtype_prev_vill_clear, vl_zero, vstart_zero, vs1_0_qNAN iff (ins.trap == 0);
 `else
-        `ifdef FLEN64
+        `ifdef D_SUPPORTED
         vs1_0_qNAN : coverpoint
                 (get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val) inside {
                         [64'h7FF8_0000_0000_0000:64'h7FFF_FFFF_FFFF_FFFF]

@@ -38,7 +38,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv39, Zalrsc]
-# MARCH: rv64i_zicsr_zalrsc
+# MARCH: rv64i_zicsr_zifencei_zalrsc
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv39_exceptions_Zalrsc_Umode.S"

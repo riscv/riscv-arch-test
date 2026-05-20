@@ -7,6 +7,8 @@
 
 #define RVMODEL_DATA_SECTION
 
+#define STANDARD_SM_SUPPORTED
+
 ##### STARTUP #####
 //#define RVMODEL_BOOT \
 
@@ -62,7 +64,6 @@
 ##### Interrupt Latency #####
 
 #define RVMODEL_INTERRUPT_LATENCY 10
-#define RVMODEL_MTVEC_ALIGN 8
 
 ##### Machine Timer #####
 

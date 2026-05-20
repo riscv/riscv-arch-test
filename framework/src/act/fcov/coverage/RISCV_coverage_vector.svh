@@ -155,24 +155,24 @@ endfunction
 
 function edge_vs_values_t vs_edges_check_eew_1(`VLEN_BITS val);
   casez (val)
-    {{(`VLEN-1){1'b?}}, {1'b1}}:  return vs_one;
+    {{(`UDB_VLEN-1){1'b?}}, {1'b1}}:  return vs_one;
     default:                      return vs_zero;
   endcase
 endfunction
 
 function edge_vs_values_t vs_edges_check_eew_8(`VLEN_BITS val);
   casez (val)
-    {{(`VLEN-8){1'b?}},         {(8){1'b0}}}:            return vs_zero;
-    {{(`VLEN-8){1'b?}},         {(8-1){1'b0}}, {1'b1}}:  return vs_one;
-    {{(`VLEN-8){1'b?}},         {(8-2){1'b0}}, {2'b10}}: return vs_two;
-    {{(`VLEN-8){1'b?}}, {1'b1}, {(8-1){1'b0}}}:          return vs_min;
-    {{(`VLEN-8){1'b?}}, {1'b1}, {(8-2){1'b0}}, {1'b1}}:  return vs_minp1;
-    {{(`VLEN-8){1'b?}}, {1'b0}, {(8-1){1'b1}}}        :  return vs_max;
-    {{(`VLEN-8){1'b?}}, {1'b0}, {(8-2){1'b1}}, {1'b0}}:  return vs_maxm1;
-    {{(`VLEN-8){1'b?}},         {(8){1'b1}}}:            return vs_ones;
-    {{(`VLEN-8){1'b?}},         {(8-1){1'b1}}, {1'b0}}:  return vs_onesm1;
-    {{(`VLEN-8){1'b?}},         {(8/2){2'b10}}}:         return vs_walkodd;
-    {{(`VLEN-8){1'b?}},         {(8/2){2'b01}}}:         return vs_walkeven;
+    {{(`UDB_VLEN-8){1'b?}},         {(8){1'b0}}}:            return vs_zero;
+    {{(`UDB_VLEN-8){1'b?}},         {(8-1){1'b0}}, {1'b1}}:  return vs_one;
+    {{(`UDB_VLEN-8){1'b?}},         {(8-2){1'b0}}, {2'b10}}: return vs_two;
+    {{(`UDB_VLEN-8){1'b?}}, {1'b1}, {(8-1){1'b0}}}:          return vs_min;
+    {{(`UDB_VLEN-8){1'b?}}, {1'b1}, {(8-2){1'b0}}, {1'b1}}:  return vs_minp1;
+    {{(`UDB_VLEN-8){1'b?}}, {1'b0}, {(8-1){1'b1}}}        :  return vs_max;
+    {{(`UDB_VLEN-8){1'b?}}, {1'b0}, {(8-2){1'b1}}, {1'b0}}:  return vs_maxm1;
+    {{(`UDB_VLEN-8){1'b?}},         {(8){1'b1}}}:            return vs_ones;
+    {{(`UDB_VLEN-8){1'b?}},         {(8-1){1'b1}}, {1'b0}}:  return vs_onesm1;
+    {{(`UDB_VLEN-8){1'b?}},         {(8/2){2'b10}}}:         return vs_walkodd;
+    {{(`UDB_VLEN-8){1'b?}},         {(8/2){2'b01}}}:         return vs_walkeven;
     default:                                             return vs_random;
   endcase
 endfunction
@@ -180,17 +180,17 @@ endfunction
 `ifdef SEW16_SUPPORTED
 function edge_vs_values_t vs_edges_check_eew_16(`VLEN_BITS val);
   casez (val)
-    {{(`VLEN-16){1'b?}},         {(16){1'b0}}}:            return vs_zero;
-    {{(`VLEN-16){1'b?}},         {(16-1){1'b0}}, {1'b1}}:  return vs_one;
-    {{(`VLEN-16){1'b?}},         {(16-2){1'b0}}, {2'b10}}: return vs_two;
-    {{(`VLEN-16){1'b?}}, {1'b1}, {(16-1){1'b0}}}:          return vs_min;
-    {{(`VLEN-16){1'b?}}, {1'b1}, {(16-2){1'b0}}, {1'b1}}:  return vs_minp1;
-    {{(`VLEN-16){1'b?}}, {1'b0}, {(16-1){1'b1}}}        :  return vs_max;
-    {{(`VLEN-16){1'b?}}, {1'b0}, {(16-2){1'b1}}, {1'b0}}:  return vs_maxm1;
-    {{(`VLEN-16){1'b?}},         {(16){1'b1}}}:            return vs_ones;
-    {{(`VLEN-16){1'b?}},         {(16-1){1'b1}}, {1'b0}}:  return vs_onesm1;
-    {{(`VLEN-16){1'b?}},         {(16/2){2'b10}}}:         return vs_walkodd;
-    {{(`VLEN-16){1'b?}},         {(16/2){2'b01}}}:         return vs_walkeven;
+    {{(`UDB_VLEN-16){1'b?}},         {(16){1'b0}}}:            return vs_zero;
+    {{(`UDB_VLEN-16){1'b?}},         {(16-1){1'b0}}, {1'b1}}:  return vs_one;
+    {{(`UDB_VLEN-16){1'b?}},         {(16-2){1'b0}}, {2'b10}}: return vs_two;
+    {{(`UDB_VLEN-16){1'b?}}, {1'b1}, {(16-1){1'b0}}}:          return vs_min;
+    {{(`UDB_VLEN-16){1'b?}}, {1'b1}, {(16-2){1'b0}}, {1'b1}}:  return vs_minp1;
+    {{(`UDB_VLEN-16){1'b?}}, {1'b0}, {(16-1){1'b1}}}        :  return vs_max;
+    {{(`UDB_VLEN-16){1'b?}}, {1'b0}, {(16-2){1'b1}}, {1'b0}}:  return vs_maxm1;
+    {{(`UDB_VLEN-16){1'b?}},         {(16){1'b1}}}:            return vs_ones;
+    {{(`UDB_VLEN-16){1'b?}},         {(16-1){1'b1}}, {1'b0}}:  return vs_onesm1;
+    {{(`UDB_VLEN-16){1'b?}},         {(16/2){2'b10}}}:         return vs_walkodd;
+    {{(`UDB_VLEN-16){1'b?}},         {(16/2){2'b01}}}:         return vs_walkeven;
     default:                                               return vs_random;
   endcase
 endfunction
@@ -198,17 +198,17 @@ endfunction
 `ifdef SEW32_SUPPORTED
 function edge_vs_values_t vs_edges_check_eew_32(`VLEN_BITS val);
   casez (val)
-    {{(`VLEN-32){1'b?}},         {(32){1'b0}}}:            return vs_zero;
-    {{(`VLEN-32){1'b?}},         {(32-1){1'b0}}, {1'b1}}:  return vs_one;
-    {{(`VLEN-32){1'b?}},         {(32-2){1'b0}}, {2'b10}}: return vs_two;
-    {{(`VLEN-32){1'b?}}, {1'b1}, {(32-1){1'b0}}}:          return vs_min;
-    {{(`VLEN-32){1'b?}}, {1'b1}, {(32-2){1'b0}}, {1'b1}}:  return vs_minp1;
-    {{(`VLEN-32){1'b?}}, {1'b0}, {(32-1){1'b1}}}        :  return vs_max;
-    {{(`VLEN-32){1'b?}}, {1'b0}, {(32-2){1'b1}}, {1'b0}}:  return vs_maxm1;
-    {{(`VLEN-32){1'b?}},         {(32){1'b1}}}:            return vs_ones;
-    {{(`VLEN-32){1'b?}},         {(32-1){1'b1}}, {1'b0}}:  return vs_onesm1;
-    {{(`VLEN-32){1'b?}},         {(32/2){2'b10}}}:         return vs_walkodd;
-    {{(`VLEN-32){1'b?}},         {(32/2){2'b01}}}:         return vs_walkeven;
+    {{(`UDB_VLEN-32){1'b?}},         {(32){1'b0}}}:            return vs_zero;
+    {{(`UDB_VLEN-32){1'b?}},         {(32-1){1'b0}}, {1'b1}}:  return vs_one;
+    {{(`UDB_VLEN-32){1'b?}},         {(32-2){1'b0}}, {2'b10}}: return vs_two;
+    {{(`UDB_VLEN-32){1'b?}}, {1'b1}, {(32-1){1'b0}}}:          return vs_min;
+    {{(`UDB_VLEN-32){1'b?}}, {1'b1}, {(32-2){1'b0}}, {1'b1}}:  return vs_minp1;
+    {{(`UDB_VLEN-32){1'b?}}, {1'b0}, {(32-1){1'b1}}}        :  return vs_max;
+    {{(`UDB_VLEN-32){1'b?}}, {1'b0}, {(32-2){1'b1}}, {1'b0}}:  return vs_maxm1;
+    {{(`UDB_VLEN-32){1'b?}},         {(32){1'b1}}}:            return vs_ones;
+    {{(`UDB_VLEN-32){1'b?}},         {(32-1){1'b1}}, {1'b0}}:  return vs_onesm1;
+    {{(`UDB_VLEN-32){1'b?}},         {(32/2){2'b10}}}:         return vs_walkodd;
+    {{(`UDB_VLEN-32){1'b?}},         {(32/2){2'b01}}}:         return vs_walkeven;
     default:                                               return vs_random;
   endcase
 endfunction
@@ -216,17 +216,17 @@ endfunction
 `ifdef SEW64_SUPPORTED
 function edge_vs_values_t vs_edges_check_eew_64(`VLEN_BITS val);
   casez (val)
-    {{(`VLEN-64){1'b?}},         {(64){1'b0}}}:            return vs_zero;
-    {{(`VLEN-64){1'b?}},         {(64-1){1'b0}}, {1'b1}}:  return vs_one;
-    {{(`VLEN-64){1'b?}},         {(64-2){1'b0}}, {2'b10}}: return vs_two;
-    {{(`VLEN-64){1'b?}}, {1'b1}, {(64-1){1'b0}}}:          return vs_min;
-    {{(`VLEN-64){1'b?}}, {1'b1}, {(64-2){1'b0}}, {1'b1}}:  return vs_minp1;
-    {{(`VLEN-64){1'b?}}, {1'b0}, {(64-1){1'b1}}}        :  return vs_max;
-    {{(`VLEN-64){1'b?}}, {1'b0}, {(64-2){1'b1}}, {1'b0}}:  return vs_maxm1;
-    {{(`VLEN-64){1'b?}},         {(64){1'b1}}}:            return vs_ones;
-    {{(`VLEN-64){1'b?}},         {(64-1){1'b1}}, {1'b0}}:  return vs_onesm1;
-    {{(`VLEN-64){1'b?}},         {(64/2){2'b10}}}:         return vs_walkodd;
-    {{(`VLEN-64){1'b?}},         {(64/2){2'b01}}}:         return vs_walkeven;
+    {{(`UDB_VLEN-64){1'b?}},         {(64){1'b0}}}:            return vs_zero;
+    {{(`UDB_VLEN-64){1'b?}},         {(64-1){1'b0}}, {1'b1}}:  return vs_one;
+    {{(`UDB_VLEN-64){1'b?}},         {(64-2){1'b0}}, {2'b10}}: return vs_two;
+    {{(`UDB_VLEN-64){1'b?}}, {1'b1}, {(64-1){1'b0}}}:          return vs_min;
+    {{(`UDB_VLEN-64){1'b?}}, {1'b1}, {(64-2){1'b0}}, {1'b1}}:  return vs_minp1;
+    {{(`UDB_VLEN-64){1'b?}}, {1'b0}, {(64-1){1'b1}}}        :  return vs_max;
+    {{(`UDB_VLEN-64){1'b?}}, {1'b0}, {(64-2){1'b1}}, {1'b0}}:  return vs_maxm1;
+    {{(`UDB_VLEN-64){1'b?}},         {(64){1'b1}}}:            return vs_ones;
+    {{(`UDB_VLEN-64){1'b?}},         {(64-1){1'b1}}, {1'b0}}:  return vs_onesm1;
+    {{(`UDB_VLEN-64){1'b?}},         {(64/2){2'b10}}}:         return vs_walkodd;
+    {{(`UDB_VLEN-64){1'b?}},         {(64/2){2'b01}}}:         return vs_walkeven;
     default:                                               return vs_random;
   endcase
 endfunction
@@ -264,7 +264,7 @@ function edge_vs2_ls_values_t vs2_ls_edges_check (int hart, int issue, `VLEN_BIT
     //  8-bit elements
     //--------------------------------------------------------------
     0: begin : SEW8
-      for (int idx = 1; idx <= `VLEN / 8; ++idx) begin
+      for (int idx = 1; idx <= `UDB_VLEN / 8; ++idx) begin
         logic [7:0] elem = val[idx*8-1 -: 8];
 
         if (signed'(elem) > vlmax*2 | signed'(elem) < -vlmax*2)   all_values_within_range = 1'b0; // if out of range fail coverage
@@ -275,7 +275,7 @@ function edge_vs2_ls_values_t vs2_ls_edges_check (int hart, int issue, `VLEN_BIT
     // 16-bit elements
     //--------------------------------------------------------------
     1: begin : SEW16
-      for (int idx = 1; idx <= `VLEN / 16; ++idx) begin
+      for (int idx = 1; idx <= `UDB_VLEN / 16; ++idx) begin
         logic [15:0] elem = val[idx*16-1 -: 16];
 
         if (signed'(elem) > vlmax*2 | signed'(elem) < -vlmax*2)   all_values_within_range = 1'b0; // if out of range fail coverage
@@ -288,11 +288,11 @@ function edge_vs2_ls_values_t vs2_ls_edges_check (int hart, int issue, `VLEN_BIT
     // 32-bit elements
     //--------------------------------------------------------------
     2: begin : SEW32
-      for (int idx = 1; idx <= `VLEN / 32; ++idx) begin
+      for (int idx = 1; idx <= `UDB_VLEN / 32; ++idx) begin
         logic [31:0] elem = val[idx*32-1 -: 32];
 
         if (signed'(elem) > vlmax*2 | signed'(elem) < -vlmax*2)   all_values_within_range = 1'b0; // if out of range fail coverage
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
         if (signed'(elem) < 0)                                    all_values_within_range = 1'b0; // if element is negative and length is less than XLEN then fail coverage as it will be zero extended instead of treated as signed
         `endif
       end
@@ -301,7 +301,7 @@ function edge_vs2_ls_values_t vs2_ls_edges_check (int hart, int issue, `VLEN_BIT
     // 64-bit elements
     //--------------------------------------------------------------
     3: begin : SEW64
-      for (int idx = 1; idx <= `VLEN / 64; ++idx) begin
+      for (int idx = 1; idx <= `UDB_VLEN / 64; ++idx) begin
         logic [63:0] elem = val[idx*64-1 -: 64];
 
         if (signed'(elem) > vlmax*2 | signed'(elem) < -vlmax*2)   all_values_within_range = 1'b0; // if out of range fail coverage

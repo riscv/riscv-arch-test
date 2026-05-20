@@ -1470,7 +1470,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
 
     if test.startswith(("ExceptionsV", "SsstrictV", "MisalignedV")):
       ext_parts_no_I = ['M', 'V', 'Zicsr']
-      ext_str_no_I = "_M_V_Zicsr"
+      ext_str_no_I = "_M_V_Zicsr_Zifencei"
       # Vector-FP priv suites need scalar/vector FP extensions in -march so the
       # assembler accepts flh/flw/fld and the matching SEW vector-FP ops. Mirror
       # the unpriv vfloat path: F + Zfhmin (+ D when flen>32) for SEW>=16, plus

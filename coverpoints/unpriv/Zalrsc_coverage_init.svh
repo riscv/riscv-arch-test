@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
     Zalrsc_lr_w_cg = new(); Zalrsc_lr_w_cg.set_inst_name("obj_Zalrsc_lr_w");
     Zalrsc_sc_w_cg = new(); Zalrsc_sc_w_cg.set_inst_name("obj_Zalrsc_sc_w");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     Zalrsc_lr_d_cg = new(); Zalrsc_lr_d_cg.set_inst_name("obj_Zalrsc_lr_d");
     Zalrsc_sc_d_cg = new(); Zalrsc_sc_d_cg.set_inst_name("obj_Zalrsc_sc_d");
 `endif

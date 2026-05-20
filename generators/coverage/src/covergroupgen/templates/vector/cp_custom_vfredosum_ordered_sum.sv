@@ -30,7 +30,7 @@
 
     cp_custom_vfredosum_ordered_sum : cross std_vec, vl_ge_2, vs1_0_maxNorm, vs2_0_neg_maxNorm, vtype_lmul_2 iff (ins.trap == 0);
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     // Ordered sum cancellation: (maxNorm + (-maxNorm)) + small = small, not 0
     vs1_0_maxNorm : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val) {
         bins maxNorm = {64'h7FEFFFFFFFFFFFFF};

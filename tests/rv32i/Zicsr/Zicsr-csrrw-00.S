@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zicsr']
 # params:
 #   MXLEN: 32
-# MARCH: rv32i_zicsr
+# MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -47,7 +47,7 @@ RVTEST_BEGIN
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x12, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b0:
@@ -61,7 +61,7 @@ Zicsr_csrrw_cg_cp_rs1_b0:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x11, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -98,7 +98,7 @@ Zicsr_csrrw_cg_cp_rs1_b0:
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Zicsr_csrrw_cg_cp_rs1_b0, Zicsr_csrrw_cg_cp_rs1_b0_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x1)
@@ -114,7 +114,7 @@ Zicsr_csrrw_cg_cp_rs1_b0:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x15, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b1:
@@ -128,7 +128,7 @@ Zicsr_csrrw_cg_cp_rs1_b1:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x20, instret, x1
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -165,7 +165,7 @@ Zicsr_csrrw_cg_cp_rs1_b1:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_b1, Zicsr_csrrw_cg_cp_rs1_b1_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   mv x24, x2 # switch signature pointer register to avoid conflict with test
@@ -182,7 +182,7 @@ Zicsr_csrrw_cg_cp_rs1_b1:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x6, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b2:
@@ -196,7 +196,7 @@ Zicsr_csrrw_cg_cp_rs1_b2:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x23, instret, x2
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -233,7 +233,7 @@ Zicsr_csrrw_cg_cp_rs1_b2:
   # Check if x6 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x24, x5, x4, x6, Zicsr_csrrw_cg_cp_rs1_b2, Zicsr_csrrw_cg_cp_rs1_b2_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   mv x18, x3 # switch data pointer register to avoid conflict with test
@@ -250,7 +250,7 @@ Zicsr_csrrw_cg_cp_rs1_b2:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x9, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b3:
@@ -264,7 +264,7 @@ Zicsr_csrrw_cg_cp_rs1_b3:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x15, instret, x3
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -301,7 +301,7 @@ Zicsr_csrrw_cg_cp_rs1_b3:
   # Check if x9 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x24, x5, x4, x9, Zicsr_csrrw_cg_cp_rs1_b3, Zicsr_csrrw_cg_cp_rs1_b3_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   mv x12, x4 # switch temp register to avoid conflict with test
@@ -319,7 +319,7 @@ Zicsr_csrrw_cg_cp_rs1_b3:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x30, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b4:
@@ -333,7 +333,7 @@ Zicsr_csrrw_cg_cp_rs1_b4:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x31, instret, x4
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -370,7 +370,7 @@ Zicsr_csrrw_cg_cp_rs1_b4:
   # Check if x30 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x24, x13, x12, x30, Zicsr_csrrw_cg_cp_rs1_b4, Zicsr_csrrw_cg_cp_rs1_b4_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x5)
@@ -386,7 +386,7 @@ Zicsr_csrrw_cg_cp_rs1_b4:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x11, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b5:
@@ -400,7 +400,7 @@ Zicsr_csrrw_cg_cp_rs1_b5:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x17, instret, x5
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -437,7 +437,7 @@ Zicsr_csrrw_cg_cp_rs1_b5:
   # Check if x11 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x24, x13, x12, x11, Zicsr_csrrw_cg_cp_rs1_b5, Zicsr_csrrw_cg_cp_rs1_b5_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x6)
@@ -453,7 +453,7 @@ Zicsr_csrrw_cg_cp_rs1_b5:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x30, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b6:
@@ -467,7 +467,7 @@ Zicsr_csrrw_cg_cp_rs1_b6:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x26, instret, x6
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -504,7 +504,7 @@ Zicsr_csrrw_cg_cp_rs1_b6:
   # Check if x30 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x24, x13, x12, x30, Zicsr_csrrw_cg_cp_rs1_b6, Zicsr_csrrw_cg_cp_rs1_b6_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x7)
@@ -520,7 +520,7 @@ Zicsr_csrrw_cg_cp_rs1_b6:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x16, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b7:
@@ -534,7 +534,7 @@ Zicsr_csrrw_cg_cp_rs1_b7:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x30, instret, x7
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -571,7 +571,7 @@ Zicsr_csrrw_cg_cp_rs1_b7:
   # Check if x16 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x24, x13, x12, x16, Zicsr_csrrw_cg_cp_rs1_b7, Zicsr_csrrw_cg_cp_rs1_b7_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x8)
@@ -587,7 +587,7 @@ Zicsr_csrrw_cg_cp_rs1_b7:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x14, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b8:
@@ -601,7 +601,7 @@ Zicsr_csrrw_cg_cp_rs1_b8:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x22, instret, x8
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -638,7 +638,7 @@ Zicsr_csrrw_cg_cp_rs1_b8:
   # Check if x14 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x24, x13, x12, x14, Zicsr_csrrw_cg_cp_rs1_b8, Zicsr_csrrw_cg_cp_rs1_b8_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x9)
@@ -654,7 +654,7 @@ Zicsr_csrrw_cg_cp_rs1_b8:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x19, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b9:
@@ -668,7 +668,7 @@ Zicsr_csrrw_cg_cp_rs1_b9:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x2, instret, x9
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -705,7 +705,7 @@ Zicsr_csrrw_cg_cp_rs1_b9:
   # Check if x19 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x24, x13, x12, x19, Zicsr_csrrw_cg_cp_rs1_b9, Zicsr_csrrw_cg_cp_rs1_b9_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x10)
@@ -721,7 +721,7 @@ Zicsr_csrrw_cg_cp_rs1_b9:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x26, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b10:
@@ -735,7 +735,7 @@ Zicsr_csrrw_cg_cp_rs1_b10:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x21, instret, x10
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -772,7 +772,7 @@ Zicsr_csrrw_cg_cp_rs1_b10:
   # Check if x26 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x24, x13, x12, x26, Zicsr_csrrw_cg_cp_rs1_b10, Zicsr_csrrw_cg_cp_rs1_b10_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x11)
@@ -788,7 +788,7 @@ Zicsr_csrrw_cg_cp_rs1_b10:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x28, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b11:
@@ -802,7 +802,7 @@ Zicsr_csrrw_cg_cp_rs1_b11:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x26, instret, x11
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -839,7 +839,7 @@ Zicsr_csrrw_cg_cp_rs1_b11:
   # Check if x28 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x24, x13, x12, x28, Zicsr_csrrw_cg_cp_rs1_b11, Zicsr_csrrw_cg_cp_rs1_b11_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   mv x7, x12 # switch temp register to avoid conflict with test
@@ -857,7 +857,7 @@ Zicsr_csrrw_cg_cp_rs1_b11:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x11, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b12:
@@ -871,7 +871,7 @@ Zicsr_csrrw_cg_cp_rs1_b12:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x27, instret, x12
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -908,7 +908,7 @@ Zicsr_csrrw_cg_cp_rs1_b12:
   # Check if x11 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x11, Zicsr_csrrw_cg_cp_rs1_b12, Zicsr_csrrw_cg_cp_rs1_b12_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x13)
@@ -924,7 +924,7 @@ Zicsr_csrrw_cg_cp_rs1_b12:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x22, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b13:
@@ -938,7 +938,7 @@ Zicsr_csrrw_cg_cp_rs1_b13:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x14, instret, x13
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -975,7 +975,7 @@ Zicsr_csrrw_cg_cp_rs1_b13:
   # Check if x22 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x22, Zicsr_csrrw_cg_cp_rs1_b13, Zicsr_csrrw_cg_cp_rs1_b13_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x14)
@@ -991,7 +991,7 @@ Zicsr_csrrw_cg_cp_rs1_b13:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x16, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b14:
@@ -1005,7 +1005,7 @@ Zicsr_csrrw_cg_cp_rs1_b14:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x4, instret, x14
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -1042,7 +1042,7 @@ Zicsr_csrrw_cg_cp_rs1_b14:
   # Check if x16 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x16, Zicsr_csrrw_cg_cp_rs1_b14, Zicsr_csrrw_cg_cp_rs1_b14_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x15)
@@ -1058,7 +1058,7 @@ Zicsr_csrrw_cg_cp_rs1_b14:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x16, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b15:
@@ -1072,7 +1072,7 @@ Zicsr_csrrw_cg_cp_rs1_b15:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x15
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -1109,7 +1109,7 @@ Zicsr_csrrw_cg_cp_rs1_b15:
   # Check if x16 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x16, Zicsr_csrrw_cg_cp_rs1_b15, Zicsr_csrrw_cg_cp_rs1_b15_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x16)
@@ -1125,7 +1125,7 @@ Zicsr_csrrw_cg_cp_rs1_b15:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x26, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b16:
@@ -1139,7 +1139,7 @@ Zicsr_csrrw_cg_cp_rs1_b16:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x15, instret, x16
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -1176,7 +1176,7 @@ Zicsr_csrrw_cg_cp_rs1_b16:
   # Check if x26 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x26, Zicsr_csrrw_cg_cp_rs1_b16, Zicsr_csrrw_cg_cp_rs1_b16_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x17)
@@ -1192,7 +1192,7 @@ Zicsr_csrrw_cg_cp_rs1_b16:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x4, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b17:
@@ -1206,7 +1206,7 @@ Zicsr_csrrw_cg_cp_rs1_b17:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x30, instret, x17
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -1243,7 +1243,7 @@ Zicsr_csrrw_cg_cp_rs1_b17:
   # Check if x4 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x4, Zicsr_csrrw_cg_cp_rs1_b17, Zicsr_csrrw_cg_cp_rs1_b17_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   mv x3, x18 # switch data pointer register to avoid conflict with test
@@ -1260,7 +1260,7 @@ Zicsr_csrrw_cg_cp_rs1_b17:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x14, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b18:
@@ -1274,7 +1274,7 @@ Zicsr_csrrw_cg_cp_rs1_b18:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x30, instret, x18
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -1311,7 +1311,7 @@ Zicsr_csrrw_cg_cp_rs1_b18:
   # Check if x14 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x14, Zicsr_csrrw_cg_cp_rs1_b18, Zicsr_csrrw_cg_cp_rs1_b18_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x19)
@@ -1327,7 +1327,7 @@ Zicsr_csrrw_cg_cp_rs1_b18:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x23, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b19:
@@ -1341,7 +1341,7 @@ Zicsr_csrrw_cg_cp_rs1_b19:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x18, instret, x19
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -1378,7 +1378,7 @@ Zicsr_csrrw_cg_cp_rs1_b19:
   # Check if x23 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x23, Zicsr_csrrw_cg_cp_rs1_b19, Zicsr_csrrw_cg_cp_rs1_b19_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x20)
@@ -1394,7 +1394,7 @@ Zicsr_csrrw_cg_cp_rs1_b19:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x0, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b20:
@@ -1408,7 +1408,7 @@ Zicsr_csrrw_cg_cp_rs1_b20:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x16, instret, x20
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -1445,7 +1445,7 @@ Zicsr_csrrw_cg_cp_rs1_b20:
   # Check if x0 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x0, Zicsr_csrrw_cg_cp_rs1_b20, Zicsr_csrrw_cg_cp_rs1_b20_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x21)
@@ -1461,7 +1461,7 @@ Zicsr_csrrw_cg_cp_rs1_b20:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x18, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b21:
@@ -1475,7 +1475,7 @@ Zicsr_csrrw_cg_cp_rs1_b21:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x27, instret, x21
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -1512,7 +1512,7 @@ Zicsr_csrrw_cg_cp_rs1_b21:
   # Check if x18 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x18, Zicsr_csrrw_cg_cp_rs1_b21, Zicsr_csrrw_cg_cp_rs1_b21_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x22)
@@ -1528,7 +1528,7 @@ Zicsr_csrrw_cg_cp_rs1_b21:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x11, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b22:
@@ -1542,7 +1542,7 @@ Zicsr_csrrw_cg_cp_rs1_b22:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x4, instret, x22
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -1579,7 +1579,7 @@ Zicsr_csrrw_cg_cp_rs1_b22:
   # Check if x11 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x11, Zicsr_csrrw_cg_cp_rs1_b22, Zicsr_csrrw_cg_cp_rs1_b22_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x23)
@@ -1595,7 +1595,7 @@ Zicsr_csrrw_cg_cp_rs1_b22:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x14, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b23:
@@ -1609,7 +1609,7 @@ Zicsr_csrrw_cg_cp_rs1_b23:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x9, instret, x23
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -1646,7 +1646,7 @@ Zicsr_csrrw_cg_cp_rs1_b23:
   # Check if x14 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x14, Zicsr_csrrw_cg_cp_rs1_b23, Zicsr_csrrw_cg_cp_rs1_b23_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   mv x27, x24 # switch signature pointer register to avoid conflict with test
@@ -1663,7 +1663,7 @@ Zicsr_csrrw_cg_cp_rs1_b23:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x4, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b24:
@@ -1677,7 +1677,7 @@ Zicsr_csrrw_cg_cp_rs1_b24:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x14, instret, x24
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -1714,7 +1714,7 @@ Zicsr_csrrw_cg_cp_rs1_b24:
   # Check if x4 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x27, x8, x7, x4, Zicsr_csrrw_cg_cp_rs1_b24, Zicsr_csrrw_cg_cp_rs1_b24_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x25)
@@ -1730,7 +1730,7 @@ Zicsr_csrrw_cg_cp_rs1_b24:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x13, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b25:
@@ -1744,7 +1744,7 @@ Zicsr_csrrw_cg_cp_rs1_b25:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x30, instret, x25
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -1781,7 +1781,7 @@ Zicsr_csrrw_cg_cp_rs1_b25:
   # Check if x13 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x27, x8, x7, x13, Zicsr_csrrw_cg_cp_rs1_b25, Zicsr_csrrw_cg_cp_rs1_b25_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x26)
@@ -1797,7 +1797,7 @@ Zicsr_csrrw_cg_cp_rs1_b25:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x14, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b26:
@@ -1811,7 +1811,7 @@ Zicsr_csrrw_cg_cp_rs1_b26:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x19, instret, x26
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -1848,7 +1848,7 @@ Zicsr_csrrw_cg_cp_rs1_b26:
   # Check if x14 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x27, x8, x7, x14, Zicsr_csrrw_cg_cp_rs1_b26, Zicsr_csrrw_cg_cp_rs1_b26_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   mv x24, x27 # switch signature pointer register to avoid conflict with test
@@ -1865,7 +1865,7 @@ Zicsr_csrrw_cg_cp_rs1_b26:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x14, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b27:
@@ -1879,7 +1879,7 @@ Zicsr_csrrw_cg_cp_rs1_b27:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x21, instret, x27
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -1916,7 +1916,7 @@ Zicsr_csrrw_cg_cp_rs1_b27:
   # Check if x14 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x14, Zicsr_csrrw_cg_cp_rs1_b27, Zicsr_csrrw_cg_cp_rs1_b27_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x28)
@@ -1932,7 +1932,7 @@ Zicsr_csrrw_cg_cp_rs1_b27:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x16, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b28:
@@ -1946,7 +1946,7 @@ Zicsr_csrrw_cg_cp_rs1_b28:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x19, instret, x28
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -1983,7 +1983,7 @@ Zicsr_csrrw_cg_cp_rs1_b28:
   # Check if x16 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x16, Zicsr_csrrw_cg_cp_rs1_b28, Zicsr_csrrw_cg_cp_rs1_b28_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x29)
@@ -1999,7 +1999,7 @@ Zicsr_csrrw_cg_cp_rs1_b28:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x15, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b29:
@@ -2013,7 +2013,7 @@ Zicsr_csrrw_cg_cp_rs1_b29:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x17, instret, x29
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -2050,7 +2050,7 @@ Zicsr_csrrw_cg_cp_rs1_b29:
   # Check if x15 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x15, Zicsr_csrrw_cg_cp_rs1_b29, Zicsr_csrrw_cg_cp_rs1_b29_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x30)
@@ -2066,7 +2066,7 @@ Zicsr_csrrw_cg_cp_rs1_b29:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x14, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b30:
@@ -2080,7 +2080,7 @@ Zicsr_csrrw_cg_cp_rs1_b30:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x12, instret, x30
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -2117,7 +2117,7 @@ Zicsr_csrrw_cg_cp_rs1_b30:
   # Check if x14 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x14, Zicsr_csrrw_cg_cp_rs1_b30, Zicsr_csrrw_cg_cp_rs1_b30_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x31)
@@ -2133,7 +2133,7 @@ Zicsr_csrrw_cg_cp_rs1_b30:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x0, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_b31:
@@ -2147,7 +2147,7 @@ Zicsr_csrrw_cg_cp_rs1_b31:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x9, instret, x31
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -2184,7 +2184,7 @@ Zicsr_csrrw_cg_cp_rs1_b31:
   # Check if x0 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x0, Zicsr_csrrw_cg_cp_rs1_b31, Zicsr_csrrw_cg_cp_rs1_b31_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 /////////////////////////////////
@@ -2204,7 +2204,7 @@ Zicsr_csrrw_cg_cp_rs1_b31:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x6, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b0:
@@ -2218,7 +2218,7 @@ Zicsr_csrrw_cg_cp_rd_b0:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x13
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -2255,7 +2255,7 @@ Zicsr_csrrw_cg_cp_rd_b0:
   # Check if x6 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x6, Zicsr_csrrw_cg_cp_rd_b0, Zicsr_csrrw_cg_cp_rd_b0_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x1)
@@ -2271,7 +2271,7 @@ Zicsr_csrrw_cg_cp_rd_b0:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x2, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b1:
@@ -2285,7 +2285,7 @@ Zicsr_csrrw_cg_cp_rd_b1:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x1, instret, x14
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -2322,7 +2322,7 @@ Zicsr_csrrw_cg_cp_rd_b1:
   # Check if x2 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x2, Zicsr_csrrw_cg_cp_rd_b1, Zicsr_csrrw_cg_cp_rd_b1_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x2)
@@ -2338,7 +2338,7 @@ Zicsr_csrrw_cg_cp_rd_b1:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x11, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b2:
@@ -2352,7 +2352,7 @@ Zicsr_csrrw_cg_cp_rd_b2:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x2, instret, x14
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -2389,7 +2389,7 @@ Zicsr_csrrw_cg_cp_rd_b2:
   # Check if x11 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x11, Zicsr_csrrw_cg_cp_rd_b2, Zicsr_csrrw_cg_cp_rd_b2_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   mv x1, x3 # switch data pointer register to avoid conflict with test
@@ -2406,7 +2406,7 @@ Zicsr_csrrw_cg_cp_rd_b2:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x6, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b3:
@@ -2420,7 +2420,7 @@ Zicsr_csrrw_cg_cp_rd_b3:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x3, instret, x14
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -2457,7 +2457,7 @@ Zicsr_csrrw_cg_cp_rd_b3:
   # Check if x6 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x6, Zicsr_csrrw_cg_cp_rd_b3, Zicsr_csrrw_cg_cp_rd_b3_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x4)
@@ -2473,7 +2473,7 @@ Zicsr_csrrw_cg_cp_rd_b3:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x2, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b4:
@@ -2487,7 +2487,7 @@ Zicsr_csrrw_cg_cp_rd_b4:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x4, instret, x12
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -2524,7 +2524,7 @@ Zicsr_csrrw_cg_cp_rd_b4:
   # Check if x2 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x2, Zicsr_csrrw_cg_cp_rd_b4, Zicsr_csrrw_cg_cp_rd_b4_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x5)
@@ -2540,7 +2540,7 @@ Zicsr_csrrw_cg_cp_rd_b4:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x2, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b5:
@@ -2554,7 +2554,7 @@ Zicsr_csrrw_cg_cp_rd_b5:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x5, instret, x23
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -2591,7 +2591,7 @@ Zicsr_csrrw_cg_cp_rd_b5:
   # Check if x2 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x2, Zicsr_csrrw_cg_cp_rd_b5, Zicsr_csrrw_cg_cp_rd_b5_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x6)
@@ -2607,7 +2607,7 @@ Zicsr_csrrw_cg_cp_rd_b5:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x18, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b6:
@@ -2621,7 +2621,7 @@ Zicsr_csrrw_cg_cp_rd_b6:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x6, instret, x29
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -2658,7 +2658,7 @@ Zicsr_csrrw_cg_cp_rd_b6:
   # Check if x18 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x24, x8, x7, x18, Zicsr_csrrw_cg_cp_rd_b6, Zicsr_csrrw_cg_cp_rd_b6_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   mv x4, x7 # switch temp register to avoid conflict with test
@@ -2676,7 +2676,7 @@ Zicsr_csrrw_cg_cp_rd_b6:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x23, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b7:
@@ -2690,7 +2690,7 @@ Zicsr_csrrw_cg_cp_rd_b7:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x7, instret, x10
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -2727,7 +2727,7 @@ Zicsr_csrrw_cg_cp_rd_b7:
   # Check if x23 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x24, x5, x4, x23, Zicsr_csrrw_cg_cp_rd_b7, Zicsr_csrrw_cg_cp_rd_b7_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x8)
@@ -2743,7 +2743,7 @@ Zicsr_csrrw_cg_cp_rd_b7:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x21, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b8:
@@ -2757,7 +2757,7 @@ Zicsr_csrrw_cg_cp_rd_b8:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x8, instret, x28
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -2794,7 +2794,7 @@ Zicsr_csrrw_cg_cp_rd_b8:
   # Check if x21 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x24, x5, x4, x21, Zicsr_csrrw_cg_cp_rd_b8, Zicsr_csrrw_cg_cp_rd_b8_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x9)
@@ -2810,7 +2810,7 @@ Zicsr_csrrw_cg_cp_rd_b8:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x0, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b9:
@@ -2824,7 +2824,7 @@ Zicsr_csrrw_cg_cp_rd_b9:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x9, instret, x6
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -2861,7 +2861,7 @@ Zicsr_csrrw_cg_cp_rd_b9:
   # Check if x0 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x24, x5, x4, x0, Zicsr_csrrw_cg_cp_rd_b9, Zicsr_csrrw_cg_cp_rd_b9_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x10)
@@ -2877,7 +2877,7 @@ Zicsr_csrrw_cg_cp_rd_b9:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x13, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b10:
@@ -2891,7 +2891,7 @@ Zicsr_csrrw_cg_cp_rd_b10:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x10, instret, x22
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -2928,7 +2928,7 @@ Zicsr_csrrw_cg_cp_rd_b10:
   # Check if x13 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x24, x5, x4, x13, Zicsr_csrrw_cg_cp_rd_b10, Zicsr_csrrw_cg_cp_rd_b10_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x11)
@@ -2944,7 +2944,7 @@ Zicsr_csrrw_cg_cp_rd_b10:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x23, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b11:
@@ -2958,7 +2958,7 @@ Zicsr_csrrw_cg_cp_rd_b11:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x11, instret, x16
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -2995,7 +2995,7 @@ Zicsr_csrrw_cg_cp_rd_b11:
   # Check if x23 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x24, x5, x4, x23, Zicsr_csrrw_cg_cp_rd_b11, Zicsr_csrrw_cg_cp_rd_b11_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x12)
@@ -3011,7 +3011,7 @@ Zicsr_csrrw_cg_cp_rd_b11:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x10, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b12:
@@ -3025,7 +3025,7 @@ Zicsr_csrrw_cg_cp_rd_b12:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x12, instret, x19
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -3062,7 +3062,7 @@ Zicsr_csrrw_cg_cp_rd_b12:
   # Check if x10 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x24, x5, x4, x10, Zicsr_csrrw_cg_cp_rd_b12, Zicsr_csrrw_cg_cp_rd_b12_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x13)
@@ -3078,7 +3078,7 @@ Zicsr_csrrw_cg_cp_rd_b12:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x30, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b13:
@@ -3092,7 +3092,7 @@ Zicsr_csrrw_cg_cp_rd_b13:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x13, instret, x8
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -3129,7 +3129,7 @@ Zicsr_csrrw_cg_cp_rd_b13:
   # Check if x30 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x24, x5, x4, x30, Zicsr_csrrw_cg_cp_rd_b13, Zicsr_csrrw_cg_cp_rd_b13_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x14)
@@ -3145,7 +3145,7 @@ Zicsr_csrrw_cg_cp_rd_b13:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x20, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b14:
@@ -3159,7 +3159,7 @@ Zicsr_csrrw_cg_cp_rd_b14:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x14, instret, x8
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -3196,7 +3196,7 @@ Zicsr_csrrw_cg_cp_rd_b14:
   # Check if x20 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x24, x5, x4, x20, Zicsr_csrrw_cg_cp_rd_b14, Zicsr_csrrw_cg_cp_rd_b14_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x15)
@@ -3212,7 +3212,7 @@ Zicsr_csrrw_cg_cp_rd_b14:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x11, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b15:
@@ -3226,7 +3226,7 @@ Zicsr_csrrw_cg_cp_rd_b15:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x15, instret, x28
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -3263,7 +3263,7 @@ Zicsr_csrrw_cg_cp_rd_b15:
   # Check if x11 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x24, x5, x4, x11, Zicsr_csrrw_cg_cp_rd_b15, Zicsr_csrrw_cg_cp_rd_b15_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x16)
@@ -3279,7 +3279,7 @@ Zicsr_csrrw_cg_cp_rd_b15:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x15, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b16:
@@ -3293,7 +3293,7 @@ Zicsr_csrrw_cg_cp_rd_b16:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x16, instret, x26
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -3330,7 +3330,7 @@ Zicsr_csrrw_cg_cp_rd_b16:
   # Check if x15 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x24, x5, x4, x15, Zicsr_csrrw_cg_cp_rd_b16, Zicsr_csrrw_cg_cp_rd_b16_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x17)
@@ -3346,7 +3346,7 @@ Zicsr_csrrw_cg_cp_rd_b16:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x30, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b17:
@@ -3360,7 +3360,7 @@ Zicsr_csrrw_cg_cp_rd_b17:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x17, instret, x19
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -3397,7 +3397,7 @@ Zicsr_csrrw_cg_cp_rd_b17:
   # Check if x30 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x24, x5, x4, x30, Zicsr_csrrw_cg_cp_rd_b17, Zicsr_csrrw_cg_cp_rd_b17_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x18)
@@ -3413,7 +3413,7 @@ Zicsr_csrrw_cg_cp_rd_b17:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x25, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b18:
@@ -3427,7 +3427,7 @@ Zicsr_csrrw_cg_cp_rd_b18:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x18, instret, x9
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -3464,7 +3464,7 @@ Zicsr_csrrw_cg_cp_rd_b18:
   # Check if x25 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x24, x5, x4, x25, Zicsr_csrrw_cg_cp_rd_b18, Zicsr_csrrw_cg_cp_rd_b18_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x19)
@@ -3480,7 +3480,7 @@ Zicsr_csrrw_cg_cp_rd_b18:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x7, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b19:
@@ -3494,7 +3494,7 @@ Zicsr_csrrw_cg_cp_rd_b19:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x19, instret, x30
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -3531,7 +3531,7 @@ Zicsr_csrrw_cg_cp_rd_b19:
   # Check if x7 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x24, x5, x4, x7, Zicsr_csrrw_cg_cp_rd_b19, Zicsr_csrrw_cg_cp_rd_b19_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x20)
@@ -3547,7 +3547,7 @@ Zicsr_csrrw_cg_cp_rd_b19:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x23, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b20:
@@ -3561,7 +3561,7 @@ Zicsr_csrrw_cg_cp_rd_b20:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x20, instret, x10
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -3598,7 +3598,7 @@ Zicsr_csrrw_cg_cp_rd_b20:
   # Check if x23 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x24, x5, x4, x23, Zicsr_csrrw_cg_cp_rd_b20, Zicsr_csrrw_cg_cp_rd_b20_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x21)
@@ -3614,7 +3614,7 @@ Zicsr_csrrw_cg_cp_rd_b20:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x31, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b21:
@@ -3628,7 +3628,7 @@ Zicsr_csrrw_cg_cp_rd_b21:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x21, instret, x11
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -3665,7 +3665,7 @@ Zicsr_csrrw_cg_cp_rd_b21:
   # Check if x31 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x24, x5, x4, x31, Zicsr_csrrw_cg_cp_rd_b21, Zicsr_csrrw_cg_cp_rd_b21_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x22)
@@ -3681,7 +3681,7 @@ Zicsr_csrrw_cg_cp_rd_b21:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x6, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b22:
@@ -3695,7 +3695,7 @@ Zicsr_csrrw_cg_cp_rd_b22:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x22, instret, x2
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -3732,7 +3732,7 @@ Zicsr_csrrw_cg_cp_rd_b22:
   # Check if x6 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x24, x5, x4, x6, Zicsr_csrrw_cg_cp_rd_b22, Zicsr_csrrw_cg_cp_rd_b22_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x23)
@@ -3748,7 +3748,7 @@ Zicsr_csrrw_cg_cp_rd_b22:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x27, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b23:
@@ -3762,7 +3762,7 @@ Zicsr_csrrw_cg_cp_rd_b23:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x23, instret, x31
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -3799,7 +3799,7 @@ Zicsr_csrrw_cg_cp_rd_b23:
   # Check if x27 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x24, x5, x4, x27, Zicsr_csrrw_cg_cp_rd_b23, Zicsr_csrrw_cg_cp_rd_b23_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   mv x29, x24 # switch signature pointer register to avoid conflict with test
@@ -3816,7 +3816,7 @@ Zicsr_csrrw_cg_cp_rd_b23:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x28, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b24:
@@ -3830,7 +3830,7 @@ Zicsr_csrrw_cg_cp_rd_b24:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x24, instret, x9
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -3867,7 +3867,7 @@ Zicsr_csrrw_cg_cp_rd_b24:
   # Check if x28 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x28, Zicsr_csrrw_cg_cp_rd_b24, Zicsr_csrrw_cg_cp_rd_b24_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x25)
@@ -3883,7 +3883,7 @@ Zicsr_csrrw_cg_cp_rd_b24:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x9, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b25:
@@ -3897,7 +3897,7 @@ Zicsr_csrrw_cg_cp_rd_b25:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x25, instret, x18
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -3934,7 +3934,7 @@ Zicsr_csrrw_cg_cp_rd_b25:
   # Check if x9 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x9, Zicsr_csrrw_cg_cp_rd_b25, Zicsr_csrrw_cg_cp_rd_b25_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x26)
@@ -3950,7 +3950,7 @@ Zicsr_csrrw_cg_cp_rd_b25:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x22, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b26:
@@ -3964,7 +3964,7 @@ Zicsr_csrrw_cg_cp_rd_b26:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x26, instret, x2
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -4001,7 +4001,7 @@ Zicsr_csrrw_cg_cp_rd_b26:
   # Check if x22 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x22, Zicsr_csrrw_cg_cp_rd_b26, Zicsr_csrrw_cg_cp_rd_b26_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x27)
@@ -4017,7 +4017,7 @@ Zicsr_csrrw_cg_cp_rd_b26:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x17, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b27:
@@ -4031,7 +4031,7 @@ Zicsr_csrrw_cg_cp_rd_b27:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x27, instret, x25
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -4068,7 +4068,7 @@ Zicsr_csrrw_cg_cp_rd_b27:
   # Check if x17 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x17, Zicsr_csrrw_cg_cp_rd_b27, Zicsr_csrrw_cg_cp_rd_b27_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x28)
@@ -4084,7 +4084,7 @@ Zicsr_csrrw_cg_cp_rd_b27:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x27, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b28:
@@ -4098,7 +4098,7 @@ Zicsr_csrrw_cg_cp_rd_b28:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x28, instret, x6
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -4135,7 +4135,7 @@ Zicsr_csrrw_cg_cp_rd_b28:
   # Check if x27 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x29, x5, x4, x27, Zicsr_csrrw_cg_cp_rd_b28, Zicsr_csrrw_cg_cp_rd_b28_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   mv x2, x29 # switch signature pointer register to avoid conflict with test
@@ -4152,7 +4152,7 @@ Zicsr_csrrw_cg_cp_rd_b28:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x25, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b29:
@@ -4166,7 +4166,7 @@ Zicsr_csrrw_cg_cp_rd_b29:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x29, instret, x28
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -4203,7 +4203,7 @@ Zicsr_csrrw_cg_cp_rd_b29:
   # Check if x25 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x25, Zicsr_csrrw_cg_cp_rd_b29, Zicsr_csrrw_cg_cp_rd_b29_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x30)
@@ -4219,7 +4219,7 @@ Zicsr_csrrw_cg_cp_rd_b29:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x18, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b30:
@@ -4233,7 +4233,7 @@ Zicsr_csrrw_cg_cp_rd_b30:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x30, instret, x11
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -4270,7 +4270,7 @@ Zicsr_csrrw_cg_cp_rd_b30:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zicsr_csrrw_cg_cp_rd_b30, Zicsr_csrrw_cg_cp_rd_b30_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x31)
@@ -4286,7 +4286,7 @@ Zicsr_csrrw_cg_cp_rd_b30:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x11, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rd_b31:
@@ -4300,7 +4300,7 @@ Zicsr_csrrw_cg_cp_rd_b31:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x31, instret, x28
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -4337,7 +4337,7 @@ Zicsr_csrrw_cg_cp_rd_b31:
   # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x11, Zicsr_csrrw_cg_cp_rd_b31, Zicsr_csrrw_cg_cp_rd_b31_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 /////////////////////////////////
@@ -4357,7 +4357,7 @@ Zicsr_csrrw_cg_cp_rd_b31:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x21, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_edges_0x0:
@@ -4371,7 +4371,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x0:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x15, instret, x17
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -4408,7 +4408,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x0:
   # Check if x21 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_edges_0x0, Zicsr_csrrw_cg_cp_rs1_edges_0x0_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000001)
@@ -4424,7 +4424,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x0:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x28, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_edges_0x1:
@@ -4438,7 +4438,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x1:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x25, instret, x27
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -4475,7 +4475,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x1:
   # Check if x28 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_edges_0x1, Zicsr_csrrw_cg_cp_rs1_edges_0x1_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000002)
@@ -4491,7 +4491,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x1:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x28, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_edges_0x2:
@@ -4505,7 +4505,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x2:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x14, instret, x24
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -4542,7 +4542,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x2:
   # Check if x28 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_edges_0x2, Zicsr_csrrw_cg_cp_rs1_edges_0x2_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x80000000)
@@ -4558,7 +4558,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x2:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x12, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_edges_0x80000000:
@@ -4572,7 +4572,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x80000000:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x9, instret, x26
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -4609,7 +4609,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x80000000:
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Zicsr_csrrw_cg_cp_rs1_edges_0x80000000, Zicsr_csrrw_cg_cp_rs1_edges_0x80000000_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x80000001)
@@ -4625,7 +4625,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x80000000:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x12, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_edges_0x80000001:
@@ -4639,7 +4639,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x80000001:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x14, instret, x25
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -4676,7 +4676,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x80000001:
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Zicsr_csrrw_cg_cp_rs1_edges_0x80000001, Zicsr_csrrw_cg_cp_rs1_edges_0x80000001_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x7fffffff)
@@ -4692,7 +4692,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x80000001:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x11, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffff:
@@ -4706,7 +4706,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffff:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x16, instret, x9
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -4743,7 +4743,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffff:
   # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x11, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffff, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffff_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x7ffffffe)
@@ -4759,7 +4759,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffff:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x9, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffe:
@@ -4773,7 +4773,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffe:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x29, instret, x30
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -4810,7 +4810,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffe:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffe_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xffffffff)
@@ -4826,7 +4826,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffe:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x9, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff:
@@ -4840,7 +4840,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x12, instret, x7
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -4877,7 +4877,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xfffffffe)
@@ -4893,7 +4893,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x3, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe:
@@ -4907,7 +4907,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x14, instret, x12
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -4944,7 +4944,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe:
   # Check if x3 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x3, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x5bbc8872)
@@ -4960,7 +4960,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x25, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc8872:
@@ -4974,7 +4974,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc8872:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x14, instret, x29
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -5011,7 +5011,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc8872:
   # Check if x25 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc8872, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc8872_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xaaaaaaaa)
@@ -5027,7 +5027,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc8872:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x18, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaa:
@@ -5041,7 +5041,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaa:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x3, instret, x20
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -5078,7 +5078,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaa:
   # Check if x18 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x18, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaa, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaa_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x55555555)
@@ -5094,7 +5094,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaa:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x17, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cp_rs1_edges_0x55555555:
@@ -5108,7 +5108,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x55555555:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x24, instret, x3
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -5145,7 +5145,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x55555555:
   # Check if x17 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x17, Zicsr_csrrw_cg_cp_rs1_edges_0x55555555, Zicsr_csrrw_cg_cp_rs1_edges_0x55555555_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 /////////////////////////////////
@@ -5165,7 +5165,7 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x55555555:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x25, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b0:
@@ -5179,7 +5179,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b0:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x0, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -5216,7 +5216,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b0:
   # Check if x25 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x25, Zicsr_csrrw_cg_cmp_rd_rs1_b0, Zicsr_csrrw_cg_cmp_rd_rs1_b0_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   mv x9, x1 # switch data pointer register to avoid conflict with test
@@ -5233,7 +5233,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b0:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x21, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b1:
@@ -5247,7 +5247,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b1:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x1, instret, x1
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -5284,7 +5284,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b1:
   # Check if x21 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b1, Zicsr_csrrw_cg_cmp_rd_rs1_b1_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   mv x14, x2 # switch signature pointer register to avoid conflict with test
@@ -5301,7 +5301,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b1:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x28, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b2:
@@ -5315,7 +5315,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b2:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x2, instret, x2
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -5352,7 +5352,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b2:
   # Check if x28 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x14, x5, x4, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b2, Zicsr_csrrw_cg_cmp_rd_rs1_b2_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x3)
@@ -5368,7 +5368,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b2:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x7, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b3:
@@ -5382,7 +5382,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b3:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x3, instret, x3
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -5419,7 +5419,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b3:
   # Check if x7 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x14, x5, x4, x7, Zicsr_csrrw_cg_cmp_rd_rs1_b3, Zicsr_csrrw_cg_cmp_rd_rs1_b3_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   mv x12, x4 # switch temp register to avoid conflict with test
@@ -5437,7 +5437,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b3:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x24, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b4:
@@ -5451,7 +5451,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b4:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x4, instret, x4
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -5488,7 +5488,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b4:
   # Check if x24 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x14, x13, x12, x24, Zicsr_csrrw_cg_cmp_rd_rs1_b4, Zicsr_csrrw_cg_cmp_rd_rs1_b4_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x5)
@@ -5504,7 +5504,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b4:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x27, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b5:
@@ -5518,7 +5518,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b5:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x5, instret, x5
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -5555,7 +5555,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b5:
   # Check if x27 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x14, x13, x12, x27, Zicsr_csrrw_cg_cmp_rd_rs1_b5, Zicsr_csrrw_cg_cmp_rd_rs1_b5_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x6)
@@ -5571,7 +5571,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b5:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x26, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b6:
@@ -5585,7 +5585,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b6:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x6, instret, x6
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -5622,7 +5622,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b6:
   # Check if x26 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x14, x13, x12, x26, Zicsr_csrrw_cg_cmp_rd_rs1_b6, Zicsr_csrrw_cg_cmp_rd_rs1_b6_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x7)
@@ -5638,7 +5638,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b6:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x27, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b7:
@@ -5652,7 +5652,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b7:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x7, instret, x7
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -5689,7 +5689,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b7:
   # Check if x27 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x14, x13, x12, x27, Zicsr_csrrw_cg_cmp_rd_rs1_b7, Zicsr_csrrw_cg_cmp_rd_rs1_b7_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x8)
@@ -5705,7 +5705,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b7:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x11, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b8:
@@ -5719,7 +5719,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b8:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x8, instret, x8
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -5756,7 +5756,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b8:
   # Check if x11 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x14, x13, x12, x11, Zicsr_csrrw_cg_cmp_rd_rs1_b8, Zicsr_csrrw_cg_cmp_rd_rs1_b8_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   mv x29, x9 # switch data pointer register to avoid conflict with test
@@ -5773,7 +5773,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b8:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x3, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b9:
@@ -5787,7 +5787,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b9:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x9, instret, x9
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -5824,7 +5824,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b9:
   # Check if x3 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x14, x13, x12, x3, Zicsr_csrrw_cg_cmp_rd_rs1_b9, Zicsr_csrrw_cg_cmp_rd_rs1_b9_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x10)
@@ -5840,7 +5840,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b9:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x7, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b10:
@@ -5854,7 +5854,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b10:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x10, instret, x10
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -5891,7 +5891,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b10:
   # Check if x7 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x14, x13, x12, x7, Zicsr_csrrw_cg_cmp_rd_rs1_b10, Zicsr_csrrw_cg_cmp_rd_rs1_b10_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x11)
@@ -5907,7 +5907,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b10:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x9, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b11:
@@ -5921,7 +5921,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b11:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x11, instret, x11
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -5958,7 +5958,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b11:
   # Check if x9 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
   RVTEST_SIGUPD(x14, x13, x12, x9, Zicsr_csrrw_cg_cmp_rd_rs1_b11, Zicsr_csrrw_cg_cmp_rd_rs1_b11_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   mv x4, x12 # switch temp register to avoid conflict with test
@@ -5976,7 +5976,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b11:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x16, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b12:
@@ -5990,7 +5990,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b12:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x12, instret, x12
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -6027,7 +6027,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b12:
   # Check if x16 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x14, x5, x4, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b12, Zicsr_csrrw_cg_cmp_rd_rs1_b12_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x13)
@@ -6043,7 +6043,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b12:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x28, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b13:
@@ -6057,7 +6057,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b13:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x13, instret, x13
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -6094,7 +6094,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b13:
   # Check if x28 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x14, x5, x4, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b13, Zicsr_csrrw_cg_cmp_rd_rs1_b13_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   mv x21, x14 # switch signature pointer register to avoid conflict with test
@@ -6111,7 +6111,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b13:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x9, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b14:
@@ -6125,7 +6125,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b14:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x14, instret, x14
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -6162,7 +6162,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b14:
   # Check if x9 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x9, Zicsr_csrrw_cg_cmp_rd_rs1_b14, Zicsr_csrrw_cg_cmp_rd_rs1_b14_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x15)
@@ -6178,7 +6178,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b14:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x6, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b15:
@@ -6192,7 +6192,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b15:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x15, instret, x15
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -6229,7 +6229,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b15:
   # Check if x6 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x6, Zicsr_csrrw_cg_cmp_rd_rs1_b15, Zicsr_csrrw_cg_cmp_rd_rs1_b15_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x16)
@@ -6245,7 +6245,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b15:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x20, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b16:
@@ -6259,7 +6259,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b16:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x16, instret, x16
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -6296,7 +6296,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b16:
   # Check if x20 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x20, Zicsr_csrrw_cg_cmp_rd_rs1_b16, Zicsr_csrrw_cg_cmp_rd_rs1_b16_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x17)
@@ -6312,7 +6312,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b16:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x26, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b17:
@@ -6326,7 +6326,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b17:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x17, instret, x17
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -6363,7 +6363,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b17:
   # Check if x26 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x26, Zicsr_csrrw_cg_cmp_rd_rs1_b17, Zicsr_csrrw_cg_cmp_rd_rs1_b17_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x18)
@@ -6379,7 +6379,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b17:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x30, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b18:
@@ -6393,7 +6393,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b18:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x18, instret, x18
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -6430,7 +6430,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b18:
   # Check if x30 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x30, Zicsr_csrrw_cg_cmp_rd_rs1_b18, Zicsr_csrrw_cg_cmp_rd_rs1_b18_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x19)
@@ -6446,7 +6446,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b18:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x0, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b19:
@@ -6460,7 +6460,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b19:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x19, instret, x19
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -6497,7 +6497,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b19:
   # Check if x0 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x0, Zicsr_csrrw_cg_cmp_rd_rs1_b19, Zicsr_csrrw_cg_cmp_rd_rs1_b19_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x20)
@@ -6513,7 +6513,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b19:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x13, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b20:
@@ -6527,7 +6527,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b20:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x20, instret, x20
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -6564,7 +6564,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b20:
   # Check if x13 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x13, Zicsr_csrrw_cg_cmp_rd_rs1_b20, Zicsr_csrrw_cg_cmp_rd_rs1_b20_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   mv x17, x21 # switch signature pointer register to avoid conflict with test
@@ -6581,7 +6581,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b20:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x28, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b21:
@@ -6595,7 +6595,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b21:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x21, instret, x21
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -6632,7 +6632,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b21:
   # Check if x28 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x17, x5, x4, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b21, Zicsr_csrrw_cg_cmp_rd_rs1_b21_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x22)
@@ -6648,7 +6648,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b21:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x19, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b22:
@@ -6662,7 +6662,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b22:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x22, instret, x22
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -6699,7 +6699,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b22:
   # Check if x19 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x17, x5, x4, x19, Zicsr_csrrw_cg_cmp_rd_rs1_b22, Zicsr_csrrw_cg_cmp_rd_rs1_b22_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x23)
@@ -6715,7 +6715,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b22:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x0, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b23:
@@ -6729,7 +6729,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b23:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x23, instret, x23
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -6766,7 +6766,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b23:
   # Check if x0 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x17, x5, x4, x0, Zicsr_csrrw_cg_cmp_rd_rs1_b23, Zicsr_csrrw_cg_cmp_rd_rs1_b23_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x24)
@@ -6782,7 +6782,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b23:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x8, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b24:
@@ -6796,7 +6796,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b24:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x24, instret, x24
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -6833,7 +6833,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b24:
   # Check if x8 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x17, x5, x4, x8, Zicsr_csrrw_cg_cmp_rd_rs1_b24, Zicsr_csrrw_cg_cmp_rd_rs1_b24_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x25)
@@ -6849,7 +6849,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b24:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x9, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b25:
@@ -6863,7 +6863,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b25:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x25, instret, x25
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -6900,7 +6900,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b25:
   # Check if x9 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x17, x5, x4, x9, Zicsr_csrrw_cg_cmp_rd_rs1_b25, Zicsr_csrrw_cg_cmp_rd_rs1_b25_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x26)
@@ -6916,7 +6916,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b25:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x6, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b26:
@@ -6930,7 +6930,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b26:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x26, instret, x26
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -6967,7 +6967,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b26:
   # Check if x6 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x17, x5, x4, x6, Zicsr_csrrw_cg_cmp_rd_rs1_b26, Zicsr_csrrw_cg_cmp_rd_rs1_b26_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x27)
@@ -6983,7 +6983,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b26:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x28, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b27:
@@ -6997,7 +6997,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b27:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x27, instret, x27
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -7034,7 +7034,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b27:
   # Check if x28 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x17, x5, x4, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b27, Zicsr_csrrw_cg_cmp_rd_rs1_b27_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x28)
@@ -7050,7 +7050,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b27:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x6, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b28:
@@ -7064,7 +7064,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b28:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x28, instret, x28
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -7101,7 +7101,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b28:
   # Check if x6 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x17, x5, x4, x6, Zicsr_csrrw_cg_cmp_rd_rs1_b28, Zicsr_csrrw_cg_cmp_rd_rs1_b28_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   mv x18, x29 # switch data pointer register to avoid conflict with test
@@ -7118,7 +7118,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b28:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x20, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b29:
@@ -7132,7 +7132,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b29:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x29, instret, x29
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -7169,7 +7169,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b29:
   # Check if x20 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x17, x5, x4, x20, Zicsr_csrrw_cg_cmp_rd_rs1_b29, Zicsr_csrrw_cg_cmp_rd_rs1_b29_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x30)
@@ -7185,7 +7185,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b29:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x16, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b30:
@@ -7199,7 +7199,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b30:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x30, instret, x30
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -7236,7 +7236,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b30:
   # Check if x16 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x17, x5, x4, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b30, Zicsr_csrrw_cg_cmp_rd_rs1_b30_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x31)
@@ -7252,7 +7252,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b30:
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x20, instret, x0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrw_cg_cmp_rd_rs1_b31:
@@ -7266,7 +7266,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b31:
 #elif defined(ZICNTR_SUPPORTED)
   csrrw x31, instret, x31
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
@@ -7303,7 +7303,7 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b31:
   # Check if x20 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x17, x5, x4, x20, Zicsr_csrrw_cg_cmp_rd_rs1_b31, Zicsr_csrrw_cg_cmp_rd_rs1_b31_str)
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   mv x2, x17 # restore signature pointer to default register for teardown

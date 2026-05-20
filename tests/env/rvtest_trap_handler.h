@@ -112,70 +112,6 @@
 //
 //************************************************************************************
 
-//****WARNING**** Don't put C-style macros (#define xxx) inside assembly macros;
-//               C preprocessor directives are evaluated before the assembler runs.
-
-//==============================================================================
-// SECTION 1: REGISTER ALIASES
-//
-// The ACT4 framework uses a fixed set of register aliases for:
-//   - Signature management:  DEFAULT_SIG_REG (x2) holds the signature pointer
-//   - Data pointer:          DEFAULT_DATA_REG (x3) holds the test data pointer
-//   - Temporaries:           DEFAULT_TEMP_REG (x4), DEFAULT_LINK_REG (x5)
-//   - Handler temporaries:   T1..T6 (x6..x11) — used exclusively by trap handler
-//
-// IMPORTANT: T5 maps to x10 (a0) and T6 maps to x11 (a1). This means:
-//   - Inside the handler, a0/a1 are used as T5/T6 (handler temporaries)
-//   - BEFORE handler entry and AFTER handler exit, a0/a1 are the caller's values
-//   - The T-SBI dispatch reads a0/a1 BEFORE they are overwritten by handler logic
-//     (the dispatch occurs after T5 is loaded with xcause but a0's value is the
-//      caller's a0, not T5, because csrr T5,xcause reads INTO T5=x10=a0)
-//
-// Wait — this needs clarification. T5 IS x10 IS a0. When the handler does
-// "csrr T5, CSR_XCAUSE", it overwrites a0 with xcause. So by the time we
-// reach the T-SBI dispatch, a0 has been destroyed.
-//
-// RESOLUTION: The T-SBI dispatch checks xcause (now in T5/a0) to detect ecalls,
-// then needs the ORIGINAL a0 value. But a0 WAS the caller's SBI opcode... and
-// it's been overwritten by xcause. This means we need to read the caller's a0
-// from somewhere else. The caller's a0 is NOT saved by the handler — it's still
-// in x10 at trap entry, but gets overwritten by csrr T5(=x10), CSR_XCAUSE.
-//
-// ACTUAL SITUATION IN THE ORIGINAL CODE: The original handler's ecall check
-// uses x3 (DEFAULT_DATA_REG), not a0. x3 is NOT one of T1..T6, so it survives
-// the handler's register saves. The T-SBI dispatch also uses a0... but wait:
-//
-// Let me re-examine. T5 = x10 = a0. When common_Xentry does:
-//   csrr T5, CSR_XCAUSE     // This writes xcause into x10, destroying caller's a0
-//
-// So the caller's a0 IS lost. But the original code checks x3, not a0.
-// For T-SBI, we need the caller's a0. We must save it before the csrr.
-//
-// CORRECTION: Looking at the handler flow more carefully:
-//   1. trap_Xhandler stub: csrrw sp, xSCRATCH, sp (swap sp with save area ptr)
-//   2. SREG T6, trap_sv_off+6*REGWIDTH(sp)         (save T6=x11=a1)
-//   3. jal T6, common_Xhandler                     (T6 now has vector addr, jal link)
-//   4. common_Xhandler: SREG T5, trap_sv_off+5*REGWIDTH(sp) (save T5=x10=a0 !!!)
-//   5. csrrw T5, xSCRATCH, sp                      (T5 gets old xSCRATCH, sp restored? No...)
-//   6. SREG T5, trap_sv_off+7*REGWIDTH(sp)          (save old sp)
-//   7. LREG T5, tentry_addr_off(sp)                 (T5 = common entry point)
-//   8. jr T5                                        (jump to common_Xentry)
-//   9. common_Xentry: save T4, T3, T2, T1
-//  10. csrr T5, CSR_XCAUSE                          (T5 = xcause, overwrites x10)
-//
-// So at step 4, the caller's a0 (=T5=x10) IS saved to trap_sv_off+5*REGWIDTH(sp).
-// Then at step 10, T5 is overwritten with xcause.
-// The ORIGINAL caller's a0 is at trap_sv_off+5*REGWIDTH(sp) in the save area!
-//
-// For T-SBI dispatch, we can recover the caller's a0 by loading it back:
-//   LREG T3, trap_sv_off+5*REGWIDTH(sp)  // T3 = caller's original a0
-//
-// Similarly, the caller's a1 (=T6=x11) is saved at trap_sv_off+6*REGWIDTH(sp).
-//
-// This is critical for the T-SBI implementation. The dispatch code must load
-// the caller's a0 from the save area, not read it directly from the a0 register.
-//==============================================================================
-
 #define DEFAULT_SIG_REG  x2                      // signature pointer register
 #define DEFAULT_DATA_REG x3                      // test data pointer register; also used as ecall flag (x3==0 means GOTO_MMODE)
 #define DEFAULT_TEMP_REG x4                      // general temporary for test macros
@@ -2271,7 +2207,6 @@ excpt_\__MODE__\()hndlr_tbl:
 
 \__MODE__\()clr_Mext_int:                            // M-mode external interrupt: clear + save intID
         RVMODEL_CLR_MEXT_INT(T2, T5)
-        TRAP_SIGUPD(T4, T3, 3, \__MODE__\()clr_Mext_int, \__MODE__\()clr_Mext_int_str)
         j       resto_\__MODE__\()rtn
 
 \__MODE__\()clr_Ssw_int:                             // S-mode software interrupt
@@ -2306,7 +2241,6 @@ excpt_\__MODE__\()hndlr_tbl:
 
 \__MODE__\()clr_Sext_int:                            // S-mode external interrupt: clear + save intID
         RVMODEL_CLR_SEXT_INT(T2, T5)
-        TRAP_SIGUPD(T4, T3, 3, \__MODE__\()clr_Sext_int, \__MODE__\()clr_Sext_int_str)
         j       resto_\__MODE__\()rtn
 
 \__MODE__\()clr_Vsw_int:                             // VS-mode software interrupt
@@ -2319,7 +2253,6 @@ excpt_\__MODE__\()hndlr_tbl:
 
 \__MODE__\()clr_Vext_int:                            // VS-mode external interrupt: clear + save intID
         RVMODEL_CLR_VEXT_INT
-        TRAP_SIGUPD(T4, T3, 3, \__MODE__\()clr_Vext_int, \__MODE__\()clr_Vext_int_str)
         j       resto_\__MODE__\()rtn
 
 .popsection                                          // end of .text.rvmodel section

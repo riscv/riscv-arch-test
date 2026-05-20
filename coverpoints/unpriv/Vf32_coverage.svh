@@ -8062,7 +8062,6 @@ covergroup Vf32_vfmv_v_f_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfncvt_f_f_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.f.f.w"  iff (ins.trap == 0 )  {
@@ -8401,9 +8400,7 @@ covergroup Vf32_vfncvt_f_f_w_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfncvt_f_x_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.f.x.w"  iff (ins.trap == 0 )  {
@@ -8684,9 +8681,7 @@ covergroup Vf32_vfncvt_f_x_w_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfncvt_f_xu_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.f.xu.w"  iff (ins.trap == 0 )  {
@@ -8967,9 +8962,7 @@ covergroup Vf32_vfncvt_f_xu_w_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfncvt_rod_f_f_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.rod.f.f.w"  iff (ins.trap == 0 )  {
@@ -9335,9 +9328,7 @@ covergroup Vf32_vfncvt_rod_f_f_w_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfncvt_rtz_x_f_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.rtz.x.f.w"  iff (ins.trap == 0 )  {
@@ -9637,9 +9628,7 @@ covergroup Vf32_vfncvt_rtz_x_f_w_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfncvt_rtz_xu_f_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.rtz.xu.f.w"  iff (ins.trap == 0 )  {
@@ -9939,9 +9928,7 @@ covergroup Vf32_vfncvt_rtz_xu_f_w_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfncvt_x_f_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.x.f.w"  iff (ins.trap == 0 )  {
@@ -10251,9 +10238,7 @@ covergroup Vf32_vfncvt_x_f_w_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfncvt_xu_f_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfncvt.xu.f.w"  iff (ins.trap == 0 )  {
@@ -10563,7 +10548,6 @@ covergroup Vf32_vfncvt_xu_f_w_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
 covergroup Vf32_vfnmacc_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
@@ -18700,7 +18684,6 @@ covergroup Vf32_vfsub_vv_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwadd_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwadd.vf"  iff (ins.trap == 0 )  {
@@ -19067,9 +19050,7 @@ covergroup Vf32_vfwadd_vf_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwadd_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -19504,9 +19485,7 @@ covergroup Vf32_vfwadd_vv_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwadd_wf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -19848,9 +19827,7 @@ covergroup Vf32_vfwadd_wf_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwadd_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -20280,9 +20257,7 @@ covergroup Vf32_vfwadd_wv_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwcvt_f_x_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwcvt.f.x.v"  iff (ins.trap == 0 )  {
@@ -20586,9 +20561,7 @@ covergroup Vf32_vfwcvt_f_x_v_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwcvt_f_xu_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwcvt.f.xu.v"  iff (ins.trap == 0 )  {
@@ -20892,9 +20865,7 @@ covergroup Vf32_vfwcvt_f_xu_v_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwcvt_rtz_x_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwcvt.rtz.x.f.v"  iff (ins.trap == 0 )  {
@@ -21262,9 +21233,7 @@ covergroup Vf32_vfwcvt_rtz_x_f_v_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwcvt.rtz.xu.f.v"  iff (ins.trap == 0 )  {
@@ -21632,9 +21601,7 @@ covergroup Vf32_vfwcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwcvt_x_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwcvt.x.f.v"  iff (ins.trap == 0 )  {
@@ -22012,9 +21979,7 @@ covergroup Vf32_vfwcvt_x_f_v_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwcvt_xu_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwcvt.xu.f.v"  iff (ins.trap == 0 )  {
@@ -22392,9 +22357,7 @@ covergroup Vf32_vfwcvt_xu_f_v_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwmacc_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwmacc.vf"  iff (ins.trap == 0 )  {
@@ -22694,9 +22657,7 @@ covergroup Vf32_vfwmacc_vf_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwmacc_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -23012,9 +22973,7 @@ covergroup Vf32_vfwmacc_vv_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwmsac_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwmsac.vf"  iff (ins.trap == 0 )  {
@@ -23314,9 +23273,7 @@ covergroup Vf32_vfwmsac_vf_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwmsac_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -23632,9 +23589,7 @@ covergroup Vf32_vfwmsac_vv_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwmul_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwmul.vf"  iff (ins.trap == 0 )  {
@@ -23999,9 +23954,7 @@ covergroup Vf32_vfwmul_vf_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwmul_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -24434,9 +24387,7 @@ covergroup Vf32_vfwmul_vv_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwnmacc_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwnmacc.vf"  iff (ins.trap == 0 )  {
@@ -24736,9 +24687,7 @@ covergroup Vf32_vfwnmacc_vf_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwnmacc_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -25054,9 +25003,7 @@ covergroup Vf32_vfwnmacc_vv_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwnmsac_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwnmsac.vf"  iff (ins.trap == 0 )  {
@@ -25356,9 +25303,7 @@ covergroup Vf32_vfwnmsac_vf_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwnmsac_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -25674,9 +25619,7 @@ covergroup Vf32_vfwnmsac_vv_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwredosum_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -26195,9 +26138,7 @@ covergroup Vf32_vfwredosum_vs_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwredusum_vs_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -26643,9 +26584,7 @@ covergroup Vf32_vfwredusum_vs_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwsub_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwsub.vf"  iff (ins.trap == 0 )  {
@@ -27012,9 +26951,7 @@ covergroup Vf32_vfwsub_vf_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwsub_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -27449,9 +27386,7 @@ covergroup Vf32_vfwsub_vv_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwsub_wf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -27793,9 +27728,7 @@ covergroup Vf32_vfwsub_wf_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef UDB_ELEN_32
 covergroup Vf32_vfwsub_wv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -28225,7 +28158,6 @@ covergroup Vf32_vfwsub_wv_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
 covergroup Vf32_vmfeq_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
@@ -31085,46 +31017,30 @@ function void vf32_sample(int hart, int issue, ins_t ins);
             "vfmv.v.f"     : begin
                 Vf32_vfmv_v_f_cg.sample(ins);
             end
-        `ifndef UDB_ELEN_32
             "vfncvt.f.f.w"     : begin
                 Vf32_vfncvt_f_f_w_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfncvt.f.x.w"     : begin
                 Vf32_vfncvt_f_x_w_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfncvt.f.xu.w"     : begin
                 Vf32_vfncvt_f_xu_w_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfncvt.rod.f.f.w"     : begin
                 Vf32_vfncvt_rod_f_f_w_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfncvt.rtz.x.f.w"     : begin
                 Vf32_vfncvt_rtz_x_f_w_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfncvt.rtz.xu.f.w"     : begin
                 Vf32_vfncvt_rtz_xu_f_w_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfncvt.x.f.w"     : begin
                 Vf32_vfncvt_x_f_w_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfncvt.xu.f.w"     : begin
                 Vf32_vfncvt_xu_f_w_cg.sample(ins);
             end
-        `endif
             "vfnmacc.vf"     : begin
                 Vf32_vfnmacc_vf_cg.sample(ins);
             end
@@ -31206,136 +31122,84 @@ function void vf32_sample(int hart, int issue, ins_t ins);
             "vfsub.vv"     : begin
                 Vf32_vfsub_vv_cg.sample(ins);
             end
-        `ifndef UDB_ELEN_32
             "vfwadd.vf"     : begin
                 Vf32_vfwadd_vf_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwadd.vv"     : begin
                 Vf32_vfwadd_vv_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwadd.wf"     : begin
                 Vf32_vfwadd_wf_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwadd.wv"     : begin
                 Vf32_vfwadd_wv_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwcvt.f.x.v"     : begin
                 Vf32_vfwcvt_f_x_v_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwcvt.f.xu.v"     : begin
                 Vf32_vfwcvt_f_xu_v_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwcvt.rtz.x.f.v"     : begin
                 Vf32_vfwcvt_rtz_x_f_v_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwcvt.rtz.xu.f.v"     : begin
                 Vf32_vfwcvt_rtz_xu_f_v_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwcvt.x.f.v"     : begin
                 Vf32_vfwcvt_x_f_v_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwcvt.xu.f.v"     : begin
                 Vf32_vfwcvt_xu_f_v_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwmacc.vf"     : begin
                 Vf32_vfwmacc_vf_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwmacc.vv"     : begin
                 Vf32_vfwmacc_vv_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwmsac.vf"     : begin
                 Vf32_vfwmsac_vf_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwmsac.vv"     : begin
                 Vf32_vfwmsac_vv_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwmul.vf"     : begin
                 Vf32_vfwmul_vf_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwmul.vv"     : begin
                 Vf32_vfwmul_vv_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwnmacc.vf"     : begin
                 Vf32_vfwnmacc_vf_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwnmacc.vv"     : begin
                 Vf32_vfwnmacc_vv_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwnmsac.vf"     : begin
                 Vf32_vfwnmsac_vf_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwnmsac.vv"     : begin
                 Vf32_vfwnmsac_vv_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwredosum.vs"     : begin
                 Vf32_vfwredosum_vs_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwredusum.vs"     : begin
                 Vf32_vfwredusum_vs_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwsub.vf"     : begin
                 Vf32_vfwsub_vf_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwsub.vv"     : begin
                 Vf32_vfwsub_vv_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwsub.wf"     : begin
                 Vf32_vfwsub_wf_cg.sample(ins);
             end
-        `endif
-        `ifndef UDB_ELEN_32
             "vfwsub.wv"     : begin
                 Vf32_vfwsub_wv_cg.sample(ins);
             end
-        `endif
             "vmfeq.vf"     : begin
                 Vf32_vmfeq_vf_cg.sample(ins);
             end

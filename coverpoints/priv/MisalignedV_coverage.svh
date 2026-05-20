@@ -827,6 +827,7 @@ covergroup MisalignedV_vloxei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vloxei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -856,6 +857,7 @@ covergroup MisalignedV_vloxei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vloxei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -943,6 +945,7 @@ covergroup MisalignedV_vloxseg2ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vloxseg2ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -972,6 +975,7 @@ covergroup MisalignedV_vloxseg2ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vloxseg2ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1059,6 +1063,7 @@ covergroup MisalignedV_vloxseg3ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vloxseg3ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1088,6 +1093,7 @@ covergroup MisalignedV_vloxseg3ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vloxseg3ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1175,6 +1181,7 @@ covergroup MisalignedV_vloxseg4ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vloxseg4ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1204,6 +1211,7 @@ covergroup MisalignedV_vloxseg4ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vloxseg4ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1291,6 +1299,7 @@ covergroup MisalignedV_vloxseg5ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vloxseg5ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1320,6 +1329,7 @@ covergroup MisalignedV_vloxseg5ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vloxseg5ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1407,6 +1417,7 @@ covergroup MisalignedV_vloxseg6ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vloxseg6ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1436,6 +1447,7 @@ covergroup MisalignedV_vloxseg6ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vloxseg6ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1523,6 +1535,7 @@ covergroup MisalignedV_vloxseg7ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vloxseg7ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1552,6 +1565,7 @@ covergroup MisalignedV_vloxseg7ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vloxseg7ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1639,6 +1653,7 @@ covergroup MisalignedV_vloxseg8ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vloxseg8ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1668,6 +1683,7 @@ covergroup MisalignedV_vloxseg8ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vloxseg8ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4307,6 +4323,7 @@ covergroup MisalignedV_vluxei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vluxei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4336,6 +4353,7 @@ covergroup MisalignedV_vluxei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vluxei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4423,6 +4441,7 @@ covergroup MisalignedV_vluxseg2ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vluxseg2ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4452,6 +4471,7 @@ covergroup MisalignedV_vluxseg2ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vluxseg2ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4539,6 +4559,7 @@ covergroup MisalignedV_vluxseg3ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vluxseg3ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4568,6 +4589,7 @@ covergroup MisalignedV_vluxseg3ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vluxseg3ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4655,6 +4677,7 @@ covergroup MisalignedV_vluxseg4ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vluxseg4ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4684,6 +4707,7 @@ covergroup MisalignedV_vluxseg4ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vluxseg4ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4771,6 +4795,7 @@ covergroup MisalignedV_vluxseg5ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vluxseg5ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4800,6 +4825,7 @@ covergroup MisalignedV_vluxseg5ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vluxseg5ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4887,6 +4913,7 @@ covergroup MisalignedV_vluxseg6ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vluxseg6ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4916,6 +4943,7 @@ covergroup MisalignedV_vluxseg6ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vluxseg6ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5003,6 +5031,7 @@ covergroup MisalignedV_vluxseg7ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vluxseg7ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5032,6 +5061,7 @@ covergroup MisalignedV_vluxseg7ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vluxseg7ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5119,6 +5149,7 @@ covergroup MisalignedV_vluxseg8ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vluxseg8ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5148,6 +5179,7 @@ covergroup MisalignedV_vluxseg8ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vluxseg8ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5604,6 +5636,7 @@ covergroup MisalignedV_vsoxei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vsoxei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5633,6 +5666,7 @@ covergroup MisalignedV_vsoxei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vsoxei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5720,6 +5754,7 @@ covergroup MisalignedV_vsoxseg2ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vsoxseg2ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5749,6 +5784,7 @@ covergroup MisalignedV_vsoxseg2ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vsoxseg2ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5836,6 +5872,7 @@ covergroup MisalignedV_vsoxseg3ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vsoxseg3ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5865,6 +5902,7 @@ covergroup MisalignedV_vsoxseg3ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vsoxseg3ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5952,6 +5990,7 @@ covergroup MisalignedV_vsoxseg4ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vsoxseg4ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5981,6 +6020,7 @@ covergroup MisalignedV_vsoxseg4ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vsoxseg4ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6068,6 +6108,7 @@ covergroup MisalignedV_vsoxseg5ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vsoxseg5ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6097,6 +6138,7 @@ covergroup MisalignedV_vsoxseg5ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vsoxseg5ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6184,6 +6226,7 @@ covergroup MisalignedV_vsoxseg6ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vsoxseg6ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6213,6 +6256,7 @@ covergroup MisalignedV_vsoxseg6ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vsoxseg6ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6300,6 +6344,7 @@ covergroup MisalignedV_vsoxseg7ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vsoxseg7ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6329,6 +6374,7 @@ covergroup MisalignedV_vsoxseg7ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vsoxseg7ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6416,6 +6462,7 @@ covergroup MisalignedV_vsoxseg8ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vsoxseg8ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6445,6 +6492,7 @@ covergroup MisalignedV_vsoxseg8ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vsoxseg8ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8272,6 +8320,7 @@ covergroup MisalignedV_vsuxei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vsuxei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8301,6 +8350,7 @@ covergroup MisalignedV_vsuxei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vsuxei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8388,6 +8438,7 @@ covergroup MisalignedV_vsuxseg2ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vsuxseg2ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8417,6 +8468,7 @@ covergroup MisalignedV_vsuxseg2ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vsuxseg2ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8504,6 +8556,7 @@ covergroup MisalignedV_vsuxseg3ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vsuxseg3ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8533,6 +8586,7 @@ covergroup MisalignedV_vsuxseg3ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vsuxseg3ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8620,6 +8674,7 @@ covergroup MisalignedV_vsuxseg4ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vsuxseg4ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8649,6 +8704,7 @@ covergroup MisalignedV_vsuxseg4ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vsuxseg4ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8736,6 +8792,7 @@ covergroup MisalignedV_vsuxseg5ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vsuxseg5ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8765,6 +8822,7 @@ covergroup MisalignedV_vsuxseg5ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vsuxseg5ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8852,6 +8910,7 @@ covergroup MisalignedV_vsuxseg6ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vsuxseg6ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8881,6 +8940,7 @@ covergroup MisalignedV_vsuxseg6ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vsuxseg6ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8968,6 +9028,7 @@ covergroup MisalignedV_vsuxseg7ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vsuxseg7ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8997,6 +9058,7 @@ covergroup MisalignedV_vsuxseg7ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vsuxseg7ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -9084,6 +9146,7 @@ covergroup MisalignedV_vsuxseg8ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup MisalignedV_vsuxseg8ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -9113,6 +9176,7 @@ covergroup MisalignedV_vsuxseg8ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup MisalignedV_vsuxseg8ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -9226,9 +9290,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vloxei32.v"     : begin
             MisalignedV_vloxei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vloxei64.v"     : begin
             MisalignedV_vloxei64_v_cg.sample(ins);
         end
+`endif
         "vloxei8.v"     : begin
             MisalignedV_vloxei8_v_cg.sample(ins);
         end
@@ -9238,9 +9304,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vloxseg2ei32.v"     : begin
             MisalignedV_vloxseg2ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vloxseg2ei64.v"     : begin
             MisalignedV_vloxseg2ei64_v_cg.sample(ins);
         end
+`endif
         "vloxseg2ei8.v"     : begin
             MisalignedV_vloxseg2ei8_v_cg.sample(ins);
         end
@@ -9250,9 +9318,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vloxseg3ei32.v"     : begin
             MisalignedV_vloxseg3ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vloxseg3ei64.v"     : begin
             MisalignedV_vloxseg3ei64_v_cg.sample(ins);
         end
+`endif
         "vloxseg3ei8.v"     : begin
             MisalignedV_vloxseg3ei8_v_cg.sample(ins);
         end
@@ -9262,9 +9332,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vloxseg4ei32.v"     : begin
             MisalignedV_vloxseg4ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vloxseg4ei64.v"     : begin
             MisalignedV_vloxseg4ei64_v_cg.sample(ins);
         end
+`endif
         "vloxseg4ei8.v"     : begin
             MisalignedV_vloxseg4ei8_v_cg.sample(ins);
         end
@@ -9274,9 +9346,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vloxseg5ei32.v"     : begin
             MisalignedV_vloxseg5ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vloxseg5ei64.v"     : begin
             MisalignedV_vloxseg5ei64_v_cg.sample(ins);
         end
+`endif
         "vloxseg5ei8.v"     : begin
             MisalignedV_vloxseg5ei8_v_cg.sample(ins);
         end
@@ -9286,9 +9360,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vloxseg6ei32.v"     : begin
             MisalignedV_vloxseg6ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vloxseg6ei64.v"     : begin
             MisalignedV_vloxseg6ei64_v_cg.sample(ins);
         end
+`endif
         "vloxseg6ei8.v"     : begin
             MisalignedV_vloxseg6ei8_v_cg.sample(ins);
         end
@@ -9298,9 +9374,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vloxseg7ei32.v"     : begin
             MisalignedV_vloxseg7ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vloxseg7ei64.v"     : begin
             MisalignedV_vloxseg7ei64_v_cg.sample(ins);
         end
+`endif
         "vloxseg7ei8.v"     : begin
             MisalignedV_vloxseg7ei8_v_cg.sample(ins);
         end
@@ -9310,9 +9388,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vloxseg8ei32.v"     : begin
             MisalignedV_vloxseg8ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vloxseg8ei64.v"     : begin
             MisalignedV_vloxseg8ei64_v_cg.sample(ins);
         end
+`endif
         "vloxseg8ei8.v"     : begin
             MisalignedV_vloxseg8ei8_v_cg.sample(ins);
         end
@@ -9586,9 +9666,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vluxei32.v"     : begin
             MisalignedV_vluxei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vluxei64.v"     : begin
             MisalignedV_vluxei64_v_cg.sample(ins);
         end
+`endif
         "vluxei8.v"     : begin
             MisalignedV_vluxei8_v_cg.sample(ins);
         end
@@ -9598,9 +9680,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vluxseg2ei32.v"     : begin
             MisalignedV_vluxseg2ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vluxseg2ei64.v"     : begin
             MisalignedV_vluxseg2ei64_v_cg.sample(ins);
         end
+`endif
         "vluxseg2ei8.v"     : begin
             MisalignedV_vluxseg2ei8_v_cg.sample(ins);
         end
@@ -9610,9 +9694,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vluxseg3ei32.v"     : begin
             MisalignedV_vluxseg3ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vluxseg3ei64.v"     : begin
             MisalignedV_vluxseg3ei64_v_cg.sample(ins);
         end
+`endif
         "vluxseg3ei8.v"     : begin
             MisalignedV_vluxseg3ei8_v_cg.sample(ins);
         end
@@ -9622,9 +9708,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vluxseg4ei32.v"     : begin
             MisalignedV_vluxseg4ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vluxseg4ei64.v"     : begin
             MisalignedV_vluxseg4ei64_v_cg.sample(ins);
         end
+`endif
         "vluxseg4ei8.v"     : begin
             MisalignedV_vluxseg4ei8_v_cg.sample(ins);
         end
@@ -9634,9 +9722,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vluxseg5ei32.v"     : begin
             MisalignedV_vluxseg5ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vluxseg5ei64.v"     : begin
             MisalignedV_vluxseg5ei64_v_cg.sample(ins);
         end
+`endif
         "vluxseg5ei8.v"     : begin
             MisalignedV_vluxseg5ei8_v_cg.sample(ins);
         end
@@ -9646,9 +9736,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vluxseg6ei32.v"     : begin
             MisalignedV_vluxseg6ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vluxseg6ei64.v"     : begin
             MisalignedV_vluxseg6ei64_v_cg.sample(ins);
         end
+`endif
         "vluxseg6ei8.v"     : begin
             MisalignedV_vluxseg6ei8_v_cg.sample(ins);
         end
@@ -9658,9 +9750,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vluxseg7ei32.v"     : begin
             MisalignedV_vluxseg7ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vluxseg7ei64.v"     : begin
             MisalignedV_vluxseg7ei64_v_cg.sample(ins);
         end
+`endif
         "vluxseg7ei8.v"     : begin
             MisalignedV_vluxseg7ei8_v_cg.sample(ins);
         end
@@ -9670,9 +9764,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vluxseg8ei32.v"     : begin
             MisalignedV_vluxseg8ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vluxseg8ei64.v"     : begin
             MisalignedV_vluxseg8ei64_v_cg.sample(ins);
         end
+`endif
         "vluxseg8ei8.v"     : begin
             MisalignedV_vluxseg8ei8_v_cg.sample(ins);
         end
@@ -9709,9 +9805,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vsoxei32.v"     : begin
             MisalignedV_vsoxei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsoxei64.v"     : begin
             MisalignedV_vsoxei64_v_cg.sample(ins);
         end
+`endif
         "vsoxei8.v"     : begin
             MisalignedV_vsoxei8_v_cg.sample(ins);
         end
@@ -9721,9 +9819,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vsoxseg2ei32.v"     : begin
             MisalignedV_vsoxseg2ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsoxseg2ei64.v"     : begin
             MisalignedV_vsoxseg2ei64_v_cg.sample(ins);
         end
+`endif
         "vsoxseg2ei8.v"     : begin
             MisalignedV_vsoxseg2ei8_v_cg.sample(ins);
         end
@@ -9733,9 +9833,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vsoxseg3ei32.v"     : begin
             MisalignedV_vsoxseg3ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsoxseg3ei64.v"     : begin
             MisalignedV_vsoxseg3ei64_v_cg.sample(ins);
         end
+`endif
         "vsoxseg3ei8.v"     : begin
             MisalignedV_vsoxseg3ei8_v_cg.sample(ins);
         end
@@ -9745,9 +9847,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vsoxseg4ei32.v"     : begin
             MisalignedV_vsoxseg4ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsoxseg4ei64.v"     : begin
             MisalignedV_vsoxseg4ei64_v_cg.sample(ins);
         end
+`endif
         "vsoxseg4ei8.v"     : begin
             MisalignedV_vsoxseg4ei8_v_cg.sample(ins);
         end
@@ -9757,9 +9861,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vsoxseg5ei32.v"     : begin
             MisalignedV_vsoxseg5ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsoxseg5ei64.v"     : begin
             MisalignedV_vsoxseg5ei64_v_cg.sample(ins);
         end
+`endif
         "vsoxseg5ei8.v"     : begin
             MisalignedV_vsoxseg5ei8_v_cg.sample(ins);
         end
@@ -9769,9 +9875,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vsoxseg6ei32.v"     : begin
             MisalignedV_vsoxseg6ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsoxseg6ei64.v"     : begin
             MisalignedV_vsoxseg6ei64_v_cg.sample(ins);
         end
+`endif
         "vsoxseg6ei8.v"     : begin
             MisalignedV_vsoxseg6ei8_v_cg.sample(ins);
         end
@@ -9781,9 +9889,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vsoxseg7ei32.v"     : begin
             MisalignedV_vsoxseg7ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsoxseg7ei64.v"     : begin
             MisalignedV_vsoxseg7ei64_v_cg.sample(ins);
         end
+`endif
         "vsoxseg7ei8.v"     : begin
             MisalignedV_vsoxseg7ei8_v_cg.sample(ins);
         end
@@ -9793,9 +9903,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vsoxseg8ei32.v"     : begin
             MisalignedV_vsoxseg8ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsoxseg8ei64.v"     : begin
             MisalignedV_vsoxseg8ei64_v_cg.sample(ins);
         end
+`endif
         "vsoxseg8ei8.v"     : begin
             MisalignedV_vsoxseg8ei8_v_cg.sample(ins);
         end
@@ -9985,9 +10097,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vsuxei32.v"     : begin
             MisalignedV_vsuxei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsuxei64.v"     : begin
             MisalignedV_vsuxei64_v_cg.sample(ins);
         end
+`endif
         "vsuxei8.v"     : begin
             MisalignedV_vsuxei8_v_cg.sample(ins);
         end
@@ -9997,9 +10111,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vsuxseg2ei32.v"     : begin
             MisalignedV_vsuxseg2ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsuxseg2ei64.v"     : begin
             MisalignedV_vsuxseg2ei64_v_cg.sample(ins);
         end
+`endif
         "vsuxseg2ei8.v"     : begin
             MisalignedV_vsuxseg2ei8_v_cg.sample(ins);
         end
@@ -10009,9 +10125,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vsuxseg3ei32.v"     : begin
             MisalignedV_vsuxseg3ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsuxseg3ei64.v"     : begin
             MisalignedV_vsuxseg3ei64_v_cg.sample(ins);
         end
+`endif
         "vsuxseg3ei8.v"     : begin
             MisalignedV_vsuxseg3ei8_v_cg.sample(ins);
         end
@@ -10021,9 +10139,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vsuxseg4ei32.v"     : begin
             MisalignedV_vsuxseg4ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsuxseg4ei64.v"     : begin
             MisalignedV_vsuxseg4ei64_v_cg.sample(ins);
         end
+`endif
         "vsuxseg4ei8.v"     : begin
             MisalignedV_vsuxseg4ei8_v_cg.sample(ins);
         end
@@ -10033,9 +10153,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vsuxseg5ei32.v"     : begin
             MisalignedV_vsuxseg5ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsuxseg5ei64.v"     : begin
             MisalignedV_vsuxseg5ei64_v_cg.sample(ins);
         end
+`endif
         "vsuxseg5ei8.v"     : begin
             MisalignedV_vsuxseg5ei8_v_cg.sample(ins);
         end
@@ -10045,9 +10167,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vsuxseg6ei32.v"     : begin
             MisalignedV_vsuxseg6ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsuxseg6ei64.v"     : begin
             MisalignedV_vsuxseg6ei64_v_cg.sample(ins);
         end
+`endif
         "vsuxseg6ei8.v"     : begin
             MisalignedV_vsuxseg6ei8_v_cg.sample(ins);
         end
@@ -10057,9 +10181,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vsuxseg7ei32.v"     : begin
             MisalignedV_vsuxseg7ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsuxseg7ei64.v"     : begin
             MisalignedV_vsuxseg7ei64_v_cg.sample(ins);
         end
+`endif
         "vsuxseg7ei8.v"     : begin
             MisalignedV_vsuxseg7ei8_v_cg.sample(ins);
         end
@@ -10069,9 +10195,11 @@ function void misalignedv_sample(int hart, int issue, ins_t ins);
         "vsuxseg8ei32.v"     : begin
             MisalignedV_vsuxseg8ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsuxseg8ei64.v"     : begin
             MisalignedV_vsuxseg8ei64_v_cg.sample(ins);
         end
+`endif
         "vsuxseg8ei8.v"     : begin
             MisalignedV_vsuxseg8ei8_v_cg.sample(ins);
         end

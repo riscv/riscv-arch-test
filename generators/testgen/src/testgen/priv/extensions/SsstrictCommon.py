@@ -76,13 +76,9 @@ SCRATCH_BASE_REG: int = 8  # x8 / s0
 
 # ── Global exclusion lists ────────────────────────────────────────────────
 
-CBO_EXCLUSIONS: list[str] = []
-
 AMO_EXCLUSIONS: list[str] = [
     "01001XXXXXXXXXXXXXXXXXXXX0101111",  # ssamoswap (Ssamoswap)
 ]
-ADDUW_EXCLUSIONS: list[str] = []
-
 # x2 is the signature pointer — must never be clobbered as rd (destination register)
 X2_RD_EXCLUSION: list[str] = [
     "XXXXXXXXXXXXXXXXXXXX00010XXXXXXX",  # Exclude x2 as rd in all templates
@@ -354,6 +350,7 @@ def generate_illegal_instr(
         ("Reserved op15", "RRRRRRRRRRRRRRRRRRRRRRRRR0111111"),
         ("Reserved op23", "RRRRRRRRRRRRRRRRRRRRRRRRR1011111"),
         ("Reserved op26", "RRRRRRRRRRRRRRRRRRRRRRRRR1101011"),
+        ("Reserved op31", "RRRRRRRRRRRRRRRRRRRRRRRRR1111111"),
         # op31 excluded — variable-length ambiguity across QEMU/Whisper
     ]:
         emit_raw_words(lines, cmt, tmpl)
@@ -363,43 +360,39 @@ def generate_illegal_instr(
     # rs1 points to scratch (via _emit_reg_init), offset=0 so load
     # accesses exactly scratch — no risk of hitting unmapped memory.
     _emit_reg_init(lines)
-    emit_raw_words(lines, "cp_load", "000000000000RRRRREEERRRRR0000011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_fload", "000000000000RRRRREEERRRRR0000111", exclusion=X2_RD_EXCLUSION)
+    emit_raw_words(lines, "cp_load", "RRRRRRRRRRRRRRRRREEERRRRR0000011", exclusion=X2_RD_EXCLUSION)
+    emit_raw_words(lines, "cp_fload", "RRRRRRRRRRRRRRRRREEERRRRR0000111", exclusion=X2_RD_EXCLUSION)
 
     # ── Stores — offset=0, all registers randomized ──────────────────
     # S-type: imm[11:5]=0 | rs2 | rs1 | funct3 | imm[4:0]=0 | opcode
     # rs1 points to scratch, offset=0, rs2 value doesn't matter
     # (store data is irrelevant for trap testing).
     _emit_reg_init(lines)
-    emit_raw_words(lines, "cp_store", "0000000RRRRRRRRRREEE000000100011")
-    emit_raw_words(lines, "cp_fstore", "0000000RRRRRRRRRREEE000000100111")
+    emit_raw_words(lines, "cp_store", "RRRRRRRRRRRR00000EEERRRRR0100011")
+    emit_raw_words(lines, "cp_fstore", "RRRRRRRRRRRR00000EEERRRRR0100111")
 
     # ── Fence / CBO ───────────────────────────────────────────────────
     # Fence/CBO funct3 sweep: offset=0
     _emit_reg_init(lines)
-    emit_raw_words(
-        lines, "cp_fence_cbo", "000000000000RRRRREEERRRRR0001111", exclusion=CBO_EXCLUSIONS + X2_RD_EXCLUSION
-    )
+    emit_raw_words(lines, "cp_fence_cbo", "RRRRRRRRRRRRRRRRREEERRRRR0001111", exclusion=X2_RD_EXCLUSION)
     # CBO immediate sweep: rs1 randomized, rd=0 (CBO has no rd)
     _emit_reg_init(lines)
-    emit_raw_words(
-        lines, "cp_cbo_immediate", "EEEEEEEEEEEERRRRR010000000001111", exclusion=CBO_EXCLUSIONS + X2_RD_EXCLUSION
-    )
+    emit_raw_words(lines, "cp_cbo_immediate", "EEEEEEEEEEEE00000010000000001111", exclusion=X2_RD_EXCLUSION)
     # CBO rd sweep: rs1 randomized
     _emit_reg_init(lines)
-    emit_raw_words(lines, "cp_cbo_rd", "000000000000RRRRR010EEEEE0001111", exclusion=CBO_EXCLUSIONS + X2_RD_EXCLUSION)
+    emit_raw_words(lines, "cp_cbo_rd", "00000000000RRRRRR010EEEEE0001111", exclusion=X2_RD_EXCLUSION)
 
     # ── Atomics — all registers randomized ────────────────────────────
     # AMO: funct5 | aq | rl | rs2 | rs1 | funct3 | rd | opcode
     # No offset field; rs1 points to scratch via _emit_reg_init.
     _emit_reg_init(lines)
     emit_raw_words(
-        lines, "cp_atomic_funct3", "RRRRRRRRRRRRRRRRREEERRRRR0101111", exclusion=AMO_EXCLUSIONS + X2_RD_EXCLUSION
+        lines, "cp_atomic_funct3", "RRRRRRRRRRRR00000EEERRRRR0101111", exclusion=AMO_EXCLUSIONS + X2_RD_EXCLUSION
     )
     emit_raw_words(
-        lines, "cp_atomic_funct7", "EEEEERRRRRRRRRRRR01ERRRRR0101111", exclusion=AMO_EXCLUSIONS + X2_RD_EXCLUSION
+        lines, "cp_atomic_funct7", "EEEEERRRRRRR0000001ERRRRR0101111", exclusion=AMO_EXCLUSIONS + X2_RD_EXCLUSION
     )
-    emit_raw_words(lines, "cp_lrsc", "00010RREEEEERRRRR01ERRRRR0101111", exclusion=AMO_EXCLUSIONS + X2_RD_EXCLUSION)
+    emit_raw_words(lines, "cp_lrsc", "00010RREEEEE0000001ERRRRR0101111", exclusion=AMO_EXCLUSIONS + X2_RD_EXCLUSION)
 
     # ── amocas odd-register sweep ─────────────────────────────────────
     _emit_reg_init(lines)
@@ -414,7 +407,7 @@ def generate_illegal_instr(
 
     # ── R-type / RW-type — all registers randomized ───────────────────
     emit_raw_words(lines, "cp_rtype", "EEEEEEERRRRRRRRRREEERRRRR0110011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_rwtype", "EEEEEEERRRRRRRRRREEERRRRR0111011", exclusion=ADDUW_EXCLUSIONS + X2_RD_EXCLUSION)
+    emit_raw_words(lines, "cp_rwtype", "EEEEEEERRRRRRRRRREEERRRRR0111011", exclusion=X2_RD_EXCLUSION)
 
     # ── FP — all registers randomized ─────────────────────────────────
     emit_raw_words(lines, "cp_ftype", "EEEEERRRRRRRRRRRREEERRRRR1010011", exclusion=X2_RD_EXCLUSION)
@@ -422,9 +415,9 @@ def generate_illegal_instr(
     emit_raw_words(lines, "cp_fclass", "1110000EEEEERRRRR001RRRRR1010011", exclusion=X2_RD_EXCLUSION)
     emit_raw_words(lines, "cp_fcvtif", "1100000EEE00RRRRR000RRRRR1010011", exclusion=X2_RD_EXCLUSION)
     emit_raw_words(lines, "cp_fcvtif_fmt", "11000EE000EERRRRR000RRRRR1010011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_fcvtfi", "1101000EEER0RRRRR000RRRRR1010011", exclusion=X2_RD_EXCLUSION)
+    emit_raw_words(lines, "cp_fcvtfi", "1101000EEER00RRRR000RRRRR1010011", exclusion=X2_RD_EXCLUSION)
     emit_raw_words(lines, "cp_fcvtfi_fmt", "11010EE000EERRRRR000RRRRR1010011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_fcvtff", "0100000EEER0RRRRR000RRRRR1010011", exclusion=X2_RD_EXCLUSION)
+    emit_raw_words(lines, "cp_fcvtff", "0100000EEER00RRRR000RRRRR1010011", exclusion=X2_RD_EXCLUSION)
     emit_raw_words(lines, "cp_fcvtff_fmt", "01000EEEEEEERRRRR000RRRRR1010011", exclusion=X2_RD_EXCLUSION)
     emit_raw_words(lines, "cp_fmvif", "11100EEEEEEERRRRR000RRRRR1010011", exclusion=X2_RD_EXCLUSION)
     emit_raw_words(lines, "cp_fli", "11110EEEEEEERRRRR000RRRRR1010011", exclusion=X2_RD_EXCLUSION)
@@ -623,7 +616,10 @@ def generate_compressed_instr(
     lines.append(f"\t{test_data.add_testcase('compressed_sweep', coverpoint, covergroup)}")
     lines.append("")
 
-    # Quadrant 00: fully exhaustive, all fields including rs1' swept.
+    # Quadrant 00: covers c.addi4spn, c.lw, c.ld, c.flw, c.fld, c.sw, c.sd, c.fsw, c.fsd
+    # All register fields (rd', rs1', rs2') swept exhaustively.
+    # CRITICAL: offset bits are zeroed (bits[6:5]=00, bits[4:2]=000) to ensure
+    # all load/store offsets are 0, so rs1 points exactly to scratch.
     # _emit_reg_init pre-loads all safe regs (x7-x31) with scratch, so
     # x8-x15 (the rs1' range) all point to valid memory.
     # rd' = x8 excluded to prevent clobbering the scratch pointer.
@@ -631,7 +627,7 @@ def generate_compressed_instr(
     emit_raw_words(
         lines,
         "compressed00",
-        "EEEEEEEEEEEEEE00",  # fully exhaustive — all 14 bits swept
+        "EEEEEEEEE00000000",  # rd'=EEE, rs1'=EEE, rs2'=EEE, offset=0, opcode=00
         length=16,
         exclusion=[
             "XXXXXXXXXXX000XX",  # rd' = x8 — clobbers scratch base pointer

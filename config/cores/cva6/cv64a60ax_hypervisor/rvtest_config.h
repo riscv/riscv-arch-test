@@ -15,6 +15,7 @@
 #define ZCD_SUPPORTED
 #define S_SUPPORTED
 #define U_SUPPORTED
+#define H_SUPPORTED
 #define SV39_SUPPORTED
 
 #define TIME_CSR_IMPLEMENTED 1

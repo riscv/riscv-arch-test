@@ -628,7 +628,6 @@ if __name__ == '__main__':
             # RVTEST_SIGUPD_V/_V_LEN, so the previous regex-based byte counter no longer
             # works.
             finalizeSigupdCount(tempfname, xlen, flen)
-            print(f"DEBUG sigupd_count for rv{xlen} {chunk_basename}: {common.sigupd_count} sigupd_countF={common.sigupd_countF}")
             # if new file is different from old file, replace old file with new file
             if pathlib.Path(fname).exists():
                 if filecmp.cmp(fname, tempfname): # files are the same

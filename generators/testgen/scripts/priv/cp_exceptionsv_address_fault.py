@@ -39,10 +39,10 @@ def make_exceptionsv_address_fault(instruction: str) -> None:
     from .cp_exceptionsv_LS import _emit_setup
     _emit_setup(instruction, instruction_data, sew)
 
-    # rs1 = 0 → triggers address fault (access to address 0). Use the
+    # rs1 = RVMODEL_ACCESS_FAULT_ADDRESS → triggers address fault. Use the
     # randomly chosen rs1 register, not a hardcoded one.
     rs1_reg = instruction_data[1]["rs1"]["reg"]
-    common.writeLine(f"li x{rs1_reg}, 0", f"# rs1 (x{rs1_reg}) = 0 → address fault trigger")
+    common.writeLine(f"li x{rs1_reg}, RVMODEL_ACCESS_FAULT_ADDRESS", f"# rs1 (x{rs1_reg}) = RVMODEL_ACCESS_FAULT_ADDRESS → address fault trigger")
 
     # Build testline: unmasked to ensure memory access actually occurs
     vec_data, scalar_data, fp_data, imm_val = instruction_data

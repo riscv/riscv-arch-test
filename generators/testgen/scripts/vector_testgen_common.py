@@ -2197,9 +2197,7 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
       # FS|VS = Dirty BEFORE touching any vector CSR so the cleanup epilog never
       # itself traps (which doubles trap-signature pressure and can overflow the
       # TRAP_SIGUPD_COUNT buffer in tests/env/rvtest_setup.h).
-      vstart_scratch = 2
-      while vstart_scratch in scalar_registers_used or vstart_scratch == sigReg:
-        vstart_scratch = randint(1, 31)
+      vstart_scratch = pickScalarScratch(list(scalar_registers_used) + [sigReg])
       writeLine(f"li x{vstart_scratch}, {(3 << 13) | (3 << 9)}", "# FS|VS = Dirty mask")
       writeLine(f"csrs mstatus, x{vstart_scratch}",              "# restore FS|VS = Dirty before vector CSR access")
       # vstart may still be non-zero after a trapping vector op (e.g. cp_vstart_gt_vl

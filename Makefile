@@ -203,14 +203,14 @@ $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
 vector-testgen: $(STAMP_DIR)/vector-testgen-unpriv.stamp $(STAMP_DIR)/vector-testgen-priv.stamp
 
 $(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/testgen/scripts/vector-testgen-unpriv.py generators/testgen/scripts/vector_testgen_common.py Makefile | $(STAMP_DIR)
-	$(UV_RUN) generators/testgen/scripts/vector-testgen-unpriv.py $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
-	touch $@
+	@$(UV_RUN) generators/testgen/scripts/vector-testgen-unpriv.py $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
+	@touch $@
 # Note: EXTENSIONS / EXCLUDE_EXTENSIONS only filter unpriv generation and
 # run-time test selection. The priv vector generator does not accept these
 # flags; priv vector tests are always generated.
 $(STAMP_DIR)/vector-testgen-priv.stamp: generators/testgen/scripts/vector-testgen-priv.py generators/testgen/scripts/vector_testgen_common.py Makefile | $(STAMP_DIR)
-	$(UV_RUN) generators/testgen/scripts/vector-testgen-priv.py
-	touch $@
+	@$(UV_RUN) generators/testgen/scripts/vector-testgen-priv.py
+	@touch $@
 
 .PHONY: tests
 tests: covergroupgen testgen

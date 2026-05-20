@@ -1,0 +1,14 @@
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_vmv4r_reg_align
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // vmv4r.v (simm=3): both vd and vs2 must be divisible by 4
+    simm_vmv4r_align: coverpoint ins.current.insn[19:15] {
+        bins nreg4 = {5'b00011};
+    }
+
+    // Both vd and vs2 unaligned for vmv4r.v
+    cp_ssstrictv_vmv4r_both_unaligned: cross std_trap_vec, simm_vmv4r_align, vd_all_reg_unaligned_lmul_4, vs2_all_reg_unaligned_lmul_4;
+
+//// end cp_ssstrictv_vmv4r_reg_align /////////////////////////////////////////////////////////////

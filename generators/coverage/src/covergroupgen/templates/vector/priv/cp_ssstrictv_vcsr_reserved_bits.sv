@@ -2,7 +2,6 @@
 // cp_ssstrictv_vcsr_reserved_bits
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // Verify vcsr reserved bits [XLEN-1:3] read back as zero after CSR write with non-zero upper bits
 

@@ -2,7 +2,6 @@
 // cp_ssstrictv_vlmul_100_reserved
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // Verify that vsetvli/vsetivli requesting vlmul=3'b100 (reserved) causes vill to be set
 

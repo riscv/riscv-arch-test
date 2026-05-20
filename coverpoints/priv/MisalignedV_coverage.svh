@@ -12,6 +12,13 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_MISALIGNEDV
+`define COVER_MISALIGNEDVCUSTOMEFFEW
+`ifdef ELENEFFEW
+    `define SEW_EFFEW_EQ_ELEN
+`endif
+`ifdef ELENTWOEFFEW
+    `define SEW_EFFEW_EQ_ELEN_DIV_2
+`endif
 covergroup MisalignedV_vl1re16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////

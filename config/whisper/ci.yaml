@@ -8,6 +8,7 @@
 # 2. vmv<nr>r.v instructions fail to trap when vill=1 Link: https://github.com/riscv/sail-riscv/issues/1709
 # 3. Add configuration parameter for vsetvli/vsetvl behavior on reserved vtype values Link: https://github.com/riscv/sail-riscv/issues/1699
 ci_enabled: true
-exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,InterruptsSm,InterruptsS,InterruptsU,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,Zalrsc,ExceptionsSvZaamo,ExceptionsSvZalrsc"
+# TODO: Remove SsstrictV when sail SsstrictV is implemented
+exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,InterruptsSm,InterruptsS,InterruptsU,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,Svadu,SvaduPMP,Zalrsc,ExceptionsSvZaamo,ExceptionsSvZalrsc,SsstrictV"
 install_script: ".github/scripts/install-whisper.sh"
 apt_packages: "libboost-program-options-dev"

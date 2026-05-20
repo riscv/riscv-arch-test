@@ -81,6 +81,15 @@
       "depNameTemplate": "llvm/llvm-project",
       "datasourceTemplate": "github-tags",
       "extractVersionTemplate": "^llvmorg-(?<version>\\d+)\\.\\d+\\.\\d+$"
+    },
+    {
+      "description": "Bundler version recorded in Gemfile.lock (kept in sync with .mise.toml gem:bundler)",
+      "customType": "regex",
+      "managerFilePatterns": ["/^framework/src/act/data/Gemfile\\.lock$/"],
+      "matchStrings": ["BUNDLED WITH\\s+(?<currentValue>[\\d.]+)"],
+      "depNameTemplate": "gem:bundler",
+      "packageNameTemplate": "bundler",
+      "datasourceTemplate": "rubygems"
     }
   ],
   "packageRules": [
@@ -119,6 +128,12 @@
     {
       "description": "Automerge non-major uv bumps; majors stay grouped for manual review",
       "matchDepNames": ["uv", "astral-sh/uv-pre-commit"],
+      "matchUpdateTypes": ["digest", "patch", "minor"],
+      "automerge": true
+    },
+    {
+      "description": "Automerge non-major bundler bumps (.mise.toml gem:bundler + Gemfile.lock BUNDLED WITH update together as one dep); majors reviewed manually",
+      "matchDepNames": ["gem:bundler"],
       "matchUpdateTypes": ["digest", "patch", "minor"],
       "automerge": true
     },

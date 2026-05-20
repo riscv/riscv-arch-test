@@ -58,7 +58,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv32, Zicbom]
-# MARCH: rv32i_zicsr_zicbom
+# MARCH: rv32i_zicsr_zifencei_zicbom
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv32_zicbom_exceptions_Umode.S"

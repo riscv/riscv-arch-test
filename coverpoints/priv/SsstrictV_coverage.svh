@@ -13,10 +13,10 @@
 
 `define COVER_SSSTRICTV
 `define COVER_SSSTRICTVCUSTOMEFFEW
-`ifdef ELENEFFEW
+`ifdef UDB_ELEN_EFFEW
     `define SEW_EFFEW_EQ_ELEN
 `endif
-`ifdef ELENTWOEFFEW
+`ifdef UDB_ELEN_TWOEFFEW
     `define SEW_EFFEW_EQ_ELEN_DIV_2
 `endif
 covergroup SsstrictV_vaadd_vv_cg with function sample(ins_t ins);

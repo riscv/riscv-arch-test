@@ -28,7 +28,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zca_zicsr
+# MARCH: rv64i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -43,8 +43,8 @@
 
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
-#if RVMODEL_PMP_GRAIN !=0
-    #define REGION_SIZE  (1<<(RVMODEL_PMP_GRAIN+2))
+#if UDB_PMP_GRANULARITY != 2
+    #define REGION_SIZE  (1<<(UDB_PMP_GRANULARITY))
 #else
     #define REGION_SIZE 8
 #endif
@@ -60,14 +60,14 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -79,9 +79,9 @@ main:
 
 #define PMPADDRESS_TOP_GLOBAL       -1              // All memory region
 #define REGIONSTART                 TEST_FOR_EXECUTION_1
-#if RVMODEL_PMP_GRAIN != 0
-    #define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
-    #define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)) - 1
+#if UDB_PMP_GRANULARITY != 2
+    #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
+    #define PMP_REGION_SIZE     (1 << (UDB_PMP_GRANULARITY - 3)) - 1
 #else
     #define PMP_MASK            ~0
     #define PMP_REGION_SIZE     0

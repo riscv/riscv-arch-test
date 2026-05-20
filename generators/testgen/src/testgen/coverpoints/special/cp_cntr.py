@@ -26,13 +26,13 @@ def make_cntr(instr_name: str, instr_type: str, coverpoint: str, test_data: Test
         test_lines.extend(
             [
                 gen_cntr_test(instr_name, "cycle", r1, r2, r3, test_data),
-                "#if TIME_CSR_IMPLEMENTED\n",
+                "#ifdef UDB_TIME_CSR_IMPLEMENTED\n",
                 gen_cntr_test(instr_name, "time", r1, r2, r3, test_data),
                 "#endif\n",
                 gen_cntr_test(instr_name, "instret", r1, r2, r3, test_data),
                 "#if __riscv_xlen == 32\n",
                 gen_cntr_test(instr_name, "cycleh", r1, r2, r3, test_data),
-                "#if TIME_CSR_IMPLEMENTED\n",
+                "#ifdef UDB_TIME_CSR_IMPLEMENTED\n",
                 gen_cntr_test(instr_name, "timeh", r1, r2, r3, test_data),
                 "#endif\n",
                 gen_cntr_test(instr_name, "instreth", r1, r2, r3, test_data),

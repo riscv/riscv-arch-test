@@ -62,7 +62,7 @@ covergroup ExceptionsU_cg with function sample(ins_t ins);
         wildcard bins lhu = {LHU};
         wildcard bins lb  = {LB};
         wildcard bins lbu = {LBU};
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             wildcard bins ld  = {LD};
             wildcard bins lwu = {LWU};
         `endif
@@ -71,7 +71,7 @@ covergroup ExceptionsU_cg with function sample(ins_t ins);
         wildcard bins sb = {SB};
         wildcard bins sh = {SH};
         wildcard bins sw = {SW};
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             wildcard bins sd = {SD};
         `endif
     }
@@ -122,7 +122,7 @@ covergroup ExceptionsU_cg with function sample(ins_t ins);
         illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
         }
-        illegal_address_priority: coverpoint {{ins.current.imm + ins.current.rs1_val}[XLEN-1:3], 3'b000} {
+        illegal_address_priority: coverpoint {{ins.current.imm + ins.current.rs1_val}[`UDB_MXLEN-1:3], 3'b000} {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
         }
         cp_instr_access_fault:                   cross priv_mode_u, jalr, illegal_address;

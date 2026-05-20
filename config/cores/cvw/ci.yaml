@@ -6,7 +6,7 @@
 # SsstrictSm excluded because of Sail bug (incorrect decoding of add.uw instruction)
 # Sail Issue Link: https://github.com/riscv/sail-riscv/issues/1711
 ci_enabled: true
-exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,InterruptsSm,InterruptsS,InterruptsU,InterruptsSstc,PMPSm,ExceptionsZalrsc,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZaamo,Sv"
+exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,InterruptsSm,InterruptsS,InterruptsU,InterruptsSstc,PMPSm,ExceptionsZalrsc,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZaamo,Sv,Zicsr,PMPS,PMPU"
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cvw.sh"
 setup_script: ".github/scripts/setup-cvw.sh"

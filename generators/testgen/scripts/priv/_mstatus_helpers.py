@@ -78,12 +78,7 @@ def run_under_fs_vs(
     True for cases that always trap (VS=Off, FS=Off): the trap-handler
     signature still records the trap event for cross-model comparison.
     """
-    fp_sew = _pick_priv_fp_sew(instruction)
-    if fp_sew is not None:
-        sew = fp_sew
-    else:
-        eew = common.getInstructionEEW(instruction) or common.minSEW_MIN
-        sew = eew
+    sew = _pick_priv_fp_sew(instruction) or common.getInstructionEEW(instruction) or common.minSEW_MIN
 
     instruction_data = common.randomizeVectorInstructionData(
         instruction,

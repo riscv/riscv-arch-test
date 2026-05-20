@@ -296,6 +296,7 @@ def getFlen():
   global flen
   return flen
 
+
 def setXlen(new_xlen):
     global xlen, formatstr
     xlen = new_xlen
@@ -1562,7 +1563,9 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
                                      f"#define RVTEST_FP\n"
                                      f"#define RVTEST_SEW {sew}\n"
                                      f"#define VDSEW {vdsew}\n"
-                                     + (f"\n{getPrivExtraDefines()}" if priv else "")))
+                                     + (f"\n{getPrivExtraDefines()}" if priv else "")
+                                     + ("\n#define TRAP_SIGUPD_COUNT 50000" if test.startswith("SsstrictV") else "")))
+
 
     )
     # Strip trailing newlines so writeLine's own appended newline doesn't produce
@@ -2189,6 +2192,14 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
 
     if (priv):
       writeLine("nop",                                           "# nop after possible trap")
+      # The test instruction may have trapped or otherwise left mstatus.VS in a
+      # state where vector CSR access (csrw vstart) is itself illegal. Restore
+      # FS|VS = Dirty BEFORE touching any vector CSR so the cleanup epilog never
+      # itself traps (which doubles trap-signature pressure and can overflow the
+      # TRAP_SIGUPD_COUNT buffer in tests/env/rvtest_setup.h).
+      vstart_scratch = pickScalarScratch(list(scalar_registers_used) + [sigReg])
+      writeLine(f"li x{vstart_scratch}, {(3 << 13) | (3 << 9)}", "# FS|VS = Dirty mask")
+      writeLine(f"csrs mstatus, x{vstart_scratch}",              "# restore FS|VS = Dirty before vector CSR access")
       # vstart may still be non-zero after a trapping vector op (e.g. cp_vstart_gt_vl
       # leaves vstart > vl, which is reserved-behavior for the SIGUPD vse/vle that
       # follows). Clear it explicitly so the signature ops always run cleanly.
@@ -3360,7 +3371,7 @@ def readTestplans(priv=False):
                                     cps.append(key)
                         tp[instr] = cps
                 testplans[arch] = tp
-                if ("Vx" in arch and not arch.startswith("Exceptions") and not arch.startswith("Ssstric")):
+                if ("Vx" in arch and not arch.startswith("Exceptions") and not arch.startswith("Ssstrict")):
                     for effew in ["8", "16", "32", "64"]:
                         testplans["Vx" + effew] = tp
                     del testplans["Vx"]

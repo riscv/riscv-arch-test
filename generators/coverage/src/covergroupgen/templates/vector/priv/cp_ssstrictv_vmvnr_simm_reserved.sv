@@ -2,7 +2,6 @@
 // cp_ssstrictv_vmvnr_simm_reserved
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // Reserved simm[4:0] values (not 0, 1, 3, or 7)
     simm_reserved: coverpoint ins.current.insn[19:15] {

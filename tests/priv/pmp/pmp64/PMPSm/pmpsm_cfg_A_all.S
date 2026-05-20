@@ -27,7 +27,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -46,7 +46,7 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -73,7 +73,7 @@ main:
     test_2:
         RVTEST_SIGUPD_CSR_WRITE(pmpcfg2, x4, test_2, test_2_str)
 
-.if RVMODEL_NUM_PMPS == 64
+.if UDB_NUM_PMP_ENTRIES == 64
     test_3:
         RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x4, test_3, test_3_str)
     test_4:
@@ -94,7 +94,7 @@ main:
     test_10:
         RVTEST_SIGUPD_CSR_WRITE(pmpcfg2, x4, test_10, test_10_str)
 
-.if RVMODEL_NUM_PMPS == 64
+.if UDB_NUM_PMP_ENTRIES == 64
     test_11:
         RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x4, test_11, test_11_str)
     test_12:
@@ -115,7 +115,7 @@ main:
     test_18:
         RVTEST_SIGUPD_CSR_WRITE(pmpcfg2, x4, test_18, test_18_str)
 
-.if RVMODEL_NUM_PMPS == 64
+.if UDB_NUM_PMP_ENTRIES == 64
     test_19:
         RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x4, test_19, test_19_str)
     test_20:
@@ -135,7 +135,7 @@ main:
    test_26:
        RVTEST_SIGUPD_CSR_WRITE(pmpcfg2, zero, test_26, test_26_str)
 
-.if RVMODEL_NUM_PMPS == 64
+.if UDB_NUM_PMP_ENTRIES == 64
     test_27:
         RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, zero, test_27, test_27_str)
     test_28:
@@ -192,12 +192,12 @@ test_31_str: .string "\"test: 31; cp: cp_cfg_A_all_test_31\""
 test_32_str: .string "\"test: 32; cp: cp_cfg_A_all_test_32\""
 
 .align 12
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jr ra
 
 TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept (1<<(UDB_PMP_GRANULARITY))
     nop
     .endr
 

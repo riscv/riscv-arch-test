@@ -13,10 +13,10 @@
 
 `define COVER_ZVBB32
 `define COVER_ZVBBCUSTOM32
-`ifdef ELEN32
+`ifdef UDB_ELEN_32
     `define SEW_32_EQ_ELEN
 `endif
-`ifdef ELEN64
+`ifdef UDB_ELEN_64
     `define SEW_32_EQ_ELEN_DIV_2
 `endif
 covergroup Zvbb32_vandn_vv_cg with function sample(ins_t ins);
@@ -252,7 +252,7 @@ covergroup Zvbb32_vandn_vx_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -1412,7 +1412,7 @@ covergroup Zvbb32_vrol_vx_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -1946,7 +1946,7 @@ covergroup Zvbb32_vror_vx_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -2722,7 +2722,7 @@ covergroup Zvbb32_vwsll_vx_cg with function sample(ins_t ins);
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};

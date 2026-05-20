@@ -402,11 +402,11 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     lines.append("\n#ifdef MSECCFG_SUPPORTED")
     lines.extend(csr_access_test(test_data, ("mseccfgh", None), covergroup, coverpoint))
     lines.append("#endif // MSECCFG")
-    lines.append("\n#ifdef SM1P13_SUPPORTED")
-    lines.extend(csr_access_test(test_data, ("medelegh", None), covergroup, coverpoint))
+    lines.append("\n#ifdef SM1P13P0_SUPPORTED")
+    lines.extend(csr_access_test(test_data, ("CSR_MEDELEGH", None), covergroup, coverpoint))
     lines.extend(
         [
-            "#endif // SM1P13",
+            "#endif // SM1P13P0_SUPPORTED",
             "#endif // xlen = 32",
         ]
     )
@@ -672,7 +672,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "",
-            "#ifdef SM1P13_SUPPORTED",
+            "#ifdef SM1P13P0_SUPPORTED",
         ]
     )
 
@@ -780,7 +780,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
 
     test_data.int_regs.return_registers([r_msip, r_msipaddr])
 
-    lines.append("#endif // SM1P13_SUPPORTED")
+    lines.append("#endif // SM1P13P0_SUPPORTED")
 
     return lines
 

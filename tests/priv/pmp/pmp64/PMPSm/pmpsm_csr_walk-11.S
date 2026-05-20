@@ -29,7 +29,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -65,7 +65,7 @@ main:
     // --- pmpcfg even walking ones, bit 6 ---
 
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
 1:  li t2, (1 << 6)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_70_str)
     .set pmpcfgi, pmpcfgi+2
@@ -74,7 +74,7 @@ main:
     // --- pmpcfg even walking ones, bit 7 ---
 
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
 1:  li t2, (1 << 7)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_71_str)
     .set pmpcfgi, pmpcfgi+2
@@ -83,7 +83,7 @@ main:
     // --- pmpcfg even walking ones, bit 8 ---
 
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
 1:  li t2, (1 << 8)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_72_str)
     .set pmpcfgi, pmpcfgi+2
@@ -92,7 +92,7 @@ main:
     // --- pmpcfg even walking ones, bit 9 ---
 
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
 1:  li t2, (1 << 9)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_73_str)
     .set pmpcfgi, pmpcfgi+2
@@ -101,7 +101,7 @@ main:
     // --- pmpcfg even walking ones, bit 10 ---
 
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
 1:  li t2, (1 << 10)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_74_str)
     .set pmpcfgi, pmpcfgi+2
@@ -110,7 +110,7 @@ main:
     // --- pmpcfg even walking ones, bit 11 ---
 
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
 1:  li t2, (1 << 11)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_75_str)
     .set pmpcfgi, pmpcfgi+2
@@ -132,12 +132,12 @@ test_75_str: .string "\"test: 75; cp: cp_csr_walk_test_75\""
 
 
 .align 12
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jr ra
 
 TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept (1<<(UDB_PMP_GRANULARITY))
     nop
     .endr
 

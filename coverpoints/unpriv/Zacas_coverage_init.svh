@@ -11,10 +11,10 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
     Zacas_amocas_w_cg = new(); Zacas_amocas_w_cg.set_inst_name("obj_Zacas_amocas_w");
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
     Zacas_amocas_d_cg = new(); Zacas_amocas_d_cg.set_inst_name("obj_Zacas_amocas_d");
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     Zacas_amocas_d_cg = new(); Zacas_amocas_d_cg.set_inst_name("obj_Zacas_amocas_d");
     Zacas_amocas_q_cg = new(); Zacas_amocas_q_cg.set_inst_name("obj_Zacas_amocas_q");
 `endif

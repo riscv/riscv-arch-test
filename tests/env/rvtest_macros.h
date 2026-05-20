@@ -36,7 +36,7 @@
     slli _PAR, _PAR, (RISCV_PGLEVEL_BITS * level + RISCV_PGSHIFT) ;\
     LI(_TR0, ((1 << RISCV_PGLEVEL_BITS) - 1))                     ;\
     and _VAR, _VAR, _TR0                                          ;\
-    slli _VAR, _VAR, ((XLEN >> 5)+1)                              ;\
+    slli _VAR, _VAR, ((UDB_MXLEN >> 5)+1)                         ;\
     add _TR1, _TR1, _VAR                                          ;\
     srli _PAR, _PAR, 12                                           ;\
     slli _PAR, _PAR, 10                                           ;\

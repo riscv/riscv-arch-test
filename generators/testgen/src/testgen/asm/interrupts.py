@@ -26,10 +26,12 @@ def set_mtimer_int(r_mtime: int, r_mtimecmp: int, r_temp: int, r_temp2: int) -> 
         "#ifdef RVMODEL_MTIME_ADDRESS",
         f"LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS)",
         f"LA(x{r_mtimecmp}, RVMODEL_MTIMECMP_ADDRESS)",
-        "#if __riscv_xlen == 64",
-        f"LREG x{r_temp}, 0(x{r_mtime})",
-        f"SREG x{r_temp}, 0(x{r_mtimecmp})",
-        "#elif __riscv_xlen == 32",
+        # temporary fix due to whisper bug [https://github.com/tenstorrent/whisper/issues/26]
+        # mti is not correctly triggered when setting mtimecmp to be equal to mtime using sd
+        # "#if __riscv_xlen == 64",
+        # f"LREG x{r_temp}, 0(x{r_mtime})",
+        # f"SREG x{r_temp}, 0(x{r_mtimecmp})",
+        # "#elif __riscv_xlen == 32",
         "# Write sequence to prevent spurious interrupts",
         "# Read mtime (new comparand will be in temp2:temp)",
         f"lw x{r_temp}, 0(x{r_mtime}) # mtime[31:0] -> low word",
@@ -39,7 +41,7 @@ def set_mtimer_int(r_mtime: int, r_mtimecmp: int, r_temp: int, r_temp2: int) -> 
         f"sw x{r_mtime}, 0(x{r_mtimecmp}) # Step 1: Write -1 to low (no smaller than old)",
         f"sw x{r_temp2}, 4(x{r_mtimecmp}) # Step 2: Write high word (no smaller than new)",
         f"sw x{r_temp}, 0(x{r_mtimecmp}) # Step 3: Write low word (new value)",
-        "#endif",
+        # "#endif",
         "#endif",
     ]
 

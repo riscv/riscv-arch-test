@@ -25,6 +25,7 @@ def generate_cmp_testcase(
     bin_name: str,
     rd_val: int,
     rs1_val: int,
+    rs2_val: int,
     load_rd: bool = True,
 ) -> TestChunk:
     """Generate a generic compare test case for CAS instructions"""
@@ -34,11 +35,11 @@ def generate_cmp_testcase(
 
     # Split values if dealing with a register pair
     mask = (1 << test_data.xlen) - 1
-
     mask_val = (1 << (2 * test_data.xlen)) - 1 if is_pair else mask
 
     rd_val &= mask_val
     rs1_val &= mask_val
+    rs2_val &= mask_val
 
     # Allocate registers and generate params
     params = generate_random_params(
@@ -47,19 +48,13 @@ def generate_cmp_testcase(
         exclude_regs=[0],
         rdval=rd_val,
         rs1val=rs1_val,
+        rs2val=rs2_val,
     )
 
     if params.rd is None or params.rs1 is None or params.rs2 is None:
         raise ValueError("Could not allocate registers for CAS instruction")
 
     rd, rs1, rs2 = params.rd, params.rs1, params.rs2
-
-    # Initialize to 0 for non-pair instructions
-    rd_lo = rd_hi = rs1_lo = rs1_hi = 0
-
-    if is_pair:
-        rd_lo, rd_hi = rd_val & mask, (rd_val >> test_data.xlen) & mask
-        rs1_lo, rs1_hi = rs1_val & mask, (rs1_val >> test_data.xlen) & mask
 
     params.rdval = rd_val
     params.rs1val = rs1_val
@@ -69,37 +64,8 @@ def generate_cmp_testcase(
     lines = [f"# Testcase {desc}"]
     label_line = test_data.add_testcase(bin_name, coverpoint)
 
-    # Load value into rd register(s)
-    if load_rd:
-        if is_pair:
-            # Load lower half into rd, upper half into rd+1
-            lines.append(load_int_reg("rd compare lo", rd, rd_lo, test_data))
-            lines.append(load_int_reg("rd compare hi", rd + 1, rd_hi, test_data))
-        else:
-            lines.append(load_int_reg("rd compare value", rd, rd_val, test_data))
-
-    # Initialize memory
-    lines.append(f"\tLA(x{rs1}, scratch)")
-
-    # We must exclude rd+1 from temp allocators if it's a pair!
-    exclusions = [rd, rs1, rs2, 0] + ([rd + 1] if is_pair else [])
-    temp = test_data.int_regs.get_register(exclude_regs=exclusions)
-
-    if is_pair:
-        # We need a second temp register for the upper memory store
-        temp2 = test_data.int_regs.get_register(exclude_regs=exclusions + [temp])
-
-        lines.append(load_int_reg("mem init lo", temp, rs1_lo, test_data))
-        lines.append(f"\tSREG x{temp}, 0(x{rs1})")
-
-        lines.append(load_int_reg("mem init hi", temp2, rs1_hi, test_data))
-        offset = test_data.xlen // 8  # e.g., 8 bytes for RV64, 4 bytes for RV32
-        lines.append(f"\tSREG x{temp2}, {offset}(x{rs1})")
-
-        test_data.int_regs.return_register(temp2)
-    else:
-        lines.append(load_int_reg("memory init", temp, rs1_val, test_data))
-        lines.append(f"\tSREG x{temp}, 0(x{rs1})")
+    if load_rd and not is_pair:
+        lines.append(load_int_reg("rd compare value", rd, rd_val, test_data))
 
     # Generate instruction, setup, test, and check lines
     setup, test, check = format_instruction(instr_name, instr_type, test_data, params)
@@ -111,7 +77,6 @@ def generate_cmp_testcase(
 
     # Cleanup temporary allocations
     return_test_regs(test_data, params)
-    test_data.int_regs.return_register(temp)
 
     return tc
 
@@ -141,11 +106,13 @@ def make_cmp_rd_rs1_val_eq(instr_name: str, instr_type: str, coverpoint: str, te
     """Generate CAS tests where rd value is equal to or not equal to the memory value (rs1)."""
 
     test_chunks = []
-    all_ones = (1 << test_data.xlen) - 1
+    is_pair = instr_type == "AP"
+    all_ones = (1 << (2 * test_data.xlen)) - 1 if is_pair else (1 << test_data.xlen) - 1
 
     # two bins: equal and not-equal
     for equal_case in [True, False]:
         rd_val = random_range(0, all_ones)
+        rs2_val = random_range(0, all_ones)
 
         if equal_case:
             rs1_val = rd_val
@@ -159,7 +126,9 @@ def make_cmp_rd_rs1_val_eq(instr_name: str, instr_type: str, coverpoint: str, te
             desc = f"{coverpoint} (rd_val != mem_val)"
             bin_name = "not_equal"
 
-        tc = generate_cmp_testcase(instr_name, instr_type, test_data, coverpoint, desc, bin_name, rd_val, rs1_val)
+        tc = generate_cmp_testcase(
+            instr_name, instr_type, test_data, coverpoint, desc, bin_name, rd_val, rs1_val, rs2_val
+        )
 
         test_chunks.append(tc)
 
@@ -171,17 +140,21 @@ def make_cmp_rd_rs1_val_lsb(instr_name: str, instr_type: str, coverpoint: str, t
     """Generate CAS tests where the least significant byte of rd value is equal to or not equal to the least significant byte of the memory value (rs1)."""
 
     test_chunks = []
-    all_ones = (1 << test_data.xlen) - 1
+    is_pair = instr_type == "AP"
+    all_ones = (1 << (2 * test_data.xlen)) - 1 if is_pair else (1 << test_data.xlen) - 1
     mask = 0xFF
 
     for equal_case in [True, False]:
         rd_val = random_range(0, all_ones)
         rs1_val = generate_masked_values(rd_val, mask, all_ones, equal_case)
+        rs2_val = random_range(0, all_ones)
 
         desc = f"{coverpoint} (rd_val[7:0] {'==' if equal_case else '!='} mem_val[7:0])"
         bin_name = "equal" if equal_case else "not_equal"
 
-        tc = generate_cmp_testcase(instr_name, instr_type, test_data, coverpoint, desc, bin_name, rd_val, rs1_val)
+        tc = generate_cmp_testcase(
+            instr_name, instr_type, test_data, coverpoint, desc, bin_name, rd_val, rs1_val, rs2_val
+        )
 
         test_chunks.append(tc)
 
@@ -193,17 +166,21 @@ def make_cmp_rd_rs1_val_hw(instr_name: str, instr_type: str, coverpoint: str, te
     """Generate CAS tests where the least significant half-word of rd value is equal to or not equal to the least significant half-word of the memory value (rs1)."""
 
     test_chunks = []
-    all_ones = (1 << test_data.xlen) - 1
+    is_pair = instr_type == "AP"
+    all_ones = (1 << (2 * test_data.xlen)) - 1 if is_pair else (1 << test_data.xlen) - 1
     mask = 0xFFFF
 
     for equal_case in [True, False]:
         rd_val = random_range(0, all_ones)
         rs1_val = generate_masked_values(rd_val, mask, all_ones, equal_case)
+        rs2_val = random_range(0, all_ones)
 
         desc = f"{coverpoint} (rd_val[15:0] {'==' if equal_case else '!='} mem_val[15:0])"
         bin_name = "equal" if equal_case else "not_equal"
 
-        tc = generate_cmp_testcase(instr_name, instr_type, test_data, coverpoint, desc, bin_name, rd_val, rs1_val)
+        tc = generate_cmp_testcase(
+            instr_name, instr_type, test_data, coverpoint, desc, bin_name, rd_val, rs1_val, rs2_val
+        )
 
         test_chunks.append(tc)
 
@@ -215,17 +192,21 @@ def make_cmp_rd_rs1_val_w(instr_name: str, instr_type: str, coverpoint: str, tes
     """Generate CAS tests where the least significant word of rd value is equal to or not equal to the least significant word of the memory value (rs1)."""
 
     test_chunks = []
-    all_ones = (1 << test_data.xlen) - 1
+    is_pair = instr_type == "AP"
+    all_ones = (1 << (2 * test_data.xlen)) - 1 if is_pair else (1 << test_data.xlen) - 1
     mask = 0xFFFFFFFF
 
     for equal_case in [True, False]:
         rd_val = random_range(0, all_ones)
         rs1_val = generate_masked_values(rd_val, mask, all_ones, equal_case)
+        rs2_val = random_range(0, all_ones)
 
         desc = f"{coverpoint} (rd_val[31:0] {'==' if equal_case else '!='} mem_val[31:0])"
         bin_name = "equal" if equal_case else "not_equal"
 
-        tc = generate_cmp_testcase(instr_name, instr_type, test_data, coverpoint, desc, bin_name, rd_val, rs1_val)
+        tc = generate_cmp_testcase(
+            instr_name, instr_type, test_data, coverpoint, desc, bin_name, rd_val, rs1_val, rs2_val
+        )
 
         test_chunks.append(tc)
 
@@ -243,7 +224,7 @@ def make_cmp_rd_rs1_pair_partial_val(
 
     test_chunks = []
 
-    all_ones = (1 << test_data.xlen) - 1
+    all_ones = (1 << (2 * test_data.xlen)) - 1
 
     # lo_match: this specifies the register 1 in pair register
     # hi_match: this specifies the register 2 in pair register
@@ -252,6 +233,7 @@ def make_cmp_rd_rs1_pair_partial_val(
         lo = random_range(0, all_ones)
         # random value for upper register in pair
         hi = random_range(0, all_ones)
+        rs2_val = random_range(0, all_ones)
 
         if case == "lo_match":
             # lower register value equal, upper register value mismatch
@@ -277,7 +259,9 @@ def make_cmp_rd_rs1_pair_partial_val(
             desc = f"{coverpoint} (upper match)"
             bin_name = "partial_hi"
 
-        tc = generate_cmp_testcase(instr_name, instr_type, test_data, coverpoint, desc, bin_name, rd_val, rs1_val)
+        tc = generate_cmp_testcase(
+            instr_name, instr_type, test_data, coverpoint, desc, bin_name, rd_val, rs1_val, rs2_val
+        )
 
         test_chunks.append(tc)
 

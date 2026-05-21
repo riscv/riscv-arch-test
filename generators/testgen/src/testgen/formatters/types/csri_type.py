@@ -36,6 +36,9 @@ def zicsr_acccess_setup(rs2: int, scratch_reg: int) -> str:
 
 def zicsr_acccessi(instr_name: str, rd: int, immval: int) -> str:
     """Helper function to determine which CSR to use for testing based on supported extensions."""
+    # Use writable unprivileged extension CSRs if any exist,
+    # else use mepc if U is not supported
+    # else use instret (which is not writable, but at least can be accessed)
     return (
         "#if defined(F_SUPPORTED)\n"
         f"{instr_name} x{rd}, fflags, {immval}\n"

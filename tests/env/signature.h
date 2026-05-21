@@ -469,11 +469,11 @@
             /* Check tail elements mismatches */                                                                        \
             vmand.mm    _VTMP, _VTMP, _MTMP      ;   /* VTMP[i] = tail && (vd != sig) → mismatch with signature */      \
             vmand.mm    _VTMP, _VTMP, _MTMP2     ;   /* VTMP[i] = signature mismatch && not all ones */            \
-            /* In the Mask Producing case, we are allowed to compute the mask as if vl = vlmax, we can safely clobber _MTMP2 now */       \
-            RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG3);                                                                     \
-            vlm.v _MTMP2, 0(_SIG_PTR);                                                                                                    \
-            vmxor.mm _MTMP2, _MTMP2, _VR; /* _MTMP2[i] = (_MTMP2[i] != _VR[i]) */                                                         \
-            vmand.mm _VTMP, _VTMP, _MTMP2 ; /* VTMP[i] = signature mismatch (vlmax) && signature mismatch (normal) && all ones mismatch */\
+            /* In the Mask Producing case, we are allowed to compute the mask as if vl = vlmax, we can safely clobber _MTMP2 now */        \
+            RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG3);                                                                      \
+            vlm.v _MTMP2, 0(_SIG_PTR);      /* Load the value calculated at vlmax */                                                       \
+            vmxor.mm _MTMP2, _MTMP2, _VR;   /* _MTMP2[i] = (vlmax_calculation[i] != _VR[i]) */                                             \
+            vmand.mm _VTMP, _VTMP, _MTMP2 ; /* VTMP[i] = signature mismatch (vlmax) && signature mismatch (normal) && all ones mismatch */ \
         .else; \
             /* Extract and check vta policy */                                                                          \
             srli        _LINK_REG, _TEMP_REG2, 6 ;   /* vta = vtype[6] */                                               \

@@ -34,18 +34,29 @@ def make_cr_fs1_fs2_edges(instr_name: str, instr_type: str, coverpoint: str, tes
 
     cross_frm = "_frm" in coverpoint
 
-    frm_modes = ("dyn", "rdn", "rmm", "rne", "rtz", "rup") if cross_frm else [None]
+    # For dyn we sweep all 5 legal fcsr.frm values explicitly rather than picking one
+    # randomly, so a DUT that ignores fcsr.frm can't slip past on the rne case.
+    if cross_frm:
+        frm_variants: list[tuple[str | None, int | None]] = [("dyn", v) for v in range(5)]
+        frm_variants += [(m, None) for m in ("rdn", "rmm", "rne", "rtz", "rup")]
+    else:
+        frm_variants = [(None, None)]
 
     test_chunks: list[TestChunk] = []
     for edge_val1 in edges1:
         for edge_val2 in edges2:
-            # Explicit rounding modes (if needed)
-            for frm_mode in frm_modes:
+            for frm_mode, csr_val in frm_variants:
                 params = generate_random_params(
-                    test_data, instr_type, exclude_regs=[0], fs1val=edge_val1, fs2val=edge_val2, frm=frm_mode
+                    test_data, instr_type, exclude_regs=[0],
+                    fs1val=edge_val1, fs2val=edge_val2,
+                    frm=frm_mode, csr_frm_val=csr_val,
                 )
-                bin_name = f"fs1val={edge_val1:#x}, fs2val={edge_val2:#x}, frm={frm_mode}"
-                desc = f"{coverpoint} (Test source fs1 = {test_data.flen_format_str.format(edge_val1)} fs2 = {test_data.flen_format_str.format(edge_val2)}{f', frm = {frm_mode}' if frm_mode is not None else ''})"
+                frm_label = "none" if frm_mode is None else (f"{frm_mode}{csr_val}" if csr_val is not None else frm_mode)
+                bin_name = f"fs1val={edge_val1:#x}, fs2val={edge_val2:#x}, frm={frm_label}"
+                desc_tag = ""
+                if frm_mode is not None:
+                    desc_tag = f", frm = {frm_mode}" + (f", fcsr.frm = {csr_val}" if csr_val is not None else "")
+                desc = f"{coverpoint} (Test source fs1 = {test_data.flen_format_str.format(edge_val1)} fs2 = {test_data.flen_format_str.format(edge_val2)}{desc_tag})"
                 tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
                 test_chunks.append(tc)
                 return_test_regs(test_data, params)
@@ -71,18 +82,28 @@ def make_cr_fs1_fs3_edges(instr_name: str, instr_type: str, coverpoint: str, tes
 
     cross_frm = "_frm" in coverpoint
 
-    frm_modes = ("dyn", "rdn", "rmm", "rne", "rtz", "rup") if cross_frm else [None]
+    # See note in make_cr_fs1_fs2_edges — dyn is expanded into 5 explicit fcsr.frm values.
+    if cross_frm:
+        frm_variants: list[tuple[str | None, int | None]] = [("dyn", v) for v in range(5)]
+        frm_variants += [(m, None) for m in ("rdn", "rmm", "rne", "rtz", "rup")]
+    else:
+        frm_variants = [(None, None)]
 
     test_chunks: list[TestChunk] = []
     for edge_val1 in edges1:
         for edge_val2 in edges2:
-            # Explicit rounding modes (if needed)
-            for frm_mode in frm_modes:
+            for frm_mode, csr_val in frm_variants:
                 params = generate_random_params(
-                    test_data, instr_type, exclude_regs=[0], fs1val=edge_val1, fs3val=edge_val2, frm=frm_mode
+                    test_data, instr_type, exclude_regs=[0],
+                    fs1val=edge_val1, fs3val=edge_val2,
+                    frm=frm_mode, csr_frm_val=csr_val,
                 )
-                desc = f"{coverpoint} (Test source fs1 = {test_data.flen_format_str.format(edge_val1)} fs3 = {test_data.flen_format_str.format(edge_val2)}{f', frm = {frm_mode}' if frm_mode is not None else ''})"
-                bin_name = f"fs1val={edge_val1:#x}, fs3val={edge_val2:#x}, frm={frm_mode}"
+                frm_label = "none" if frm_mode is None else (f"{frm_mode}{csr_val}" if csr_val is not None else frm_mode)
+                bin_name = f"fs1val={edge_val1:#x}, fs3val={edge_val2:#x}, frm={frm_label}"
+                desc_tag = ""
+                if frm_mode is not None:
+                    desc_tag = f", frm = {frm_mode}" + (f", fcsr.frm = {csr_val}" if csr_val is not None else "")
+                desc = f"{coverpoint} (Test source fs1 = {test_data.flen_format_str.format(edge_val1)} fs3 = {test_data.flen_format_str.format(edge_val2)}{desc_tag})"
                 tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
                 test_chunks.append(tc)
                 return_test_regs(test_data, params)

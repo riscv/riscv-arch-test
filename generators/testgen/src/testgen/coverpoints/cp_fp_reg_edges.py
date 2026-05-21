@@ -30,14 +30,28 @@ def make_fs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
 
     cross_frm = "_frm" in coverpoint
 
-    frm_modes = ("dyn", "rdn", "rmm", "rne", "rtz", "rup") if cross_frm else [None]
+    # For dyn we sweep all 5 legal fcsr.frm values explicitly; relying on a random pick
+    # lands on rne 20% of the time and hides a DUT that ignores fcsr.frm.
+    if cross_frm:
+        frm_variants: list[tuple[str | None, int | None]] = [("dyn", v) for v in range(5)]
+        frm_variants += [(m, None) for m in ("rdn", "rmm", "rne", "rtz", "rup")]
+    else:
+        frm_variants = [(None, None)]
 
     test_chunks: list[TestChunk] = []
     for edge_val in edges:
-        for frm_mode in frm_modes:
-            params = generate_random_params(test_data, instr_type, exclude_regs=[0], fs1val=edge_val, frm=frm_mode)
-            bin_name = f"b{edge_val:#x}{f'_{frm_mode}' if frm_mode is not None else ''}"
-            desc = f"{coverpoint} (Test source fs1 value = {test_data.flen_format_str.format(edge_val)}{f', frm = {frm_mode}' if frm_mode is not None else ''})"
+        for frm_mode, csr_val in frm_variants:
+            params = generate_random_params(
+                test_data, instr_type, exclude_regs=[0], fs1val=edge_val, frm=frm_mode, csr_frm_val=csr_val
+            )
+            frm_tag = ""
+            if frm_mode is not None:
+                frm_tag = f"_{frm_mode}{csr_val}" if csr_val is not None else f"_{frm_mode}"
+            bin_name = f"b{edge_val:#x}{frm_tag}"
+            desc_tag = ""
+            if frm_mode is not None:
+                desc_tag = f", frm = {frm_mode}" + (f", fcsr.frm = {csr_val}" if csr_val is not None else "")
+            desc = f"{coverpoint} (Test source fs1 value = {test_data.flen_format_str.format(edge_val)}{desc_tag})"
             tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
             test_chunks.append(tc)
             return_test_regs(test_data, params)

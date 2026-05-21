@@ -403,9 +403,8 @@
 //   _VS1           - Vector Source 1
 //   _MASKPROD_FLAG - Immediate flag indicating whether the instruction under test is mask-producing (1) or not (0)
 //   _MASKED_FLAG   - Immediate flag indicating whether the instruction under test is masked (1) or unmasked (0)
-//   _VCOMPRESS_FLAG - Immediate flag indicating whether the instruction under test is vcompress.m, which changes effective vl of destination register
-//                     If the instruction under test is vcompress.m, the immediate should be the number of vs1 register (e.g., v4 -> 4),
-//                     and -1 if the instruction under test is not vcompress.m.
+//   _VCOMPRESS_FLAG - Immediate flag indicating whether the instruction under test is vcompress.m (1) or not (0),
+//                     which changes effective vl of destination register.
 //                     The effective vl of vd of vcompress.m is the number of 1s in vs1, with respect to the original vl setting when executed.
 //   _VD_EEW        - Destination element width (for widening, 2*SEW)
 //   _LMUL          - LMUL setting
@@ -465,7 +464,7 @@
         .if (_MASKPROD_FLAG == 1); \
             /* Mask vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
             vmv.v.v      _MTMP2, _VR              ;   /* MTMP2[i] = (VR[i] == 1) */                                      \
-            vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = inactive && !(VR[i] == 1) → mismatch with all 1s */  \
+            vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = tail && !(VR[i] == 1) → mismatch with all 1s */  \
             /* Check tail elements mismatches */                                                                        \
             vmand.mm    _VTMP, _VTMP, _MTMP      ;   /* VTMP[i] = tail && (vd != sig) → mismatch with signature */      \
             vmand.mm    _VTMP, _VTMP, _MTMP2     ;   /* VTMP[i] = signature mismatch && not all ones */            \

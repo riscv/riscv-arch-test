@@ -446,7 +446,6 @@
             vle##_VD_EEW##.v _VTMP, 0(_SIG_PTR)     ;                                                                   \
             vmsne.vv    _MTMP, _VR, _VTMP        ;   /* _MTMP[i] = 1 if result != reference */                          \
         .endif; \
-    2:                                                                                                              \
         /* Build active element mask (i < vl && v0[i] == 1) */                                                      \
         vid.v       _VTMP                    ;   /* VTMP[i] = i (element index) */                                  \
         vmsltu.vx   _MTMP2, _VTMP, _TEMP_REG ;   /* MTMP2[i] = (i < original vl) */                                 \
@@ -454,7 +453,6 @@
             /* Filter the active element mask, if the operation was masked */ \
             vmand.mm    _MTMP2, _MTMP2, v0       ;   /* MTMP2 = Active = (i < vl) && v0[i] == 1 */                      \
         .endif; \
-    3:                                                                                                              \
         /* Check active elements mismatch */                                                                        \
         vmand.mm    _MTMP2, _MTMP2, _MTMP    ;   /* Active mismatches = active (MTMP2) && mismatch (MTMP)*/         \
         vfirst.m    _LINK_REG, _MTMP2        ;   /* Find first active mismatch index; -1 if none */                 \
@@ -504,7 +502,7 @@
             /* Extract and check vma policy */                                                                          \
             srli        _LINK_REG, _TEMP_REG2, 7 ;   /* vma = vtype[7] */                                               \
             andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
-            beqz        _LINK_REG, 8f            ;   /* If vma==0 (undisturbed), skip agnostic relaxation */            \
+            beqz        _LINK_REG, 3f            ;   /* If vma==0 (undisturbed), skip agnostic relaxation */            \
             .if (_MASKPROD_FLAG == 1); \
                 /* Mask vector mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                \
                 vmv.v.v      _MTMP2, _VR              ;   /* MTMP2[i] = (VR[i] == 1) */                                      \
@@ -514,14 +512,14 @@
                 vmseq.vi    _MTMP2, _VR, -1          ;   /* MTMP2[i] = (VR[i] == -1) */                                     \
                 vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = inactive && !(VR[i] == -1) → mismatch with all 1s*/  \
             .endif; \
-        8: \
+        3: \
             /* Check inactive element mismatches */                                                                     \
             vmand.mm    _VTMP, _VTMP, _MTMP      ;   /* VTMP[i] = inactive && (vd != sig) → mismatch with signature */  \
             srli        _LINK_REG, _TEMP_REG2, 7 ;   /* vma = vtype[7] */                                               \
             andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
-            beqz        _LINK_REG, 9f            ;   /* If vma==0 (undisturbed), skip agnostic all 1s comparison */     \
+            beqz        _LINK_REG, 4f            ;   /* If vma==0 (undisturbed), skip agnostic all 1s comparison */     \
             vmand.mm    _VTMP, _VTMP, _MTMP2     ;   /* VTMP[i] = signature mismatch && all 1s mismatch */              \
-        9:                                                                                                              \
+        4:                                                                                                              \
             vfirst.m    _LINK_REG, _VTMP         ;   /* Find first active mismatch index; -1 if none */                 \
             blt         _LINK_REG, x0, 12f       ;   /* If no mismatch found → PASS ALL */                              \
         .endif; \
@@ -577,38 +575,26 @@
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
         /* Save architecture state of instruction under test (vl and vtype) */                                      \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-        nop                                  ;   /* _SCALAR_DST_FLAG: LI placeholder */                             \
-        nop                                  ;   /* _SCALAR_DST_FLAG: beqz placeholder */                           \
-        nop                                  ;   /* _SCALAR_DST_FLAG: li placeholder */                             \
-    40:                                      ;                                                                      \
-        /* Obtain effective vl if insstruction is vcompress.m */                                                                       \
-        LI(_LINK_REG, _VCOMPRESS_FLAG)       ;   /* Load whether instr is vcompress.m which changes effective vl of vd */              \
-        beqz        _LINK_REG, 0f            ;   /* If not vcompress.m, effective vl is the same as current vl, skip following */      \
-        nop                                  ;   /* Count number of active elements in vs1 to get effective vl for vcompress.m */      \
-    0:                                                                                                                                 \
+        nop                                  ;   /* _TEMP_REG2 load */                                              \
+        nop                                  ;   /* _TEMP_REG load */                                               \
         /* Set vl = VLMAX for full-register comparison*/                                                            \
         vsetvli     _LINK_REG, x0, e ##_VD_EEW, m ##_LMUL, ta, ma ;                                                 \
         /* Load reference from signature and compute mismatch mask */                                               \
-        LI(_LINK_REG, _MASKPROD_FLAG)        ;   /* Load whether instr is a mask-producing instruction */           \
-        beqz        _LINK_REG, 1f            ;   /* If not mask-producing, skip to data vector comparison */        \
-        /* Mask vector comparison: Load reference from signature and compute mismatch mask */                       \
-        vsm.v       _VR, 0(_SIG_PTR)         ;   /* Load reference data with vector unit-stride mask load */        \
-        nop                                  ;                                                                      \
-        j           2f                       ;   /* Unconditional skip data vector comparison to active check */    \
-    1:                                                                                                              \
-        /* Data vector comparison: Load reference from signature and compute mismatch mask */                       \
-        vse##_VD_EEW##.v _VR, 0(_SIG_PTR)       ;                                                                   \
-        nop                                  ;                                                                      \
-    2:                                                                                                              \
+        .if (_MASKPROD_FLAG == 1) ; \
+            /* Mask vector comparison: Load reference from signature and compute mismatch mask */                       \
+            vsm.v       _VR, 0(_SIG_PTR)         ;   /* Load reference data with vector unit-stride mask load */        \
+            nop                                  ;                                                                      \
+        .else; \
+            /* Data vector comparison: Load reference from signature and compute mismatch mask */                       \
+            vse##_VD_EEW##.v _VR, 0(_SIG_PTR)    ;                                                                   \
+            nop                                  ;                                                                      \
+        .endif; \
         /* Build active element mask (i < vl && v0[i] == 1) */                                                      \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
-        LI(_LINK_REG, _MASKED_FLAG)          ;   /* Load whether instr was masked (0 = unmasked) */                 \
-        beqz        _LINK_REG, 3f            ;   /* If unmasked, skip mask filtering */                             \
-        nop                                  ;                                                                      \
-    3:                                                                                                              \
+        .if (_MASKED_FLAG == 1) ; \
+            nop                                  ;                                                                      \
+        .endif ;\
         /* Check active elements mismatch */                                                                        \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
@@ -618,69 +604,67 @@
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         /* Check whether instr is a mask-producing instruction */                                                   \
-        LI(_LINK_REG, _MASKPROD_FLAG)        ;   /* Load whether instr is a mask-producing instruction */           \
-        beqz        _LINK_REG, 4f            ;   /* If not mask-producing, skip to data vector comparison */        \
-        /* Extract and check vta policy */                                                                          \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-        /* Data vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-    4:                                                                                                              \
-        /* Mask vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-    5:                                                                                                              \
-        /* Check tail elements mismatches */                                                                        \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-        LI(_LINK_REG, _MASKPROD_FLAG);                                                                                          \
-        bnez _LINK_REG, 6f; /* Skip this code if MASKPROD_FLAG != 0 */                                                          \
-        /* In the Mask Producing case, we are allowed to compute the mask as if vl = vlmax, we can safely clobber _MTMP2 now */ \
-        nop ;                                                                                                       \
-        RVTEST_SIGUPD_V_ADVANCE_NOP;                                                                                \
-        nop ;                                                                                                       \
-        nop ;                                                                                                       \
-        nop ;                                                                                                       \
-    6:                                                                                                              \
+        .if (_MASKPROD_FLAG == 1) ;\
+            /* Mask vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
+            nop; \
+            nop; \
+            /* Check tail elements mismatches */                                                                        \
+            nop; \
+            nop; \
+            /* In the Mask Producing case, we are allowed to compute the mask as if vl = vlmax, we can safely clobber _MTMP2 now */       \
+            RVTEST_SIGUPD_V_ADVANCE_NOP ; \
+            nop; \
+            nop; \
+            nop; \
+        .else ;\
+            /* Extract and check vta policy */                                                                          \
+            nop                                  ;                                                                      \
+            nop                                  ;                                                                      \
+            nop                                  ;                                                                      \
+            /* Data vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
+            nop                                  ;                                                                      \
+            nop                                  ;                                                                      \
+        1: ;\
+            /* Check tail elements mismatches */                                                                        \
+            nop                                  ;                                                                      \
+            nop                                  ;                                                                      \
+            nop                                  ;                                                                      \
+        2:  ;\
+        .endif ;\
+        /* Now analyze VTMP to find a mismatch */ \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         /* Build mask inactive mask */                                                                              \
-        LI(_LINK_REG, _MASKED_FLAG)          ;   /* Dummy instruction */                                            \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-        /* Extract and check vma policy */                                                                          \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-        /* Check whether instr is a mask-producing instruction */                                                   \
-        LI(_LINK_REG, _MASKPROD_FLAG)        ;   /* Dummy instruction */                                            \
-        nop                                  ;                                                                      \
-        /* Mask vector mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-    7:                                                                                                              \
-        /* Mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                            \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-    8:                                                                                                              \
-        /* Check inactive element mismatches */                                                                     \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-    9:                                                                                                              \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
+        .if (_MASKED_FLAG == 0); \
+            nop; \
+        .else; \
+            nop                                  ;                                                                      \
+            nop                                  ;                                                                      \
+            nop                                  ;                                                                      \
+            /* Extract and check vma policy */                                                                          \
+            nop                                  ;                                                                      \
+            nop                                  ;                                                                      \
+            nop                                  ;                                                                      \
+            .if (_MASKPROD_FLAG == 1); \
+                /* Mask vector mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                \
+                nop                                  ;                                                                      \
+                nop                                  ;                                                                      \
+            .else;\
+                /* Mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                            \
+                nop                                  ;                                                                      \
+                nop                                  ;                                                                      \
+            .endif;\
+        3: ; \
+            /* Check inactive element mismatches */                                                                     \
+            nop                                  ;                                                                      \
+            nop                                  ;                                                                      \
+            nop                                  ;                                                                      \
+            nop                                  ;                                                                      \
+            nop                                  ;                                                                      \
+        4: ; \
+            nop                                  ;                                                                      \
+            nop                                  ;                                                                      \
+        .endif; \
     30:                                                                                                             \
         /* mask region FAIL path, has to come right after mask region checks */                                     \
         nop                                  ;                                                                      \

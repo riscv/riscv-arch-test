@@ -185,9 +185,10 @@ def _parse_trap_words(sig_path: Path, xlen: int) -> list[int] | None:
     except ValueError:
         raise ValueError("End canary not found in trap signature region")
 
-    # Trim trailing deadbeef padding
-    while raw_region and raw_region[-1] == deadbeef:
-        raw_region.pop()
+    # Do not strip trailing deadbeef here: it can be a legitimate padding word
+    # inside the last entry (e.g. word 3 of a 4-word interrupt entry with no
+    # IntID). The decode loop already rejects a standalone deadbeef as word0
+    # via its entry_size check.
 
     return raw_region
 

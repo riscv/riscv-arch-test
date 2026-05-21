@@ -88,20 +88,41 @@
 
 #define RVMODEL_MTIME_ADDRESS  0x0200BFF8  /* Address of mtime CSR */
 
-#define RVMODEL_SET_MEXT_INT(_R1, _R2)
+#define RVMODEL_SET_MEXT_INT(_R1, _R2) \
+  mv _R1, x21;       /* saving the value stored in x21 */ \
+  csrr _R2, mip;   \
+  li x21, 1<<11;    \
+  or x21, x21, _R2; /* set the bit 11 (machine external) of mip to high */ \
+  addi x0, x21, 0;  /* whisper uses the hint instruction where "addi x0, x21, imm" sets the value of MIP to value in x21*/\
+  mv x21, _R1;       /* restore the original value of x21*/
 
-#define RVMODEL_CLR_MEXT_INT(_R1, _R2)
+#define RVMODEL_CLR_MEXT_INT(_R1, _R2) \
+  mv _R1, x21;    /* saving the value stored in x21 */ \
+  li x21, 1<<11;      \
+  not x21, x21; \
+  csrr _R2, mip;   \
+  and x21, x21, _R2;/* clear bit 11 (machine external) of mip */\
+  addi x0, x21, 0; /* whisper uses the hint instruction where "addi x0, x21, imm" sets the value of MIP to value in x21*/\
+  mv x21, _R1; /* restore the original value of x21*/
 
 #define CLINT_BASE_ADDRESS 0x02000000
 #define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 #define RVMODEL_SET_MSW_INT(_R1, _R2) \
-  li _R1, 1; \
-  li _R2, RVMODEL_MSIP_ADDRESS; \
-  sw _R1, 0(_R2);
+  mv _R1, x21;     /* saving the value stored in x21 */ \
+  csrr _R2, mip;   \
+  li x21, 1<<3;    \
+  or x21, x21, _R2; /* set the bit 3 (machine software) of mip to high */ \
+  addi x0, x21, 0;  /* whisper uses the hint instruction where "addi x0, x21, imm" sets the value of MIP to value in x21*/ \
+  mv x21, _R1; /* restore the original value of x21*/
 
 #define RVMODEL_CLR_MSW_INT(_R1, _R2) \
-  li _R2, RVMODEL_MSIP_ADDRESS; \
-  sw zero, 0(_R2);
+  mv _R1, x21;     /* saving the value stored in x21 */\
+  li x21, 1<<3;    \
+  not x21, x21; \
+  csrr _R2, mip;   \
+  and x21, x21, _R2; /* clear bit 3 (machine software) of mip */\
+  addi x0, x21, 0; /* whisper uses the hint instruction where "addi x0, x21, imm" sets the value of MIP to value in x21*/\
+  mv x21, _R1; /* restore the original value of x21*/
 
 ##### Supervisor Interrupts #####
 

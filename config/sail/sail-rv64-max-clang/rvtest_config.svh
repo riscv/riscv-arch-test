@@ -1,1 +1,0 @@
-../sail-rv64-max/rvtest_config.svh

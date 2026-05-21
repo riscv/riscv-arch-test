@@ -10,7 +10,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
     Zcf_c_flw_cg = new(); Zcf_c_flw_cg.set_inst_name("obj_Zcf_c_flw");
     Zcf_c_flwsp_cg = new(); Zcf_c_flwsp_cg.set_inst_name("obj_Zcf_c_flwsp");
     Zcf_c_fsw_cg = new(); Zcf_c_fsw_cg.set_inst_name("obj_Zcf_c_fsw");

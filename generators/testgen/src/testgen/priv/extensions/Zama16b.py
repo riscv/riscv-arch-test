@@ -34,7 +34,7 @@ _LOAD_OPS: list[tuple[str, int, bool, str | None]] = [
     ("flh", 2, True, "#ifdef ZFH_SUPPORTED"),
     ("flw", 4, True, "#ifdef F_SUPPORTED"),
     ("fld", 8, True, "#ifdef D_SUPPORTED"),
-    ("flq", 16, True, "#ifdef Q_SUPPORTED"),
+    # ("flq", 16, True, "#ifdef Q_SUPPORTED"),
 ]
 
 _STORE_OPS: list[tuple[str, int, bool, str | None]] = [
@@ -48,7 +48,7 @@ _STORE_OPS: list[tuple[str, int, bool, str | None]] = [
     ("fsh", 2, True, "#ifdef ZFH_SUPPORTED"),
     ("fsw", 4, True, "#ifdef F_SUPPORTED"),
     ("fsd", 8, True, "#ifdef D_SUPPORTED"),
-    ("fsq", 16, True, "#ifdef Q_SUPPORTED"),
+    # ("fsq", 16, True, "#ifdef Q_SUPPORTED"),
 ]
 
 _AMO_OPS: list[tuple[str, int, str]] = [

@@ -90,7 +90,7 @@ covergroup ZicntrS_cg with function sample(ins_t ins);
       bins hpmcounter31_disabled  = {44'b110000011111_01111111111111111111111111111111};
     `endif
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
         bins cycleh_enabled         = {44'b110010000000_00000000000000000000000000000001};
         bins timeh_enabled          = {44'b110010000001_00000000000000000000000000000010};
         bins instreth_enabled       = {44'b110010000010_00000000000000000000000000000100};
@@ -233,7 +233,7 @@ covergroup ZicntrS_cg with function sample(ins_t ins);
           bins hpmcounter31_disabled  = {44'b110000011111_01111111111111111111111111111111};
         `endif
 
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins cycleh_enabled         = {44'b110010000000_00000000000000000000000000000001};
             bins timeh_enabled          = {44'b110010000001_00000000000000000000000000000010};
             bins instreth_enabled       = {44'b110010000010_00000000000000000000000000000100};

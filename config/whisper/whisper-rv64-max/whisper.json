@@ -77,7 +77,7 @@
     "domains": {
       "maplic": {
         "base": "0x0c000000",
-        "size": "0x00200000",
+        "size": "0x00100000",
         "parent": null,
         "is_machine": true,
         "hart_indices": [0],

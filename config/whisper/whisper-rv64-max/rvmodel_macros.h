@@ -117,7 +117,6 @@
 
 #define RVMODEL_CLR_MSW_INT(_R1, _R2) \
   mv _R1, x21;     /* saving the value stored in x21 */\
-  csrr _R2, mip;   \
   li x21, 1<<3;    \
   not x21, x21; \
   csrr _R2, mip;   \

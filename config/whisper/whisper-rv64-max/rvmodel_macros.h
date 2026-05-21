@@ -101,7 +101,7 @@
   li x21, 1<<11;      \
   not x21, x21; \
   csrr _R2, mip;   \
-  and x21, x21, _R2;/* set the bit 11 (machine external) of mip to low */\
+  and x21, x21, _R2;/* clear bit 11 (machine external) of mip */\
   addi x0, x21, 0; /* whisper uses the hint instruction where "addi x0, x21, imm" sets the value of MIP to value in x21*/\
   mv x21, _R1; /* restore the original value of x21*/
 
@@ -121,7 +121,7 @@
   li x21, 1<<3;    \
   not x21, x21; \
   csrr _R2, mip;   \
-  and x21, x21, _R2; /* set the bit 3 (machine software) of mip to low */\
+  and x21, x21, _R2; /* clear bit 3 (machine software) of mip */\
   addi x0, x21, 0; /* whisper uses the hint instruction where "addi x0, x21, imm" sets the value of MIP to value in x21*/\
   mv x21, _R1; /* restore the original value of x21*/
 

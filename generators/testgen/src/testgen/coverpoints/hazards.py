@@ -120,24 +120,22 @@ def make_cp_fpr_hazard(instr_name: str, instr_type: str, coverpoint: str, test_d
 
     for haz_type in hazard_types:
         for i in range(2):
+            # Bail out before allocating the producer if the consumer can't form this
+            # hazard, otherwise params_a's regs would leak from the pool on continue.
+            if haz_type == "raw" and not consumer_fp_srcs:
+                continue
+            if haz_type in ("waw", "war") and not consumer_has_fd:
+                continue
+
             params_a = generate_random_params(test_data, producer_type)
             assert params_a.fs1 is not None and params_a.fs2 is not None and params_a.fd is not None
 
             if haz_type == "raw":
-                if consumer_fp_srcs:
-                    src_field = consumer_fp_srcs[i % len(consumer_fp_srcs)]
-                    params_b = generate_random_params(test_data, instr_type, **{src_field: params_a.fd})
-                else:
-                    # Consumer reads no FP source register — skip this iteration's hazard
-                    # rather than emit a no-op test that pretends to cover RAW.
-                    continue
+                src_field = consumer_fp_srcs[i % len(consumer_fp_srcs)]
+                params_b = generate_random_params(test_data, instr_type, **{src_field: params_a.fd})
             elif haz_type == "waw":
-                if not consumer_has_fd:
-                    continue
                 params_b = generate_random_params(test_data, instr_type, fd=params_a.fd)
             elif haz_type == "war":
-                if not consumer_has_fd:
-                    continue
                 src_of_a = params_a.fs1 if i % 2 == 0 else params_a.fs2
                 params_b = generate_random_params(test_data, instr_type, fd=src_of_a)
             elif haz_type == "nohaz":

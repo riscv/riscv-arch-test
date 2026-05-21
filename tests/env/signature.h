@@ -466,7 +466,7 @@
         /* Check whether instr is a mask-producing instruction */                                                                      \
         .if (_MASKPROD_FLAG == 1); \
             /* Mask vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
-            vmand.mm    _MTMP2, _VR, _VR         ;   /* MTMP2[i] = (VR[i] == 1) */                                      \
+            vmv.v.v      _MTMP2, _VR              ;   /* MTMP2[i] = (VR[i] == 1) */                                      \
             vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = inactive && !(VR[i] == 1) → mismatch with all 1s */  \
             /* Check tail elements mismatches */                                                                        \
             vmand.mm    _VTMP, _VTMP, _MTMP      ;   /* VTMP[i] = tail && (vd != sig) → mismatch with signature */      \
@@ -507,7 +507,7 @@
             beqz        _LINK_REG, 8f            ;   /* If vma==0 (undisturbed), skip agnostic relaxation */            \
             .if (_MASKPROD_FLAG == 1); \
                 /* Mask vector mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                \
-                vmand.mm    _MTMP2, _VR, _VR         ;   /* MTMP2[i] = (VR[i] == 1) */                                      \
+                vmv.v.v      _MTMP2, _VR              ;   /* MTMP2[i] = (VR[i] == 1) */                                      \
                 vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = inactive && !(VR[i] == 1) → mismatch with all 1s */  \
             .else; \
                 /* Mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                            \

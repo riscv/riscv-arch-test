@@ -399,6 +399,9 @@
 //   _VTMP          - Temporary vector register used for loading reference and other vector operations
 //   _MTMP          - Mask register containing mismatch results
 //   _MTMP2         - Temporary mask register used for building active/tail/inactive masks
+//   _MTMP3         - Temporary mask register used for computing a mask for when vl > SEW_MAX
+//                    This takes up a disproportionate amount of calculation, so we try to avoid making this by hand
+//                    if possible.
 //   _VR            - Vector register under test
 //   _VS1           - Vector Source 1
 //   _MASKPROD_FLAG - Immediate flag indicating whether the instruction under test is mask-producing (1) or not (0)
@@ -416,7 +419,7 @@
 //   Note: _VTMP, _MTMP, _MTMP2 cannot be v0 since v0 should be saved to preserve its mask value (in case the instruction under test is masked)
 
 #ifdef RVTEST_SELFCHECK
-    #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP2, _MTMP, _VR,  \
+    #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR,  \
         _VS1, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR) \
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
@@ -445,21 +448,58 @@
             vle##_VD_EEW##.v _VTMP, 0(_SIG_PTR)     ;                                                                   \
             vmsne.vv    _MTMP, _VR, _VTMP        ;   /* _MTMP[i] = 1 if result != reference */                          \
         .endif; \
-        /* Build active element mask (i < vl && v0[i] == 1) */                                                      \
+        /* Build active element mask (i < vl && v0[i] == 1). This approach will not work if  */ \
+        /* vl > SEW_MAX because the rs1 input to vmsltu.vx will get truncated, so its possible we have */ \
+        /* to calculate the hard way */                  \
+        LI          (_LINK_REG, (1 << _VD_EEW))         ; \
+        bge         _TEMP_REG, _LINK_REG, 4f ; \
         vid.v       _VTMP                    ;   /* VTMP[i] = i (element index) */                                  \
-        vmsltu.vx   _MTMP2, _VTMP, _TEMP_REG ;   /* MTMP2[i] = (i < original vl) */                                 \
+        vmsltu.vx   _MTMP3, _VTMP, _TEMP_REG ;   /* MTMP2[i] = (i < original vl) */                                 \
+        j 5f ; \
+    4: ;\
+        /* Calculate the mask by hand:  */ \
+        /*   1: Calculate the bits of the mask of the byte between where the zeros and ones meet */ \
+        /*         i.e. the selected byte 00000000[00011111]11111111 */ \
+        /*   2: Place this byte in the first element of an sew = 8 vector register that is zeros otherwise  */ \
+        /*         Notice that this value also is from the selected byte upwards in the desired register */ \
+        /*   3: Use vslideup to slide this value into the correct place in a vector register that is all ones */ \
+        /*         This yields the desired result because the slide doesn't touch the ones below the bottom of the slide */ \
+        /*    e.g. vslideup 11111111, 00000011, 3 --> 00011|111 (here sew = 1 for simplicity, */ \
+        /*           and | is where the slide splits the registers) */ \
+        vsetvli _LINK_REG, x0, e8, m1, ta, ma ;  /* A mask has lmul = 1, so calculate with lmul = 1 */                                                 \
+        vmv.v.i _VTMP, 0; /* Zero out _VTMP, so that we can place the desired value in the first bytes */ \
+        /* To move into the first byte, we need to move with tail undisturbed into vl = 1 */ \
+        li _TEMP_REG3, 1; /* vl = 1 */ \
+        vsetvli x0, _TEMP_REG3, e8, m1, tu, ma ;  /* Set VL = 1 */                                                 \
+        /* Calculate the bits in the element bordering zeros and ones in the mask */ \
+        andi _LINK_REG, _TEMP_REG, 0x7; /* _LINK_REG = vl & 0x7 */ \
+        sll _LINK_REG, _TEMP_REG3, _LINK_REG; /* _LINK_REG = 1 << LINK_REG */ \
+        addi _LINK_REG, _LINK_REG, -1; /* _LINK_REG -= 1 */\
+        /* As, v1 = 1, this sets only the first element of vtmp to 1 */ \
+        vmv.v.x _VTMP, _LINK_REG; \
+        /* Return to a full vector register */ \
+        vsetvli _LINK_REG, x0, e8, m1, ta, ma ;                                                   \
+        /* Set the target to be all ones at the start */ \
+        LI(_LINK_REG, 0xff); \
+        vmv.v.x _MTMP3, _LINK_REG;\
+        /* Calculate the number of elements to slide _VTMP up */ \
+        srli _TEMP_REG3, _TEMP_REG, 3; /* _TEMP_REG = _TEMP_REG >> 3 (divides by 8) */ \
+        vslideup.vx _MTMP3, _VTMP, _TEMP_REG3; /* Slide Up By _TEMP_REG3. rs1 is NOT truncated to SEW bytes for this instruction */ \
+        vsetvli _LINK_REG, x0, e##_VD_EEW, m##_LMUL, ta, ma ; /* Return to the previous vector settings */                                \
+    5: ;\
         .if (_MASKED_FLAG == 1); \
             /* Filter the active element mask, if the operation was masked */ \
-            vmand.mm    _MTMP2, _MTMP2, v0       ;   /* MTMP2 = Active = (i < vl) && v0[i] == 1 */                      \
+            vmand.mm  _MTMP2, _MTMP3, v0       ;   /* MTMP2 = Active = (i < vl) && v0[i] == 1 */                      \
+        .else ; \
+            /* (vmv.v.v would generate an exception because _MTMP3 and _MTMP2 are not necessarily aligned for lmul) */ \
+            vmand.mm _MTMP2, _MTMP3, _MTMP3; /* Move the base element mask into _MTMP2 */ \
         .endif; \
         /* Check active elements mismatch */                                                                        \
         vmand.mm    _MTMP2, _MTMP2, _MTMP    ;   /* Active mismatches = active (MTMP2) && mismatch (MTMP)*/         \
         vfirst.m    _LINK_REG, _MTMP2        ;   /* Find first active mismatch index; -1 if none */                 \
         bge         _LINK_REG, x0, 10f       ;   /* If >=0, mismatch found → FAIL */                                \
-        /* Build tail element mask (i >= vl) */                                                                     \
-        vid.v       _VTMP                    ;   /* Recompute element indices */                                    \
-        vmsltu.vx   _VTMP, _VTMP, _TEMP_REG  ;   /* VTMP[i] = (i < original vl) */                                  \
-        vmnand.mm   _VTMP, _VTMP, _VTMP      ;   /* VTMP[i] = !(i < original vl) = (i >= original vl) */            \
+        /* Build tail element mask (i >= vl), _MTMP3 Contains the Base Mask */                                                                     \
+        vmnand.mm   _VTMP, _MTMP3, _MTMP3      ;   /* VTMP[i] = !base = tail */            \
         /* Check whether instr is a mask-producing instruction */                                                                      \
         .if (_MASKPROD_FLAG == 1); \
             /* Mask vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
@@ -491,13 +531,11 @@
         /* Now analyze VTMP to find a mismatch */ \
         vfirst.m    _LINK_REG, _VTMP         ;   /* Find first active mismatch index; -1 if none */                 \
         bge         _LINK_REG, x0, 20f       ;   /* If >=0, mismatch found → FAIL */                                \
-        /* Build mask inactive mask */                                                                              \
         .if (_MASKED_FLAG == 0); \
             j 12f; /* If unmasked, no mask inactive → all checks have passed */ \
         .else; \
-            vid.v       _VTMP                    ;   /* Recompute element indices */                                    \
-            vmsltu.vx   _VTMP, _VTMP, _TEMP_REG  ;   /* MTMP2[i] = (i < original vl) */                                 \
-            vmandn.mm   _VTMP, _VTMP, v0         ;   /* VTMP = Inactive = (i < vl) && (v0 == 0) */                      \
+            /* Build mask inactive mask */                                                                              \
+            vmandn.mm   _VTMP, _MTMP3, v0        ;   /* VTMP = base && (v0 == 0) = inactive */                      \
             /* Extract and check vma policy */                                                                          \
             srli        _LINK_REG, _TEMP_REG2, 7 ;   /* vma = vtype[7] */                                               \
             andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
@@ -569,7 +607,7 @@
         RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)                                                    ;\
         .option pop
 #else
-    #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP2, _MTMP, _VR,  \
+    #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR,  \
         _VS1, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR) \
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \

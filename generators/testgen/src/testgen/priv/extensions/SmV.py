@@ -8,7 +8,7 @@
 
 """SmV privileged test generator: vector CSRs and vtype/vl/vstart behavior in M-mode."""
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
 
@@ -92,6 +92,8 @@ def _gen_vcsrs_walking1s(test_data: TestData, temp_reg: int) -> list[str]:
     ]
     lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
     lines.extend(_vector_setup(temp_reg))
+    # Read-back register: separate from walk_reg so the walking bit is not clobbered.
+    read_reg = test_data.int_regs.get_register()
     for csr in _VECTOR_CSRS_WR:
         lines.append(f"# walking-1s on {csr}")
         lines.append(f"LI(x{mask_reg}, -1)  # all 1s")
@@ -100,15 +102,21 @@ def _gen_vcsrs_walking1s(test_data: TestData, temp_reg: int) -> list[str]:
             lines.append(f"CSRC({csr}, x{mask_reg})  # clear all bits")
             lines.append(test_data.add_testcase(f"{csr}_bit_{i}", coverpoint, _CG))
             lines.append(f"CSRW({csr}, x{walk_reg})  # walking-1 bit {i}")
+            # Capture the CSR read-back so WARL masking is verified against the reference,
+            # not just "the write didn't trap".
+            lines.append(f"csrr x{read_reg}, {csr}")
+            lines.append(write_sigupd(read_reg, test_data, "int"))
             lines.append(f"slli x{walk_reg}, x{walk_reg}, 1")
         lines.append("#if __riscv_xlen == 64")
         for i in range(32, 64):
             lines.append(f"CSRC({csr}, x{mask_reg})  # clear all bits")
             lines.append(test_data.add_testcase(f"{csr}_bit_{i}", coverpoint, _CG))
             lines.append(f"CSRW({csr}, x{walk_reg})  # walking-1 bit {i}")
+            lines.append(f"csrr x{read_reg}, {csr}")
+            lines.append(write_sigupd(read_reg, test_data, "int"))
             lines.append(f"slli x{walk_reg}, x{walk_reg}, 1")
         lines.append("#endif")
-    test_data.int_regs.return_registers([walk_reg, mask_reg])
+    test_data.int_regs.return_registers([walk_reg, mask_reg, read_reg])
     return lines
 
 

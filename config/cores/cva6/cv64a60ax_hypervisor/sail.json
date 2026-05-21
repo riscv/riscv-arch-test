@@ -414,6 +414,9 @@
     "S": {
       "supported": true
     },
+    "H": {
+      "supported": true
+    },
     "U": {
       "supported": true
     },

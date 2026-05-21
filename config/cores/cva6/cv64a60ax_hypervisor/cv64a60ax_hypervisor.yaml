@@ -37,7 +37,7 @@ implemented_extensions:
   - { name: Sstvala, version: "= 1.0.0" }
   - { name: Sstvecd, version: "= 1.0.0" }
   - { name: Ssu64xl, version: "= 1.0.0" }
-  - { name: Sv39, version: "= 1.13.0" }
+  - { name: Sv39, version: "= 1.0.0" }
   - { name: Svbare, version: "= 1.0.0" }
 
   # H extension: Added for RVB23+Hypervisor target config
@@ -215,6 +215,7 @@ params:
       false,
     ]
   HPM_EVENTS: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
+  MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
     [
       true,

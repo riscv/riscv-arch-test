@@ -626,10 +626,36 @@
             vse##_VD_EEW##.v _VR, 0(_SIG_PTR)    ;                                                                   \
             nop                                  ;                                                                      \
         .endif; \
-        /* Build active element mask (i < vl && v0[i] == 1) */                                                      \
+        /* Build active element mask */                                                      \
+        LI          (_LINK_REG, (1 << _VD_EEW))         ; \
+        bge         _TEMP_REG, _LINK_REG, 4f ; \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+    4: /* Comments provided for context into where we are relative to the self-checking macro */ \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        /* To move into the first byte, we need to move with tail undisturbed into vl = 1 */ \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        /* Calculate the bits in the element bordering zeros and ones in the mask */ \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        /* As, v1 = 1, this sets only the first element of vtmp to 1 */ \
+        nop                                  ;                                                                      \
+        /* Return to a full vector register */ \
+        nop                                  ;                                                                      \
+        /* Set the target to be all ones at the start */ \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+        /* Calculate the number of elements to slide _VTMP up */ \
+        nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         .if (_MASKED_FLAG == 1) ; \
+            nop                                  ;                                                                      \
+        .else ;\
             nop                                  ;                                                                      \
         .endif ;\
         /* Check active elements mismatch */                                                                        \
@@ -637,8 +663,6 @@
         nop                                  ;                                                                      \
         j           12f                      ;   /* Unconditional set to PASS for non-selfcheck */                  \
         /* Build tail element mask (i >= vl) */                                                                     \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         /* Check whether instr is a mask-producing instruction */                                                   \
         .if (_MASKPROD_FLAG == 1) ;\
@@ -671,12 +695,10 @@
         /* Now analyze VTMP to find a mismatch */ \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
-        /* Build mask inactive mask */                                                                              \
         .if (_MASKED_FLAG == 0); \
             nop; \
         .else; \
-            nop                                  ;                                                                      \
-            nop                                  ;                                                                      \
+            /* Build mask inactive mask */                                                                              \
             nop                                  ;                                                                      \
             /* Extract and check vma policy */                                                                          \
             nop                                  ;                                                                      \

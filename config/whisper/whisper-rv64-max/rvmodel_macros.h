@@ -82,6 +82,22 @@
 
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
+#define APLIC_BASE       0x0c000000 /* not really used anywhere just as a reference base address */
+
+#define ADDR_DOMAINCFG  0x0c000000
+#define ADDR_SOURCECFG1 0x0c000004
+#define ADDR_SETIE0     0x0c001e00
+#define ADDR_SETIPNUM   0x0c001cdc
+#define ADDR_CLRIPNUM   0x0c001ddc
+#define ADDR_TARGET1    0x0c003004
+#define ADDR_IDELIVERY0 0x0c004000
+#define ADDR_ITHRESH0   0x0c004008
+#define ADDR_CLAIMI0    0x0c00401c
+
+#define SM_EDGE1        4
+#define DOMAINCFG_RUN   0x80000100
+#define TARGET1_H0_P1   0x00000001
+
 ##### Machine Timer #####
 
 #define RVMODEL_MTIMECMP_ADDRESS  0x02004000  /* Address of mtimecmp CSR */
@@ -89,40 +105,43 @@
 #define RVMODEL_MTIME_ADDRESS  0x0200BFF8  /* Address of mtime CSR */
 
 #define RVMODEL_SET_MEXT_INT(_R1, _R2) \
-  mv _R1, x21;       /* saving the value stored in x21 */ \
-  csrr _R2, mip;   \
-  li x21, 1<<11;    \
-  or x21, x21, _R2; /* set the bit 11 (machine external) of mip to high */ \
-  addi x0, x21, 0;  /* whisper uses the hint instruction where "addi x0, x21, imm" sets the value of MIP to value in x21*/\
-  mv x21, _R1;       /* restore the original value of x21*/
+  li      _R1, ADDR_SOURCECFG1; \
+  li      _R2, SM_EDGE1; \
+  sw      _R2, 0(_R1); \
+  li      _R1, ADDR_TARGET1; \
+  li      _R2, TARGET1_H0_P1; \
+  sw      _R2, 0(_R1); \
+  li      _R1, ADDR_DOMAINCFG; \
+  li      _R2, DOMAINCFG_RUN; \
+  sw      _R2, 0(_R1); \
+  li      _R1, ADDR_IDELIVERY0; \
+  li      _R2, 1; \
+  sw      _R2, 0(_R1); \
+  li      _R1, ADDR_ITHRESH0; \
+  sw      zero, 0(_R1); \
+  li      _R1, ADDR_SETIE0; \
+  li      _R2, 2; \
+  sw      _R2, 0(_R1); \
+  li      _R1, ADDR_SETIPNUM; \
+  li      _R2, 1; \
+  sw      _R2, 0(_R1);
 
 #define RVMODEL_CLR_MEXT_INT(_R1, _R2) \
-  mv _R1, x21;    /* saving the value stored in x21 */ \
-  li x21, 1<<11;      \
-  not x21, x21; \
-  csrr _R2, mip;   \
-  and x21, x21, _R2;/* clear bit 11 (machine external) of mip */\
-  addi x0, x21, 0; /* whisper uses the hint instruction where "addi x0, x21, imm" sets the value of MIP to value in x21*/\
-  mv x21, _R1; /* restore the original value of x21*/
+  li      _R1, ADDR_CLRIPNUM; \
+  li      _R2, 1; \
+  sw      _R2, 0(_R1);
 
 #define CLINT_BASE_ADDRESS 0x02000000
 #define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
+
 #define RVMODEL_SET_MSW_INT(_R1, _R2) \
-  mv _R1, x21;     /* saving the value stored in x21 */ \
-  csrr _R2, mip;   \
-  li x21, 1<<3;    \
-  or x21, x21, _R2; /* set the bit 3 (machine software) of mip to high */ \
-  addi x0, x21, 0;  /* whisper uses the hint instruction where "addi x0, x21, imm" sets the value of MIP to value in x21*/ \
-  mv x21, _R1; /* restore the original value of x21*/
+  li      _R2, CLINT_BASE_ADDRESS; \
+  li      _R1, 1; \
+  sw      _R1, (_R2); \
 
 #define RVMODEL_CLR_MSW_INT(_R1, _R2) \
-  mv _R1, x21;     /* saving the value stored in x21 */\
-  li x21, 1<<3;    \
-  not x21, x21; \
-  csrr _R2, mip;   \
-  and x21, x21, _R2; /* clear bit 3 (machine software) of mip */\
-  addi x0, x21, 0; /* whisper uses the hint instruction where "addi x0, x21, imm" sets the value of MIP to value in x21*/\
-  mv x21, _R1; /* restore the original value of x21*/
+  li      _R1, CLINT_BASE_ADDRESS; \
+  sw      x0, (_R1);
 
 ##### Supervisor Interrupts #####
 

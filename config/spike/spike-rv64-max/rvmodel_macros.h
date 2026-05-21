@@ -124,6 +124,9 @@
 #define PLIC_ENABLE_ADDRESS  0x0c002000
 #define PLIC_THRESH_ADDRESS  0x0c200000
 #define PLIC_CLAIM_ADDRESS   0x0c200004
+#define PLIC_SENABLE_ADDRESS 0x0c002080   /* For S mode */
+#define PLIC_STHRESH_ADDRESS 0x0c201000
+#define PLIC_SCLAIM_ADDRESS  0x0c201004
 #define NS16550_BASE_ADDRESS 0x10000000
 #define UART_INT_SRC         1            /* NS16550 interrupt source ID in Spike */
 
@@ -172,9 +175,25 @@
 
 #define SPIKE_SSIP_ADDRESS (CLINT_BASE_ADDRESS + 0xC000)
 
-#define RVMODEL_SET_SEXT_INT(_R1, _R2)
+#define RVMODEL_SET_SEXT_INT(_R1, _R2)          \
+  li _R1, 7;                                     \
+  li _R2, PLIC_BASE_ADDRESS;                     \
+  sw _R1, (4*UART_INT_SRC)(_R2);                 \
+  li _R1, (1 << UART_INT_SRC);                   \
+  li _R2, PLIC_SENABLE_ADDRESS;                   \
+  sw _R1, 0(_R2);                                \
+  li _R2, PLIC_STHRESH_ADDRESS;                   \
+  sw zero, 0(_R2);                               \
+  li _R1, 0x02;                                  \
+  li _R2, NS16550_BASE_ADDRESS;                  \
+  sb _R1, 1(_R2);
 
-#define RVMODEL_CLR_SEXT_INT(_R1, _R2)
+#define RVMODEL_CLR_SEXT_INT(_R1, _R2)          \
+  li _R2, NS16550_BASE_ADDRESS;                  \
+  sb zero, 1(_R2);                               \
+  li _R2, PLIC_SCLAIM_ADDRESS;                    \
+  lw _R1, 0(_R2);                               \
+  sw _R1, 0(_R2);
 
 #define RVMODEL_SET_SSW_INT(_R1, _R2) \
   li _R1, 1; \

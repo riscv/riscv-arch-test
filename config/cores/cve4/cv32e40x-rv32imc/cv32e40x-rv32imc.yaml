@@ -75,14 +75,14 @@ params:
   MTVEC_MODES: [0, 1] # VERIFIED -- MODE[1:0] WARL(0x0, 0x1); 0=non-vectored CLINT, 1=vectored CLINT
   MTVEC_ACCESS: rw
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom # VERIFIED -- MODE[1] hardwired 0, MODE[0] writable; only values 0/1 retained
-  MTVEC_BASE_ALIGNMENT_VECTORED: 256 # User Manual control_status_registers.rst csr-mtvec: BASE[31:8] RW, BASE[7:2] WARL(0x0); 2^8 = 256-byte alignment
-  MTVEC_BASE_ALIGNMENT_DIRECT: 256 # same alignment constraint applies in direct mode
+  MTVEC_BASE_ALIGNMENT_VECTORED: 128 # VERIFIED -- User Manual csr-mtvec: BASE[31:7] WARL (writable), BASE[6:2] WARL(0x0); RTL CSR_BASIC_MTVEC_MASK=0xFFFFFF81 (bit 7 writable); 2^7 = 128-byte alignment
+  MTVEC_BASE_ALIGNMENT_DIRECT: 128 # same 128-byte alignment constraint applies in direct mode
 
   # Sm params
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true # VERIFIED -- User Manual, Exceptions and Interrupts: "All exceptions are precise"
   MARCHID_IMPLEMENTED: true # VERIFIED -- marchid CSR (0xF12) in CSR map
   MIMPID_IMPLEMENTED: true # VERIFIED -- mimpid CSR (0xF13) in CSR map
-  PMA_GRANULARITY: 2 # ASSUMED -- no explicit PMA hardware with PMA_NUM_REGIONS=0; minimum 4-byte (2^2) aligned OBI bus
+  PMA_GRANULARITY: 2 # VERIFIED -- pma.rst: word_addr_low/high hold address bits[33:2]; PMA region boundaries are 4-byte (word) aligned; 2^2 = 4 bytes
   NUM_PMP_ENTRIES: 0 # VERIFIED -- no pmpcfg/pmpaddr CSRs in CSR map; PMP not implemented in CV32E40X
 
   # Zcmt params (VERIFIED -- User Manual, Control and Status Registers, jvt section)
@@ -166,12 +166,12 @@ params:
       false,
       false, # 24..31 (unimplemented)
     ]
-  MCOUNTENABLE_EN: # NOTE: CV32E40X has no mcounteren (M-mode only; no U/S mode); values below satisfy UDB schema
+  MCOUNTENABLE_EN: # VERIFIED -- CV32E40X has no U/S mode; mcounteren is WARL(0x0) hardwired; no counter is delegatable
     [
-      true,
-      true,
-      true,
-      true,
+      false,
+      false,
+      false,
+      false,
       false,
       false,
       false,

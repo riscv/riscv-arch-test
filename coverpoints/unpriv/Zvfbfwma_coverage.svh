@@ -19,7 +19,6 @@
 `ifdef UDB_ELEN_32
     `define SEW_16_EQ_ELEN_DIV_2
 `endif
-`ifndef ELEN16
 covergroup Zvfbfwma_vfwmaccbf16_vf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "vfwmaccbf16.vf"  iff (ins.trap == 0 )  {
@@ -231,9 +230,7 @@ covergroup Zvfbfwma_vfwmaccbf16_vf_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
-`ifndef ELEN16
 covergroup Zvfbfwma_vfwmaccbf16_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -461,7 +458,6 @@ covergroup Zvfbfwma_vfwmaccbf16_vv_cg with function sample(ins_t ins);
     //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
 
 endgroup
-`endif
 // ---------------------
 function void zvfbfwma_sample(int hart, int issue, ins_t ins);
     // Want to sample only if the SEW matches the target SEW of the file, some tests require
@@ -470,16 +466,12 @@ function void zvfbfwma_sample(int hart, int issue, ins_t ins);
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
-        `ifndef ELEN16
             "vfwmaccbf16.vf"     : begin
                 Zvfbfwma_vfwmaccbf16_vf_cg.sample(ins);
             end
-        `endif
-        `ifndef ELEN16
             "vfwmaccbf16.vv"     : begin
                 Zvfbfwma_vfwmaccbf16_vv_cg.sample(ins);
             end
-        `endif
         endcase
     end
 endfunction

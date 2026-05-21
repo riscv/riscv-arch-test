@@ -10,9 +10,5 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
-`ifndef ELEN16
     Zvfbfmin_vfncvtbf16_f_f_w_cg = new(); Zvfbfmin_vfncvtbf16_f_f_w_cg.set_inst_name("obj_Zvfbfmin_vfncvtbf16_f_f_w");
-`endif
-`ifndef ELEN16
     Zvfbfmin_vfwcvtbf16_f_f_v_cg = new(); Zvfbfmin_vfwcvtbf16_f_f_v_cg.set_inst_name("obj_Zvfbfmin_vfwcvtbf16_f_f_v");
-`endif

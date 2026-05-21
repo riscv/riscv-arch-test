@@ -1530,8 +1530,8 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
 
       ext_parts = re.findall(r'Z[a-z]+|[A-Z]', extension)
 
-      ext_parts_no_I = []
-      ext_str_no_I = ""
+      ext_parts_no_I = ["zifencei"]
+      ext_str_no_I = "_zifenci"
       for ext in ext_parts:
         if ext == "I":
           continue

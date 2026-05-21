@@ -54,7 +54,7 @@ def generate_cmp_testcase(
     if params.rd is None or params.rs1 is None or params.rs2 is None:
         raise ValueError("Could not allocate registers for CAS instruction")
 
-    rd, rs1, rs2 = params.rd, params.rs1, params.rs2
+    rd = params.rd
 
     params.rdval = rd_val
     params.rs1val = rs1_val
@@ -286,7 +286,16 @@ def make_cmp_rd_rs1_sign_ext(instr_name: str, instr_type: str, coverpoint: str, 
         bin_name = f"sign_ext_match_{mem_val:08x}"
 
         tc = generate_cmp_testcase(
-            instr_name, instr_type, test_data, coverpoint, desc, bin_name, rd_val=0, rs1_val=mem_val, load_rd=False
+            instr_name,
+            instr_type,
+            test_data,
+            coverpoint,
+            desc,
+            bin_name,
+            rd_val=0,
+            rs1_val=mem_val,
+            rs2_val=0,
+            load_rd=False,
         )
 
         test_chunks.append(tc)

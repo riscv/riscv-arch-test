@@ -84,7 +84,7 @@ def make_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     reg_is_pair = False
     if coverpoint == "cp_rs1":
         rs1_regs = list(range(test_data.int_regs.reg_count))
-    elif coverpoint.endswith("_nx0") or coverpoint.endswith("_nx0_pair"):
+    elif coverpoint.endswith(("_nx0", "_nx0_pair")):
         rs1_regs = list(range(1, test_data.int_regs.reg_count))  # Exclude x0
     elif coverpoint.endswith("_nx2"):
         rs1_regs = list(range(1, test_data.int_regs.reg_count))  # Exclude x0

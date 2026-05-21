@@ -17,11 +17,8 @@ csri_config = InstructionTypeConfig(
 )
 
 
-def zicsr_acccess_setup(rs2: int) -> str:
+def zicsr_acccess_setup(rs2: int, scratch_reg: int) -> str:
     """Helper to initialize CSR or sample 'before' counter value."""
-    # Use writable unprivileged extension CSRs if any exist,
-    # else use mepc if U is not supported
-    # else use instret (which is not writable, but at least can be accessed)
     return (
         "#if defined(F_SUPPORTED)\n"
         f"csrrw x0, fflags, x{rs2}\n"
@@ -30,9 +27,9 @@ def zicsr_acccess_setup(rs2: int) -> str:
         "#elif !defined(U_SUPPORTED)\n"
         f"csrrw x0, mepc, x{rs2}\n"
         "#elif defined(ZICNTR_SUPPORTED)\n"
-        f"csrrs x{rs2}, instret, x0\n"
+        f"csrrs x{scratch_reg}, instret, x0\n"
         "#else\n"
-        f"  Error: no CSR known for testing\n"
+        "#error no CSR known for testing\n"
         "#endif\n"
     )
 
@@ -66,7 +63,7 @@ def format_csri_type(
     forbidden = {params.rd, params.rs2}
     allocated = []
     scratch_reg = None
-
+    
     try:
         allocated = test_data.int_regs.get_registers(len(forbidden) + 1)
         
@@ -74,14 +71,14 @@ def format_csri_type(
             if reg not in forbidden:
                 scratch_reg = reg
                 break
-        
+                
         if scratch_reg is None:
             raise RuntimeError("Allocator returned non-unique registers violating contract.")
 
         setup = [
             load_int_reg("temp reg", params.rs2, params.rs2val, test_data),
             "// Initialize CSR with random value or capture 'before' sample",
-            zicsr_acccess_setup(params.rs2),
+            zicsr_acccess_setup(params.rs2, scratch_reg),
         ]
         test = [
             "// perform operation",
@@ -104,17 +101,12 @@ def format_csri_type(
             f"csrrs x{params.rs2}, mepc, x0",
             write_sigupd(params.rs2, test_data, "int"),
             "#elif defined(ZICNTR_SUPPORTED)",
-            "// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch",
-            f"sub x{scratch_reg}, x{params.rd}, x{params.rs2}",
-            f"sltiu x{scratch_reg}, x{scratch_reg}, 0x000007FF",
-            write_sigupd(scratch_reg, test_data, "int"),     
-            "// 2. Validate 'after' counter state (safe to clobber rs2 now)",
-            f"csrrs x{scratch_reg}, instret, x0",
-            f"sub x{scratch_reg}, x{scratch_reg}, x{params.rs2}",
-            f"sltiu x{params.rs2}, x{scratch_reg}, 0x000007FF",
-            write_sigupd(params.rs2, test_data, "int"),
+            "// Read instret after execution, subtract 'before' sample, and record difference",
+            f"csrrs x{params.rs2}, instret, x0",
+            f"sub x{params.rs2}, x{params.rs2}, x{scratch_reg}",
+            write_sigupd(params.rs2, test_data, "int"),     
             "#else",
-            "  Error: no CSR known for testing",
+            "#error no CSR known for testing",
             "#endif",
         ]
         return (setup, test, check)

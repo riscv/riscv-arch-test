@@ -2,7 +2,6 @@
 // cp_ssstrictv_lmulgt1_off_group
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // LMUL=2: vd, vs1, vs2 not divisible by 2 should trap
     cp_ssstrictv_lmul2_vd_off_group: cross std_trap_vec, vtype_lmul_2, vd_all_reg_unaligned_lmul_2;

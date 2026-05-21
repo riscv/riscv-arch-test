@@ -21,7 +21,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv32]
-# MARCH: rv32i_zicsr
+# MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv32_nleaf_pte_level0_Umode.S"

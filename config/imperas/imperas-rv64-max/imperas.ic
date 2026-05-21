@@ -51,11 +51,11 @@
 --override cpu*/ELEN=64 #(Uns32) (default=64) (default) Override ELEN
 --override cpu*/SEW_min=8 #(Uns32) (default=8) (default) Override minimum supported SEW
 --override cpu*/VLEN=0x200 #(Uns32) (default=0x200) (default) Override VLEN
---override cpu*/Zve32f=F #(Boolean) (default=F) (default) Specify that Zve32f is implemented
---override cpu*/Zve32x=F #(Boolean) (default=F) (default) Specify that Zve32x is implemented
---override cpu*/Zve64d=F #(Boolean) (default=F) (default) Specify that Zve64d is implemented
---override cpu*/Zve64f=F #(Boolean) (default=F) (default) Specify that Zve64f is implemented
---override cpu*/Zve64x=F #(Boolean) (default=F) (default) Specify that Zve64x is implemented
+--override cpu*/Zve32f=T #(Boolean) (default=F) (default) Specify that Zve32f is implemented
+--override cpu*/Zve32x=T #(Boolean) (default=F) (default) Specify that Zve32x is implemented
+--override cpu*/Zve64d=T #(Boolean) (default=F) (default) Specify that Zve64d is implemented
+--override cpu*/Zve64f=T #(Boolean) (default=F) (default) Specify that Zve64f is implemented
+--override cpu*/Zve64x=T #(Boolean) (default=F) (default) Specify that Zve64x is implemented
 --override cpu*/Zvfbfmin=T #(Boolean) (default=T) (default) Specify that Zvfbfmin is implemented
 --override cpu*/Zvfbfwma=T #(Boolean) (default=T) (default) Specify that Zvfbfwma is implemented
 --override cpu*/Zvfh=T #(Boolean) (default=T) (default) Specify that Zvfh is implemented

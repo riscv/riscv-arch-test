@@ -25,7 +25,7 @@ covergroup ExceptionsZaamo_cg with function sample(ins_t ins);
         wildcard bins amomaxu_w = {AMOMAXU_W};
         wildcard bins amomin_w  = {AMOMIN_W};
         wildcard bins amominu_w = {AMOMINU_W};
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             wildcard bins amoswap_d = {AMOSWAP_D};
             wildcard bins amoadd_d  = {AMOADD_D};
             wildcard bins amoand_d  = {AMOAND_D};

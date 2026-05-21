@@ -31,13 +31,13 @@ covergroup S_scause_cg with function sample(ins_t ins);
     scause: coverpoint ins.current.insn[31:20] {
         bins scause = {CSR_SCAUSE};
     }
-    scause_interrupt : coverpoint ins.current.rs1_val[XLEN-1] {
+    scause_interrupt : coverpoint ins.current.rs1_val[`UDB_MXLEN-1] {
         bins interrupt = {1};
     }
-    scause_exception : coverpoint ins.current.rs1_val[XLEN-1] {
+    scause_exception : coverpoint ins.current.rs1_val[`UDB_MXLEN-1] {
         bins exception = {0};
     }
-    scause_exception_values: coverpoint ins.current.rs1_val[XLEN-2:0] {
+    scause_exception_values: coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
         // exclude reserved and custom fields
         bins b_0_instruction_address_misaligned = {0};
         bins b_1_instruction_address_fault = {1};
@@ -73,7 +73,7 @@ covergroup S_scause_cg with function sample(ins_t ins);
         //bins b_47_32_reserved = {[47:32]};
         //bins b_63_48_custom = {[63:48]};
     }
-    scause_interrupt_values: coverpoint ins.current.rs1_val[XLEN-2:0] {
+    scause_interrupt_values: coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
         // exclude reserved and custom fields
         //bins b_0_reserved = {0};
         bins b_1_supervisor_software = {1};
@@ -104,7 +104,7 @@ covergroup S_sstatus_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    cp_sstatus_sd: coverpoint ins.current.rs1_val[XLEN-1]  {
+    cp_sstatus_sd: coverpoint ins.current.rs1_val[`UDB_MXLEN-1]  {
     }
     cp_sstatus_fs: coverpoint ins.current.rs1_val[14:13] {
     }
@@ -121,8 +121,8 @@ covergroup S_sstatus_cg with function sample(ins_t ins);
     // main coverpoints
     cp_sstatus_sd_write: cross priv_mode_s, csrrw, sstatus, cp_sstatus_sd, cp_sstatus_fs, cp_sstatus_vs, cp_sstatus_xs;
 
-    `ifdef SS1P13_SUPPORTED
-        `ifdef XLEN64
+    `ifdef S1P13P0_SUPPORTED
+        `ifdef UDB_MXLEN_64
             uxl_write_attempt: coverpoint ins.current.rs1_val[33:32] {
                 bins attempt_1 = {2'b01};
                 bins attempt_2 = {2'b10};
@@ -132,8 +132,8 @@ covergroup S_sstatus_cg with function sample(ins_t ins);
             }
              // main coverpoints
             cp_sxlen_ge_uxlen: cross priv_mode_s, csrop, sstatus, uxl_write_attempt;
-        `endif // XLEN64
-    `endif // SS1P13_SUPPORTED
+        `endif // UDB_MXLEN_64
+    `endif // S1P13P0_SUPPORTED
 
 endgroup
 
@@ -191,14 +191,14 @@ covergroup S_scsr_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     walking_ones: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
-        bins b_1[] = { [0:`XLEN-1] };
+        bins b_1[] = { [0:`UDB_MXLEN-1] };
     }
 
     // walking_ones_nonmode: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
-    //     `ifdef XLEN64
-    //         bins b_1[] = { [0:`XLEN-5] };
+    //     `ifdef UDB_MXLEN_64
+    //         bins b_1[] = { [0:`UDB_MXLEN-5] };
     //     `else
-    //         bins b_1[] = { [0:`XLEN-2] };
+    //         bins b_1[] = { [0:`UDB_MXLEN-2] };
     //     `endif
     // }
 

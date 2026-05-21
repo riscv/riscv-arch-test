@@ -57,9 +57,9 @@ implemented_extensions:
   - { name: Ssu64xl, version: "= 1.0.0" }
   - { name: Ssube, version: "= 1.0.0" }
   - { name: Supm, version: "= 1.0.0" }
-  - { name: Sv39, version: "= 1.13.0" }
-  - { name: Sv48, version: "= 1.13.0" }
-  - { name: Sv57, version: "= 1.13.0" }
+  - { name: Sv39, version: "= 1.0.0" }
+  - { name: Sv48, version: "= 1.0.0" }
+  - { name: Sv57, version: "= 1.0.0" }
   - { name: Svade, version: "= 1.0.0" }
   - { name: Svadu, version: "= 1.0.0" }
   - { name: Svbare, version: "= 1.0.0" }
@@ -78,7 +78,7 @@ implemented_extensions:
   - { name: Zalasr, version: "= 1.0.0" }
   - { name: Zalrsc, version: "= 1.0.0" }
   - { name: Zama16b, version: "= 1.0.0" }
-  - { name: Zawrs, version: "= 1.0.1" }
+  - { name: Zawrs, version: "= 1.0.0" }
   - { name: Zba, version: "= 1.0.0" }
   - { name: Zbb, version: "= 1.0.0" }
   - { name: Zbc, version: "= 1.0.0" }
@@ -154,7 +154,6 @@ implemented_extensions:
   - { name: Zvl128b, version: "= 1.0.0" }
   - { name: Zvl256b, version: "= 1.0.0" }
   - { name: Zvl512b, version: "= 1.0.0" }
-  - { name: Zvl1024b, version: "= 1.0.0" }
 
 params:
   # A params
@@ -328,6 +327,7 @@ params:
       true,
     ]
   HPM_EVENTS: [0]
+  MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
     [
       true,
@@ -400,7 +400,7 @@ params:
     ]
   # Vector params
   MUTABLE_MISA_V: false
-  VLEN: 1024
+  VLEN: 512
   ELEN: 64
   FOLLOW_VTYPE_RESET_RECOMMENDATION: true
   HW_MSTATUS_VS_DIRTY_UPDATE: precise

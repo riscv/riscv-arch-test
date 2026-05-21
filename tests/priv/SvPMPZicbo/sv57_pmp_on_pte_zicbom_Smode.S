@@ -3,7 +3,7 @@
 // --------------------------------------------------------------------------------------------------------------------------------
 // Test cases are as follows:
 // --------------------------------------------------------------------------------------------------------------------------------
-// .if (RVMODEL_PMP_GRAIN < 10)
+// .if (UDB_PMP_GRANULARITY < 12)
 // Configure level 4 PTE as NAPOT with X permission (pmp0cfg0)
 // 1. Setup a PTE at Level 4 with RWX permissions
 //      Then, in S-Mode, execute cbo.clean, cbo.flush and cbo.inval. Expected: 3 Store access faults
@@ -25,7 +25,7 @@
 // 5. Setup a PTE at Level 0 with RWX permissions
 //      Then, in S-Mode, execute cbo.clean, cbo.flush and cbo.inval. Expected: 3 Store access faults
 //
-// .if (RVMODEL_PMP_GRAIN < 10)
+// .if (UDB_PMP_GRANULARITY < 12)
 //         Total Expected Faults :: 15
 // .else
 //         Total Expected Faults :: 12
@@ -36,7 +36,7 @@
 # REQUIRED_EXTENSIONS: [I, Sv57, Zicbom, Sm]
 # params:
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr_zicbom
+# MARCH: rv64i_zicsr_zifencei_zicbom
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv57_pmp_on_pte_zicbom_Smode.S"
@@ -134,7 +134,7 @@ main:
 
   LA (t2, rvtest_Sroot_pg_tbl)
   srl t2, t2, PMP_SHIFT
-  LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
+  LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
   CSRW(pmpaddr0, t2)
 
@@ -144,7 +144,7 @@ main:
 
   // This test case for root page table is skipped if G >= 10, because with PMP granularity ≥ 4KB,
   // the entire root page table will lose its read/write permissions, preventing entry into S-Mode.
-  .if (RVMODEL_PMP_GRAIN < 10)
+  .if (UDB_PMP_GRANULARITY < 12)
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                                    TESTS AT LEVEL 4
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -167,7 +167,7 @@ main:
 
   LA (t2, rvtest_slvl3_pg_tbl)
   srl t2, t2, PMP_SHIFT
-  LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
+  LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
   CSRW(pmpaddr0, t2)
 
@@ -193,7 +193,7 @@ main:
 
   LA (t2, rvtest_slvl2_pg_tbl)
   srl t2, t2, PMP_SHIFT
-  LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
+  LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
   CSRW(pmpaddr0, t2)
 
@@ -220,7 +220,7 @@ main:
 
   LA (t2, rvtest_slvl1_pg_tbl)
   srl t2, t2, PMP_SHIFT
-  LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
+  LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
   CSRW(pmpaddr0, t2)
 
@@ -248,7 +248,7 @@ main:
 
   LA (t2, rvtest_slvl0_pg_tbl)
   srl t2, t2, PMP_SHIFT
-  LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
+  LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
   CSRW(pmpaddr0, t2)
 
@@ -292,19 +292,19 @@ rvtest_data_1:
 
 // Page Tables
 .align 12
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 rvtest_slvl0_pg_tbl:
     .skip(4096)
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 rvtest_slvl1_pg_tbl:
     .skip(4096)
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 rvtest_slvl2_pg_tbl:
     .skip(4096)
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 rvtest_slvl3_pg_tbl:
     .skip(4096)
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 
 write_pmpcfg0_str:   .string "\"Mismatch in pmpcfg0!\""
 

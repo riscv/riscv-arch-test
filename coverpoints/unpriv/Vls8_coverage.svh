@@ -13,10 +13,10 @@
 
 `define COVER_VLS8
 `define COVER_VLSCUSTOM8
-`ifdef ELEN8
+`ifdef UDB_ELEN_8
     `define SEW_8_EQ_ELEN
 `endif
-`ifdef ELEN16
+`ifdef UDB_ELEN_16
     `define SEW_8_EQ_ELEN_DIV_2
 `endif
 covergroup Vls8_vl1re16_v_cg with function sample(ins_t ins);
@@ -3621,7 +3621,7 @@ covergroup Vls8_vloxei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -3818,7 +3818,7 @@ covergroup Vls8_vloxei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -4012,7 +4012,7 @@ covergroup Vls8_vloxei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -4226,7 +4226,7 @@ covergroup Vls8_vloxei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -4402,7 +4402,7 @@ covergroup Vls8_vloxseg2ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -4557,7 +4557,7 @@ covergroup Vls8_vloxseg2ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -4712,7 +4712,7 @@ covergroup Vls8_vloxseg2ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -4890,7 +4890,7 @@ covergroup Vls8_vloxseg2ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -5044,7 +5044,7 @@ covergroup Vls8_vloxseg3ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -5199,7 +5199,7 @@ covergroup Vls8_vloxseg3ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -5354,7 +5354,7 @@ covergroup Vls8_vloxseg3ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -5507,7 +5507,7 @@ covergroup Vls8_vloxseg3ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -5685,7 +5685,7 @@ covergroup Vls8_vloxseg4ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -5865,7 +5865,7 @@ covergroup Vls8_vloxseg4ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -6021,7 +6021,7 @@ covergroup Vls8_vloxseg4ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -6199,7 +6199,7 @@ covergroup Vls8_vloxseg4ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -6354,7 +6354,7 @@ covergroup Vls8_vloxseg5ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -6510,7 +6510,7 @@ covergroup Vls8_vloxseg5ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -6665,7 +6665,7 @@ covergroup Vls8_vloxseg5ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -6816,7 +6816,7 @@ covergroup Vls8_vloxseg5ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -6973,7 +6973,7 @@ covergroup Vls8_vloxseg6ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -7130,7 +7130,7 @@ covergroup Vls8_vloxseg6ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -7286,7 +7286,7 @@ covergroup Vls8_vloxseg6ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -7438,7 +7438,7 @@ covergroup Vls8_vloxseg6ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -7596,7 +7596,7 @@ covergroup Vls8_vloxseg7ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -7754,7 +7754,7 @@ covergroup Vls8_vloxseg7ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -7911,7 +7911,7 @@ covergroup Vls8_vloxseg7ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -8064,7 +8064,7 @@ covergroup Vls8_vloxseg7ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -8247,7 +8247,7 @@ covergroup Vls8_vloxseg8ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -8430,7 +8430,7 @@ covergroup Vls8_vloxseg8ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -8612,7 +8612,7 @@ covergroup Vls8_vloxseg8ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -8790,7 +8790,7 @@ covergroup Vls8_vloxseg8ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -13697,7 +13697,7 @@ covergroup Vls8_vluxei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -13894,7 +13894,7 @@ covergroup Vls8_vluxei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -14088,7 +14088,7 @@ covergroup Vls8_vluxei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -14302,7 +14302,7 @@ covergroup Vls8_vluxei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -14478,7 +14478,7 @@ covergroup Vls8_vluxseg2ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -14633,7 +14633,7 @@ covergroup Vls8_vluxseg2ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -14788,7 +14788,7 @@ covergroup Vls8_vluxseg2ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -14966,7 +14966,7 @@ covergroup Vls8_vluxseg2ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -15120,7 +15120,7 @@ covergroup Vls8_vluxseg3ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -15275,7 +15275,7 @@ covergroup Vls8_vluxseg3ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -15430,7 +15430,7 @@ covergroup Vls8_vluxseg3ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -15583,7 +15583,7 @@ covergroup Vls8_vluxseg3ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -15761,7 +15761,7 @@ covergroup Vls8_vluxseg4ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -15941,7 +15941,7 @@ covergroup Vls8_vluxseg4ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -16097,7 +16097,7 @@ covergroup Vls8_vluxseg4ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -16275,7 +16275,7 @@ covergroup Vls8_vluxseg4ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -16430,7 +16430,7 @@ covergroup Vls8_vluxseg5ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -16586,7 +16586,7 @@ covergroup Vls8_vluxseg5ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -16741,7 +16741,7 @@ covergroup Vls8_vluxseg5ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -16892,7 +16892,7 @@ covergroup Vls8_vluxseg5ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -17049,7 +17049,7 @@ covergroup Vls8_vluxseg6ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -17206,7 +17206,7 @@ covergroup Vls8_vluxseg6ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -17362,7 +17362,7 @@ covergroup Vls8_vluxseg6ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -17514,7 +17514,7 @@ covergroup Vls8_vluxseg6ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -17672,7 +17672,7 @@ covergroup Vls8_vluxseg7ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -17830,7 +17830,7 @@ covergroup Vls8_vluxseg7ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -17987,7 +17987,7 @@ covergroup Vls8_vluxseg7ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -18140,7 +18140,7 @@ covergroup Vls8_vluxseg7ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -18323,7 +18323,7 @@ covergroup Vls8_vluxseg8ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -18506,7 +18506,7 @@ covergroup Vls8_vluxseg8ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -18688,7 +18688,7 @@ covergroup Vls8_vluxseg8ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -18866,7 +18866,7 @@ covergroup Vls8_vluxseg8ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -20217,7 +20217,7 @@ covergroup Vls8_vsoxei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -20370,7 +20370,7 @@ covergroup Vls8_vsoxei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -20523,7 +20523,7 @@ covergroup Vls8_vsoxei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -20686,7 +20686,7 @@ covergroup Vls8_vsoxei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -20862,7 +20862,7 @@ covergroup Vls8_vsoxseg2ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -21017,7 +21017,7 @@ covergroup Vls8_vsoxseg2ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -21172,7 +21172,7 @@ covergroup Vls8_vsoxseg2ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -21361,7 +21361,7 @@ covergroup Vls8_vsoxseg2ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -21515,7 +21515,7 @@ covergroup Vls8_vsoxseg3ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -21670,7 +21670,7 @@ covergroup Vls8_vsoxseg3ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -21825,7 +21825,7 @@ covergroup Vls8_vsoxseg3ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -21989,7 +21989,7 @@ covergroup Vls8_vsoxseg3ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -22167,7 +22167,7 @@ covergroup Vls8_vsoxseg4ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -22347,7 +22347,7 @@ covergroup Vls8_vsoxseg4ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -22503,7 +22503,7 @@ covergroup Vls8_vsoxseg4ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -22692,7 +22692,7 @@ covergroup Vls8_vsoxseg4ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -22847,7 +22847,7 @@ covergroup Vls8_vsoxseg5ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -23003,7 +23003,7 @@ covergroup Vls8_vsoxseg5ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -23158,7 +23158,7 @@ covergroup Vls8_vsoxseg5ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -23320,7 +23320,7 @@ covergroup Vls8_vsoxseg5ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -23477,7 +23477,7 @@ covergroup Vls8_vsoxseg6ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -23634,7 +23634,7 @@ covergroup Vls8_vsoxseg6ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -23790,7 +23790,7 @@ covergroup Vls8_vsoxseg6ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -23953,7 +23953,7 @@ covergroup Vls8_vsoxseg6ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -24111,7 +24111,7 @@ covergroup Vls8_vsoxseg7ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -24269,7 +24269,7 @@ covergroup Vls8_vsoxseg7ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -24426,7 +24426,7 @@ covergroup Vls8_vsoxseg7ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -24590,7 +24590,7 @@ covergroup Vls8_vsoxseg7ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -24773,7 +24773,7 @@ covergroup Vls8_vsoxseg8ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -24956,7 +24956,7 @@ covergroup Vls8_vsoxseg8ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -25138,7 +25138,7 @@ covergroup Vls8_vsoxseg8ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -25327,7 +25327,7 @@ covergroup Vls8_vsoxseg8ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -28626,7 +28626,7 @@ covergroup Vls8_vsuxei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -28779,7 +28779,7 @@ covergroup Vls8_vsuxei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -28932,7 +28932,7 @@ covergroup Vls8_vsuxei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -29095,7 +29095,7 @@ covergroup Vls8_vsuxei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -29271,7 +29271,7 @@ covergroup Vls8_vsuxseg2ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -29426,7 +29426,7 @@ covergroup Vls8_vsuxseg2ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -29581,7 +29581,7 @@ covergroup Vls8_vsuxseg2ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -29770,7 +29770,7 @@ covergroup Vls8_vsuxseg2ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -29924,7 +29924,7 @@ covergroup Vls8_vsuxseg3ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -30079,7 +30079,7 @@ covergroup Vls8_vsuxseg3ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -30234,7 +30234,7 @@ covergroup Vls8_vsuxseg3ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -30398,7 +30398,7 @@ covergroup Vls8_vsuxseg3ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -30576,7 +30576,7 @@ covergroup Vls8_vsuxseg4ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -30756,7 +30756,7 @@ covergroup Vls8_vsuxseg4ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -30912,7 +30912,7 @@ covergroup Vls8_vsuxseg4ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -31101,7 +31101,7 @@ covergroup Vls8_vsuxseg4ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -31256,7 +31256,7 @@ covergroup Vls8_vsuxseg5ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -31412,7 +31412,7 @@ covergroup Vls8_vsuxseg5ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -31567,7 +31567,7 @@ covergroup Vls8_vsuxseg5ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -31729,7 +31729,7 @@ covergroup Vls8_vsuxseg5ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -31886,7 +31886,7 @@ covergroup Vls8_vsuxseg6ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -32043,7 +32043,7 @@ covergroup Vls8_vsuxseg6ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -32199,7 +32199,7 @@ covergroup Vls8_vsuxseg6ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -32362,7 +32362,7 @@ covergroup Vls8_vsuxseg6ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -32520,7 +32520,7 @@ covergroup Vls8_vsuxseg7ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -32678,7 +32678,7 @@ covergroup Vls8_vsuxseg7ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -32835,7 +32835,7 @@ covergroup Vls8_vsuxseg7ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -32999,7 +32999,7 @@ covergroup Vls8_vsuxseg7ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -33182,7 +33182,7 @@ covergroup Vls8_vsuxseg8ei16_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -33365,7 +33365,7 @@ covergroup Vls8_vsuxseg8ei32_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -33547,7 +33547,7 @@ covergroup Vls8_vsuxseg8ei64_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};
@@ -33736,7 +33736,7 @@ covergroup Vls8_vsuxseg8ei8_v_cg with function sample(ins_t ins);
     // cp_custom_ls_indexed
     //////////////////////////////////////////////////////////////////////////////////
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
     `ifdef COVER_VLS64
         vs2_element_zero_top_32_ones_bottom_zero : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins target = {64'hFFFF_FFFF_0000_0000};

@@ -64,7 +64,9 @@
 ##### Interrupt Latency #####
 
 #define RVMODEL_INTERRUPT_LATENCY 10
-#define RVMODEL_MTVEC_ALIGN 7
+// CV32E40X mtvec WARL forces BASE[7:2]=0; BASE is 256-byte aligned, not 128.
+// User Manual control_status_registers.rst csr-mtvec: BASE[31:8] RW, BASE[7:2] WARL(0x0).
+#define RVMODEL_MTVEC_ALIGN 8
 
 ##### Machine Timer #####
 

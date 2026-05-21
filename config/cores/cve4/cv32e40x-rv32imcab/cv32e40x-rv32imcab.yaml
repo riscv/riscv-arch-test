@@ -88,8 +88,8 @@ params:
   MTVEC_MODES: [0, 1] # VERIFIED -- MODE[1:0] WARL(0x0, 0x1); 0=non-vectored CLINT, 1=vectored CLINT
   MTVEC_ACCESS: rw # VERIFIED -- BASE[31:7] writable; MODE[0] writable
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom # VERIFIED -- MODE[1] hardwired 0, MODE[0] writable; only values 0/1 retained
-  MTVEC_BASE_ALIGNMENT_VECTORED: 128 # VERIFIED -- BASE[31:7] writable, bits[6:2] hardwired to 0x0; 2^7 = 128-byte alignment
-  MTVEC_BASE_ALIGNMENT_DIRECT: 128 # VERIFIED -- same alignment constraint applies in direct mode
+  MTVEC_BASE_ALIGNMENT_VECTORED: 256 # User Manual control_status_registers.rst csr-mtvec: BASE[31:8] RW, BASE[7:2] WARL(0x0); 2^8 = 256-byte alignment
+  MTVEC_BASE_ALIGNMENT_DIRECT: 256 # same alignment constraint applies in direct mode
 
   # Sm params
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true # VERIFIED -- User Manual, Exceptions and Interrupts: "All exceptions are precise"

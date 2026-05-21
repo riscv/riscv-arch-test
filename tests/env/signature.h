@@ -422,40 +422,38 @@
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
         /* Save architecture state of instruction under test (vl and vtype) */                                      \
-        csrr        _TEMP_REG, vl            ;                                                                      \
         csrr        _TEMP_REG2, vtype        ;                                                                      \
-        /* For scalar-dst instructions (vmv.s.x, reductions) only element 0 is written. */                          \
-        /* Override the saved vl to 1 so the active mask covers only element 0 and     */                           \
-        /* elements 1..VLMAX-1 are treated as tail, getting the vta-agnostic relaxation.*/                          \
-        LI(_LINK_REG, _SCALAR_DST_FLAG)      ;                                                                      \
-        beqz        _LINK_REG, 40f           ;                                                                      \
-        li          _TEMP_REG, 1             ;                                                                      \
-    40:                                      ;                                                                      \
-        /* Obtain effective vl if insstruction is vcompress.m */                                                                       \
-        LI(_LINK_REG, _VCOMPRESS_FLAG)       ;   /* Load whether instr is vcompress.m which changes effective vl of vd */              \
-        beqz        _LINK_REG, 0f            ;   /* If not vcompress.m, effective vl is the same as current vl, skip following */      \
-        vcpop.m     _TEMP_REG, _VS1          ;   /* Count number of active elements in vs1 to get effective vl for vcompress.m */      \
-    0:                                                                                                                                 \
+        /* vl can be loaded in 3 distinct ways */ \
+        .if (_SCALAR_DST_FLAG==1) ;\
+            /* For scalar-dst instructions (vmv.s.x, reductions) only element 0 is written. */                          \
+            /* Override the saved vl to 1 so the active mask covers only element 0 and     */                           \
+            /* elements 1..VLMAX-1 are treated as tail, getting the vta-agnostic relaxation.*/                          \
+            li          _TEMP_REG, 1             ;                                                                      \
+        .elseif (_VCOMPRESS_FLAG == 1) ; \
+            vcpop.m _TEMP_REG, _VS1 ; /* Count number of active elements in vs1 to get effective vl for vcompress.m */ \
+        .else; \
+            csrr _TEMP_REG, vl ;\
+        .endif ; \
         /* Set vl = VLMAX for full-register comparison*/                                                            \
         vsetvli     _LINK_REG, x0, e##_VD_EEW, m##_LMUL, ta, ma ;                                                   \
         /* Load reference from signature and compute mismatch mask */                                               \
-        LI(_LINK_REG, _MASKPROD_FLAG)        ;   /* Load whether instr is a mask-producing instruction */           \
-        beqz        _LINK_REG, 1f            ;   /* If not mask-producing, skip to data vector comparison */        \
-        /* Mask vector comparison: Load reference from signature and compute mismatch mask */                       \
-        vlm.v       _VTMP, 0(_SIG_PTR)       ;   /* Load reference data with vector unit-stride mask load */        \
-        vmxor.mm    _MTMP, _VR, _VTMP        ;   /* MTMP[i] = 1 if result != reference for mask registers */        \
-        j           2f                       ;   /* Unconditional skip data vector comparison to active check */    \
-    1:                                                                                                              \
-        /* Data vector comparison: Load reference from signature and compute mismatch mask */                       \
-        vle##_VD_EEW##.v _VTMP, 0(_SIG_PTR)     ;                                                                   \
-        vmsne.vv    _MTMP, _VR, _VTMP        ;   /* _MTMP[i] = 1 if result != reference */                          \
+        .if (_MASKPROD_FLAG == 1); \
+            /* Mask vector comparison: Load reference from signature and compute mismatch mask */                       \
+            vlm.v       _VTMP, 0(_SIG_PTR)       ;   /* Load reference data with vector unit-stride mask load */        \
+            vmxor.mm    _MTMP, _VR, _VTMP        ;   /* MTMP[i] = 1 if result != reference for mask registers */        \
+        .else; \
+            /* Data vector comparison: Load reference from signature and compute mismatch mask */                       \
+            vle##_VD_EEW##.v _VTMP, 0(_SIG_PTR)     ;                                                                   \
+            vmsne.vv    _MTMP, _VR, _VTMP        ;   /* _MTMP[i] = 1 if result != reference */                          \
+        .endif; \
     2:                                                                                                              \
         /* Build active element mask (i < vl && v0[i] == 1) */                                                      \
         vid.v       _VTMP                    ;   /* VTMP[i] = i (element index) */                                  \
         vmsltu.vx   _MTMP2, _VTMP, _TEMP_REG ;   /* MTMP2[i] = (i < original vl) */                                 \
-        LI(_LINK_REG, _MASKED_FLAG)          ;   /* Load whether instr was masked (0 = unmasked) */                 \
-        beqz        _LINK_REG, 3f            ;   /* If unmasked, skip mask filtering */                             \
-        vmand.mm    _MTMP2, _MTMP2, v0       ;   /* MTMP2 = Active = (i < vl) && v0[i] == 1 */                      \
+        .if (_MASKED_FLAG == 1); \
+            /* Filter the active element mask, if the operation was masked */ \
+            vmand.mm    _MTMP2, _MTMP2, v0       ;   /* MTMP2 = Active = (i < vl) && v0[i] == 1 */                      \
+        .endif; \
     3:                                                                                                              \
         /* Check active elements mismatch */                                                                        \
         vmand.mm    _MTMP2, _MTMP2, _MTMP    ;   /* Active mismatches = active (MTMP2) && mismatch (MTMP)*/         \
@@ -466,70 +464,67 @@
         vmsltu.vx   _VTMP, _VTMP, _TEMP_REG  ;   /* VTMP[i] = (i < original vl) */                                  \
         vmnand.mm   _VTMP, _VTMP, _VTMP      ;   /* VTMP[i] = !(i < original vl) = (i >= original vl) */            \
         /* Check whether instr is a mask-producing instruction */                                                                      \
-        LI(_LINK_REG, _MASKPROD_FLAG)        ;   /* Load whether instr is a mask-producing instruction */                              \
-        bnez        _LINK_REG, 4f            ;   /* If mask-producing, tails are always treated as agnostic */                         \
-        /* Extract and check vta policy */                                                                          \
-        srli        _LINK_REG, _TEMP_REG2, 6 ;   /* vta = vtype[6] */                                               \
-        andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
-        beqz        _LINK_REG, 5f            ;   /* If vta==0 (undisturbed), skip agnostic relaxation */            \
-        /* Data vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
-        vmseq.vi    _MTMP2, _VR, -1          ;   /* MTMP2[i] = (VR[i] == -1) */                                     \
-        vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = tail && !(VR[i] == -1) → mismatch with all 1s */     \
-        j           5f                       ;   /* Unconditional skip data vec agnostic handling to tail check */  \
-    4:                                                                                                              \
-        /* Mask vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
-        vmand.mm    _MTMP2, _VR, _VR         ;   /* MTMP2[i] = (VR[i] == 1) */                                      \
-        vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = inactive && !(VR[i] == 1) → mismatch with all 1s */  \
-    5:                                                                                                              \
-        /* Check tail elements mismatches */                                                                        \
-        vmand.mm    _VTMP, _VTMP, _MTMP      ;   /* VTMP[i] = tail && (vd != sig) → mismatch with signature */      \
-        srli        _LINK_REG, _TEMP_REG2, 6 ;   /* vta = vtype[6] */                                               \
-        andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
-        beqz        _LINK_REG, 16f            ;   /* If vta==0 (undisturbed), skip agnostic all 1s comparison */    \
-        vmand.mm    _VTMP, _VTMP, _MTMP2     ;   /* VTMP[i] = signature mismatch && all 1s mismatch */              \
-    16:                                                                                                             \
-        LI(_LINK_REG, _MASKPROD_FLAG); /* All mask prod instructions all tail agnostic */                                             \
-        beqz _LINK_REG, 6f; /* if MASKPROD_FLAG == 0, skip this section */                                                            \
-        /* In the Mask Producing case, we are allowed to compute the mask as if vl = vlmax, we can safely clobber _MTMP2 now */       \
-        vmand.mm    _VTMP, _VTMP, _MTMP2     ;   /* We have to run this again because it could have been skipped before */            \
-        RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG3);                                                                     \
-        vlm.v _MTMP2, 0(_SIG_PTR);                                                                                                    \
-        vmxor.mm _MTMP2, _MTMP2, _VR; /* _MTMP2[i] = (_MTMP2[i] != _VR[i]) */                                                         \
-        vmand.mm _VTMP, _VTMP, _MTMP2 ; /* VTMP[i] = signature mismatch (vlmax) && signature mismatch (normal) && all ones mismatch */\
-    6:                                                                                                              \
+        .if (_MASKPROD_FLAG == 1); \
+            /* Mask vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
+            vmand.mm    _MTMP2, _VR, _VR         ;   /* MTMP2[i] = (VR[i] == 1) */                                      \
+            vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = inactive && !(VR[i] == 1) → mismatch with all 1s */  \
+            /* Check tail elements mismatches */                                                                        \
+            vmand.mm    _VTMP, _VTMP, _MTMP      ;   /* VTMP[i] = tail && (vd != sig) → mismatch with signature */      \
+            vmand.mm    _VTMP, _VTMP, _MTMP2     ;   /* VTMP[i] = signature mismatch && not all ones */            \
+            /* In the Mask Producing case, we are allowed to compute the mask as if vl = vlmax, we can safely clobber _MTMP2 now */       \
+            RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG3);                                                                     \
+            vlm.v _MTMP2, 0(_SIG_PTR);                                                                                                    \
+            vmxor.mm _MTMP2, _MTMP2, _VR; /* _MTMP2[i] = (_MTMP2[i] != _VR[i]) */                                                         \
+            vmand.mm _VTMP, _VTMP, _MTMP2 ; /* VTMP[i] = signature mismatch (vlmax) && signature mismatch (normal) && all ones mismatch */\
+        .else; \
+            /* Extract and check vta policy */                                                                          \
+            srli        _LINK_REG, _TEMP_REG2, 6 ;   /* vta = vtype[6] */                                               \
+            andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
+            beqz        _LINK_REG, 1f            ;   /* If vta==0 (undisturbed), skip agnostic relaxation */            \
+            /* Data vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
+            vmseq.vi    _MTMP2, _VR, -1          ;   /* MTMP2[i] = (VR[i] == -1) */                                     \
+            vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = tail && !(VR[i] == -1) → mismatch with all 1s */     \
+        1: ;\
+            /* Check tail elements mismatches */                                                                        \
+            vmand.mm    _VTMP, _VTMP, _MTMP      ;   /* VTMP[i] = tail && (vd != sig) → mismatch with signature */      \
+            beqz        _LINK_REG, 2f            ;   /* If vta==0 (undisturbed), skip agnostic all 1s comparison */    \
+            vmand.mm    _VTMP, _VTMP, _MTMP2     ;   /* VTMP[i] = signature mismatch && all 1s mismatch */              \
+        2: ;\
+        .endif; \
+        /* Now analyze VTMP to find a mismatch */ \
         vfirst.m    _LINK_REG, _VTMP         ;   /* Find first active mismatch index; -1 if none */                 \
         bge         _LINK_REG, x0, 20f       ;   /* If >=0, mismatch found → FAIL */                                \
         /* Build mask inactive mask */                                                                              \
-        LI(_LINK_REG, _MASKED_FLAG)          ;   /* Load whether instr was masked (0 = unmasked) */                 \
-        beqz        _LINK_REG, 12f           ;   /* If unmasked, no mask inactive → all checks have passed */       \
-        vid.v       _VTMP                    ;   /* Recompute element indices */                                    \
-        vmsltu.vx   _VTMP, _VTMP, _TEMP_REG  ;   /* MTMP2[i] = (i < original vl) */                                 \
-        vmandn.mm   _VTMP, _VTMP, v0         ;   /* VTMP = Inactive = (i < vl) && (v0 == 0) */                      \
-        /* Extract and check vma policy */                                                                          \
-        srli        _LINK_REG, _TEMP_REG2, 7 ;   /* vma = vtype[7] */                                               \
-        andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
-        beqz        _LINK_REG, 8f            ;   /* If vma==0 (undisturbed), skip agnostic relaxation */            \
-        /* Check whether instr is a mask-producing instruction */                                                   \
-        LI(_LINK_REG, _MASKPROD_FLAG)        ;   /* Load whether instr is a mask-producing instruction */           \
-        beqz        _LINK_REG, 7f            ;   /* If not mask-producing, skip to data vector comparison */        \
-        /* Mask vector mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                \
-        vmand.mm    _MTMP2, _VR, _VR         ;   /* MTMP2[i] = (VR[i] == 1) */                                      \
-        vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = inactive && !(VR[i] == 1) → mismatch with all 1s */  \
-        j           8f                       ;   /* Unconditional skip data vec agnostic to inactive check */       \
-    7:                                                                                                              \
-        /* Mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                            \
-        vmseq.vi    _MTMP2, _VR, -1          ;   /* MTMP2[i] = (VR[i] == -1) */                                     \
-        vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = inactive && !(VR[i] == -1) → mismatch with all 1s*/  \
-    8:                                                                                                              \
-        /* Check inactive element mismatches */                                                                     \
-        vmand.mm    _VTMP, _VTMP, _MTMP      ;   /* VTMP[i] = inactive && (vd != sig) → mismatch with signature */  \
-        srli        _LINK_REG, _TEMP_REG2, 7 ;   /* vma = vtype[7] */                                               \
-        andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
-        beqz        _LINK_REG, 9f            ;   /* If vma==0 (undisturbed), skip agnostic all 1s comparison */     \
-        vmand.mm    _VTMP, _VTMP, _MTMP2     ;   /* VTMP[i] = signature mismatch && all 1s mismatch */              \
-    9:                                                                                                              \
-        vfirst.m    _LINK_REG, _VTMP         ;   /* Find first active mismatch index; -1 if none */                 \
-        blt         _LINK_REG, x0, 12f       ;   /* If no mismatch found → PASS ALL */                              \
+        .if (_MASKED_FLAG == 0); \
+            j 12f; /* If unmasked, no mask inactive → all checks have passed */ \
+        .else; \
+            vid.v       _VTMP                    ;   /* Recompute element indices */                                    \
+            vmsltu.vx   _VTMP, _VTMP, _TEMP_REG  ;   /* MTMP2[i] = (i < original vl) */                                 \
+            vmandn.mm   _VTMP, _VTMP, v0         ;   /* VTMP = Inactive = (i < vl) && (v0 == 0) */                      \
+            /* Extract and check vma policy */                                                                          \
+            srli        _LINK_REG, _TEMP_REG2, 7 ;   /* vma = vtype[7] */                                               \
+            andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
+            beqz        _LINK_REG, 8f            ;   /* If vma==0 (undisturbed), skip agnostic relaxation */            \
+            .if (_MASKPROD_FLAG == 1); \
+                /* Mask vector mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                \
+                vmand.mm    _MTMP2, _VR, _VR         ;   /* MTMP2[i] = (VR[i] == 1) */                                      \
+                vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = inactive && !(VR[i] == 1) → mismatch with all 1s */  \
+            .else; \
+                /* Mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                            \
+                vmseq.vi    _MTMP2, _VR, -1          ;   /* MTMP2[i] = (VR[i] == -1) */                                     \
+                vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = inactive && !(VR[i] == -1) → mismatch with all 1s*/  \
+            .endif; \
+        8: \
+            /* Check inactive element mismatches */                                                                     \
+            vmand.mm    _VTMP, _VTMP, _MTMP      ;   /* VTMP[i] = inactive && (vd != sig) → mismatch with signature */  \
+            srli        _LINK_REG, _TEMP_REG2, 7 ;   /* vma = vtype[7] */                                               \
+            andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
+            beqz        _LINK_REG, 9f            ;   /* If vma==0 (undisturbed), skip agnostic all 1s comparison */     \
+            vmand.mm    _VTMP, _VTMP, _MTMP2     ;   /* VTMP[i] = signature mismatch && all 1s mismatch */              \
+        9:                                                                                                              \
+            vfirst.m    _LINK_REG, _VTMP         ;   /* Find first active mismatch index; -1 if none */                 \
+            blt         _LINK_REG, x0, 12f       ;   /* If no mismatch found → PASS ALL */                              \
+        .endif; \
     30:                                                                                                             \
         /* mask region FAIL path, has to come right after mask region checks */                                     \
         vsetvli     _LINK_REG, x0, e##_VD_EEW, m1, ta, ma ;  /* Set LMUL=1 to prevent vmv.v.v trapping */           \

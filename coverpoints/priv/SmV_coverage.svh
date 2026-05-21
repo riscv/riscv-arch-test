@@ -54,7 +54,7 @@ covergroup SmV_cg with function sample(ins_t ins);
     }
 
     walking_ones_rs1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
-        bins b_1[] = { [0:`XLEN-1] };
+        bins b_1[] = { [0:`UDB_MXLEN-1] };
     }
 
     cp_vcsrs_walking1s: cross writable_vcsrs, csrw, walking_ones_rs1;
@@ -156,7 +156,7 @@ covergroup SmV_cg with function sample(ins_t ins);
     }
 
     // rs2 in vsetvl is written to vtype
-    rs2_vtype_legal: coverpoint ins.current.rs2_val[`XLEN-1:8] {
+    rs2_vtype_legal: coverpoint ins.current.rs2_val[`UDB_MXLEN-1:8] {
         bins legal     =   {0};
     }
 
@@ -255,7 +255,7 @@ covergroup SmV_cg with function sample(ins_t ins);
     // doesn't change the vtype csr value
     //////////////////////////////////////////////////////////////////////////////////
 
-    rs2_vill_set : coverpoint ins.current.rs2_val[`XLEN-1] {
+    rs2_vill_set : coverpoint ins.current.rs2_val[`UDB_MXLEN-1] {
         bins set = {1};
     }
 
@@ -272,7 +272,7 @@ covergroup SmV_cg with function sample(ins_t ins);
     // writes a 1 to the vill bit with the rest of the register being a valid configuration
     //////////////////////////////////////////////////////////////////////////////////
 
-    rs2_sew_supported : coverpoint check_vtype_sew_supported({{(`XLEN-3){1'b0}}, ins.current.rs2_val[5:3]}) {
+    rs2_sew_supported : coverpoint check_vtype_sew_supported({{(`UDB_MXLEN-3){1'b0}}, ins.current.rs2_val[5:3]}) {
         bins supported = {1};
     }
 
@@ -292,12 +292,12 @@ covergroup SmV_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     rs1_non_zero : coverpoint ins.current.rs1_val {
-        bins nonzero = { [0:`XLEN-1] };
+        bins nonzero = { [0:`UDB_MXLEN-1] };
     }
 
     vl_nonzero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
         //Any value between max and 1
-        bins target = {[`XLEN'h10000:`XLEN'h1]};
+        bins target = {[`UDB_MXLEN'h10000:`UDB_MXLEN'h1]};
     }
 
     cp_vtype_vill_set_vl_0 : cross vsetvl_instruction, rs1_non_zero, rs2_vill_set, vl_nonzero;

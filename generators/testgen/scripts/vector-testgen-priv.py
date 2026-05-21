@@ -21,6 +21,22 @@ from random import randint, seed
 import priv  # priv coverpoint generator scripts
 import vector_testgen_common as common
 from priv_coverpoint_registry import PRIV_REGISTRY, import_all_modules
+##################################
+# SsstrictV skip table
+##################################
+# The (coverpoint-column, instruction) pairs that the SsstrictV pipeline
+# intentionally OMITS due to simulator failures or missing generator support
+# live in `ssstrictv_skip_combinations.SKIP_COMBINATIONS`.
+#
+# Single source of truth: generators/testgen/scripts/ssstrictv_skip_combinations.py
+# That table is consumed by:
+#   * the priv test generator (this file) to suppress test emission, and
+#   * the coverage generator (covergroupgen/generate.py) to suppress the
+#     corresponding covergroup bins so they are not counted as missing.
+#
+# To audit / extend the skip list, edit that module directly. Keep entries
+# justified (sail issue 1104, unimplemented coverpoint, etc.).
+from ssstrictv_skip_combinations import SKIP_COMBINATIONS as SSSTRICTV_SKIP_COMBINATIONS
 from vector_testgen_common import (
   ARCH_VERIF,
   add_testcase_string,
@@ -189,6 +205,12 @@ def make_vstart(instruction, maxlmul = 8):
     # Further cap for EEW-driven load/store and segmented variants so that
     # EMUL of every operand stays ≤ 8 (LMUL * size_mult * segments ≤ 8).
     maxlmul = min(maxlmul, _max_lmul_for_instruction(instruction))
+    # Whole-register move (vmv<nr>r.v) is reserved when vstart >= evl, where
+    # evl = NREG * VLEN/SEW. cp_vstart picks vstart in [1, vlmax) and
+    # vlmax = LMUL * VLEN/SEW. Cap LMUL <= NREG so vlmax <= evl, guaranteeing
+    # vstart < evl and the instruction is never reserved (testable).
+    if instruction in whole_register_move:
+        maxlmul = min(maxlmul, int(instruction[3]))
     vstartvals = ["one", "vlmaxm1", "vlmaxd2", "random"]
     for vstartval in vstartvals:
         if maxlmul <= 1:
@@ -268,6 +290,10 @@ def makeTest(coverpoints, instruction):
     writeLine(f"// ExceptionsV tests for {instruction}")
     writeLine("///////////////////////////////////////////")
     for coverpoint in coverpoints:
+        # Skip simulator-failure / unimplemented combinations curated in the
+        # SsstrictV skip table (see ssstrictv_skip_combinations.py).
+        if instruction in SSSTRICTV_SKIP_COMBINATIONS.get(coverpoint, ()):
+            continue
         # produce a deterministic seed for repeatable random numbers distinct for each instruction and coverpoint
         testname = instruction + coverpoint
         hashval = myhash(testname)
@@ -276,10 +302,8 @@ def makeTest(coverpoints, instruction):
         if   ((coverpoint in ['RV32', 'RV64', 'EFFEW8', 'EFFEW16', 'EFFEW32', 'EFFEW64']) or
               ("sample" in coverpoint))                      : pass
         elif (coverpoint == "cp_vill")                       : make_vill(instruction)
-        # TODO Issue 1445 on ACT$ Issue https://github.com/riscv/sail-riscv/issues/1104 on sail
-        # restore these next two lines when fixed
-        elif (coverpoint == "cp_vstart")                     : pass # make_vstart(instruction)
-        elif (coverpoint == "cp_vstart_gt_vl")               : pass # make_vstart_gt_vl(instruction)
+        elif (coverpoint == "cp_vstart")                     : make_vstart(instruction)
+        elif (coverpoint == "cp_vstart_gt_vl")               : make_vstart_gt_vl(instruction)
         elif coverpoint in PRIV_REGISTRY                     : PRIV_REGISTRY[coverpoint](instruction)
         else:
             print("Warning: " + coverpoint + " not implemented yet for " + instruction)
@@ -448,11 +472,15 @@ def writePrivTestLine(instruction, instruction_data, cp="cp_vill", vl=1, lmul=1,
     # Always-trapping cases:
     #   - cp_vill: vill=1 forces illegal-instruction on every test.
     #   - cp_vstart_gt_vl: vstart > vl is reserved → illegal.
-    #   - cp_vstart on whole_register_move: vmv{1,2,4,8}r.v require vstart=0,
-    #     and cp_vstart sets vstart != 0, so they always trap illegal.
+    #   - cp_vstart on vstart_zero_required: spec marks vstart!=0 reserved.
+    #   - cp_vstart on vector_stores: stores have no architectural vd; the
+    #     SIGUPD_V vd is a random unused reg, comparison non-deterministic.
+    # whole_register_move (vmv<nr>r.v): per V spec reserved only when
+    # vstart >= evl (= NREG*VLEN/SEW). make_vstart caps LMUL <= NREG so
+    # vlmax <= evl and the cp_vstart picks (vstart < vlmax) always satisfy
+    # vstart < evl -- the instruction executes legally and SIGUPD_V is valid.
     skip_sigupd = (
         cp in ("cp_vill", "cp_vstart_gt_vl")
-        or (cp == "cp_vstart" and instruction in whole_register_move)
         or (cp == "cp_vstart" and instruction in vector_stores)
         or (cp == "cp_vstart" and instruction in vstart_zero_required)
     )
@@ -487,11 +515,6 @@ if __name__ == '__main__':
       for extension in extensions:
         setExtension(extension)
         setXlen(xlen)
-
-        # Reset per-file generator state (sigupd_count, testcase_count, sigReg, ...)
-        # so each (xlen, extension) starts clean. Without this, signature counts
-        # accumulate across files and label numbering drifts.
-        newInstruction()
 
         # Filter instructions to only those marked for this xlen
         all_instructions = list(testplans[extension].keys())
@@ -536,58 +559,91 @@ if __name__ == '__main__':
         fname = pathname + "/" + basename + f"_rv{xlen}.S"
         tempfname = pathname + "/" + basename + f"_rv{xlen}_temp.S"
 
-        print(f"Generating rv{xlen} tests for " + fname)
+        # Split SsstrictV across multiple .S files so each ELF stays under the
+        # ±1MiB JAL relocation range. The framework's `tests_dir.rglob("*.S")`
+        # picks up every chunk independently, each with its own RVTEST_BEGIN/END
+        # wrapper, signature region, and SIGUPD_COUNT. Other priv arches keep a
+        # single file (CHUNK_SIZE >= len(instructions)).
+        if extension.startswith("SsstrictV"):
+            CHUNK_SIZE = 25
+        else:
+            CHUNK_SIZE = max(len(instructions), 1)
 
-        ############################### starting test file ###############################
-        # print custom header part
-        f = pathlib.Path(tempfname).open("w")
-        line = "///////////////////////////////////////////\n"
-        f.write(line)
-        line = "// "+fname+ "\n// " + author + "\n"
-        f.write(line)
+        chunks = [instructions[i:i + CHUNK_SIZE] for i in range(0, len(instructions), CHUNK_SIZE)]
+        # Discover existing chunk files so stale outputs from a larger split
+        # don't leak into the build (e.g. switching from 6 chunks to 4).
+        for stale in pathlib.Path(pathname).glob(f"{basename}_rv{xlen}*.S"):
+            os.system(f"rm -f {stale}")
 
-        # insert generic header
-        insertTemplate(basename, 0, "testgen_header.S", priv=True)
+        for chunk_idx, chunk_instructions in enumerate(chunks):
+            # Reset per-file generator state (sigupd_count, testcase_count, sigReg, ...)
+            # so each chunk starts clean and signature counts / label numbering
+            # don't accumulate across chunks.
+            newInstruction()
 
-        ###############################     test body      ###############################
-        for instruction in instructions:
-            coverpoints = list(testplans[extension][instruction])
-            makeTest(coverpoints, instruction)
+            # Single-chunk extensions keep the historical filename so other
+            # tooling that searches for "<ext>_rv<xlen>.S" continues to work.
+            if len(chunks) == 1:
+                chunk_basename = basename
+                fname = pathname + f"/{basename}_rv{xlen}.S"
+                tempfname = pathname + f"/{basename}_rv{xlen}_temp.S"
+            else:
+                chunk_basename = f"{basename}_p{chunk_idx}"
+                fname = pathname + f"/{basename}_rv{xlen}_p{chunk_idx}.S"
+                tempfname = pathname + f"/{basename}_rv{xlen}_p{chunk_idx}_temp.S"
 
-        insertTemplate(basename, 0, "cp_vstart_gt_vl_setup.S")
+            print(f"Generating rv{xlen} tests for " + fname)
 
-        # The framework's RVTEST_CODE_END (tests/env/rvtest_setup.h) hardcodes x2
-        # as the signature pointer for its final check_trap_sig_offset SIGUPD.
-        # If our test relocated sigReg away from x2 (handleSignaturePointerConflict),
-        # x2 now holds stale data and the cleanup epilog would store through a
-        # bogus pointer (typical symptom: trap loop with MEPC inside
-        # check_trap_sig_offset). Restore x2 = sigReg here so the cleanup works.
-        if common.sigReg != 2:
-            writeLine(f"mv x2, x{common.sigReg}", "# restore sigReg into x2 for RVTEST_CODE_END cleanup epilog")
+            ############################### starting test file ###############################
+            # print custom header part
+            f = pathlib.Path(tempfname).open("w")
+            line = "///////////////////////////////////////////\n"
+            f.write(line)
+            line = "// "+fname+ "\n// " + author + "\n"
+            f.write(line)
 
-        ###############################  ending test file  ###############################
-        # generate vector data (random and corners)
-        test_data = genVMaskedges() # TODO: change to generate a good random (vector_random)
-        test_data += genRandomVectorLS()
+            # insert generic header
+            insertTemplate(chunk_basename, 0, "testgen_header.S", priv=True)
 
-        # print footer with test data and signature
-        signatureWords = getSigSpace(xlen, flen)
-        insertTemplate(basename, signatureWords, "testgen_footer.S", test_data=test_data)
+            ###############################     test body      ###############################
+            for instruction in chunk_instructions:
+                coverpoints = list(testplans[extension][instruction])
+                makeTest(coverpoints, instruction)
 
-        # Finish
-        f.close()
-        # Replace the @SIGUPD_COUNT_FROM_TESTGEN@ placeholder using the dynamic
-        # sigupd_count tally maintained by writeSIGUPD / writeSIGUPD_V (same path
-        # used by vector-testgen-unpriv.py). PR #1353 dropped the _OFFSET arg from
-        # RVTEST_SIGUPD_V/_V_LEN, so the previous regex-based byte counter no longer
-        # works.
-        finalizeSigupdCount(tempfname, xlen, flen)
-        # if new file is different from old file, replace old file with new file
-        if pathlib.Path(fname).exists():
-            if filecmp.cmp(fname, tempfname): # files are the same
-                os.system(f"rm {tempfname}") # remove temp file
+            insertTemplate(chunk_basename, 0, "cp_vstart_gt_vl_setup.S")
+
+            # The framework's RVTEST_CODE_END (tests/env/rvtest_setup.h) hardcodes x2
+            # as the signature pointer for its final check_trap_sig_offset SIGUPD.
+            # If our test relocated sigReg away from x2 (handleSignaturePointerConflict),
+            # x2 now holds stale data and the cleanup epilog would store through a
+            # bogus pointer (typical symptom: trap loop with MEPC inside
+            # check_trap_sig_offset). Restore x2 = sigReg here so the cleanup works.
+            if common.sigReg != 2:
+                writeLine(f"mv x2, x{common.sigReg}", "# restore sigReg into x2 for RVTEST_CODE_END cleanup epilog")
+
+            ###############################  ending test file  ###############################
+            # generate vector data (random and corners)
+            test_data = genVMaskedges() # TODO: change to generate a good random (vector_random)
+            test_data += genRandomVectorLS()
+
+            # print footer with test data and signature
+            signatureWords = getSigSpace(xlen, flen)
+            insertTemplate(chunk_basename, signatureWords, "testgen_footer.S", test_data=test_data)
+
+            # Finish
+            f.close()
+            # Replace the @SIGUPD_COUNT_FROM_TESTGEN@ placeholder using the dynamic
+            # sigupd_count tally maintained by writeSIGUPD / writeSIGUPD_V (same path
+            # used by vector-testgen-unpriv.py). PR #1353 dropped the _OFFSET arg from
+            # RVTEST_SIGUPD_V/_V_LEN, so the previous regex-based byte counter no longer
+            # works.
+            finalizeSigupdCount(tempfname, xlen, flen)
+            # if new file is different from old file, replace old file with new file
+            if pathlib.Path(fname).exists():
+                if filecmp.cmp(fname, tempfname): # files are the same
+                    os.system(f"rm {tempfname}") # remove temp file
+                else:
+                    os.system(f"mv {tempfname} {fname}")
+                    print("Updated " + fname)
             else:
                 os.system(f"mv {tempfname} {fname}")
-                print("Updated " + fname)
-        else:
-            os.system(f"mv {tempfname} {fname}")

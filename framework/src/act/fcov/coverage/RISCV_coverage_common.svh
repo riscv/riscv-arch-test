@@ -45,11 +45,11 @@
 `define PMP_SPECIAL_REGION_START 32'h80005000 // Zicbo + Zaamo tests
 
 // Calculate region size g in bytes.
-`define g_tor       (2 ** (`G + 2))
-`define g_napot     ((`G > 1) ? (2 ** (`G + 2)) : (2 ** (`G + 3)))
+`define g_tor       (2 ** (`UDB_PMP_GRANULARITY))
+`define g_napot     ((`UDB_PMP_GRANULARITY > 3) ? (2 ** (`UDB_PMP_GRANULARITY)) : (2 ** (`UDB_PMP_GRANULARITY + 1)))
 
 // Calculate k = G - 1 trailing ones in NAPOT encoding.
-`define k  ((`G > 1) ? (`G - 1) : 0)
+`define k  ((`UDB_PMP_GRANULARITY > 3) ? (`UDB_PMP_GRANULARITY - 3) : 0)
 
 // Address encodings
 
@@ -61,21 +61,16 @@
 `define STANDARD_REGION      ((`PMP_REGION_START >> 2) | ((2 ** `k) - 1)) // NAPOT format: yyyyy...0111
 `define SPECIAL_STANDARD_REGION      ((`PMP_SPECIAL_REGION_START >> 2) | ((2 ** `k) - 1)) // NAPOT format: yyyyy...0111
 
-// XLEN64 -> [53:0] & XLEN32 -> [31:0]
-`define EFFECTIVE_PMPADDR (`ifdef XLEN64 53 `else 31 `endif)
-`define READ_ZERO_MASK   ~((1<<`G)-1)
+// UDB_MXLEN_64 -> [53:0] & UDB_MXLEN_32 -> [31:0]
+`define EFFECTIVE_PMPADDR (`ifdef UDB_MXLEN_64 53 `else 31 `endif)
+`define READ_ZERO_MASK   ~((1<<(`UDB_PMP_GRANULARITY - 2))-1)
 
 
 // -----------------------------------------------------------------------------
-//                         XLEN FLEN VLEN Macros
+//                                 FLEN Macros
 // -----------------------------------------------------------------------------
 
 // XLEN/FLEN as usable numbers
-`ifdef XLEN32
-  `define XLEN 32
-`else
-  `define XLEN 64
-`endif
 `ifdef Q_COVERAGE
   `define FLEN 128
 `elsif D_COVERAGE
@@ -86,110 +81,7 @@
 
 ///////////////////////////////////////////////////
 // VECTOR-RELATED MACROS
-// TODO: refactor to be generated based on config
 ///////////////////////////////////////////////////
-
-// VLEN as usable numbers, ifdef contents should be defined in config
-`ifdef VLEN65536
-  `define VLEN 65536
-`elsif VLEN32768
-  `define VLEN 32768
-`elsif VLEN16384
-  `define VLEN 16384
-`elsif VLEN8192
-  `define VLEN 8192
-`elsif VLEN4096
-  `define VLEN 4096
-`elsif VLEN2048
-  `define VLEN 2048
-`elsif VLEN1024
-  `define VLEN 1024
-`elsif VLEN512
-  `define VLEN 512
-`elsif VLEN256
-  `define VLEN 256
-`elsif VLEN128
-  `define VLEN 128
-`elsif VLEN64
-  `define VLEN 64
-`elsif VLEN32
-  `define VLEN 32
-  `ifdef VX64_COVERAGE
-    // the missing `define is intentional
-    `VX64_COVERAGE_NOT_SUPPORTED_WITH_VLEN32 // this is meant to throw an error letting the user know coverage is not supported in this case as it would cause negative indexing
-  `endif
-`elsif VLEN16
-  `define VLEN 16
-  `ifdef VX64_COVERAGE
-    // the missing `define is intentional
-    `VX64_COVERAGE_NOT_SUPPORTED_WITH_VLEN16 // this is meant to throw an error letting the user know coverage is not supported in this case
-  `endif
-  `ifdef VX32_COVERAGE
-    `VX32_COVERAGE_NOT_SUPPORTED_WITH_VLEN16 // this is meant to throw an error letting the user know coverage is not supported in this case
-  `endif
-`elsif VLEN8
-  `define VLEN 8
-  `ifdef VX64_COVERAGE
-    // the missing `define is intentional
-    `VX64_COVERAGE_NOT_SUPPORTED_WITH_VLEN8 // this is meant to throw an error letting the user know coverage is not supported in this case
-  `endif
-  `ifdef VX32_COVERAGE
-    // the missing `define is intentional
-    `VX32_COVERAGE_NOT_SUPPORTED_WITH_VLEN8 // this is meant to throw an error letting the user know coverage is not supported in this case
-  `endif
-  `ifdef VX16_COVERAGE
-    // the missing `define is intentional
-    `VX16_COVERAGE_NOT_SUPPORTED_WITH_VLEN8 // this is meant to throw an error letting the user know coverage is not supported in this case
-  `endif
-`endif
-
-// edge cases
-`ifdef VLEN64
-  `ifdef ELEN64
-    `define ELEN_EQ_VLEN
-  `endif
-`endif
-`ifdef VLEN32
-  `ifdef ELEN32
-    `define ELEN_EQ_VLEN
-  `endif
-`endif
-`ifdef VLEN16
-  `ifdef ELEN16
-    `define ELEN_EQ_VLEN
-  `endif
-`endif
-`ifdef VLEN8
-  `ifdef ELEN8
-    `define ELEN_EQ_VLEN
-  `endif
-`endif
-
-// Minimum supported LMUL
-// `ifdef SEW8_SUPPORTED
-//   `ifdef ELEN64
-//     `define LMULf8_SUPPORTED
-//     `define LMULf4_SUPPORTED
-//     `define LMULf2_SUPPORTED
-//   `elsif ELEN32
-//     `define LMULf4_SUPPORTED
-//     `define LMULf2_SUPPORTED
-//   `elsif ELEN16
-//     `define LMULf2_SUPPORTED
-//   `endif
-// `elsif SEW16_SUPPORTED
-//   `ifdef ELEN64
-//     `define LMULf4_SUPPORTED
-//     `define LMULf2_SUPPORTED
-//   `elsif ELEN32
-//     `define LMULf2_SUPPORTED
-//   `endif
-// `elsif SEW32_SUPPORTED
-//   `ifdef ELEN64
-//     `define LMULf2_SUPPORTED
-//   `endif
-// `endif
-
 
 // MAXINDEXEEW — maximum supported index element width for indexed load/store
 // Config should define one of: MAXINDEXEEW64, MAXINDEXEEW32, MAXINDEXEEW16, MAXINDEXEEW8
@@ -214,12 +106,12 @@
 `endif
 
 // Set register type length
-`define XLEN_BITS         bit        [`XLEN-1:0]
-`define SIGNED_XLEN_BITS  bit signed [`XLEN-1:0]
+`define XLEN_BITS         bit        [`UDB_MXLEN-1:0]
+`define SIGNED_XLEN_BITS  bit signed [`UDB_MXLEN-1:0]
 `define FLEN_BITS         bit        [`FLEN-1:0]
 `define SIGNED_FLEN_BITS  bit signed [`FLEN-1:0]
-`define VLEN_BITS         bit        [`VLEN-1:0]
-`define SIGNED_VLEN_BITS  bit signed [`VLEN-1:0]
+`define VLEN_BITS         bit        [`UDB_VLEN-1:0]
+`define SIGNED_VLEN_BITS  bit signed [`UDB_VLEN-1:0]
 
 // Instruction operand data structure
 typedef struct {

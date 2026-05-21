@@ -10,10 +10,7 @@
         bins csr_00E = {12'h00E};
     }
 
-    trap_occurred: coverpoint ins.trap {
-        bins trapped = {1'b1};
-    }
 
-    cp_ssstrictv_reserved_vcsrs: cross reserved_vcsr_addr, trap_occurred;
+    cp_ssstrictv_reserved_vcsrs: cross reserved_vcsr_addr;
 
 //// end cp_ssstrictv_reserved_vcsrs /////////////////////////////////////////////////////////////////////

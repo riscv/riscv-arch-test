@@ -10,7 +10,7 @@
 
 `define COVER_PMPZICBO
 
-covergroup PMPZicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], logic [14:0] pmp_hit, logic [XLEN-1:0] pmpaddr [62:0]);
+covergroup PMPZicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], logic [14:0] pmp_hit, logic [`UDB_MXLEN-1:0] pmpaddr [62:0]);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -85,10 +85,10 @@ endgroup
 function void pmpzicbo_sample(int hart, int issue, ins_t ins);
 
   logic [7:0] pmpcfg [63:0];
-  logic [XLEN-1:0] pmpaddr [62:0];
+  logic [`UDB_MXLEN-1:0] pmpaddr [62:0];
   logic [14:0] pmp_hit;   // for first 15 Regions
 
-  `ifdef XLEN32
+  `ifdef UDB_MXLEN_32
     // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
     for (int i = 0; i < 16; i++) begin
       logic [31:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + i];
@@ -97,7 +97,7 @@ function void pmpzicbo_sample(int hart, int issue, ins_t ins);
       pmpcfg[i*4 + 2] = cfg_word[23:16];
       pmpcfg[i*4 + 3] = cfg_word[31:24];
     end
-  `elsif XLEN64
+  `elsif UDB_MXLEN_64
     // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
       logic [63:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + 2*i];

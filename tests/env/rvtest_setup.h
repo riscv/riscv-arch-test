@@ -166,6 +166,37 @@
       #endif
     #endif
 
+    #ifdef S_SUPPORTED
+      rvtest_identity_map:
+        // Identity maps rvtest_data_begin, forming an aligned Sv32 megapage,
+        // Sv39 gigapage, Sv48 terapage and Sv57 petapage.
+        // This allows the S-mode trap handler and save area to be accessed
+        // without requiring prior page table entries setup.
+        LA(T1, rvtest_Sroot_pg_tbl)
+        LA(T2, rvtest_data_begin)
+        #if __riscv_xlen == 32
+          srli T3, T2, 22
+          andi T3, T3, 0x3FF
+          slli T4, T3, 20
+          ori  T4, T4, 0xCF
+          slli T3, T3, 2
+          add  T3, T1, T3
+          sw   T4, 0(T3)
+        #else
+          .set VPN_SHIFT, 21
+          .rept (3)
+            .set VPN_SHIFT, VPN_SHIFT+9
+            srli T3, T2, VPN_SHIFT
+            andi T3, T3, 0x1FF
+            slli T4, T3, VPN_SHIFT-2
+            ori  T4, T4, 0xCF
+            slli T3, T3, 3
+            add  T3, T1, T3
+            sd   T4, 0(T3)
+          .endr
+        #endif
+    #endif
+
     RVTEST_INIT_REGS // Put deterministic values in each register
 
     LA (T1, rvtest_code_begin)
@@ -451,7 +482,9 @@
       #else    // RV32
         li t0, MSTATUS_MPP
         csrw mstatus, t0
-        csrw mstatush, zero // Clear all these fields
+        #ifndef SM1P11P0_SUPPORTED
+          csrw mstatush, zero // Clear all these fields
+        #endif
       #endif
 
       // Disable all privileged environment configuration, and enable unprivileged configuration
@@ -592,7 +625,7 @@
         csrw mnstatus, zero // Clear all fields in mnstatus as well if it exists
       #endif
 
-      #if (RVMODEL_NUM_PMPS > 0) && defined(U_SUPPORTED)
+      #if (UDB_NUM_PMP_ENTRIES > 0) && defined(U_SUPPORTED)
         // set up PMP so user and supervisor mode can access full address space
         CSRW(pmpcfg0, 0xF)   // configure PMP0 to TOR RWX
         LI(t0, -1)
@@ -769,9 +802,9 @@
 /**** helper macro to initialize regs, just to make sure you catch any errors ****/
 /*****************************************************************/
 
-.macro DBLSHIFTR dstreg,     oldreg,    tmpreg, shamt       //this is just a rotate  using xtmp as a tmp
-        slli    \tmpreg\(), \oldreg\(),   XLEN-\shamt
-        srli    \dstreg\(), \oldreg\(),        \shamt
+.macro DBLSHIFTR dstreg,     oldreg,       tmpreg, shamt       //this is just a rotate  using xtmp as a tmp
+        slli    \tmpreg\(), \oldreg\(), UDB_MXLEN-\shamt
+        srli    \dstreg\(), \oldreg\(),           \shamt
         or      \dstreg\(), \dstreg\(), \tmpreg\()
 .endm
 
@@ -782,7 +815,7 @@
   /* init regs, to ensure you catch any errors */
   rvtest_init_regs:
 
-  #ifndef RVTEST_E
+  #ifndef E_SUPPORTED
     LI (x16, (0x7D5BFDDB7D5BFDDB & MASK))
     DBLSHIFTR x17, x16, x15, 7
     DBLSHIFTR x18, x17, x15, 7

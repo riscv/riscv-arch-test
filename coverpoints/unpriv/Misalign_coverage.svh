@@ -20,7 +20,7 @@ covergroup Misalign_lh_cg with function sample(ins_t ins);
     }
 
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
         cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
             // test all 4 possible offsets of word alignments
         }
@@ -40,7 +40,7 @@ covergroup Misalign_lhu_cg with function sample(ins_t ins);
     }
 
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
         cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
             // test all 4 possible offsets of word alignments
         }
@@ -60,7 +60,7 @@ covergroup Misalign_lw_cg with function sample(ins_t ins);
     }
 
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
         cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
             // test all 4 possible offsets of word alignments
         }
@@ -80,7 +80,7 @@ covergroup Misalign_sh_cg with function sample(ins_t ins);
     }
 
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
         cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
             // test all 4 possible offsets of word alignments
         }
@@ -100,7 +100,7 @@ covergroup Misalign_sw_cg with function sample(ins_t ins);
     }
 
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
         cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
             // test all 4 possible offsets of word alignments
         }
@@ -112,7 +112,7 @@ covergroup Misalign_sw_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
 covergroup Misalign_ld_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "ld"  iff (ins.trap == 0 )  {
@@ -121,7 +121,7 @@ covergroup Misalign_ld_cg with function sample(ins_t ins);
     }
 
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
         cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
             // test all 4 possible offsets of word alignments
         }
@@ -141,7 +141,7 @@ covergroup Misalign_lwu_cg with function sample(ins_t ins);
     }
 
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
         cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
             // test all 4 possible offsets of word alignments
         }
@@ -161,7 +161,7 @@ covergroup Misalign_sd_cg with function sample(ins_t ins);
     }
 
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
         cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
             // test all 4 possible offsets of word alignments
         }
@@ -192,7 +192,7 @@ function void misalign_sample(int hart, int issue, ins_t ins);
         "sw"     : begin
             Misalign_sw_cg.sample(ins);
         end
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
         "ld"     : begin
             Misalign_ld_cg.sample(ins);
         end

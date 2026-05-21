@@ -2,19 +2,16 @@
 // Developed by: Umer Shahid & Muhammad Zain
 // --------------------------------------------------------------------------------------------------------------------------------
 // Test Description:
-//                     Setup a valid NAPOT PTE (PTE.N=1) with RWX permissions to map a 64 KiB physical page. Also setup
-// two non-NAPOT PTEs with reserved WX permissions at indices 2 and 15 of level 0 page table (within the 16 PTEs range
-// covered by the NAPOT PTE). Then in S-Mode, store, load and execute using VA used to setup NAPOT PTE.
-// Then access addresses at 8KiB and 60KiB offsets within the same 64KiB region. These addresses are same as those
-// two non-NAPOT PTEs that we setup earlier. Accesses are expected to succeed via the NAPOT mapping. However, if DUT
-// incorrectly uses those non-NAPOT PTEs, we will get a page fault due to reserved (WX) encoding.
+//                     Construct a 64 KiB NAPOT region by setting up 16 contiguous level 0 PTEs with PTE.N=1,
+// RWX permissions and PTE.ppn[0][3:0]=1000 (64 KiB encoding). Then in S-Mode, perform store, load and execute at offsets
+// 0KiB, 8KiB and 60KiB within the same 64KiB region.
 //
 // Total Expected Faults :: 0
 // --------------------------------------------------------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv57, Svnapot]
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv57_Svnapot_Smode.S"
@@ -94,19 +91,6 @@ main:
   sfence.vma                                                             // Flush TLB
 
 //---------------------------------------------------------------------------------------------------------------------------------
-// Setup 2 non-NAPOT PTEs within the 16 PTE range of NAPOT PTE
-// Using reserved encoding (WX) so that we get a page fault if DUT incorrectly fetches these PTEs instead of 64KiB NAPOT page
-//---------------------------------------------------------------------------------------------------------------------------------
-
-  PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
-  PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
-  PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
-  PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
-  PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_V), (va_data+0x2000), LEVEL0)
-  PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_V), (va_data+0xF000), LEVEL0)
-  sfence.vma
-
-//---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                                    TESTS AT LEVEL 0
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -119,10 +103,24 @@ main:
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV57(rvtest_data_1, (PTE_N | (1 << 13) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+  PTE_SETUP_SV57(rvtest_data_1, (PTE_N | (1 << 13) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), (va_data+0x1000), LEVEL0)
+  PTE_SETUP_SV57(rvtest_data_1, (PTE_N | (1 << 13) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), (va_data+0x2000), LEVEL0)
+  PTE_SETUP_SV57(rvtest_data_1, (PTE_N | (1 << 13) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), (va_data+0x3000), LEVEL0)
+  PTE_SETUP_SV57(rvtest_data_1, (PTE_N | (1 << 13) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), (va_data+0x4000), LEVEL0)
+  PTE_SETUP_SV57(rvtest_data_1, (PTE_N | (1 << 13) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), (va_data+0x5000), LEVEL0)
+  PTE_SETUP_SV57(rvtest_data_1, (PTE_N | (1 << 13) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), (va_data+0x6000), LEVEL0)
+  PTE_SETUP_SV57(rvtest_data_1, (PTE_N | (1 << 13) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), (va_data+0x7000), LEVEL0)
+  PTE_SETUP_SV57(rvtest_data_1, (PTE_N | (1 << 13) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), (va_data+0x8000), LEVEL0)
+  PTE_SETUP_SV57(rvtest_data_1, (PTE_N | (1 << 13) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), (va_data+0x9000), LEVEL0)
+  PTE_SETUP_SV57(rvtest_data_1, (PTE_N | (1 << 13) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), (va_data+0xA000), LEVEL0)
+  PTE_SETUP_SV57(rvtest_data_1, (PTE_N | (1 << 13) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), (va_data+0xB000), LEVEL0)
+  PTE_SETUP_SV57(rvtest_data_1, (PTE_N | (1 << 13) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), (va_data+0xC000), LEVEL0)
+  PTE_SETUP_SV57(rvtest_data_1, (PTE_N | (1 << 13) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), (va_data+0xD000), LEVEL0)
+  PTE_SETUP_SV57(rvtest_data_1, (PTE_N | (1 << 13) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), (va_data+0xE000), LEVEL0)
+  PTE_SETUP_SV57(rvtest_data_1, (PTE_N | (1 << 13) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), (va_data+0xF000), LEVEL0)
   sfence.vma
 
   // Access different addresses within 64KB region
-  // Including VAs that point to the non-NAPOT PTEs setup earlier
   TEST_CASES_RUNNER Smode, va_data,        LEVEL0, test1_access1
   TEST_CASES_RUNNER Smode, va_data+0x2000, LEVEL0, test1_access2
   TEST_CASES_RUNNER Smode, va_data+0xF000, LEVEL0, test1_access3

@@ -41,15 +41,12 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv39]
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv39_exceptions_Umode.S"
 #define SIGUPD_COUNT 115
 #define TRAP_SIGUPD_COUNT 270
-#define rvtest_mtrap_routine
-#define rvtest_strap_routine
-#define RVTEST_PRIV_TEST
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"
@@ -144,17 +141,16 @@ main:
   LI( a2, 0x800)              // Test signature initialization
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//                               Virtual addresses definition for code, data and test regions
+//                                   Virtual addresses definition for code and test regions
 //---------------------------------------------------------------------------------------------------------------------------------
 
   // Virtual Address of Test section (rvtest_data_1)
   .set va_data,                     0x140802000
   .set va_data_inv,                 0x180802000
 
-  // Virtual Address for code & data regions
+  // Virtual Address for code regions
   .set va_rvtest_code_begin,        0x1C0000000
   .set va_rvtest_code_begin_spage,  0x200000000
-  .set va_rvtest_data_begin,        0x080000000
 
 
   // PTE setup for Code Region (Upage)
@@ -162,9 +158,6 @@ main:
   sfence.vma
   // PTE setup for Code Region (Spage)
   SUPERPAGE_PTE_SETUP_SV39(rvtest_code_begin, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin_spage, LEVEL2)
-  sfence.vma
-  // PTE setup for Data Region (Identity mapped)
-  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_begin, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_rvtest_data_begin, LEVEL2)
   sfence.vma
 
   // Save area setup for code region

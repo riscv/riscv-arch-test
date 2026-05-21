@@ -30,13 +30,13 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
     mcause: coverpoint ins.current.insn[31:20] {
         bins mcause = {CSR_MCAUSE};
     }
-    mcause_interrupt : coverpoint ins.current.rs1_val[XLEN-1] {
+    mcause_interrupt : coverpoint ins.current.rs1_val[`UDB_MXLEN-1] {
         bins interrupt = {1};
     }
-    mcause_exception : coverpoint ins.current.rs1_val[XLEN-1] {
+    mcause_exception : coverpoint ins.current.rs1_val[`UDB_MXLEN-1] {
         bins exception = {0};
     }
-    mcause_exception_values: coverpoint ins.current.rs1_val[XLEN-2:0] {
+    mcause_exception_values: coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
         // exclude reserved and custom fields
         bins b_0_instruction_address_misaligned = {0};
         bins b_1_instruction_address_fault = {1};
@@ -78,7 +78,7 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
         //bins b_47_32_reserved = {[47:32]};
         //bins b_63_48_custom = {[63:48]};
     }
-    mcause_interrupt_values: coverpoint ins.current.rs1_val[XLEN-2:0] {
+    mcause_interrupt_values: coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
         // exclude reserved and custom fields
         //bins b_0_reserved = {0};
         bins b_1_supervisor_software = {1};
@@ -112,7 +112,7 @@ covergroup Sm_mstatus_cg with function sample(ins_t ins);
 
     // SD COVERPOINTS
     // Cross-product of trying to write mstatus.SD, .FS, .XS, .VS
-    cp_mstatus_sd: coverpoint ins.current.rs1_val[XLEN-1]  {
+    cp_mstatus_sd: coverpoint ins.current.rs1_val[`UDB_MXLEN-1]  {
     }
     cp_mstatus_fs: coverpoint ins.current.rs1_val[14:13] {
     }
@@ -239,16 +239,16 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins mhpmevent29= {CSR_MHPMEVENT29};
         bins mhpmevent30= {CSR_MHPMEVENT30};
         bins mhpmevent31= {CSR_MHPMEVENT31};
-        `ifdef MSECCFG_SUPPORTED // update this in four places when UDB gives a name to this parameter
+        `ifdef MSECCFG_SUPPORTED
             bins mseccfg  = {CSR_MSECCFG};
         `endif
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins mstatush = {CSR_MSTATUSH};
             bins menvcfgh = {CSR_MENVCFGH};
-            `ifdef MSECCFG_SUPPORTED // update this in four places when UDB gives a name to this parameter
+            `ifdef MSECCFG_SUPPORTED
                 bins mseccfgh = {CSR_MSECCFGH};
             `endif
-            `ifdef SM1P13_SUPPORTED
+            `ifdef S1P13P0_SUPPORTED
                 bins medelegh = {CSR_MEDELEGH};
             `endif
         `endif
@@ -285,7 +285,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins mhpmcounter29= {CSR_MHPMCOUNTER29};
         bins mhpmcounter30= {CSR_MHPMCOUNTER30};
         bins mhpmcounter31= {CSR_MHPMCOUNTER31};
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins mcycleh      = {CSR_MCYCLEH};
             bins minstreth    = {CSR_MINSTRETH};
             bins mhpmcounter3h = {CSR_MHPMCOUNTER3H};
@@ -325,7 +325,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         wildcard bins csrrc = {CSRRC};
     }
     walking_ones: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
-        bins b_1[] = { [0:`XLEN-1] };
+        bins b_1[] = { [0:`UDB_MXLEN-1] };
     }
 
     csr_debug: coverpoint ins.current.insn[31:20]  {
@@ -354,13 +354,13 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     old_mcountinhibit_cy: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "cy") {
         bins zero = {1'b0};
-        `ifdef COUNTINHIBIT_EN_0
+        `ifdef UDB_COUNTINHIBIT_EN_0
             bins one = {1'b1}; // only if counter can be inhibited
         `endif
     }
     old_mcountinhibit_ir: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "ir") {
         bins zero = {1'b0};
-        `ifdef COUNTINHIBIT_EN_2
+        `ifdef UDB_COUNTINHIBIT_EN_2
             bins one = {1'b1}; // only if counter can be inhibited
         `endif
     }
@@ -374,7 +374,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     time_csr: coverpoint ins.current.insn[31:20] {
         bins time_csr = {CSR_TIME};
     }
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
         timeh_csr: coverpoint ins.current.insn[31:20] {
             bins timeh_csr = {CSR_TIMEH};
         }
@@ -386,12 +386,12 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     // only check MISA.MXL.  The other bits are allowed to be 0s even if a feature is implemented.
     // misa.MXL is also allowed to be hardwired to 0 (but should match the reference model)
     misa_mxl_accesses : coverpoint ins.current.insn {
-        wildcard bins csrc_11  = {CSRC} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b11); // clear misa.MXL
-        wildcard bins csrs_11  = {CSRS} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b11); // set misa.MXL = 11
-        wildcard bins csrw_00  = {CSRW} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b00); // write misa.MXL = 00
-        wildcard bins csrw_01  = {CSRW} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b01); // write misa.MXL = 01
-        wildcard bins csrw_10  = {CSRW} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b10); // write misa.MXL = 10
-        wildcard bins csrw_11  = {CSRW} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b11); // write misa.MXL = 11
+        wildcard bins csrc_11  = {CSRC} iff (ins.current.rs1_val[`UDB_MXLEN-1:`UDB_MXLEN-2] == 2'b11); // clear misa.MXL
+        wildcard bins csrs_11  = {CSRS} iff (ins.current.rs1_val[`UDB_MXLEN-1:`UDB_MXLEN-2] == 2'b11); // set misa.MXL = 11
+        wildcard bins csrw_00  = {CSRW} iff (ins.current.rs1_val[`UDB_MXLEN-1:`UDB_MXLEN-2] == 2'b00); // write misa.MXL = 00
+        wildcard bins csrw_01  = {CSRW} iff (ins.current.rs1_val[`UDB_MXLEN-1:`UDB_MXLEN-2] == 2'b01); // write misa.MXL = 01
+        wildcard bins csrw_10  = {CSRW} iff (ins.current.rs1_val[`UDB_MXLEN-1:`UDB_MXLEN-2] == 2'b10); // write misa.MXL = 10
+        wildcard bins csrw_11  = {CSRW} iff (ins.current.rs1_val[`UDB_MXLEN-1:`UDB_MXLEN-2] == 2'b11); // write misa.MXL = 11
         wildcard bins csrr     = {CSRR};                                                   // read misa
     }
 
@@ -432,14 +432,14 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     cp_misa_dependencies :      cross priv_mode_m, csrrw, misa, misa_dependencies;
     cp_misa_clear_c :           cross priv_mode_m, csrc, misa_c_0, pc_1;
 
-    `ifdef TIME_CSR_IMPLEMENTED
+    `ifdef UDB_TIME_CSR_IMPLEMENTED
         cp_mtime_write :        cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             cp_mtimeh_write :   cross priv_mode_m, csrr,  timeh_csr; // assumes mtimeh has been written
         `endif
     `endif
 
-    `ifdef SM1P13_SUPPORTED
+    `ifdef S1P13P0_SUPPORTED
         misa_b_bit: coverpoint ins.current.rs1_val[1] {
             bins b_set   = {1'b1};
             bins b_clear = {1'b0};
@@ -463,7 +463,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             }
             cp_msip: cross priv_mode_m, sw, msip_address, msip_val;
         `endif // RVMODEL_MSIP_ADDRESS
-    `endif // SM1P13_SUPPORTED
+    `endif // S1P13P0_SUPPORTED
 
 
 endgroup

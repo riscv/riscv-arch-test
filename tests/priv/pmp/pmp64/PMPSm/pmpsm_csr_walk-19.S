@@ -29,7 +29,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -65,7 +65,7 @@ main:
     // --- pmpcfg even walking ones, bit 62 ---
 
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
 1:  li t2, (1 << 62)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_119_str)
     .set pmpcfgi, pmpcfgi+2
@@ -74,7 +74,7 @@ main:
     // --- pmpcfg even walking ones, bit 63 (MSB for RV64) ---
 
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
 1:  li t2, (1 << 63)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_120_str)
     .set pmpcfgi, pmpcfgi+2
@@ -90,12 +90,12 @@ test_119_str: .string "\"test: 119; cp: cp_csr_walk_119\""
 test_120_str: .string "\"test: 120; cp: cp_csr_walk_120\""
 
 .align 12
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jr ra
 
 TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept (1<<(UDB_PMP_GRANULARITY))
     nop
     .endr
 

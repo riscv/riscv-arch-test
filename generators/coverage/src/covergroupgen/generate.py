@@ -15,9 +15,63 @@ import math
 import re
 from difflib import get_close_matches
 from pathlib import Path
+from types import ModuleType
 
 from rich import print as rprint
 from rich.progress import track
+
+
+def _load_ssstrictv_skip_combinations() -> dict[str, set[str]]:
+    """Load the SsstrictV (column, instruction) skip table.
+
+    Single source of truth lives in
+    ``generators/testgen/scripts/ssstrictv_skip_combinations.py``. The testgen
+    scripts dir is not a Python package, so load it by file path via
+    ``importlib``. Returns ``{csv_column: set(instructions)}``.
+    """
+    import importlib.util
+
+    repo_root = Path(__file__).resolve().parents[4]
+    skip_path = repo_root / "generators" / "testgen" / "scripts" / "ssstrictv_skip_combinations.py"
+    if not skip_path.exists():
+        return {}
+    spec = importlib.util.spec_from_file_location("ssstrictv_skip_combinations", skip_path)
+    if spec is None or spec.loader is None:
+        return {}
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    raw = getattr(module, "SKIP_COMBINATIONS", {})
+    return {col: set(instrs) for col, instrs in raw.items()}
+
+
+SSSTRICTV_SKIP_COMBINATIONS = _load_ssstrictv_skip_combinations()
+
+
+_VECTOR_TESTGEN_COMMON = None
+
+
+def _load_vector_testgen_common() -> ModuleType | None:
+    """Lazy-load the testgen ``vector_testgen_common`` module by file path."""
+    global _VECTOR_TESTGEN_COMMON
+    if _VECTOR_TESTGEN_COMMON is not None:
+        return _VECTOR_TESTGEN_COMMON
+    import importlib.util
+
+    repo_root = Path(__file__).resolve().parents[4]
+    mod_path = repo_root / "generators" / "testgen" / "scripts" / "vector_testgen_common.py"
+    if not mod_path.exists():
+        return None
+    spec = importlib.util.spec_from_file_location("vector_testgen_common", mod_path)
+    if spec is None or spec.loader is None:
+        return None
+    module = importlib.util.module_from_spec(spec)
+    try:
+        spec.loader.exec_module(module)
+    except Exception:  # noqa: BLE001
+        return None
+    _VECTOR_TESTGEN_COMMON = module
+    return module
+
 
 # Coverpoints whose template name depends on the SEW (element width).
 SEW_DEPENDENT_CPS = {
@@ -43,10 +97,116 @@ VECTOR_PREFIXES = ("Vx", "Zv", "Vls", "Vf")
 # Priv-side architectures that need vector-flavored covergroups (header_vector etc.).
 # These priv testplans use the same vector helpers as unpriv vector covergroups
 # but do not undergo per-SEW expansion.
-PRIV_VECTOR_PREFIXES = ("ExceptionsV", "MisalignedV")
+PRIV_VECTOR_PREFIXES = ("ExceptionsV", "SsstrictV", "MisalignedV")
 
 # Subset of vector prefixes that support widening instructions.
 VECTOR_WIDEN_PREFIXES = ("Vx", "Vls", "Vf")
+
+
+# Map instruction Type code → (has_vd_reg_group, has_vs1_reg_group, has_vs2_reg_group).
+# Used to suppress per-operand off_group / overlap crosses for instructions whose
+# encoding hardcodes an operand field (e.g. vid.v has no vs1/vs2 registers — those
+# bits are part of the opcode, so unaligned-vs1 / unaligned-vs2 bins can never fire).
+# vd is recorded as "present" for stores (the vs3 data register lives in the rd field
+# and still has an EMUL-aligned register group constraint).
+_TYPE_OPERANDS: dict[str, tuple[bool, bool, bool]] = {
+    "VVVM": (True, True, True),
+    "VVV": (True, True, True),
+    "VVVMR": (True, True, True),
+    "VVIM": (True, False, True),
+    "VVI": (True, False, True),
+    "VVXM": (True, False, True),
+    "VVX": (True, False, True),
+    "VVFM": (True, False, True),
+    "VVM": (True, False, True),
+    "VV": (True, False, True),
+    "VVR": (True, True, False),
+    "VFVM": (True, False, True),
+    "VI": (True, False, False),
+    "VM": (True, False, False),
+    "VF": (True, False, False),
+    "FV": (False, False, True),
+    "XV": (False, False, True),
+    "XVM": (False, False, True),
+    "VX": (True, False, False),
+    "VXM": (True, False, False),
+    "VXVM": (True, False, True),
+    "VXXM": (True, False, False),
+    "VSX": (True, False, False),
+    "VSXM": (True, False, False),
+    "VSXVM": (True, False, True),
+    "VSXXM": (True, False, False),
+}
+
+
+def _operand_presence(instr_type: str) -> tuple[bool, bool, bool]:
+    """Return (has_vd, has_vs1, has_vs2) register-group presence for a given Type.
+
+    Unknown types default to (True, True, True) so we don't accidentally drop bins
+    for new types that are added without updating this table.
+    """
+    return _TYPE_OPERANDS.get(instr_type, (True, True, True))
+
+
+def _max_legal_lmul_for_instruction(instr: str) -> int:
+    """Return the largest legal LMUL for ``instr`` (≤ 8).
+
+    Mirrors the rules in ``priv/_ssstrictv_helpers.max_legal_lmul``:
+
+    * Segment LS instructions require ``NF * EMUL ≤ 8`` so EMUL ≤ 8/NF.
+    * Widening / narrowing ops have an operand with EEW = 2*SEW so EMUL = 2*LMUL,
+      capping LMUL at 4.
+    * Otherwise LMUL ≤ 8.
+    """
+    _c = _load_vector_testgen_common()
+    if _c is None:
+        return 8
+    nf = _c.getInstructionSegments(instr) if hasattr(_c, "getInstructionSegments") else 1
+    if nf and nf > 1:
+        cap = 8 // nf
+        for m in (8, 4, 2, 1):
+            if m <= cap:
+                return m
+        return 1
+    if instr in getattr(_c, "vd_widen_ins", ()) or instr in getattr(_c, "vs2_widen_ins", ()):
+        return 4
+    return 8
+
+
+_LMUL_CROSS_RE = re.compile(r"cp_ssstrictv_lmul(\d+)_(vd|vs1|vs2)_off_group")
+
+
+def _filter_per_operand_crosses(rendered: str, instr_type: str, instr: str = "") -> str:
+    """Drop cross lines tied to operands the instruction's Type does not encode.
+
+    The ``cp_ssstrictv_lmulgt1_off_group`` template emits one cross per (lmul,
+    operand) pair. Two reasons we may drop a cross:
+
+    * Operand absent in the Type encoding (e.g. ``vid.v`` has no vs1/vs2).
+    * The (LMUL, instruction) combination is illegal — e.g. widening ops cap at
+      LMUL=4 because vd has EEW=2*SEW, and segment LS caps at LMUL=8/NF.
+    """
+    has_vd, has_vs1, has_vs2 = _operand_presence(instr_type)
+    max_lmul = _max_legal_lmul_for_instruction(instr) if instr else 8
+    if has_vd and has_vs1 and has_vs2 and max_lmul >= 8:
+        return rendered
+    out_lines: list[str] = []
+    for line in rendered.splitlines(keepends=True):
+        stripped = line.lstrip()
+        m = _LMUL_CROSS_RE.search(stripped)
+        if m and stripped.startswith("cp_ssstrictv_lmul"):
+            lmul = int(m.group(1))
+            role = m.group(2)
+            if role == "vd" and not has_vd:
+                continue
+            if role == "vs1" and not has_vs1:
+                continue
+            if role == "vs2" and not has_vs2:
+                continue
+            if lmul > max_lmul:
+                continue
+        out_lines.append(line)
+    return "".join(out_lines)
 
 
 def _write_if_changed(path: Path, content: str) -> None:
@@ -219,6 +379,11 @@ def _is_vector(arch: str) -> bool:
     return arch.startswith(VECTOR_PREFIXES)
 
 
+def _is_priv_vector(arch: str) -> bool:
+    """Priv testplans whose covergroups need vector helpers but no SEW expansion."""
+    return arch.startswith(PRIV_VECTOR_PREFIXES)
+
+
 def _is_vector_widen(arch: str, instr: str) -> bool:
     """Check if this is a vector widening instruction."""
     return arch.startswith(VECTOR_WIDEN_PREFIXES) and (instr.startswith(("vw", "vfw")) or ".w" in instr)
@@ -267,16 +432,27 @@ def _indexed_ls_eew(instr: str) -> int | None:
     return int(m.group(3)) if m else None
 
 
-def _should_gate_maxindexeew(arch: str, instr: str) -> int | None:
-    """Return the index EEW to gate on, or None if no gate should be emitted.
+def _should_gate_maxindexeew(arch: str, instr: str) -> tuple[int, str] | None:
+    """Return (eew, macro_prefix) to gate on, or None if no gate should be emitted.
 
-    Only unpriv per-SEW Vls{N} arches gate indexed LS covergroups behind
-    MAXINDEXEEW_GE{eew}; priv (ExceptionsVls) and Vx (vrgather) never gate.
+    Unpriv per-SEW Vls{N} arches gate indexed LS covergroups behind
+    MAXINDEXEEW_GE{eew}. Priv MisalignedV / ExceptionsVls covergroups gate
+    behind XLEN{eew} so EEW=64 indexed-LS coverage is suppressed on RV32
+    (see sail-riscv issue 1719: Sail RV32 takes illegal-instruction on
+    EEW=64 indexed LS while other sims take a load access fault, producing
+    mismatched mcause in the signature). Vx (vrgather) never gates.
     """
-    if arch not in _VLS_PER_SEW_ARCHES:
-        return None
     eew = _indexed_ls_eew(instr)
-    return eew if eew and eew > 8 else None
+    if not eew or eew <= 8:
+        return None
+    if arch in _VLS_PER_SEW_ARCHES:
+        return (eew, "MAXINDEXEEW_GE")
+    if arch == "MisalignedV" or arch == "ExceptionsVls":
+        # XLEN16 macro does not exist; XLEN is always >= 32, so only gate eew=64.
+        if eew >= 64:
+            return (eew, "XLEN")
+        return None
+    return None
 
 
 def _ffLS_feasible(instr: str, sew: int) -> bool:
@@ -324,15 +500,17 @@ def _gen_instrs(
 
         vectorwiden = _is_vector_widen(arch, instr)
 
-        # Gate indexed LS covergroups by MAXINDEXEEW only for unpriv per-SEW
-        # Vls{N} arches: those are legal-path coverage of instructions that
-        # don't exist when MAXINDEXEEW is too small. Priv (ExceptionsVls) and
-        # Vx (vrgather) never gate — priv wants to confirm traps, and Vx
-        # isn't load/store so MAXINDEXEEW doesn't apply.
-        idx_eew = _should_gate_maxindexeew(arch, instr)
-        if idx_eew:
-            covergroup_lines.append(f"`ifdef MAXINDEXEEW_GE{idx_eew}\n")
-            init_lines.append(f"`ifdef MAXINDEXEEW_GE{idx_eew}\n")
+        # Gate indexed LS covergroups by MAXINDEXEEW for unpriv per-SEW
+        # Vls{N} arches, and by XLEN for priv MisalignedV / ExceptionsVls.
+        # Priv ei64 covergroups are suppressed on RV32 because Sail RV32
+        # takes illegal-instruction on EEW=64 indexed LS while other sims
+        # take a load access fault (see sail-riscv issue 1719). Vx (vrgather)
+        # never gates.
+        gate = _should_gate_maxindexeew(arch, instr)
+        if gate:
+            idx_eew, macro_prefix = gate
+            covergroup_lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
+            init_lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
 
         # Instruction header
         if vectorwiden:
@@ -366,6 +544,13 @@ def _gen_instrs(
             if cp.startswith(("sample_", "EFFEW", "cp_ibm")) or cp in {"RV32", "RV64"}:
                 continue
 
+            # SsstrictV: honor the curated (column, instruction) skip table that
+            # records simulator-failure / unimplemented combinations. Skipping
+            # here removes the corresponding bins from the covergroup so they
+            # do not count as missing coverage.
+            if arch.startswith("SsstrictV") and instr in SSSTRICTV_SKIP_COMBINATIONS.get(cp, ()):
+                continue
+
             # Skip cp_custom_ffLS for instructions where LMUL=2 is infeasible at this SEW
             if cp == "cp_custom_ffLS" and _is_vector(arch):
                 sew = int(_get_effew(arch))
@@ -384,6 +569,12 @@ def _gen_instrs(
             if any(sew_cp in cp for sew_cp in SEW_DEPENDENT_CPS):
                 cp = cp + "_sew" + _get_effew(arch)
 
+            # Handle eew_eq_sew variants: only emit when indexed-LS EEW == arch SEW
+            if cp.endswith("_eew_eq_sew"):
+                eew = _indexed_ls_eew(instr)
+                if eew is not None and _is_vector(arch) and int(_get_effew(arch)) != eew:
+                    continue
+
             # Handle conditional SEW inclusion
             if "sew_lte" in cp:
                 effew = _get_effew(arch)
@@ -392,9 +583,13 @@ def _gen_instrs(
                     max_sew = int(match.group(1))
                     if int(effew) <= max_sew:
                         cp = re.sub(r"_sew_lte_\d+", "", cp)
-                        covergroup_lines.append(customize_template(templates, cp, arch, instr) + "\n")
+                        rendered = customize_template(templates, cp, arch, instr) + "\n"
+                        rendered = _filter_per_operand_crosses(rendered, _instr_type, instr)
+                        covergroup_lines.append(rendered)
             else:
-                covergroup_lines.append(customize_template(templates, cp, arch, instr) + "\n")
+                rendered = customize_template(templates, cp, arch, instr) + "\n"
+                rendered = _filter_per_operand_crosses(rendered, _instr_type, instr)
+                covergroup_lines.append(rendered)
 
         # Instruction footer
         if vectorwiden:
@@ -402,7 +597,7 @@ def _gen_instrs(
         else:
             covergroup_lines.append(customize_template(templates, "endgroup", arch, instr))
 
-        if idx_eew:
+        if gate:
             covergroup_lines.append("`endif\n")
             init_lines.append("`endif\n")
 
@@ -424,9 +619,10 @@ def _gen_covergroup_samples(
         if not _matches_xlen(cps, has_rv32, has_rv64):
             continue
 
-        idx_eew = _should_gate_maxindexeew(arch, instr)
-        if idx_eew:
-            lines.append(f"`ifdef MAXINDEXEEW_GE{idx_eew}\n")
+        gate = _should_gate_maxindexeew(arch, instr)
+        if gate:
+            idx_eew, macro_prefix = gate
+            lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
 
         if arch.startswith(VECTOR_WIDEN_PREFIXES):
             if _is_vector_widen(arch, instr):
@@ -437,7 +633,7 @@ def _gen_covergroup_samples(
         elif arch != "E":  # E currently breaks coverage
             lines.append(customize_template(templates, "covergroup_sample", arch, instr))
 
-        if idx_eew:
+        if gate:
             lines.append("`endif\n")
 
     return "".join(lines)
@@ -480,12 +676,21 @@ def _write_extension_files(
     an EFFEW substitution is made available in the header, and the instruction
     key list is filtered to the matching SEW.
     """
-    effew = _get_effew(arch) if (vector or _has_effew_suffix(arch)) else ""
+    effew = ""
+    if vector or _has_effew_suffix(arch):
+        try:
+            effew = _get_effew(arch)
+        except ValueError:
+            # Priv vector archs (SsstrictV, ExceptionsV*, MisalignedV) have no SEW expansion or EFFEW.
+            effew = ""
     instr_keys = _get_sorted_instr_keys(tp, arch) if (vector or _has_effew_suffix(arch)) else sorted(tp.keys())
 
     header_tmpl = "header_vector" if vector else "header"
-    sample_header_tmpl = "covergroup_sample_header_vector" if vector else "covergroup_sample_header"
-    sample_end_tmpl = "covergroup_sample_end_vector" if vector else "covergroup_sample_end"
+    # Priv vector archs (SsstrictV, ExceptionsV*) don't expand per-SEW so the
+    # EFFVSEW gate doesn't apply — use the non-vector sample header/end.
+    use_vector_sample = vector and bool(effew)
+    sample_header_tmpl = "covergroup_sample_header_vector" if use_vector_sample else "covergroup_sample_header"
+    sample_end_tmpl = "covergroup_sample_end_vector" if use_vector_sample else "covergroup_sample_end"
 
     lines: list[str] = [customize_template(templates, header_tmpl, arch, effew=effew)]
     init_lines: list[str] = [customize_template(templates, "initheader", arch)]
@@ -657,7 +862,7 @@ def write_priv_covergroups(
     for arch, tp in track(
         priv_plans.items(), description="[cyan]Generating priv covergroups...", total=len(priv_plans)
     ):
-        _write_extension_files(arch, tp, templates, priv_output_dir, vector=False)
+        _write_extension_files(arch, tp, templates, priv_output_dir, vector=_is_priv_vector(arch))
 
 
 ##################################

@@ -40,9 +40,13 @@
       "mask": "0x000002cf00fe7faa",
       "poke_mask": "0x800002cf00fe7faa"
     },
+    "mie": {
+      "mask": "0x2aaa", // ensuring that all non writable bits remain as read only 0
+      "poke_mask": "0x2aaa"
+    },
     "mip": {
-      "mask": "0x2222",
-      "poke_mask": "0x2aaa" //had to change from 0x2222 to 0x2aaa for interrupts to trigger on whisper
+      "mask": "0x2222", // determines what bits of mip can be set by M-mode software [SEIP, STIP, SSIP]
+      "poke_mask": "0x2aaa" //determines what bits of mip can be set by simulator injecting external events
     },
     "stvec": {
       "mask": "0xFFFFFFFFFFFFFFFD" // don't allow setting MODE field to 2 (reserved)

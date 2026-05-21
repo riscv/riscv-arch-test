@@ -172,6 +172,10 @@ def generate_march_string(ext_components: list[str], xlen: int) -> str:
     if "Zicsr" not in multi_letter:
         multi_letter.append("Zicsr")
 
+    # Always include Zifencei so trap handler fence.i can be assembled
+    if "Zifencei" not in multi_letter:
+        multi_letter.append("Zifencei")
+
     # workaround for https://github.com/llvm/llvm-project/issues/190910; can be removed when this is resolved
     if ("Zihintntl" in multi_letter) and ("Zca" in multi_letter):
         single_letter.append("C")

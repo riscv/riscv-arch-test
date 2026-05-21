@@ -140,9 +140,13 @@ def _emit_setup(instruction: str, instruction_data: list, sew: int) -> int:
         if scalar_data.get(k) and scalar_data[k].get("reg") is not None
     ]
     reserved_for_fp = list(common.PRIV_RESERVED_SCALAR_REGS) + operand_regs
+    # FP scalar precision comes from the priv suite's FP SEW (e.g. ExceptionsVf16=16),
+    # not the vector SEW: arithmetic FP instructions have no eew_ins entry, so the
+    # caller's `sew` falls back to minSEW_MIN=8, which has no flh/flw/fld mapping.
+    fp_sew = common.getPrivFpSew() or sew
     for fp_arg in ("fs1", "fs2", "fs3"):
         if fp_arg in args and fp_arg in fp_data and fp_data[fp_arg].get("reg") is not None:
-            common.loadFloatReg(sew, fp_arg, fp_data, *reserved_for_fp)
+            common.loadFloatReg(fp_sew, fp_arg, fp_data, *reserved_for_fp)
     return scratch
 
 

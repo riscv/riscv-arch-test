@@ -49,7 +49,7 @@
     E_sw_cg = new(); E_sw_cg.set_inst_name("obj_E_sw");
     E_xor_cg = new(); E_xor_cg.set_inst_name("obj_E_xor");
     E_xori_cg = new(); E_xori_cg.set_inst_name("obj_E_xori");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     E_addiw_cg = new(); E_addiw_cg.set_inst_name("obj_E_addiw");
     E_addw_cg = new(); E_addw_cg.set_inst_name("obj_E_addw");
     E_ld_cg = new(); E_ld_cg.set_inst_name("obj_E_ld");

@@ -482,7 +482,9 @@
       #else    // RV32
         li t0, MSTATUS_MPP
         csrw mstatus, t0
-        csrw mstatush, zero // Clear all these fields
+        #ifndef SM1P11P0_SUPPORTED
+          csrw mstatush, zero // Clear all these fields
+        #endif
       #endif
 
       // Disable all privileged environment configuration, and enable unprivileged configuration
@@ -623,7 +625,7 @@
         csrw mnstatus, zero // Clear all fields in mnstatus as well if it exists
       #endif
 
-      #if (RVMODEL_NUM_PMPS > 0) && defined(U_SUPPORTED)
+      #if (UDB_NUM_PMP_ENTRIES > 0) && defined(U_SUPPORTED)
         // set up PMP so user and supervisor mode can access full address space
         CSRW(pmpcfg0, 0xF)   // configure PMP0 to TOR RWX
         LI(t0, -1)
@@ -800,9 +802,9 @@
 /**** helper macro to initialize regs, just to make sure you catch any errors ****/
 /*****************************************************************/
 
-.macro DBLSHIFTR dstreg,     oldreg,    tmpreg, shamt       //this is just a rotate  using xtmp as a tmp
-        slli    \tmpreg\(), \oldreg\(),   XLEN-\shamt
-        srli    \dstreg\(), \oldreg\(),        \shamt
+.macro DBLSHIFTR dstreg,     oldreg,       tmpreg, shamt       //this is just a rotate  using xtmp as a tmp
+        slli    \tmpreg\(), \oldreg\(), UDB_MXLEN-\shamt
+        srli    \dstreg\(), \oldreg\(),           \shamt
         or      \dstreg\(), \dstreg\(), \tmpreg\()
 .endm
 
@@ -813,7 +815,7 @@
   /* init regs, to ensure you catch any errors */
   rvtest_init_regs:
 
-  #ifndef RVTEST_E
+  #ifndef E_SUPPORTED
     LI (x16, (0x7D5BFDDB7D5BFDDB & MASK))
     DBLSHIFTR x17, x16, x15, 7
     DBLSHIFTR x18, x17, x15, 7

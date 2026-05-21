@@ -14,7 +14,41 @@
 # Perform boot operations. Can be empty or left undefined unless needed for
 # DUT-specific behavior such as turning on a memory controller or
 # initializing custom state.
-//#define RVMODEL_BOOT
+
+#define APLIC_BASE       0x0c000000 /* not really used anywhere just as a reference base address */
+
+#define ADDR_DOMAINCFG  0x0c000000
+#define ADDR_SOURCECFG1 0x0c000004
+#define ADDR_SETIE0     0x0c001e00
+#define ADDR_SETIPNUM   0x0c001cdc
+#define ADDR_CLRIPNUM   0x0c001ddc
+#define ADDR_TARGET1    0x0c003004
+#define ADDR_IDELIVERY0 0x0c004000
+#define ADDR_ITHRESH0   0x0c004008
+#define ADDR_CLAIMI0    0x0c00401c
+
+#define SM_EDGE1        4
+#define DOMAINCFG_RUN   0x80000100
+#define TARGET1_H0_P1   0x00000001
+
+#define RVMODEL_BOOT \
+  li      t1, ADDR_SOURCECFG1; /* setting up for APLIC */\
+  li      t2, SM_EDGE1; \
+  sw      t2, 0(t1); \
+  li      t1, ADDR_TARGET1; \
+  li      t2, TARGET1_H0_P1; \
+  sw      t2, 0(t1); \
+  li      t1, ADDR_DOMAINCFG; \
+  li      t2, DOMAINCFG_RUN; \
+  sw      t2, 0(t1); \
+  li      t1, ADDR_IDELIVERY0; \
+  li      t2, 1; \
+  sw      t2, 0(t1); \
+  li      t1, ADDR_ITHRESH0; \
+  sw      zero, 0(t1); \
+  li      t1, ADDR_SETIE0; \
+  li      t2, 2; \
+  sw      t2, 0(t1);
 
 // Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
 // if defined.  For most DUTs, the default should work and this macro
@@ -82,21 +116,6 @@
 
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
-#define APLIC_BASE       0x0c000000 /* not really used anywhere just as a reference base address */
-
-#define ADDR_DOMAINCFG  0x0c000000
-#define ADDR_SOURCECFG1 0x0c000004
-#define ADDR_SETIE0     0x0c001e00
-#define ADDR_SETIPNUM   0x0c001cdc
-#define ADDR_CLRIPNUM   0x0c001ddc
-#define ADDR_TARGET1    0x0c003004
-#define ADDR_IDELIVERY0 0x0c004000
-#define ADDR_ITHRESH0   0x0c004008
-#define ADDR_CLAIMI0    0x0c00401c
-
-#define SM_EDGE1        4
-#define DOMAINCFG_RUN   0x80000100
-#define TARGET1_H0_P1   0x00000001
 
 ##### Machine Timer #####
 
@@ -105,29 +124,12 @@
 #define RVMODEL_MTIME_ADDRESS  0x0200BFF8  /* Address of mtime CSR */
 
 #define RVMODEL_SET_MEXT_INT(_R1, _R2) \
-  li      _R1, ADDR_SOURCECFG1; \
-  li      _R2, SM_EDGE1; \
-  sw      _R2, 0(_R1); \
-  li      _R1, ADDR_TARGET1; \
-  li      _R2, TARGET1_H0_P1; \
-  sw      _R2, 0(_R1); \
-  li      _R1, ADDR_DOMAINCFG; \
-  li      _R2, DOMAINCFG_RUN; \
-  sw      _R2, 0(_R1); \
-  li      _R1, ADDR_IDELIVERY0; \
-  li      _R2, 1; \
-  sw      _R2, 0(_R1); \
-  li      _R1, ADDR_ITHRESH0; \
-  sw      zero, 0(_R1); \
-  li      _R1, ADDR_SETIE0; \
-  li      _R2, 2; \
-  sw      _R2, 0(_R1); \
-  li      _R1, ADDR_SETIPNUM; \
+  li      _R1, ADDR_SETIPNUM; /* sets the interrupt to pending*/ \
   li      _R2, 1; \
   sw      _R2, 0(_R1);
 
 #define RVMODEL_CLR_MEXT_INT(_R1, _R2) \
-  li      _R1, ADDR_CLRIPNUM; \
+  li      _R1, ADDR_CLRIPNUM; /* clear the pending interrupt*/ \
   li      _R2, 1; \
   sw      _R2, 0(_R1);
 

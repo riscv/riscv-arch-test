@@ -131,6 +131,8 @@ params:
       false,
       false, # 24..31 (unimplemented)
     ]
+  MCOUNTINHIBIT_IMPLEMENTED: true # VERIFIED -- mcountinhibit CSR (0x320) in CSR map; inhibit bits for mcycle/minstret/mhpmcounterX
+
   COUNTINHIBIT_EN: # VERIFIED -- User Manual, Performance Counters: bit 0=mcycle, bit 2=minstret, bit X=mhpmcounterX
     [
       true, # index 0 (MCYCLE inhibit -- supported)

@@ -7,6 +7,8 @@
 
 #define RVMODEL_DATA_SECTION
 
+#define STANDARD_SM_SUPPORTED
+
 ##### STARTUP #####
 //#define RVMODEL_BOOT \
 

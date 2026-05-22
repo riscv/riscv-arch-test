@@ -2708,6 +2708,11 @@ def writeTest(description, instruction, cp, instruction_data=None,
       vs2_preloaded = True
       # restore vl later after prepBaseV will reset it, so no need to save/restore vtype
 
+    # The previous operations may have preloaded vs1 if it appears as vd or vs2.
+    # Allowing it to load later without vl = vlmax means that the work done to have vd
+    # and vs2 be deterministically loaded in length suite tests is thrown out
+    vs1_preloaded = (vd_preloaded and vs1 == vd) or (vs2_preloaded and vs1 == vs2)
+
     scalar_registers_used = prepBaseV(sew, lmul, vl, vstart, vta, vma, force_vill, vector_registers_used, *scalar_registers_used)
 
     # These bare vmv.v.i cases must be after prepBaseV which sets vsetvli (otherwise
@@ -2737,7 +2742,7 @@ def writeTest(description, instruction, cp, instruction_data=None,
       elif argument == 'imm':
         testline = testline + f"{imm_val}"
       elif argument[0] == 'v':
-        if not (argument == 'vd' and vd_preloaded) and not (argument == 'vs2' and vs2_preloaded): # skip loading vd if we already preloaded it with VLMAX
+        if not (argument == 'vd' and vd_preloaded) and not (argument == 'vs2' and vs2_preloaded) and not (argument == 'vs1' and vs1_preloaded): # skip loading vd if we already preloaded it with VLMAX
           scalar_registers_used = loadVecReg(instruction, argument, vector_register_data, sew, lmul, *scalar_registers_used, vl=vl)
         testline = testline + f"v{vector_register_data[argument]['reg']}"
       elif argument[0] == 'r':

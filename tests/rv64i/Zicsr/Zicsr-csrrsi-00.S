@@ -45,7 +45,7 @@ RVTEST_BEGIN
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x18
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x18
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -59,7 +59,10 @@ Zicsr_csrrsi_cg_cp_rd_b0:
 #elif !defined(U_SUPPORTED)
   csrrsi x0, mepc, 20
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x0, instret, 20
+  csrrsi x18, instret, 0
+  csrrsi x0, instret, 0
+  sub x0, x0, x18  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -74,7 +77,10 @@ Zicsr_csrrsi_cg_cp_rd_b0:
 #elif !defined(U_SUPPORTED)
   csrrs x18, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x18, instret, x0
+  sub x18, x18, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -93,7 +99,7 @@ Zicsr_csrrsi_cg_cp_rd_b0:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x10
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x10
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -107,7 +113,10 @@ Zicsr_csrrsi_cg_cp_rd_b1:
 #elif !defined(U_SUPPORTED)
   csrrsi x1, mepc, 11
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x1, instret, 11
+  csrrsi x10, instret, 0
+  csrrsi x1, instret, 0
+  sub x1, x1, x10  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -122,7 +131,10 @@ Zicsr_csrrsi_cg_cp_rd_b1:
 #elif !defined(U_SUPPORTED)
   csrrs x10, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x10, instret, x0
+  sub x10, x10, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -142,7 +154,7 @@ Zicsr_csrrsi_cg_cp_rd_b1:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x24
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x24
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -156,7 +168,10 @@ Zicsr_csrrsi_cg_cp_rd_b2:
 #elif !defined(U_SUPPORTED)
   csrrsi x2, mepc, 14
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x2, instret, 14
+  csrrsi x24, instret, 0
+  csrrsi x2, instret, 0
+  sub x2, x2, x24  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -171,7 +186,10 @@ Zicsr_csrrsi_cg_cp_rd_b2:
 #elif !defined(U_SUPPORTED)
   csrrs x24, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x24, instret, x0
+  sub x24, x24, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -191,7 +209,7 @@ Zicsr_csrrsi_cg_cp_rd_b2:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x10
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x10
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -205,7 +223,10 @@ Zicsr_csrrsi_cg_cp_rd_b3:
 #elif !defined(U_SUPPORTED)
   csrrsi x3, mepc, 0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrsi x10, instret, 0
   csrrsi x3, instret, 0
+  sub x3, x3, x10  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -220,7 +241,10 @@ Zicsr_csrrsi_cg_cp_rd_b3:
 #elif !defined(U_SUPPORTED)
   csrrs x10, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x10, instret, x0
+  sub x10, x10, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -241,7 +265,7 @@ Zicsr_csrrsi_cg_cp_rd_b3:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x9
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x9
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -255,7 +279,10 @@ Zicsr_csrrsi_cg_cp_rd_b4:
 #elif !defined(U_SUPPORTED)
   csrrsi x4, mepc, 21
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x4, instret, 21
+  csrrsi x9, instret, 0
+  csrrsi x4, instret, 0
+  sub x4, x4, x9  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -270,7 +297,10 @@ Zicsr_csrrsi_cg_cp_rd_b4:
 #elif !defined(U_SUPPORTED)
   csrrs x9, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x9, instret, x0
+  sub x9, x9, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -289,7 +319,7 @@ Zicsr_csrrsi_cg_cp_rd_b4:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x13
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x13
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -303,7 +333,10 @@ Zicsr_csrrsi_cg_cp_rd_b5:
 #elif !defined(U_SUPPORTED)
   csrrsi x5, mepc, 10
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x5, instret, 10
+  csrrsi x13, instret, 0
+  csrrsi x5, instret, 0
+  sub x5, x5, x13  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -318,7 +351,10 @@ Zicsr_csrrsi_cg_cp_rd_b5:
 #elif !defined(U_SUPPORTED)
   csrrs x13, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x13, instret, x0
+  sub x13, x13, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -337,7 +373,7 @@ Zicsr_csrrsi_cg_cp_rd_b5:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x15
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x15
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -351,7 +387,10 @@ Zicsr_csrrsi_cg_cp_rd_b6:
 #elif !defined(U_SUPPORTED)
   csrrsi x6, mepc, 4
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x6, instret, 4
+  csrrsi x15, instret, 0
+  csrrsi x6, instret, 0
+  sub x6, x6, x15  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -366,7 +405,10 @@ Zicsr_csrrsi_cg_cp_rd_b6:
 #elif !defined(U_SUPPORTED)
   csrrs x15, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x15, instret, x0
+  sub x15, x15, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -387,7 +429,7 @@ Zicsr_csrrsi_cg_cp_rd_b6:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x3
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x3
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -401,7 +443,10 @@ Zicsr_csrrsi_cg_cp_rd_b7:
 #elif !defined(U_SUPPORTED)
   csrrsi x7, mepc, 8
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x7, instret, 8
+  csrrsi x3, instret, 0
+  csrrsi x7, instret, 0
+  sub x7, x7, x3  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -416,7 +461,10 @@ Zicsr_csrrsi_cg_cp_rd_b7:
 #elif !defined(U_SUPPORTED)
   csrrs x3, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x3, instret, x0
+  sub x3, x3, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -435,7 +483,7 @@ Zicsr_csrrsi_cg_cp_rd_b7:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x13
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x13
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -449,7 +497,10 @@ Zicsr_csrrsi_cg_cp_rd_b8:
 #elif !defined(U_SUPPORTED)
   csrrsi x8, mepc, 18
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x8, instret, 18
+  csrrsi x13, instret, 0
+  csrrsi x8, instret, 0
+  sub x8, x8, x13  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -464,7 +515,10 @@ Zicsr_csrrsi_cg_cp_rd_b8:
 #elif !defined(U_SUPPORTED)
   csrrs x13, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x13, instret, x0
+  sub x13, x13, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -483,7 +537,7 @@ Zicsr_csrrsi_cg_cp_rd_b8:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x30
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x30
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -497,7 +551,10 @@ Zicsr_csrrsi_cg_cp_rd_b9:
 #elif !defined(U_SUPPORTED)
   csrrsi x9, mepc, 13
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x9, instret, 13
+  csrrsi x30, instret, 0
+  csrrsi x9, instret, 0
+  sub x9, x9, x30  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -512,7 +569,10 @@ Zicsr_csrrsi_cg_cp_rd_b9:
 #elif !defined(U_SUPPORTED)
   csrrs x30, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x30, instret, x0
+  sub x30, x30, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -531,7 +591,7 @@ Zicsr_csrrsi_cg_cp_rd_b9:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x19
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x19
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -545,7 +605,10 @@ Zicsr_csrrsi_cg_cp_rd_b10:
 #elif !defined(U_SUPPORTED)
   csrrsi x10, mepc, 23
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x10, instret, 23
+  csrrsi x19, instret, 0
+  csrrsi x10, instret, 0
+  sub x10, x10, x19  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -560,7 +623,10 @@ Zicsr_csrrsi_cg_cp_rd_b10:
 #elif !defined(U_SUPPORTED)
   csrrs x19, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x19, instret, x0
+  sub x19, x19, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -579,7 +645,7 @@ Zicsr_csrrsi_cg_cp_rd_b10:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x25
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x25
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -593,7 +659,10 @@ Zicsr_csrrsi_cg_cp_rd_b11:
 #elif !defined(U_SUPPORTED)
   csrrsi x11, mepc, 20
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x11, instret, 20
+  csrrsi x25, instret, 0
+  csrrsi x11, instret, 0
+  sub x11, x11, x25  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -608,7 +677,10 @@ Zicsr_csrrsi_cg_cp_rd_b11:
 #elif !defined(U_SUPPORTED)
   csrrs x25, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x25, instret, x0
+  sub x25, x25, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -627,7 +699,7 @@ Zicsr_csrrsi_cg_cp_rd_b11:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x27
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x27
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -641,7 +713,10 @@ Zicsr_csrrsi_cg_cp_rd_b12:
 #elif !defined(U_SUPPORTED)
   csrrsi x12, mepc, 20
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x12, instret, 20
+  csrrsi x27, instret, 0
+  csrrsi x12, instret, 0
+  sub x12, x12, x27  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -656,7 +731,10 @@ Zicsr_csrrsi_cg_cp_rd_b12:
 #elif !defined(U_SUPPORTED)
   csrrs x27, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x27, instret, x0
+  sub x27, x27, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -675,7 +753,7 @@ Zicsr_csrrsi_cg_cp_rd_b12:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x9
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x9
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -689,7 +767,10 @@ Zicsr_csrrsi_cg_cp_rd_b13:
 #elif !defined(U_SUPPORTED)
   csrrsi x13, mepc, 25
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x13, instret, 25
+  csrrsi x9, instret, 0
+  csrrsi x13, instret, 0
+  sub x13, x13, x9  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -704,7 +785,10 @@ Zicsr_csrrsi_cg_cp_rd_b13:
 #elif !defined(U_SUPPORTED)
   csrrs x9, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x9, instret, x0
+  sub x9, x9, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -723,7 +807,7 @@ Zicsr_csrrsi_cg_cp_rd_b13:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x2
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x2
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -737,7 +821,10 @@ Zicsr_csrrsi_cg_cp_rd_b14:
 #elif !defined(U_SUPPORTED)
   csrrsi x14, mepc, 26
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x14, instret, 26
+  csrrsi x2, instret, 0
+  csrrsi x14, instret, 0
+  sub x14, x14, x2  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -752,7 +839,10 @@ Zicsr_csrrsi_cg_cp_rd_b14:
 #elif !defined(U_SUPPORTED)
   csrrs x2, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x2, instret, x0
+  sub x2, x2, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -771,7 +861,7 @@ Zicsr_csrrsi_cg_cp_rd_b14:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x14
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x14
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -785,7 +875,10 @@ Zicsr_csrrsi_cg_cp_rd_b15:
 #elif !defined(U_SUPPORTED)
   csrrsi x15, mepc, 14
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x15, instret, 14
+  csrrsi x14, instret, 0
+  csrrsi x15, instret, 0
+  sub x15, x15, x14  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -800,7 +893,10 @@ Zicsr_csrrsi_cg_cp_rd_b15:
 #elif !defined(U_SUPPORTED)
   csrrs x14, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x14, instret, x0
+  sub x14, x14, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -819,7 +915,7 @@ Zicsr_csrrsi_cg_cp_rd_b15:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x7
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x7
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -833,7 +929,10 @@ Zicsr_csrrsi_cg_cp_rd_b16:
 #elif !defined(U_SUPPORTED)
   csrrsi x16, mepc, 27
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x16, instret, 27
+  csrrsi x7, instret, 0
+  csrrsi x16, instret, 0
+  sub x16, x16, x7  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -848,7 +947,10 @@ Zicsr_csrrsi_cg_cp_rd_b16:
 #elif !defined(U_SUPPORTED)
   csrrs x7, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x7, instret, x0
+  sub x7, x7, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -867,7 +969,7 @@ Zicsr_csrrsi_cg_cp_rd_b16:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x18
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x18
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -881,7 +983,10 @@ Zicsr_csrrsi_cg_cp_rd_b17:
 #elif !defined(U_SUPPORTED)
   csrrsi x17, mepc, 24
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x17, instret, 24
+  csrrsi x18, instret, 0
+  csrrsi x17, instret, 0
+  sub x17, x17, x18  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -896,7 +1001,10 @@ Zicsr_csrrsi_cg_cp_rd_b17:
 #elif !defined(U_SUPPORTED)
   csrrs x18, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x18, instret, x0
+  sub x18, x18, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -915,7 +1023,7 @@ Zicsr_csrrsi_cg_cp_rd_b17:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x10
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x10
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -929,7 +1037,10 @@ Zicsr_csrrsi_cg_cp_rd_b18:
 #elif !defined(U_SUPPORTED)
   csrrsi x18, mepc, 2
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x18, instret, 2
+  csrrsi x10, instret, 0
+  csrrsi x18, instret, 0
+  sub x18, x18, x10  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -944,7 +1055,10 @@ Zicsr_csrrsi_cg_cp_rd_b18:
 #elif !defined(U_SUPPORTED)
   csrrs x10, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x10, instret, x0
+  sub x10, x10, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -963,7 +1077,7 @@ Zicsr_csrrsi_cg_cp_rd_b18:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x13
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x13
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -977,7 +1091,10 @@ Zicsr_csrrsi_cg_cp_rd_b19:
 #elif !defined(U_SUPPORTED)
   csrrsi x19, mepc, 25
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x19, instret, 25
+  csrrsi x13, instret, 0
+  csrrsi x19, instret, 0
+  sub x19, x19, x13  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -992,7 +1109,10 @@ Zicsr_csrrsi_cg_cp_rd_b19:
 #elif !defined(U_SUPPORTED)
   csrrs x13, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x13, instret, x0
+  sub x13, x13, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1011,7 +1131,7 @@ Zicsr_csrrsi_cg_cp_rd_b19:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x25
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x25
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -1025,7 +1145,10 @@ Zicsr_csrrsi_cg_cp_rd_b20:
 #elif !defined(U_SUPPORTED)
   csrrsi x20, mepc, 1
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x20, instret, 1
+  csrrsi x25, instret, 0
+  csrrsi x20, instret, 0
+  sub x20, x20, x25  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1040,7 +1163,10 @@ Zicsr_csrrsi_cg_cp_rd_b20:
 #elif !defined(U_SUPPORTED)
   csrrs x25, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x25, instret, x0
+  sub x25, x25, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1060,7 +1186,7 @@ Zicsr_csrrsi_cg_cp_rd_b20:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x0
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -1074,7 +1200,10 @@ Zicsr_csrrsi_cg_cp_rd_b21:
 #elif !defined(U_SUPPORTED)
   csrrsi x21, mepc, 28
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x21, instret, 28
+  csrrsi x0, instret, 0
+  csrrsi x21, instret, 0
+  sub x21, x21, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1090,6 +1219,9 @@ Zicsr_csrrsi_cg_cp_rd_b21:
   csrrs x0, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x0, instret, x0
+  csrrs x0, instret, x0
+  sub x0, x0, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1108,7 +1240,7 @@ Zicsr_csrrsi_cg_cp_rd_b21:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x13
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x13
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -1122,7 +1254,10 @@ Zicsr_csrrsi_cg_cp_rd_b22:
 #elif !defined(U_SUPPORTED)
   csrrsi x22, mepc, 15
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x22, instret, 15
+  csrrsi x13, instret, 0
+  csrrsi x22, instret, 0
+  sub x22, x22, x13  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1137,7 +1272,10 @@ Zicsr_csrrsi_cg_cp_rd_b22:
 #elif !defined(U_SUPPORTED)
   csrrs x13, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x13, instret, x0
+  sub x13, x13, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1157,7 +1295,7 @@ Zicsr_csrrsi_cg_cp_rd_b22:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x31
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x31
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -1171,7 +1309,10 @@ Zicsr_csrrsi_cg_cp_rd_b23:
 #elif !defined(U_SUPPORTED)
   csrrsi x23, mepc, 11
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x23, instret, 11
+  csrrsi x31, instret, 0
+  csrrsi x23, instret, 0
+  sub x23, x23, x31  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1186,7 +1327,10 @@ Zicsr_csrrsi_cg_cp_rd_b23:
 #elif !defined(U_SUPPORTED)
   csrrs x31, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x31, instret, x0
+  sub x31, x31, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1205,7 +1349,7 @@ Zicsr_csrrsi_cg_cp_rd_b23:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x22
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x22
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -1219,7 +1363,10 @@ Zicsr_csrrsi_cg_cp_rd_b24:
 #elif !defined(U_SUPPORTED)
   csrrsi x24, mepc, 26
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x24, instret, 26
+  csrrsi x22, instret, 0
+  csrrsi x24, instret, 0
+  sub x24, x24, x22  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1234,7 +1381,10 @@ Zicsr_csrrsi_cg_cp_rd_b24:
 #elif !defined(U_SUPPORTED)
   csrrs x22, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x22, instret, x0
+  sub x22, x22, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1253,7 +1403,7 @@ Zicsr_csrrsi_cg_cp_rd_b24:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x24
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x24
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -1267,7 +1417,10 @@ Zicsr_csrrsi_cg_cp_rd_b25:
 #elif !defined(U_SUPPORTED)
   csrrsi x25, mepc, 17
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x25, instret, 17
+  csrrsi x24, instret, 0
+  csrrsi x25, instret, 0
+  sub x25, x25, x24  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1282,7 +1435,10 @@ Zicsr_csrrsi_cg_cp_rd_b25:
 #elif !defined(U_SUPPORTED)
   csrrs x24, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x24, instret, x0
+  sub x24, x24, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1301,7 +1457,7 @@ Zicsr_csrrsi_cg_cp_rd_b25:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x31
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x31
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -1315,7 +1471,10 @@ Zicsr_csrrsi_cg_cp_rd_b26:
 #elif !defined(U_SUPPORTED)
   csrrsi x26, mepc, 20
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x26, instret, 20
+  csrrsi x31, instret, 0
+  csrrsi x26, instret, 0
+  sub x26, x26, x31  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1330,7 +1489,10 @@ Zicsr_csrrsi_cg_cp_rd_b26:
 #elif !defined(U_SUPPORTED)
   csrrs x31, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x31, instret, x0
+  sub x31, x31, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1349,7 +1511,7 @@ Zicsr_csrrsi_cg_cp_rd_b26:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x6
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x6
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -1363,7 +1525,10 @@ Zicsr_csrrsi_cg_cp_rd_b27:
 #elif !defined(U_SUPPORTED)
   csrrsi x27, mepc, 9
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x27, instret, 9
+  csrrsi x6, instret, 0
+  csrrsi x27, instret, 0
+  sub x27, x27, x6  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1378,7 +1543,10 @@ Zicsr_csrrsi_cg_cp_rd_b27:
 #elif !defined(U_SUPPORTED)
   csrrs x6, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x6, instret, x0
+  sub x6, x6, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1398,7 +1566,7 @@ Zicsr_csrrsi_cg_cp_rd_b27:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x0
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -1412,7 +1580,10 @@ Zicsr_csrrsi_cg_cp_rd_b28:
 #elif !defined(U_SUPPORTED)
   csrrsi x28, mepc, 20
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x28, instret, 20
+  csrrsi x0, instret, 0
+  csrrsi x28, instret, 0
+  sub x28, x28, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1428,6 +1599,9 @@ Zicsr_csrrsi_cg_cp_rd_b28:
   csrrs x0, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x0, instret, x0
+  csrrs x0, instret, x0
+  sub x0, x0, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1446,7 +1620,7 @@ Zicsr_csrrsi_cg_cp_rd_b28:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x6
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x6
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -1460,7 +1634,10 @@ Zicsr_csrrsi_cg_cp_rd_b29:
 #elif !defined(U_SUPPORTED)
   csrrsi x29, mepc, 5
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x29, instret, 5
+  csrrsi x6, instret, 0
+  csrrsi x29, instret, 0
+  sub x29, x29, x6  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1475,7 +1652,10 @@ Zicsr_csrrsi_cg_cp_rd_b29:
 #elif !defined(U_SUPPORTED)
   csrrs x6, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x6, instret, x0
+  sub x6, x6, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1494,7 +1674,7 @@ Zicsr_csrrsi_cg_cp_rd_b29:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x18
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x18
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -1508,7 +1688,10 @@ Zicsr_csrrsi_cg_cp_rd_b30:
 #elif !defined(U_SUPPORTED)
   csrrsi x30, mepc, 23
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x30, instret, 23
+  csrrsi x18, instret, 0
+  csrrsi x30, instret, 0
+  sub x30, x30, x18  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1523,7 +1706,10 @@ Zicsr_csrrsi_cg_cp_rd_b30:
 #elif !defined(U_SUPPORTED)
   csrrs x18, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x18, instret, x0
+  sub x18, x18, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1542,7 +1728,7 @@ Zicsr_csrrsi_cg_cp_rd_b30:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x29
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x29
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -1556,7 +1742,10 @@ Zicsr_csrrsi_cg_cp_rd_b31:
 #elif !defined(U_SUPPORTED)
   csrrsi x31, mepc, 0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrsi x29, instret, 0
   csrrsi x31, instret, 0
+  sub x31, x31, x29  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1571,7 +1760,10 @@ Zicsr_csrrsi_cg_cp_rd_b31:
 #elif !defined(U_SUPPORTED)
   csrrs x29, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x29, instret, x0
+  sub x29, x29, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1594,7 +1786,7 @@ Zicsr_csrrsi_cg_cp_rd_b31:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x16
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x16
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -1608,7 +1800,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm0:
 #elif !defined(U_SUPPORTED)
   csrrsi x14, mepc, 0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrsi x16, instret, 0
   csrrsi x14, instret, 0
+  sub x14, x14, x16  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1623,7 +1818,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm0:
 #elif !defined(U_SUPPORTED)
   csrrs x16, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x16, instret, x0
+  sub x16, x16, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1642,7 +1840,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm0:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x16
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x16
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -1656,7 +1854,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm1:
 #elif !defined(U_SUPPORTED)
   csrrsi x0, mepc, 1
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x0, instret, 1
+  csrrsi x16, instret, 0
+  csrrsi x0, instret, 0
+  sub x0, x0, x16  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1671,7 +1872,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm1:
 #elif !defined(U_SUPPORTED)
   csrrs x16, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x16, instret, x0
+  sub x16, x16, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1690,7 +1894,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm1:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x15
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x15
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -1704,7 +1908,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm2:
 #elif !defined(U_SUPPORTED)
   csrrsi x7, mepc, 2
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x7, instret, 2
+  csrrsi x15, instret, 0
+  csrrsi x7, instret, 0
+  sub x7, x7, x15  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1719,7 +1926,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm2:
 #elif !defined(U_SUPPORTED)
   csrrs x15, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x15, instret, x0
+  sub x15, x15, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1738,7 +1948,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm2:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x23
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x23
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -1752,7 +1962,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm3:
 #elif !defined(U_SUPPORTED)
   csrrsi x3, mepc, 3
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x3, instret, 3
+  csrrsi x23, instret, 0
+  csrrsi x3, instret, 0
+  sub x3, x3, x23  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1767,7 +1980,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm3:
 #elif !defined(U_SUPPORTED)
   csrrs x23, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x23, instret, x0
+  sub x23, x23, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1786,7 +2002,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm3:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x7
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x7
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -1800,7 +2016,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm4:
 #elif !defined(U_SUPPORTED)
   csrrsi x31, mepc, 4
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x31, instret, 4
+  csrrsi x7, instret, 0
+  csrrsi x31, instret, 0
+  sub x31, x31, x7  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1815,7 +2034,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm4:
 #elif !defined(U_SUPPORTED)
   csrrs x7, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x7, instret, x0
+  sub x7, x7, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1834,7 +2056,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm4:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x30
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x30
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -1848,7 +2070,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm5:
 #elif !defined(U_SUPPORTED)
   csrrsi x7, mepc, 5
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x7, instret, 5
+  csrrsi x30, instret, 0
+  csrrsi x7, instret, 0
+  sub x7, x7, x30  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1863,7 +2088,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm5:
 #elif !defined(U_SUPPORTED)
   csrrs x30, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x30, instret, x0
+  sub x30, x30, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1882,7 +2110,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm5:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x21
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x21
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -1896,7 +2124,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm6:
 #elif !defined(U_SUPPORTED)
   csrrsi x22, mepc, 6
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x22, instret, 6
+  csrrsi x21, instret, 0
+  csrrsi x22, instret, 0
+  sub x22, x22, x21  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1911,7 +2142,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm6:
 #elif !defined(U_SUPPORTED)
   csrrs x21, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x21, instret, x0
+  sub x21, x21, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1930,7 +2164,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm6:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x24
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x24
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -1944,7 +2178,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm7:
 #elif !defined(U_SUPPORTED)
   csrrsi x0, mepc, 7
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x0, instret, 7
+  csrrsi x24, instret, 0
+  csrrsi x0, instret, 0
+  sub x0, x0, x24  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1959,7 +2196,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm7:
 #elif !defined(U_SUPPORTED)
   csrrs x24, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x24, instret, x0
+  sub x24, x24, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -1978,7 +2218,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm7:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x25
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x25
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -1992,7 +2232,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm8:
 #elif !defined(U_SUPPORTED)
   csrrsi x1, mepc, 8
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x1, instret, 8
+  csrrsi x25, instret, 0
+  csrrsi x1, instret, 0
+  sub x1, x1, x25  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2007,7 +2250,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm8:
 #elif !defined(U_SUPPORTED)
   csrrs x25, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x25, instret, x0
+  sub x25, x25, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2026,7 +2272,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm8:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x13
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x13
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -2040,7 +2286,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm9:
 #elif !defined(U_SUPPORTED)
   csrrsi x16, mepc, 9
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x16, instret, 9
+  csrrsi x13, instret, 0
+  csrrsi x16, instret, 0
+  sub x16, x16, x13  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2055,7 +2304,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm9:
 #elif !defined(U_SUPPORTED)
   csrrs x13, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x13, instret, x0
+  sub x13, x13, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2074,7 +2326,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm9:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x9
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x9
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -2088,7 +2340,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm10:
 #elif !defined(U_SUPPORTED)
   csrrsi x15, mepc, 10
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x15, instret, 10
+  csrrsi x9, instret, 0
+  csrrsi x15, instret, 0
+  sub x15, x15, x9  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2103,7 +2358,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm10:
 #elif !defined(U_SUPPORTED)
   csrrs x9, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x9, instret, x0
+  sub x9, x9, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2122,7 +2380,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm10:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x20
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x20
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -2136,7 +2394,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm11:
 #elif !defined(U_SUPPORTED)
   csrrsi x25, mepc, 11
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x25, instret, 11
+  csrrsi x20, instret, 0
+  csrrsi x25, instret, 0
+  sub x25, x25, x20  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2151,7 +2412,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm11:
 #elif !defined(U_SUPPORTED)
   csrrs x20, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x20, instret, x0
+  sub x20, x20, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2170,7 +2434,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm11:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x27
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x27
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -2184,7 +2448,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm12:
 #elif !defined(U_SUPPORTED)
   csrrsi x8, mepc, 12
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x8, instret, 12
+  csrrsi x27, instret, 0
+  csrrsi x8, instret, 0
+  sub x8, x8, x27  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2199,7 +2466,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm12:
 #elif !defined(U_SUPPORTED)
   csrrs x27, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x27, instret, x0
+  sub x27, x27, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2218,7 +2488,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm12:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x22
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x22
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -2232,7 +2502,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm13:
 #elif !defined(U_SUPPORTED)
   csrrsi x30, mepc, 13
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x30, instret, 13
+  csrrsi x22, instret, 0
+  csrrsi x30, instret, 0
+  sub x30, x30, x22  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2247,7 +2520,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm13:
 #elif !defined(U_SUPPORTED)
   csrrs x22, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x22, instret, x0
+  sub x22, x22, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2266,7 +2542,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm13:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x2
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x2
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -2280,7 +2556,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm14:
 #elif !defined(U_SUPPORTED)
   csrrsi x15, mepc, 14
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x15, instret, 14
+  csrrsi x2, instret, 0
+  csrrsi x15, instret, 0
+  sub x15, x15, x2  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2295,7 +2574,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm14:
 #elif !defined(U_SUPPORTED)
   csrrs x2, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x2, instret, x0
+  sub x2, x2, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2314,7 +2596,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm14:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x14
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x14
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -2328,7 +2610,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm15:
 #elif !defined(U_SUPPORTED)
   csrrsi x11, mepc, 15
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x11, instret, 15
+  csrrsi x14, instret, 0
+  csrrsi x11, instret, 0
+  sub x11, x11, x14  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2343,7 +2628,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm15:
 #elif !defined(U_SUPPORTED)
   csrrs x14, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x14, instret, x0
+  sub x14, x14, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2362,7 +2650,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm15:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x27
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x27
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -2376,7 +2664,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm16:
 #elif !defined(U_SUPPORTED)
   csrrsi x28, mepc, 16
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x28, instret, 16
+  csrrsi x27, instret, 0
+  csrrsi x28, instret, 0
+  sub x28, x28, x27  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2391,7 +2682,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm16:
 #elif !defined(U_SUPPORTED)
   csrrs x27, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x27, instret, x0
+  sub x27, x27, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2410,7 +2704,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm16:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x10
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x10
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -2424,7 +2718,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm17:
 #elif !defined(U_SUPPORTED)
   csrrsi x25, mepc, 17
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x25, instret, 17
+  csrrsi x10, instret, 0
+  csrrsi x25, instret, 0
+  sub x25, x25, x10  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2439,7 +2736,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm17:
 #elif !defined(U_SUPPORTED)
   csrrs x10, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x10, instret, x0
+  sub x10, x10, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2458,7 +2758,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm17:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x12
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x12
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -2472,7 +2772,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm18:
 #elif !defined(U_SUPPORTED)
   csrrsi x29, mepc, 18
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x29, instret, 18
+  csrrsi x12, instret, 0
+  csrrsi x29, instret, 0
+  sub x29, x29, x12  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2487,7 +2790,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm18:
 #elif !defined(U_SUPPORTED)
   csrrs x12, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x12, instret, x0
+  sub x12, x12, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2506,7 +2812,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm18:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x13
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x13
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -2520,7 +2826,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm19:
 #elif !defined(U_SUPPORTED)
   csrrsi x21, mepc, 19
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x21, instret, 19
+  csrrsi x13, instret, 0
+  csrrsi x21, instret, 0
+  sub x21, x21, x13  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2535,7 +2844,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm19:
 #elif !defined(U_SUPPORTED)
   csrrs x13, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x13, instret, x0
+  sub x13, x13, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2554,7 +2866,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm19:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x15
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x15
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -2568,7 +2880,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm20:
 #elif !defined(U_SUPPORTED)
   csrrsi x22, mepc, 20
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x22, instret, 20
+  csrrsi x15, instret, 0
+  csrrsi x22, instret, 0
+  sub x22, x22, x15  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2583,7 +2898,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm20:
 #elif !defined(U_SUPPORTED)
   csrrs x15, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x15, instret, x0
+  sub x15, x15, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2602,7 +2920,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm20:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x0
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -2616,7 +2934,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm21:
 #elif !defined(U_SUPPORTED)
   csrrsi x28, mepc, 21
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x28, instret, 21
+  csrrsi x0, instret, 0
+  csrrsi x28, instret, 0
+  sub x28, x28, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2632,6 +2953,9 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm21:
   csrrs x0, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
   csrrs x0, instret, x0
+  csrrs x0, instret, x0
+  sub x0, x0, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2650,7 +2974,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm21:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x15
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x15
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -2664,7 +2988,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm22:
 #elif !defined(U_SUPPORTED)
   csrrsi x9, mepc, 22
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x9, instret, 22
+  csrrsi x15, instret, 0
+  csrrsi x9, instret, 0
+  sub x9, x9, x15  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2679,7 +3006,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm22:
 #elif !defined(U_SUPPORTED)
   csrrs x15, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x15, instret, x0
+  sub x15, x15, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2698,7 +3028,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm22:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x9
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x9
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -2712,7 +3042,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm23:
 #elif !defined(U_SUPPORTED)
   csrrsi x15, mepc, 23
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x15, instret, 23
+  csrrsi x9, instret, 0
+  csrrsi x15, instret, 0
+  sub x15, x15, x9  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2727,7 +3060,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm23:
 #elif !defined(U_SUPPORTED)
   csrrs x9, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x9, instret, x0
+  sub x9, x9, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2746,7 +3082,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm23:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x25
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x25
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -2760,7 +3096,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm24:
 #elif !defined(U_SUPPORTED)
   csrrsi x3, mepc, 24
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x3, instret, 24
+  csrrsi x25, instret, 0
+  csrrsi x3, instret, 0
+  sub x3, x3, x25  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2775,7 +3114,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm24:
 #elif !defined(U_SUPPORTED)
   csrrs x25, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x25, instret, x0
+  sub x25, x25, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2794,7 +3136,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm24:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x13
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x13
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -2808,7 +3150,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm25:
 #elif !defined(U_SUPPORTED)
   csrrsi x14, mepc, 25
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x14, instret, 25
+  csrrsi x13, instret, 0
+  csrrsi x14, instret, 0
+  sub x14, x14, x13  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2823,7 +3168,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm25:
 #elif !defined(U_SUPPORTED)
   csrrs x13, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x13, instret, x0
+  sub x13, x13, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2842,7 +3190,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm25:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x14
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x14
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -2856,7 +3204,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm26:
 #elif !defined(U_SUPPORTED)
   csrrsi x30, mepc, 26
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x30, instret, 26
+  csrrsi x14, instret, 0
+  csrrsi x30, instret, 0
+  sub x30, x30, x14  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2871,7 +3222,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm26:
 #elif !defined(U_SUPPORTED)
   csrrs x14, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x14, instret, x0
+  sub x14, x14, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2890,7 +3244,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm26:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x15
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x15
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -2904,7 +3258,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm27:
 #elif !defined(U_SUPPORTED)
   csrrsi x20, mepc, 27
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x20, instret, 27
+  csrrsi x15, instret, 0
+  csrrsi x20, instret, 0
+  sub x20, x20, x15  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2919,7 +3276,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm27:
 #elif !defined(U_SUPPORTED)
   csrrs x15, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x15, instret, x0
+  sub x15, x15, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2938,7 +3298,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm27:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x3
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x3
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -2952,7 +3312,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm28:
 #elif !defined(U_SUPPORTED)
   csrrsi x0, mepc, 28
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x0, instret, 28
+  csrrsi x3, instret, 0
+  csrrsi x0, instret, 0
+  sub x0, x0, x3  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2967,7 +3330,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm28:
 #elif !defined(U_SUPPORTED)
   csrrs x3, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x3, instret, x0
+  sub x3, x3, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -2986,7 +3352,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm28:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x19
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x19
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -3000,7 +3366,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm29:
 #elif !defined(U_SUPPORTED)
   csrrsi x9, mepc, 29
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x9, instret, 29
+  csrrsi x19, instret, 0
+  csrrsi x9, instret, 0
+  sub x9, x9, x19  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -3015,7 +3384,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm29:
 #elif !defined(U_SUPPORTED)
   csrrs x19, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x19, instret, x0
+  sub x19, x19, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -3034,7 +3406,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm29:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x2
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x2
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -3048,7 +3420,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm30:
 #elif !defined(U_SUPPORTED)
   csrrsi x29, mepc, 30
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x29, instret, 30
+  csrrsi x2, instret, 0
+  csrrsi x29, instret, 0
+  sub x29, x29, x2  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -3063,7 +3438,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm30:
 #elif !defined(U_SUPPORTED)
   csrrs x2, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x2, instret, x0
+  sub x2, x2, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -3082,7 +3460,7 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm30:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x7
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x7
+  li x0, 0 # no write to instret
 #else
   #error no CSR known for testing
 #endif
@@ -3096,7 +3474,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm31:
 #elif !defined(U_SUPPORTED)
   csrrsi x1, mepc, 31
 #elif defined(ZICNTR_SUPPORTED)
-  csrrsi x1, instret, 31
+  csrrsi x7, instret, 0
+  csrrsi x1, instret, 0
+  sub x1, x1, x7  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif
@@ -3111,7 +3492,10 @@ Zicsr_csrrsi_cg_cp_uimm_5_uimm31:
 #elif !defined(U_SUPPORTED)
   csrrs x7, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
+  csrrs x0, instret, x0
   csrrs x7, instret, x0
+  sub x7, x7, x0  # check that instret value has incremented
+
 #else
   #error no CSR known for testing
 #endif

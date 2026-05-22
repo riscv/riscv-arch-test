@@ -286,7 +286,7 @@
       "supported": false
     },
     "Zicntr": {
-      "supported": true
+      "supported": false
     },
     "Zicsr": {
       "supported": true
@@ -301,7 +301,7 @@
       "supported": false
     },
     "Zihpm": {
-      "supported": true
+      "supported": false
     },
     "Zimop": {
       "supported": false

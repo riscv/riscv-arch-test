@@ -49,6 +49,7 @@ def format_csri_type(
     try:
         allocated = test_data.int_regs.get_registers(1)
         scratch_reg = allocated[0]
+        # Dedicated scratch register used for instret delta calculation.
 
         setup = [
             load_int_reg("temp reg", params.rs2, params.rs2val, test_data),

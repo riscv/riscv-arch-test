@@ -224,22 +224,26 @@ def make_cmp_rd_rs1_pair_partial_val(
 
     test_chunks = []
 
+    # Use xlen for individual register halves
+    half_ones = (1 << test_data.xlen) - 1
+
+    # Use full width for the entire pair register value
     all_ones = (1 << (2 * test_data.xlen)) - 1
 
     # lo_match: this specifies the register 1 in pair register
     # hi_match: this specifies the register 2 in pair register
     for case in ["lo_match", "hi_match"]:
         # Random value for lower register in pair
-        lo = random_range(0, all_ones)
+        lo = random_range(0, half_ones)
         # random value for upper register in pair
-        hi = random_range(0, all_ones)
+        hi = random_range(0, half_ones)
         rs2_val = random_range(0, all_ones)
 
         if case == "lo_match":
             # lower register value equal, upper register value mismatch
-            mem_hi = random_range(0, all_ones)
+            mem_hi = random_range(0, half_ones)
             while mem_hi == hi:
-                mem_hi = random_range(0, all_ones)
+                mem_hi = random_range(0, half_ones)
 
             rd_val = (hi << test_data.xlen) | lo
             rs1_val = (mem_hi << test_data.xlen) | lo
@@ -249,9 +253,9 @@ def make_cmp_rd_rs1_pair_partial_val(
 
         else:
             # upper equal, lower mismatch
-            mem_lo = random_range(0, all_ones)
+            mem_lo = random_range(0, half_ones)
             while mem_lo == lo:
-                mem_lo = random_range(0, all_ones)
+                mem_lo = random_range(0, half_ones)
 
             rd_val = (hi << test_data.xlen) | lo
             rs1_val = (hi << test_data.xlen) | mem_lo
@@ -275,7 +279,7 @@ def make_cmp_rd_rs1_sign_ext(instr_name: str, instr_type: str, coverpoint: str, 
     test_chunks = []
 
     # RV64 only, AMOCAS.W is relevant
-    if instr_type != "AP" or test_data.xlen != 64 or instr_name != "amocas.w":
+    if instr_type != "A" or test_data.xlen != 64 or instr_name != "amocas.w":
         return test_chunks
 
     # Select corner memory values to cover sign-extension

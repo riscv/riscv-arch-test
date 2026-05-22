@@ -30,7 +30,7 @@ def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 "",
-                f"# Offset {offset} (LSBs: {offset:03b})",
+                f"# Offset {offset} (LSBs: {offset:05b})",
                 f"LI(x{limit_reg}, {offset})",
                 f"LA(x{addr_reg}, scratch)",
                 "",

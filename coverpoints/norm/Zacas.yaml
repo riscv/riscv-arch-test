@@ -26,7 +26,7 @@ normative_rule_definitions:
   - name: Zacas_rv64_amocas-w_op
     coverpoint:
       [
-        "Zacas_amocas_w_cg/{cp_asm_count, cp_rs1, cp_rs2, cp_rd, cmp_rd_rs1_val_eq, cmp_rd_rs1_val_lsb, cmp_rd_rs1_val_hw, cmp_rd_rs1_sign_ext}",
+        "Zacas_amocas_w_cg/{cp_asm_count, cp_rs1, cp_rs2, cp_rd, cmp_rd_rs1_val_eq, cmp_rd_rs1_val_lsb, cmp_rd_rs1_val_hw, cmp_rd_sign_ext}",
       ]
 
   - name: Zacas_rv64_amocas-d_op

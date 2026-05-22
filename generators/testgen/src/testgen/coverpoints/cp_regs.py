@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Register coverpoint handlers (cp_rd, cp_rs1, cp_rs2) with matching/non-matching randomization."""
+"""Register coverpoint handlers (cp_rd, cp_rs1, cp_rs2)"""
 
 from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
@@ -34,42 +34,53 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
 
     test_chunks: list[TestChunk] = []
 
+    # For Zacas instructions only (amocas)
+    is_zacas = instr_name.lower().startswith("amocas")
+    equal_cases = [True, False] if is_zacas else [None]
+
     # Value is double-width if instruction type is AP
     val_is_pair = instr_type == "AP"
     all_ones = (1 << (2 * test_data.xlen)) - 1 if val_is_pair else (1 << test_data.xlen) - 1
 
     # Generate both matching and non-matching tests for every register
     for rd in rd_regs:
-        for equal_case in [True, False]:
+        for equal_case in equal_cases:
             if reg_is_pair:
                 asm_setup = test_data.int_regs.consume_register_pair(rd)
             else:
                 asm_setup = test_data.int_regs.consume_registers([rd])
+            
+            if is_zacas:
+                # For amocas instructions, we want to specifically test the case where the loaded value matches the original rd value
+                rd_val = random_range(0, all_ones)
+                rs2_val = random_range(0, all_ones)
 
-            rd_val = random_range(0, all_ones)
-            rs2_val = random_range(0, all_ones)
-
-            if equal_case:
-                rs1_val = rd_val
-                case_desc = "matching (rd_val == mem_val)"
-                bin_suffix = "equal"
-            else:
-                rs1_val = random_range(0, all_ones)
-                while rs1_val == rd_val:
+                if equal_case:
+                    rs1_val = rd_val
+                    case_desc = "matching (rd_val == mem_val)"
+                    bin_suffix = "equal"
+                else:
                     rs1_val = random_range(0, all_ones)
-                case_desc = "non-matching (rd_val != mem_val)"
-                bin_suffix = "not_equal"
+                    while rs1_val == rd_val:
+                        rs1_val = random_range(0, all_ones)
+                    case_desc = "non-matching (rd_val != mem_val)"
+                    bin_suffix = "not_equal"
 
-            params = generate_random_params(test_data, instr_type, rd=rd, rdval=rd_val, rs1val=rs1_val, rs2val=rs2_val)
-            # Enforce explicit manual assignment consistency
-            params.rdval = rd_val
-            params.rs1val = rs1_val
-            params.rs2val = rs2_val
+                params = generate_random_params(test_data, instr_type, rd=rd, rdval=rd_val, rs1val=rs1_val, rs2val=rs2_val)
+                params.rdval = rd_val
+                params.rs1val = rs1_val
+                params.rs2val = rs2_val
 
-            desc = f"{coverpoint} (Test destination rd = x{rd}, {case_desc})"
-            bin_name = f"b{rd}_{bin_suffix}"
+                desc = f"{coverpoint} (Test destination rd = x{rd}, {case_desc})"
+                bin_name = f"b{rd}_{bin_suffix}"
+            else:
+                # standard case for non-Zacas instructions where we just want to test different rd values without specific matching requirements
+                params = generate_random_params(test_data, instr_type, rd=rd)
+                desc = f"{coverpoint} (Test destination rd = x{rd})"
+                bin_name = f"b{rd}"
 
             tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+            
             if asm_setup:
                 tc.code = asm_setup + "\n" + tc.code
             test_chunks.append(tc)
@@ -99,40 +110,48 @@ def make_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
 
     test_chunks: list[TestChunk] = []
 
+    is_zacas = instr_name.lower().startswith("amocas")
+    equal_cases = [True, False] if is_zacas else [None]
+
     # Value is double-width if instruction type is AP
     val_is_pair = instr_type == "AP"
     all_ones = (1 << (2 * test_data.xlen)) - 1 if val_is_pair else (1 << test_data.xlen) - 1
 
     for rs1 in rs1_regs:
-        for equal_case in [True, False]:
+        for equal_case in equal_cases:
             if reg_is_pair:
                 asm_setup = test_data.int_regs.consume_register_pair(rs1)
             else:
                 asm_setup = test_data.int_regs.consume_registers([rs1])
 
-            rd_val = random_range(0, all_ones)
-            rs2_val = random_range(0, all_ones)
+            if is_zacas:
+                # For amocas instructions, we want to specifically test the case where the loaded value matches the original rd value
+                rd_val = random_range(0, all_ones)
+                rs2_val = random_range(0, all_ones)
 
-            if equal_case:
-                rs1_val = rd_val
-                case_desc = "matching (rd_val == mem_val)"
-                bin_suffix = "equal"
-            else:
-                rs1_val = random_range(0, all_ones)
-                while rs1_val == rd_val:
+                if equal_case:
+                    rs1_val = rd_val
+                    case_desc = "matching (rd_val == mem_val)"
+                    bin_suffix = "equal"
+                else:
                     rs1_val = random_range(0, all_ones)
-                case_desc = "non-matching (rd_val != mem_val)"
-                bin_suffix = "not_equal"
+                    while rs1_val == rd_val:
+                        rs1_val = random_range(0, all_ones)
+                    case_desc = "non-matching (rd_val != mem_val)"
+                    bin_suffix = "not_equal"
 
-            params = generate_random_params(
-                test_data, instr_type, rs1=rs1, rdval=rd_val, rs1val=rs1_val, rs2val=rs2_val
-            )
-            params.rdval = rd_val
-            params.rs1val = rs1_val
-            params.rs2val = rs2_val
+                params = generate_random_params(test_data, instr_type, rs1=rs1, rdval=rd_val, rs1val=rs1_val, rs2val=rs2_val)
+                params.rdval = rd_val
+                params.rs1val = rs1_val
+                params.rs2val = rs2_val
 
-            desc = f"{coverpoint} (Test source rs1 = x{rs1}, {case_desc})"
-            bin_name = f"b{rs1}_{bin_suffix}"
+                desc = f"{coverpoint} (Test source rs1 = x{rs1}, {case_desc})"
+                bin_name = f"b{rs1}_{bin_suffix}"
+            else:
+                # standard case for non-Zacas instructions where we just want to test different rs1 values without specific matching requirements
+                params = generate_random_params(test_data, instr_type, rs1=rs1)
+                desc = f"{coverpoint} (Test source rs1 = x{rs1})"
+                bin_name = f"b{rs1}"
 
             tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
             if asm_setup:
@@ -161,42 +180,51 @@ def make_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
 
     test_chunks: list[TestChunk] = []
 
+    is_zacas = instr_name.lower().startswith("amocas")
+    equal_cases = [True, False] if is_zacas else [None]
+
     # Value is double-width if instruction type is AP
     val_is_pair = instr_type == "AP"
     all_ones = (1 << (2 * test_data.xlen)) - 1 if val_is_pair else (1 << test_data.xlen) - 1
 
     for rs2 in rs2_regs:
-        for equal_case in [True, False]:
+        for equal_case in equal_cases:
             if reg_is_pair:
                 asm_setup = test_data.int_regs.consume_register_pair(rs2)
             else:
                 asm_setup = test_data.int_regs.consume_registers([rs2])
 
-            rd_val = random_range(0, all_ones)
-            rs2_val = random_range(0, all_ones)
+            if is_zacas:
+                # For amocas instructions, we want to specifically test the case where the loaded value matches the original rd value
+                rd_val = random_range(0, all_ones)
+                rs2_val = random_range(0, all_ones)
 
-            if equal_case:
-                rs1_val = rd_val
-                case_desc = "matching (rd_val == mem_val)"
-                bin_suffix = "equal"
-            else:
-                rs1_val = random_range(0, all_ones)
-                while rs1_val == rd_val:
+                if equal_case:
+                    rs1_val = rd_val
+                    case_desc = "matching (rd_val == mem_val)"
+                    bin_suffix = "equal"
+                else:
                     rs1_val = random_range(0, all_ones)
-                case_desc = "non-matching (rd_val != mem_val)"
-                bin_suffix = "not_equal"
+                    while rs1_val == rd_val:
+                        rs1_val = random_range(0, all_ones)
+                    case_desc = "non-matching (rd_val != mem_val)"
+                    bin_suffix = "not_equal"
 
-            params = generate_random_params(
-                test_data, instr_type, rs2=rs2, rdval=rd_val, rs1val=rs1_val, rs2val=rs2_val
-            )
-            params.rdval = rd_val
-            params.rs1val = rs1_val
-            params.rs2val = rs2_val
+                params = generate_random_params(test_data, instr_type, rs2=rs2, rdval=rd_val, rs1val=rs1_val, rs2val=rs2_val)
+                params.rdval = rd_val
+                params.rs1val = rs1_val
+                params.rs2val = rs2_val
 
-            desc = f"{coverpoint} (Test source rs2 = x{rs2}, {case_desc})"
-            bin_name = f"b{rs2}_{bin_suffix}"
+                desc = f"{coverpoint} (Test source rs2 = x{rs2}, {case_desc})"
+                bin_name = f"b{rs2}_{bin_suffix}"
+            else:
+                # standard case for non-Zacas instructions where we just want to test different rs2 values without specific matching requirements
+                params = generate_random_params(test_data, instr_type, rs2=rs2)
+                desc = f"{coverpoint} (Test source rs2 = x{rs2})"
+                bin_name = f"b{rs2}"
 
             tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+            
             if asm_setup:
                 tc.code = asm_setup + "\n" + tc.code
             test_chunks.append(tc)

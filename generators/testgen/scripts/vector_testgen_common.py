@@ -2742,7 +2742,7 @@ def writeTest(description, instruction, cp, instruction_data=None,
       elif argument == 'imm':
         testline = testline + f"{imm_val}"
       elif argument[0] == 'v':
-        if not (argument == 'vd' and vd_preloaded) and not (argument == 'vs2' and vs2_preloaded) and not (argument == 'vs1' and vs1_preloaded): # skip loading vd if we already preloaded it with VLMAX
+        if not (argument == 'vd' and vd_preloaded) and not (argument == 'vs2' and vs2_preloaded) and not (argument == 'vs1' and vs1_preloaded): # skip loading vd, vs2, or vs1 when that operand was already preloaded
           scalar_registers_used = loadVecReg(instruction, argument, vector_register_data, sew, lmul, *scalar_registers_used, vl=vl)
         testline = testline + f"v{vector_register_data[argument]['reg']}"
       elif argument[0] == 'r':

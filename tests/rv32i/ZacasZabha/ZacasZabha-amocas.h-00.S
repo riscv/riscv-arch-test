@@ -17,7 +17,7 @@
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "ZacasZabha-amocas.h-00.S"
-#define SIGUPD_COUNT 482
+#define SIGUPD_COUNT 672
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -34,3232 +34,4468 @@ RVTEST_BEGIN
 // cp_rs1_nx0
 /////////////////////////////////
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load value in memory: x17 = 0x47dd42e8
-  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load rs2: x8 = 0x2747a1d0
+# Testcase cp_rs1_nx0 (Test source rs1 = x1, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load value in memory: x10 = 0xb1e054d4
+  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load rs2: x25 = 0x63337499
   LA(x1, scratch) # load base address into rs1
-  SREG x17, 0(x1) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b1:
-  amocas.h x27, x8, (x1) # perform operation
-  # Check if x27 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x27, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b1, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b1_str)
+  SREG x10, 0(x1) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b1_equal:
+  amocas.h x14, x25, (x1) # perform operation
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b1_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b1_equal_str)
   LREG x1, 0(x1) # Load the updated value from memory
   # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x1, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b1, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b1_str)
+  RVTEST_SIGUPD(x2, x5, x4, x1, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b1_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b1_equal_str)
 
-  mv x23, x2 # switch signature pointer register to avoid conflict with test
-# Testcase cp_rs1_nx0 (Test source rs1 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load value in memory: x17 = 0x9ea12da3
-  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load rs2: x6 = 0x33e36cc2
+# Testcase cp_rs1_nx0 (Test source rs1 = x1, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load value in memory: x11 = 0x55704f36
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load rs2: x8 = 0xf8ecc260
+  LA(x1, scratch) # load base address into rs1
+  SREG x11, 0(x1) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b1_not_equal:
+  amocas.h x30, x8, (x1) # perform operation
+  # Check if x30 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x30, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b1_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b1_not_equal_str)
+  LREG x1, 0(x1) # Load the updated value from memory
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b1_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b1_not_equal_str)
+
+  mv x9, x2 # switch signature pointer register to avoid conflict with test
+# Testcase cp_rs1_nx0 (Test source rs1 = x2, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load value in memory: x11 = 0xb3e36cc2
+  RVTEST_TESTDATA_LOAD_INT(x3, x16) # load rs2: x16 = 0x79c769d7
   LA(x2, scratch) # load base address into rs1
-  SREG x17, 0(x2) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b2:
-  amocas.h x30, x6, (x2) # perform operation
-  # Check if x30 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x30, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b2, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b2_str)
+  SREG x11, 0(x2) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b2_equal:
+  amocas.h x31, x16, (x2) # perform operation
+  # Check if x31 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x31, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b2_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b2_equal_str)
   LREG x2, 0(x2) # Load the updated value from memory
-  # Check if x2 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x2, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b2, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b2_str)
+  # Check if x2 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x2, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b2_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b2_equal_str)
 
-  mv x30, x3 # switch data pointer register to avoid conflict with test
-# Testcase cp_rs1_nx0 (Test source rs1 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x30, x15) # load value in memory: x15 = 0xd9887701
-  RVTEST_TESTDATA_LOAD_INT(x30, x14) # load rs2: x14 = 0xdae8cf0c
+# Testcase cp_rs1_nx0 (Test source rs1 = x2, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x3, x27) # load value in memory: x27 = 0x94f48621
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load rs2: x10 = 0x488d0005
+  LA(x2, scratch) # load base address into rs1
+  SREG x27, 0(x2) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b2_not_equal:
+  amocas.h x11, x10, (x2) # perform operation
+  # Check if x11 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x11, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b2_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b2_not_equal_str)
+  LREG x2, 0(x2) # Load the updated value from memory
+  # Check if x2 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x2, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b2_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b2_not_equal_str)
+
+  mv x6, x3 # switch data pointer register to avoid conflict with test
+# Testcase cp_rs1_nx0 (Test source rs1 = x3, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x6, x19) # load value in memory: x19 = 0x5d04e2cf
+  RVTEST_TESTDATA_LOAD_INT(x6, x20) # load rs2: x20 = 0xc2bc1073
   LA(x3, scratch) # load base address into rs1
-  SREG x15, 0(x3) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b3:
-  amocas.h x18, x14, (x3) # perform operation
-  # Check if x18 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x18, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b3, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b3_str)
+  SREG x19, 0(x3) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b3_equal:
+  amocas.h x31, x20, (x3) # perform operation
+  # Check if x31 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x31, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b3_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b3_equal_str)
   LREG x3, 0(x3) # Load the updated value from memory
-  # Check if x3 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x3, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b3, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b3_str)
+  # Check if x3 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x3, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b3_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b3_equal_str)
 
-  mv x12, x4 # switch temp register to avoid conflict with test
-  mv x13, x5 # switch link pointer register to avoid conflict with test
-# Testcase cp_rs1_nx0 (Test source rs1 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x30, x22) # load value in memory: x22 = 0xb3f63357
-  RVTEST_TESTDATA_LOAD_INT(x30, x29) # load rs2: x29 = 0x1b118b6b
+# Testcase cp_rs1_nx0 (Test source rs1 = x3, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x6, x25) # load value in memory: x25 = 0x6f5aa16e
+  RVTEST_TESTDATA_LOAD_INT(x6, x22) # load rs2: x22 = 0x63ec76ac
+  LA(x3, scratch) # load base address into rs1
+  SREG x25, 0(x3) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b3_not_equal:
+  amocas.h x20, x22, (x3) # perform operation
+  # Check if x20 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x20, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b3_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b3_not_equal_str)
+  LREG x3, 0(x3) # Load the updated value from memory
+  # Check if x3 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x3, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b3_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b3_not_equal_str)
+
+  mv x7, x4 # switch temp register to avoid conflict with test
+  mv x8, x5 # switch link pointer register to avoid conflict with test
+# Testcase cp_rs1_nx0 (Test source rs1 = x4, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x6, x27) # load value in memory: x27 = 0x325bf5b7
+  RVTEST_TESTDATA_LOAD_INT(x6, x22) # load rs2: x22 = 0xb4a2ccdf
   LA(x4, scratch) # load base address into rs1
-  SREG x22, 0(x4) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b4:
-  amocas.h x26, x29, (x4) # perform operation
-  # Check if x26 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x26, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b4, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b4_str)
+  SREG x27, 0(x4) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b4_equal:
+  amocas.h x0, x22, (x4) # perform operation
+  # Check if x0 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x0, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b4_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b4_equal_str)
   LREG x4, 0(x4) # Load the updated value from memory
-  # Check if x4 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x4, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b4, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b4_str)
+  # Check if x4 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x4, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b4_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b4_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x30, x19) # load value in memory: x19 = 0xdd04e2cf
-  RVTEST_TESTDATA_LOAD_INT(x30, x29) # load rs2: x29 = 0x61fb0c34
+# Testcase cp_rs1_nx0 (Test source rs1 = x4, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x6, x19) # load value in memory: x19 = 0x36a02c58
+  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load rs2: x24 = 0x03009be3
+  LA(x4, scratch) # load base address into rs1
+  SREG x19, 0(x4) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b4_not_equal:
+  amocas.h x21, x24, (x4) # perform operation
+  # Check if x21 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x21, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b4_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b4_not_equal_str)
+  LREG x4, 0(x4) # Load the updated value from memory
+  # Check if x4 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x4, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b4_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b4_not_equal_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x5, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load value in memory: x24 = 0x765199a9
+  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0xe28da96f
   LA(x5, scratch) # load base address into rs1
-  SREG x19, 0(x5) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b5:
-  amocas.h x25, x29, (x5) # perform operation
-  # Check if x25 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x25, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b5, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b5_str)
+  SREG x24, 0(x5) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b5_equal:
+  amocas.h x18, x2, (x5) # perform operation
+  # Check if x18 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x18, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b5_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b5_equal_str)
   LREG x5, 0(x5) # Load the updated value from memory
-  # Check if x5 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x5, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b5, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b5_str)
+  # Check if x5 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x5, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b5_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b5_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x30, x7) # load value in memory: x7 = 0xc39aa24b
-  RVTEST_TESTDATA_LOAD_INT(x30, x20) # load rs2: x20 = 0x860bda77
+# Testcase cp_rs1_nx0 (Test source rs1 = x5, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x6, x16) # load value in memory: x16 = 0xca94a02e
+  RVTEST_TESTDATA_LOAD_INT(x6, x22) # load rs2: x22 = 0x023e34ac
+  LA(x5, scratch) # load base address into rs1
+  SREG x16, 0(x5) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b5_not_equal:
+  amocas.h x18, x22, (x5) # perform operation
+  # Check if x18 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x18, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b5_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b5_not_equal_str)
+  LREG x5, 0(x5) # Load the updated value from memory
+  # Check if x5 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x5, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b5_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b5_not_equal_str)
+
+  mv x28, x6 # switch data pointer register to avoid conflict with test
+# Testcase cp_rs1_nx0 (Test source rs1 = x6, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x4) # load value in memory: x4 = 0xfc1c75d2
+  RVTEST_TESTDATA_LOAD_INT(x28, x2) # load rs2: x2 = 0x39359b95
   LA(x6, scratch) # load base address into rs1
-  SREG x7, 0(x6) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b6:
-  amocas.h x16, x20, (x6) # perform operation
-  # Check if x16 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x16, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b6, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b6_str)
+  SREG x4, 0(x6) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b6_equal:
+  amocas.h x21, x2, (x6) # perform operation
+  # Check if x21 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x21, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b6_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b6_equal_str)
   LREG x6, 0(x6) # Load the updated value from memory
-  # Check if x6 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x6, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b6, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b6_str)
+  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x6, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b6_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b6_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x30, x17) # load value in memory: x17 = 0x94e9dae5
-  RVTEST_TESTDATA_LOAD_INT(x30, x19) # load rs2: x19 = 0x1dde9650
+# Testcase cp_rs1_nx0 (Test source rs1 = x6, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x20) # load value in memory: x20 = 0xa1a211a6
+  RVTEST_TESTDATA_LOAD_INT(x28, x4) # load rs2: x4 = 0xcd49c320
+  LA(x6, scratch) # load base address into rs1
+  SREG x20, 0(x6) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b6_not_equal:
+  amocas.h x17, x4, (x6) # perform operation
+  # Check if x17 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x17, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b6_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b6_not_equal_str)
+  LREG x6, 0(x6) # Load the updated value from memory
+  # Check if x6 contains the expected result. x9 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x9, x8, x7, x6, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b6_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b6_not_equal_str)
+
+  mv x12, x7 # switch temp register to avoid conflict with test
+  mv x13, x8 # switch link pointer register to avoid conflict with test
+# Testcase cp_rs1_nx0 (Test source rs1 = x7, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x4) # load value in memory: x4 = 0x20290348
+  RVTEST_TESTDATA_LOAD_INT(x28, x20) # load rs2: x20 = 0x127c922b
   LA(x7, scratch) # load base address into rs1
-  SREG x17, 0(x7) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b7:
-  amocas.h x26, x19, (x7) # perform operation
-  # Check if x26 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x26, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b7, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b7_str)
+  SREG x4, 0(x7) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b7_equal:
+  amocas.h x26, x20, (x7) # perform operation
+  # Check if x26 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x9, x13, x12, x26, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b7_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b7_equal_str)
   LREG x7, 0(x7) # Load the updated value from memory
-  # Check if x7 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x7, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b7, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b7_str)
+  # Check if x7 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x9, x13, x12, x7, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b7_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b7_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x30, x21) # load value in memory: x21 = 0xe6b4f280
-  RVTEST_TESTDATA_LOAD_INT(x30, x22) # load rs2: x22 = 0xb6a02c58
+# Testcase cp_rs1_nx0 (Test source rs1 = x7, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x31) # load value in memory: x31 = 0xe29d8fe6
+  RVTEST_TESTDATA_LOAD_INT(x28, x8) # load rs2: x8 = 0x85208f32
+  LA(x7, scratch) # load base address into rs1
+  SREG x31, 0(x7) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b7_not_equal:
+  amocas.h x17, x8, (x7) # perform operation
+  # Check if x17 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x9, x13, x12, x17, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b7_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b7_not_equal_str)
+  LREG x7, 0(x7) # Load the updated value from memory
+  # Check if x7 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x9, x13, x12, x7, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b7_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b7_not_equal_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x8, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x22) # load value in memory: x22 = 0x402c97a3
+  RVTEST_TESTDATA_LOAD_INT(x28, x3) # load rs2: x3 = 0x3a288a48
   LA(x8, scratch) # load base address into rs1
-  SREG x21, 0(x8) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b8:
-  amocas.h x0, x22, (x8) # perform operation
-  # Check if x0 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x0, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b8, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b8_str)
+  SREG x22, 0(x8) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b8_equal:
+  amocas.h x11, x3, (x8) # perform operation
+  # Check if x11 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x9, x13, x12, x11, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b8_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b8_equal_str)
   LREG x8, 0(x8) # Load the updated value from memory
-  # Check if x8 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x8, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b8, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b8_str)
+  # Check if x8 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x9, x13, x12, x8, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b8_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b8_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x30, x19) # load value in memory: x19 = 0xe6444625
-  RVTEST_TESTDATA_LOAD_INT(x30, x3) # load rs2: x3 = 0x628da96f
+# Testcase cp_rs1_nx0 (Test source rs1 = x8, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x19) # load value in memory: x19 = 0x772a2902
+  RVTEST_TESTDATA_LOAD_INT(x28, x18) # load rs2: x18 = 0xb0e8ef9e
+  LA(x8, scratch) # load base address into rs1
+  SREG x19, 0(x8) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b8_not_equal:
+  amocas.h x21, x18, (x8) # perform operation
+  # Check if x21 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x9, x13, x12, x21, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b8_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b8_not_equal_str)
+  LREG x8, 0(x8) # Load the updated value from memory
+  # Check if x8 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x9, x13, x12, x8, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b8_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b8_not_equal_str)
+
+  mv x23, x9 # switch signature pointer register to avoid conflict with test
+# Testcase cp_rs1_nx0 (Test source rs1 = x9, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x11) # load value in memory: x11 = 0xcc009634
+  RVTEST_TESTDATA_LOAD_INT(x28, x16) # load rs2: x16 = 0x8eb9235c
   LA(x9, scratch) # load base address into rs1
-  SREG x19, 0(x9) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b9:
-  amocas.h x21, x3, (x9) # perform operation
-  # Check if x21 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x21, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b9, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b9_str)
+  SREG x11, 0(x9) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b9_equal:
+  amocas.h x30, x16, (x9) # perform operation
+  # Check if x30 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x23, x13, x12, x30, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b9_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b9_equal_str)
   LREG x9, 0(x9) # Load the updated value from memory
   # Check if x9 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x9, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b9, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b9_str)
+  RVTEST_SIGUPD(x23, x13, x12, x9, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b9_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b9_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x30, x16) # load value in memory: x16 = 0x0419e78c
-  RVTEST_TESTDATA_LOAD_INT(x30, x15) # load rs2: x15 = 0x823e34ac
-  LA(x10, scratch) # load base address into rs1
-  SREG x16, 0(x10) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b10:
-  amocas.h x2, x15, (x10) # perform operation
+# Testcase cp_rs1_nx0 (Test source rs1 = x9, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x31) # load value in memory: x31 = 0x77299ae0
+  RVTEST_TESTDATA_LOAD_INT(x28, x27) # load rs2: x27 = 0xaf4e8220
+  LA(x9, scratch) # load base address into rs1
+  SREG x31, 0(x9) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b9_not_equal:
+  amocas.h x2, x27, (x9) # perform operation
   # Check if x2 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x2, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b10, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b10_str)
+  RVTEST_SIGUPD(x23, x13, x12, x2, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b9_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b9_not_equal_str)
+  LREG x9, 0(x9) # Load the updated value from memory
+  # Check if x9 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x23, x13, x12, x9, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b9_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b9_not_equal_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x10, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x14) # load value in memory: x14 = 0xf2d3b581
+  RVTEST_TESTDATA_LOAD_INT(x28, x11) # load rs2: x11 = 0x7fb8df9d
+  LA(x10, scratch) # load base address into rs1
+  SREG x14, 0(x10) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b10_equal:
+  amocas.h x4, x11, (x10) # perform operation
+  # Check if x4 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x23, x13, x12, x4, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b10_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b10_equal_str)
   LREG x10, 0(x10) # Load the updated value from memory
   # Check if x10 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x10, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b10, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b10_str)
+  RVTEST_SIGUPD(x23, x13, x12, x10, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b10_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b10_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x30, x21) # load value in memory: x21 = 0x7c1c75d2
-  RVTEST_TESTDATA_LOAD_INT(x30, x7) # load rs2: x7 = 0x900076c0
+# Testcase cp_rs1_nx0 (Test source rs1 = x10, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x16) # load value in memory: x16 = 0x3e28ce68
+  RVTEST_TESTDATA_LOAD_INT(x28, x22) # load rs2: x22 = 0xc3587e08
+  LA(x10, scratch) # load base address into rs1
+  SREG x16, 0(x10) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b10_not_equal:
+  amocas.h x2, x22, (x10) # perform operation
+  # Check if x2 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x23, x13, x12, x2, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b10_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b10_not_equal_str)
+  LREG x10, 0(x10) # Load the updated value from memory
+  # Check if x10 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x23, x13, x12, x10, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b10_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b10_not_equal_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x11, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x20) # load value in memory: x20 = 0x47865740
+  RVTEST_TESTDATA_LOAD_INT(x28, x26) # load rs2: x26 = 0xd87a06af
   LA(x11, scratch) # load base address into rs1
-  SREG x21, 0(x11) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b11:
-  amocas.h x16, x7, (x11) # perform operation
-  # Check if x16 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x16, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b11, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b11_str)
+  SREG x20, 0(x11) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b11_equal:
+  amocas.h x1, x26, (x11) # perform operation
+  # Check if x1 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x23, x13, x12, x1, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b11_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b11_equal_str)
   LREG x11, 0(x11) # Load the updated value from memory
   # Check if x11 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x23, x13, x12, x11, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b11, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b11_str)
+  RVTEST_SIGUPD(x23, x13, x12, x11, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b11_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b11_equal_str)
 
-  mv x4, x12 # switch temp register to avoid conflict with test
-  mv x5, x13 # switch link pointer register to avoid conflict with test
-# Testcase cp_rs1_nx0 (Test source rs1 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x30, x8) # load value in memory: x8 = 0x4d49c320
-  RVTEST_TESTDATA_LOAD_INT(x30, x25) # load rs2: x25 = 0x9757d969
+# Testcase cp_rs1_nx0 (Test source rs1 = x11, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x27) # load value in memory: x27 = 0xcd5bfad9
+  RVTEST_TESTDATA_LOAD_INT(x28, x29) # load rs2: x29 = 0x890f1138
+  LA(x11, scratch) # load base address into rs1
+  SREG x27, 0(x11) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b11_not_equal:
+  amocas.h x26, x29, (x11) # perform operation
+  # Check if x26 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x23, x13, x12, x26, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b11_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b11_not_equal_str)
+  LREG x11, 0(x11) # Load the updated value from memory
+  # Check if x11 contains the expected result. x23 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x23, x13, x12, x11, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b11_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b11_not_equal_str)
+
+  mv x7, x12 # switch temp register to avoid conflict with test
+  mv x8, x13 # switch link pointer register to avoid conflict with test
+# Testcase cp_rs1_nx0 (Test source rs1 = x12, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x26) # load value in memory: x26 = 0x81fcea8d
+  RVTEST_TESTDATA_LOAD_INT(x28, x24) # load rs2: x24 = 0x8a6d1fc1
   LA(x12, scratch) # load base address into rs1
-  SREG x8, 0(x12) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b12:
-  amocas.h x13, x25, (x12) # perform operation
-  # Check if x13 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x13, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b12, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b12_str)
+  SREG x26, 0(x12) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b12_equal:
+  amocas.h x15, x24, (x12) # perform operation
+  # Check if x15 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x15, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b12_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b12_equal_str)
   LREG x12, 0(x12) # Load the updated value from memory
-  # Check if x12 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x12, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b12, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b12_str)
+  # Check if x12 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x12, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b12_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b12_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x30, x6) # load value in memory: x6 = 0x45320d13
-  RVTEST_TESTDATA_LOAD_INT(x30, x22) # load rs2: x22 = 0xa0290348
+# Testcase cp_rs1_nx0 (Test source rs1 = x12, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x10) # load value in memory: x10 = 0xb5554cb6
+  RVTEST_TESTDATA_LOAD_INT(x28, x4) # load rs2: x4 = 0xa4bd477a
+  LA(x12, scratch) # load base address into rs1
+  SREG x10, 0(x12) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b12_not_equal:
+  amocas.h x9, x4, (x12) # perform operation
+  # Check if x9 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x9, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b12_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b12_not_equal_str)
+  LREG x12, 0(x12) # Load the updated value from memory
+  # Check if x12 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x12, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b12_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b12_not_equal_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x13, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x11) # load value in memory: x11 = 0x3e0fc465
+  RVTEST_TESTDATA_LOAD_INT(x28, x18) # load rs2: x18 = 0x9e2a8c76
   LA(x13, scratch) # load base address into rs1
-  SREG x6, 0(x13) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b13:
-  amocas.h x15, x22, (x13) # perform operation
-  # Check if x15 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x15, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b13, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b13_str)
+  SREG x11, 0(x13) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b13_equal:
+  amocas.h x4, x18, (x13) # perform operation
+  # Check if x4 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x4, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b13_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b13_equal_str)
   LREG x13, 0(x13) # Load the updated value from memory
-  # Check if x13 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x13, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b13, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b13_str)
+  # Check if x13 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x13, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b13_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b13_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x30, x31) # load value in memory: x31 = 0x965f7fa2
-  RVTEST_TESTDATA_LOAD_INT(x30, x15) # load rs2: x15 = 0x05208f32
+# Testcase cp_rs1_nx0 (Test source rs1 = x13, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x5) # load value in memory: x5 = 0x2e46f3da
+  RVTEST_TESTDATA_LOAD_INT(x28, x26) # load rs2: x26 = 0xc1835b2d
+  LA(x13, scratch) # load base address into rs1
+  SREG x5, 0(x13) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b13_not_equal:
+  amocas.h x4, x26, (x13) # perform operation
+  # Check if x4 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x4, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b13_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b13_not_equal_str)
+  LREG x13, 0(x13) # Load the updated value from memory
+  # Check if x13 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x13, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b13_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b13_not_equal_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x14, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x18) # load value in memory: x18 = 0xb9c16084
+  RVTEST_TESTDATA_LOAD_INT(x28, x21) # load rs2: x21 = 0x67d90c5d
   LA(x14, scratch) # load base address into rs1
-  SREG x31, 0(x14) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b14:
-  amocas.h x3, x15, (x14) # perform operation
-  # Check if x3 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x3, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b14, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b14_str)
+  SREG x18, 0(x14) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b14_equal:
+  amocas.h x13, x21, (x14) # perform operation
+  # Check if x13 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x13, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b14_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b14_equal_str)
   LREG x14, 0(x14) # Load the updated value from memory
-  # Check if x14 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x14, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b14, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b14_str)
+  # Check if x14 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x14, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b14_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b14_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x30, x12) # load value in memory: x12 = 0xf4d2f266
-  RVTEST_TESTDATA_LOAD_INT(x30, x9) # load rs2: x9 = 0xc02c97a3
+# Testcase cp_rs1_nx0 (Test source rs1 = x14, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x9) # load value in memory: x9 = 0x2dd6ed36
+  RVTEST_TESTDATA_LOAD_INT(x28, x29) # load rs2: x29 = 0x75a5ba43
+  LA(x14, scratch) # load base address into rs1
+  SREG x9, 0(x14) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b14_not_equal:
+  amocas.h x3, x29, (x14) # perform operation
+  # Check if x3 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x3, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b14_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b14_not_equal_str)
+  LREG x14, 0(x14) # Load the updated value from memory
+  # Check if x14 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x14, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b14_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b14_not_equal_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x15, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x18) # load value in memory: x18 = 0xd7fbe5e1
+  RVTEST_TESTDATA_LOAD_INT(x28, x4) # load rs2: x4 = 0x0bf48917
   LA(x15, scratch) # load base address into rs1
-  SREG x12, 0(x15) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b15:
-  amocas.h x29, x9, (x15) # perform operation
-  # Check if x29 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x29, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b15, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b15_str)
+  SREG x18, 0(x15) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b15_equal:
+  amocas.h x13, x4, (x15) # perform operation
+  # Check if x13 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x13, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b15_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b15_equal_str)
   LREG x15, 0(x15) # Load the updated value from memory
-  # Check if x15 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x15, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b15, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b15_str)
+  # Check if x15 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x15, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b15_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b15_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x30, x1) # load value in memory: x1 = 0x99aa0705
-  RVTEST_TESTDATA_LOAD_INT(x30, x9) # load rs2: x9 = 0xeb94d7ca
+# Testcase cp_rs1_nx0 (Test source rs1 = x15, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x16) # load value in memory: x16 = 0x4271315f
+  RVTEST_TESTDATA_LOAD_INT(x28, x26) # load rs2: x26 = 0x321394e2
+  LA(x15, scratch) # load base address into rs1
+  SREG x16, 0(x15) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b15_not_equal:
+  amocas.h x5, x26, (x15) # perform operation
+  # Check if x5 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x5, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b15_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b15_not_equal_str)
+  LREG x15, 0(x15) # Load the updated value from memory
+  # Check if x15 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x15, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b15_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b15_not_equal_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x16, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x17) # load value in memory: x17 = 0x69fbb2fe
+  RVTEST_TESTDATA_LOAD_INT(x28, x26) # load rs2: x26 = 0x2348fad2
   LA(x16, scratch) # load base address into rs1
-  SREG x1, 0(x16) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b16:
-  amocas.h x14, x9, (x16) # perform operation
-  # Check if x14 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x14, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b16, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b16_str)
+  SREG x17, 0(x16) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b16_equal:
+  amocas.h x12, x26, (x16) # perform operation
+  # Check if x12 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x12, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b16_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b16_equal_str)
   LREG x16, 0(x16) # Load the updated value from memory
-  # Check if x16 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x16, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b16, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b16_str)
+  # Check if x16 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x16, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b16_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b16_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x30, x25) # load value in memory: x25 = 0xf2eed26d
-  RVTEST_TESTDATA_LOAD_INT(x30, x18) # load rs2: x18 = 0x4c009634
+# Testcase cp_rs1_nx0 (Test source rs1 = x16, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x31) # load value in memory: x31 = 0x2e267630
+  RVTEST_TESTDATA_LOAD_INT(x28, x6) # load rs2: x6 = 0x27340855
+  LA(x16, scratch) # load base address into rs1
+  SREG x31, 0(x16) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b16_not_equal:
+  amocas.h x13, x6, (x16) # perform operation
+  # Check if x13 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x13, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b16_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b16_not_equal_str)
+  LREG x16, 0(x16) # Load the updated value from memory
+  # Check if x16 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x16, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b16_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b16_not_equal_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x17, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x30) # load value in memory: x30 = 0xd189e459
+  RVTEST_TESTDATA_LOAD_INT(x28, x14) # load rs2: x14 = 0xba577031
   LA(x17, scratch) # load base address into rs1
-  SREG x25, 0(x17) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b17:
-  amocas.h x20, x18, (x17) # perform operation
-  # Check if x20 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x20, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b17, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b17_str)
+  SREG x30, 0(x17) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b17_equal:
+  amocas.h x6, x14, (x17) # perform operation
+  # Check if x6 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x6, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b17_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b17_equal_str)
   LREG x17, 0(x17) # Load the updated value from memory
-  # Check if x17 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x17, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b17, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b17_str)
+  # Check if x17 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x17, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b17_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b17_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x30, x19) # load value in memory: x19 = 0x4a5ab385
-  RVTEST_TESTDATA_LOAD_INT(x30, x11) # load rs2: x11 = 0x4b44492a
+# Testcase cp_rs1_nx0 (Test source rs1 = x17, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x26) # load value in memory: x26 = 0x98cd6796
+  RVTEST_TESTDATA_LOAD_INT(x28, x4) # load rs2: x4 = 0xa3c264ad
+  LA(x17, scratch) # load base address into rs1
+  SREG x26, 0(x17) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b17_not_equal:
+  amocas.h x0, x4, (x17) # perform operation
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b17_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b17_not_equal_str)
+  LREG x17, 0(x17) # Load the updated value from memory
+  # Check if x17 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x17, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b17_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b17_not_equal_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x18, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x1) # load value in memory: x1 = 0x8b2ee8ce
+  RVTEST_TESTDATA_LOAD_INT(x28, x25) # load rs2: x25 = 0xd6312a55
   LA(x18, scratch) # load base address into rs1
-  SREG x19, 0(x18) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b18:
-  amocas.h x7, x11, (x18) # perform operation
-  # Check if x7 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x7, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b18, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b18_str)
+  SREG x1, 0(x18) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b18_equal:
+  amocas.h x9, x25, (x18) # perform operation
+  # Check if x9 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x9, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b18_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b18_equal_str)
   LREG x18, 0(x18) # Load the updated value from memory
-  # Check if x18 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x18, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b18, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b18_str)
+  # Check if x18 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x18, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b18_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b18_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x30, x6) # load value in memory: x6 = 0x2f4e8220
-  RVTEST_TESTDATA_LOAD_INT(x30, x15) # load rs2: x15 = 0x625e9777
+# Testcase cp_rs1_nx0 (Test source rs1 = x18, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x31) # load value in memory: x31 = 0x89a4ddca
+  RVTEST_TESTDATA_LOAD_INT(x28, x29) # load rs2: x29 = 0xc78751cc
+  LA(x18, scratch) # load base address into rs1
+  SREG x31, 0(x18) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b18_not_equal:
+  amocas.h x0, x29, (x18) # perform operation
+  # Check if x0 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x0, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b18_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b18_not_equal_str)
+  LREG x18, 0(x18) # Load the updated value from memory
+  # Check if x18 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x18, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b18_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b18_not_equal_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x19, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x21) # load value in memory: x21 = 0x7aea44b7
+  RVTEST_TESTDATA_LOAD_INT(x28, x4) # load rs2: x4 = 0xc7e97a34
   LA(x19, scratch) # load base address into rs1
-  SREG x6, 0(x19) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b19:
-  amocas.h x31, x15, (x19) # perform operation
-  # Check if x31 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x31, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b19, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b19_str)
+  SREG x21, 0(x19) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b19_equal:
+  amocas.h x10, x4, (x19) # perform operation
+  # Check if x10 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x10, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b19_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b19_equal_str)
   LREG x19, 0(x19) # Load the updated value from memory
-  # Check if x19 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x19, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b19, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b19_str)
+  # Check if x19 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x19, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b19_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b19_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x30, x8) # load value in memory: x8 = 0x96030a81
-  RVTEST_TESTDATA_LOAD_INT(x30, x27) # load rs2: x27 = 0xffb8df9d
+# Testcase cp_rs1_nx0 (Test source rs1 = x19, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x5) # load value in memory: x5 = 0xefd942e8
+  RVTEST_TESTDATA_LOAD_INT(x28, x27) # load rs2: x27 = 0x0cc6ce53
+  LA(x19, scratch) # load base address into rs1
+  SREG x5, 0(x19) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b19_not_equal:
+  amocas.h x18, x27, (x19) # perform operation
+  # Check if x18 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x18, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b19_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b19_not_equal_str)
+  LREG x19, 0(x19) # Load the updated value from memory
+  # Check if x19 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x19, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b19_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b19_not_equal_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x20, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x24) # load value in memory: x24 = 0x26e079b5
+  RVTEST_TESTDATA_LOAD_INT(x28, x5) # load rs2: x5 = 0xb781bb04
   LA(x20, scratch) # load base address into rs1
-  SREG x8, 0(x20) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b20:
-  amocas.h x2, x27, (x20) # perform operation
-  # Check if x2 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x2, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b20, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b20_str)
+  SREG x24, 0(x20) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b20_equal:
+  amocas.h x22, x5, (x20) # perform operation
+  # Check if x22 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x22, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b20_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b20_equal_str)
   LREG x20, 0(x20) # Load the updated value from memory
-  # Check if x20 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x20, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b20, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b20_str)
+  # Check if x20 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x20, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b20_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b20_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x30, x14) # load value in memory: x14 = 0xedb89c87
-  RVTEST_TESTDATA_LOAD_INT(x30, x7) # load rs2: x7 = 0xde7ebf9c
+# Testcase cp_rs1_nx0 (Test source rs1 = x20, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x25) # load value in memory: x25 = 0xbadc653b
+  RVTEST_TESTDATA_LOAD_INT(x28, x5) # load rs2: x5 = 0x83b93e62
+  LA(x20, scratch) # load base address into rs1
+  SREG x25, 0(x20) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b20_not_equal:
+  amocas.h x17, x5, (x20) # perform operation
+  # Check if x17 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x17, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b20_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b20_not_equal_str)
+  LREG x20, 0(x20) # Load the updated value from memory
+  # Check if x20 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x20, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b20_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b20_not_equal_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x21, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x16) # load value in memory: x16 = 0x7ac990cd
+  RVTEST_TESTDATA_LOAD_INT(x28, x30) # load rs2: x30 = 0x92b8e1a8
   LA(x21, scratch) # load base address into rs1
-  SREG x14, 0(x21) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b21:
-  amocas.h x11, x7, (x21) # perform operation
-  # Check if x11 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x11, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b21, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b21_str)
+  SREG x16, 0(x21) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b21_equal:
+  amocas.h x20, x30, (x21) # perform operation
+  # Check if x20 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x20, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b21_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b21_equal_str)
   LREG x21, 0(x21) # Load the updated value from memory
-  # Check if x21 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x21, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b21, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b21_str)
+  # Check if x21 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x21, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b21_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b21_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x30, x18) # load value in memory: x18 = 0x587a06af
-  RVTEST_TESTDATA_LOAD_INT(x30, x2) # load rs2: x2 = 0xf183a2d0
+# Testcase cp_rs1_nx0 (Test source rs1 = x21, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x9) # load value in memory: x9 = 0xa47b6ae6
+  RVTEST_TESTDATA_LOAD_INT(x28, x1) # load rs2: x1 = 0x9ea9d8ef
+  LA(x21, scratch) # load base address into rs1
+  SREG x9, 0(x21) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b21_not_equal:
+  amocas.h x10, x1, (x21) # perform operation
+  # Check if x10 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x10, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b21_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b21_not_equal_str)
+  LREG x21, 0(x21) # Load the updated value from memory
+  # Check if x21 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x21, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b21_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b21_not_equal_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x22, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x12) # load value in memory: x12 = 0x967201ce
+  RVTEST_TESTDATA_LOAD_INT(x28, x21) # load rs2: x21 = 0x2b8f2d30
   LA(x22, scratch) # load base address into rs1
-  SREG x18, 0(x22) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b22:
-  amocas.h x1, x2, (x22) # perform operation
-  # Check if x1 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x1, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b22, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b22_str)
+  SREG x12, 0(x22) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b22_equal:
+  amocas.h x5, x21, (x22) # perform operation
+  # Check if x5 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x5, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b22_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b22_equal_str)
   LREG x22, 0(x22) # Load the updated value from memory
-  # Check if x22 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x22, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b22, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b22_str)
+  # Check if x22 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x22, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b22_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b22_equal_str)
 
-  mv x29, x23 # switch signature pointer register to avoid conflict with test
-# Testcase cp_rs1_nx0 (Test source rs1 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x30, x27) # load value in memory: x27 = 0xe1b6d763
-  RVTEST_TESTDATA_LOAD_INT(x30, x24) # load rs2: x24 = 0x01fcea8d
+# Testcase cp_rs1_nx0 (Test source rs1 = x22, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x15) # load value in memory: x15 = 0x1f385aeb
+  RVTEST_TESTDATA_LOAD_INT(x28, x21) # load rs2: x21 = 0xd16f43da
+  LA(x22, scratch) # load base address into rs1
+  SREG x15, 0(x22) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b22_not_equal:
+  amocas.h x3, x21, (x22) # perform operation
+  # Check if x3 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x3, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b22_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b22_not_equal_str)
+  LREG x22, 0(x22) # Load the updated value from memory
+  # Check if x22 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x23, x8, x7, x22, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b22_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b22_not_equal_str)
+
+  mv x30, x23 # switch signature pointer register to avoid conflict with test
+# Testcase cp_rs1_nx0 (Test source rs1 = x23, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x29) # load value in memory: x29 = 0xe24051d9
+  RVTEST_TESTDATA_LOAD_INT(x28, x13) # load rs2: x13 = 0x64b6ed68
+  LA(x23, scratch) # load base address into rs1
+  SREG x29, 0(x23) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b23_equal:
+  amocas.h x25, x13, (x23) # perform operation
+  # Check if x25 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x25, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b23_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b23_equal_str)
+  LREG x23, 0(x23) # Load the updated value from memory
+  # Check if x23 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x23, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b23_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b23_equal_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x23, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x27) # load value in memory: x27 = 0xaa344b12
+  RVTEST_TESTDATA_LOAD_INT(x28, x0) # load rs2: x0 = 0x3cebf837
   LA(x23, scratch) # load base address into rs1
   SREG x27, 0(x23) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b23:
-  amocas.h x19, x24, (x23) # perform operation
-  # Check if x19 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x19, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b23, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b23_str)
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b23_not_equal:
+  amocas.h x16, x0, (x23) # perform operation
+  # Check if x16 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x16, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b23_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b23_not_equal_str)
   LREG x23, 0(x23) # Load the updated value from memory
-  # Check if x23 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x23, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b23, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b23_str)
+  # Check if x23 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x23, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b23_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b23_not_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x30, x26) # load value in memory: x26 = 0xe1da4ffc
-  RVTEST_TESTDATA_LOAD_INT(x30, x22) # load rs2: x22 = 0x879574e3
+# Testcase cp_rs1_nx0 (Test source rs1 = x24, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x1) # load value in memory: x1 = 0x41e85343
+  RVTEST_TESTDATA_LOAD_INT(x28, x25) # load rs2: x25 = 0x426d9ab0
   LA(x24, scratch) # load base address into rs1
-  SREG x26, 0(x24) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b24:
-  amocas.h x19, x22, (x24) # perform operation
-  # Check if x19 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x19, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b24, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b24_str)
+  SREG x1, 0(x24) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b24_equal:
+  amocas.h x21, x25, (x24) # perform operation
+  # Check if x21 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x21, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b24_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b24_equal_str)
   LREG x24, 0(x24) # Load the updated value from memory
-  # Check if x24 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x24, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b24, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b24_str)
+  # Check if x24 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x24, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b24_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b24_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x30, x3) # load value in memory: x3 = 0xc86da691
-  RVTEST_TESTDATA_LOAD_INT(x30, x6) # load rs2: x6 = 0xa76c6316
+# Testcase cp_rs1_nx0 (Test source rs1 = x24, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x16) # load value in memory: x16 = 0x0c2790e6
+  RVTEST_TESTDATA_LOAD_INT(x28, x15) # load rs2: x15 = 0x6a3558e9
+  LA(x24, scratch) # load base address into rs1
+  SREG x16, 0(x24) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b24_not_equal:
+  amocas.h x14, x15, (x24) # perform operation
+  # Check if x14 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x14, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b24_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b24_not_equal_str)
+  LREG x24, 0(x24) # Load the updated value from memory
+  # Check if x24 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x24, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b24_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b24_not_equal_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x25, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x9) # load value in memory: x9 = 0xb36bc954
+  RVTEST_TESTDATA_LOAD_INT(x28, x23) # load rs2: x23 = 0xea67ed3b
   LA(x25, scratch) # load base address into rs1
-  SREG x3, 0(x25) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b25:
-  amocas.h x13, x6, (x25) # perform operation
-  # Check if x13 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x13, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b25, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b25_str)
+  SREG x9, 0(x25) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b25_equal:
+  amocas.h x18, x23, (x25) # perform operation
+  # Check if x18 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x18, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b25_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b25_equal_str)
   LREG x25, 0(x25) # Load the updated value from memory
-  # Check if x25 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x25, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b25, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b25_str)
+  # Check if x25 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x25, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b25_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b25_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x30, x8) # load value in memory: x8 = 0x01a65e05
-  RVTEST_TESTDATA_LOAD_INT(x30, x24) # load rs2: x24 = 0x1e2a8c76
+# Testcase cp_rs1_nx0 (Test source rs1 = x25, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x5) # load value in memory: x5 = 0x96c3643a
+  RVTEST_TESTDATA_LOAD_INT(x28, x19) # load rs2: x19 = 0x8a7bc612
+  LA(x25, scratch) # load base address into rs1
+  SREG x5, 0(x25) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b25_not_equal:
+  amocas.h x22, x19, (x25) # perform operation
+  # Check if x22 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x22, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b25_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b25_not_equal_str)
+  LREG x25, 0(x25) # Load the updated value from memory
+  # Check if x25 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x25, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b25_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b25_not_equal_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x26, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x23) # load value in memory: x23 = 0x5ac1b168
+  RVTEST_TESTDATA_LOAD_INT(x28, x13) # load rs2: x13 = 0x9748730c
   LA(x26, scratch) # load base address into rs1
-  SREG x8, 0(x26) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b26:
-  amocas.h x20, x24, (x26) # perform operation
-  # Check if x20 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x20, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b26, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b26_str)
+  SREG x23, 0(x26) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b26_equal:
+  amocas.h x20, x13, (x26) # perform operation
+  # Check if x20 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x20, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b26_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b26_equal_str)
   LREG x26, 0(x26) # Load the updated value from memory
-  # Check if x26 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x26, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b26, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b26_str)
+  # Check if x26 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x26, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b26_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b26_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x30, x21) # load value in memory: x21 = 0x5caf38ab
-  RVTEST_TESTDATA_LOAD_INT(x30, x8) # load rs2: x8 = 0xf5b7acb3
+# Testcase cp_rs1_nx0 (Test source rs1 = x26, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x19) # load value in memory: x19 = 0x84bb3a21
+  RVTEST_TESTDATA_LOAD_INT(x28, x17) # load rs2: x17 = 0x7b8c6249
+  LA(x26, scratch) # load base address into rs1
+  SREG x19, 0(x26) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b26_not_equal:
+  amocas.h x21, x17, (x26) # perform operation
+  # Check if x21 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x21, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b26_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b26_not_equal_str)
+  LREG x26, 0(x26) # Load the updated value from memory
+  # Check if x26 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x26, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b26_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b26_not_equal_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x27, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x19) # load value in memory: x19 = 0x770669be
+  RVTEST_TESTDATA_LOAD_INT(x28, x18) # load rs2: x18 = 0x14c745cb
   LA(x27, scratch) # load base address into rs1
-  SREG x21, 0(x27) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b27:
-  amocas.h x31, x8, (x27) # perform operation
-  # Check if x31 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x31, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b27, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b27_str)
+  SREG x19, 0(x27) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b27_equal:
+  amocas.h x10, x18, (x27) # perform operation
+  # Check if x10 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x10, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b27_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b27_equal_str)
   LREG x27, 0(x27) # Load the updated value from memory
-  # Check if x27 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x27, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b27, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b27_str)
+  # Check if x27 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x27, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b27_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b27_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x30, x1) # load value in memory: x1 = 0x41835b2d
-  RVTEST_TESTDATA_LOAD_INT(x30, x22) # load rs2: x22 = 0x281b181c
+# Testcase cp_rs1_nx0 (Test source rs1 = x27, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x28, x15) # load value in memory: x15 = 0xc95e0381
+  RVTEST_TESTDATA_LOAD_INT(x28, x31) # load rs2: x31 = 0x05d94384
+  LA(x27, scratch) # load base address into rs1
+  SREG x15, 0(x27) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b27_not_equal:
+  amocas.h x6, x31, (x27) # perform operation
+  # Check if x6 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x6, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b27_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b27_not_equal_str)
+  LREG x27, 0(x27) # Load the updated value from memory
+  # Check if x27 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x27, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b27_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b27_not_equal_str)
+
+  mv x21, x28 # switch data pointer register to avoid conflict with test
+# Testcase cp_rs1_nx0 (Test source rs1 = x28, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x14) # load value in memory: x14 = 0xb0bd088f
+  RVTEST_TESTDATA_LOAD_INT(x21, x25) # load rs2: x25 = 0x9f4ce24a
   LA(x28, scratch) # load base address into rs1
-  SREG x1, 0(x28) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b28:
-  amocas.h x24, x22, (x28) # perform operation
-  # Check if x24 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x24, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b28, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b28_str)
+  SREG x14, 0(x28) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b28_equal:
+  amocas.h x31, x25, (x28) # perform operation
+  # Check if x31 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x31, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b28_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b28_equal_str)
   LREG x28, 0(x28) # Load the updated value from memory
-  # Check if x28 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x28, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b28, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b28_str)
+  # Check if x28 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x28, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b28_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b28_equal_str)
 
-  mv x9, x29 # switch signature pointer register to avoid conflict with test
-# Testcase cp_rs1_nx0 (Test source rs1 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x30, x21) # load value in memory: x21 = 0xc6cdbec2
-  RVTEST_TESTDATA_LOAD_INT(x30, x2) # load rs2: x2 = 0xe66c511a
+# Testcase cp_rs1_nx0 (Test source rs1 = x28, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x10) # load value in memory: x10 = 0x50553a15
+  RVTEST_TESTDATA_LOAD_INT(x21, x2) # load rs2: x2 = 0x72e0ef2e
+  LA(x28, scratch) # load base address into rs1
+  SREG x10, 0(x28) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b28_not_equal:
+  amocas.h x4, x2, (x28) # perform operation
+  # Check if x4 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x4, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b28_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b28_not_equal_str)
+  LREG x28, 0(x28) # Load the updated value from memory
+  # Check if x28 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x28, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b28_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b28_not_equal_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x29, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x3) # load value in memory: x3 = 0x3601a410
+  RVTEST_TESTDATA_LOAD_INT(x21, x11) # load rs2: x11 = 0x1aebc568
   LA(x29, scratch) # load base address into rs1
-  SREG x21, 0(x29) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b29:
-  amocas.h x24, x2, (x29) # perform operation
-  # Check if x24 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x24, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b29, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b29_str)
+  SREG x3, 0(x29) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b29_equal:
+  amocas.h x0, x11, (x29) # perform operation
+  # Check if x0 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x0, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b29_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b29_equal_str)
   LREG x29, 0(x29) # Load the updated value from memory
-  # Check if x29 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x29, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b29, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b29_str)
+  # Check if x29 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x29, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b29_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b29_equal_str)
 
-  mv x19, x30 # switch data pointer register to avoid conflict with test
-# Testcase cp_rs1_nx0 (Test source rs1 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x19, x7) # load value in memory: x7 = 0xe44b81c1
-  RVTEST_TESTDATA_LOAD_INT(x19, x29) # load rs2: x29 = 0xadd6ed36
+# Testcase cp_rs1_nx0 (Test source rs1 = x29, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x23) # load value in memory: x23 = 0x24ada9a3
+  RVTEST_TESTDATA_LOAD_INT(x21, x4) # load rs2: x4 = 0x2799e9ed
+  LA(x29, scratch) # load base address into rs1
+  SREG x23, 0(x29) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b29_not_equal:
+  amocas.h x31, x4, (x29) # perform operation
+  # Check if x31 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x31, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b29_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b29_not_equal_str)
+  LREG x29, 0(x29) # Load the updated value from memory
+  # Check if x29 contains the expected result. x30 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x30, x8, x7, x29, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b29_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b29_not_equal_str)
+
+  mv x16, x30 # switch signature pointer register to avoid conflict with test
+# Testcase cp_rs1_nx0 (Test source rs1 = x30, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x5) # load value in memory: x5 = 0x36211b04
+  RVTEST_TESTDATA_LOAD_INT(x21, x11) # load rs2: x11 = 0xebb8ad24
   LA(x30, scratch) # load base address into rs1
-  SREG x7, 0(x30) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b30:
-  amocas.h x17, x29, (x30) # perform operation
-  # Check if x17 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x17, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b30, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b30_str)
+  SREG x5, 0(x30) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b30_equal:
+  amocas.h x9, x11, (x30) # perform operation
+  # Check if x9 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x9, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b30_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b30_equal_str)
   LREG x30, 0(x30) # Load the updated value from memory
-  # Check if x30 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x30, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b30, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b30_str)
+  # Check if x30 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x30, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b30_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b30_equal_str)
 
-# Testcase cp_rs1_nx0 (Test source rs1 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x19, x10) # load value in memory: x10 = 0x84961bda
-  RVTEST_TESTDATA_LOAD_INT(x19, x1) # load rs2: x1 = 0x848abe0e
+# Testcase cp_rs1_nx0 (Test source rs1 = x30, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x17) # load value in memory: x17 = 0x36dcf0c8
+  RVTEST_TESTDATA_LOAD_INT(x21, x9) # load rs2: x9 = 0x81884ac8
+  LA(x30, scratch) # load base address into rs1
+  SREG x17, 0(x30) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b30_not_equal:
+  amocas.h x27, x9, (x30) # perform operation
+  # Check if x27 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x27, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b30_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b30_not_equal_str)
+  LREG x30, 0(x30) # Load the updated value from memory
+  # Check if x30 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x30, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b30_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b30_not_equal_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x31, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x19) # load value in memory: x19 = 0xfb6cadd5
+  RVTEST_TESTDATA_LOAD_INT(x21, x1) # load rs2: x1 = 0x0442207d
   LA(x31, scratch) # load base address into rs1
-  SREG x10, 0(x31) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b31:
-  amocas.h x27, x1, (x31) # perform operation
-  # Check if x27 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x27, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b31, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b31_str)
+  SREG x19, 0(x31) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b31_equal:
+  amocas.h x3, x1, (x31) # perform operation
+  # Check if x3 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x3, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b31_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b31_equal_str)
   LREG x31, 0(x31) # Load the updated value from memory
-  # Check if x31 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x31, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b31, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b31_str)
+  # Check if x31 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x31, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b31_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b31_equal_str)
+
+# Testcase cp_rs1_nx0 (Test source rs1 = x31, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x28) # load value in memory: x28 = 0x83ce8b7c
+  RVTEST_TESTDATA_LOAD_INT(x21, x30) # load rs2: x30 = 0xe9910f75
+  LA(x31, scratch) # load base address into rs1
+  SREG x28, 0(x31) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b31_not_equal:
+  amocas.h x0, x30, (x31) # perform operation
+  # Check if x0 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x0, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b31_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b31_not_equal_str)
+  LREG x31, 0(x31) # Load the updated value from memory
+  # Check if x31 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x31, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b31_not_equal, ZacasZabha_amocas_h_cg_cp_rs1_nx0_b31_not_equal_str)
 
 /////////////////////////////////
 // cp_rs2
 /////////////////////////////////
 
-# Testcase cp_rs2 (Test source rs2 = x0)
-  RVTEST_TESTDATA_LOAD_INT(x19, x15) # load value in memory: x15 = 0x9a59e367
-  RVTEST_TESTDATA_LOAD_INT(x19, x0) # load rs2: x0 = 0xdd5b6d35
-  LA(x31, scratch) # load base address into rs1
-  SREG x15, 0(x31) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b0:
-  amocas.h x29, x0, (x31) # perform operation
-  # Check if x29 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x29, ZacasZabha_amocas_h_cg_cp_rs2_b0, ZacasZabha_amocas_h_cg_cp_rs2_b0_str)
-  LREG x31, 0(x31) # Load the updated value from memory
-  # Check if x31 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x31, ZacasZabha_amocas_h_cg_cp_rs2_b0, ZacasZabha_amocas_h_cg_cp_rs2_b0_str)
+# Testcase cp_rs2 (Test source rs2 = x0, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x15) # load value in memory: x15 = 0x1a59e367
+  RVTEST_TESTDATA_LOAD_INT(x21, x0) # load rs2: x0 = 0x5d5b6d35
+  LA(x2, scratch) # load base address into rs1
+  SREG x15, 0(x2) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b0_equal:
+  amocas.h x13, x0, (x2) # perform operation
+  # Check if x13 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x13, ZacasZabha_amocas_h_cg_cp_rs2_b0_equal, ZacasZabha_amocas_h_cg_cp_rs2_b0_equal_str)
+  LREG x2, 0(x2) # Load the updated value from memory
+  # Check if x2 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x2, ZacasZabha_amocas_h_cg_cp_rs2_b0_equal, ZacasZabha_amocas_h_cg_cp_rs2_b0_equal_str)
 
-# Testcase cp_rs2 (Test source rs2 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x19, x29) # load value in memory: x29 = 0x3cbaa972
-  RVTEST_TESTDATA_LOAD_INT(x19, x1) # load rs2: x1 = 0x8df9e2f9
-  LA(x15, scratch) # load base address into rs1
-  SREG x29, 0(x15) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b1:
-  amocas.h x2, x1, (x15) # perform operation
-  # Check if x2 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x2, ZacasZabha_amocas_h_cg_cp_rs2_b1, ZacasZabha_amocas_h_cg_cp_rs2_b1_str)
-  LREG x15, 0(x15) # Load the updated value from memory
-  # Check if x15 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x15, ZacasZabha_amocas_h_cg_cp_rs2_b1, ZacasZabha_amocas_h_cg_cp_rs2_b1_str)
-
-# Testcase cp_rs2 (Test source rs2 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x19, x1) # load value in memory: x1 = 0xa7680eae
-  RVTEST_TESTDATA_LOAD_INT(x19, x2) # load rs2: x2 = 0x8a35cf7e
+# Testcase cp_rs2 (Test source rs2 = x0, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x9) # load value in memory: x9 = 0x013dfbcf
+  RVTEST_TESTDATA_LOAD_INT(x21, x0) # load rs2: x0 = 0x0df9e2f9
   LA(x17, scratch) # load base address into rs1
-  SREG x1, 0(x17) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b2:
-  amocas.h x28, x2, (x17) # perform operation
-  # Check if x28 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x28, ZacasZabha_amocas_h_cg_cp_rs2_b2, ZacasZabha_amocas_h_cg_cp_rs2_b2_str)
+  SREG x9, 0(x17) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b0_not_equal:
+  amocas.h x30, x0, (x17) # perform operation
+  # Check if x30 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x30, ZacasZabha_amocas_h_cg_cp_rs2_b0_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b0_not_equal_str)
   LREG x17, 0(x17) # Load the updated value from memory
-  # Check if x17 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x17, ZacasZabha_amocas_h_cg_cp_rs2_b2, ZacasZabha_amocas_h_cg_cp_rs2_b2_str)
+  # Check if x17 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x17, ZacasZabha_amocas_h_cg_cp_rs2_b0_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b0_not_equal_str)
 
-# Testcase cp_rs2 (Test source rs2 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x19, x17) # load value in memory: x17 = 0x70a14e5a
-  RVTEST_TESTDATA_LOAD_INT(x19, x3) # load rs2: x3 = 0x2c673c82
-  LA(x30, scratch) # load base address into rs1
-  SREG x17, 0(x30) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b3:
-  amocas.h x20, x3, (x30) # perform operation
-  # Check if x20 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x20, ZacasZabha_amocas_h_cg_cp_rs2_b3, ZacasZabha_amocas_h_cg_cp_rs2_b3_str)
-  LREG x30, 0(x30) # Load the updated value from memory
-  # Check if x30 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x9, x5, x4, x30, ZacasZabha_amocas_h_cg_cp_rs2_b3, ZacasZabha_amocas_h_cg_cp_rs2_b3_str)
+# Testcase cp_rs2 (Test source rs2 = x1, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x18) # load value in memory: x18 = 0xaf065301
+  RVTEST_TESTDATA_LOAD_INT(x21, x1) # load rs2: x1 = 0x0deb0984
+  LA(x23, scratch) # load base address into rs1
+  SREG x18, 0(x23) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b1_equal:
+  amocas.h x14, x1, (x23) # perform operation
+  # Check if x14 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x14, ZacasZabha_amocas_h_cg_cp_rs2_b1_equal, ZacasZabha_amocas_h_cg_cp_rs2_b1_equal_str)
+  LREG x23, 0(x23) # Load the updated value from memory
+  # Check if x23 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x23, ZacasZabha_amocas_h_cg_cp_rs2_b1_equal, ZacasZabha_amocas_h_cg_cp_rs2_b1_equal_str)
 
-  mv x12, x4 # switch temp register to avoid conflict with test
-  mv x13, x5 # switch link pointer register to avoid conflict with test
-# Testcase cp_rs2 (Test source rs2 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x19, x3) # load value in memory: x3 = 0x49335d7f
-  RVTEST_TESTDATA_LOAD_INT(x19, x4) # load rs2: x4 = 0x8f279a6a
-  LA(x20, scratch) # load base address into rs1
-  SREG x3, 0(x20) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b4:
-  amocas.h x22, x4, (x20) # perform operation
-  # Check if x22 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x22, ZacasZabha_amocas_h_cg_cp_rs2_b4, ZacasZabha_amocas_h_cg_cp_rs2_b4_str)
-  LREG x20, 0(x20) # Load the updated value from memory
-  # Check if x20 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x20, ZacasZabha_amocas_h_cg_cp_rs2_b4, ZacasZabha_amocas_h_cg_cp_rs2_b4_str)
+# Testcase cp_rs2 (Test source rs2 = x1, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x9) # load value in memory: x9 = 0x018235ee
+  RVTEST_TESTDATA_LOAD_INT(x21, x1) # load rs2: x1 = 0x22af7e2a
+  LA(x2, scratch) # load base address into rs1
+  SREG x9, 0(x2) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b1_not_equal:
+  amocas.h x17, x1, (x2) # perform operation
+  # Check if x17 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x17, ZacasZabha_amocas_h_cg_cp_rs2_b1_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b1_not_equal_str)
+  LREG x2, 0(x2) # Load the updated value from memory
+  # Check if x2 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x2, ZacasZabha_amocas_h_cg_cp_rs2_b1_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b1_not_equal_str)
 
-# Testcase cp_rs2 (Test source rs2 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x19, x10) # load value in memory: x10 = 0xd4680700
-  RVTEST_TESTDATA_LOAD_INT(x19, x5) # load rs2: x5 = 0x25e407af
+# Testcase cp_rs2 (Test source rs2 = x2, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x6) # load value in memory: x6 = 0x26f60bdf
+  RVTEST_TESTDATA_LOAD_INT(x21, x2) # load rs2: x2 = 0x6cd24861
+  LA(x12, scratch) # load base address into rs1
+  SREG x6, 0(x12) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b2_equal:
+  amocas.h x25, x2, (x12) # perform operation
+  # Check if x25 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x25, ZacasZabha_amocas_h_cg_cp_rs2_b2_equal, ZacasZabha_amocas_h_cg_cp_rs2_b2_equal_str)
+  LREG x12, 0(x12) # Load the updated value from memory
+  # Check if x12 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x12, ZacasZabha_amocas_h_cg_cp_rs2_b2_equal, ZacasZabha_amocas_h_cg_cp_rs2_b2_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x2, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x10) # load value in memory: x10 = 0x65bda69c
+  RVTEST_TESTDATA_LOAD_INT(x21, x2) # load rs2: x2 = 0x1702c251
   LA(x6, scratch) # load base address into rs1
   SREG x10, 0(x6) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b5:
-  amocas.h x4, x5, (x6) # perform operation
-  # Check if x4 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x4, ZacasZabha_amocas_h_cg_cp_rs2_b5, ZacasZabha_amocas_h_cg_cp_rs2_b5_str)
+ZacasZabha_amocas_h_cg_cp_rs2_b2_not_equal:
+  amocas.h x27, x2, (x6) # perform operation
+  # Check if x27 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x27, ZacasZabha_amocas_h_cg_cp_rs2_b2_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b2_not_equal_str)
   LREG x6, 0(x6) # Load the updated value from memory
-  # Check if x6 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x6, ZacasZabha_amocas_h_cg_cp_rs2_b5, ZacasZabha_amocas_h_cg_cp_rs2_b5_str)
+  # Check if x6 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x6, ZacasZabha_amocas_h_cg_cp_rs2_b2_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b2_not_equal_str)
 
-# Testcase cp_rs2 (Test source rs2 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x19, x24) # load value in memory: x24 = 0x4115337d
-  RVTEST_TESTDATA_LOAD_INT(x19, x6) # load rs2: x6 = 0x31b0bbe7
-  LA(x1, scratch) # load base address into rs1
-  SREG x24, 0(x1) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b6:
-  amocas.h x10, x6, (x1) # perform operation
-  # Check if x10 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x10, ZacasZabha_amocas_h_cg_cp_rs2_b6, ZacasZabha_amocas_h_cg_cp_rs2_b6_str)
-  LREG x1, 0(x1) # Load the updated value from memory
-  # Check if x1 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x1, ZacasZabha_amocas_h_cg_cp_rs2_b6, ZacasZabha_amocas_h_cg_cp_rs2_b6_str)
+# Testcase cp_rs2 (Test source rs2 = x3, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x10) # load value in memory: x10 = 0xace47720
+  RVTEST_TESTDATA_LOAD_INT(x21, x3) # load rs2: x3 = 0xa3abeac7
+  LA(x25, scratch) # load base address into rs1
+  SREG x10, 0(x25) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b3_equal:
+  amocas.h x30, x3, (x25) # perform operation
+  # Check if x30 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x30, ZacasZabha_amocas_h_cg_cp_rs2_b3_equal, ZacasZabha_amocas_h_cg_cp_rs2_b3_equal_str)
+  LREG x25, 0(x25) # Load the updated value from memory
+  # Check if x25 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x25, ZacasZabha_amocas_h_cg_cp_rs2_b3_equal, ZacasZabha_amocas_h_cg_cp_rs2_b3_equal_str)
 
-# Testcase cp_rs2 (Test source rs2 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x19, x29) # load value in memory: x29 = 0x297b65e7
-  RVTEST_TESTDATA_LOAD_INT(x19, x7) # load rs2: x7 = 0x12933705
-  LA(x5, scratch) # load base address into rs1
-  SREG x29, 0(x5) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b7:
-  amocas.h x27, x7, (x5) # perform operation
-  # Check if x27 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x27, ZacasZabha_amocas_h_cg_cp_rs2_b7, ZacasZabha_amocas_h_cg_cp_rs2_b7_str)
-  LREG x5, 0(x5) # Load the updated value from memory
-  # Check if x5 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x5, ZacasZabha_amocas_h_cg_cp_rs2_b7, ZacasZabha_amocas_h_cg_cp_rs2_b7_str)
+# Testcase cp_rs2 (Test source rs2 = x3, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x22) # load value in memory: x22 = 0xc9d2f4b3
+  RVTEST_TESTDATA_LOAD_INT(x21, x3) # load rs2: x3 = 0x7822cec7
+  LA(x12, scratch) # load base address into rs1
+  SREG x22, 0(x12) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b3_not_equal:
+  amocas.h x27, x3, (x12) # perform operation
+  # Check if x27 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x27, ZacasZabha_amocas_h_cg_cp_rs2_b3_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b3_not_equal_str)
+  LREG x12, 0(x12) # Load the updated value from memory
+  # Check if x12 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x12, ZacasZabha_amocas_h_cg_cp_rs2_b3_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b3_not_equal_str)
 
-# Testcase cp_rs2 (Test source rs2 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x19, x3) # load value in memory: x3 = 0x02935e47
-  RVTEST_TESTDATA_LOAD_INT(x19, x8) # load rs2: x8 = 0x885a1874
-  LA(x31, scratch) # load base address into rs1
-  SREG x3, 0(x31) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b8:
-  amocas.h x2, x8, (x31) # perform operation
-  # Check if x2 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x2, ZacasZabha_amocas_h_cg_cp_rs2_b8, ZacasZabha_amocas_h_cg_cp_rs2_b8_str)
-  LREG x31, 0(x31) # Load the updated value from memory
-  # Check if x31 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x9, x13, x12, x31, ZacasZabha_amocas_h_cg_cp_rs2_b8, ZacasZabha_amocas_h_cg_cp_rs2_b8_str)
+# Testcase cp_rs2 (Test source rs2 = x4, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x28) # load value in memory: x28 = 0x01a6eb96
+  RVTEST_TESTDATA_LOAD_INT(x21, x4) # load rs2: x4 = 0x656ad417
+  LA(x19, scratch) # load base address into rs1
+  SREG x28, 0(x19) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b4_equal:
+  amocas.h x29, x4, (x19) # perform operation
+  # Check if x29 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x29, ZacasZabha_amocas_h_cg_cp_rs2_b4_equal, ZacasZabha_amocas_h_cg_cp_rs2_b4_equal_str)
+  LREG x19, 0(x19) # Load the updated value from memory
+  # Check if x19 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x19, ZacasZabha_amocas_h_cg_cp_rs2_b4_equal, ZacasZabha_amocas_h_cg_cp_rs2_b4_equal_str)
 
-  mv x18, x9 # switch signature pointer register to avoid conflict with test
-# Testcase cp_rs2 (Test source rs2 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x19, x11) # load value in memory: x11 = 0x6362ed3a
-  RVTEST_TESTDATA_LOAD_INT(x19, x9) # load rs2: x9 = 0x81a6eb96
-  LA(x10, scratch) # load base address into rs1
-  SREG x11, 0(x10) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b9:
-  amocas.h x27, x9, (x10) # perform operation
-  # Check if x27 contains the expected result. x18 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x18, x13, x12, x27, ZacasZabha_amocas_h_cg_cp_rs2_b9, ZacasZabha_amocas_h_cg_cp_rs2_b9_str)
-  LREG x10, 0(x10) # Load the updated value from memory
-  # Check if x10 contains the expected result. x18 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x18, x13, x12, x10, ZacasZabha_amocas_h_cg_cp_rs2_b9, ZacasZabha_amocas_h_cg_cp_rs2_b9_str)
+# Testcase cp_rs2 (Test source rs2 = x4, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x12) # load value in memory: x12 = 0x7d5046c8
+  RVTEST_TESTDATA_LOAD_INT(x21, x4) # load rs2: x4 = 0xee9ea9ed
+  LA(x20, scratch) # load base address into rs1
+  SREG x12, 0(x20) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b4_not_equal:
+  amocas.h x0, x4, (x20) # perform operation
+  # Check if x0 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x0, ZacasZabha_amocas_h_cg_cp_rs2_b4_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b4_not_equal_str)
+  LREG x20, 0(x20) # Load the updated value from memory
+  # Check if x20 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x20, ZacasZabha_amocas_h_cg_cp_rs2_b4_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b4_not_equal_str)
 
-# Testcase cp_rs2 (Test source rs2 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x19, x7) # load value in memory: x7 = 0x2cbc8f8e
-  RVTEST_TESTDATA_LOAD_INT(x19, x10) # load rs2: x10 = 0x89343c40
-  LA(x14, scratch) # load base address into rs1
-  SREG x7, 0(x14) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b10:
-  amocas.h x29, x10, (x14) # perform operation
-  # Check if x29 contains the expected result. x18 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x18, x13, x12, x29, ZacasZabha_amocas_h_cg_cp_rs2_b10, ZacasZabha_amocas_h_cg_cp_rs2_b10_str)
-  LREG x14, 0(x14) # Load the updated value from memory
-  # Check if x14 contains the expected result. x18 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x18, x13, x12, x14, ZacasZabha_amocas_h_cg_cp_rs2_b10, ZacasZabha_amocas_h_cg_cp_rs2_b10_str)
-
-# Testcase cp_rs2 (Test source rs2 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x19, x23) # load value in memory: x23 = 0x807ac561
-  RVTEST_TESTDATA_LOAD_INT(x19, x11) # load rs2: x11 = 0xb9bd8f02
+# Testcase cp_rs2 (Test source rs2 = x5, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x31) # load value in memory: x31 = 0x290b78c2
+  RVTEST_TESTDATA_LOAD_INT(x21, x5) # load rs2: x5 = 0x31533581
   LA(x3, scratch) # load base address into rs1
-  SREG x23, 0(x3) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b11:
-  amocas.h x20, x11, (x3) # perform operation
-  # Check if x20 contains the expected result. x18 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x18, x13, x12, x20, ZacasZabha_amocas_h_cg_cp_rs2_b11, ZacasZabha_amocas_h_cg_cp_rs2_b11_str)
+  SREG x31, 0(x3) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b5_equal:
+  amocas.h x11, x5, (x3) # perform operation
+  # Check if x11 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x11, ZacasZabha_amocas_h_cg_cp_rs2_b5_equal, ZacasZabha_amocas_h_cg_cp_rs2_b5_equal_str)
   LREG x3, 0(x3) # Load the updated value from memory
-  # Check if x3 contains the expected result. x18 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x18, x13, x12, x3, ZacasZabha_amocas_h_cg_cp_rs2_b11, ZacasZabha_amocas_h_cg_cp_rs2_b11_str)
+  # Check if x3 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x3, ZacasZabha_amocas_h_cg_cp_rs2_b5_equal, ZacasZabha_amocas_h_cg_cp_rs2_b5_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x5, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x18) # load value in memory: x18 = 0x2820dfb0
+  RVTEST_TESTDATA_LOAD_INT(x21, x5) # load rs2: x5 = 0xce715337
+  LA(x15, scratch) # load base address into rs1
+  SREG x18, 0(x15) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b5_not_equal:
+  amocas.h x26, x5, (x15) # perform operation
+  # Check if x26 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x26, ZacasZabha_amocas_h_cg_cp_rs2_b5_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b5_not_equal_str)
+  LREG x15, 0(x15) # Load the updated value from memory
+  # Check if x15 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x15, ZacasZabha_amocas_h_cg_cp_rs2_b5_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b5_not_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x6, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x11) # load value in memory: x11 = 0xac64bc88
+  RVTEST_TESTDATA_LOAD_INT(x21, x6) # load rs2: x6 = 0xb6bf6425
+  LA(x1, scratch) # load base address into rs1
+  SREG x11, 0(x1) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b6_equal:
+  amocas.h x28, x6, (x1) # perform operation
+  # Check if x28 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x28, ZacasZabha_amocas_h_cg_cp_rs2_b6_equal, ZacasZabha_amocas_h_cg_cp_rs2_b6_equal_str)
+  LREG x1, 0(x1) # Load the updated value from memory
+  # Check if x1 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x1, ZacasZabha_amocas_h_cg_cp_rs2_b6_equal, ZacasZabha_amocas_h_cg_cp_rs2_b6_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x6, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x4) # load value in memory: x4 = 0x7179d011
+  RVTEST_TESTDATA_LOAD_INT(x21, x6) # load rs2: x6 = 0x6a09707d
+  LA(x28, scratch) # load base address into rs1
+  SREG x4, 0(x28) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b6_not_equal:
+  amocas.h x27, x6, (x28) # perform operation
+  # Check if x27 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x27, ZacasZabha_amocas_h_cg_cp_rs2_b6_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b6_not_equal_str)
+  LREG x28, 0(x28) # Load the updated value from memory
+  # Check if x28 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x28, ZacasZabha_amocas_h_cg_cp_rs2_b6_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b6_not_equal_str)
+
+  mv x12, x7 # switch temp register to avoid conflict with test
+  mv x13, x8 # switch link pointer register to avoid conflict with test
+# Testcase cp_rs2 (Test source rs2 = x7, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x1) # load value in memory: x1 = 0x08a860e5
+  RVTEST_TESTDATA_LOAD_INT(x21, x7) # load rs2: x7 = 0xfb41fd1d
+  LA(x17, scratch) # load base address into rs1
+  SREG x1, 0(x17) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b7_equal:
+  amocas.h x5, x7, (x17) # perform operation
+  # Check if x5 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x16, x13, x12, x5, ZacasZabha_amocas_h_cg_cp_rs2_b7_equal, ZacasZabha_amocas_h_cg_cp_rs2_b7_equal_str)
+  LREG x17, 0(x17) # Load the updated value from memory
+  # Check if x17 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x16, x13, x12, x17, ZacasZabha_amocas_h_cg_cp_rs2_b7_equal, ZacasZabha_amocas_h_cg_cp_rs2_b7_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x7, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x27) # load value in memory: x27 = 0x3163fd0c
+  RVTEST_TESTDATA_LOAD_INT(x21, x7) # load rs2: x7 = 0xcb6a47fd
+  LA(x30, scratch) # load base address into rs1
+  SREG x27, 0(x30) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b7_not_equal:
+  amocas.h x8, x7, (x30) # perform operation
+  # Check if x8 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x16, x13, x12, x8, ZacasZabha_amocas_h_cg_cp_rs2_b7_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b7_not_equal_str)
+  LREG x30, 0(x30) # Load the updated value from memory
+  # Check if x30 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x16, x13, x12, x30, ZacasZabha_amocas_h_cg_cp_rs2_b7_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b7_not_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x8, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x31) # load value in memory: x31 = 0x17744aee
+  RVTEST_TESTDATA_LOAD_INT(x21, x8) # load rs2: x8 = 0x93e3b867
+  LA(x10, scratch) # load base address into rs1
+  SREG x31, 0(x10) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b8_equal:
+  amocas.h x14, x8, (x10) # perform operation
+  # Check if x14 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x16, x13, x12, x14, ZacasZabha_amocas_h_cg_cp_rs2_b8_equal, ZacasZabha_amocas_h_cg_cp_rs2_b8_equal_str)
+  LREG x10, 0(x10) # Load the updated value from memory
+  # Check if x10 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x16, x13, x12, x10, ZacasZabha_amocas_h_cg_cp_rs2_b8_equal, ZacasZabha_amocas_h_cg_cp_rs2_b8_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x8, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x20) # load value in memory: x20 = 0x25fab8c1
+  RVTEST_TESTDATA_LOAD_INT(x21, x8) # load rs2: x8 = 0x9c3d9233
+  LA(x24, scratch) # load base address into rs1
+  SREG x20, 0(x24) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b8_not_equal:
+  amocas.h x5, x8, (x24) # perform operation
+  # Check if x5 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x16, x13, x12, x5, ZacasZabha_amocas_h_cg_cp_rs2_b8_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b8_not_equal_str)
+  LREG x24, 0(x24) # Load the updated value from memory
+  # Check if x24 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x16, x13, x12, x24, ZacasZabha_amocas_h_cg_cp_rs2_b8_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b8_not_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x9, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x24) # load value in memory: x24 = 0xf9ef8bb6
+  RVTEST_TESTDATA_LOAD_INT(x21, x9) # load rs2: x9 = 0xd945caab
+  LA(x29, scratch) # load base address into rs1
+  SREG x24, 0(x29) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b9_equal:
+  amocas.h x15, x9, (x29) # perform operation
+  # Check if x15 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x16, x13, x12, x15, ZacasZabha_amocas_h_cg_cp_rs2_b9_equal, ZacasZabha_amocas_h_cg_cp_rs2_b9_equal_str)
+  LREG x29, 0(x29) # Load the updated value from memory
+  # Check if x29 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x16, x13, x12, x29, ZacasZabha_amocas_h_cg_cp_rs2_b9_equal, ZacasZabha_amocas_h_cg_cp_rs2_b9_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x9, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x8) # load value in memory: x8 = 0x420ec46a
+  RVTEST_TESTDATA_LOAD_INT(x21, x9) # load rs2: x9 = 0xefde9ec5
+  LA(x11, scratch) # load base address into rs1
+  SREG x8, 0(x11) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b9_not_equal:
+  amocas.h x27, x9, (x11) # perform operation
+  # Check if x27 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x16, x13, x12, x27, ZacasZabha_amocas_h_cg_cp_rs2_b9_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b9_not_equal_str)
+  LREG x11, 0(x11) # Load the updated value from memory
+  # Check if x11 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x16, x13, x12, x11, ZacasZabha_amocas_h_cg_cp_rs2_b9_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b9_not_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x10, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x3) # load value in memory: x3 = 0x28d7206f
+  RVTEST_TESTDATA_LOAD_INT(x21, x10) # load rs2: x10 = 0xcbbd2049
+  LA(x29, scratch) # load base address into rs1
+  SREG x3, 0(x29) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b10_equal:
+  amocas.h x23, x10, (x29) # perform operation
+  # Check if x23 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x16, x13, x12, x23, ZacasZabha_amocas_h_cg_cp_rs2_b10_equal, ZacasZabha_amocas_h_cg_cp_rs2_b10_equal_str)
+  LREG x29, 0(x29) # Load the updated value from memory
+  # Check if x29 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x16, x13, x12, x29, ZacasZabha_amocas_h_cg_cp_rs2_b10_equal, ZacasZabha_amocas_h_cg_cp_rs2_b10_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x10, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x14) # load value in memory: x14 = 0x073654d3
+  RVTEST_TESTDATA_LOAD_INT(x21, x10) # load rs2: x10 = 0x01943cb9
+  LA(x7, scratch) # load base address into rs1
+  SREG x14, 0(x7) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b10_not_equal:
+  amocas.h x8, x10, (x7) # perform operation
+  # Check if x8 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x16, x13, x12, x8, ZacasZabha_amocas_h_cg_cp_rs2_b10_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b10_not_equal_str)
+  LREG x7, 0(x7) # Load the updated value from memory
+  # Check if x7 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x16, x13, x12, x7, ZacasZabha_amocas_h_cg_cp_rs2_b10_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b10_not_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x11, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x25) # load value in memory: x25 = 0x64273f73
+  RVTEST_TESTDATA_LOAD_INT(x21, x11) # load rs2: x11 = 0x4f71c93d
+  LA(x29, scratch) # load base address into rs1
+  SREG x25, 0(x29) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b11_equal:
+  amocas.h x22, x11, (x29) # perform operation
+  # Check if x22 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x16, x13, x12, x22, ZacasZabha_amocas_h_cg_cp_rs2_b11_equal, ZacasZabha_amocas_h_cg_cp_rs2_b11_equal_str)
+  LREG x29, 0(x29) # Load the updated value from memory
+  # Check if x29 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x16, x13, x12, x29, ZacasZabha_amocas_h_cg_cp_rs2_b11_equal, ZacasZabha_amocas_h_cg_cp_rs2_b11_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x11, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x31) # load value in memory: x31 = 0x07de6dcd
+  RVTEST_TESTDATA_LOAD_INT(x21, x11) # load rs2: x11 = 0xba9a2f8a
+  LA(x15, scratch) # load base address into rs1
+  SREG x31, 0(x15) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b11_not_equal:
+  amocas.h x2, x11, (x15) # perform operation
+  # Check if x2 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x16, x13, x12, x2, ZacasZabha_amocas_h_cg_cp_rs2_b11_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b11_not_equal_str)
+  LREG x15, 0(x15) # Load the updated value from memory
+  # Check if x15 contains the expected result. x16 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x16, x13, x12, x15, ZacasZabha_amocas_h_cg_cp_rs2_b11_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b11_not_equal_str)
 
   mv x7, x12 # switch temp register to avoid conflict with test
   mv x8, x13 # switch link pointer register to avoid conflict with test
-# Testcase cp_rs2 (Test source rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x19, x15) # load value in memory: x15 = 0x7e0eaade
-  RVTEST_TESTDATA_LOAD_INT(x19, x12) # load rs2: x12 = 0x4e715337
-  LA(x6, scratch) # load base address into rs1
-  SREG x15, 0(x6) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b12:
-  amocas.h x25, x12, (x6) # perform operation
-  # Check if x25 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x18, x8, x7, x25, ZacasZabha_amocas_h_cg_cp_rs2_b12, ZacasZabha_amocas_h_cg_cp_rs2_b12_str)
-  LREG x6, 0(x6) # Load the updated value from memory
-  # Check if x6 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x18, x8, x7, x6, ZacasZabha_amocas_h_cg_cp_rs2_b12, ZacasZabha_amocas_h_cg_cp_rs2_b12_str)
+# Testcase cp_rs2 (Test source rs2 = x12, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x15) # load value in memory: x15 = 0xb87e80cc
+  RVTEST_TESTDATA_LOAD_INT(x21, x12) # load rs2: x12 = 0xf0839d1a
+  LA(x24, scratch) # load base address into rs1
+  SREG x15, 0(x24) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b12_equal:
+  amocas.h x10, x12, (x24) # perform operation
+  # Check if x10 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x10, ZacasZabha_amocas_h_cg_cp_rs2_b12_equal, ZacasZabha_amocas_h_cg_cp_rs2_b12_equal_str)
+  LREG x24, 0(x24) # Load the updated value from memory
+  # Check if x24 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x24, ZacasZabha_amocas_h_cg_cp_rs2_b12_equal, ZacasZabha_amocas_h_cg_cp_rs2_b12_equal_str)
 
-# Testcase cp_rs2 (Test source rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x19, x31) # load value in memory: x31 = 0xe09e0ac2
-  RVTEST_TESTDATA_LOAD_INT(x19, x13) # load rs2: x13 = 0x2c64bc88
-  LA(x5, scratch) # load base address into rs1
-  SREG x31, 0(x5) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b13:
-  amocas.h x28, x13, (x5) # perform operation
-  # Check if x28 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x18, x8, x7, x28, ZacasZabha_amocas_h_cg_cp_rs2_b13, ZacasZabha_amocas_h_cg_cp_rs2_b13_str)
-  LREG x5, 0(x5) # Load the updated value from memory
-  # Check if x5 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x18, x8, x7, x5, ZacasZabha_amocas_h_cg_cp_rs2_b13, ZacasZabha_amocas_h_cg_cp_rs2_b13_str)
-
-# Testcase cp_rs2 (Test source rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x19, x21) # load value in memory: x21 = 0x8d289a5e
-  RVTEST_TESTDATA_LOAD_INT(x19, x14) # load rs2: x14 = 0x73657865
-  LA(x29, scratch) # load base address into rs1
-  SREG x21, 0(x29) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b14:
-  amocas.h x13, x14, (x29) # perform operation
-  # Check if x13 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x18, x8, x7, x13, ZacasZabha_amocas_h_cg_cp_rs2_b14, ZacasZabha_amocas_h_cg_cp_rs2_b14_str)
-  LREG x29, 0(x29) # Load the updated value from memory
-  # Check if x29 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x18, x8, x7, x29, ZacasZabha_amocas_h_cg_cp_rs2_b14, ZacasZabha_amocas_h_cg_cp_rs2_b14_str)
-
-# Testcase cp_rs2 (Test source rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x19, x21) # load value in memory: x21 = 0x021939a4
-  RVTEST_TESTDATA_LOAD_INT(x19, x15) # load rs2: x15 = 0x12c5bb7f
-  LA(x22, scratch) # load base address into rs1
-  SREG x21, 0(x22) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b15:
-  amocas.h x20, x15, (x22) # perform operation
-  # Check if x20 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x18, x8, x7, x20, ZacasZabha_amocas_h_cg_cp_rs2_b15, ZacasZabha_amocas_h_cg_cp_rs2_b15_str)
-  LREG x22, 0(x22) # Load the updated value from memory
-  # Check if x22 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x18, x8, x7, x22, ZacasZabha_amocas_h_cg_cp_rs2_b15, ZacasZabha_amocas_h_cg_cp_rs2_b15_str)
-
-# Testcase cp_rs2 (Test source rs2 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x19, x24) # load value in memory: x24 = 0x16846b42
-  RVTEST_TESTDATA_LOAD_INT(x19, x16) # load rs2: x16 = 0x88a860e5
-  LA(x15, scratch) # load base address into rs1
-  SREG x24, 0(x15) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b16:
-  amocas.h x27, x16, (x15) # perform operation
-  # Check if x27 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x18, x8, x7, x27, ZacasZabha_amocas_h_cg_cp_rs2_b16, ZacasZabha_amocas_h_cg_cp_rs2_b16_str)
-  LREG x15, 0(x15) # Load the updated value from memory
-  # Check if x15 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x18, x8, x7, x15, ZacasZabha_amocas_h_cg_cp_rs2_b16, ZacasZabha_amocas_h_cg_cp_rs2_b16_str)
-
-# Testcase cp_rs2 (Test source rs2 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x19, x1) # load value in memory: x1 = 0xde8ebbf9
-  RVTEST_TESTDATA_LOAD_INT(x19, x17) # load rs2: x17 = 0x769a7193
-  LA(x11, scratch) # load base address into rs1
-  SREG x1, 0(x11) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b17:
-  amocas.h x28, x17, (x11) # perform operation
-  # Check if x28 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x18, x8, x7, x28, ZacasZabha_amocas_h_cg_cp_rs2_b17, ZacasZabha_amocas_h_cg_cp_rs2_b17_str)
-  LREG x11, 0(x11) # Load the updated value from memory
-  # Check if x11 contains the expected result. x18 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x18, x8, x7, x11, ZacasZabha_amocas_h_cg_cp_rs2_b17, ZacasZabha_amocas_h_cg_cp_rs2_b17_str)
-
-  mv x23, x18 # switch signature pointer register to avoid conflict with test
-# Testcase cp_rs2 (Test source rs2 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x19, x28) # load value in memory: x28 = 0xf37fbe96
-  RVTEST_TESTDATA_LOAD_INT(x19, x18) # load rs2: x18 = 0xb57a4e09
+# Testcase cp_rs2 (Test source rs2 = x12, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x24) # load value in memory: x24 = 0x49411d13
+  RVTEST_TESTDATA_LOAD_INT(x21, x12) # load rs2: x12 = 0x081d554b
   LA(x25, scratch) # load base address into rs1
-  SREG x28, 0(x25) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b18:
-  amocas.h x17, x18, (x25) # perform operation
-  # Check if x17 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x17, ZacasZabha_amocas_h_cg_cp_rs2_b18, ZacasZabha_amocas_h_cg_cp_rs2_b18_str)
+  SREG x24, 0(x25) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b12_not_equal:
+  amocas.h x6, x12, (x25) # perform operation
+  # Check if x6 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x6, ZacasZabha_amocas_h_cg_cp_rs2_b12_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b12_not_equal_str)
   LREG x25, 0(x25) # Load the updated value from memory
-  # Check if x25 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x25, ZacasZabha_amocas_h_cg_cp_rs2_b18, ZacasZabha_amocas_h_cg_cp_rs2_b18_str)
+  # Check if x25 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x25, ZacasZabha_amocas_h_cg_cp_rs2_b12_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b12_not_equal_str)
 
-  mv x25, x19 # switch data pointer register to avoid conflict with test
-# Testcase cp_rs2 (Test source rs2 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x25, x13) # load value in memory: x13 = 0x50d6cd76
-  RVTEST_TESTDATA_LOAD_INT(x25, x19) # load rs2: x19 = 0x8fc91b2e
-  LA(x2, scratch) # load base address into rs1
-  SREG x13, 0(x2) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b19:
-  amocas.h x31, x19, (x2) # perform operation
-  # Check if x31 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x31, ZacasZabha_amocas_h_cg_cp_rs2_b19, ZacasZabha_amocas_h_cg_cp_rs2_b19_str)
-  LREG x2, 0(x2) # Load the updated value from memory
-  # Check if x2 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x2, ZacasZabha_amocas_h_cg_cp_rs2_b19, ZacasZabha_amocas_h_cg_cp_rs2_b19_str)
+# Testcase cp_rs2 (Test source rs2 = x13, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x14) # load value in memory: x14 = 0xb4c2a10f
+  RVTEST_TESTDATA_LOAD_INT(x21, x13) # load rs2: x13 = 0x87010505
+  LA(x15, scratch) # load base address into rs1
+  SREG x14, 0(x15) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b13_equal:
+  amocas.h x11, x13, (x15) # perform operation
+  # Check if x11 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x11, ZacasZabha_amocas_h_cg_cp_rs2_b13_equal, ZacasZabha_amocas_h_cg_cp_rs2_b13_equal_str)
+  LREG x15, 0(x15) # Load the updated value from memory
+  # Check if x15 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x15, ZacasZabha_amocas_h_cg_cp_rs2_b13_equal, ZacasZabha_amocas_h_cg_cp_rs2_b13_equal_str)
 
-# Testcase cp_rs2 (Test source rs2 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x25, x26) # load value in memory: x26 = 0x95e25cfc
-  RVTEST_TESTDATA_LOAD_INT(x25, x20) # load rs2: x20 = 0x8104e59c
-  LA(x18, scratch) # load base address into rs1
-  SREG x26, 0(x18) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b20:
-  amocas.h x27, x20, (x18) # perform operation
-  # Check if x27 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x27, ZacasZabha_amocas_h_cg_cp_rs2_b20, ZacasZabha_amocas_h_cg_cp_rs2_b20_str)
-  LREG x18, 0(x18) # Load the updated value from memory
-  # Check if x18 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x18, ZacasZabha_amocas_h_cg_cp_rs2_b20, ZacasZabha_amocas_h_cg_cp_rs2_b20_str)
+# Testcase cp_rs2 (Test source rs2 = x13, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x18) # load value in memory: x18 = 0x6210f634
+  RVTEST_TESTDATA_LOAD_INT(x21, x13) # load rs2: x13 = 0xf2bd610e
+  LA(x27, scratch) # load base address into rs1
+  SREG x18, 0(x27) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b13_not_equal:
+  amocas.h x5, x13, (x27) # perform operation
+  # Check if x5 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x5, ZacasZabha_amocas_h_cg_cp_rs2_b13_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b13_not_equal_str)
+  LREG x27, 0(x27) # Load the updated value from memory
+  # Check if x27 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x27, ZacasZabha_amocas_h_cg_cp_rs2_b13_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b13_not_equal_str)
 
-# Testcase cp_rs2 (Test source rs2 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x25, x30) # load value in memory: x30 = 0xc06a35da
-  RVTEST_TESTDATA_LOAD_INT(x25, x21) # load rs2: x21 = 0x8d406876
-  LA(x11, scratch) # load base address into rs1
-  SREG x30, 0(x11) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b21:
-  amocas.h x15, x21, (x11) # perform operation
-  # Check if x15 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x15, ZacasZabha_amocas_h_cg_cp_rs2_b21, ZacasZabha_amocas_h_cg_cp_rs2_b21_str)
-  LREG x11, 0(x11) # Load the updated value from memory
-  # Check if x11 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x11, ZacasZabha_amocas_h_cg_cp_rs2_b21, ZacasZabha_amocas_h_cg_cp_rs2_b21_str)
+# Testcase cp_rs2 (Test source rs2 = x14, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x25) # load value in memory: x25 = 0x2d9cd792
+  RVTEST_TESTDATA_LOAD_INT(x21, x14) # load rs2: x14 = 0x33b9d737
+  LA(x9, scratch) # load base address into rs1
+  SREG x25, 0(x9) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b14_equal:
+  amocas.h x24, x14, (x9) # perform operation
+  # Check if x24 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x24, ZacasZabha_amocas_h_cg_cp_rs2_b14_equal, ZacasZabha_amocas_h_cg_cp_rs2_b14_equal_str)
+  LREG x9, 0(x9) # Load the updated value from memory
+  # Check if x9 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x9, ZacasZabha_amocas_h_cg_cp_rs2_b14_equal, ZacasZabha_amocas_h_cg_cp_rs2_b14_equal_str)
 
-# Testcase cp_rs2 (Test source rs2 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x25, x30) # load value in memory: x30 = 0xd25f2d15
-  RVTEST_TESTDATA_LOAD_INT(x25, x22) # load rs2: x22 = 0xa8d7206f
-  LA(x11, scratch) # load base address into rs1
-  SREG x30, 0(x11) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b22:
-  amocas.h x5, x22, (x11) # perform operation
-  # Check if x5 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x5, ZacasZabha_amocas_h_cg_cp_rs2_b22, ZacasZabha_amocas_h_cg_cp_rs2_b22_str)
-  LREG x11, 0(x11) # Load the updated value from memory
-  # Check if x11 contains the expected result. x23 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x23, x8, x7, x11, ZacasZabha_amocas_h_cg_cp_rs2_b22, ZacasZabha_amocas_h_cg_cp_rs2_b22_str)
-
-  mv x27, x23 # switch signature pointer register to avoid conflict with test
-# Testcase cp_rs2 (Test source rs2 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x25, x3) # load value in memory: x3 = 0xfae1ca08
-  RVTEST_TESTDATA_LOAD_INT(x25, x23) # load rs2: x23 = 0x6c083b14
-  LA(x1, scratch) # load base address into rs1
-  SREG x3, 0(x1) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b23:
-  amocas.h x30, x23, (x1) # perform operation
-  # Check if x30 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x30, ZacasZabha_amocas_h_cg_cp_rs2_b23, ZacasZabha_amocas_h_cg_cp_rs2_b23_str)
-  LREG x1, 0(x1) # Load the updated value from memory
-  # Check if x1 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x1, ZacasZabha_amocas_h_cg_cp_rs2_b23, ZacasZabha_amocas_h_cg_cp_rs2_b23_str)
-
-# Testcase cp_rs2 (Test source rs2 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x25, x16) # load value in memory: x16 = 0x28c4e4a9
-  RVTEST_TESTDATA_LOAD_INT(x25, x24) # load rs2: x24 = 0x6bb8ecce
+# Testcase cp_rs2 (Test source rs2 = x14, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x26) # load value in memory: x26 = 0xd0e5a441
+  RVTEST_TESTDATA_LOAD_INT(x21, x14) # load rs2: x14 = 0x582817f3
   LA(x4, scratch) # load base address into rs1
-  SREG x16, 0(x4) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b24:
-  amocas.h x26, x24, (x4) # perform operation
-  # Check if x26 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x26, ZacasZabha_amocas_h_cg_cp_rs2_b24, ZacasZabha_amocas_h_cg_cp_rs2_b24_str)
+  SREG x26, 0(x4) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b14_not_equal:
+  amocas.h x20, x14, (x4) # perform operation
+  # Check if x20 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x20, ZacasZabha_amocas_h_cg_cp_rs2_b14_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b14_not_equal_str)
   LREG x4, 0(x4) # Load the updated value from memory
-  # Check if x4 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x4, ZacasZabha_amocas_h_cg_cp_rs2_b24, ZacasZabha_amocas_h_cg_cp_rs2_b24_str)
+  # Check if x4 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x4, ZacasZabha_amocas_h_cg_cp_rs2_b14_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b14_not_equal_str)
 
-  mv x15, x25 # switch data pointer register to avoid conflict with test
-# Testcase cp_rs2 (Test source rs2 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x15, x24) # load value in memory: x24 = 0xe4273f73
-  RVTEST_TESTDATA_LOAD_INT(x15, x25) # load rs2: x25 = 0xcf71c93d
+# Testcase cp_rs2 (Test source rs2 = x15, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x30) # load value in memory: x30 = 0xdda42350
+  RVTEST_TESTDATA_LOAD_INT(x21, x15) # load rs2: x15 = 0x39ec13b8
+  LA(x29, scratch) # load base address into rs1
+  SREG x30, 0(x29) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b15_equal:
+  amocas.h x13, x15, (x29) # perform operation
+  # Check if x13 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x13, ZacasZabha_amocas_h_cg_cp_rs2_b15_equal, ZacasZabha_amocas_h_cg_cp_rs2_b15_equal_str)
+  LREG x29, 0(x29) # Load the updated value from memory
+  # Check if x29 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x29, ZacasZabha_amocas_h_cg_cp_rs2_b15_equal, ZacasZabha_amocas_h_cg_cp_rs2_b15_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x15, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x11) # load value in memory: x11 = 0x2b6c84f6
+  RVTEST_TESTDATA_LOAD_INT(x21, x15) # load rs2: x15 = 0x963d4628
+  LA(x6, scratch) # load base address into rs1
+  SREG x11, 0(x6) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b15_not_equal:
+  amocas.h x25, x15, (x6) # perform operation
+  # Check if x25 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x25, ZacasZabha_amocas_h_cg_cp_rs2_b15_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b15_not_equal_str)
+  LREG x6, 0(x6) # Load the updated value from memory
+  # Check if x6 contains the expected result. x16 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x16, x8, x7, x6, ZacasZabha_amocas_h_cg_cp_rs2_b15_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b15_not_equal_str)
+
+  mv x24, x16 # switch signature pointer register to avoid conflict with test
+# Testcase cp_rs2 (Test source rs2 = x16, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x12) # load value in memory: x12 = 0x88042865
+  RVTEST_TESTDATA_LOAD_INT(x21, x16) # load rs2: x16 = 0xb7ffa506
+  LA(x4, scratch) # load base address into rs1
+  SREG x12, 0(x4) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b16_equal:
+  amocas.h x0, x16, (x4) # perform operation
+  # Check if x0 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x0, ZacasZabha_amocas_h_cg_cp_rs2_b16_equal, ZacasZabha_amocas_h_cg_cp_rs2_b16_equal_str)
+  LREG x4, 0(x4) # Load the updated value from memory
+  # Check if x4 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x4, ZacasZabha_amocas_h_cg_cp_rs2_b16_equal, ZacasZabha_amocas_h_cg_cp_rs2_b16_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x16, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x27) # load value in memory: x27 = 0x7906f71f
+  RVTEST_TESTDATA_LOAD_INT(x21, x16) # load rs2: x16 = 0xd5ee5ce1
+  LA(x18, scratch) # load base address into rs1
+  SREG x27, 0(x18) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b16_not_equal:
+  amocas.h x22, x16, (x18) # perform operation
+  # Check if x22 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x22, ZacasZabha_amocas_h_cg_cp_rs2_b16_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b16_not_equal_str)
+  LREG x18, 0(x18) # Load the updated value from memory
+  # Check if x18 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x18, ZacasZabha_amocas_h_cg_cp_rs2_b16_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b16_not_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x17, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x11) # load value in memory: x11 = 0xaf15fda6
+  RVTEST_TESTDATA_LOAD_INT(x21, x17) # load rs2: x17 = 0x70c37969
+  LA(x6, scratch) # load base address into rs1
+  SREG x11, 0(x6) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b17_equal:
+  amocas.h x5, x17, (x6) # perform operation
+  # Check if x5 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x5, ZacasZabha_amocas_h_cg_cp_rs2_b17_equal, ZacasZabha_amocas_h_cg_cp_rs2_b17_equal_str)
+  LREG x6, 0(x6) # Load the updated value from memory
+  # Check if x6 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x6, ZacasZabha_amocas_h_cg_cp_rs2_b17_equal, ZacasZabha_amocas_h_cg_cp_rs2_b17_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x17, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x20) # load value in memory: x20 = 0x3a05c2db
+  RVTEST_TESTDATA_LOAD_INT(x21, x17) # load rs2: x17 = 0xbe35b26c
+  LA(x19, scratch) # load base address into rs1
+  SREG x20, 0(x19) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b17_not_equal:
+  amocas.h x6, x17, (x19) # perform operation
+  # Check if x6 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x6, ZacasZabha_amocas_h_cg_cp_rs2_b17_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b17_not_equal_str)
+  LREG x19, 0(x19) # Load the updated value from memory
+  # Check if x19 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x19, ZacasZabha_amocas_h_cg_cp_rs2_b17_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b17_not_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x18, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x9) # load value in memory: x9 = 0x3b8b289d
+  RVTEST_TESTDATA_LOAD_INT(x21, x18) # load rs2: x18 = 0x14cb06d5
   LA(x10, scratch) # load base address into rs1
-  SREG x24, 0(x10) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b25:
-  amocas.h x9, x25, (x10) # perform operation
-  # Check if x9 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x9, ZacasZabha_amocas_h_cg_cp_rs2_b25, ZacasZabha_amocas_h_cg_cp_rs2_b25_str)
+  SREG x9, 0(x10) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b18_equal:
+  amocas.h x2, x18, (x10) # perform operation
+  # Check if x2 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x2, ZacasZabha_amocas_h_cg_cp_rs2_b18_equal, ZacasZabha_amocas_h_cg_cp_rs2_b18_equal_str)
   LREG x10, 0(x10) # Load the updated value from memory
-  # Check if x10 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x10, ZacasZabha_amocas_h_cg_cp_rs2_b25, ZacasZabha_amocas_h_cg_cp_rs2_b25_str)
+  # Check if x10 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x10, ZacasZabha_amocas_h_cg_cp_rs2_b18_equal, ZacasZabha_amocas_h_cg_cp_rs2_b18_equal_str)
 
-# Testcase cp_rs2 (Test source rs2 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x15, x1) # load value in memory: x1 = 0xc325d7f3
-  RVTEST_TESTDATA_LOAD_INT(x15, x26) # load rs2: x26 = 0x3a9a2f8a
+# Testcase cp_rs2 (Test source rs2 = x18, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x23) # load value in memory: x23 = 0x3d26eeb6
+  RVTEST_TESTDATA_LOAD_INT(x21, x18) # load rs2: x18 = 0xa3f25b14
+  LA(x6, scratch) # load base address into rs1
+  SREG x23, 0(x6) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b18_not_equal:
+  amocas.h x22, x18, (x6) # perform operation
+  # Check if x22 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x22, ZacasZabha_amocas_h_cg_cp_rs2_b18_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b18_not_equal_str)
+  LREG x6, 0(x6) # Load the updated value from memory
+  # Check if x6 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x6, ZacasZabha_amocas_h_cg_cp_rs2_b18_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b18_not_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x19, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x20) # load value in memory: x20 = 0xdd8f6c60
+  RVTEST_TESTDATA_LOAD_INT(x21, x19) # load rs2: x19 = 0x2326e3b0
+  LA(x3, scratch) # load base address into rs1
+  SREG x20, 0(x3) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b19_equal:
+  amocas.h x17, x19, (x3) # perform operation
+  # Check if x17 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x17, ZacasZabha_amocas_h_cg_cp_rs2_b19_equal, ZacasZabha_amocas_h_cg_cp_rs2_b19_equal_str)
+  LREG x3, 0(x3) # Load the updated value from memory
+  # Check if x3 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x3, ZacasZabha_amocas_h_cg_cp_rs2_b19_equal, ZacasZabha_amocas_h_cg_cp_rs2_b19_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x19, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x12) # load value in memory: x12 = 0xa6ad7e19
+  RVTEST_TESTDATA_LOAD_INT(x21, x19) # load rs2: x19 = 0x1c8a7d96
+  LA(x11, scratch) # load base address into rs1
+  SREG x12, 0(x11) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b19_not_equal:
+  amocas.h x15, x19, (x11) # perform operation
+  # Check if x15 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x15, ZacasZabha_amocas_h_cg_cp_rs2_b19_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b19_not_equal_str)
+  LREG x11, 0(x11) # Load the updated value from memory
+  # Check if x11 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x11, ZacasZabha_amocas_h_cg_cp_rs2_b19_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b19_not_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x20, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x31) # load value in memory: x31 = 0xab3068c2
+  RVTEST_TESTDATA_LOAD_INT(x21, x20) # load rs2: x20 = 0x4995f55d
+  LA(x25, scratch) # load base address into rs1
+  SREG x31, 0(x25) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b20_equal:
+  amocas.h x2, x20, (x25) # perform operation
+  # Check if x2 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x2, ZacasZabha_amocas_h_cg_cp_rs2_b20_equal, ZacasZabha_amocas_h_cg_cp_rs2_b20_equal_str)
+  LREG x25, 0(x25) # Load the updated value from memory
+  # Check if x25 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x25, ZacasZabha_amocas_h_cg_cp_rs2_b20_equal, ZacasZabha_amocas_h_cg_cp_rs2_b20_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x20, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x21, x13) # load value in memory: x13 = 0x758de479
+  RVTEST_TESTDATA_LOAD_INT(x21, x20) # load rs2: x20 = 0x0dc2eea2
+  LA(x10, scratch) # load base address into rs1
+  SREG x13, 0(x10) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b20_not_equal:
+  amocas.h x27, x20, (x10) # perform operation
+  # Check if x27 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x27, ZacasZabha_amocas_h_cg_cp_rs2_b20_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b20_not_equal_str)
+  LREG x10, 0(x10) # Load the updated value from memory
+  # Check if x10 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x10, ZacasZabha_amocas_h_cg_cp_rs2_b20_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b20_not_equal_str)
+
+  mv x11, x21 # switch data pointer register to avoid conflict with test
+# Testcase cp_rs2 (Test source rs2 = x21, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x28) # load value in memory: x28 = 0x495fc4ff
+  RVTEST_TESTDATA_LOAD_INT(x11, x21) # load rs2: x21 = 0xf8b5522a
+  LA(x31, scratch) # load base address into rs1
+  SREG x28, 0(x31) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b21_equal:
+  amocas.h x10, x21, (x31) # perform operation
+  # Check if x10 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x10, ZacasZabha_amocas_h_cg_cp_rs2_b21_equal, ZacasZabha_amocas_h_cg_cp_rs2_b21_equal_str)
+  LREG x31, 0(x31) # Load the updated value from memory
+  # Check if x31 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x31, ZacasZabha_amocas_h_cg_cp_rs2_b21_equal, ZacasZabha_amocas_h_cg_cp_rs2_b21_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x21, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x23) # load value in memory: x23 = 0xc31c7345
+  RVTEST_TESTDATA_LOAD_INT(x11, x21) # load rs2: x21 = 0x6ed42e05
+  LA(x28, scratch) # load base address into rs1
+  SREG x23, 0(x28) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b21_not_equal:
+  amocas.h x25, x21, (x28) # perform operation
+  # Check if x25 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x25, ZacasZabha_amocas_h_cg_cp_rs2_b21_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b21_not_equal_str)
+  LREG x28, 0(x28) # Load the updated value from memory
+  # Check if x28 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x28, ZacasZabha_amocas_h_cg_cp_rs2_b21_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b21_not_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x22, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x15) # load value in memory: x15 = 0xe818e8f4
+  RVTEST_TESTDATA_LOAD_INT(x11, x22) # load rs2: x22 = 0x925abad3
+  LA(x21, scratch) # load base address into rs1
+  SREG x15, 0(x21) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b22_equal:
+  amocas.h x27, x22, (x21) # perform operation
+  # Check if x27 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x27, ZacasZabha_amocas_h_cg_cp_rs2_b22_equal, ZacasZabha_amocas_h_cg_cp_rs2_b22_equal_str)
+  LREG x21, 0(x21) # Load the updated value from memory
+  # Check if x21 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x21, ZacasZabha_amocas_h_cg_cp_rs2_b22_equal, ZacasZabha_amocas_h_cg_cp_rs2_b22_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x22, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x28) # load value in memory: x28 = 0x12df18c0
+  RVTEST_TESTDATA_LOAD_INT(x11, x22) # load rs2: x22 = 0x927b0b77
+  LA(x26, scratch) # load base address into rs1
+  SREG x28, 0(x26) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b22_not_equal:
+  amocas.h x1, x22, (x26) # perform operation
+  # Check if x1 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x1, ZacasZabha_amocas_h_cg_cp_rs2_b22_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b22_not_equal_str)
+  LREG x26, 0(x26) # Load the updated value from memory
+  # Check if x26 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x26, ZacasZabha_amocas_h_cg_cp_rs2_b22_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b22_not_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x23, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x30) # load value in memory: x30 = 0x545ea36f
+  RVTEST_TESTDATA_LOAD_INT(x11, x23) # load rs2: x23 = 0x1f1bdd4e
+  LA(x19, scratch) # load base address into rs1
+  SREG x30, 0(x19) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b23_equal:
+  amocas.h x27, x23, (x19) # perform operation
+  # Check if x27 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x27, ZacasZabha_amocas_h_cg_cp_rs2_b23_equal, ZacasZabha_amocas_h_cg_cp_rs2_b23_equal_str)
+  LREG x19, 0(x19) # Load the updated value from memory
+  # Check if x19 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x19, ZacasZabha_amocas_h_cg_cp_rs2_b23_equal, ZacasZabha_amocas_h_cg_cp_rs2_b23_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x23, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x9) # load value in memory: x9 = 0x8559196a
+  RVTEST_TESTDATA_LOAD_INT(x11, x23) # load rs2: x23 = 0xbe361542
+  LA(x15, scratch) # load base address into rs1
+  SREG x9, 0(x15) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b23_not_equal:
+  amocas.h x21, x23, (x15) # perform operation
+  # Check if x21 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x21, ZacasZabha_amocas_h_cg_cp_rs2_b23_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b23_not_equal_str)
+  LREG x15, 0(x15) # Load the updated value from memory
+  # Check if x15 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x24, x8, x7, x15, ZacasZabha_amocas_h_cg_cp_rs2_b23_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b23_not_equal_str)
+
+  mv x22, x24 # switch signature pointer register to avoid conflict with test
+# Testcase cp_rs2 (Test source rs2 = x24, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x5) # load value in memory: x5 = 0xa1f35718
+  RVTEST_TESTDATA_LOAD_INT(x11, x24) # load rs2: x24 = 0x4720c7d6
+  LA(x13, scratch) # load base address into rs1
+  SREG x5, 0(x13) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b24_equal:
+  amocas.h x26, x24, (x13) # perform operation
+  # Check if x26 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x26, ZacasZabha_amocas_h_cg_cp_rs2_b24_equal, ZacasZabha_amocas_h_cg_cp_rs2_b24_equal_str)
+  LREG x13, 0(x13) # Load the updated value from memory
+  # Check if x13 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x13, ZacasZabha_amocas_h_cg_cp_rs2_b24_equal, ZacasZabha_amocas_h_cg_cp_rs2_b24_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x24, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load value in memory: x31 = 0xa45876f4
+  RVTEST_TESTDATA_LOAD_INT(x11, x24) # load rs2: x24 = 0x07b07f39
+  LA(x12, scratch) # load base address into rs1
+  SREG x31, 0(x12) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b24_not_equal:
+  amocas.h x1, x24, (x12) # perform operation
+  # Check if x1 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x1, ZacasZabha_amocas_h_cg_cp_rs2_b24_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b24_not_equal_str)
+  LREG x12, 0(x12) # Load the updated value from memory
+  # Check if x12 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x12, ZacasZabha_amocas_h_cg_cp_rs2_b24_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b24_not_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x25, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x30) # load value in memory: x30 = 0x9b2af221
+  RVTEST_TESTDATA_LOAD_INT(x11, x25) # load rs2: x25 = 0x9bb35cc2
+  LA(x21, scratch) # load base address into rs1
+  SREG x30, 0(x21) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b25_equal:
+  amocas.h x23, x25, (x21) # perform operation
+  # Check if x23 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x23, ZacasZabha_amocas_h_cg_cp_rs2_b25_equal, ZacasZabha_amocas_h_cg_cp_rs2_b25_equal_str)
+  LREG x21, 0(x21) # Load the updated value from memory
+  # Check if x21 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x21, ZacasZabha_amocas_h_cg_cp_rs2_b25_equal, ZacasZabha_amocas_h_cg_cp_rs2_b25_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x25, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x9) # load value in memory: x9 = 0x4185b602
+  RVTEST_TESTDATA_LOAD_INT(x11, x25) # load rs2: x25 = 0x225ca8c2
+  LA(x2, scratch) # load base address into rs1
+  SREG x9, 0(x2) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b25_not_equal:
+  amocas.h x23, x25, (x2) # perform operation
+  # Check if x23 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x23, ZacasZabha_amocas_h_cg_cp_rs2_b25_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b25_not_equal_str)
+  LREG x2, 0(x2) # Load the updated value from memory
+  # Check if x2 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x2, ZacasZabha_amocas_h_cg_cp_rs2_b25_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b25_not_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x26, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x1) # load value in memory: x1 = 0x7285c0b7
+  RVTEST_TESTDATA_LOAD_INT(x11, x26) # load rs2: x26 = 0xe81a4307
+  LA(x12, scratch) # load base address into rs1
+  SREG x1, 0(x12) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b26_equal:
+  amocas.h x20, x26, (x12) # perform operation
+  # Check if x20 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x20, ZacasZabha_amocas_h_cg_cp_rs2_b26_equal, ZacasZabha_amocas_h_cg_cp_rs2_b26_equal_str)
+  LREG x12, 0(x12) # Load the updated value from memory
+  # Check if x12 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x12, ZacasZabha_amocas_h_cg_cp_rs2_b26_equal, ZacasZabha_amocas_h_cg_cp_rs2_b26_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x26, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x27) # load value in memory: x27 = 0xebb4a87f
+  RVTEST_TESTDATA_LOAD_INT(x11, x26) # load rs2: x26 = 0xb459d825
+  LA(x2, scratch) # load base address into rs1
+  SREG x27, 0(x2) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b26_not_equal:
+  amocas.h x6, x26, (x2) # perform operation
+  # Check if x6 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x6, ZacasZabha_amocas_h_cg_cp_rs2_b26_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b26_not_equal_str)
+  LREG x2, 0(x2) # Load the updated value from memory
+  # Check if x2 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x2, ZacasZabha_amocas_h_cg_cp_rs2_b26_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b26_not_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x27, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x12) # load value in memory: x12 = 0x0d3f803e
+  RVTEST_TESTDATA_LOAD_INT(x11, x27) # load rs2: x27 = 0xb83acbc6
+  LA(x1, scratch) # load base address into rs1
+  SREG x12, 0(x1) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b27_equal:
+  amocas.h x15, x27, (x1) # perform operation
+  # Check if x15 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x15, ZacasZabha_amocas_h_cg_cp_rs2_b27_equal, ZacasZabha_amocas_h_cg_cp_rs2_b27_equal_str)
+  LREG x1, 0(x1) # Load the updated value from memory
+  # Check if x1 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x1, ZacasZabha_amocas_h_cg_cp_rs2_b27_equal, ZacasZabha_amocas_h_cg_cp_rs2_b27_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x27, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x18) # load value in memory: x18 = 0x318f0cdf
+  RVTEST_TESTDATA_LOAD_INT(x11, x27) # load rs2: x27 = 0x5f41a91f
+  LA(x23, scratch) # load base address into rs1
+  SREG x18, 0(x23) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b27_not_equal:
+  amocas.h x1, x27, (x23) # perform operation
+  # Check if x1 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x1, ZacasZabha_amocas_h_cg_cp_rs2_b27_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b27_not_equal_str)
+  LREG x23, 0(x23) # Load the updated value from memory
+  # Check if x23 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x23, ZacasZabha_amocas_h_cg_cp_rs2_b27_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b27_not_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x28, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x9) # load value in memory: x9 = 0xb1e3cb07
+  RVTEST_TESTDATA_LOAD_INT(x11, x28) # load rs2: x28 = 0x0b4d9cde
   LA(x20, scratch) # load base address into rs1
-  SREG x1, 0(x20) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b26:
-  amocas.h x28, x26, (x20) # perform operation
-  # Check if x28 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x28, ZacasZabha_amocas_h_cg_cp_rs2_b26, ZacasZabha_amocas_h_cg_cp_rs2_b26_str)
+  SREG x9, 0(x20) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b28_equal:
+  amocas.h x25, x28, (x20) # perform operation
+  # Check if x25 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x25, ZacasZabha_amocas_h_cg_cp_rs2_b28_equal, ZacasZabha_amocas_h_cg_cp_rs2_b28_equal_str)
   LREG x20, 0(x20) # Load the updated value from memory
-  # Check if x20 contains the expected result. x27 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x27, x8, x7, x20, ZacasZabha_amocas_h_cg_cp_rs2_b26, ZacasZabha_amocas_h_cg_cp_rs2_b26_str)
+  # Check if x20 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x20, ZacasZabha_amocas_h_cg_cp_rs2_b28_equal, ZacasZabha_amocas_h_cg_cp_rs2_b28_equal_str)
 
-  mv x17, x27 # switch signature pointer register to avoid conflict with test
-# Testcase cp_rs2 (Test source rs2 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x15, x24) # load value in memory: x24 = 0x3c9754c9
-  RVTEST_TESTDATA_LOAD_INT(x15, x27) # load rs2: x27 = 0x387e80cc
+# Testcase cp_rs2 (Test source rs2 = x28, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x9) # load value in memory: x9 = 0xd73a1cef
+  RVTEST_TESTDATA_LOAD_INT(x11, x28) # load rs2: x28 = 0x9a571995
+  LA(x23, scratch) # load base address into rs1
+  SREG x9, 0(x23) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b28_not_equal:
+  amocas.h x16, x28, (x23) # perform operation
+  # Check if x16 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x16, ZacasZabha_amocas_h_cg_cp_rs2_b28_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b28_not_equal_str)
+  LREG x23, 0(x23) # Load the updated value from memory
+  # Check if x23 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x23, ZacasZabha_amocas_h_cg_cp_rs2_b28_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b28_not_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x29, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x18) # load value in memory: x18 = 0xdfee6283
+  RVTEST_TESTDATA_LOAD_INT(x11, x29) # load rs2: x29 = 0x9ca4c9cc
+  LA(x31, scratch) # load base address into rs1
+  SREG x18, 0(x31) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b29_equal:
+  amocas.h x19, x29, (x31) # perform operation
+  # Check if x19 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x19, ZacasZabha_amocas_h_cg_cp_rs2_b29_equal, ZacasZabha_amocas_h_cg_cp_rs2_b29_equal_str)
+  LREG x31, 0(x31) # Load the updated value from memory
+  # Check if x31 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x31, ZacasZabha_amocas_h_cg_cp_rs2_b29_equal, ZacasZabha_amocas_h_cg_cp_rs2_b29_equal_str)
+
+# Testcase cp_rs2 (Test source rs2 = x29, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x24) # load value in memory: x24 = 0x94c797fa
+  RVTEST_TESTDATA_LOAD_INT(x11, x29) # load rs2: x29 = 0x3725e2eb
   LA(x14, scratch) # load base address into rs1
   SREG x24, 0(x14) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b27:
-  amocas.h x2, x27, (x14) # perform operation
-  # Check if x2 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x2, ZacasZabha_amocas_h_cg_cp_rs2_b27, ZacasZabha_amocas_h_cg_cp_rs2_b27_str)
+ZacasZabha_amocas_h_cg_cp_rs2_b29_not_equal:
+  amocas.h x15, x29, (x14) # perform operation
+  # Check if x15 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x15, ZacasZabha_amocas_h_cg_cp_rs2_b29_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b29_not_equal_str)
   LREG x14, 0(x14) # Load the updated value from memory
-  # Check if x14 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x14, ZacasZabha_amocas_h_cg_cp_rs2_b27, ZacasZabha_amocas_h_cg_cp_rs2_b27_str)
+  # Check if x14 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x14, ZacasZabha_amocas_h_cg_cp_rs2_b29_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b29_not_equal_str)
 
-# Testcase cp_rs2 (Test source rs2 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x15, x16) # load value in memory: x16 = 0xee6ee24e
-  RVTEST_TESTDATA_LOAD_INT(x15, x28) # load rs2: x28 = 0x10ac8f6a
-  LA(x12, scratch) # load base address into rs1
-  SREG x16, 0(x12) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b28:
-  amocas.h x24, x28, (x12) # perform operation
-  # Check if x24 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x24, ZacasZabha_amocas_h_cg_cp_rs2_b28, ZacasZabha_amocas_h_cg_cp_rs2_b28_str)
-  LREG x12, 0(x12) # Load the updated value from memory
-  # Check if x12 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x12, ZacasZabha_amocas_h_cg_cp_rs2_b28, ZacasZabha_amocas_h_cg_cp_rs2_b28_str)
+# Testcase cp_rs2 (Test source rs2 = x30, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x28) # load value in memory: x28 = 0xda8adf7f
+  RVTEST_TESTDATA_LOAD_INT(x11, x30) # load rs2: x30 = 0x0ddd7635
+  LA(x13, scratch) # load base address into rs1
+  SREG x28, 0(x13) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b30_equal:
+  amocas.h x29, x30, (x13) # perform operation
+  # Check if x29 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x29, ZacasZabha_amocas_h_cg_cp_rs2_b30_equal, ZacasZabha_amocas_h_cg_cp_rs2_b30_equal_str)
+  LREG x13, 0(x13) # Load the updated value from memory
+  # Check if x13 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x13, ZacasZabha_amocas_h_cg_cp_rs2_b30_equal, ZacasZabha_amocas_h_cg_cp_rs2_b30_equal_str)
 
-# Testcase cp_rs2 (Test source rs2 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x15, x13) # load value in memory: x13 = 0xe45acc2f
-  RVTEST_TESTDATA_LOAD_INT(x15, x29) # load rs2: x29 = 0x881d554b
-  LA(x24, scratch) # load base address into rs1
-  SREG x13, 0(x24) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b29:
-  amocas.h x23, x29, (x24) # perform operation
-  # Check if x23 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x23, ZacasZabha_amocas_h_cg_cp_rs2_b29, ZacasZabha_amocas_h_cg_cp_rs2_b29_str)
-  LREG x24, 0(x24) # Load the updated value from memory
-  # Check if x24 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x24, ZacasZabha_amocas_h_cg_cp_rs2_b29, ZacasZabha_amocas_h_cg_cp_rs2_b29_str)
+# Testcase cp_rs2 (Test source rs2 = x30, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x24) # load value in memory: x24 = 0x1210a8fe
+  RVTEST_TESTDATA_LOAD_INT(x11, x30) # load rs2: x30 = 0x0bc0d874
+  LA(x26, scratch) # load base address into rs1
+  SREG x24, 0(x26) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b30_not_equal:
+  amocas.h x2, x30, (x26) # perform operation
+  # Check if x2 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x2, ZacasZabha_amocas_h_cg_cp_rs2_b30_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b30_not_equal_str)
+  LREG x26, 0(x26) # Load the updated value from memory
+  # Check if x26 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x26, ZacasZabha_amocas_h_cg_cp_rs2_b30_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b30_not_equal_str)
 
-# Testcase cp_rs2 (Test source rs2 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x15, x24) # load value in memory: x24 = 0x16edb236
-  RVTEST_TESTDATA_LOAD_INT(x15, x30) # load rs2: x30 = 0xf13923ea
-  LA(x6, scratch) # load base address into rs1
-  SREG x24, 0(x6) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b30:
-  amocas.h x19, x30, (x6) # perform operation
-  # Check if x19 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x19, ZacasZabha_amocas_h_cg_cp_rs2_b30, ZacasZabha_amocas_h_cg_cp_rs2_b30_str)
-  LREG x6, 0(x6) # Load the updated value from memory
-  # Check if x6 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x6, ZacasZabha_amocas_h_cg_cp_rs2_b30, ZacasZabha_amocas_h_cg_cp_rs2_b30_str)
+# Testcase cp_rs2 (Test source rs2 = x31, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x19) # load value in memory: x19 = 0xdce8902a
+  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs2: x31 = 0xe33fe538
+  LA(x23, scratch) # load base address into rs1
+  SREG x19, 0(x23) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b31_equal:
+  amocas.h x25, x31, (x23) # perform operation
+  # Check if x25 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x25, ZacasZabha_amocas_h_cg_cp_rs2_b31_equal, ZacasZabha_amocas_h_cg_cp_rs2_b31_equal_str)
+  LREG x23, 0(x23) # Load the updated value from memory
+  # Check if x23 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x23, ZacasZabha_amocas_h_cg_cp_rs2_b31_equal, ZacasZabha_amocas_h_cg_cp_rs2_b31_equal_str)
 
-# Testcase cp_rs2 (Test source rs2 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x15, x4) # load value in memory: x4 = 0x02f8412f
-  RVTEST_TESTDATA_LOAD_INT(x15, x31) # load rs2: x31 = 0xac282b69
-  LA(x12, scratch) # load base address into rs1
-  SREG x4, 0(x12) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rs2_b31:
-  amocas.h x6, x31, (x12) # perform operation
-  # Check if x6 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x6, ZacasZabha_amocas_h_cg_cp_rs2_b31, ZacasZabha_amocas_h_cg_cp_rs2_b31_str)
-  LREG x12, 0(x12) # Load the updated value from memory
-  # Check if x12 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x12, ZacasZabha_amocas_h_cg_cp_rs2_b31, ZacasZabha_amocas_h_cg_cp_rs2_b31_str)
+# Testcase cp_rs2 (Test source rs2 = x31, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x30) # load value in memory: x30 = 0x1583d53d
+  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs2: x31 = 0x6ff07d8b
+  LA(x4, scratch) # load base address into rs1
+  SREG x30, 0(x4) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rs2_b31_not_equal:
+  amocas.h x13, x31, (x4) # perform operation
+  # Check if x13 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x13, ZacasZabha_amocas_h_cg_cp_rs2_b31_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b31_not_equal_str)
+  LREG x4, 0(x4) # Load the updated value from memory
+  # Check if x4 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x4, ZacasZabha_amocas_h_cg_cp_rs2_b31_not_equal, ZacasZabha_amocas_h_cg_cp_rs2_b31_not_equal_str)
 
 /////////////////////////////////
 // cp_rd
 /////////////////////////////////
 
-# Testcase cp_rd (Test destination rd = x0)
-  RVTEST_TESTDATA_LOAD_INT(x15, x14) # load value in memory: x14 = 0x49bc1e99
-  RVTEST_TESTDATA_LOAD_INT(x15, x2) # load rs2: x2 = 0x308873c3
-  LA(x9, scratch) # load base address into rs1
-  SREG x14, 0(x9) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b0:
-  amocas.h x0, x2, (x9) # perform operation
-  # Check if x0 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x0, ZacasZabha_amocas_h_cg_cp_rd_b0, ZacasZabha_amocas_h_cg_cp_rd_b0_str)
-  LREG x9, 0(x9) # Load the updated value from memory
-  # Check if x9 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x9, ZacasZabha_amocas_h_cg_cp_rd_b0, ZacasZabha_amocas_h_cg_cp_rd_b0_str)
-
-# Testcase cp_rd (Test destination rd = x1)
-  RVTEST_TESTDATA_LOAD_INT(x15, x24) # load value in memory: x24 = 0x5a9a97a0
-  RVTEST_TESTDATA_LOAD_INT(x15, x26) # load rs2: x26 = 0x8f7571e8
-  LA(x23, scratch) # load base address into rs1
-  SREG x24, 0(x23) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b1:
-  amocas.h x1, x26, (x23) # perform operation
-  # Check if x1 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x1, ZacasZabha_amocas_h_cg_cp_rd_b1, ZacasZabha_amocas_h_cg_cp_rd_b1_str)
-  LREG x23, 0(x23) # Load the updated value from memory
-  # Check if x23 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x23, ZacasZabha_amocas_h_cg_cp_rd_b1, ZacasZabha_amocas_h_cg_cp_rd_b1_str)
-
-# Testcase cp_rd (Test destination rd = x2)
-  RVTEST_TESTDATA_LOAD_INT(x15, x6) # load value in memory: x6 = 0x11f23748
-  RVTEST_TESTDATA_LOAD_INT(x15, x12) # load rs2: x12 = 0xb6b9f30e
-  LA(x5, scratch) # load base address into rs1
-  SREG x6, 0(x5) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b2:
-  amocas.h x2, x12, (x5) # perform operation
-  # Check if x2 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x2, ZacasZabha_amocas_h_cg_cp_rd_b2, ZacasZabha_amocas_h_cg_cp_rd_b2_str)
-  LREG x5, 0(x5) # Load the updated value from memory
-  # Check if x5 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x5, ZacasZabha_amocas_h_cg_cp_rd_b2, ZacasZabha_amocas_h_cg_cp_rd_b2_str)
-
-# Testcase cp_rd (Test destination rd = x3)
-  RVTEST_TESTDATA_LOAD_INT(x15, x31) # load value in memory: x31 = 0xe15a3a4c
-  RVTEST_TESTDATA_LOAD_INT(x15, x0) # load rs2: x0 = 0x3a0bd6d4
-  LA(x18, scratch) # load base address into rs1
-  SREG x31, 0(x18) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b3:
-  amocas.h x3, x0, (x18) # perform operation
-  # Check if x3 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x3, ZacasZabha_amocas_h_cg_cp_rd_b3, ZacasZabha_amocas_h_cg_cp_rd_b3_str)
-  LREG x18, 0(x18) # Load the updated value from memory
-  # Check if x18 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x18, ZacasZabha_amocas_h_cg_cp_rd_b3, ZacasZabha_amocas_h_cg_cp_rd_b3_str)
-
-# Testcase cp_rd (Test destination rd = x4)
-  RVTEST_TESTDATA_LOAD_INT(x15, x19) # load value in memory: x19 = 0x5aa64202
-  RVTEST_TESTDATA_LOAD_INT(x15, x5) # load rs2: x5 = 0x4f163d99
-  LA(x14, scratch) # load base address into rs1
-  SREG x19, 0(x14) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b4:
-  amocas.h x4, x5, (x14) # perform operation
-  # Check if x4 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x4, ZacasZabha_amocas_h_cg_cp_rd_b4, ZacasZabha_amocas_h_cg_cp_rd_b4_str)
-  LREG x14, 0(x14) # Load the updated value from memory
-  # Check if x14 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x14, ZacasZabha_amocas_h_cg_cp_rd_b4, ZacasZabha_amocas_h_cg_cp_rd_b4_str)
-
-# Testcase cp_rd (Test destination rd = x5)
-  RVTEST_TESTDATA_LOAD_INT(x15, x13) # load value in memory: x13 = 0x046659b6
-  RVTEST_TESTDATA_LOAD_INT(x15, x11) # load rs2: x11 = 0x665f66a5
-  LA(x1, scratch) # load base address into rs1
-  SREG x13, 0(x1) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b5:
-  amocas.h x5, x11, (x1) # perform operation
-  # Check if x5 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x5, ZacasZabha_amocas_h_cg_cp_rd_b5, ZacasZabha_amocas_h_cg_cp_rd_b5_str)
-  LREG x1, 0(x1) # Load the updated value from memory
-  # Check if x1 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x1, ZacasZabha_amocas_h_cg_cp_rd_b5, ZacasZabha_amocas_h_cg_cp_rd_b5_str)
-
-# Testcase cp_rd (Test destination rd = x6)
-  RVTEST_TESTDATA_LOAD_INT(x15, x28) # load value in memory: x28 = 0x48a9d19d
-  RVTEST_TESTDATA_LOAD_INT(x15, x1) # load rs2: x1 = 0x2c5beb8c
-  LA(x10, scratch) # load base address into rs1
-  SREG x28, 0(x10) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b6:
-  amocas.h x6, x1, (x10) # perform operation
-  # Check if x6 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x6, ZacasZabha_amocas_h_cg_cp_rd_b6, ZacasZabha_amocas_h_cg_cp_rd_b6_str)
-  LREG x10, 0(x10) # Load the updated value from memory
-  # Check if x10 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x17, x8, x7, x10, ZacasZabha_amocas_h_cg_cp_rd_b6, ZacasZabha_amocas_h_cg_cp_rd_b6_str)
-
-  mv x4, x7 # switch temp register to avoid conflict with test
-  mv x5, x8 # switch link pointer register to avoid conflict with test
-# Testcase cp_rd (Test destination rd = x7)
-  RVTEST_TESTDATA_LOAD_INT(x15, x14) # load value in memory: x14 = 0x634c9d67
-  RVTEST_TESTDATA_LOAD_INT(x15, x2) # load rs2: x2 = 0x8c674f20
-  LA(x27, scratch) # load base address into rs1
-  SREG x14, 0(x27) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b7:
-  amocas.h x7, x2, (x27) # perform operation
-  # Check if x7 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x7, ZacasZabha_amocas_h_cg_cp_rd_b7, ZacasZabha_amocas_h_cg_cp_rd_b7_str)
-  LREG x27, 0(x27) # Load the updated value from memory
-  # Check if x27 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x27, ZacasZabha_amocas_h_cg_cp_rd_b7, ZacasZabha_amocas_h_cg_cp_rd_b7_str)
-
-# Testcase cp_rd (Test destination rd = x8)
-  RVTEST_TESTDATA_LOAD_INT(x15, x30) # load value in memory: x30 = 0x3026a9a5
-  RVTEST_TESTDATA_LOAD_INT(x15, x18) # load rs2: x18 = 0x2e7fa2f3
-  LA(x24, scratch) # load base address into rs1
-  SREG x30, 0(x24) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b8:
-  amocas.h x8, x18, (x24) # perform operation
-  # Check if x8 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x8, ZacasZabha_amocas_h_cg_cp_rd_b8, ZacasZabha_amocas_h_cg_cp_rd_b8_str)
-  LREG x24, 0(x24) # Load the updated value from memory
-  # Check if x24 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x24, ZacasZabha_amocas_h_cg_cp_rd_b8, ZacasZabha_amocas_h_cg_cp_rd_b8_str)
-
-# Testcase cp_rd (Test destination rd = x9)
-  RVTEST_TESTDATA_LOAD_INT(x15, x16) # load value in memory: x16 = 0x527ddf1d
-  RVTEST_TESTDATA_LOAD_INT(x15, x6) # load rs2: x6 = 0xc6ab2a1b
-  LA(x26, scratch) # load base address into rs1
-  SREG x16, 0(x26) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b9:
-  amocas.h x9, x6, (x26) # perform operation
-  # Check if x9 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x9, ZacasZabha_amocas_h_cg_cp_rd_b9, ZacasZabha_amocas_h_cg_cp_rd_b9_str)
-  LREG x26, 0(x26) # Load the updated value from memory
-  # Check if x26 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x26, ZacasZabha_amocas_h_cg_cp_rd_b9, ZacasZabha_amocas_h_cg_cp_rd_b9_str)
-
-# Testcase cp_rd (Test destination rd = x10)
-  RVTEST_TESTDATA_LOAD_INT(x15, x11) # load value in memory: x11 = 0x997914b6
-  RVTEST_TESTDATA_LOAD_INT(x15, x3) # load rs2: x3 = 0x0465dd99
+# Testcase cp_rd (Test destination rd = x0, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load value in memory: x31 = 0xdd110c86
+  RVTEST_TESTDATA_LOAD_INT(x11, x24) # load rs2: x24 = 0xb08873c3
   LA(x13, scratch) # load base address into rs1
-  SREG x11, 0(x13) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b10:
-  amocas.h x10, x3, (x13) # perform operation
-  # Check if x10 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x10, ZacasZabha_amocas_h_cg_cp_rd_b10, ZacasZabha_amocas_h_cg_cp_rd_b10_str)
+  SREG x31, 0(x13) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b0_equal:
+  amocas.h x0, x24, (x13) # perform operation
+  # Check if x0 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x0, ZacasZabha_amocas_h_cg_cp_rd_b0_equal, ZacasZabha_amocas_h_cg_cp_rd_b0_equal_str)
   LREG x13, 0(x13) # Load the updated value from memory
-  # Check if x13 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x13, ZacasZabha_amocas_h_cg_cp_rd_b10, ZacasZabha_amocas_h_cg_cp_rd_b10_str)
+  # Check if x13 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x13, ZacasZabha_amocas_h_cg_cp_rd_b0_equal, ZacasZabha_amocas_h_cg_cp_rd_b0_equal_str)
 
-# Testcase cp_rd (Test destination rd = x11)
-  RVTEST_TESTDATA_LOAD_INT(x15, x31) # load value in memory: x31 = 0x859b9605
-  RVTEST_TESTDATA_LOAD_INT(x15, x10) # load rs2: x10 = 0x1908f0f7
-  LA(x18, scratch) # load base address into rs1
-  SREG x31, 0(x18) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b11:
-  amocas.h x11, x10, (x18) # perform operation
-  # Check if x11 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x11, ZacasZabha_amocas_h_cg_cp_rd_b11, ZacasZabha_amocas_h_cg_cp_rd_b11_str)
-  LREG x18, 0(x18) # Load the updated value from memory
-  # Check if x18 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x18, ZacasZabha_amocas_h_cg_cp_rd_b11, ZacasZabha_amocas_h_cg_cp_rd_b11_str)
-
-# Testcase cp_rd (Test destination rd = x12)
-  RVTEST_TESTDATA_LOAD_INT(x15, x9) # load value in memory: x9 = 0x8f56e55c
-  RVTEST_TESTDATA_LOAD_INT(x15, x11) # load rs2: x11 = 0x8c512d2e
-  LA(x23, scratch) # load base address into rs1
-  SREG x9, 0(x23) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b12:
-  amocas.h x12, x11, (x23) # perform operation
-  # Check if x12 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x12, ZacasZabha_amocas_h_cg_cp_rd_b12, ZacasZabha_amocas_h_cg_cp_rd_b12_str)
-  LREG x23, 0(x23) # Load the updated value from memory
-  # Check if x23 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x23, ZacasZabha_amocas_h_cg_cp_rd_b12, ZacasZabha_amocas_h_cg_cp_rd_b12_str)
-
-# Testcase cp_rd (Test destination rd = x13)
-  RVTEST_TESTDATA_LOAD_INT(x15, x8) # load value in memory: x8 = 0x9ceb86bd
-  RVTEST_TESTDATA_LOAD_INT(x15, x21) # load rs2: x21 = 0x2739d55a
-  LA(x29, scratch) # load base address into rs1
-  SREG x8, 0(x29) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b13:
-  amocas.h x13, x21, (x29) # perform operation
-  # Check if x13 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x13, ZacasZabha_amocas_h_cg_cp_rd_b13, ZacasZabha_amocas_h_cg_cp_rd_b13_str)
-  LREG x29, 0(x29) # Load the updated value from memory
-  # Check if x29 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x29, ZacasZabha_amocas_h_cg_cp_rd_b13, ZacasZabha_amocas_h_cg_cp_rd_b13_str)
-
-# Testcase cp_rd (Test destination rd = x14)
-  RVTEST_TESTDATA_LOAD_INT(x15, x19) # load value in memory: x19 = 0x69462404
-  RVTEST_TESTDATA_LOAD_INT(x15, x26) # load rs2: x26 = 0x57dae785
-  LA(x12, scratch) # load base address into rs1
-  SREG x19, 0(x12) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b14:
-  amocas.h x14, x26, (x12) # perform operation
-  # Check if x14 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x14, ZacasZabha_amocas_h_cg_cp_rd_b14, ZacasZabha_amocas_h_cg_cp_rd_b14_str)
-  LREG x12, 0(x12) # Load the updated value from memory
-  # Check if x12 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x12, ZacasZabha_amocas_h_cg_cp_rd_b14, ZacasZabha_amocas_h_cg_cp_rd_b14_str)
-
-  mv x27, x15 # switch data pointer register to avoid conflict with test
-# Testcase cp_rd (Test destination rd = x15)
-  RVTEST_TESTDATA_LOAD_INT(x27, x1) # load value in memory: x1 = 0xeb219bed
-  RVTEST_TESTDATA_LOAD_INT(x27, x18) # load rs2: x18 = 0x61dc1efb
-  LA(x6, scratch) # load base address into rs1
-  SREG x1, 0(x6) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b15:
-  amocas.h x15, x18, (x6) # perform operation
-  # Check if x15 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x15, ZacasZabha_amocas_h_cg_cp_rd_b15, ZacasZabha_amocas_h_cg_cp_rd_b15_str)
-  LREG x6, 0(x6) # Load the updated value from memory
-  # Check if x6 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x6, ZacasZabha_amocas_h_cg_cp_rd_b15, ZacasZabha_amocas_h_cg_cp_rd_b15_str)
-
-# Testcase cp_rd (Test destination rd = x16)
-  RVTEST_TESTDATA_LOAD_INT(x27, x1) # load value in memory: x1 = 0x1ec40e44
-  RVTEST_TESTDATA_LOAD_INT(x27, x14) # load rs2: x14 = 0x14494bd0
-  LA(x22, scratch) # load base address into rs1
-  SREG x1, 0(x22) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b16:
-  amocas.h x16, x14, (x22) # perform operation
-  # Check if x16 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x16, ZacasZabha_amocas_h_cg_cp_rd_b16, ZacasZabha_amocas_h_cg_cp_rd_b16_str)
-  LREG x22, 0(x22) # Load the updated value from memory
-  # Check if x22 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x17, x5, x4, x22, ZacasZabha_amocas_h_cg_cp_rd_b16, ZacasZabha_amocas_h_cg_cp_rd_b16_str)
-
-  mv x14, x17 # switch signature pointer register to avoid conflict with test
-# Testcase cp_rd (Test destination rd = x17)
-  RVTEST_TESTDATA_LOAD_INT(x27, x9) # load value in memory: x9 = 0x7b814bc6
-  RVTEST_TESTDATA_LOAD_INT(x27, x3) # load rs2: x3 = 0xa8f6ccf0
-  LA(x21, scratch) # load base address into rs1
-  SREG x9, 0(x21) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b17:
-  amocas.h x17, x3, (x21) # perform operation
-  # Check if x17 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x17, ZacasZabha_amocas_h_cg_cp_rd_b17, ZacasZabha_amocas_h_cg_cp_rd_b17_str)
-  LREG x21, 0(x21) # Load the updated value from memory
-  # Check if x21 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x21, ZacasZabha_amocas_h_cg_cp_rd_b17, ZacasZabha_amocas_h_cg_cp_rd_b17_str)
-
-# Testcase cp_rd (Test destination rd = x18)
-  RVTEST_TESTDATA_LOAD_INT(x27, x24) # load value in memory: x24 = 0x0c58af7d
-  RVTEST_TESTDATA_LOAD_INT(x27, x12) # load rs2: x12 = 0x5742e027
-  LA(x26, scratch) # load base address into rs1
-  SREG x24, 0(x26) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b18:
-  amocas.h x18, x12, (x26) # perform operation
-  # Check if x18 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x18, ZacasZabha_amocas_h_cg_cp_rd_b18, ZacasZabha_amocas_h_cg_cp_rd_b18_str)
-  LREG x26, 0(x26) # Load the updated value from memory
-  # Check if x26 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x26, ZacasZabha_amocas_h_cg_cp_rd_b18, ZacasZabha_amocas_h_cg_cp_rd_b18_str)
-
-# Testcase cp_rd (Test destination rd = x19)
-  RVTEST_TESTDATA_LOAD_INT(x27, x15) # load value in memory: x15 = 0xbb205023
-  RVTEST_TESTDATA_LOAD_INT(x27, x7) # load rs2: x7 = 0xf6ee3865
-  LA(x6, scratch) # load base address into rs1
-  SREG x15, 0(x6) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b19:
-  amocas.h x19, x7, (x6) # perform operation
-  # Check if x19 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x19, ZacasZabha_amocas_h_cg_cp_rd_b19, ZacasZabha_amocas_h_cg_cp_rd_b19_str)
-  LREG x6, 0(x6) # Load the updated value from memory
-  # Check if x6 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x6, ZacasZabha_amocas_h_cg_cp_rd_b19, ZacasZabha_amocas_h_cg_cp_rd_b19_str)
-
-# Testcase cp_rd (Test destination rd = x20)
-  RVTEST_TESTDATA_LOAD_INT(x27, x9) # load value in memory: x9 = 0xc7b1a638
-  RVTEST_TESTDATA_LOAD_INT(x27, x28) # load rs2: x28 = 0xd894e0d4
-  LA(x29, scratch) # load base address into rs1
-  SREG x9, 0(x29) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b20:
-  amocas.h x20, x28, (x29) # perform operation
-  # Check if x20 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x20, ZacasZabha_amocas_h_cg_cp_rd_b20, ZacasZabha_amocas_h_cg_cp_rd_b20_str)
-  LREG x29, 0(x29) # Load the updated value from memory
-  # Check if x29 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x29, ZacasZabha_amocas_h_cg_cp_rd_b20, ZacasZabha_amocas_h_cg_cp_rd_b20_str)
-
-# Testcase cp_rd (Test destination rd = x21)
-  RVTEST_TESTDATA_LOAD_INT(x27, x11) # load value in memory: x11 = 0x20674dc9
-  RVTEST_TESTDATA_LOAD_INT(x27, x18) # load rs2: x18 = 0xefce255d
+# Testcase cp_rd (Test destination rd = x0, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x9) # load value in memory: x9 = 0x4194f5a6
+  RVTEST_TESTDATA_LOAD_INT(x11, x6) # load rs2: x6 = 0xa70fcdf2
   LA(x1, scratch) # load base address into rs1
-  SREG x11, 0(x1) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b21:
-  amocas.h x21, x18, (x1) # perform operation
-  # Check if x21 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x21, ZacasZabha_amocas_h_cg_cp_rd_b21, ZacasZabha_amocas_h_cg_cp_rd_b21_str)
+  SREG x9, 0(x1) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b0_not_equal:
+  amocas.h x0, x6, (x1) # perform operation
+  # Check if x0 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x0, ZacasZabha_amocas_h_cg_cp_rd_b0_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b0_not_equal_str)
   LREG x1, 0(x1) # Load the updated value from memory
-  # Check if x1 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x1, ZacasZabha_amocas_h_cg_cp_rd_b21, ZacasZabha_amocas_h_cg_cp_rd_b21_str)
+  # Check if x1 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x1, ZacasZabha_amocas_h_cg_cp_rd_b0_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b0_not_equal_str)
 
-# Testcase cp_rd (Test destination rd = x22)
-  RVTEST_TESTDATA_LOAD_INT(x27, x9) # load value in memory: x9 = 0x8efa59f0
-  RVTEST_TESTDATA_LOAD_INT(x27, x12) # load rs2: x12 = 0xcf5a9091
-  LA(x11, scratch) # load base address into rs1
-  SREG x9, 0(x11) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b22:
-  amocas.h x22, x12, (x11) # perform operation
-  # Check if x22 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x22, ZacasZabha_amocas_h_cg_cp_rd_b22, ZacasZabha_amocas_h_cg_cp_rd_b22_str)
-  LREG x11, 0(x11) # Load the updated value from memory
-  # Check if x11 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x11, ZacasZabha_amocas_h_cg_cp_rd_b22, ZacasZabha_amocas_h_cg_cp_rd_b22_str)
+# Testcase cp_rd (Test destination rd = x1, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load value in memory: x31 = 0x6dda5512
+  RVTEST_TESTDATA_LOAD_INT(x11, x0) # load rs2: x0 = 0xcdf64811
+  LA(x5, scratch) # load base address into rs1
+  SREG x31, 0(x5) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b1_equal:
+  amocas.h x1, x0, (x5) # perform operation
+  # Check if x1 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x1, ZacasZabha_amocas_h_cg_cp_rd_b1_equal, ZacasZabha_amocas_h_cg_cp_rd_b1_equal_str)
+  LREG x5, 0(x5) # Load the updated value from memory
+  # Check if x5 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x5, ZacasZabha_amocas_h_cg_cp_rd_b1_equal, ZacasZabha_amocas_h_cg_cp_rd_b1_equal_str)
 
-# Testcase cp_rd (Test destination rd = x23)
-  RVTEST_TESTDATA_LOAD_INT(x27, x17) # load value in memory: x17 = 0x879ecb93
-  RVTEST_TESTDATA_LOAD_INT(x27, x19) # load rs2: x19 = 0xca925b10
-  LA(x24, scratch) # load base address into rs1
-  SREG x17, 0(x24) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b23:
-  amocas.h x23, x19, (x24) # perform operation
-  # Check if x23 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x23, ZacasZabha_amocas_h_cg_cp_rd_b23, ZacasZabha_amocas_h_cg_cp_rd_b23_str)
-  LREG x24, 0(x24) # Load the updated value from memory
-  # Check if x24 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x24, ZacasZabha_amocas_h_cg_cp_rd_b23, ZacasZabha_amocas_h_cg_cp_rd_b23_str)
+# Testcase cp_rd (Test destination rd = x1, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x10) # load value in memory: x10 = 0x5250b133
+  RVTEST_TESTDATA_LOAD_INT(x11, x29) # load rs2: x29 = 0xcf163d99
+  LA(x28, scratch) # load base address into rs1
+  SREG x10, 0(x28) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b1_not_equal:
+  amocas.h x1, x29, (x28) # perform operation
+  # Check if x1 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x1, ZacasZabha_amocas_h_cg_cp_rd_b1_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b1_not_equal_str)
+  LREG x28, 0(x28) # Load the updated value from memory
+  # Check if x28 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x28, ZacasZabha_amocas_h_cg_cp_rd_b1_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b1_not_equal_str)
 
-# Testcase cp_rd (Test destination rd = x24)
-  RVTEST_TESTDATA_LOAD_INT(x27, x9) # load value in memory: x9 = 0x51a0e317
-  RVTEST_TESTDATA_LOAD_INT(x27, x15) # load rs2: x15 = 0xba2f86b3
-  LA(x6, scratch) # load base address into rs1
-  SREG x9, 0(x6) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b24:
-  amocas.h x24, x15, (x6) # perform operation
-  # Check if x24 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x24, ZacasZabha_amocas_h_cg_cp_rd_b24, ZacasZabha_amocas_h_cg_cp_rd_b24_str)
-  LREG x6, 0(x6) # Load the updated value from memory
-  # Check if x6 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x6, ZacasZabha_amocas_h_cg_cp_rd_b24, ZacasZabha_amocas_h_cg_cp_rd_b24_str)
+# Testcase cp_rd (Test destination rd = x2, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x5) # load value in memory: x5 = 0x8dc203ac
+  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs2: x31 = 0x1051daef
+  LA(x10, scratch) # load base address into rs1
+  SREG x5, 0(x10) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b2_equal:
+  amocas.h x2, x31, (x10) # perform operation
+  # Check if x2 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x2, ZacasZabha_amocas_h_cg_cp_rd_b2_equal, ZacasZabha_amocas_h_cg_cp_rd_b2_equal_str)
+  LREG x10, 0(x10) # Load the updated value from memory
+  # Check if x10 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x10, ZacasZabha_amocas_h_cg_cp_rd_b2_equal, ZacasZabha_amocas_h_cg_cp_rd_b2_equal_str)
 
-# Testcase cp_rd (Test destination rd = x25)
-  RVTEST_TESTDATA_LOAD_INT(x27, x16) # load value in memory: x16 = 0xe0c847d8
-  RVTEST_TESTDATA_LOAD_INT(x27, x10) # load rs2: x10 = 0x60dc9f37
+# Testcase cp_rd (Test destination rd = x2, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x26) # load value in memory: x26 = 0x0c674f20
+  RVTEST_TESTDATA_LOAD_INT(x11, x13) # load rs2: x13 = 0x7e7f7818
+  LA(x29, scratch) # load base address into rs1
+  SREG x26, 0(x29) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b2_not_equal:
+  amocas.h x2, x13, (x29) # perform operation
+  # Check if x2 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x2, ZacasZabha_amocas_h_cg_cp_rd_b2_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b2_not_equal_str)
+  LREG x29, 0(x29) # Load the updated value from memory
+  # Check if x29 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x29, ZacasZabha_amocas_h_cg_cp_rd_b2_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b2_not_equal_str)
+
+# Testcase cp_rd (Test destination rd = x3, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x1) # load value in memory: x1 = 0xb026a9a5
+  RVTEST_TESTDATA_LOAD_INT(x11, x27) # load rs2: x27 = 0x6ee31ea7
   LA(x23, scratch) # load base address into rs1
-  SREG x16, 0(x23) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b25:
-  amocas.h x25, x10, (x23) # perform operation
-  # Check if x25 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x25, ZacasZabha_amocas_h_cg_cp_rd_b25, ZacasZabha_amocas_h_cg_cp_rd_b25_str)
+  SREG x1, 0(x23) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b3_equal:
+  amocas.h x3, x27, (x23) # perform operation
+  # Check if x3 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x3, ZacasZabha_amocas_h_cg_cp_rd_b3_equal, ZacasZabha_amocas_h_cg_cp_rd_b3_equal_str)
   LREG x23, 0(x23) # Load the updated value from memory
-  # Check if x23 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x23, ZacasZabha_amocas_h_cg_cp_rd_b25, ZacasZabha_amocas_h_cg_cp_rd_b25_str)
+  # Check if x23 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x23, ZacasZabha_amocas_h_cg_cp_rd_b3_equal, ZacasZabha_amocas_h_cg_cp_rd_b3_equal_str)
 
-# Testcase cp_rd (Test destination rd = x26)
-  RVTEST_TESTDATA_LOAD_INT(x27, x24) # load value in memory: x24 = 0x1540d717
-  RVTEST_TESTDATA_LOAD_INT(x27, x1) # load rs2: x1 = 0xb2dcd38d
-  LA(x7, scratch) # load base address into rs1
-  SREG x24, 0(x7) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b26:
-  amocas.h x26, x1, (x7) # perform operation
-  # Check if x26 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x26, ZacasZabha_amocas_h_cg_cp_rd_b26, ZacasZabha_amocas_h_cg_cp_rd_b26_str)
-  LREG x7, 0(x7) # Load the updated value from memory
-  # Check if x7 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x7, ZacasZabha_amocas_h_cg_cp_rd_b26, ZacasZabha_amocas_h_cg_cp_rd_b26_str)
+# Testcase cp_rd (Test destination rd = x3, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x6) # load value in memory: x6 = 0x4da6a7ef
+  RVTEST_TESTDATA_LOAD_INT(x11, x30) # load rs2: x30 = 0x46ab2a1b
+  LA(x20, scratch) # load base address into rs1
+  SREG x6, 0(x20) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b3_not_equal:
+  amocas.h x3, x30, (x20) # perform operation
+  # Check if x3 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x3, ZacasZabha_amocas_h_cg_cp_rd_b3_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b3_not_equal_str)
+  LREG x20, 0(x20) # Load the updated value from memory
+  # Check if x20 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x20, ZacasZabha_amocas_h_cg_cp_rd_b3_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b3_not_equal_str)
 
-  mv x6, x27 # switch data pointer register to avoid conflict with test
-# Testcase cp_rd (Test destination rd = x27)
-  RVTEST_TESTDATA_LOAD_INT(x6, x25) # load value in memory: x25 = 0x0168ba58
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0x94b58d03
-  LA(x22, scratch) # load base address into rs1
-  SREG x25, 0(x22) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b27:
-  amocas.h x27, x8, (x22) # perform operation
-  # Check if x27 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x27, ZacasZabha_amocas_h_cg_cp_rd_b27, ZacasZabha_amocas_h_cg_cp_rd_b27_str)
-  LREG x22, 0(x22) # Load the updated value from memory
-  # Check if x22 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x22, ZacasZabha_amocas_h_cg_cp_rd_b27, ZacasZabha_amocas_h_cg_cp_rd_b27_str)
+# Testcase cp_rd (Test destination rd = x4, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x20) # load value in memory: x20 = 0x2c9d33f1
+  RVTEST_TESTDATA_LOAD_INT(x11, x21) # load rs2: x21 = 0x059b9605
+  LA(x12, scratch) # load base address into rs1
+  SREG x20, 0(x12) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b4_equal:
+  amocas.h x4, x21, (x12) # perform operation
+  # Check if x4 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x4, ZacasZabha_amocas_h_cg_cp_rd_b4_equal, ZacasZabha_amocas_h_cg_cp_rd_b4_equal_str)
+  LREG x12, 0(x12) # Load the updated value from memory
+  # Check if x12 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x12, ZacasZabha_amocas_h_cg_cp_rd_b4_equal, ZacasZabha_amocas_h_cg_cp_rd_b4_equal_str)
 
-# Testcase cp_rd (Test destination rd = x28)
-  RVTEST_TESTDATA_LOAD_INT(x6, x26) # load value in memory: x26 = 0xfddf7cbc
-  RVTEST_TESTDATA_LOAD_INT(x6, x27) # load rs2: x27 = 0x4932528a
+# Testcase cp_rd (Test destination rd = x4, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load value in memory: x31 = 0x0c512d2e
+  RVTEST_TESTDATA_LOAD_INT(x11, x30) # load rs2: x30 = 0x0cbf0e25
+  LA(x6, scratch) # load base address into rs1
+  SREG x31, 0(x6) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b4_not_equal:
+  amocas.h x4, x30, (x6) # perform operation
+  # Check if x4 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x4, ZacasZabha_amocas_h_cg_cp_rd_b4_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b4_not_equal_str)
+  LREG x6, 0(x6) # Load the updated value from memory
+  # Check if x6 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x6, ZacasZabha_amocas_h_cg_cp_rd_b4_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b4_not_equal_str)
+
+# Testcase cp_rd (Test destination rd = x5, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x18) # load value in memory: x18 = 0xac829dd4
+  RVTEST_TESTDATA_LOAD_INT(x11, x15) # load rs2: x15 = 0xa739d55a
+  LA(x4, scratch) # load base address into rs1
+  SREG x18, 0(x4) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b5_equal:
+  amocas.h x5, x15, (x4) # perform operation
+  # Check if x5 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x5, ZacasZabha_amocas_h_cg_cp_rd_b5_equal, ZacasZabha_amocas_h_cg_cp_rd_b5_equal_str)
+  LREG x4, 0(x4) # Load the updated value from memory
+  # Check if x4 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x4, ZacasZabha_amocas_h_cg_cp_rd_b5_equal, ZacasZabha_amocas_h_cg_cp_rd_b5_equal_str)
+
+# Testcase cp_rd (Test destination rd = x5, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x26) # load value in memory: x26 = 0x080abb8d
+  RVTEST_TESTDATA_LOAD_INT(x11, x0) # load rs2: x0 = 0x259e4563
+  LA(x10, scratch) # load base address into rs1
+  SREG x26, 0(x10) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b5_not_equal:
+  amocas.h x5, x0, (x10) # perform operation
+  # Check if x5 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x5, ZacasZabha_amocas_h_cg_cp_rd_b5_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b5_not_equal_str)
+  LREG x10, 0(x10) # Load the updated value from memory
+  # Check if x10 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x10, ZacasZabha_amocas_h_cg_cp_rd_b5_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b5_not_equal_str)
+
+# Testcase cp_rd (Test destination rd = x6, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x5) # load value in memory: x5 = 0x9ec40e44
+  RVTEST_TESTDATA_LOAD_INT(x11, x23) # load rs2: x23 = 0x6769f8ae
+  LA(x25, scratch) # load base address into rs1
+  SREG x5, 0(x25) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b6_equal:
+  amocas.h x6, x23, (x25) # perform operation
+  # Check if x6 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x6, ZacasZabha_amocas_h_cg_cp_rd_b6_equal, ZacasZabha_amocas_h_cg_cp_rd_b6_equal_str)
+  LREG x25, 0(x25) # Load the updated value from memory
+  # Check if x25 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x25, ZacasZabha_amocas_h_cg_cp_rd_b6_equal, ZacasZabha_amocas_h_cg_cp_rd_b6_equal_str)
+
+# Testcase cp_rd (Test destination rd = x6, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x19) # load value in memory: x19 = 0x28f6ccf0
+  RVTEST_TESTDATA_LOAD_INT(x11, x0) # load rs2: x0 = 0xeed54f26
+  LA(x4, scratch) # load base address into rs1
+  SREG x19, 0(x4) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b6_not_equal:
+  amocas.h x6, x0, (x4) # perform operation
+  # Check if x6 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x6, ZacasZabha_amocas_h_cg_cp_rd_b6_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b6_not_equal_str)
+  LREG x4, 0(x4) # Load the updated value from memory
+  # Check if x4 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x4, ZacasZabha_amocas_h_cg_cp_rd_b6_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b6_not_equal_str)
+
+  mv x12, x7 # switch temp register to avoid conflict with test
+  mv x13, x8 # switch link pointer register to avoid conflict with test
+# Testcase cp_rd (Test destination rd = x7, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x6) # load value in memory: x6 = 0xf71b49d8
+  RVTEST_TESTDATA_LOAD_INT(x11, x25) # load rs2: x25 = 0xd742e027
+  LA(x21, scratch) # load base address into rs1
+  SREG x6, 0(x21) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b7_equal:
+  amocas.h x7, x25, (x21) # perform operation
+  # Check if x7 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x22, x13, x12, x7, ZacasZabha_amocas_h_cg_cp_rd_b7_equal, ZacasZabha_amocas_h_cg_cp_rd_b7_equal_str)
+  LREG x21, 0(x21) # Load the updated value from memory
+  # Check if x21 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x22, x13, x12, x21, ZacasZabha_amocas_h_cg_cp_rd_b7_equal, ZacasZabha_amocas_h_cg_cp_rd_b7_equal_str)
+
+# Testcase cp_rd (Test destination rd = x7, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x4) # load value in memory: x4 = 0x93725dbd
+  RVTEST_TESTDATA_LOAD_INT(x11, x18) # load rs2: x18 = 0x25f29ea1
+  LA(x30, scratch) # load base address into rs1
+  SREG x4, 0(x30) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b7_not_equal:
+  amocas.h x7, x18, (x30) # perform operation
+  # Check if x7 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x22, x13, x12, x7, ZacasZabha_amocas_h_cg_cp_rd_b7_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b7_not_equal_str)
+  LREG x30, 0(x30) # Load the updated value from memory
+  # Check if x30 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x22, x13, x12, x30, ZacasZabha_amocas_h_cg_cp_rd_b7_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b7_not_equal_str)
+
+# Testcase cp_rd (Test destination rd = x8, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x6) # load value in memory: x6 = 0xea21c74c
+  RVTEST_TESTDATA_LOAD_INT(x11, x15) # load rs2: x15 = 0x47b1a638
+  LA(x28, scratch) # load base address into rs1
+  SREG x6, 0(x28) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b8_equal:
+  amocas.h x8, x15, (x28) # perform operation
+  # Check if x8 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x22, x13, x12, x8, ZacasZabha_amocas_h_cg_cp_rd_b8_equal, ZacasZabha_amocas_h_cg_cp_rd_b8_equal_str)
+  LREG x28, 0(x28) # Load the updated value from memory
+  # Check if x28 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x22, x13, x12, x28, ZacasZabha_amocas_h_cg_cp_rd_b8_equal, ZacasZabha_amocas_h_cg_cp_rd_b8_equal_str)
+
+# Testcase cp_rd (Test destination rd = x8, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x3) # load value in memory: x3 = 0xe16cdcb3
+  RVTEST_TESTDATA_LOAD_INT(x11, x17) # load rs2: x17 = 0xa0674dc9
+  LA(x25, scratch) # load base address into rs1
+  SREG x3, 0(x25) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b8_not_equal:
+  amocas.h x8, x17, (x25) # perform operation
+  # Check if x8 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x22, x13, x12, x8, ZacasZabha_amocas_h_cg_cp_rd_b8_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b8_not_equal_str)
+  LREG x25, 0(x25) # Load the updated value from memory
+  # Check if x25 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x22, x13, x12, x25, ZacasZabha_amocas_h_cg_cp_rd_b8_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b8_not_equal_str)
+
+# Testcase cp_rd (Test destination rd = x9, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x25) # load value in memory: x25 = 0x35363e0c
+  RVTEST_TESTDATA_LOAD_INT(x11, x6) # load rs2: x6 = 0x0efa59f0
+  LA(x10, scratch) # load base address into rs1
+  SREG x25, 0(x10) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b9_equal:
+  amocas.h x9, x6, (x10) # perform operation
+  # Check if x9 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x22, x13, x12, x9, ZacasZabha_amocas_h_cg_cp_rd_b9_equal, ZacasZabha_amocas_h_cg_cp_rd_b9_equal_str)
+  LREG x10, 0(x10) # Load the updated value from memory
+  # Check if x10 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x22, x13, x12, x10, ZacasZabha_amocas_h_cg_cp_rd_b9_equal, ZacasZabha_amocas_h_cg_cp_rd_b9_equal_str)
+
+# Testcase cp_rd (Test destination rd = x9, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x15) # load value in memory: x15 = 0xb50f209e
+  RVTEST_TESTDATA_LOAD_INT(x11, x10) # load rs2: x10 = 0x079ecb93
+  LA(x26, scratch) # load base address into rs1
+  SREG x15, 0(x26) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b9_not_equal:
+  amocas.h x9, x10, (x26) # perform operation
+  # Check if x9 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x22, x13, x12, x9, ZacasZabha_amocas_h_cg_cp_rd_b9_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b9_not_equal_str)
+  LREG x26, 0(x26) # Load the updated value from memory
+  # Check if x26 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x22, x13, x12, x26, ZacasZabha_amocas_h_cg_cp_rd_b9_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b9_not_equal_str)
+
+# Testcase cp_rd (Test destination rd = x10, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x14) # load value in memory: x14 = 0xd2c7bcce
+  RVTEST_TESTDATA_LOAD_INT(x11, x29) # load rs2: x29 = 0x185460bf
   LA(x3, scratch) # load base address into rs1
-  SREG x26, 0(x3) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b28:
-  amocas.h x28, x27, (x3) # perform operation
-  # Check if x28 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x28, ZacasZabha_amocas_h_cg_cp_rd_b28, ZacasZabha_amocas_h_cg_cp_rd_b28_str)
+  SREG x14, 0(x3) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b10_equal:
+  amocas.h x10, x29, (x3) # perform operation
+  # Check if x10 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x22, x13, x12, x10, ZacasZabha_amocas_h_cg_cp_rd_b10_equal, ZacasZabha_amocas_h_cg_cp_rd_b10_equal_str)
   LREG x3, 0(x3) # Load the updated value from memory
-  # Check if x3 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x3, ZacasZabha_amocas_h_cg_cp_rd_b28, ZacasZabha_amocas_h_cg_cp_rd_b28_str)
+  # Check if x3 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x22, x13, x12, x3, ZacasZabha_amocas_h_cg_cp_rd_b10_equal, ZacasZabha_amocas_h_cg_cp_rd_b10_equal_str)
 
-# Testcase cp_rd (Test destination rd = x29)
-  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load value in memory: x10 = 0x3006451a
-  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x6848cb6e
-  LA(x2, scratch) # load base address into rs1
-  SREG x10, 0(x2) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b29:
-  amocas.h x29, x3, (x2) # perform operation
-  # Check if x29 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x29, ZacasZabha_amocas_h_cg_cp_rd_b29, ZacasZabha_amocas_h_cg_cp_rd_b29_str)
-  LREG x2, 0(x2) # Load the updated value from memory
-  # Check if x2 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x2, ZacasZabha_amocas_h_cg_cp_rd_b29, ZacasZabha_amocas_h_cg_cp_rd_b29_str)
+# Testcase cp_rd (Test destination rd = x10, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x11, x15) # load value in memory: x15 = 0xb0551d60
+  RVTEST_TESTDATA_LOAD_INT(x11, x8) # load rs2: x8 = 0xa1c39839
+  LA(x9, scratch) # load base address into rs1
+  SREG x15, 0(x9) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b10_not_equal:
+  amocas.h x10, x8, (x9) # perform operation
+  # Check if x10 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x22, x13, x12, x10, ZacasZabha_amocas_h_cg_cp_rd_b10_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b10_not_equal_str)
+  LREG x9, 0(x9) # Load the updated value from memory
+  # Check if x9 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x22, x13, x12, x9, ZacasZabha_amocas_h_cg_cp_rd_b10_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b10_not_equal_str)
 
-# Testcase cp_rd (Test destination rd = x30)
-  RVTEST_TESTDATA_LOAD_INT(x6, x16) # load value in memory: x16 = 0x33a491a0
-  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load rs2: x24 = 0xc1b22646
-  LA(x7, scratch) # load base address into rs1
-  SREG x16, 0(x7) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b30:
-  amocas.h x30, x24, (x7) # perform operation
-  # Check if x30 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x30, ZacasZabha_amocas_h_cg_cp_rd_b30, ZacasZabha_amocas_h_cg_cp_rd_b30_str)
-  LREG x7, 0(x7) # Load the updated value from memory
-  # Check if x7 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x7, ZacasZabha_amocas_h_cg_cp_rd_b30, ZacasZabha_amocas_h_cg_cp_rd_b30_str)
+  mv x18, x11 # switch data pointer register to avoid conflict with test
+# Testcase cp_rd (Test destination rd = x11, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x18, x5) # load value in memory: x5 = 0x708a0f67
+  RVTEST_TESTDATA_LOAD_INT(x18, x21) # load rs2: x21 = 0x32dcd38d
+  LA(x30, scratch) # load base address into rs1
+  SREG x5, 0(x30) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b11_equal:
+  amocas.h x11, x21, (x30) # perform operation
+  # Check if x11 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x22, x13, x12, x11, ZacasZabha_amocas_h_cg_cp_rd_b11_equal, ZacasZabha_amocas_h_cg_cp_rd_b11_equal_str)
+  LREG x30, 0(x30) # Load the updated value from memory
+  # Check if x30 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x22, x13, x12, x30, ZacasZabha_amocas_h_cg_cp_rd_b11_equal, ZacasZabha_amocas_h_cg_cp_rd_b11_equal_str)
 
-# Testcase cp_rd (Test destination rd = x31)
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load value in memory: x8 = 0x49300c16
-  RVTEST_TESTDATA_LOAD_INT(x6, x12) # load rs2: x12 = 0x6ed370a3
+# Testcase cp_rd (Test destination rd = x11, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x18, x4) # load value in memory: x4 = 0x1cf6b73d
+  RVTEST_TESTDATA_LOAD_INT(x18, x19) # load rs2: x19 = 0x14b58d03
+  LA(x30, scratch) # load base address into rs1
+  SREG x4, 0(x30) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b11_not_equal:
+  amocas.h x11, x19, (x30) # perform operation
+  # Check if x11 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x22, x13, x12, x11, ZacasZabha_amocas_h_cg_cp_rd_b11_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b11_not_equal_str)
+  LREG x30, 0(x30) # Load the updated value from memory
+  # Check if x30 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x22, x13, x12, x30, ZacasZabha_amocas_h_cg_cp_rd_b11_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b11_not_equal_str)
+
+  mv x4, x12 # switch temp register to avoid conflict with test
+  mv x5, x13 # switch link pointer register to avoid conflict with test
+# Testcase cp_rd (Test destination rd = x12, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x18, x8) # load value in memory: x8 = 0xf3ccc42c
+  RVTEST_TESTDATA_LOAD_INT(x18, x14) # load rs2: x14 = 0xb006451a
   LA(x2, scratch) # load base address into rs1
   SREG x8, 0(x2) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cp_rd_b31:
-  amocas.h x31, x12, (x2) # perform operation
-  # Check if x31 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x31, ZacasZabha_amocas_h_cg_cp_rd_b31, ZacasZabha_amocas_h_cg_cp_rd_b31_str)
+ZacasZabha_amocas_h_cg_cp_rd_b12_equal:
+  amocas.h x12, x14, (x2) # perform operation
+  # Check if x12 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x12, ZacasZabha_amocas_h_cg_cp_rd_b12_equal, ZacasZabha_amocas_h_cg_cp_rd_b12_equal_str)
   LREG x2, 0(x2) # Load the updated value from memory
-  # Check if x2 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x2, ZacasZabha_amocas_h_cg_cp_rd_b31, ZacasZabha_amocas_h_cg_cp_rd_b31_str)
+  # Check if x2 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x2, ZacasZabha_amocas_h_cg_cp_rd_b12_equal, ZacasZabha_amocas_h_cg_cp_rd_b12_equal_str)
+
+# Testcase cp_rd (Test destination rd = x12, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x18, x17) # load value in memory: x17 = 0x9d137539
+  RVTEST_TESTDATA_LOAD_INT(x18, x10) # load rs2: x10 = 0xb3a491a0
+  LA(x29, scratch) # load base address into rs1
+  SREG x17, 0(x29) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b12_not_equal:
+  amocas.h x12, x10, (x29) # perform operation
+  # Check if x12 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x12, ZacasZabha_amocas_h_cg_cp_rd_b12_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b12_not_equal_str)
+  LREG x29, 0(x29) # Load the updated value from memory
+  # Check if x29 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x29, ZacasZabha_amocas_h_cg_cp_rd_b12_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b12_not_equal_str)
+
+# Testcase cp_rd (Test destination rd = x13, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x18, x7) # load value in memory: x7 = 0x4a8e4ca7
+  RVTEST_TESTDATA_LOAD_INT(x18, x8) # load rs2: x8 = 0xc9300c16
+  LA(x10, scratch) # load base address into rs1
+  SREG x7, 0(x10) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b13_equal:
+  amocas.h x13, x8, (x10) # perform operation
+  # Check if x13 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x13, ZacasZabha_amocas_h_cg_cp_rd_b13_equal, ZacasZabha_amocas_h_cg_cp_rd_b13_equal_str)
+  LREG x10, 0(x10) # Load the updated value from memory
+  # Check if x10 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x10, ZacasZabha_amocas_h_cg_cp_rd_b13_equal, ZacasZabha_amocas_h_cg_cp_rd_b13_equal_str)
+
+# Testcase cp_rd (Test destination rd = x13, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x18, x1) # load value in memory: x1 = 0x24410964
+  RVTEST_TESTDATA_LOAD_INT(x18, x11) # load rs2: x11 = 0x9e17439c
+  LA(x21, scratch) # load base address into rs1
+  SREG x1, 0(x21) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b13_not_equal:
+  amocas.h x13, x11, (x21) # perform operation
+  # Check if x13 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x13, ZacasZabha_amocas_h_cg_cp_rd_b13_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b13_not_equal_str)
+  LREG x21, 0(x21) # Load the updated value from memory
+  # Check if x21 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x21, ZacasZabha_amocas_h_cg_cp_rd_b13_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b13_not_equal_str)
+
+# Testcase cp_rd (Test destination rd = x14, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x18, x16) # load value in memory: x16 = 0xd5eedb80
+  RVTEST_TESTDATA_LOAD_INT(x18, x12) # load rs2: x12 = 0x142da4e0
+  LA(x30, scratch) # load base address into rs1
+  SREG x16, 0(x30) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b14_equal:
+  amocas.h x14, x12, (x30) # perform operation
+  # Check if x14 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x14, ZacasZabha_amocas_h_cg_cp_rd_b14_equal, ZacasZabha_amocas_h_cg_cp_rd_b14_equal_str)
+  LREG x30, 0(x30) # Load the updated value from memory
+  # Check if x30 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x30, ZacasZabha_amocas_h_cg_cp_rd_b14_equal, ZacasZabha_amocas_h_cg_cp_rd_b14_equal_str)
+
+# Testcase cp_rd (Test destination rd = x14, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x18, x30) # load value in memory: x30 = 0xea0236a4
+  RVTEST_TESTDATA_LOAD_INT(x18, x15) # load rs2: x15 = 0x74af0626
+  LA(x8, scratch) # load base address into rs1
+  SREG x30, 0(x8) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b14_not_equal:
+  amocas.h x14, x15, (x8) # perform operation
+  # Check if x14 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x14, ZacasZabha_amocas_h_cg_cp_rd_b14_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b14_not_equal_str)
+  LREG x8, 0(x8) # Load the updated value from memory
+  # Check if x8 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x8, ZacasZabha_amocas_h_cg_cp_rd_b14_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b14_not_equal_str)
+
+# Testcase cp_rd (Test destination rd = x15, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x18, x10) # load value in memory: x10 = 0xe2226c8d
+  RVTEST_TESTDATA_LOAD_INT(x18, x1) # load rs2: x1 = 0xab185bd1
+  LA(x13, scratch) # load base address into rs1
+  SREG x10, 0(x13) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b15_equal:
+  amocas.h x15, x1, (x13) # perform operation
+  # Check if x15 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x15, ZacasZabha_amocas_h_cg_cp_rd_b15_equal, ZacasZabha_amocas_h_cg_cp_rd_b15_equal_str)
+  LREG x13, 0(x13) # Load the updated value from memory
+  # Check if x13 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x13, ZacasZabha_amocas_h_cg_cp_rd_b15_equal, ZacasZabha_amocas_h_cg_cp_rd_b15_equal_str)
+
+# Testcase cp_rd (Test destination rd = x15, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x18, x24) # load value in memory: x24 = 0x47974893
+  RVTEST_TESTDATA_LOAD_INT(x18, x16) # load rs2: x16 = 0x7919d690
+  LA(x20, scratch) # load base address into rs1
+  SREG x24, 0(x20) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b15_not_equal:
+  amocas.h x15, x16, (x20) # perform operation
+  # Check if x15 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x15, ZacasZabha_amocas_h_cg_cp_rd_b15_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b15_not_equal_str)
+  LREG x20, 0(x20) # Load the updated value from memory
+  # Check if x20 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x20, ZacasZabha_amocas_h_cg_cp_rd_b15_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b15_not_equal_str)
+
+# Testcase cp_rd (Test destination rd = x16, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x18, x20) # load value in memory: x20 = 0x0aa8c255
+  RVTEST_TESTDATA_LOAD_INT(x18, x13) # load rs2: x13 = 0xd5d5e856
+  LA(x14, scratch) # load base address into rs1
+  SREG x20, 0(x14) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b16_equal:
+  amocas.h x16, x13, (x14) # perform operation
+  # Check if x16 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x16, ZacasZabha_amocas_h_cg_cp_rd_b16_equal, ZacasZabha_amocas_h_cg_cp_rd_b16_equal_str)
+  LREG x14, 0(x14) # Load the updated value from memory
+  # Check if x14 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x14, ZacasZabha_amocas_h_cg_cp_rd_b16_equal, ZacasZabha_amocas_h_cg_cp_rd_b16_equal_str)
+
+# Testcase cp_rd (Test destination rd = x16, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x18, x8) # load value in memory: x8 = 0x325ed364
+  RVTEST_TESTDATA_LOAD_INT(x18, x30) # load rs2: x30 = 0x6c35ecd6
+  LA(x25, scratch) # load base address into rs1
+  SREG x8, 0(x25) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b16_not_equal:
+  amocas.h x16, x30, (x25) # perform operation
+  # Check if x16 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x16, ZacasZabha_amocas_h_cg_cp_rd_b16_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b16_not_equal_str)
+  LREG x25, 0(x25) # Load the updated value from memory
+  # Check if x25 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x25, ZacasZabha_amocas_h_cg_cp_rd_b16_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b16_not_equal_str)
+
+# Testcase cp_rd (Test destination rd = x17, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x18, x27) # load value in memory: x27 = 0x54ac1192
+  RVTEST_TESTDATA_LOAD_INT(x18, x31) # load rs2: x31 = 0x05cfe2d7
+  LA(x10, scratch) # load base address into rs1
+  SREG x27, 0(x10) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b17_equal:
+  amocas.h x17, x31, (x10) # perform operation
+  # Check if x17 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x17, ZacasZabha_amocas_h_cg_cp_rd_b17_equal, ZacasZabha_amocas_h_cg_cp_rd_b17_equal_str)
+  LREG x10, 0(x10) # Load the updated value from memory
+  # Check if x10 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x10, ZacasZabha_amocas_h_cg_cp_rd_b17_equal, ZacasZabha_amocas_h_cg_cp_rd_b17_equal_str)
+
+# Testcase cp_rd (Test destination rd = x17, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x18, x28) # load value in memory: x28 = 0xb0df2e45
+  RVTEST_TESTDATA_LOAD_INT(x18, x30) # load rs2: x30 = 0xf9a951e7
+  LA(x13, scratch) # load base address into rs1
+  SREG x28, 0(x13) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b17_not_equal:
+  amocas.h x17, x30, (x13) # perform operation
+  # Check if x17 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x17, ZacasZabha_amocas_h_cg_cp_rd_b17_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b17_not_equal_str)
+  LREG x13, 0(x13) # Load the updated value from memory
+  # Check if x13 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x13, ZacasZabha_amocas_h_cg_cp_rd_b17_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b17_not_equal_str)
+
+  mv x26, x18 # switch data pointer register to avoid conflict with test
+# Testcase cp_rd (Test destination rd = x18, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x26, x29) # load value in memory: x29 = 0x32528ac7
+  RVTEST_TESTDATA_LOAD_INT(x26, x14) # load rs2: x14 = 0x89114d9c
+  LA(x19, scratch) # load base address into rs1
+  SREG x29, 0(x19) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b18_equal:
+  amocas.h x18, x14, (x19) # perform operation
+  # Check if x18 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x18, ZacasZabha_amocas_h_cg_cp_rd_b18_equal, ZacasZabha_amocas_h_cg_cp_rd_b18_equal_str)
+  LREG x19, 0(x19) # Load the updated value from memory
+  # Check if x19 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x19, ZacasZabha_amocas_h_cg_cp_rd_b18_equal, ZacasZabha_amocas_h_cg_cp_rd_b18_equal_str)
+
+# Testcase cp_rd (Test destination rd = x18, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x26, x8) # load value in memory: x8 = 0x0cabfd52
+  RVTEST_TESTDATA_LOAD_INT(x26, x13) # load rs2: x13 = 0x09828432
+  LA(x27, scratch) # load base address into rs1
+  SREG x8, 0(x27) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b18_not_equal:
+  amocas.h x18, x13, (x27) # perform operation
+  # Check if x18 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x18, ZacasZabha_amocas_h_cg_cp_rd_b18_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b18_not_equal_str)
+  LREG x27, 0(x27) # Load the updated value from memory
+  # Check if x27 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x27, ZacasZabha_amocas_h_cg_cp_rd_b18_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b18_not_equal_str)
+
+# Testcase cp_rd (Test destination rd = x19, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x26, x20) # load value in memory: x20 = 0xa4cbe75f
+  RVTEST_TESTDATA_LOAD_INT(x26, x24) # load rs2: x24 = 0x71766fd1
+  LA(x12, scratch) # load base address into rs1
+  SREG x20, 0(x12) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b19_equal:
+  amocas.h x19, x24, (x12) # perform operation
+  # Check if x19 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x19, ZacasZabha_amocas_h_cg_cp_rd_b19_equal, ZacasZabha_amocas_h_cg_cp_rd_b19_equal_str)
+  LREG x12, 0(x12) # Load the updated value from memory
+  # Check if x12 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x12, ZacasZabha_amocas_h_cg_cp_rd_b19_equal, ZacasZabha_amocas_h_cg_cp_rd_b19_equal_str)
+
+# Testcase cp_rd (Test destination rd = x19, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load value in memory: x11 = 0x9c0daf8f
+  RVTEST_TESTDATA_LOAD_INT(x26, x3) # load rs2: x3 = 0xf828421e
+  LA(x10, scratch) # load base address into rs1
+  SREG x11, 0(x10) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b19_not_equal:
+  amocas.h x19, x3, (x10) # perform operation
+  # Check if x19 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x19, ZacasZabha_amocas_h_cg_cp_rd_b19_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b19_not_equal_str)
+  LREG x10, 0(x10) # Load the updated value from memory
+  # Check if x10 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x10, ZacasZabha_amocas_h_cg_cp_rd_b19_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b19_not_equal_str)
+
+# Testcase cp_rd (Test destination rd = x20, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x26, x21) # load value in memory: x21 = 0x7c60030e
+  RVTEST_TESTDATA_LOAD_INT(x26, x27) # load rs2: x27 = 0xd04ecac4
+  LA(x10, scratch) # load base address into rs1
+  SREG x21, 0(x10) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b20_equal:
+  amocas.h x20, x27, (x10) # perform operation
+  # Check if x20 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x20, ZacasZabha_amocas_h_cg_cp_rd_b20_equal, ZacasZabha_amocas_h_cg_cp_rd_b20_equal_str)
+  LREG x10, 0(x10) # Load the updated value from memory
+  # Check if x10 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x10, ZacasZabha_amocas_h_cg_cp_rd_b20_equal, ZacasZabha_amocas_h_cg_cp_rd_b20_equal_str)
+
+# Testcase cp_rd (Test destination rd = x20, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x26, x17) # load value in memory: x17 = 0xaa449308
+  RVTEST_TESTDATA_LOAD_INT(x26, x30) # load rs2: x30 = 0x34f0259d
+  LA(x13, scratch) # load base address into rs1
+  SREG x17, 0(x13) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b20_not_equal:
+  amocas.h x20, x30, (x13) # perform operation
+  # Check if x20 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x20, ZacasZabha_amocas_h_cg_cp_rd_b20_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b20_not_equal_str)
+  LREG x13, 0(x13) # Load the updated value from memory
+  # Check if x13 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x13, ZacasZabha_amocas_h_cg_cp_rd_b20_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b20_not_equal_str)
+
+# Testcase cp_rd (Test destination rd = x21, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x26, x19) # load value in memory: x19 = 0x14b4d6ad
+  RVTEST_TESTDATA_LOAD_INT(x26, x27) # load rs2: x27 = 0xdf8ffeb8
+  LA(x18, scratch) # load base address into rs1
+  SREG x19, 0(x18) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b21_equal:
+  amocas.h x21, x27, (x18) # perform operation
+  # Check if x21 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x21, ZacasZabha_amocas_h_cg_cp_rd_b21_equal, ZacasZabha_amocas_h_cg_cp_rd_b21_equal_str)
+  LREG x18, 0(x18) # Load the updated value from memory
+  # Check if x18 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x18, ZacasZabha_amocas_h_cg_cp_rd_b21_equal, ZacasZabha_amocas_h_cg_cp_rd_b21_equal_str)
+
+# Testcase cp_rd (Test destination rd = x21, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x26, x23) # load value in memory: x23 = 0x8bfbe449
+  RVTEST_TESTDATA_LOAD_INT(x26, x18) # load rs2: x18 = 0x11d00278
+  LA(x2, scratch) # load base address into rs1
+  SREG x23, 0(x2) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b21_not_equal:
+  amocas.h x21, x18, (x2) # perform operation
+  # Check if x21 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x21, ZacasZabha_amocas_h_cg_cp_rd_b21_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b21_not_equal_str)
+  LREG x2, 0(x2) # Load the updated value from memory
+  # Check if x2 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x2, ZacasZabha_amocas_h_cg_cp_rd_b21_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b21_not_equal_str)
+
+  mv x30, x22 # switch signature pointer register to avoid conflict with test
+# Testcase cp_rd (Test destination rd = x22, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x26, x10) # load value in memory: x10 = 0x0a363a41
+  RVTEST_TESTDATA_LOAD_INT(x26, x15) # load rs2: x15 = 0x4a2b9b9f
+  LA(x19, scratch) # load base address into rs1
+  SREG x10, 0(x19) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b22_equal:
+  amocas.h x22, x15, (x19) # perform operation
+  # Check if x22 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x22, ZacasZabha_amocas_h_cg_cp_rd_b22_equal, ZacasZabha_amocas_h_cg_cp_rd_b22_equal_str)
+  LREG x19, 0(x19) # Load the updated value from memory
+  # Check if x19 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x19, ZacasZabha_amocas_h_cg_cp_rd_b22_equal, ZacasZabha_amocas_h_cg_cp_rd_b22_equal_str)
+
+# Testcase cp_rd (Test destination rd = x22, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x26, x31) # load value in memory: x31 = 0xbf00c5bb
+  RVTEST_TESTDATA_LOAD_INT(x26, x21) # load rs2: x21 = 0x06cfb815
+  LA(x3, scratch) # load base address into rs1
+  SREG x31, 0(x3) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b22_not_equal:
+  amocas.h x22, x21, (x3) # perform operation
+  # Check if x22 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x22, ZacasZabha_amocas_h_cg_cp_rd_b22_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b22_not_equal_str)
+  LREG x3, 0(x3) # Load the updated value from memory
+  # Check if x3 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x3, ZacasZabha_amocas_h_cg_cp_rd_b22_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b22_not_equal_str)
+
+# Testcase cp_rd (Test destination rd = x23, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x26, x15) # load value in memory: x15 = 0xb1492ca7
+  RVTEST_TESTDATA_LOAD_INT(x26, x19) # load rs2: x19 = 0xdea34700
+  LA(x9, scratch) # load base address into rs1
+  SREG x15, 0(x9) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b23_equal:
+  amocas.h x23, x19, (x9) # perform operation
+  # Check if x23 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x23, ZacasZabha_amocas_h_cg_cp_rd_b23_equal, ZacasZabha_amocas_h_cg_cp_rd_b23_equal_str)
+  LREG x9, 0(x9) # Load the updated value from memory
+  # Check if x9 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x9, ZacasZabha_amocas_h_cg_cp_rd_b23_equal, ZacasZabha_amocas_h_cg_cp_rd_b23_equal_str)
+
+# Testcase cp_rd (Test destination rd = x23, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x26, x1) # load value in memory: x1 = 0x790b0f94
+  RVTEST_TESTDATA_LOAD_INT(x26, x7) # load rs2: x7 = 0x5ce7b322
+  LA(x2, scratch) # load base address into rs1
+  SREG x1, 0(x2) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b23_not_equal:
+  amocas.h x23, x7, (x2) # perform operation
+  # Check if x23 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x23, ZacasZabha_amocas_h_cg_cp_rd_b23_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b23_not_equal_str)
+  LREG x2, 0(x2) # Load the updated value from memory
+  # Check if x2 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x2, ZacasZabha_amocas_h_cg_cp_rd_b23_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b23_not_equal_str)
+
+# Testcase cp_rd (Test destination rd = x24, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x26, x25) # load value in memory: x25 = 0x978013c5
+  RVTEST_TESTDATA_LOAD_INT(x26, x17) # load rs2: x17 = 0x1bae69e7
+  LA(x27, scratch) # load base address into rs1
+  SREG x25, 0(x27) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b24_equal:
+  amocas.h x24, x17, (x27) # perform operation
+  # Check if x24 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x24, ZacasZabha_amocas_h_cg_cp_rd_b24_equal, ZacasZabha_amocas_h_cg_cp_rd_b24_equal_str)
+  LREG x27, 0(x27) # Load the updated value from memory
+  # Check if x27 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x27, ZacasZabha_amocas_h_cg_cp_rd_b24_equal, ZacasZabha_amocas_h_cg_cp_rd_b24_equal_str)
+
+# Testcase cp_rd (Test destination rd = x24, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x26, x15) # load value in memory: x15 = 0x5385efc8
+  RVTEST_TESTDATA_LOAD_INT(x26, x27) # load rs2: x27 = 0x76d3282f
+  LA(x10, scratch) # load base address into rs1
+  SREG x15, 0(x10) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b24_not_equal:
+  amocas.h x24, x27, (x10) # perform operation
+  # Check if x24 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x24, ZacasZabha_amocas_h_cg_cp_rd_b24_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b24_not_equal_str)
+  LREG x10, 0(x10) # Load the updated value from memory
+  # Check if x10 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x10, ZacasZabha_amocas_h_cg_cp_rd_b24_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b24_not_equal_str)
+
+# Testcase cp_rd (Test destination rd = x25, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x26, x18) # load value in memory: x18 = 0x2047099d
+  RVTEST_TESTDATA_LOAD_INT(x26, x19) # load rs2: x19 = 0xbf9fb1a5
+  LA(x15, scratch) # load base address into rs1
+  SREG x18, 0(x15) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b25_equal:
+  amocas.h x25, x19, (x15) # perform operation
+  # Check if x25 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x25, ZacasZabha_amocas_h_cg_cp_rd_b25_equal, ZacasZabha_amocas_h_cg_cp_rd_b25_equal_str)
+  LREG x15, 0(x15) # Load the updated value from memory
+  # Check if x15 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x15, ZacasZabha_amocas_h_cg_cp_rd_b25_equal, ZacasZabha_amocas_h_cg_cp_rd_b25_equal_str)
+
+# Testcase cp_rd (Test destination rd = x25, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x26, x15) # load value in memory: x15 = 0x1f474cdc
+  RVTEST_TESTDATA_LOAD_INT(x26, x16) # load rs2: x16 = 0x8461bb7a
+  LA(x29, scratch) # load base address into rs1
+  SREG x15, 0(x29) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b25_not_equal:
+  amocas.h x25, x16, (x29) # perform operation
+  # Check if x25 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x25, ZacasZabha_amocas_h_cg_cp_rd_b25_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b25_not_equal_str)
+  LREG x29, 0(x29) # Load the updated value from memory
+  # Check if x29 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x29, ZacasZabha_amocas_h_cg_cp_rd_b25_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b25_not_equal_str)
+
+  mv x22, x26 # switch data pointer register to avoid conflict with test
+# Testcase cp_rd (Test destination rd = x26, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x22, x17) # load value in memory: x17 = 0x4c88a9e2
+  RVTEST_TESTDATA_LOAD_INT(x22, x14) # load rs2: x14 = 0x22e16f41
+  LA(x23, scratch) # load base address into rs1
+  SREG x17, 0(x23) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b26_equal:
+  amocas.h x26, x14, (x23) # perform operation
+  # Check if x26 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x26, ZacasZabha_amocas_h_cg_cp_rd_b26_equal, ZacasZabha_amocas_h_cg_cp_rd_b26_equal_str)
+  LREG x23, 0(x23) # Load the updated value from memory
+  # Check if x23 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x23, ZacasZabha_amocas_h_cg_cp_rd_b26_equal, ZacasZabha_amocas_h_cg_cp_rd_b26_equal_str)
+
+# Testcase cp_rd (Test destination rd = x26, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x22, x8) # load value in memory: x8 = 0xf0a85751
+  RVTEST_TESTDATA_LOAD_INT(x22, x10) # load rs2: x10 = 0xc26b3ff6
+  LA(x13, scratch) # load base address into rs1
+  SREG x8, 0(x13) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b26_not_equal:
+  amocas.h x26, x10, (x13) # perform operation
+  # Check if x26 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x26, ZacasZabha_amocas_h_cg_cp_rd_b26_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b26_not_equal_str)
+  LREG x13, 0(x13) # Load the updated value from memory
+  # Check if x13 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x13, ZacasZabha_amocas_h_cg_cp_rd_b26_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b26_not_equal_str)
+
+# Testcase cp_rd (Test destination rd = x27, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x22, x28) # load value in memory: x28 = 0x3e2d210b
+  RVTEST_TESTDATA_LOAD_INT(x22, x14) # load rs2: x14 = 0x30468865
+  LA(x26, scratch) # load base address into rs1
+  SREG x28, 0(x26) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b27_equal:
+  amocas.h x27, x14, (x26) # perform operation
+  # Check if x27 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x27, ZacasZabha_amocas_h_cg_cp_rd_b27_equal, ZacasZabha_amocas_h_cg_cp_rd_b27_equal_str)
+  LREG x26, 0(x26) # Load the updated value from memory
+  # Check if x26 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x26, ZacasZabha_amocas_h_cg_cp_rd_b27_equal, ZacasZabha_amocas_h_cg_cp_rd_b27_equal_str)
+
+# Testcase cp_rd (Test destination rd = x27, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x22, x20) # load value in memory: x20 = 0xe8176e59
+  RVTEST_TESTDATA_LOAD_INT(x22, x13) # load rs2: x13 = 0xbdbc3f6f
+  LA(x18, scratch) # load base address into rs1
+  SREG x20, 0(x18) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b27_not_equal:
+  amocas.h x27, x13, (x18) # perform operation
+  # Check if x27 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x27, ZacasZabha_amocas_h_cg_cp_rd_b27_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b27_not_equal_str)
+  LREG x18, 0(x18) # Load the updated value from memory
+  # Check if x18 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x18, ZacasZabha_amocas_h_cg_cp_rd_b27_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b27_not_equal_str)
+
+# Testcase cp_rd (Test destination rd = x28, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x22, x23) # load value in memory: x23 = 0x5d5bdeff
+  RVTEST_TESTDATA_LOAD_INT(x22, x10) # load rs2: x10 = 0x7783af2f
+  LA(x13, scratch) # load base address into rs1
+  SREG x23, 0(x13) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b28_equal:
+  amocas.h x28, x10, (x13) # perform operation
+  # Check if x28 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x28, ZacasZabha_amocas_h_cg_cp_rd_b28_equal, ZacasZabha_amocas_h_cg_cp_rd_b28_equal_str)
+  LREG x13, 0(x13) # Load the updated value from memory
+  # Check if x13 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x13, ZacasZabha_amocas_h_cg_cp_rd_b28_equal, ZacasZabha_amocas_h_cg_cp_rd_b28_equal_str)
+
+# Testcase cp_rd (Test destination rd = x28, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x22, x3) # load value in memory: x3 = 0x216788f9
+  RVTEST_TESTDATA_LOAD_INT(x22, x17) # load rs2: x17 = 0xdf913dc7
+  LA(x13, scratch) # load base address into rs1
+  SREG x3, 0(x13) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b28_not_equal:
+  amocas.h x28, x17, (x13) # perform operation
+  # Check if x28 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x28, ZacasZabha_amocas_h_cg_cp_rd_b28_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b28_not_equal_str)
+  LREG x13, 0(x13) # Load the updated value from memory
+  # Check if x13 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x13, ZacasZabha_amocas_h_cg_cp_rd_b28_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b28_not_equal_str)
+
+# Testcase cp_rd (Test destination rd = x29, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x22, x3) # load value in memory: x3 = 0x7abf69d0
+  RVTEST_TESTDATA_LOAD_INT(x22, x10) # load rs2: x10 = 0xbd8860d8
+  LA(x12, scratch) # load base address into rs1
+  SREG x3, 0(x12) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b29_equal:
+  amocas.h x29, x10, (x12) # perform operation
+  # Check if x29 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x29, ZacasZabha_amocas_h_cg_cp_rd_b29_equal, ZacasZabha_amocas_h_cg_cp_rd_b29_equal_str)
+  LREG x12, 0(x12) # Load the updated value from memory
+  # Check if x12 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x12, ZacasZabha_amocas_h_cg_cp_rd_b29_equal, ZacasZabha_amocas_h_cg_cp_rd_b29_equal_str)
+
+# Testcase cp_rd (Test destination rd = x29, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x22, x28) # load value in memory: x28 = 0xe5ccd89d
+  RVTEST_TESTDATA_LOAD_INT(x22, x2) # load rs2: x2 = 0xa3199bf6
+  LA(x23, scratch) # load base address into rs1
+  SREG x28, 0(x23) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b29_not_equal:
+  amocas.h x29, x2, (x23) # perform operation
+  # Check if x29 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x29, ZacasZabha_amocas_h_cg_cp_rd_b29_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b29_not_equal_str)
+  LREG x23, 0(x23) # Load the updated value from memory
+  # Check if x23 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x30, x5, x4, x23, ZacasZabha_amocas_h_cg_cp_rd_b29_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b29_not_equal_str)
+
+  mv x9, x30 # switch signature pointer register to avoid conflict with test
+# Testcase cp_rd (Test destination rd = x30, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x22, x14) # load value in memory: x14 = 0x9ebda94a
+  RVTEST_TESTDATA_LOAD_INT(x22, x7) # load rs2: x7 = 0x3d9ba38e
+  LA(x10, scratch) # load base address into rs1
+  SREG x14, 0(x10) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b30_equal:
+  amocas.h x30, x7, (x10) # perform operation
+  # Check if x30 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x30, ZacasZabha_amocas_h_cg_cp_rd_b30_equal, ZacasZabha_amocas_h_cg_cp_rd_b30_equal_str)
+  LREG x10, 0(x10) # Load the updated value from memory
+  # Check if x10 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x10, ZacasZabha_amocas_h_cg_cp_rd_b30_equal, ZacasZabha_amocas_h_cg_cp_rd_b30_equal_str)
+
+# Testcase cp_rd (Test destination rd = x30, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x22, x21) # load value in memory: x21 = 0x9dfdb890
+  RVTEST_TESTDATA_LOAD_INT(x22, x13) # load rs2: x13 = 0x121f6b09
+  LA(x3, scratch) # load base address into rs1
+  SREG x21, 0(x3) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b30_not_equal:
+  amocas.h x30, x13, (x3) # perform operation
+  # Check if x30 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x30, ZacasZabha_amocas_h_cg_cp_rd_b30_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b30_not_equal_str)
+  LREG x3, 0(x3) # Load the updated value from memory
+  # Check if x3 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x3, ZacasZabha_amocas_h_cg_cp_rd_b30_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b30_not_equal_str)
+
+# Testcase cp_rd (Test destination rd = x31, matching (rd_val == mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x22, x14) # load value in memory: x14 = 0xaa259ac0
+  RVTEST_TESTDATA_LOAD_INT(x22, x23) # load rs2: x23 = 0x0baa463c
+  LA(x13, scratch) # load base address into rs1
+  SREG x14, 0(x13) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b31_equal:
+  amocas.h x31, x23, (x13) # perform operation
+  # Check if x31 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x31, ZacasZabha_amocas_h_cg_cp_rd_b31_equal, ZacasZabha_amocas_h_cg_cp_rd_b31_equal_str)
+  LREG x13, 0(x13) # Load the updated value from memory
+  # Check if x13 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x13, ZacasZabha_amocas_h_cg_cp_rd_b31_equal, ZacasZabha_amocas_h_cg_cp_rd_b31_equal_str)
+
+# Testcase cp_rd (Test destination rd = x31, non-matching (rd_val != mem_val))
+  RVTEST_TESTDATA_LOAD_INT(x22, x14) # load value in memory: x14 = 0xdedee50f
+  RVTEST_TESTDATA_LOAD_INT(x22, x7) # load rs2: x7 = 0x54e31d31
+  LA(x21, scratch) # load base address into rs1
+  SREG x14, 0(x21) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cp_rd_b31_not_equal:
+  amocas.h x31, x7, (x21) # perform operation
+  # Check if x31 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x31, ZacasZabha_amocas_h_cg_cp_rd_b31_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b31_not_equal_str)
+  LREG x21, 0(x21) # Load the updated value from memory
+  # Check if x21 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x21, ZacasZabha_amocas_h_cg_cp_rd_b31_not_equal, ZacasZabha_amocas_h_cg_cp_rd_b31_not_equal_str)
 
 /////////////////////////////////
 // cp_rs2_edges
 /////////////////////////////////
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x00000000)
-  RVTEST_TESTDATA_LOAD_INT(x6, x18) # load value in memory: x18 = 0x87c727bb
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x00000000
-  LA(x15, scratch) # load base address into rs1
-  SREG x18, 0(x15) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x22, x17) # load value in memory: x17 = 0x87c727bb
+  RVTEST_TESTDATA_LOAD_INT(x22, x2) # load rs2: x2 = 0x00000000
+  LA(x14, scratch) # load base address into rs1
+  SREG x17, 0(x14) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cp_rs2_edges_0x0:
-  amocas.h x9, x2, (x15) # perform operation
-  # Check if x9 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x9, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x0, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x0_str)
-  LREG x15, 0(x15) # Load the updated value from memory
-  # Check if x15 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x15, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x0, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x0_str)
+  amocas.h x8, x2, (x14) # perform operation
+  # Check if x8 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x8, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x0, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x0_str)
+  LREG x14, 0(x14) # Load the updated value from memory
+  # Check if x14 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x14, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x0, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x0_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x00000001)
-  RVTEST_TESTDATA_LOAD_INT(x6, x18) # load value in memory: x18 = 0x04b03944
-  RVTEST_TESTDATA_LOAD_INT(x6, x30) # load rs2: x30 = 0x00000001
-  LA(x16, scratch) # load base address into rs1
-  SREG x18, 0(x16) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x22, x17) # load value in memory: x17 = 0x04b03944
+  RVTEST_TESTDATA_LOAD_INT(x22, x30) # load rs2: x30 = 0x00000001
+  LA(x15, scratch) # load base address into rs1
+  SREG x17, 0(x15) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cp_rs2_edges_0x1:
-  amocas.h x29, x30, (x16) # perform operation
-  # Check if x29 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x29, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x1, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x1_str)
-  LREG x16, 0(x16) # Load the updated value from memory
-  # Check if x16 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x16, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x1, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x1_str)
+  amocas.h x29, x30, (x15) # perform operation
+  # Check if x29 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x29, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x1, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x1_str)
+  LREG x15, 0(x15) # Load the updated value from memory
+  # Check if x15 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x15, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x1, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x1_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x00000002)
-  RVTEST_TESTDATA_LOAD_INT(x6, x27) # load value in memory: x27 = 0x53472034
-  RVTEST_TESTDATA_LOAD_INT(x6, x16) # load rs2: x16 = 0x00000002
+  RVTEST_TESTDATA_LOAD_INT(x22, x27) # load value in memory: x27 = 0x53472034
+  RVTEST_TESTDATA_LOAD_INT(x22, x15) # load rs2: x15 = 0x00000002
   LA(x30, scratch) # load base address into rs1
   SREG x27, 0(x30) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cp_rs2_edges_0x2:
-  amocas.h x2, x16, (x30) # perform operation
-  # Check if x2 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x2, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x2, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x2_str)
+  amocas.h x2, x15, (x30) # perform operation
+  # Check if x2 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x2, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x2, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x2_str)
   LREG x30, 0(x30) # Load the updated value from memory
-  # Check if x30 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x30, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x2, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x2_str)
+  # Check if x30 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x30, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x2, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x2_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x80000000)
-  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load value in memory: x15 = 0xb2675f7d
-  RVTEST_TESTDATA_LOAD_INT(x6, x25) # load rs2: x25 = 0x80000000
+  RVTEST_TESTDATA_LOAD_INT(x22, x14) # load value in memory: x14 = 0xb2675f7d
+  RVTEST_TESTDATA_LOAD_INT(x22, x25) # load rs2: x25 = 0x80000000
   LA(x28, scratch) # load base address into rs1
-  SREG x15, 0(x28) # store value into memory at address in rs1
+  SREG x14, 0(x28) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cp_rs2_edges_0x80000000:
   amocas.h x11, x25, (x28) # perform operation
-  # Check if x11 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x11, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x80000000, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x80000000_str)
+  # Check if x11 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x11, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x80000000, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x80000000_str)
   LREG x28, 0(x28) # Load the updated value from memory
-  # Check if x28 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x28, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x80000000, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x80000000_str)
+  # Check if x28 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x28, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x80000000, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x80000000_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x80000001)
-  RVTEST_TESTDATA_LOAD_INT(x6, x22) # load value in memory: x22 = 0x17248600
-  RVTEST_TESTDATA_LOAD_INT(x6, x21) # load rs2: x21 = 0x80000001
-  LA(x18, scratch) # load base address into rs1
-  SREG x22, 0(x18) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x22, x21) # load value in memory: x21 = 0x17248600
+  RVTEST_TESTDATA_LOAD_INT(x22, x20) # load rs2: x20 = 0x80000001
+  LA(x17, scratch) # load base address into rs1
+  SREG x21, 0(x17) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cp_rs2_edges_0x80000001:
-  amocas.h x12, x21, (x18) # perform operation
-  # Check if x12 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x12, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x80000001, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x80000001_str)
-  LREG x18, 0(x18) # Load the updated value from memory
-  # Check if x18 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x18, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x80000001, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x80000001_str)
+  amocas.h x12, x20, (x17) # perform operation
+  # Check if x12 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x12, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x80000001, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x80000001_str)
+  LREG x17, 0(x17) # Load the updated value from memory
+  # Check if x17 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x17, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x80000001, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x80000001_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x7fffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load value in memory: x15 = 0xfa4913e4
-  RVTEST_TESTDATA_LOAD_INT(x6, x29) # load rs2: x29 = 0x7fffffff
+  RVTEST_TESTDATA_LOAD_INT(x22, x14) # load value in memory: x14 = 0xfa4913e4
+  RVTEST_TESTDATA_LOAD_INT(x22, x29) # load rs2: x29 = 0x7fffffff
   LA(x24, scratch) # load base address into rs1
-  SREG x15, 0(x24) # store value into memory at address in rs1
+  SREG x14, 0(x24) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cp_rs2_edges_0x7fffffff:
-  amocas.h x9, x29, (x24) # perform operation
-  # Check if x9 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x9, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x7fffffff, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x7fffffff_str)
+  amocas.h x8, x29, (x24) # perform operation
+  # Check if x8 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x8, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x7fffffff, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x7fffffff_str)
   LREG x24, 0(x24) # Load the updated value from memory
-  # Check if x24 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x24, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x7fffffff, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x7fffffff_str)
+  # Check if x24 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x24, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x7fffffff, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x7fffffff_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x7ffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x19) # load value in memory: x19 = 0x7f15588d
-  RVTEST_TESTDATA_LOAD_INT(x6, x23) # load rs2: x23 = 0x7ffffffe
+  RVTEST_TESTDATA_LOAD_INT(x22, x18) # load value in memory: x18 = 0x7f15588d
+  RVTEST_TESTDATA_LOAD_INT(x22, x23) # load rs2: x23 = 0x7ffffffe
   LA(x29, scratch) # load base address into rs1
-  SREG x19, 0(x29) # store value into memory at address in rs1
+  SREG x18, 0(x29) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cp_rs2_edges_0x7ffffffe:
   amocas.h x30, x23, (x29) # perform operation
-  # Check if x30 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x30, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x7ffffffe, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x7ffffffe_str)
+  # Check if x30 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x30, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x7ffffffe, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x7ffffffe_str)
   LREG x29, 0(x29) # Load the updated value from memory
-  # Check if x29 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x29, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x7ffffffe, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x7ffffffe_str)
+  # Check if x29 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x29, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x7ffffffe, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x7ffffffe_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0xffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load value in memory: x3 = 0xfa4e2334
-  RVTEST_TESTDATA_LOAD_INT(x6, x28) # load rs2: x28 = 0xffffffff
+  RVTEST_TESTDATA_LOAD_INT(x22, x3) # load value in memory: x3 = 0xfa4e2334
+  RVTEST_TESTDATA_LOAD_INT(x22, x28) # load rs2: x28 = 0xffffffff
   LA(x24, scratch) # load base address into rs1
   SREG x3, 0(x24) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cp_rs2_edges_0xffffffff:
-  amocas.h x21, x28, (x24) # perform operation
-  # Check if x21 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x21, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xffffffff, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xffffffff_str)
+  amocas.h x20, x28, (x24) # perform operation
+  # Check if x20 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x20, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xffffffff, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xffffffff_str)
   LREG x24, 0(x24) # Load the updated value from memory
-  # Check if x24 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x24, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xffffffff, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xffffffff_str)
+  # Check if x24 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x24, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xffffffff, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xffffffff_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0xfffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x6, x9) # load value in memory: x9 = 0xabbdc1f4
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load rs2: x13 = 0xfffffffe
+  RVTEST_TESTDATA_LOAD_INT(x22, x8) # load value in memory: x8 = 0xabbdc1f4
+  RVTEST_TESTDATA_LOAD_INT(x22, x13) # load rs2: x13 = 0xfffffffe
   LA(x26, scratch) # load base address into rs1
-  SREG x9, 0(x26) # store value into memory at address in rs1
+  SREG x8, 0(x26) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cp_rs2_edges_0xfffffffe:
   amocas.h x11, x13, (x26) # perform operation
-  # Check if x11 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x11, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xfffffffe, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xfffffffe_str)
+  # Check if x11 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x11, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xfffffffe, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xfffffffe_str)
   LREG x26, 0(x26) # Load the updated value from memory
-  # Check if x26 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x26, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xfffffffe, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xfffffffe_str)
+  # Check if x26 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x26, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xfffffffe, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xfffffffe_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x5bbc8872)
-  RVTEST_TESTDATA_LOAD_INT(x6, x13) # load value in memory: x13 = 0x1e1d0dc7
-  RVTEST_TESTDATA_LOAD_INT(x6, x10) # load rs2: x10 = 0x5bbc8872
+  RVTEST_TESTDATA_LOAD_INT(x22, x13) # load value in memory: x13 = 0x1e1d0dc7
+  RVTEST_TESTDATA_LOAD_INT(x22, x10) # load rs2: x10 = 0x5bbc8872
   LA(x12, scratch) # load base address into rs1
   SREG x13, 0(x12) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cp_rs2_edges_0x5bbc8872:
-  amocas.h x15, x10, (x12) # perform operation
-  # Check if x15 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x15, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x5bbc8872, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x5bbc8872_str)
+  amocas.h x14, x10, (x12) # perform operation
+  # Check if x14 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x14, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x5bbc8872, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x5bbc8872_str)
   LREG x12, 0(x12) # Load the updated value from memory
-  # Check if x12 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x12, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x5bbc8872, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x5bbc8872_str)
+  # Check if x12 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x12, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x5bbc8872, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x5bbc8872_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0xaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load value in memory: x15 = 0x3090a440
-  RVTEST_TESTDATA_LOAD_INT(x6, x8) # load rs2: x8 = 0xaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x22, x14) # load value in memory: x14 = 0x3090a440
+  RVTEST_TESTDATA_LOAD_INT(x22, x7) # load rs2: x7 = 0xaaaaaaaa
   LA(x31, scratch) # load base address into rs1
-  SREG x15, 0(x31) # store value into memory at address in rs1
+  SREG x14, 0(x31) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cp_rs2_edges_0xaaaaaaaa:
-  amocas.h x3, x8, (x31) # perform operation
-  # Check if x3 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x3, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xaaaaaaaa, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xaaaaaaaa_str)
+  amocas.h x3, x7, (x31) # perform operation
+  # Check if x3 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x3, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xaaaaaaaa, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xaaaaaaaa_str)
   LREG x31, 0(x31) # Load the updated value from memory
-  # Check if x31 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x31, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xaaaaaaaa, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xaaaaaaaa_str)
+  # Check if x31 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x31, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xaaaaaaaa, ZacasZabha_amocas_h_cg_cp_rs2_edges_0xaaaaaaaa_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x55555555)
-  RVTEST_TESTDATA_LOAD_INT(x6, x27) # load value in memory: x27 = 0x9e01b14f
-  RVTEST_TESTDATA_LOAD_INT(x6, x22) # load rs2: x22 = 0x55555555
-  LA(x18, scratch) # load base address into rs1
-  SREG x27, 0(x18) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x22, x27) # load value in memory: x27 = 0x9e01b14f
+  RVTEST_TESTDATA_LOAD_INT(x22, x21) # load rs2: x21 = 0x55555555
+  LA(x17, scratch) # load base address into rs1
+  SREG x27, 0(x17) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cp_rs2_edges_0x55555555:
-  amocas.h x30, x22, (x18) # perform operation
-  # Check if x30 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x30, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x55555555, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x55555555_str)
-  LREG x18, 0(x18) # Load the updated value from memory
-  # Check if x18 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x18, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x55555555, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x55555555_str)
+  amocas.h x30, x21, (x17) # perform operation
+  # Check if x30 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x30, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x55555555, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x55555555_str)
+  LREG x17, 0(x17) # Load the updated value from memory
+  # Check if x17 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x17, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x55555555, ZacasZabha_amocas_h_cg_cp_rs2_edges_0x55555555_str)
 
 /////////////////////////////////
 // cmp_rs1_rs2_nx0
 /////////////////////////////////
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x6, x19) # load value in memory: x19 = 0x9fa855b3
-  RVTEST_TESTDATA_LOAD_INT(x6, x1) # load rs2: x1 = 0x44dfa288
+  RVTEST_TESTDATA_LOAD_INT(x22, x18) # load value in memory: x18 = 0x9fa855b3
+  RVTEST_TESTDATA_LOAD_INT(x22, x1) # load rs2: x1 = 0x44dfa288
   LA(x1, scratch) # load base address into rs1
-  SREG x19, 0(x1) # store value into memory at address in rs1
+  SREG x18, 0(x1) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b1:
-  amocas.h x16, x1, (x1) # perform operation
-  # Check if x16 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x16, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b1, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b1_str)
+  amocas.h x15, x1, (x1) # perform operation
+  # Check if x15 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x15, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b1, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b1_str)
   LREG x1, 0(x1) # Load the updated value from memory
-  # Check if x1 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x1, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b1, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b1_str)
+  # Check if x1 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x1, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b1, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b1_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x6, x28) # load value in memory: x28 = 0xd4261da2
-  RVTEST_TESTDATA_LOAD_INT(x6, x2) # load rs2: x2 = 0x506235fa
+  RVTEST_TESTDATA_LOAD_INT(x22, x28) # load value in memory: x28 = 0xd4261da2
+  RVTEST_TESTDATA_LOAD_INT(x22, x2) # load rs2: x2 = 0x506235fa
   LA(x2, scratch) # load base address into rs1
   SREG x28, 0(x2) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b2:
-  amocas.h x15, x2, (x2) # perform operation
-  # Check if x15 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x15, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b2, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b2_str)
+  amocas.h x14, x2, (x2) # perform operation
+  # Check if x14 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x14, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b2, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b2_str)
   LREG x2, 0(x2) # Load the updated value from memory
-  # Check if x2 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x2, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b2, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b2_str)
+  # Check if x2 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x2, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b2, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b2_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x6, x15) # load value in memory: x15 = 0x0af5f2bc
-  RVTEST_TESTDATA_LOAD_INT(x6, x3) # load rs2: x3 = 0x72a62465
+  RVTEST_TESTDATA_LOAD_INT(x22, x14) # load value in memory: x14 = 0x0af5f2bc
+  RVTEST_TESTDATA_LOAD_INT(x22, x3) # load rs2: x3 = 0x72a62465
   LA(x3, scratch) # load base address into rs1
-  SREG x15, 0(x3) # store value into memory at address in rs1
+  SREG x14, 0(x3) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b3:
-  amocas.h x17, x3, (x3) # perform operation
-  # Check if x17 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x17, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b3, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b3_str)
+  amocas.h x16, x3, (x3) # perform operation
+  # Check if x16 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x16, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b3, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b3_str)
   LREG x3, 0(x3) # Load the updated value from memory
-  # Check if x3 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x3, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b3, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b3_str)
+  # Check if x3 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x3, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b3, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b3_str)
 
   mv x12, x4 # switch temp register to avoid conflict with test
   mv x13, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x6, x22) # load value in memory: x22 = 0xd9be3f89
-  RVTEST_TESTDATA_LOAD_INT(x6, x4) # load rs2: x4 = 0x2e9ee998
+  RVTEST_TESTDATA_LOAD_INT(x22, x21) # load value in memory: x21 = 0xd9be3f89
+  RVTEST_TESTDATA_LOAD_INT(x22, x4) # load rs2: x4 = 0x2e9ee998
   LA(x4, scratch) # load base address into rs1
-  SREG x22, 0(x4) # store value into memory at address in rs1
+  SREG x21, 0(x4) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b4:
   amocas.h x29, x4, (x4) # perform operation
-  # Check if x29 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x29, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b4, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b4_str)
+  # Check if x29 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x9, x13, x12, x29, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b4, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b4_str)
   LREG x4, 0(x4) # Load the updated value from memory
-  # Check if x4 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x4, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b4, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b4_str)
+  # Check if x4 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x9, x13, x12, x4, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b4, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b4_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x6, x24) # load value in memory: x24 = 0x27b29409
-  RVTEST_TESTDATA_LOAD_INT(x6, x5) # load rs2: x5 = 0x1c1d5c49
+  RVTEST_TESTDATA_LOAD_INT(x22, x24) # load value in memory: x24 = 0x27b29409
+  RVTEST_TESTDATA_LOAD_INT(x22, x5) # load rs2: x5 = 0x1c1d5c49
   LA(x5, scratch) # load base address into rs1
   SREG x24, 0(x5) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b5:
-  amocas.h x20, x5, (x5) # perform operation
-  # Check if x20 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x20, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b5, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b5_str)
+  amocas.h x19, x5, (x5) # perform operation
+  # Check if x19 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x9, x13, x12, x19, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b5, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b5_str)
   LREG x5, 0(x5) # Load the updated value from memory
-  # Check if x5 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x5, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b5, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b5_str)
+  # Check if x5 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x9, x13, x12, x5, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b5, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b5_str)
 
-  mv x15, x6 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x15, x16) # load value in memory: x16 = 0x88afa771
-  RVTEST_TESTDATA_LOAD_INT(x15, x6) # load rs2: x6 = 0xba7e8780
+  RVTEST_TESTDATA_LOAD_INT(x22, x31) # load value in memory: x31 = 0x6cfed3d1
+  RVTEST_TESTDATA_LOAD_INT(x22, x6) # load rs2: x6 = 0xc775bbf4
   LA(x6, scratch) # load base address into rs1
-  SREG x16, 0(x6) # store value into memory at address in rs1
+  SREG x31, 0(x6) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b6:
-  amocas.h x9, x6, (x6) # perform operation
-  # Check if x9 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x9, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b6, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b6_str)
+  amocas.h x29, x6, (x6) # perform operation
+  # Check if x29 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x9, x13, x12, x29, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b6, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b6_str)
   LREG x6, 0(x6) # Load the updated value from memory
-  # Check if x6 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x6, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b6, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b6_str)
+  # Check if x6 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x9, x13, x12, x6, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b6, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b6_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x15, x17) # load value in memory: x17 = 0xbdd45443
-  RVTEST_TESTDATA_LOAD_INT(x15, x7) # load rs2: x7 = 0x25161518
+  RVTEST_TESTDATA_LOAD_INT(x22, x21) # load value in memory: x21 = 0x52e291f1
+  RVTEST_TESTDATA_LOAD_INT(x22, x7) # load rs2: x7 = 0x9d8affca
   LA(x7, scratch) # load base address into rs1
-  SREG x17, 0(x7) # store value into memory at address in rs1
+  SREG x21, 0(x7) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b7:
-  amocas.h x30, x7, (x7) # perform operation
-  # Check if x30 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x30, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b7, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b7_str)
+  amocas.h x1, x7, (x7) # perform operation
+  # Check if x1 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x9, x13, x12, x1, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b7, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b7_str)
   LREG x7, 0(x7) # Load the updated value from memory
-  # Check if x7 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x7, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b7, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b7_str)
+  # Check if x7 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x9, x13, x12, x7, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b7, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b7_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x15, x4) # load value in memory: x4 = 0x1f1401b5
-  RVTEST_TESTDATA_LOAD_INT(x15, x8) # load rs2: x8 = 0x0ddde7e6
+  RVTEST_TESTDATA_LOAD_INT(x22, x17) # load value in memory: x17 = 0xbdd45443
+  RVTEST_TESTDATA_LOAD_INT(x22, x8) # load rs2: x8 = 0x25161518
   LA(x8, scratch) # load base address into rs1
-  SREG x4, 0(x8) # store value into memory at address in rs1
+  SREG x17, 0(x8) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b8:
-  amocas.h x29, x8, (x8) # perform operation
-  # Check if x29 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x29, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b8, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b8_str)
+  amocas.h x10, x8, (x8) # perform operation
+  # Check if x10 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x9, x13, x12, x10, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b8, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b8_str)
   LREG x8, 0(x8) # Load the updated value from memory
-  # Check if x8 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x8, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b8, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b8_str)
+  # Check if x8 contains the expected result. x9 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x9, x13, x12, x8, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b8, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b8_str)
 
+  mv x3, x9 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x15, x17) # load value in memory: x17 = 0xedc7178d
-  RVTEST_TESTDATA_LOAD_INT(x15, x9) # load rs2: x9 = 0xa9acfbe6
+  RVTEST_TESTDATA_LOAD_INT(x22, x20) # load value in memory: x20 = 0x0d5fbc3e
+  RVTEST_TESTDATA_LOAD_INT(x22, x9) # load rs2: x9 = 0x95e00c1d
   LA(x9, scratch) # load base address into rs1
-  SREG x17, 0(x9) # store value into memory at address in rs1
+  SREG x20, 0(x9) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b9:
-  amocas.h x3, x9, (x9) # perform operation
-  # Check if x3 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x3, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b9, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b9_str)
+  amocas.h x11, x9, (x9) # perform operation
+  # Check if x11 contains the expected result. x3 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x3, x13, x12, x11, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b9, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b9_str)
   LREG x9, 0(x9) # Load the updated value from memory
-  # Check if x9 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x9, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b9, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b9_str)
+  # Check if x9 contains the expected result. x3 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x3, x13, x12, x9, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b9, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b9_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x15, x22) # load value in memory: x22 = 0x122b3062
-  RVTEST_TESTDATA_LOAD_INT(x15, x10) # load rs2: x10 = 0x309f3f6b
+  RVTEST_TESTDATA_LOAD_INT(x22, x26) # load value in memory: x26 = 0xa9acfbe6
+  RVTEST_TESTDATA_LOAD_INT(x22, x10) # load rs2: x10 = 0xca8b95f1
   LA(x10, scratch) # load base address into rs1
-  SREG x22, 0(x10) # store value into memory at address in rs1
+  SREG x26, 0(x10) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b10:
-  amocas.h x9, x10, (x10) # perform operation
-  # Check if x9 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x9, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b10, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b10_str)
+  amocas.h x5, x10, (x10) # perform operation
+  # Check if x5 contains the expected result. x3 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x3, x13, x12, x5, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b10, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b10_str)
   LREG x10, 0(x10) # Load the updated value from memory
-  # Check if x10 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x10, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b10, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b10_str)
+  # Check if x10 contains the expected result. x3 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x3, x13, x12, x10, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b10, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b10_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x15, x4) # load value in memory: x4 = 0x9c776eec
-  RVTEST_TESTDATA_LOAD_INT(x15, x11) # load rs2: x11 = 0x40958153
+  RVTEST_TESTDATA_LOAD_INT(x22, x26) # load value in memory: x26 = 0x309f3f6b
+  RVTEST_TESTDATA_LOAD_INT(x22, x11) # load rs2: x11 = 0x5547d705
   LA(x11, scratch) # load base address into rs1
-  SREG x4, 0(x11) # store value into memory at address in rs1
+  SREG x26, 0(x11) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b11:
-  amocas.h x23, x11, (x11) # perform operation
-  # Check if x23 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x23, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b11, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b11_str)
+  amocas.h x14, x11, (x11) # perform operation
+  # Check if x14 contains the expected result. x3 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x3, x13, x12, x14, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b11, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b11_str)
   LREG x11, 0(x11) # Load the updated value from memory
-  # Check if x11 contains the expected result. x14 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x14, x13, x12, x11, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b11, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b11_str)
+  # Check if x11 contains the expected result. x3 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x3, x13, x12, x11, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b11, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b11_str)
 
   mv x4, x12 # switch temp register to avoid conflict with test
   mv x5, x13 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x15, x1) # load value in memory: x1 = 0x656601f3
-  RVTEST_TESTDATA_LOAD_INT(x15, x12) # load rs2: x12 = 0x75e49be0
+  RVTEST_TESTDATA_LOAD_INT(x22, x7) # load value in memory: x7 = 0x9c776eec
+  RVTEST_TESTDATA_LOAD_INT(x22, x12) # load rs2: x12 = 0x40958153
   LA(x12, scratch) # load base address into rs1
-  SREG x1, 0(x12) # store value into memory at address in rs1
+  SREG x7, 0(x12) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b12:
-  amocas.h x17, x12, (x12) # perform operation
-  # Check if x17 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x17, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b12, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b12_str)
+  amocas.h x24, x12, (x12) # perform operation
+  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x24, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b12, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b12_str)
   LREG x12, 0(x12) # Load the updated value from memory
-  # Check if x12 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x12, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b12, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b12_str)
+  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x12, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b12, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b12_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x15, x27) # load value in memory: x27 = 0x56d58518
-  RVTEST_TESTDATA_LOAD_INT(x15, x13) # load rs2: x13 = 0x4d3b915f
+  RVTEST_TESTDATA_LOAD_INT(x22, x23) # load value in memory: x23 = 0xf94e15a3
+  RVTEST_TESTDATA_LOAD_INT(x22, x13) # load rs2: x13 = 0xf82e76e7
   LA(x13, scratch) # load base address into rs1
-  SREG x27, 0(x13) # store value into memory at address in rs1
+  SREG x23, 0(x13) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b13:
-  amocas.h x16, x13, (x13) # perform operation
-  # Check if x16 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x16, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b13, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b13_str)
+  amocas.h x8, x13, (x13) # perform operation
+  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x8, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b13, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b13_str)
   LREG x13, 0(x13) # Load the updated value from memory
-  # Check if x13 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x13, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b13, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b13_str)
+  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x13, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b13, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b13_str)
 
-  mv x27, x14 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x15, x25) # load value in memory: x25 = 0xc9d6ecd8
-  RVTEST_TESTDATA_LOAD_INT(x15, x14) # load rs2: x14 = 0xa6d07e13
+  RVTEST_TESTDATA_LOAD_INT(x22, x20) # load value in memory: x20 = 0xa6d07e13
+  RVTEST_TESTDATA_LOAD_INT(x22, x14) # load rs2: x14 = 0x140beaf4
   LA(x14, scratch) # load base address into rs1
-  SREG x25, 0(x14) # store value into memory at address in rs1
+  SREG x20, 0(x14) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b14:
-  amocas.h x19, x14, (x14) # perform operation
-  # Check if x19 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x19, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b14, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b14_str)
+  amocas.h x31, x14, (x14) # perform operation
+  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x31, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b14, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b14_str)
   LREG x14, 0(x14) # Load the updated value from memory
-  # Check if x14 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x14, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b14, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b14_str)
+  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x14, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b14, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b14_str)
 
-  mv x3, x15 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load value in memory: x31 = 0x140beaf4
-  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs2: x15 = 0x93f7f079
+  RVTEST_TESTDATA_LOAD_INT(x22, x12) # load value in memory: x12 = 0x93f7f079
+  RVTEST_TESTDATA_LOAD_INT(x22, x15) # load rs2: x15 = 0x3a2b2087
   LA(x15, scratch) # load base address into rs1
-  SREG x31, 0(x15) # store value into memory at address in rs1
+  SREG x12, 0(x15) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b15:
-  amocas.h x24, x15, (x15) # perform operation
-  # Check if x24 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x24, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b15, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b15_str)
+  amocas.h x27, x15, (x15) # perform operation
+  # Check if x27 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x27, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b15, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b15_str)
   LREG x15, 0(x15) # Load the updated value from memory
-  # Check if x15 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x15, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b15, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b15_str)
+  # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x15, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b15, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b15_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load value in memory: x9 = 0x5871b1c9
-  RVTEST_TESTDATA_LOAD_INT(x3, x16) # load rs2: x16 = 0x05ef3f3a
+  RVTEST_TESTDATA_LOAD_INT(x22, x11) # load value in memory: x11 = 0xe0486cbf
+  RVTEST_TESTDATA_LOAD_INT(x22, x16) # load rs2: x16 = 0x57011bf1
   LA(x16, scratch) # load base address into rs1
-  SREG x9, 0(x16) # store value into memory at address in rs1
+  SREG x11, 0(x16) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b16:
-  amocas.h x18, x16, (x16) # perform operation
-  # Check if x18 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x18, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b16, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b16_str)
+  amocas.h x20, x16, (x16) # perform operation
+  # Check if x20 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x20, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b16, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b16_str)
   LREG x16, 0(x16) # Load the updated value from memory
-  # Check if x16 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x16, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b16, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b16_str)
+  # Check if x16 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x16, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b16, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b16_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load value in memory: x24 = 0xb1fb5fb3
-  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs2: x17 = 0x55b3e1b1
+  RVTEST_TESTDATA_LOAD_INT(x22, x19) # load value in memory: x19 = 0x55b3e1b1
+  RVTEST_TESTDATA_LOAD_INT(x22, x17) # load rs2: x17 = 0x6861b928
   LA(x17, scratch) # load base address into rs1
-  SREG x24, 0(x17) # store value into memory at address in rs1
+  SREG x19, 0(x17) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b17:
-  amocas.h x30, x17, (x17) # perform operation
-  # Check if x30 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x30, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b17, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b17_str)
+  amocas.h x14, x17, (x17) # perform operation
+  # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x14, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b17, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b17_str)
   LREG x17, 0(x17) # Load the updated value from memory
-  # Check if x17 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x17, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b17, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b17_str)
+  # Check if x17 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x17, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b17, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b17_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load value in memory: x30 = 0x6e575850
-  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs2: x18 = 0xd45158a7
+  RVTEST_TESTDATA_LOAD_INT(x22, x30) # load value in memory: x30 = 0x6e575850
+  RVTEST_TESTDATA_LOAD_INT(x22, x18) # load rs2: x18 = 0xd45158a7
   LA(x18, scratch) # load base address into rs1
   SREG x30, 0(x18) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b18:
-  amocas.h x8, x18, (x18) # perform operation
-  # Check if x8 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x8, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b18, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b18_str)
+  amocas.h x21, x18, (x18) # perform operation
+  # Check if x21 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x21, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b18, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b18_str)
   LREG x18, 0(x18) # Load the updated value from memory
-  # Check if x18 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x18, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b18, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b18_str)
+  # Check if x18 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x18, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b18, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b18_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load value in memory: x12 = 0xd82a061a
-  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load rs2: x19 = 0xe4c5931b
+  RVTEST_TESTDATA_LOAD_INT(x22, x12) # load value in memory: x12 = 0xd82a061a
+  RVTEST_TESTDATA_LOAD_INT(x22, x19) # load rs2: x19 = 0xe4c5931b
   LA(x19, scratch) # load base address into rs1
   SREG x12, 0(x19) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b19:
   amocas.h x11, x19, (x19) # perform operation
-  # Check if x11 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x11, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b19, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b19_str)
+  # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x11, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b19, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b19_str)
   LREG x19, 0(x19) # Load the updated value from memory
-  # Check if x19 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x19, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b19, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b19_str)
+  # Check if x19 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x19, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b19, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b19_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x3, x7) # load value in memory: x7 = 0x65699d1f
-  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs2: x20 = 0xd13ff272
+  RVTEST_TESTDATA_LOAD_INT(x22, x7) # load value in memory: x7 = 0x65699d1f
+  RVTEST_TESTDATA_LOAD_INT(x22, x20) # load rs2: x20 = 0xd13ff272
   LA(x20, scratch) # load base address into rs1
   SREG x7, 0(x20) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b20:
   amocas.h x12, x20, (x20) # perform operation
-  # Check if x12 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x12, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b20, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b20_str)
+  # Check if x12 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x12, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b20, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b20_str)
   LREG x20, 0(x20) # Load the updated value from memory
-  # Check if x20 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x20, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b20, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b20_str)
+  # Check if x20 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x20, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b20, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b20_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load value in memory: x12 = 0x0c95876d
-  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs2: x21 = 0xd0282924
+  RVTEST_TESTDATA_LOAD_INT(x22, x12) # load value in memory: x12 = 0x0c95876d
+  RVTEST_TESTDATA_LOAD_INT(x22, x21) # load rs2: x21 = 0xd0282924
   LA(x21, scratch) # load base address into rs1
   SREG x12, 0(x21) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b21:
   amocas.h x19, x21, (x21) # perform operation
-  # Check if x19 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x19, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b21, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b21_str)
+  # Check if x19 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x19, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b21, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b21_str)
   LREG x21, 0(x21) # Load the updated value from memory
-  # Check if x21 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x21, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b21, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b21_str)
+  # Check if x21 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x21, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b21, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b21_str)
 
+  mv x30, x22 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load value in memory: x19 = 0x0b33e8fe
-  RVTEST_TESTDATA_LOAD_INT(x3, x22) # load rs2: x22 = 0x4c2e0180
+  RVTEST_TESTDATA_LOAD_INT(x30, x12) # load value in memory: x12 = 0xc521a76f
+  RVTEST_TESTDATA_LOAD_INT(x30, x22) # load rs2: x22 = 0x846fcf5f
   LA(x22, scratch) # load base address into rs1
-  SREG x19, 0(x22) # store value into memory at address in rs1
+  SREG x12, 0(x22) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b22:
-  amocas.h x25, x22, (x22) # perform operation
-  # Check if x25 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x25, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b22, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b22_str)
+  amocas.h x20, x22, (x22) # perform operation
+  # Check if x20 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x20, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b22, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b22_str)
   LREG x22, 0(x22) # Load the updated value from memory
-  # Check if x22 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x22, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b22, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b22_str)
+  # Check if x22 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x22, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b22, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b22_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x3, x16) # load value in memory: x16 = 0x6d89e9a0
-  RVTEST_TESTDATA_LOAD_INT(x3, x23) # load rs2: x23 = 0x9544581a
+  RVTEST_TESTDATA_LOAD_INT(x30, x16) # load value in memory: x16 = 0xf8798d45
+  RVTEST_TESTDATA_LOAD_INT(x30, x23) # load rs2: x23 = 0x329fd2cc
   LA(x23, scratch) # load base address into rs1
   SREG x16, 0(x23) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b23:
-  amocas.h x11, x23, (x23) # perform operation
-  # Check if x11 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x11, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b23, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b23_str)
+  amocas.h x13, x23, (x23) # perform operation
+  # Check if x13 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x13, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b23, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b23_str)
   LREG x23, 0(x23) # Load the updated value from memory
-  # Check if x23 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x23, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b23, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b23_str)
+  # Check if x23 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x23, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b23, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b23_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load value in memory: x31 = 0xb41419e3
-  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs2: x24 = 0x0964e9ea
+  RVTEST_TESTDATA_LOAD_INT(x30, x9) # load value in memory: x9 = 0xb32c9528
+  RVTEST_TESTDATA_LOAD_INT(x30, x24) # load rs2: x24 = 0x7885657c
   LA(x24, scratch) # load base address into rs1
-  SREG x31, 0(x24) # store value into memory at address in rs1
+  SREG x9, 0(x24) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b24:
-  amocas.h x18, x24, (x24) # perform operation
-  # Check if x18 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x18, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b24, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b24_str)
+  amocas.h x20, x24, (x24) # perform operation
+  # Check if x20 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x20, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b24, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b24_str)
   LREG x24, 0(x24) # Load the updated value from memory
-  # Check if x24 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x24, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b24, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b24_str)
+  # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x24, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b24, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b24_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load value in memory: x29 = 0x8a049a46
-  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load rs2: x25 = 0x0af25834
+  RVTEST_TESTDATA_LOAD_INT(x30, x10) # load value in memory: x10 = 0x2d8e6d5b
+  RVTEST_TESTDATA_LOAD_INT(x30, x25) # load rs2: x25 = 0x6fab3f8d
   LA(x25, scratch) # load base address into rs1
-  SREG x29, 0(x25) # store value into memory at address in rs1
+  SREG x10, 0(x25) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b25:
-  amocas.h x9, x25, (x25) # perform operation
-  # Check if x9 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x9, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b25, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b25_str)
+  amocas.h x7, x25, (x25) # perform operation
+  # Check if x7 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x7, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b25, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b25_str)
   LREG x25, 0(x25) # Load the updated value from memory
-  # Check if x25 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x25, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b25, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b25_str)
+  # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x25, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b25, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b25_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load value in memory: x1 = 0xbdef8f29
-  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs2: x26 = 0x06e5ccf8
+  RVTEST_TESTDATA_LOAD_INT(x30, x23) # load value in memory: x23 = 0x8494df6f
+  RVTEST_TESTDATA_LOAD_INT(x30, x26) # load rs2: x26 = 0x22e25da1
   LA(x26, scratch) # load base address into rs1
-  SREG x1, 0(x26) # store value into memory at address in rs1
+  SREG x23, 0(x26) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b26:
-  amocas.h x24, x26, (x26) # perform operation
-  # Check if x24 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x24, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b26, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b26_str)
+  amocas.h x19, x26, (x26) # perform operation
+  # Check if x19 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x19, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b26, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b26_str)
   LREG x26, 0(x26) # Load the updated value from memory
-  # Check if x26 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x27, x5, x4, x26, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b26, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b26_str)
+  # Check if x26 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x26, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b26, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b26_str)
 
-  mv x1, x27 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x3, x7) # load value in memory: x7 = 0xec26c763
-  RVTEST_TESTDATA_LOAD_INT(x3, x27) # load rs2: x27 = 0x9b3f5eec
+  RVTEST_TESTDATA_LOAD_INT(x30, x14) # load value in memory: x14 = 0xcbc86239
+  RVTEST_TESTDATA_LOAD_INT(x30, x27) # load rs2: x27 = 0xa9093f67
   LA(x27, scratch) # load base address into rs1
-  SREG x7, 0(x27) # store value into memory at address in rs1
+  SREG x14, 0(x27) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b27:
-  amocas.h x24, x27, (x27) # perform operation
-  # Check if x24 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x24, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b27, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b27_str)
+  amocas.h x16, x27, (x27) # perform operation
+  # Check if x16 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x16, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b27, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b27_str)
   LREG x27, 0(x27) # Load the updated value from memory
-  # Check if x27 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x27, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b27, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b27_str)
+  # Check if x27 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x27, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b27, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b27_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load value in memory: x14 = 0x3e137efa
-  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs2: x28 = 0x8d113175
+  RVTEST_TESTDATA_LOAD_INT(x30, x20) # load value in memory: x20 = 0xd208dff9
+  RVTEST_TESTDATA_LOAD_INT(x30, x28) # load rs2: x28 = 0x648fd3c6
   LA(x28, scratch) # load base address into rs1
-  SREG x14, 0(x28) # store value into memory at address in rs1
+  SREG x20, 0(x28) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b28:
-  amocas.h x13, x28, (x28) # perform operation
-  # Check if x13 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x13, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b28, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b28_str)
+  amocas.h x26, x28, (x28) # perform operation
+  # Check if x26 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x26, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b28, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b28_str)
   LREG x28, 0(x28) # Load the updated value from memory
-  # Check if x28 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x28, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b28, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b28_str)
+  # Check if x28 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x28, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b28, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b28_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load value in memory: x26 = 0xe02fe1db
-  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs2: x29 = 0x725557a2
+  RVTEST_TESTDATA_LOAD_INT(x30, x19) # load value in memory: x19 = 0xce0bc405
+  RVTEST_TESTDATA_LOAD_INT(x30, x29) # load rs2: x29 = 0x22589c54
   LA(x29, scratch) # load base address into rs1
-  SREG x26, 0(x29) # store value into memory at address in rs1
+  SREG x19, 0(x29) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b29:
-  amocas.h x13, x29, (x29) # perform operation
-  # Check if x13 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x13, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b29, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b29_str)
+  amocas.h x10, x29, (x29) # perform operation
+  # Check if x10 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x10, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b29, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b29_str)
   LREG x29, 0(x29) # Load the updated value from memory
-  # Check if x29 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x29, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b29, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b29_str)
+  # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x29, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b29, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b29_str)
 
+  mv x27, x30 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load value in memory: x12 = 0x46bc540e
-  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load rs2: x30 = 0x2febedc4
+  RVTEST_TESTDATA_LOAD_INT(x27, x11) # load value in memory: x11 = 0x46bc540e
+  RVTEST_TESTDATA_LOAD_INT(x27, x30) # load rs2: x30 = 0x2febedc4
   LA(x30, scratch) # load base address into rs1
-  SREG x12, 0(x30) # store value into memory at address in rs1
+  SREG x11, 0(x30) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b30:
-  amocas.h x9, x30, (x30) # perform operation
-  # Check if x9 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x9, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b30, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b30_str)
+  amocas.h x8, x30, (x30) # perform operation
+  # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x8, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b30, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b30_str)
   LREG x30, 0(x30) # Load the updated value from memory
-  # Check if x30 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x30, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b30, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b30_str)
+  # Check if x30 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x30, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b30, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b30_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load value in memory: x26 = 0x34265eef
-  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs2: x31 = 0x23d71443
+  RVTEST_TESTDATA_LOAD_INT(x27, x25) # load value in memory: x25 = 0x34265eef
+  RVTEST_TESTDATA_LOAD_INT(x27, x31) # load rs2: x31 = 0x23d71443
   LA(x31, scratch) # load base address into rs1
-  SREG x26, 0(x31) # store value into memory at address in rs1
+  SREG x25, 0(x31) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b31:
   amocas.h x28, x31, (x31) # perform operation
-  # Check if x28 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x28, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b31, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b31_str)
+  # Check if x28 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x28, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b31, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b31_str)
   LREG x31, 0(x31) # Load the updated value from memory
-  # Check if x31 contains the expected result. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x1, x5, x4, x31, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b31, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b31_str)
+  # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x31, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b31, ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b31_str)
 
 /////////////////////////////////
 // cmp_rd_rs1_nx0
 /////////////////////////////////
 
-  mv x25, x1 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load value in memory: x11 = 0xe46ddb5b
-  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs2: x21 = 0x47bf6818
+  RVTEST_TESTDATA_LOAD_INT(x27, x19) # load value in memory: x19 = 0x0190774e
+  RVTEST_TESTDATA_LOAD_INT(x27, x6) # load rs2: x6 = 0xc447fd1f
   LA(x1, scratch) # load base address into rs1
-  SREG x11, 0(x1) # store value into memory at address in rs1
+  SREG x19, 0(x1) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b1:
-  amocas.h x1, x21, (x1) # perform operation
-  # Check if x1 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x1, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b1, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b1_str)
+  amocas.h x1, x6, (x1) # perform operation
+  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x1, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b1, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b1_str)
   LA(x1, scratch) # reload base address into rs1
   LREG x1, 0(x1) # Load the updated value from memory
-  # Check if x1 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x1, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b1, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b1_str)
+  # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x1, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b1, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b1_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load value in memory: x26 = 0xe1eac628
-  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load rs2: x19 = 0x984d5036
+  RVTEST_TESTDATA_LOAD_INT(x27, x24) # load value in memory: x24 = 0xf5b2b8e4
+  RVTEST_TESTDATA_LOAD_INT(x27, x9) # load rs2: x9 = 0x217e140f
   LA(x2, scratch) # load base address into rs1
-  SREG x26, 0(x2) # store value into memory at address in rs1
+  SREG x24, 0(x2) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b2:
-  amocas.h x2, x19, (x2) # perform operation
-  # Check if x2 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x2, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b2, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b2_str)
+  amocas.h x2, x9, (x2) # perform operation
+  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x2, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b2, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b2_str)
   LA(x2, scratch) # reload base address into rs1
   LREG x2, 0(x2) # Load the updated value from memory
-  # Check if x2 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x2, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b2, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b2_str)
+  # Check if x2 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x3, x5, x4, x2, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b2, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b2_str)
 
-  mv x1, x3 # switch data pointer register to avoid conflict with test
+  mv x18, x3 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load value in memory: x9 = 0x83f58312
-  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs2: x29 = 0x6e1c5173
+  RVTEST_TESTDATA_LOAD_INT(x27, x20) # load value in memory: x20 = 0x137f7e30
+  RVTEST_TESTDATA_LOAD_INT(x27, x19) # load rs2: x19 = 0x417acf5e
   LA(x3, scratch) # load base address into rs1
-  SREG x9, 0(x3) # store value into memory at address in rs1
+  SREG x20, 0(x3) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b3:
-  amocas.h x3, x29, (x3) # perform operation
-  # Check if x3 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x3, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b3, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b3_str)
+  amocas.h x3, x19, (x3) # perform operation
+  # Check if x3 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x3, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b3, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b3_str)
   LA(x3, scratch) # reload base address into rs1
   LREG x3, 0(x3) # Load the updated value from memory
-  # Check if x3 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x3, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b3, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b3_str)
+  # Check if x3 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x3, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b3, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b3_str)
 
-  mv x7, x4 # switch temp register to avoid conflict with test
-  mv x8, x5 # switch link pointer register to avoid conflict with test
+  mv x12, x4 # switch temp register to avoid conflict with test
+  mv x13, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load value in memory: x26 = 0x0d999b88
-  RVTEST_TESTDATA_LOAD_INT(x1, x18) # load rs2: x18 = 0xb2042f5c
+  RVTEST_TESTDATA_LOAD_INT(x27, x9) # load value in memory: x9 = 0x9aed8483
+  RVTEST_TESTDATA_LOAD_INT(x27, x21) # load rs2: x21 = 0xe37954e5
   LA(x4, scratch) # load base address into rs1
-  SREG x26, 0(x4) # store value into memory at address in rs1
+  SREG x9, 0(x4) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b4:
-  amocas.h x4, x18, (x4) # perform operation
-  # Check if x4 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x4, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b4, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b4_str)
+  amocas.h x4, x21, (x4) # perform operation
+  # Check if x4 contains the expected result. x18 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x18, x13, x12, x4, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b4, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b4_str)
   LA(x4, scratch) # reload base address into rs1
   LREG x4, 0(x4) # Load the updated value from memory
-  # Check if x4 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x4, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b4, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b4_str)
+  # Check if x4 contains the expected result. x18 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x18, x13, x12, x4, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b4, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b4_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load value in memory: x19 = 0x10da1eed
-  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs2: x27 = 0x4ea73352
+  RVTEST_TESTDATA_LOAD_INT(x27, x19) # load value in memory: x19 = 0x10da1eed
+  RVTEST_TESTDATA_LOAD_INT(x27, x26) # load rs2: x26 = 0x4ea73352
   LA(x5, scratch) # load base address into rs1
   SREG x19, 0(x5) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b5:
-  amocas.h x5, x27, (x5) # perform operation
-  # Check if x5 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x5, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b5, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b5_str)
+  amocas.h x5, x26, (x5) # perform operation
+  # Check if x5 contains the expected result. x18 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x18, x13, x12, x5, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b5, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b5_str)
   LA(x5, scratch) # reload base address into rs1
   LREG x5, 0(x5) # Load the updated value from memory
-  # Check if x5 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x5, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b5, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b5_str)
+  # Check if x5 contains the expected result. x18 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x18, x13, x12, x5, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b5, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b5_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load value in memory: x28 = 0x3a317a18
-  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs2: x3 = 0xc27b5e33
+  RVTEST_TESTDATA_LOAD_INT(x27, x26) # load value in memory: x26 = 0x3a317a18
+  RVTEST_TESTDATA_LOAD_INT(x27, x2) # load rs2: x2 = 0xc27b5e33
   LA(x6, scratch) # load base address into rs1
-  SREG x28, 0(x6) # store value into memory at address in rs1
+  SREG x26, 0(x6) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b6:
-  amocas.h x6, x3, (x6) # perform operation
-  # Check if x6 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x6, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b6, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b6_str)
+  amocas.h x6, x2, (x6) # perform operation
+  # Check if x6 contains the expected result. x18 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x18, x13, x12, x6, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b6, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b6_str)
   LA(x6, scratch) # reload base address into rs1
   LREG x6, 0(x6) # Load the updated value from memory
-  # Check if x6 contains the expected result. x25 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x25, x8, x7, x6, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b6, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b6_str)
+  # Check if x6 contains the expected result. x18 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x18, x13, x12, x6, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b6, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b6_str)
 
-  mv x4, x7 # switch temp register to avoid conflict with test
-  mv x5, x8 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load value in memory: x20 = 0xd4bc41c6
-  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load rs2: x17 = 0xd1a93e4f
+  RVTEST_TESTDATA_LOAD_INT(x27, x16) # load value in memory: x16 = 0x884347a2
+  RVTEST_TESTDATA_LOAD_INT(x27, x10) # load rs2: x10 = 0xec0b2849
   LA(x7, scratch) # load base address into rs1
-  SREG x20, 0(x7) # store value into memory at address in rs1
+  SREG x16, 0(x7) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b7:
-  amocas.h x7, x17, (x7) # perform operation
-  # Check if x7 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x7, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b7, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b7_str)
+  amocas.h x7, x10, (x7) # perform operation
+  # Check if x7 contains the expected result. x18 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x18, x13, x12, x7, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b7, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b7_str)
   LA(x7, scratch) # reload base address into rs1
   LREG x7, 0(x7) # Load the updated value from memory
-  # Check if x7 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x7, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b7, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b7_str)
+  # Check if x7 contains the expected result. x18 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x18, x13, x12, x7, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b7, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b7_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x1, x16) # load value in memory: x16 = 0x17145126
-  RVTEST_TESTDATA_LOAD_INT(x1, x24) # load rs2: x24 = 0x4823737b
+  RVTEST_TESTDATA_LOAD_INT(x27, x15) # load value in memory: x15 = 0xbad5a61d
+  RVTEST_TESTDATA_LOAD_INT(x27, x22) # load rs2: x22 = 0x4823737b
   LA(x8, scratch) # load base address into rs1
-  SREG x16, 0(x8) # store value into memory at address in rs1
+  SREG x15, 0(x8) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b8:
-  amocas.h x8, x24, (x8) # perform operation
-  # Check if x8 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x8, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b8, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b8_str)
+  amocas.h x8, x22, (x8) # perform operation
+  # Check if x8 contains the expected result. x18 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x18, x13, x12, x8, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b8, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b8_str)
   LA(x8, scratch) # reload base address into rs1
   LREG x8, 0(x8) # Load the updated value from memory
-  # Check if x8 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x8, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b8, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b8_str)
+  # Check if x8 contains the expected result. x18 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x18, x13, x12, x8, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b8, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b8_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load value in memory: x17 = 0xec05aaed
-  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0xe9a2b482
+  RVTEST_TESTDATA_LOAD_INT(x27, x16) # load value in memory: x16 = 0xec05aaed
+  RVTEST_TESTDATA_LOAD_INT(x27, x11) # load rs2: x11 = 0xe9a2b482
   LA(x9, scratch) # load base address into rs1
-  SREG x17, 0(x9) # store value into memory at address in rs1
+  SREG x16, 0(x9) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b9:
-  amocas.h x9, x14, (x9) # perform operation
-  # Check if x9 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x9, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b9, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b9_str)
+  amocas.h x9, x11, (x9) # perform operation
+  # Check if x9 contains the expected result. x18 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x18, x13, x12, x9, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b9, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b9_str)
   LA(x9, scratch) # reload base address into rs1
   LREG x9, 0(x9) # Load the updated value from memory
-  # Check if x9 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x9, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b9, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b9_str)
+  # Check if x9 contains the expected result. x18 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x18, x13, x12, x9, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b9, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b9_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load value in memory: x26 = 0x6b2925aa
-  RVTEST_TESTDATA_LOAD_INT(x1, x16) # load rs2: x16 = 0x19adbe19
+  RVTEST_TESTDATA_LOAD_INT(x27, x25) # load value in memory: x25 = 0x6b2925aa
+  RVTEST_TESTDATA_LOAD_INT(x27, x15) # load rs2: x15 = 0x19adbe19
   LA(x10, scratch) # load base address into rs1
-  SREG x26, 0(x10) # store value into memory at address in rs1
+  SREG x25, 0(x10) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b10:
-  amocas.h x10, x16, (x10) # perform operation
-  # Check if x10 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x10, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b10, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b10_str)
+  amocas.h x10, x15, (x10) # perform operation
+  # Check if x10 contains the expected result. x18 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x18, x13, x12, x10, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b10, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b10_str)
   LA(x10, scratch) # reload base address into rs1
   LREG x10, 0(x10) # Load the updated value from memory
-  # Check if x10 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x10, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b10, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b10_str)
+  # Check if x10 contains the expected result. x18 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x18, x13, x12, x10, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b10, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b10_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load value in memory: x14 = 0xce7e8c80
-  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0x6c453856
+  RVTEST_TESTDATA_LOAD_INT(x27, x10) # load value in memory: x10 = 0xce7e8c80
+  RVTEST_TESTDATA_LOAD_INT(x27, x6) # load rs2: x6 = 0x6c453856
   LA(x11, scratch) # load base address into rs1
-  SREG x14, 0(x11) # store value into memory at address in rs1
+  SREG x10, 0(x11) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b11:
-  amocas.h x11, x9, (x11) # perform operation
-  # Check if x11 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x11, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b11, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b11_str)
+  amocas.h x11, x6, (x11) # perform operation
+  # Check if x11 contains the expected result. x18 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x18, x13, x12, x11, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b11, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b11_str)
   LA(x11, scratch) # reload base address into rs1
   LREG x11, 0(x11) # Load the updated value from memory
-  # Check if x11 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x11, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b11, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b11_str)
+  # Check if x11 contains the expected result. x18 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x18, x13, x12, x11, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b11, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b11_str)
 
+  mv x4, x12 # switch temp register to avoid conflict with test
+  mv x5, x13 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load value in memory: x30 = 0x53db20c7
-  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs2: x20 = 0xdc8d7a93
+  RVTEST_TESTDATA_LOAD_INT(x27, x1) # load value in memory: x1 = 0x073fce41
+  RVTEST_TESTDATA_LOAD_INT(x27, x8) # load rs2: x8 = 0x575cda4d
   LA(x12, scratch) # load base address into rs1
-  SREG x30, 0(x12) # store value into memory at address in rs1
+  SREG x1, 0(x12) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b12:
-  amocas.h x12, x20, (x12) # perform operation
-  # Check if x12 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x12, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b12, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b12_str)
+  amocas.h x12, x8, (x12) # perform operation
+  # Check if x12 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x12, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b12, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b12_str)
   LA(x12, scratch) # reload base address into rs1
   LREG x12, 0(x12) # Load the updated value from memory
-  # Check if x12 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x12, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b12, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b12_str)
+  # Check if x12 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x12, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b12, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b12_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load value in memory: x10 = 0x575cda4d
-  RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs2: x0 = 0xce83161f
+  RVTEST_TESTDATA_LOAD_INT(x27, x17) # load value in memory: x17 = 0xce83161f
+  RVTEST_TESTDATA_LOAD_INT(x27, x7) # load rs2: x7 = 0x217648c6
   LA(x13, scratch) # load base address into rs1
-  SREG x10, 0(x13) # store value into memory at address in rs1
+  SREG x17, 0(x13) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b13:
-  amocas.h x13, x0, (x13) # perform operation
-  # Check if x13 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x13, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b13, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b13_str)
+  amocas.h x13, x7, (x13) # perform operation
+  # Check if x13 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x13, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b13, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b13_str)
   LA(x13, scratch) # reload base address into rs1
   LREG x13, 0(x13) # Load the updated value from memory
-  # Check if x13 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x13, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b13, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b13_str)
+  # Check if x13 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x13, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b13, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b13_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x1, x18) # load value in memory: x18 = 0x217648c6
-  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0x2dc6746c
+  RVTEST_TESTDATA_LOAD_INT(x27, x23) # load value in memory: x23 = 0x2dc6746c
+  RVTEST_TESTDATA_LOAD_INT(x27, x13) # load rs2: x13 = 0xa1cb2d80
   LA(x14, scratch) # load base address into rs1
-  SREG x18, 0(x14) # store value into memory at address in rs1
+  SREG x23, 0(x14) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b14:
-  amocas.h x14, x15, (x14) # perform operation
-  # Check if x14 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x14, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b14, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b14_str)
+  amocas.h x14, x13, (x14) # perform operation
+  # Check if x14 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x14, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b14, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b14_str)
   LA(x14, scratch) # reload base address into rs1
   LREG x14, 0(x14) # Load the updated value from memory
-  # Check if x14 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x14, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b14, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b14_str)
+  # Check if x14 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x14, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b14, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b14_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load value in memory: x22 = 0xa1cb2d80
-  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs2: x20 = 0x762be024
+  RVTEST_TESTDATA_LOAD_INT(x27, x26) # load value in memory: x26 = 0x762be024
+  RVTEST_TESTDATA_LOAD_INT(x27, x19) # load rs2: x19 = 0x886ef329
   LA(x15, scratch) # load base address into rs1
-  SREG x22, 0(x15) # store value into memory at address in rs1
+  SREG x26, 0(x15) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b15:
-  amocas.h x15, x20, (x15) # perform operation
-  # Check if x15 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x15, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b15, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b15_str)
+  amocas.h x15, x19, (x15) # perform operation
+  # Check if x15 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x15, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b15, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b15_str)
   LA(x15, scratch) # reload base address into rs1
   LREG x15, 0(x15) # Load the updated value from memory
-  # Check if x15 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x15, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b15, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b15_str)
+  # Check if x15 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x15, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b15, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b15_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load value in memory: x30 = 0x886ef329
-  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs2: x23 = 0x2053d68c
+  RVTEST_TESTDATA_LOAD_INT(x27, x31) # load value in memory: x31 = 0x2053d68c
+  RVTEST_TESTDATA_LOAD_INT(x27, x26) # load rs2: x26 = 0xfe9dbe0a
   LA(x16, scratch) # load base address into rs1
-  SREG x30, 0(x16) # store value into memory at address in rs1
+  SREG x31, 0(x16) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b16:
-  amocas.h x16, x23, (x16) # perform operation
-  # Check if x16 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x16, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b16, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b16_str)
+  amocas.h x16, x26, (x16) # perform operation
+  # Check if x16 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x16, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b16, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b16_str)
   LA(x16, scratch) # reload base address into rs1
   LREG x16, 0(x16) # Load the updated value from memory
-  # Check if x16 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x16, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b16, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b16_str)
+  # Check if x16 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x16, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b16, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b16_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load value in memory: x27 = 0xfe9dbe0a
-  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs2: x28 = 0x2b8668e5
+  RVTEST_TESTDATA_LOAD_INT(x27, x1) # load value in memory: x1 = 0x2b8668e5
+  RVTEST_TESTDATA_LOAD_INT(x27, x24) # load rs2: x24 = 0xa249ff64
   LA(x17, scratch) # load base address into rs1
-  SREG x27, 0(x17) # store value into memory at address in rs1
+  SREG x1, 0(x17) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b17:
-  amocas.h x17, x28, (x17) # perform operation
-  # Check if x17 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x17, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b17, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b17_str)
+  amocas.h x17, x24, (x17) # perform operation
+  # Check if x17 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x17, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b17, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b17_str)
   LA(x17, scratch) # reload base address into rs1
   LREG x17, 0(x17) # Load the updated value from memory
-  # Check if x17 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x17, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b17, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b17_str)
+  # Check if x17 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x17, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b17, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b17_str)
 
+  mv x10, x18 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x1, x16) # load value in memory: x16 = 0xa249ff64
-  RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs2: x0 = 0xa92a4065
+  RVTEST_TESTDATA_LOAD_INT(x27, x3) # load value in memory: x3 = 0xad05fbeb
+  RVTEST_TESTDATA_LOAD_INT(x27, x17) # load rs2: x17 = 0xdd780cd6
   LA(x18, scratch) # load base address into rs1
-  SREG x16, 0(x18) # store value into memory at address in rs1
+  SREG x3, 0(x18) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b18:
-  amocas.h x18, x0, (x18) # perform operation
-  # Check if x18 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x18, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b18, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b18_str)
+  amocas.h x18, x17, (x18) # perform operation
+  # Check if x18 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x18, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b18, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b18_str)
   LA(x18, scratch) # reload base address into rs1
   LREG x18, 0(x18) # Load the updated value from memory
-  # Check if x18 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x18, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b18, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b18_str)
+  # Check if x18 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x18, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b18, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b18_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load value in memory: x7 = 0x5808a048
-  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0xc6938596
+  RVTEST_TESTDATA_LOAD_INT(x27, x12) # load value in memory: x12 = 0x9262603b
+  RVTEST_TESTDATA_LOAD_INT(x27, x11) # load rs2: x11 = 0x8a970894
   LA(x19, scratch) # load base address into rs1
-  SREG x7, 0(x19) # store value into memory at address in rs1
+  SREG x12, 0(x19) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b19:
-  amocas.h x19, x14, (x19) # perform operation
-  # Check if x19 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x19, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b19, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b19_str)
+  amocas.h x19, x11, (x19) # perform operation
+  # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x19, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b19, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b19_str)
   LA(x19, scratch) # reload base address into rs1
   LREG x19, 0(x19) # Load the updated value from memory
-  # Check if x19 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x19, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b19, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b19_str)
+  # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x19, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b19, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b19_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x1, x24) # load value in memory: x24 = 0xd9257ab5
-  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs2: x26 = 0x548a48e7
+  RVTEST_TESTDATA_LOAD_INT(x27, x9) # load value in memory: x9 = 0x463008ba
+  RVTEST_TESTDATA_LOAD_INT(x27, x31) # load rs2: x31 = 0xdcd7f6df
   LA(x20, scratch) # load base address into rs1
-  SREG x24, 0(x20) # store value into memory at address in rs1
+  SREG x9, 0(x20) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b20:
-  amocas.h x20, x26, (x20) # perform operation
-  # Check if x20 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x20, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b20, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b20_str)
+  amocas.h x20, x31, (x20) # perform operation
+  # Check if x20 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x20, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b20, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b20_str)
   LA(x20, scratch) # reload base address into rs1
   LREG x20, 0(x20) # Load the updated value from memory
-  # Check if x20 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x20, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b20, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b20_str)
+  # Check if x20 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x20, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b20, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b20_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load value in memory: x7 = 0x8a970894
-  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0x463008ba
+  RVTEST_TESTDATA_LOAD_INT(x27, x26) # load value in memory: x26 = 0x17cf7591
+  RVTEST_TESTDATA_LOAD_INT(x27, x13) # load rs2: x13 = 0x102fc929
   LA(x21, scratch) # load base address into rs1
-  SREG x7, 0(x21) # store value into memory at address in rs1
+  SREG x26, 0(x21) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b21:
-  amocas.h x21, x9, (x21) # perform operation
-  # Check if x21 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x21, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b21, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b21_str)
+  amocas.h x21, x13, (x21) # perform operation
+  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x21, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b21, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b21_str)
   LA(x21, scratch) # reload base address into rs1
   LREG x21, 0(x21) # Load the updated value from memory
-  # Check if x21 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x21, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b21, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b21_str)
+  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x21, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b21, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b21_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load value in memory: x26 = 0x40524b21
-  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0x4d143431
+  RVTEST_TESTDATA_LOAD_INT(x27, x29) # load value in memory: x29 = 0xd31f0b55
+  RVTEST_TESTDATA_LOAD_INT(x27, x24) # load rs2: x24 = 0xfec8da17
   LA(x22, scratch) # load base address into rs1
-  SREG x26, 0(x22) # store value into memory at address in rs1
+  SREG x29, 0(x22) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b22:
-  amocas.h x22, x15, (x22) # perform operation
-  # Check if x22 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x22, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b22, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b22_str)
+  amocas.h x22, x24, (x22) # perform operation
+  # Check if x22 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x22, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b22, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b22_str)
   LA(x22, scratch) # reload base address into rs1
   LREG x22, 0(x22) # Load the updated value from memory
-  # Check if x22 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x22, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b22, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b22_str)
+  # Check if x22 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x22, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b22, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b22_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load value in memory: x28 = 0x7c7e1b36
-  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs2: x21 = 0xd31f0b55
+  RVTEST_TESTDATA_LOAD_INT(x27, x19) # load value in memory: x19 = 0xf02a8595
+  RVTEST_TESTDATA_LOAD_INT(x27, x20) # load rs2: x20 = 0x770999d5
   LA(x23, scratch) # load base address into rs1
-  SREG x28, 0(x23) # store value into memory at address in rs1
+  SREG x19, 0(x23) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b23:
-  amocas.h x23, x21, (x23) # perform operation
-  # Check if x23 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x23, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b23, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b23_str)
+  amocas.h x23, x20, (x23) # perform operation
+  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x23, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b23, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b23_str)
   LA(x23, scratch) # reload base address into rs1
   LREG x23, 0(x23) # Load the updated value from memory
-  # Check if x23 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x23, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b23, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b23_str)
+  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x23, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b23, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b23_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load value in memory: x22 = 0xfec8da17
-  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs2: x26 = 0xf02a8595
+  RVTEST_TESTDATA_LOAD_INT(x27, x22) # load value in memory: x22 = 0xbd8b1577
+  RVTEST_TESTDATA_LOAD_INT(x27, x25) # load rs2: x25 = 0x8e6212c4
   LA(x24, scratch) # load base address into rs1
   SREG x22, 0(x24) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b24:
-  amocas.h x24, x26, (x24) # perform operation
-  # Check if x24 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x24, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b24, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b24_str)
+  amocas.h x24, x25, (x24) # perform operation
+  # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x24, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b24, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b24_str)
   LA(x24, scratch) # reload base address into rs1
   LREG x24, 0(x24) # Load the updated value from memory
-  # Check if x24 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x25, x5, x4, x24, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b24, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b24_str)
+  # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x24, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b24, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b24_str)
 
-  mv x30, x25 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load value in memory: x7 = 0x770999d5
-  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs2: x28 = 0xf052c929
+  RVTEST_TESTDATA_LOAD_INT(x27, x12) # load value in memory: x12 = 0x86d069f7
+  RVTEST_TESTDATA_LOAD_INT(x27, x17) # load rs2: x17 = 0xbaa125a7
   LA(x25, scratch) # load base address into rs1
-  SREG x7, 0(x25) # store value into memory at address in rs1
+  SREG x12, 0(x25) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b25:
-  amocas.h x25, x28, (x25) # perform operation
-  # Check if x25 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x25, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b25, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b25_str)
+  amocas.h x25, x17, (x25) # perform operation
+  # Check if x25 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x25, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b25, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b25_str)
   LA(x25, scratch) # reload base address into rs1
   LREG x25, 0(x25) # Load the updated value from memory
-  # Check if x25 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x25, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b25, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b25_str)
+  # Check if x25 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x25, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b25, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b25_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load value in memory: x27 = 0x2c85eaed
-  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs2: x6 = 0x09b44537
+  RVTEST_TESTDATA_LOAD_INT(x27, x18) # load value in memory: x18 = 0x13002756
+  RVTEST_TESTDATA_LOAD_INT(x27, x20) # load rs2: x20 = 0xb7f2a20c
   LA(x26, scratch) # load base address into rs1
-  SREG x27, 0(x26) # store value into memory at address in rs1
+  SREG x18, 0(x26) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b26:
-  amocas.h x26, x6, (x26) # perform operation
-  # Check if x26 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x26, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b26, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b26_str)
+  amocas.h x26, x20, (x26) # perform operation
+  # Check if x26 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x26, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b26, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b26_str)
   LA(x26, scratch) # reload base address into rs1
   LREG x26, 0(x26) # Load the updated value from memory
-  # Check if x26 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x26, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b26, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b26_str)
+  # Check if x26 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x26, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b26, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b26_str)
 
+  mv x18, x27 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x1, x16) # load value in memory: x16 = 0x5cf40692
-  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs2: x11 = 0xf5216c78
+  RVTEST_TESTDATA_LOAD_INT(x18, x20) # load value in memory: x20 = 0x4469044c
+  RVTEST_TESTDATA_LOAD_INT(x18, x23) # load rs2: x23 = 0xcb93e830
   LA(x27, scratch) # load base address into rs1
-  SREG x16, 0(x27) # store value into memory at address in rs1
+  SREG x20, 0(x27) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b27:
-  amocas.h x27, x11, (x27) # perform operation
-  # Check if x27 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x27, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b27, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b27_str)
+  amocas.h x27, x23, (x27) # perform operation
+  # Check if x27 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x27, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b27, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b27_str)
   LA(x27, scratch) # reload base address into rs1
   LREG x27, 0(x27) # Load the updated value from memory
-  # Check if x27 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x27, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b27, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b27_str)
+  # Check if x27 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x27, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b27, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b27_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x1, x18) # load value in memory: x18 = 0xbbff19e9
-  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs2: x21 = 0xb7f2a20c
+  RVTEST_TESTDATA_LOAD_INT(x18, x20) # load value in memory: x20 = 0x4be68836
+  RVTEST_TESTDATA_LOAD_INT(x18, x6) # load rs2: x6 = 0x2531f82a
   LA(x28, scratch) # load base address into rs1
-  SREG x18, 0(x28) # store value into memory at address in rs1
+  SREG x20, 0(x28) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b28:
-  amocas.h x28, x21, (x28) # perform operation
-  # Check if x28 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x28, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b28, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b28_str)
+  amocas.h x28, x6, (x28) # perform operation
+  # Check if x28 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x28, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b28, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b28_str)
   LA(x28, scratch) # reload base address into rs1
   LREG x28, 0(x28) # Load the updated value from memory
-  # Check if x28 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x28, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b28, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b28_str)
+  # Check if x28 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x28, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b28, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b28_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load value in memory: x19 = 0x58e87d31
-  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs2: x27 = 0xcb93e830
+  RVTEST_TESTDATA_LOAD_INT(x18, x6) # load value in memory: x6 = 0x69c7ec12
+  RVTEST_TESTDATA_LOAD_INT(x18, x7) # load rs2: x7 = 0x824b278b
   LA(x29, scratch) # load base address into rs1
-  SREG x19, 0(x29) # store value into memory at address in rs1
+  SREG x6, 0(x29) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b29:
-  amocas.h x29, x27, (x29) # perform operation
-  # Check if x29 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x29, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b29, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b29_str)
+  amocas.h x29, x7, (x29) # perform operation
+  # Check if x29 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x29, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b29, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b29_str)
   LA(x29, scratch) # reload base address into rs1
   LREG x29, 0(x29) # Load the updated value from memory
-  # Check if x29 contains the expected result. x30 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x30, x5, x4, x29, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b29, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b29_str)
+  # Check if x29 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x29, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b29, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b29_str)
 
-  mv x22, x30 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x1, x18) # load value in memory: x18 = 0x443e56d9
-  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs2: x20 = 0x2531f82a
+  RVTEST_TESTDATA_LOAD_INT(x18, x1) # load value in memory: x1 = 0xb898a65e
+  RVTEST_TESTDATA_LOAD_INT(x18, x3) # load rs2: x3 = 0xa9e71e36
   LA(x30, scratch) # load base address into rs1
-  SREG x18, 0(x30) # store value into memory at address in rs1
+  SREG x1, 0(x30) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b30:
-  amocas.h x30, x20, (x30) # perform operation
-  # Check if x30 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x30, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b30, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b30_str)
+  amocas.h x30, x3, (x30) # perform operation
+  # Check if x30 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x30, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b30, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b30_str)
   LA(x30, scratch) # reload base address into rs1
   LREG x30, 0(x30) # Load the updated value from memory
-  # Check if x30 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x30, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b30, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b30_str)
+  # Check if x30 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x30, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b30, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b30_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load value in memory: x7 = 0x69c7ec12
-  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs2: x8 = 0x824b278b
+  RVTEST_TESTDATA_LOAD_INT(x18, x29) # load value in memory: x29 = 0x437e0b61
+  RVTEST_TESTDATA_LOAD_INT(x18, x25) # load rs2: x25 = 0x67a5eb81
   LA(x31, scratch) # load base address into rs1
-  SREG x7, 0(x31) # store value into memory at address in rs1
+  SREG x29, 0(x31) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b31:
-  amocas.h x31, x8, (x31) # perform operation
-  # Check if x31 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x31, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b31, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b31_str)
+  amocas.h x31, x25, (x31) # perform operation
+  # Check if x31 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x31, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b31, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b31_str)
   LA(x31, scratch) # reload base address into rs1
   LREG x31, 0(x31) # Load the updated value from memory
-  # Check if x31 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x31, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b31, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b31_str)
+  # Check if x31 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x31, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b31, ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b31_str)
 
 /////////////////////////////////
 // cmp_rd_rs2
 /////////////////////////////////
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x0)
-  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load value in memory: x11 = 0x8e1971cd
-  RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs2: x0 = 0x6769a631
+  RVTEST_TESTDATA_LOAD_INT(x18, x11) # load value in memory: x11 = 0x8e1971cd
+  RVTEST_TESTDATA_LOAD_INT(x18, x0) # load rs2: x0 = 0x6769a631
   LA(x17, scratch) # load base address into rs1
   SREG x11, 0(x17) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b0:
   amocas.h x0, x0, (x17) # perform operation
-  # Check if x0 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x0, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b0, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b0_str)
+  # Check if x0 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x0, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b0, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b0_str)
   LREG x17, 0(x17) # Load the updated value from memory
-  # Check if x17 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x17, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b0, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b0_str)
+  # Check if x17 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x17, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b0, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b0_str)
 
-  mv x21, x1 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x21, x19) # load value in memory: x19 = 0x1edd3e2e
-  RVTEST_TESTDATA_LOAD_INT(x21, x1) # load rs2: x1 = 0x2498e19c
-  LA(x18, scratch) # load base address into rs1
-  SREG x19, 0(x18) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x18, x27) # load value in memory: x27 = 0x77dfe3d6
+  RVTEST_TESTDATA_LOAD_INT(x18, x1) # load rs2: x1 = 0xb5752240
+  LA(x29, scratch) # load base address into rs1
+  SREG x27, 0(x29) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b1:
-  amocas.h x1, x1, (x18) # perform operation
-  # Check if x1 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x1, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b1, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b1_str)
-  LREG x18, 0(x18) # Load the updated value from memory
-  # Check if x18 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x18, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b1, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b1_str)
+  amocas.h x1, x1, (x29) # perform operation
+  # Check if x1 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x1, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b1, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b1_str)
+  LREG x29, 0(x29) # Load the updated value from memory
+  # Check if x29 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x29, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b1, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b1_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x21, x18) # load value in memory: x18 = 0xf2006466
-  RVTEST_TESTDATA_LOAD_INT(x21, x2) # load rs2: x2 = 0x0e965ac5
-  LA(x3, scratch) # load base address into rs1
-  SREG x18, 0(x3) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x18, x25) # load value in memory: x25 = 0xe9b48d3a
+  RVTEST_TESTDATA_LOAD_INT(x18, x2) # load rs2: x2 = 0xf2006466
+  LA(x8, scratch) # load base address into rs1
+  SREG x25, 0(x8) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b2:
-  amocas.h x2, x2, (x3) # perform operation
-  # Check if x2 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x2, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b2, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b2_str)
-  LREG x3, 0(x3) # Load the updated value from memory
-  # Check if x3 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x3, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b2, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b2_str)
+  amocas.h x2, x2, (x8) # perform operation
+  # Check if x2 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x2, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b2, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b2_str)
+  LREG x8, 0(x8) # Load the updated value from memory
+  # Check if x8 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x8, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b2, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b2_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x21, x16) # load value in memory: x16 = 0x267429db
-  RVTEST_TESTDATA_LOAD_INT(x21, x3) # load rs2: x3 = 0xe38214c9
-  LA(x26, scratch) # load base address into rs1
-  SREG x16, 0(x26) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x18, x19) # load value in memory: x19 = 0x0e965ac5
+  RVTEST_TESTDATA_LOAD_INT(x18, x3) # load rs2: x3 = 0x267429db
+  LA(x31, scratch) # load base address into rs1
+  SREG x19, 0(x31) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b3:
-  amocas.h x3, x3, (x26) # perform operation
-  # Check if x3 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x3, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b3, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b3_str)
-  LREG x26, 0(x26) # Load the updated value from memory
-  # Check if x26 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x26, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b3, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b3_str)
+  amocas.h x3, x3, (x31) # perform operation
+  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x3, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b3, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b3_str)
+  LREG x31, 0(x31) # Load the updated value from memory
+  # Check if x31 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x31, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b3, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b3_str)
 
   mv x7, x4 # switch temp register to avoid conflict with test
   mv x8, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x21, x3) # load value in memory: x3 = 0x4471409c
-  RVTEST_TESTDATA_LOAD_INT(x21, x4) # load rs2: x4 = 0xb6fa7a33
-  LA(x17, scratch) # load base address into rs1
-  SREG x3, 0(x17) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x18, x12) # load value in memory: x12 = 0xb1be05b9
+  RVTEST_TESTDATA_LOAD_INT(x18, x4) # load rs2: x4 = 0x4471409c
+  LA(x15, scratch) # load base address into rs1
+  SREG x12, 0(x15) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b4:
-  amocas.h x4, x4, (x17) # perform operation
-  # Check if x4 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x4, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b4, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b4_str)
-  LREG x17, 0(x17) # Load the updated value from memory
-  # Check if x17 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x17, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b4, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b4_str)
+  amocas.h x4, x4, (x15) # perform operation
+  # Check if x4 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x4, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b4, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b4_str)
+  LREG x15, 0(x15) # Load the updated value from memory
+  # Check if x15 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x15, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b4, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b4_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x21, x6) # load value in memory: x6 = 0xbfb21e1c
-  RVTEST_TESTDATA_LOAD_INT(x21, x5) # load rs2: x5 = 0x58f93651
-  LA(x18, scratch) # load base address into rs1
-  SREG x6, 0(x18) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x18, x21) # load value in memory: x21 = 0x88ec77f4
+  RVTEST_TESTDATA_LOAD_INT(x18, x5) # load rs2: x5 = 0xbfb21e1c
+  LA(x19, scratch) # load base address into rs1
+  SREG x21, 0(x19) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b5:
-  amocas.h x5, x5, (x18) # perform operation
-  # Check if x5 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x5, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b5, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b5_str)
-  LREG x18, 0(x18) # Load the updated value from memory
-  # Check if x18 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x18, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b5, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b5_str)
+  amocas.h x5, x5, (x19) # perform operation
+  # Check if x5 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x5, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b5, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b5_str)
+  LREG x19, 0(x19) # Load the updated value from memory
+  # Check if x19 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x19, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b5, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b5_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x21, x25) # load value in memory: x25 = 0x4a3de216
-  RVTEST_TESTDATA_LOAD_INT(x21, x6) # load rs2: x6 = 0x7c2089e7
-  LA(x26, scratch) # load base address into rs1
-  SREG x25, 0(x26) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b6:
-  amocas.h x6, x6, (x26) # perform operation
-  # Check if x6 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x6, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b6, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b6_str)
-  LREG x26, 0(x26) # Load the updated value from memory
-  # Check if x26 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x26, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b6, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b6_str)
-
-  mv x12, x7 # switch temp register to avoid conflict with test
-  mv x13, x8 # switch link pointer register to avoid conflict with test
-# Testcase cmp_rd_rs2 (Test rd = rs2 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x21, x20) # load value in memory: x20 = 0xf25363a9
-  RVTEST_TESTDATA_LOAD_INT(x21, x7) # load rs2: x7 = 0x1ec8f279
+  RVTEST_TESTDATA_LOAD_INT(x18, x5) # load value in memory: x5 = 0x24ba23be
+  RVTEST_TESTDATA_LOAD_INT(x18, x6) # load rs2: x6 = 0x9d7feee9
   LA(x3, scratch) # load base address into rs1
-  SREG x20, 0(x3) # store value into memory at address in rs1
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b7:
-  amocas.h x7, x7, (x3) # perform operation
-  # Check if x7 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x7, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b7, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b7_str)
+  SREG x5, 0(x3) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b6:
+  amocas.h x6, x6, (x3) # perform operation
+  # Check if x6 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x6, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b6, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b6_str)
   LREG x3, 0(x3) # Load the updated value from memory
-  # Check if x3 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x3, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b7, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b7_str)
+  # Check if x3 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x10, x8, x7, x3, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b6, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b6_str)
+
+  mv x4, x7 # switch temp register to avoid conflict with test
+  mv x5, x8 # switch link pointer register to avoid conflict with test
+# Testcase cmp_rd_rs2 (Test rd = rs2 = x7)
+  RVTEST_TESTDATA_LOAD_INT(x18, x31) # load value in memory: x31 = 0xf2893e03
+  RVTEST_TESTDATA_LOAD_INT(x18, x7) # load rs2: x7 = 0x74a44a73
+  LA(x19, scratch) # load base address into rs1
+  SREG x31, 0(x19) # store value into memory at address in rs1
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b7:
+  amocas.h x7, x7, (x19) # perform operation
+  # Check if x7 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x7, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b7, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b7_str)
+  LREG x19, 0(x19) # Load the updated value from memory
+  # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x19, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b7, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b7_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x21, x18) # load value in memory: x18 = 0xa15285ed
-  RVTEST_TESTDATA_LOAD_INT(x21, x8) # load rs2: x8 = 0x3278ecc2
-  LA(x17, scratch) # load base address into rs1
-  SREG x18, 0(x17) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x18, x25) # load value in memory: x25 = 0x2903e0d2
+  RVTEST_TESTDATA_LOAD_INT(x18, x8) # load rs2: x8 = 0xb6d18129
+  LA(x19, scratch) # load base address into rs1
+  SREG x25, 0(x19) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b8:
-  amocas.h x8, x8, (x17) # perform operation
-  # Check if x8 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x8, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b8, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b8_str)
-  LREG x17, 0(x17) # Load the updated value from memory
-  # Check if x17 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x17, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b8, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b8_str)
+  amocas.h x8, x8, (x19) # perform operation
+  # Check if x8 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x8, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b8, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b8_str)
+  LREG x19, 0(x19) # Load the updated value from memory
+  # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x19, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b8, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b8_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x21, x18) # load value in memory: x18 = 0x8fe8a0b3
-  RVTEST_TESTDATA_LOAD_INT(x21, x9) # load rs2: x9 = 0x1b070883
+  RVTEST_TESTDATA_LOAD_INT(x18, x7) # load value in memory: x7 = 0x34f75154
+  RVTEST_TESTDATA_LOAD_INT(x18, x9) # load rs2: x9 = 0x4c4f6994
   LA(x20, scratch) # load base address into rs1
-  SREG x18, 0(x20) # store value into memory at address in rs1
+  SREG x7, 0(x20) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b9:
   amocas.h x9, x9, (x20) # perform operation
-  # Check if x9 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x9, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b9, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b9_str)
+  # Check if x9 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x9, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b9, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b9_str)
   LREG x20, 0(x20) # Load the updated value from memory
-  # Check if x20 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x20, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b9, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b9_str)
+  # Check if x20 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x10, x5, x4, x20, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b9, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b9_str)
 
+  mv x28, x10 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x21, x6) # load value in memory: x6 = 0x1292127d
-  RVTEST_TESTDATA_LOAD_INT(x21, x10) # load rs2: x10 = 0x67b23ae9
-  LA(x31, scratch) # load base address into rs1
-  SREG x6, 0(x31) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x18, x8) # load value in memory: x8 = 0x1292127d
+  RVTEST_TESTDATA_LOAD_INT(x18, x10) # load rs2: x10 = 0x67b23ae9
+  LA(x12, scratch) # load base address into rs1
+  SREG x8, 0(x12) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b10:
-  amocas.h x10, x10, (x31) # perform operation
-  # Check if x10 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x10, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b10, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b10_str)
-  LREG x31, 0(x31) # Load the updated value from memory
-  # Check if x31 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x31, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b10, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b10_str)
+  amocas.h x10, x10, (x12) # perform operation
+  # Check if x10 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x10, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b10, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b10_str)
+  LREG x12, 0(x12) # Load the updated value from memory
+  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x12, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b10, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b10_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x21, x17) # load value in memory: x17 = 0x365bd11b
-  RVTEST_TESTDATA_LOAD_INT(x21, x11) # load rs2: x11 = 0x9df67498
-  LA(x18, scratch) # load base address into rs1
-  SREG x17, 0(x18) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x18, x17) # load value in memory: x17 = 0x365bd11b
+  RVTEST_TESTDATA_LOAD_INT(x18, x11) # load rs2: x11 = 0x9df67498
+  LA(x19, scratch) # load base address into rs1
+  SREG x17, 0(x19) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b11:
-  amocas.h x11, x11, (x18) # perform operation
-  # Check if x11 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x11, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b11, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b11_str)
-  LREG x18, 0(x18) # Load the updated value from memory
-  # Check if x18 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x18, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b11, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b11_str)
+  amocas.h x11, x11, (x19) # perform operation
+  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x11, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b11, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b11_str)
+  LREG x19, 0(x19) # Load the updated value from memory
+  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x19, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b11, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b11_str)
 
-  mv x4, x12 # switch temp register to avoid conflict with test
-  mv x5, x13 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x21, x13) # load value in memory: x13 = 0xcb7841da
-  RVTEST_TESTDATA_LOAD_INT(x21, x12) # load rs2: x12 = 0x79bdd96c
-  LA(x26, scratch) # load base address into rs1
-  SREG x13, 0(x26) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x18, x10) # load value in memory: x10 = 0x7067d277
+  RVTEST_TESTDATA_LOAD_INT(x18, x12) # load rs2: x12 = 0x4d824c26
+  LA(x31, scratch) # load base address into rs1
+  SREG x10, 0(x31) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b12:
-  amocas.h x12, x12, (x26) # perform operation
-  # Check if x12 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x12, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b12, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b12_str)
-  LREG x26, 0(x26) # Load the updated value from memory
-  # Check if x26 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x26, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b12, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b12_str)
+  amocas.h x12, x12, (x31) # perform operation
+  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x12, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b12, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b12_str)
+  LREG x31, 0(x31) # Load the updated value from memory
+  # Check if x31 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x31, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b12, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b12_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x21, x12) # load value in memory: x12 = 0xef497889
-  RVTEST_TESTDATA_LOAD_INT(x21, x13) # load rs2: x13 = 0x92a24c8c
-  LA(x6, scratch) # load base address into rs1
-  SREG x12, 0(x6) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x18, x19) # load value in memory: x19 = 0x79bdd96c
+  RVTEST_TESTDATA_LOAD_INT(x18, x13) # load rs2: x13 = 0x67794f33
+  LA(x29, scratch) # load base address into rs1
+  SREG x19, 0(x29) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b13:
-  amocas.h x13, x13, (x6) # perform operation
-  # Check if x13 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x13, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b13, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b13_str)
-  LREG x6, 0(x6) # Load the updated value from memory
-  # Check if x6 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x6, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b13, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b13_str)
+  amocas.h x13, x13, (x29) # perform operation
+  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x13, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b13, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b13_str)
+  LREG x29, 0(x29) # Load the updated value from memory
+  # Check if x29 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x29, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b13, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b13_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x21, x30) # load value in memory: x30 = 0x69e33072
-  RVTEST_TESTDATA_LOAD_INT(x21, x14) # load rs2: x14 = 0xaca86951
-  LA(x9, scratch) # load base address into rs1
-  SREG x30, 0(x9) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x18, x23) # load value in memory: x23 = 0x92a24c8c
+  RVTEST_TESTDATA_LOAD_INT(x18, x14) # load rs2: x14 = 0xbc40d12e
+  LA(x12, scratch) # load base address into rs1
+  SREG x23, 0(x12) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b14:
-  amocas.h x14, x14, (x9) # perform operation
-  # Check if x14 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x14, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b14, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b14_str)
-  LREG x9, 0(x9) # Load the updated value from memory
-  # Check if x9 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x9, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b14, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b14_str)
+  amocas.h x14, x14, (x12) # perform operation
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b14, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b14_str)
+  LREG x12, 0(x12) # Load the updated value from memory
+  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x12, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b14, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b14_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x21, x9) # load value in memory: x9 = 0xa8ca962f
-  RVTEST_TESTDATA_LOAD_INT(x21, x15) # load rs2: x15 = 0xf15476f1
-  LA(x16, scratch) # load base address into rs1
-  SREG x9, 0(x16) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x18, x9) # load value in memory: x9 = 0x878a5b76
+  RVTEST_TESTDATA_LOAD_INT(x18, x15) # load rs2: x15 = 0x3744a9b0
+  LA(x20, scratch) # load base address into rs1
+  SREG x9, 0(x20) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b15:
-  amocas.h x15, x15, (x16) # perform operation
-  # Check if x15 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x15, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b15, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b15_str)
-  LREG x16, 0(x16) # Load the updated value from memory
-  # Check if x16 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x16, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b15, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b15_str)
+  amocas.h x15, x15, (x20) # perform operation
+  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x15, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b15, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b15_str)
+  LREG x20, 0(x20) # Load the updated value from memory
+  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x20, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b15, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b15_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x21, x6) # load value in memory: x6 = 0x0a949771
-  RVTEST_TESTDATA_LOAD_INT(x21, x16) # load rs2: x16 = 0xf5b53f49
-  LA(x25, scratch) # load base address into rs1
-  SREG x6, 0(x25) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x18, x19) # load value in memory: x19 = 0xf15476f1
+  RVTEST_TESTDATA_LOAD_INT(x18, x16) # load rs2: x16 = 0x0a949771
+  LA(x8, scratch) # load base address into rs1
+  SREG x19, 0(x8) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b16:
-  amocas.h x16, x16, (x25) # perform operation
-  # Check if x16 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x16, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b16, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b16_str)
-  LREG x25, 0(x25) # Load the updated value from memory
-  # Check if x25 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x25, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b16, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b16_str)
+  amocas.h x16, x16, (x8) # perform operation
+  # Check if x16 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x16, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b16, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b16_str)
+  LREG x8, 0(x8) # Load the updated value from memory
+  # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x8, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b16, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b16_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x21, x3) # load value in memory: x3 = 0xa84b918c
-  RVTEST_TESTDATA_LOAD_INT(x21, x17) # load rs2: x17 = 0x0adba5ee
-  LA(x23, scratch) # load base address into rs1
-  SREG x3, 0(x23) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x18, x24) # load value in memory: x24 = 0xf5b53f49
+  RVTEST_TESTDATA_LOAD_INT(x18, x17) # load rs2: x17 = 0x7c34ea17
+  LA(x25, scratch) # load base address into rs1
+  SREG x24, 0(x25) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b17:
-  amocas.h x17, x17, (x23) # perform operation
-  # Check if x17 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x17, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b17, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b17_str)
-  LREG x23, 0(x23) # Load the updated value from memory
-  # Check if x23 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x23, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b17, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b17_str)
+  amocas.h x17, x17, (x25) # perform operation
+  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x17, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b17, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b17_str)
+  LREG x25, 0(x25) # Load the updated value from memory
+  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x25, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b17, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b17_str)
 
+  mv x16, x18 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x21, x24) # load value in memory: x24 = 0x422cbc08
-  RVTEST_TESTDATA_LOAD_INT(x21, x18) # load rs2: x18 = 0xa736ca88
-  LA(x15, scratch) # load base address into rs1
-  SREG x24, 0(x15) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load value in memory: x3 = 0xa84b918c
+  RVTEST_TESTDATA_LOAD_INT(x16, x18) # load rs2: x18 = 0x0adba5ee
+  LA(x21, scratch) # load base address into rs1
+  SREG x3, 0(x21) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b18:
-  amocas.h x18, x18, (x15) # perform operation
-  # Check if x18 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x18, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b18, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b18_str)
-  LREG x15, 0(x15) # Load the updated value from memory
-  # Check if x15 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x15, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b18, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b18_str)
+  amocas.h x18, x18, (x21) # perform operation
+  # Check if x18 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x18, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b18, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b18_str)
+  LREG x21, 0(x21) # Load the updated value from memory
+  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x21, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b18, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b18_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x21, x27) # load value in memory: x27 = 0x4334266f
-  RVTEST_TESTDATA_LOAD_INT(x21, x19) # load rs2: x19 = 0x185c7d24
-  LA(x14, scratch) # load base address into rs1
-  SREG x27, 0(x14) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load value in memory: x23 = 0x422cbc08
+  RVTEST_TESTDATA_LOAD_INT(x16, x19) # load rs2: x19 = 0xa736ca88
+  LA(x15, scratch) # load base address into rs1
+  SREG x23, 0(x15) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b19:
-  amocas.h x19, x19, (x14) # perform operation
-  # Check if x19 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x19, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b19, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b19_str)
-  LREG x14, 0(x14) # Load the updated value from memory
-  # Check if x14 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x14, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b19, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b19_str)
+  amocas.h x19, x19, (x15) # perform operation
+  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x19, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b19, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b19_str)
+  LREG x15, 0(x15) # Load the updated value from memory
+  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x15, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b19, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b19_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x21, x30) # load value in memory: x30 = 0x182f7ef5
-  RVTEST_TESTDATA_LOAD_INT(x21, x20) # load rs2: x20 = 0x51e43d6b
-  LA(x16, scratch) # load base address into rs1
-  SREG x30, 0(x16) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x16, x26) # load value in memory: x26 = 0x4334266f
+  RVTEST_TESTDATA_LOAD_INT(x16, x20) # load rs2: x20 = 0x185c7d24
+  LA(x14, scratch) # load base address into rs1
+  SREG x26, 0(x14) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b20:
-  amocas.h x20, x20, (x16) # perform operation
-  # Check if x20 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x20, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b20, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b20_str)
-  LREG x16, 0(x16) # Load the updated value from memory
-  # Check if x16 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x16, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b20, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b20_str)
+  amocas.h x20, x20, (x14) # perform operation
+  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x20, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b20, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b20_str)
+  LREG x14, 0(x14) # Load the updated value from memory
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b20, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b20_str)
 
-  mv x3, x21 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load value in memory: x30 = 0x6ed1144c
-  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs2: x21 = 0x71d29882
-  LA(x13, scratch) # load base address into rs1
-  SREG x30, 0(x13) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load value in memory: x30 = 0x182f7ef5
+  RVTEST_TESTDATA_LOAD_INT(x16, x21) # load rs2: x21 = 0x51e43d6b
+  LA(x17, scratch) # load base address into rs1
+  SREG x30, 0(x17) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b21:
-  amocas.h x21, x21, (x13) # perform operation
-  # Check if x21 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x21, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b21, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b21_str)
-  LREG x13, 0(x13) # Load the updated value from memory
-  # Check if x13 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x13, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b21, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b21_str)
+  amocas.h x21, x21, (x17) # perform operation
+  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x21, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b21, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b21_str)
+  LREG x17, 0(x17) # Load the updated value from memory
+  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x17, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b21, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b21_str)
 
-  mv x10, x22 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load value in memory: x12 = 0xf654e887
-  RVTEST_TESTDATA_LOAD_INT(x3, x22) # load rs2: x22 = 0x8bc07710
-  LA(x24, scratch) # load base address into rs1
-  SREG x12, 0(x24) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load value in memory: x30 = 0xd523847a
+  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load rs2: x22 = 0xf654e887
+  LA(x2, scratch) # load base address into rs1
+  SREG x30, 0(x2) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b22:
-  amocas.h x22, x22, (x24) # perform operation
-  # Check if x22 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x22, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b22, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b22_str)
-  LREG x24, 0(x24) # Load the updated value from memory
-  # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x24, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b22, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b22_str)
+  amocas.h x22, x22, (x2) # perform operation
+  # Check if x22 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x22, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b22, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b22_str)
+  LREG x2, 0(x2) # Load the updated value from memory
+  # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x2, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b22, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b22_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load value in memory: x17 = 0xc7922fd2
-  RVTEST_TESTDATA_LOAD_INT(x3, x23) # load rs2: x23 = 0xa7e695e2
-  LA(x28, scratch) # load base address into rs1
-  SREG x17, 0(x28) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load value in memory: x13 = 0x835fe602
+  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load rs2: x23 = 0x3ca70f7f
+  LA(x1, scratch) # load base address into rs1
+  SREG x13, 0(x1) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b23:
-  amocas.h x23, x23, (x28) # perform operation
-  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x23, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b23, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b23_str)
-  LREG x28, 0(x28) # Load the updated value from memory
-  # Check if x28 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x28, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b23, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b23_str)
+  amocas.h x23, x23, (x1) # perform operation
+  # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x23, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b23, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b23_str)
+  LREG x1, 0(x1) # Load the updated value from memory
+  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x1, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b23, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b23_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load value in memory: x19 = 0x089aa3e5
-  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs2: x24 = 0x83ee5496
-  LA(x13, scratch) # load base address into rs1
-  SREG x19, 0(x13) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load value in memory: x22 = 0xa7e695e2
+  RVTEST_TESTDATA_LOAD_INT(x16, x24) # load rs2: x24 = 0xda9e8462
+  LA(x9, scratch) # load base address into rs1
+  SREG x22, 0(x9) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b24:
-  amocas.h x24, x24, (x13) # perform operation
-  # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x24, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b24, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b24_str)
-  LREG x13, 0(x13) # Load the updated value from memory
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b24, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b24_str)
+  amocas.h x24, x24, (x9) # perform operation
+  # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x24, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b24, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b24_str)
+  LREG x9, 0(x9) # Load the updated value from memory
+  # Check if x9 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x9, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b24, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b24_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load value in memory: x24 = 0xc016f136
-  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load rs2: x25 = 0xf824be71
-  LA(x15, scratch) # load base address into rs1
-  SREG x24, 0(x15) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x16, x17) # load value in memory: x17 = 0x490ec26e
+  RVTEST_TESTDATA_LOAD_INT(x16, x25) # load rs2: x25 = 0x351ee07c
+  LA(x21, scratch) # load base address into rs1
+  SREG x17, 0(x21) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b25:
-  amocas.h x25, x25, (x15) # perform operation
-  # Check if x25 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x25, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b25, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b25_str)
-  LREG x15, 0(x15) # Load the updated value from memory
-  # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x15, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b25, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b25_str)
+  amocas.h x25, x25, (x21) # perform operation
+  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x25, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b25, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b25_str)
+  LREG x21, 0(x21) # Load the updated value from memory
+  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x21, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b25, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b25_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load value in memory: x19 = 0x3a930dd6
-  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs2: x26 = 0x342a9322
-  LA(x7, scratch) # load base address into rs1
-  SREG x19, 0(x7) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x16, x8) # load value in memory: x8 = 0x268b1340
+  RVTEST_TESTDATA_LOAD_INT(x16, x26) # load rs2: x26 = 0x3cd137ef
+  LA(x14, scratch) # load base address into rs1
+  SREG x8, 0(x14) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b26:
-  amocas.h x26, x26, (x7) # perform operation
-  # Check if x26 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x26, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b26, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b26_str)
-  LREG x7, 0(x7) # Load the updated value from memory
-  # Check if x7 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x7, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b26, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b26_str)
+  amocas.h x26, x26, (x14) # perform operation
+  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x26, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b26, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b26_str)
+  LREG x14, 0(x14) # Load the updated value from memory
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b26, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b26_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load value in memory: x28 = 0x01c835ec
-  RVTEST_TESTDATA_LOAD_INT(x3, x27) # load rs2: x27 = 0xfb5b6357
-  LA(x31, scratch) # load base address into rs1
-  SREG x28, 0(x31) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load value in memory: x22 = 0xab75e95c
+  RVTEST_TESTDATA_LOAD_INT(x16, x27) # load rs2: x27 = 0x06eff083
+  LA(x18, scratch) # load base address into rs1
+  SREG x22, 0(x18) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b27:
-  amocas.h x27, x27, (x31) # perform operation
-  # Check if x27 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x27, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b27, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b27_str)
-  LREG x31, 0(x31) # Load the updated value from memory
-  # Check if x31 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x31, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b27, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b27_str)
+  amocas.h x27, x27, (x18) # perform operation
+  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x27, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b27, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b27_str)
+  LREG x18, 0(x18) # Load the updated value from memory
+  # Check if x18 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x18, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b27, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b27_str)
 
+  mv x31, x28 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load value in memory: x25 = 0x46595b3e
-  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs2: x28 = 0x18725b1f
-  LA(x24, scratch) # load base address into rs1
-  SREG x25, 0(x24) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load value in memory: x23 = 0x342a9322
+  RVTEST_TESTDATA_LOAD_INT(x16, x28) # load rs2: x28 = 0x01c835ec
+  LA(x30, scratch) # load base address into rs1
+  SREG x23, 0(x30) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b28:
-  amocas.h x28, x28, (x24) # perform operation
-  # Check if x28 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x28, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b28, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b28_str)
-  LREG x24, 0(x24) # Load the updated value from memory
-  # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x24, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b28, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b28_str)
+  amocas.h x28, x28, (x30) # perform operation
+  # Check if x28 contains the expected result. x31 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x31, x5, x4, x28, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b28, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b28_str)
+  LREG x30, 0(x30) # Load the updated value from memory
+  # Check if x30 contains the expected result. x31 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x31, x5, x4, x30, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b28, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b28_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load value in memory: x9 = 0x08ef64fe
-  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs2: x29 = 0x93fe9355
-  LA(x8, scratch) # load base address into rs1
-  SREG x9, 0(x8) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load value in memory: x30 = 0x4913e5d6
+  RVTEST_TESTDATA_LOAD_INT(x16, x29) # load rs2: x29 = 0x2779f9ed
+  LA(x13, scratch) # load base address into rs1
+  SREG x30, 0(x13) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b29:
-  amocas.h x29, x29, (x8) # perform operation
-  # Check if x29 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x29, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b29, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b29_str)
-  LREG x8, 0(x8) # Load the updated value from memory
-  # Check if x8 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x8, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b29, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b29_str)
+  amocas.h x29, x29, (x13) # perform operation
+  # Check if x29 contains the expected result. x31 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x31, x5, x4, x29, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b29, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b29_str)
+  LREG x13, 0(x13) # Load the updated value from memory
+  # Check if x13 contains the expected result. x31 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x31, x5, x4, x13, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b29, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b29_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load value in memory: x11 = 0x6c82ab36
-  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load rs2: x30 = 0x5c3b8406
-  LA(x8, scratch) # load base address into rs1
-  SREG x11, 0(x8) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load value in memory: x13 = 0x18725b1f
+  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load rs2: x30 = 0x142913ec
+  LA(x28, scratch) # load base address into rs1
+  SREG x13, 0(x28) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b30:
-  amocas.h x30, x30, (x8) # perform operation
-  # Check if x30 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x30, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b30, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b30_str)
-  LREG x8, 0(x8) # Load the updated value from memory
-  # Check if x8 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x8, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b30, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b30_str)
+  amocas.h x30, x30, (x28) # perform operation
+  # Check if x30 contains the expected result. x31 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x31, x5, x4, x30, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b30, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b30_str)
+  LREG x28, 0(x28) # Load the updated value from memory
+  # Check if x28 contains the expected result. x31 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x31, x5, x4, x28, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b30, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b30_str)
 
+  mv x28, x31 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load value in memory: x13 = 0xb77594c2
-  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs2: x31 = 0x65841805
-  LA(x23, scratch) # load base address into rs1
-  SREG x13, 0(x23) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x16, x9) # load value in memory: x9 = 0x7b0a5107
+  RVTEST_TESTDATA_LOAD_INT(x16, x31) # load rs2: x31 = 0x965c5bbd
+  LA(x20, scratch) # load base address into rs1
+  SREG x9, 0(x20) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs2_b31:
-  amocas.h x31, x31, (x23) # perform operation
-  # Check if x31 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x31, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b31, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b31_str)
-  LREG x23, 0(x23) # Load the updated value from memory
-  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x23, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b31, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b31_str)
+  amocas.h x31, x31, (x20) # perform operation
+  # Check if x31 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x31, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b31, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b31_str)
+  LREG x20, 0(x20) # Load the updated value from memory
+  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x20, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b31, ZacasZabha_amocas_h_cg_cmp_rd_rs2_b31_str)
 
 /////////////////////////////////
 // cmp_rd_rs1_rs2_nx0
 /////////////////////////////////
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load value in memory: x30 = 0x825beadc
-  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs2: x1 = 0x0900309c
+  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load value in memory: x30 = 0x825beadc
+  RVTEST_TESTDATA_LOAD_INT(x16, x1) # load rs2: x1 = 0x0900309c
   LA(x1, scratch) # load base address into rs1
   SREG x30, 0(x1) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b1:
   amocas.h x1, x1, (x1) # perform operation
-  # Check if x1 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x1, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b1, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b1_str)
+  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x1, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b1, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b1_str)
   LA(x1, scratch) # reload base address into rs1
   LREG x1, 0(x1) # Load the updated value from memory
-  # Check if x1 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x1, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b1, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b1_str)
+  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x1, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b1, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b1_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load value in memory: x26 = 0x552dd239
-  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs2: x2 = 0xcbb9cdbc
+  RVTEST_TESTDATA_LOAD_INT(x16, x25) # load value in memory: x25 = 0x552dd239
+  RVTEST_TESTDATA_LOAD_INT(x16, x2) # load rs2: x2 = 0xcbb9cdbc
   LA(x2, scratch) # load base address into rs1
-  SREG x26, 0(x2) # store value into memory at address in rs1
+  SREG x25, 0(x2) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b2:
   amocas.h x2, x2, (x2) # perform operation
-  # Check if x2 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x2, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b2, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b2_str)
+  # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x2, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b2, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b2_str)
   LA(x2, scratch) # reload base address into rs1
   LREG x2, 0(x2) # Load the updated value from memory
-  # Check if x2 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x2, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b2, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b2_str)
+  # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x2, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b2, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b2_str)
 
-  mv x11, x3 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load value in memory: x31 = 0xd39257d6
-  RVTEST_TESTDATA_LOAD_INT(x11, x3) # load rs2: x3 = 0xf7f7ed31
+  RVTEST_TESTDATA_LOAD_INT(x16, x20) # load value in memory: x20 = 0xa30c65f3
+  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load rs2: x3 = 0xad997824
   LA(x3, scratch) # load base address into rs1
-  SREG x31, 0(x3) # store value into memory at address in rs1
+  SREG x20, 0(x3) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b3:
   amocas.h x3, x3, (x3) # perform operation
-  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x3, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b3, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b3_str)
+  # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x3, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b3, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b3_str)
   LA(x3, scratch) # reload base address into rs1
   LREG x3, 0(x3) # Load the updated value from memory
-  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x3, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b3, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b3_str)
+  # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x3, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b3, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b3_str)
 
-  mv x12, x4 # switch temp register to avoid conflict with test
-  mv x13, x5 # switch link pointer register to avoid conflict with test
+  mv x7, x4 # switch temp register to avoid conflict with test
+  mv x8, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x11, x15) # load value in memory: x15 = 0xa3be6fd9
-  RVTEST_TESTDATA_LOAD_INT(x11, x4) # load rs2: x4 = 0xc0599c5a
+  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load value in memory: x13 = 0x46e7eeec
+  RVTEST_TESTDATA_LOAD_INT(x16, x4) # load rs2: x4 = 0xa3be6fd9
   LA(x4, scratch) # load base address into rs1
-  SREG x15, 0(x4) # store value into memory at address in rs1
+  SREG x13, 0(x4) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b4:
   amocas.h x4, x4, (x4) # perform operation
-  # Check if x4 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x4, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b4, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b4_str)
+  # Check if x4 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x4, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b4, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b4_str)
   LA(x4, scratch) # reload base address into rs1
   LREG x4, 0(x4) # Load the updated value from memory
-  # Check if x4 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x4, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b4, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b4_str)
+  # Check if x4 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x4, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b4, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b4_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x11, x7) # load value in memory: x7 = 0x30cb1706
-  RVTEST_TESTDATA_LOAD_INT(x11, x5) # load rs2: x5 = 0x1b341f20
+  RVTEST_TESTDATA_LOAD_INT(x16, x24) # load value in memory: x24 = 0xb4f8f146
+  RVTEST_TESTDATA_LOAD_INT(x16, x5) # load rs2: x5 = 0x30cb1706
   LA(x5, scratch) # load base address into rs1
-  SREG x7, 0(x5) # store value into memory at address in rs1
+  SREG x24, 0(x5) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b5:
   amocas.h x5, x5, (x5) # perform operation
-  # Check if x5 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x5, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b5, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b5_str)
+  # Check if x5 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x5, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b5, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b5_str)
   LA(x5, scratch) # reload base address into rs1
   LREG x5, 0(x5) # Load the updated value from memory
-  # Check if x5 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x5, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b5, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b5_str)
+  # Check if x5 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x5, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b5, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b5_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x11, x24) # load value in memory: x24 = 0x4d971e2b
-  RVTEST_TESTDATA_LOAD_INT(x11, x6) # load rs2: x6 = 0xa2fdfba0
+  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load value in memory: x3 = 0x1b341f20
+  RVTEST_TESTDATA_LOAD_INT(x16, x6) # load rs2: x6 = 0x8920102e
   LA(x6, scratch) # load base address into rs1
-  SREG x24, 0(x6) # store value into memory at address in rs1
+  SREG x3, 0(x6) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b6:
   amocas.h x6, x6, (x6) # perform operation
-  # Check if x6 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x6, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b6, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b6_str)
+  # Check if x6 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x6, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b6, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b6_str)
   LA(x6, scratch) # reload base address into rs1
   LREG x6, 0(x6) # Load the updated value from memory
-  # Check if x6 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x6, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b6, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b6_str)
+  # Check if x6 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x6, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b6, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b6_str)
 
+  mv x12, x7 # switch temp register to avoid conflict with test
+  mv x13, x8 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x11, x25) # load value in memory: x25 = 0x1541f618
-  RVTEST_TESTDATA_LOAD_INT(x11, x7) # load rs2: x7 = 0xc2e50d19
+  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load value in memory: x3 = 0x75e6d8cb
+  RVTEST_TESTDATA_LOAD_INT(x16, x7) # load rs2: x7 = 0xd29246ba
   LA(x7, scratch) # load base address into rs1
-  SREG x25, 0(x7) # store value into memory at address in rs1
+  SREG x3, 0(x7) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b7:
   amocas.h x7, x7, (x7) # perform operation
-  # Check if x7 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x7, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b7, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b7_str)
+  # Check if x7 contains the expected result. x28 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x28, x13, x12, x7, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b7, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b7_str)
   LA(x7, scratch) # reload base address into rs1
   LREG x7, 0(x7) # Load the updated value from memory
-  # Check if x7 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x7, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b7, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b7_str)
+  # Check if x7 contains the expected result. x28 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x28, x13, x12, x7, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b7, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b7_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x11, x29) # load value in memory: x29 = 0xd29246ba
-  RVTEST_TESTDATA_LOAD_INT(x11, x8) # load rs2: x8 = 0x6e969372
+  RVTEST_TESTDATA_LOAD_INT(x16, x20) # load value in memory: x20 = 0x330cc4cd
+  RVTEST_TESTDATA_LOAD_INT(x16, x8) # load rs2: x8 = 0x7fac6bc7
   LA(x8, scratch) # load base address into rs1
-  SREG x29, 0(x8) # store value into memory at address in rs1
+  SREG x20, 0(x8) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b8:
   amocas.h x8, x8, (x8) # perform operation
-  # Check if x8 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x8, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b8, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b8_str)
+  # Check if x8 contains the expected result. x28 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x28, x13, x12, x8, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b8, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b8_str)
   LA(x8, scratch) # reload base address into rs1
   LREG x8, 0(x8) # Load the updated value from memory
-  # Check if x8 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x8, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b8, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b8_str)
+  # Check if x8 contains the expected result. x28 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x28, x13, x12, x8, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b8, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b8_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x11, x27) # load value in memory: x27 = 0xe4bfd3d0
-  RVTEST_TESTDATA_LOAD_INT(x11, x9) # load rs2: x9 = 0x2a72b926
+  RVTEST_TESTDATA_LOAD_INT(x16, x21) # load value in memory: x21 = 0x39903fbd
+  RVTEST_TESTDATA_LOAD_INT(x16, x9) # load rs2: x9 = 0x08c13e71
   LA(x9, scratch) # load base address into rs1
-  SREG x27, 0(x9) # store value into memory at address in rs1
+  SREG x21, 0(x9) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b9:
   amocas.h x9, x9, (x9) # perform operation
-  # Check if x9 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x9, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b9, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b9_str)
+  # Check if x9 contains the expected result. x28 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x28, x13, x12, x9, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b9, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b9_str)
   LA(x9, scratch) # reload base address into rs1
   LREG x9, 0(x9) # Load the updated value from memory
-  # Check if x9 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x9, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b9, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b9_str)
+  # Check if x9 contains the expected result. x28 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x28, x13, x12, x9, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b9, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b9_str)
 
-  mv x15, x10 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x11, x24) # load value in memory: x24 = 0x4b3f6bc7
-  RVTEST_TESTDATA_LOAD_INT(x11, x10) # load rs2: x10 = 0x39903fbd
+  RVTEST_TESTDATA_LOAD_INT(x16, x20) # load value in memory: x20 = 0xd17670d4
+  RVTEST_TESTDATA_LOAD_INT(x16, x10) # load rs2: x10 = 0x3590bc19
   LA(x10, scratch) # load base address into rs1
-  SREG x24, 0(x10) # store value into memory at address in rs1
+  SREG x20, 0(x10) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b10:
   amocas.h x10, x10, (x10) # perform operation
-  # Check if x10 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x15, x13, x12, x10, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b10, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b10_str)
+  # Check if x10 contains the expected result. x28 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x28, x13, x12, x10, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b10, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b10_str)
   LA(x10, scratch) # reload base address into rs1
   LREG x10, 0(x10) # Load the updated value from memory
-  # Check if x10 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x15, x13, x12, x10, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b10, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b10_str)
+  # Check if x10 contains the expected result. x28 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x28, x13, x12, x10, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b10, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b10_str)
 
-  mv x3, x11 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load value in memory: x20 = 0xff21d05d
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs2: x11 = 0x5eb43cb2
+  RVTEST_TESTDATA_LOAD_INT(x16, x7) # load value in memory: x7 = 0xa939fae4
+  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load rs2: x11 = 0x2ddcc510
   LA(x11, scratch) # load base address into rs1
-  SREG x20, 0(x11) # store value into memory at address in rs1
+  SREG x7, 0(x11) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b11:
   amocas.h x11, x11, (x11) # perform operation
-  # Check if x11 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x15, x13, x12, x11, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b11, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b11_str)
+  # Check if x11 contains the expected result. x28 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x28, x13, x12, x11, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b11, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b11_str)
   LA(x11, scratch) # reload base address into rs1
   LREG x11, 0(x11) # Load the updated value from memory
-  # Check if x11 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x15, x13, x12, x11, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b11, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b11_str)
+  # Check if x11 contains the expected result. x28 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x28, x13, x12, x11, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b11, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b11_str)
 
-  mv x7, x12 # switch temp register to avoid conflict with test
-  mv x8, x13 # switch link pointer register to avoid conflict with test
+  mv x4, x12 # switch temp register to avoid conflict with test
+  mv x5, x13 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load value in memory: x25 = 0x0c8713da
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs2: x12 = 0x24bf9b4f
+  RVTEST_TESTDATA_LOAD_INT(x16, x27) # load value in memory: x27 = 0x0a6c62a1
+  RVTEST_TESTDATA_LOAD_INT(x16, x12) # load rs2: x12 = 0xb7cc7cd4
   LA(x12, scratch) # load base address into rs1
-  SREG x25, 0(x12) # store value into memory at address in rs1
+  SREG x27, 0(x12) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b12:
   amocas.h x12, x12, (x12) # perform operation
-  # Check if x12 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x15, x8, x7, x12, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b12, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b12_str)
+  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x12, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b12, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b12_str)
   LA(x12, scratch) # reload base address into rs1
   LREG x12, 0(x12) # Load the updated value from memory
-  # Check if x12 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x15, x8, x7, x12, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b12, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b12_str)
+  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x12, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b12, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b12_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load value in memory: x28 = 0xbbc346e1
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs2: x13 = 0xa939fae4
+  RVTEST_TESTDATA_LOAD_INT(x16, x31) # load value in memory: x31 = 0xc7763f99
+  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load rs2: x13 = 0x9893b6ac
   LA(x13, scratch) # load base address into rs1
-  SREG x28, 0(x13) # store value into memory at address in rs1
+  SREG x31, 0(x13) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b13:
   amocas.h x13, x13, (x13) # perform operation
-  # Check if x13 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x15, x8, x7, x13, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b13, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b13_str)
+  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x13, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b13, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b13_str)
   LA(x13, scratch) # reload base address into rs1
   LREG x13, 0(x13) # Load the updated value from memory
-  # Check if x13 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x15, x8, x7, x13, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b13, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b13_str)
+  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x13, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b13, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b13_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load value in memory: x11 = 0xaae101aa
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rs2: x14 = 0x0a6c62a1
+  RVTEST_TESTDATA_LOAD_INT(x16, x31) # load value in memory: x31 = 0x2a24d171
+  RVTEST_TESTDATA_LOAD_INT(x16, x14) # load rs2: x14 = 0xe0a5857b
   LA(x14, scratch) # load base address into rs1
-  SREG x11, 0(x14) # store value into memory at address in rs1
+  SREG x31, 0(x14) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b14:
   amocas.h x14, x14, (x14) # perform operation
-  # Check if x14 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x15, x8, x7, x14, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b14, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b14_str)
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b14, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b14_str)
   LA(x14, scratch) # reload base address into rs1
   LREG x14, 0(x14) # Load the updated value from memory
-  # Check if x14 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x15, x8, x7, x14, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b14, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b14_str)
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b14, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b14_str)
 
-  mv x19, x15 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load value in memory: x25 = 0x2a05a797
-  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs2: x15 = 0xa57e8a0a
+  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load value in memory: x11 = 0xdb80bf4b
+  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load rs2: x15 = 0xa8d4a40e
   LA(x15, scratch) # load base address into rs1
-  SREG x25, 0(x15) # store value into memory at address in rs1
+  SREG x11, 0(x15) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b15:
   amocas.h x15, x15, (x15) # perform operation
-  # Check if x15 contains the expected result. x19 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x19, x8, x7, x15, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b15, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b15_str)
+  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x15, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b15, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b15_str)
   LA(x15, scratch) # reload base address into rs1
   LREG x15, 0(x15) # Load the updated value from memory
-  # Check if x15 contains the expected result. x19 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x19, x8, x7, x15, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b15, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b15_str)
+  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x15, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b15, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b15_str)
 
+  mv x9, x16 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load value in memory: x28 = 0x9893b6ac
-  RVTEST_TESTDATA_LOAD_INT(x3, x16) # load rs2: x16 = 0x44c8958e
+  RVTEST_TESTDATA_LOAD_INT(x9, x1) # load value in memory: x1 = 0xbaa0c8c8
+  RVTEST_TESTDATA_LOAD_INT(x9, x16) # load rs2: x16 = 0x67686561
   LA(x16, scratch) # load base address into rs1
-  SREG x28, 0(x16) # store value into memory at address in rs1
+  SREG x1, 0(x16) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b16:
   amocas.h x16, x16, (x16) # perform operation
-  # Check if x16 contains the expected result. x19 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x19, x8, x7, x16, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b16, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b16_str)
+  # Check if x16 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x16, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b16, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b16_str)
   LA(x16, scratch) # reload base address into rs1
   LREG x16, 0(x16) # Load the updated value from memory
-  # Check if x16 contains the expected result. x19 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x19, x8, x7, x16, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b16, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b16_str)
+  # Check if x16 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x16, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b16, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b16_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load value in memory: x31 = 0x2a24d171
-  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs2: x17 = 0xe0a5857b
+  RVTEST_TESTDATA_LOAD_INT(x9, x30) # load value in memory: x30 = 0x97e9bb7f
+  RVTEST_TESTDATA_LOAD_INT(x9, x17) # load rs2: x17 = 0xd32d836e
   LA(x17, scratch) # load base address into rs1
-  SREG x31, 0(x17) # store value into memory at address in rs1
+  SREG x30, 0(x17) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b17:
   amocas.h x17, x17, (x17) # perform operation
-  # Check if x17 contains the expected result. x19 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x19, x8, x7, x17, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b17, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b17_str)
+  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x17, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b17, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b17_str)
   LA(x17, scratch) # reload base address into rs1
   LREG x17, 0(x17) # Load the updated value from memory
-  # Check if x17 contains the expected result. x19 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x19, x8, x7, x17, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b17, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b17_str)
+  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x17, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b17, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b17_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load value in memory: x12 = 0xdb80bf4b
-  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs2: x18 = 0xa8d4a40e
+  RVTEST_TESTDATA_LOAD_INT(x9, x12) # load value in memory: x12 = 0xc5b95a97
+  RVTEST_TESTDATA_LOAD_INT(x9, x18) # load rs2: x18 = 0x243b6b9e
   LA(x18, scratch) # load base address into rs1
   SREG x12, 0(x18) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b18:
   amocas.h x18, x18, (x18) # perform operation
-  # Check if x18 contains the expected result. x19 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x19, x8, x7, x18, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b18, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b18_str)
+  # Check if x18 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x18, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b18, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b18_str)
   LA(x18, scratch) # reload base address into rs1
   LREG x18, 0(x18) # Load the updated value from memory
-  # Check if x18 contains the expected result. x19 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x19, x8, x7, x18, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b18, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b18_str)
+  # Check if x18 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x18, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b18, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b18_str)
 
-  mv x10, x19 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load value in memory: x1 = 0xbaa0c8c8
-  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load rs2: x19 = 0x67686561
+  RVTEST_TESTDATA_LOAD_INT(x9, x3) # load value in memory: x3 = 0x4845c659
+  RVTEST_TESTDATA_LOAD_INT(x9, x19) # load rs2: x19 = 0x9c905cde
   LA(x19, scratch) # load base address into rs1
-  SREG x1, 0(x19) # store value into memory at address in rs1
+  SREG x3, 0(x19) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b19:
   amocas.h x19, x19, (x19) # perform operation
-  # Check if x19 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x19, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b19, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b19_str)
+  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x19, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b19, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b19_str)
   LA(x19, scratch) # reload base address into rs1
   LREG x19, 0(x19) # Load the updated value from memory
-  # Check if x19 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x19, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b19, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b19_str)
+  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x19, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b19, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b19_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load value in memory: x30 = 0x97e9bb7f
-  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs2: x20 = 0xd32d836e
+  RVTEST_TESTDATA_LOAD_INT(x9, x24) # load value in memory: x24 = 0xd97e5c51
+  RVTEST_TESTDATA_LOAD_INT(x9, x20) # load rs2: x20 = 0xfeb8a286
   LA(x20, scratch) # load base address into rs1
-  SREG x30, 0(x20) # store value into memory at address in rs1
+  SREG x24, 0(x20) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b20:
   amocas.h x20, x20, (x20) # perform operation
-  # Check if x20 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x20, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b20, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b20_str)
+  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x20, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b20, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b20_str)
   LA(x20, scratch) # reload base address into rs1
   LREG x20, 0(x20) # Load the updated value from memory
-  # Check if x20 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x20, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b20, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b20_str)
+  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x20, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b20, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b20_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load value in memory: x13 = 0xc5b95a97
-  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs2: x21 = 0x243b6b9e
+  RVTEST_TESTDATA_LOAD_INT(x9, x8) # load value in memory: x8 = 0x2797cbb3
+  RVTEST_TESTDATA_LOAD_INT(x9, x21) # load rs2: x21 = 0x6b8c2085
   LA(x21, scratch) # load base address into rs1
-  SREG x13, 0(x21) # store value into memory at address in rs1
+  SREG x8, 0(x21) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b21:
   amocas.h x21, x21, (x21) # perform operation
-  # Check if x21 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x21, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b21, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b21_str)
+  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x21, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b21, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b21_str)
   LA(x21, scratch) # reload base address into rs1
   LREG x21, 0(x21) # Load the updated value from memory
-  # Check if x21 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x21, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b21, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b21_str)
+  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x21, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b21, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b21_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x3, x4) # load value in memory: x4 = 0x4845c659
-  RVTEST_TESTDATA_LOAD_INT(x3, x22) # load rs2: x22 = 0x9c905cde
+  RVTEST_TESTDATA_LOAD_INT(x9, x12) # load value in memory: x12 = 0xce0b4a32
+  RVTEST_TESTDATA_LOAD_INT(x9, x22) # load rs2: x22 = 0xd8d106ae
   LA(x22, scratch) # load base address into rs1
-  SREG x4, 0(x22) # store value into memory at address in rs1
+  SREG x12, 0(x22) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b22:
   amocas.h x22, x22, (x22) # perform operation
-  # Check if x22 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x22, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b22, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b22_str)
+  # Check if x22 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x22, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b22, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b22_str)
   LA(x22, scratch) # reload base address into rs1
   LREG x22, 0(x22) # Load the updated value from memory
-  # Check if x22 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x22, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b22, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b22_str)
+  # Check if x22 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x22, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b22, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b22_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load value in memory: x25 = 0xd97e5c51
-  RVTEST_TESTDATA_LOAD_INT(x3, x23) # load rs2: x23 = 0xfeb8a286
+  RVTEST_TESTDATA_LOAD_INT(x9, x24) # load value in memory: x24 = 0xa5aaad21
+  RVTEST_TESTDATA_LOAD_INT(x9, x23) # load rs2: x23 = 0x80917c91
   LA(x23, scratch) # load base address into rs1
-  SREG x25, 0(x23) # store value into memory at address in rs1
+  SREG x24, 0(x23) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b23:
   amocas.h x23, x23, (x23) # perform operation
-  # Check if x23 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x23, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b23, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b23_str)
+  # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x23, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b23, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b23_str)
   LA(x23, scratch) # reload base address into rs1
   LREG x23, 0(x23) # Load the updated value from memory
-  # Check if x23 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x23, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b23, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b23_str)
+  # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x23, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b23, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b23_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load value in memory: x9 = 0x2797cbb3
-  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs2: x24 = 0x6b8c2085
+  RVTEST_TESTDATA_LOAD_INT(x9, x7) # load value in memory: x7 = 0x5d811707
+  RVTEST_TESTDATA_LOAD_INT(x9, x24) # load rs2: x24 = 0x1b7ee55f
   LA(x24, scratch) # load base address into rs1
-  SREG x9, 0(x24) # store value into memory at address in rs1
+  SREG x7, 0(x24) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b24:
   amocas.h x24, x24, (x24) # perform operation
-  # Check if x24 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x24, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b24, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b24_str)
+  # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x24, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b24, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b24_str)
   LA(x24, scratch) # reload base address into rs1
   LREG x24, 0(x24) # Load the updated value from memory
-  # Check if x24 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x24, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b24, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b24_str)
+  # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x24, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b24, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b24_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load value in memory: x13 = 0xce0b4a32
-  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load rs2: x25 = 0xd8d106ae
+  RVTEST_TESTDATA_LOAD_INT(x9, x22) # load value in memory: x22 = 0x5a855572
+  RVTEST_TESTDATA_LOAD_INT(x9, x25) # load rs2: x25 = 0x56240a5f
   LA(x25, scratch) # load base address into rs1
-  SREG x13, 0(x25) # store value into memory at address in rs1
+  SREG x22, 0(x25) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b25:
   amocas.h x25, x25, (x25) # perform operation
-  # Check if x25 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x25, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b25, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b25_str)
+  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x25, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b25, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b25_str)
   LA(x25, scratch) # reload base address into rs1
   LREG x25, 0(x25) # Load the updated value from memory
-  # Check if x25 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x25, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b25, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b25_str)
+  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x25, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b25, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b25_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load value in memory: x24 = 0xa5aaad21
-  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs2: x26 = 0x80917c91
+  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load value in memory: x6 = 0x88deacf6
+  RVTEST_TESTDATA_LOAD_INT(x9, x26) # load rs2: x26 = 0x1d706ebf
   LA(x26, scratch) # load base address into rs1
-  SREG x24, 0(x26) # store value into memory at address in rs1
+  SREG x6, 0(x26) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b26:
   amocas.h x26, x26, (x26) # perform operation
-  # Check if x26 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x26, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b26, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b26_str)
+  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x26, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b26, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b26_str)
   LA(x26, scratch) # reload base address into rs1
   LREG x26, 0(x26) # Load the updated value from memory
-  # Check if x26 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x26, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b26, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b26_str)
+  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x26, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b26, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b26_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load value in memory: x6 = 0x5d811707
-  RVTEST_TESTDATA_LOAD_INT(x3, x27) # load rs2: x27 = 0x1b7ee55f
+  RVTEST_TESTDATA_LOAD_INT(x9, x31) # load value in memory: x31 = 0x73e7800f
+  RVTEST_TESTDATA_LOAD_INT(x9, x27) # load rs2: x27 = 0xb41aab8a
   LA(x27, scratch) # load base address into rs1
-  SREG x6, 0(x27) # store value into memory at address in rs1
+  SREG x31, 0(x27) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b27:
   amocas.h x27, x27, (x27) # perform operation
-  # Check if x27 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x27, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b27, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b27_str)
+  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x27, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b27, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b27_str)
   LA(x27, scratch) # reload base address into rs1
   LREG x27, 0(x27) # Load the updated value from memory
-  # Check if x27 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x27, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b27, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b27_str)
+  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x27, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b27, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b27_str)
 
+  mv x19, x28 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x3, x23) # load value in memory: x23 = 0x5a855572
-  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs2: x28 = 0x56240a5f
+  RVTEST_TESTDATA_LOAD_INT(x9, x29) # load value in memory: x29 = 0x31fef91f
+  RVTEST_TESTDATA_LOAD_INT(x9, x28) # load rs2: x28 = 0xb0a683f4
   LA(x28, scratch) # load base address into rs1
-  SREG x23, 0(x28) # store value into memory at address in rs1
+  SREG x29, 0(x28) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b28:
   amocas.h x28, x28, (x28) # perform operation
-  # Check if x28 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x28, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b28, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b28_str)
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b28, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b28_str)
   LA(x28, scratch) # reload base address into rs1
   LREG x28, 0(x28) # Load the updated value from memory
-  # Check if x28 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x28, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b28, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b28_str)
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b28, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b28_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x3, x5) # load value in memory: x5 = 0x88deacf6
-  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs2: x29 = 0x1d706ebf
+  RVTEST_TESTDATA_LOAD_INT(x9, x21) # load value in memory: x21 = 0x20fd408b
+  RVTEST_TESTDATA_LOAD_INT(x9, x29) # load rs2: x29 = 0x3ba7a5f2
   LA(x29, scratch) # load base address into rs1
-  SREG x5, 0(x29) # store value into memory at address in rs1
+  SREG x21, 0(x29) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b29:
   amocas.h x29, x29, (x29) # perform operation
-  # Check if x29 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x29, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b29, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b29_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b29, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b29_str)
   LA(x29, scratch) # reload base address into rs1
   LREG x29, 0(x29) # Load the updated value from memory
-  # Check if x29 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x29, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b29, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b29_str)
+  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x29, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b29, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b29_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load value in memory: x31 = 0x73e7800f
-  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load rs2: x30 = 0xb41aab8a
+  RVTEST_TESTDATA_LOAD_INT(x9, x31) # load value in memory: x31 = 0xff685632
+  RVTEST_TESTDATA_LOAD_INT(x9, x30) # load rs2: x30 = 0x7013f1dc
   LA(x30, scratch) # load base address into rs1
   SREG x31, 0(x30) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b30:
   amocas.h x30, x30, (x30) # perform operation
-  # Check if x30 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x30, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b30, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b30_str)
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b30, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b30_str)
   LA(x30, scratch) # reload base address into rs1
   LREG x30, 0(x30) # Load the updated value from memory
-  # Check if x30 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x30, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b30, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b30_str)
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b30, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b30_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load value in memory: x20 = 0xd9b14018
-  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs2: x31 = 0x8242708d
+  RVTEST_TESTDATA_LOAD_INT(x9, x22) # load value in memory: x22 = 0x97573b9c
+  RVTEST_TESTDATA_LOAD_INT(x9, x31) # load rs2: x31 = 0xc8798581
   LA(x31, scratch) # load base address into rs1
-  SREG x20, 0(x31) # store value into memory at address in rs1
+  SREG x22, 0(x31) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b31:
   amocas.h x31, x31, (x31) # perform operation
-  # Check if x31 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x31, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b31, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b31_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b31, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b31_str)
   LA(x31, scratch) # reload base address into rs1
   LREG x31, 0(x31) # Load the updated value from memory
-  # Check if x31 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x31, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b31, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b31_str)
+  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x31, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b31, ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b31_str)
 
 /////////////////////////////////
 // cp_align_hword
 /////////////////////////////////
 
 # Testcase: cp_align_hword (address[2:0] = 000)
-  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load value in memory: x26 = 0xef297d11
-  RVTEST_TESTDATA_LOAD_INT(x3, x4) # load rs2: x4 = 0x761340f4
+  RVTEST_TESTDATA_LOAD_INT(x9, x26) # load value in memory: x26 = 0xef297d11
+  RVTEST_TESTDATA_LOAD_INT(x9, x3) # load rs2: x3 = 0x761340f4
   LA(x2, scratch) # load base address into rs1
   addi x2, x2, 0 # adjust for alignment
   sh x26, 0(x2) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cp_align_hword_b0:
-  amocas.h x28, x4, (x2) # perform operation
-  # Check if x28 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x28, ZacasZabha_amocas_h_cg_cp_align_hword_b0, ZacasZabha_amocas_h_cg_cp_align_hword_b0_str)
+  amocas.h x28, x3, (x2) # perform operation
+  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x28, ZacasZabha_amocas_h_cg_cp_align_hword_b0, ZacasZabha_amocas_h_cg_cp_align_hword_b0_str)
   lh x2, 0(x2) # Load the updated value from memory
-  # Check if x2 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x2, ZacasZabha_amocas_h_cg_cp_align_hword_b0, ZacasZabha_amocas_h_cg_cp_align_hword_b0_str)
+  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x2, ZacasZabha_amocas_h_cg_cp_align_hword_b0, ZacasZabha_amocas_h_cg_cp_align_hword_b0_str)
 
 # Testcase: cp_align_hword (address[2:0] = 010)
-  RVTEST_TESTDATA_LOAD_INT(x3, x22) # load value in memory: x22 = 0x4011690a
-  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs2: x21 = 0x6e8286cb
+  RVTEST_TESTDATA_LOAD_INT(x9, x22) # load value in memory: x22 = 0x4011690a
+  RVTEST_TESTDATA_LOAD_INT(x9, x21) # load rs2: x21 = 0x6e8286cb
   LA(x25, scratch) # load base address into rs1
   addi x25, x25, 2 # adjust for alignment
   sh x22, 0(x25) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cp_align_hword_b2:
-  amocas.h x16, x21, (x25) # perform operation
-  # Check if x16 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x16, ZacasZabha_amocas_h_cg_cp_align_hword_b2, ZacasZabha_amocas_h_cg_cp_align_hword_b2_str)
+  amocas.h x15, x21, (x25) # perform operation
+  # Check if x15 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x15, ZacasZabha_amocas_h_cg_cp_align_hword_b2, ZacasZabha_amocas_h_cg_cp_align_hword_b2_str)
   lh x25, 0(x25) # Load the updated value from memory
-  # Check if x25 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x25, ZacasZabha_amocas_h_cg_cp_align_hword_b2, ZacasZabha_amocas_h_cg_cp_align_hword_b2_str)
+  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x25, ZacasZabha_amocas_h_cg_cp_align_hword_b2, ZacasZabha_amocas_h_cg_cp_align_hword_b2_str)
 
 # Testcase: cp_align_hword (address[2:0] = 100)
-  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load value in memory: x15 = 0xbdbdda83
-  RVTEST_TESTDATA_LOAD_INT(x3, x4) # load rs2: x4 = 0xcd92b279
-  LA(x5, scratch) # load base address into rs1
-  addi x5, x5, 4 # adjust for alignment
-  sh x15, 0(x5) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x9, x14) # load value in memory: x14 = 0xbdbdda83
+  RVTEST_TESTDATA_LOAD_INT(x9, x3) # load rs2: x3 = 0xcd92b279
+  LA(x6, scratch) # load base address into rs1
+  addi x6, x6, 4 # adjust for alignment
+  sh x14, 0(x6) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cp_align_hword_b4:
-  amocas.h x30, x4, (x5) # perform operation
-  # Check if x30 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x30, ZacasZabha_amocas_h_cg_cp_align_hword_b4, ZacasZabha_amocas_h_cg_cp_align_hword_b4_str)
-  lh x5, 0(x5) # Load the updated value from memory
-  # Check if x5 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x5, ZacasZabha_amocas_h_cg_cp_align_hword_b4, ZacasZabha_amocas_h_cg_cp_align_hword_b4_str)
+  amocas.h x30, x3, (x6) # perform operation
+  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x30, ZacasZabha_amocas_h_cg_cp_align_hword_b4, ZacasZabha_amocas_h_cg_cp_align_hword_b4_str)
+  lh x6, 0(x6) # Load the updated value from memory
+  # Check if x6 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x6, ZacasZabha_amocas_h_cg_cp_align_hword_b4, ZacasZabha_amocas_h_cg_cp_align_hword_b4_str)
 
 # Testcase: cp_align_hword (address[2:0] = 110)
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load value in memory: x14 = 0x7176de9f
-  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs2: x31 = 0xc16d3013
-  LA(x19, scratch) # load base address into rs1
-  addi x19, x19, 6 # adjust for alignment
-  sh x14, 0(x19) # store value into memory at address in rs1
+  RVTEST_TESTDATA_LOAD_INT(x9, x13) # load value in memory: x13 = 0x7176de9f
+  RVTEST_TESTDATA_LOAD_INT(x9, x31) # load rs2: x31 = 0xc16d3013
+  LA(x18, scratch) # load base address into rs1
+  addi x18, x18, 6 # adjust for alignment
+  sh x13, 0(x18) # store value into memory at address in rs1
 ZacasZabha_amocas_h_cg_cp_align_hword_b6:
-  amocas.h x18, x31, (x19) # perform operation
-  # Check if x18 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x18, ZacasZabha_amocas_h_cg_cp_align_hword_b6, ZacasZabha_amocas_h_cg_cp_align_hword_b6_str)
-  lh x19, 0(x19) # Load the updated value from memory
-  # Check if x19 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x19, ZacasZabha_amocas_h_cg_cp_align_hword_b6, ZacasZabha_amocas_h_cg_cp_align_hword_b6_str)
+  amocas.h x17, x31, (x18) # perform operation
+  # Check if x17 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x17, ZacasZabha_amocas_h_cg_cp_align_hword_b6, ZacasZabha_amocas_h_cg_cp_align_hword_b6_str)
+  lh x18, 0(x18) # Load the updated value from memory
+  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x19, x5, x4, x18, ZacasZabha_amocas_h_cg_cp_align_hword_b6, ZacasZabha_amocas_h_cg_cp_align_hword_b6_str)
 
 
-  mv x2, x10 # restore signature pointer to default register for teardown
+  mv x2, x19 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -3268,196 +4504,386 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test data
-.word 0x47dd42e8
-.word 0x2747a1d0
-.word 0x9ea12da3
-.word 0x33e36cc2
-.word 0xd9887701
-.word 0xdae8cf0c
-.word 0xb3f63357
-.word 0x1b118b6b
-.word 0xdd04e2cf
-.word 0x61fb0c34
-.word 0xc39aa24b
-.word 0x860bda77
-.word 0x94e9dae5
-.word 0x1dde9650
-.word 0xe6b4f280
-.word 0xb6a02c58
-.word 0xe6444625
-.word 0x628da96f
-.word 0x0419e78c
-.word 0x823e34ac
-.word 0x7c1c75d2
-.word 0x900076c0
-.word 0x4d49c320
-.word 0x9757d969
-.word 0x45320d13
-.word 0xa0290348
-.word 0x965f7fa2
-.word 0x05208f32
-.word 0xf4d2f266
-.word 0xc02c97a3
-.word 0x99aa0705
-.word 0xeb94d7ca
-.word 0xf2eed26d
-.word 0x4c009634
-.word 0x4a5ab385
-.word 0x4b44492a
-.word 0x2f4e8220
-.word 0x625e9777
-.word 0x96030a81
-.word 0xffb8df9d
-.word 0xedb89c87
-.word 0xde7ebf9c
-.word 0x587a06af
-.word 0xf183a2d0
-.word 0xe1b6d763
-.word 0x01fcea8d
-.word 0xe1da4ffc
-.word 0x879574e3
-.word 0xc86da691
-.word 0xa76c6316
-.word 0x01a65e05
-.word 0x1e2a8c76
-.word 0x5caf38ab
-.word 0xf5b7acb3
-.word 0x41835b2d
-.word 0x281b181c
-.word 0xc6cdbec2
-.word 0xe66c511a
-.word 0xe44b81c1
-.word 0xadd6ed36
-.word 0x84961bda
-.word 0x848abe0e
-.word 0x9a59e367
-.word 0xdd5b6d35
-.word 0x3cbaa972
-.word 0x8df9e2f9
-.word 0xa7680eae
-.word 0x8a35cf7e
-.word 0x70a14e5a
-.word 0x2c673c82
-.word 0x49335d7f
-.word 0x8f279a6a
-.word 0xd4680700
-.word 0x25e407af
-.word 0x4115337d
-.word 0x31b0bbe7
-.word 0x297b65e7
-.word 0x12933705
-.word 0x02935e47
-.word 0x885a1874
-.word 0x6362ed3a
-.word 0x81a6eb96
-.word 0x2cbc8f8e
-.word 0x89343c40
-.word 0x807ac561
-.word 0xb9bd8f02
-.word 0x7e0eaade
-.word 0x4e715337
-.word 0xe09e0ac2
-.word 0x2c64bc88
-.word 0x8d289a5e
-.word 0x73657865
-.word 0x021939a4
-.word 0x12c5bb7f
-.word 0x16846b42
-.word 0x88a860e5
-.word 0xde8ebbf9
-.word 0x769a7193
-.word 0xf37fbe96
-.word 0xb57a4e09
-.word 0x50d6cd76
-.word 0x8fc91b2e
-.word 0x95e25cfc
-.word 0x8104e59c
-.word 0xc06a35da
-.word 0x8d406876
-.word 0xd25f2d15
-.word 0xa8d7206f
-.word 0xfae1ca08
-.word 0x6c083b14
-.word 0x28c4e4a9
-.word 0x6bb8ecce
-.word 0xe4273f73
-.word 0xcf71c93d
-.word 0xc325d7f3
-.word 0x3a9a2f8a
-.word 0x3c9754c9
-.word 0x387e80cc
-.word 0xee6ee24e
-.word 0x10ac8f6a
-.word 0xe45acc2f
-.word 0x881d554b
-.word 0x16edb236
-.word 0xf13923ea
-.word 0x02f8412f
-.word 0xac282b69
-.word 0x49bc1e99
-.word 0x308873c3
-.word 0x5a9a97a0
-.word 0x8f7571e8
-.word 0x11f23748
-.word 0xb6b9f30e
-.word 0xe15a3a4c
-.word 0x3a0bd6d4
-.word 0x5aa64202
-.word 0x4f163d99
-.word 0x046659b6
-.word 0x665f66a5
-.word 0x48a9d19d
-.word 0x2c5beb8c
-.word 0x634c9d67
-.word 0x8c674f20
-.word 0x3026a9a5
-.word 0x2e7fa2f3
-.word 0x527ddf1d
-.word 0xc6ab2a1b
-.word 0x997914b6
-.word 0x0465dd99
-.word 0x859b9605
-.word 0x1908f0f7
-.word 0x8f56e55c
-.word 0x8c512d2e
-.word 0x9ceb86bd
-.word 0x2739d55a
-.word 0x69462404
-.word 0x57dae785
-.word 0xeb219bed
-.word 0x61dc1efb
-.word 0x1ec40e44
-.word 0x14494bd0
-.word 0x7b814bc6
-.word 0xa8f6ccf0
-.word 0x0c58af7d
-.word 0x5742e027
-.word 0xbb205023
-.word 0xf6ee3865
-.word 0xc7b1a638
-.word 0xd894e0d4
-.word 0x20674dc9
-.word 0xefce255d
-.word 0x8efa59f0
-.word 0xcf5a9091
-.word 0x879ecb93
-.word 0xca925b10
-.word 0x51a0e317
-.word 0xba2f86b3
-.word 0xe0c847d8
-.word 0x60dc9f37
-.word 0x1540d717
-.word 0xb2dcd38d
-.word 0x0168ba58
-.word 0x94b58d03
-.word 0xfddf7cbc
-.word 0x4932528a
-.word 0x3006451a
-.word 0x6848cb6e
-.word 0x33a491a0
-.word 0xc1b22646
-.word 0x49300c16
-.word 0x6ed370a3
+.word 0xb1e054d4
+.word 0x63337499
+.word 0x55704f36
+.word 0xf8ecc260
+.word 0xb3e36cc2
+.word 0x79c769d7
+.word 0x94f48621
+.word 0x488d0005
+.word 0x5d04e2cf
+.word 0xc2bc1073
+.word 0x6f5aa16e
+.word 0x63ec76ac
+.word 0x325bf5b7
+.word 0xb4a2ccdf
+.word 0x36a02c58
+.word 0x03009be3
+.word 0x765199a9
+.word 0xe28da96f
+.word 0xca94a02e
+.word 0x023e34ac
+.word 0xfc1c75d2
+.word 0x39359b95
+.word 0xa1a211a6
+.word 0xcd49c320
+.word 0x20290348
+.word 0x127c922b
+.word 0xe29d8fe6
+.word 0x85208f32
+.word 0x402c97a3
+.word 0x3a288a48
+.word 0x772a2902
+.word 0xb0e8ef9e
+.word 0xcc009634
+.word 0x8eb9235c
+.word 0x77299ae0
+.word 0xaf4e8220
+.word 0xf2d3b581
+.word 0x7fb8df9d
+.word 0x3e28ce68
+.word 0xc3587e08
+.word 0x47865740
+.word 0xd87a06af
+.word 0xcd5bfad9
+.word 0x890f1138
+.word 0x81fcea8d
+.word 0x8a6d1fc1
+.word 0xb5554cb6
+.word 0xa4bd477a
+.word 0x3e0fc465
+.word 0x9e2a8c76
+.word 0x2e46f3da
+.word 0xc1835b2d
+.word 0xb9c16084
+.word 0x67d90c5d
+.word 0x2dd6ed36
+.word 0x75a5ba43
+.word 0xd7fbe5e1
+.word 0x0bf48917
+.word 0x4271315f
+.word 0x321394e2
+.word 0x69fbb2fe
+.word 0x2348fad2
+.word 0x2e267630
+.word 0x27340855
+.word 0xd189e459
+.word 0xba577031
+.word 0x98cd6796
+.word 0xa3c264ad
+.word 0x8b2ee8ce
+.word 0xd6312a55
+.word 0x89a4ddca
+.word 0xc78751cc
+.word 0x7aea44b7
+.word 0xc7e97a34
+.word 0xefd942e8
+.word 0x0cc6ce53
+.word 0x26e079b5
+.word 0xb781bb04
+.word 0xbadc653b
+.word 0x83b93e62
+.word 0x7ac990cd
+.word 0x92b8e1a8
+.word 0xa47b6ae6
+.word 0x9ea9d8ef
+.word 0x967201ce
+.word 0x2b8f2d30
+.word 0x1f385aeb
+.word 0xd16f43da
+.word 0xe24051d9
+.word 0x64b6ed68
+.word 0xaa344b12
+.word 0x3cebf837
+.word 0x41e85343
+.word 0x426d9ab0
+.word 0x0c2790e6
+.word 0x6a3558e9
+.word 0xb36bc954
+.word 0xea67ed3b
+.word 0x96c3643a
+.word 0x8a7bc612
+.word 0x5ac1b168
+.word 0x9748730c
+.word 0x84bb3a21
+.word 0x7b8c6249
+.word 0x770669be
+.word 0x14c745cb
+.word 0xc95e0381
+.word 0x05d94384
+.word 0xb0bd088f
+.word 0x9f4ce24a
+.word 0x50553a15
+.word 0x72e0ef2e
+.word 0x3601a410
+.word 0x1aebc568
+.word 0x24ada9a3
+.word 0x2799e9ed
+.word 0x36211b04
+.word 0xebb8ad24
+.word 0x36dcf0c8
+.word 0x81884ac8
+.word 0xfb6cadd5
+.word 0x0442207d
+.word 0x83ce8b7c
+.word 0xe9910f75
+.word 0x1a59e367
+.word 0x5d5b6d35
+.word 0x013dfbcf
+.word 0x0df9e2f9
+.word 0xaf065301
+.word 0x0deb0984
+.word 0x018235ee
+.word 0x22af7e2a
+.word 0x26f60bdf
+.word 0x6cd24861
+.word 0x65bda69c
+.word 0x1702c251
+.word 0xace47720
+.word 0xa3abeac7
+.word 0xc9d2f4b3
+.word 0x7822cec7
+.word 0x01a6eb96
+.word 0x656ad417
+.word 0x7d5046c8
+.word 0xee9ea9ed
+.word 0x290b78c2
+.word 0x31533581
+.word 0x2820dfb0
+.word 0xce715337
+.word 0xac64bc88
+.word 0xb6bf6425
+.word 0x7179d011
+.word 0x6a09707d
+.word 0x08a860e5
+.word 0xfb41fd1d
+.word 0x3163fd0c
+.word 0xcb6a47fd
+.word 0x17744aee
+.word 0x93e3b867
+.word 0x25fab8c1
+.word 0x9c3d9233
+.word 0xf9ef8bb6
+.word 0xd945caab
+.word 0x420ec46a
+.word 0xefde9ec5
+.word 0x28d7206f
+.word 0xcbbd2049
+.word 0x073654d3
+.word 0x01943cb9
+.word 0x64273f73
+.word 0x4f71c93d
+.word 0x07de6dcd
+.word 0xba9a2f8a
+.word 0xb87e80cc
+.word 0xf0839d1a
+.word 0x49411d13
+.word 0x081d554b
+.word 0xb4c2a10f
+.word 0x87010505
+.word 0x6210f634
+.word 0xf2bd610e
+.word 0x2d9cd792
+.word 0x33b9d737
+.word 0xd0e5a441
+.word 0x582817f3
+.word 0xdda42350
+.word 0x39ec13b8
+.word 0x2b6c84f6
+.word 0x963d4628
+.word 0x88042865
+.word 0xb7ffa506
+.word 0x7906f71f
+.word 0xd5ee5ce1
+.word 0xaf15fda6
+.word 0x70c37969
+.word 0x3a05c2db
+.word 0xbe35b26c
+.word 0x3b8b289d
+.word 0x14cb06d5
+.word 0x3d26eeb6
+.word 0xa3f25b14
+.word 0xdd8f6c60
+.word 0x2326e3b0
+.word 0xa6ad7e19
+.word 0x1c8a7d96
+.word 0xab3068c2
+.word 0x4995f55d
+.word 0x758de479
+.word 0x0dc2eea2
+.word 0x495fc4ff
+.word 0xf8b5522a
+.word 0xc31c7345
+.word 0x6ed42e05
+.word 0xe818e8f4
+.word 0x925abad3
+.word 0x12df18c0
+.word 0x927b0b77
+.word 0x545ea36f
+.word 0x1f1bdd4e
+.word 0x8559196a
+.word 0xbe361542
+.word 0xa1f35718
+.word 0x4720c7d6
+.word 0xa45876f4
+.word 0x07b07f39
+.word 0x9b2af221
+.word 0x9bb35cc2
+.word 0x4185b602
+.word 0x225ca8c2
+.word 0x7285c0b7
+.word 0xe81a4307
+.word 0xebb4a87f
+.word 0xb459d825
+.word 0x0d3f803e
+.word 0xb83acbc6
+.word 0x318f0cdf
+.word 0x5f41a91f
+.word 0xb1e3cb07
+.word 0x0b4d9cde
+.word 0xd73a1cef
+.word 0x9a571995
+.word 0xdfee6283
+.word 0x9ca4c9cc
+.word 0x94c797fa
+.word 0x3725e2eb
+.word 0xda8adf7f
+.word 0x0ddd7635
+.word 0x1210a8fe
+.word 0x0bc0d874
+.word 0xdce8902a
+.word 0xe33fe538
+.word 0x1583d53d
+.word 0x6ff07d8b
+.word 0xdd110c86
+.word 0xb08873c3
+.word 0x4194f5a6
+.word 0xa70fcdf2
+.word 0x6dda5512
+.word 0xcdf64811
+.word 0x5250b133
+.word 0xcf163d99
+.word 0x8dc203ac
+.word 0x1051daef
+.word 0x0c674f20
+.word 0x7e7f7818
+.word 0xb026a9a5
+.word 0x6ee31ea7
+.word 0x4da6a7ef
+.word 0x46ab2a1b
+.word 0x2c9d33f1
+.word 0x059b9605
+.word 0x0c512d2e
+.word 0x0cbf0e25
+.word 0xac829dd4
+.word 0xa739d55a
+.word 0x080abb8d
+.word 0x259e4563
+.word 0x9ec40e44
+.word 0x6769f8ae
+.word 0x28f6ccf0
+.word 0xeed54f26
+.word 0xf71b49d8
+.word 0xd742e027
+.word 0x93725dbd
+.word 0x25f29ea1
+.word 0xea21c74c
+.word 0x47b1a638
+.word 0xe16cdcb3
+.word 0xa0674dc9
+.word 0x35363e0c
+.word 0x0efa59f0
+.word 0xb50f209e
+.word 0x079ecb93
+.word 0xd2c7bcce
+.word 0x185460bf
+.word 0xb0551d60
+.word 0xa1c39839
+.word 0x708a0f67
+.word 0x32dcd38d
+.word 0x1cf6b73d
+.word 0x14b58d03
+.word 0xf3ccc42c
+.word 0xb006451a
+.word 0x9d137539
+.word 0xb3a491a0
+.word 0x4a8e4ca7
+.word 0xc9300c16
+.word 0x24410964
+.word 0x9e17439c
+.word 0xd5eedb80
+.word 0x142da4e0
+.word 0xea0236a4
+.word 0x74af0626
+.word 0xe2226c8d
+.word 0xab185bd1
+.word 0x47974893
+.word 0x7919d690
+.word 0x0aa8c255
+.word 0xd5d5e856
+.word 0x325ed364
+.word 0x6c35ecd6
+.word 0x54ac1192
+.word 0x05cfe2d7
+.word 0xb0df2e45
+.word 0xf9a951e7
+.word 0x32528ac7
+.word 0x89114d9c
+.word 0x0cabfd52
+.word 0x09828432
+.word 0xa4cbe75f
+.word 0x71766fd1
+.word 0x9c0daf8f
+.word 0xf828421e
+.word 0x7c60030e
+.word 0xd04ecac4
+.word 0xaa449308
+.word 0x34f0259d
+.word 0x14b4d6ad
+.word 0xdf8ffeb8
+.word 0x8bfbe449
+.word 0x11d00278
+.word 0x0a363a41
+.word 0x4a2b9b9f
+.word 0xbf00c5bb
+.word 0x06cfb815
+.word 0xb1492ca7
+.word 0xdea34700
+.word 0x790b0f94
+.word 0x5ce7b322
+.word 0x978013c5
+.word 0x1bae69e7
+.word 0x5385efc8
+.word 0x76d3282f
+.word 0x2047099d
+.word 0xbf9fb1a5
+.word 0x1f474cdc
+.word 0x8461bb7a
+.word 0x4c88a9e2
+.word 0x22e16f41
+.word 0xf0a85751
+.word 0xc26b3ff6
+.word 0x3e2d210b
+.word 0x30468865
+.word 0xe8176e59
+.word 0xbdbc3f6f
+.word 0x5d5bdeff
+.word 0x7783af2f
+.word 0x216788f9
+.word 0xdf913dc7
+.word 0x7abf69d0
+.word 0xbd8860d8
+.word 0xe5ccd89d
+.word 0xa3199bf6
+.word 0x9ebda94a
+.word 0x3d9ba38e
+.word 0x9dfdb890
+.word 0x121f6b09
+.word 0xaa259ac0
+.word 0x0baa463c
+.word 0xdedee50f
+.word 0x54e31d31
 .word 0x87c727bb
 .word 0x00000000
 .word 0x04b03944
@@ -3492,30 +4918,30 @@ RVTEST_DATA_BEGIN
 .word 0x2e9ee998
 .word 0x27b29409
 .word 0x1c1d5c49
-.word 0x88afa771
-.word 0xba7e8780
+.word 0x6cfed3d1
+.word 0xc775bbf4
+.word 0x52e291f1
+.word 0x9d8affca
 .word 0xbdd45443
 .word 0x25161518
-.word 0x1f1401b5
-.word 0x0ddde7e6
-.word 0xedc7178d
+.word 0x0d5fbc3e
+.word 0x95e00c1d
 .word 0xa9acfbe6
-.word 0x122b3062
+.word 0xca8b95f1
 .word 0x309f3f6b
+.word 0x5547d705
 .word 0x9c776eec
 .word 0x40958153
-.word 0x656601f3
-.word 0x75e49be0
-.word 0x56d58518
-.word 0x4d3b915f
-.word 0xc9d6ecd8
+.word 0xf94e15a3
+.word 0xf82e76e7
 .word 0xa6d07e13
 .word 0x140beaf4
 .word 0x93f7f079
-.word 0x5871b1c9
-.word 0x05ef3f3a
-.word 0xb1fb5fb3
+.word 0x3a2b2087
+.word 0xe0486cbf
+.word 0x57011bf1
 .word 0x55b3e1b1
+.word 0x6861b928
 .word 0x6e575850
 .word 0xd45158a7
 .word 0xd82a061a
@@ -3524,41 +4950,41 @@ RVTEST_DATA_BEGIN
 .word 0xd13ff272
 .word 0x0c95876d
 .word 0xd0282924
-.word 0x0b33e8fe
-.word 0x4c2e0180
-.word 0x6d89e9a0
-.word 0x9544581a
-.word 0xb41419e3
-.word 0x0964e9ea
-.word 0x8a049a46
-.word 0x0af25834
-.word 0xbdef8f29
-.word 0x06e5ccf8
-.word 0xec26c763
-.word 0x9b3f5eec
-.word 0x3e137efa
-.word 0x8d113175
-.word 0xe02fe1db
-.word 0x725557a2
+.word 0xc521a76f
+.word 0x846fcf5f
+.word 0xf8798d45
+.word 0x329fd2cc
+.word 0xb32c9528
+.word 0x7885657c
+.word 0x2d8e6d5b
+.word 0x6fab3f8d
+.word 0x8494df6f
+.word 0x22e25da1
+.word 0xcbc86239
+.word 0xa9093f67
+.word 0xd208dff9
+.word 0x648fd3c6
+.word 0xce0bc405
+.word 0x22589c54
 .word 0x46bc540e
 .word 0x2febedc4
 .word 0x34265eef
 .word 0x23d71443
-.word 0xe46ddb5b
-.word 0x47bf6818
-.word 0xe1eac628
-.word 0x984d5036
-.word 0x83f58312
-.word 0x6e1c5173
-.word 0x0d999b88
-.word 0xb2042f5c
+.word 0x0190774e
+.word 0xc447fd1f
+.word 0xf5b2b8e4
+.word 0x217e140f
+.word 0x137f7e30
+.word 0x417acf5e
+.word 0x9aed8483
+.word 0xe37954e5
 .word 0x10da1eed
 .word 0x4ea73352
 .word 0x3a317a18
 .word 0xc27b5e33
-.word 0xd4bc41c6
-.word 0xd1a93e4f
-.word 0x17145126
+.word 0x884347a2
+.word 0xec0b2849
+.word 0xbad5a61d
 .word 0x4823737b
 .word 0xec05aaed
 .word 0xe9a2b482
@@ -3566,8 +4992,7 @@ RVTEST_DATA_BEGIN
 .word 0x19adbe19
 .word 0xce7e8c80
 .word 0x6c453856
-.word 0x53db20c7
-.word 0xdc8d7a93
+.word 0x073fce41
 .word 0x575cda4d
 .word 0xce83161f
 .word 0x217648c6
@@ -3579,67 +5004,70 @@ RVTEST_DATA_BEGIN
 .word 0xfe9dbe0a
 .word 0x2b8668e5
 .word 0xa249ff64
-.word 0xa92a4065
-.word 0x5808a048
-.word 0xc6938596
-.word 0xd9257ab5
-.word 0x548a48e7
+.word 0xad05fbeb
+.word 0xdd780cd6
+.word 0x9262603b
 .word 0x8a970894
 .word 0x463008ba
-.word 0x40524b21
-.word 0x4d143431
-.word 0x7c7e1b36
+.word 0xdcd7f6df
+.word 0x17cf7591
+.word 0x102fc929
 .word 0xd31f0b55
 .word 0xfec8da17
 .word 0xf02a8595
 .word 0x770999d5
-.word 0xf052c929
-.word 0x2c85eaed
-.word 0x09b44537
-.word 0x5cf40692
-.word 0xf5216c78
-.word 0xbbff19e9
+.word 0xbd8b1577
+.word 0x8e6212c4
+.word 0x86d069f7
+.word 0xbaa125a7
+.word 0x13002756
 .word 0xb7f2a20c
-.word 0x58e87d31
+.word 0x4469044c
 .word 0xcb93e830
-.word 0x443e56d9
+.word 0x4be68836
 .word 0x2531f82a
 .word 0x69c7ec12
 .word 0x824b278b
+.word 0xb898a65e
+.word 0xa9e71e36
+.word 0x437e0b61
+.word 0x67a5eb81
 .word 0x8e1971cd
 .word 0x6769a631
-.word 0x1edd3e2e
-.word 0x2498e19c
+.word 0x77dfe3d6
+.word 0xb5752240
+.word 0xe9b48d3a
 .word 0xf2006466
 .word 0x0e965ac5
 .word 0x267429db
-.word 0xe38214c9
+.word 0xb1be05b9
 .word 0x4471409c
-.word 0xb6fa7a33
+.word 0x88ec77f4
 .word 0xbfb21e1c
-.word 0x58f93651
-.word 0x4a3de216
-.word 0x7c2089e7
-.word 0xf25363a9
-.word 0x1ec8f279
-.word 0xa15285ed
-.word 0x3278ecc2
-.word 0x8fe8a0b3
-.word 0x1b070883
+.word 0x24ba23be
+.word 0x9d7feee9
+.word 0xf2893e03
+.word 0x74a44a73
+.word 0x2903e0d2
+.word 0xb6d18129
+.word 0x34f75154
+.word 0x4c4f6994
 .word 0x1292127d
 .word 0x67b23ae9
 .word 0x365bd11b
 .word 0x9df67498
-.word 0xcb7841da
+.word 0x7067d277
+.word 0x4d824c26
 .word 0x79bdd96c
-.word 0xef497889
+.word 0x67794f33
 .word 0x92a24c8c
-.word 0x69e33072
-.word 0xaca86951
-.word 0xa8ca962f
+.word 0xbc40d12e
+.word 0x878a5b76
+.word 0x3744a9b0
 .word 0xf15476f1
 .word 0x0a949771
 .word 0xf5b53f49
+.word 0x7c34ea17
 .word 0xa84b918c
 .word 0x0adba5ee
 .word 0x422cbc08
@@ -3648,60 +5076,52 @@ RVTEST_DATA_BEGIN
 .word 0x185c7d24
 .word 0x182f7ef5
 .word 0x51e43d6b
-.word 0x6ed1144c
-.word 0x71d29882
+.word 0xd523847a
 .word 0xf654e887
-.word 0x8bc07710
-.word 0xc7922fd2
+.word 0x835fe602
+.word 0x3ca70f7f
 .word 0xa7e695e2
-.word 0x089aa3e5
-.word 0x83ee5496
-.word 0xc016f136
-.word 0xf824be71
-.word 0x3a930dd6
+.word 0xda9e8462
+.word 0x490ec26e
+.word 0x351ee07c
+.word 0x268b1340
+.word 0x3cd137ef
+.word 0xab75e95c
+.word 0x06eff083
 .word 0x342a9322
 .word 0x01c835ec
-.word 0xfb5b6357
-.word 0x46595b3e
+.word 0x4913e5d6
+.word 0x2779f9ed
 .word 0x18725b1f
-.word 0x08ef64fe
-.word 0x93fe9355
-.word 0x6c82ab36
-.word 0x5c3b8406
-.word 0xb77594c2
-.word 0x65841805
+.word 0x142913ec
+.word 0x7b0a5107
+.word 0x965c5bbd
 .word 0x825beadc
 .word 0x0900309c
 .word 0x552dd239
 .word 0xcbb9cdbc
-.word 0xd39257d6
-.word 0xf7f7ed31
+.word 0xa30c65f3
+.word 0xad997824
+.word 0x46e7eeec
 .word 0xa3be6fd9
-.word 0xc0599c5a
+.word 0xb4f8f146
 .word 0x30cb1706
 .word 0x1b341f20
-.word 0x4d971e2b
-.word 0xa2fdfba0
-.word 0x1541f618
-.word 0xc2e50d19
+.word 0x8920102e
+.word 0x75e6d8cb
 .word 0xd29246ba
-.word 0x6e969372
-.word 0xe4bfd3d0
-.word 0x2a72b926
-.word 0x4b3f6bc7
+.word 0x330cc4cd
+.word 0x7fac6bc7
 .word 0x39903fbd
-.word 0xff21d05d
-.word 0x5eb43cb2
-.word 0x0c8713da
-.word 0x24bf9b4f
-.word 0xbbc346e1
+.word 0x08c13e71
+.word 0xd17670d4
+.word 0x3590bc19
 .word 0xa939fae4
-.word 0xaae101aa
+.word 0x2ddcc510
 .word 0x0a6c62a1
-.word 0x2a05a797
-.word 0xa57e8a0a
+.word 0xb7cc7cd4
+.word 0xc7763f99
 .word 0x9893b6ac
-.word 0x44c8958e
 .word 0x2a24d171
 .word 0xe0a5857b
 .word 0xdb80bf4b
@@ -3730,8 +5150,14 @@ RVTEST_DATA_BEGIN
 .word 0x1d706ebf
 .word 0x73e7800f
 .word 0xb41aab8a
-.word 0xd9b14018
-.word 0x8242708d
+.word 0x31fef91f
+.word 0xb0a683f4
+.word 0x20fd408b
+.word 0x3ba7a5f2
+.word 0xff685632
+.word 0x7013f1dc
+.word 0x97573b9c
+.word 0xc8798581
 .word 0xef297d11
 .word 0x761340f4
 .word 0x4011690a
@@ -3742,242 +5168,337 @@ RVTEST_DATA_BEGIN
 .word 0xc16d3013
 
 // Testcase strings
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b1_str: .string "\"test: 1; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b1\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b2_str: .string "\"test: 2; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b2\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b3_str: .string "\"test: 3; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b3\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b4_str: .string "\"test: 4; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b4\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b5_str: .string "\"test: 5; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b5\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b6_str: .string "\"test: 6; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b6\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b7_str: .string "\"test: 7; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b7\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b8_str: .string "\"test: 8; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b8\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b9_str: .string "\"test: 9; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b9\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b10_str: .string "\"test: 10; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b10\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b11_str: .string "\"test: 11; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b11\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b12_str: .string "\"test: 12; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b12\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b13_str: .string "\"test: 13; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b13\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b14_str: .string "\"test: 14; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b14\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b15_str: .string "\"test: 15; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b15\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b16_str: .string "\"test: 16; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b16\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b17_str: .string "\"test: 17; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b17\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b18_str: .string "\"test: 18; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b18\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b19_str: .string "\"test: 19; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b19\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b20_str: .string "\"test: 20; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b20\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b21_str: .string "\"test: 21; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b21\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b22_str: .string "\"test: 22; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b22\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b23_str: .string "\"test: 23; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b23\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b24_str: .string "\"test: 24; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b24\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b25_str: .string "\"test: 25; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b25\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b26_str: .string "\"test: 26; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b26\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b27_str: .string "\"test: 27; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b27\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b28_str: .string "\"test: 28; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b28\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b29_str: .string "\"test: 29; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b29\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b30_str: .string "\"test: 30; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b30\""
-ZacasZabha_amocas_h_cg_cp_rs1_nx0_b31_str: .string "\"test: 31; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b31\""
-ZacasZabha_amocas_h_cg_cp_rs2_b0_str: .string "\"test: 32; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b0\""
-ZacasZabha_amocas_h_cg_cp_rs2_b1_str: .string "\"test: 33; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b1\""
-ZacasZabha_amocas_h_cg_cp_rs2_b2_str: .string "\"test: 34; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b2\""
-ZacasZabha_amocas_h_cg_cp_rs2_b3_str: .string "\"test: 35; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b3\""
-ZacasZabha_amocas_h_cg_cp_rs2_b4_str: .string "\"test: 36; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b4\""
-ZacasZabha_amocas_h_cg_cp_rs2_b5_str: .string "\"test: 37; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b5\""
-ZacasZabha_amocas_h_cg_cp_rs2_b6_str: .string "\"test: 38; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b6\""
-ZacasZabha_amocas_h_cg_cp_rs2_b7_str: .string "\"test: 39; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b7\""
-ZacasZabha_amocas_h_cg_cp_rs2_b8_str: .string "\"test: 40; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b8\""
-ZacasZabha_amocas_h_cg_cp_rs2_b9_str: .string "\"test: 41; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b9\""
-ZacasZabha_amocas_h_cg_cp_rs2_b10_str: .string "\"test: 42; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b10\""
-ZacasZabha_amocas_h_cg_cp_rs2_b11_str: .string "\"test: 43; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b11\""
-ZacasZabha_amocas_h_cg_cp_rs2_b12_str: .string "\"test: 44; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b12\""
-ZacasZabha_amocas_h_cg_cp_rs2_b13_str: .string "\"test: 45; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b13\""
-ZacasZabha_amocas_h_cg_cp_rs2_b14_str: .string "\"test: 46; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b14\""
-ZacasZabha_amocas_h_cg_cp_rs2_b15_str: .string "\"test: 47; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b15\""
-ZacasZabha_amocas_h_cg_cp_rs2_b16_str: .string "\"test: 48; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b16\""
-ZacasZabha_amocas_h_cg_cp_rs2_b17_str: .string "\"test: 49; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b17\""
-ZacasZabha_amocas_h_cg_cp_rs2_b18_str: .string "\"test: 50; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b18\""
-ZacasZabha_amocas_h_cg_cp_rs2_b19_str: .string "\"test: 51; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b19\""
-ZacasZabha_amocas_h_cg_cp_rs2_b20_str: .string "\"test: 52; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b20\""
-ZacasZabha_amocas_h_cg_cp_rs2_b21_str: .string "\"test: 53; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b21\""
-ZacasZabha_amocas_h_cg_cp_rs2_b22_str: .string "\"test: 54; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b22\""
-ZacasZabha_amocas_h_cg_cp_rs2_b23_str: .string "\"test: 55; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b23\""
-ZacasZabha_amocas_h_cg_cp_rs2_b24_str: .string "\"test: 56; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b24\""
-ZacasZabha_amocas_h_cg_cp_rs2_b25_str: .string "\"test: 57; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b25\""
-ZacasZabha_amocas_h_cg_cp_rs2_b26_str: .string "\"test: 58; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b26\""
-ZacasZabha_amocas_h_cg_cp_rs2_b27_str: .string "\"test: 59; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b27\""
-ZacasZabha_amocas_h_cg_cp_rs2_b28_str: .string "\"test: 60; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b28\""
-ZacasZabha_amocas_h_cg_cp_rs2_b29_str: .string "\"test: 61; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b29\""
-ZacasZabha_amocas_h_cg_cp_rs2_b30_str: .string "\"test: 62; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b30\""
-ZacasZabha_amocas_h_cg_cp_rs2_b31_str: .string "\"test: 63; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b31\""
-ZacasZabha_amocas_h_cg_cp_rd_b0_str: .string "\"test: 64; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b0\""
-ZacasZabha_amocas_h_cg_cp_rd_b1_str: .string "\"test: 65; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b1\""
-ZacasZabha_amocas_h_cg_cp_rd_b2_str: .string "\"test: 66; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b2\""
-ZacasZabha_amocas_h_cg_cp_rd_b3_str: .string "\"test: 67; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b3\""
-ZacasZabha_amocas_h_cg_cp_rd_b4_str: .string "\"test: 68; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b4\""
-ZacasZabha_amocas_h_cg_cp_rd_b5_str: .string "\"test: 69; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b5\""
-ZacasZabha_amocas_h_cg_cp_rd_b6_str: .string "\"test: 70; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b6\""
-ZacasZabha_amocas_h_cg_cp_rd_b7_str: .string "\"test: 71; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b7\""
-ZacasZabha_amocas_h_cg_cp_rd_b8_str: .string "\"test: 72; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b8\""
-ZacasZabha_amocas_h_cg_cp_rd_b9_str: .string "\"test: 73; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b9\""
-ZacasZabha_amocas_h_cg_cp_rd_b10_str: .string "\"test: 74; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b10\""
-ZacasZabha_amocas_h_cg_cp_rd_b11_str: .string "\"test: 75; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b11\""
-ZacasZabha_amocas_h_cg_cp_rd_b12_str: .string "\"test: 76; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b12\""
-ZacasZabha_amocas_h_cg_cp_rd_b13_str: .string "\"test: 77; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b13\""
-ZacasZabha_amocas_h_cg_cp_rd_b14_str: .string "\"test: 78; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b14\""
-ZacasZabha_amocas_h_cg_cp_rd_b15_str: .string "\"test: 79; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b15\""
-ZacasZabha_amocas_h_cg_cp_rd_b16_str: .string "\"test: 80; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b16\""
-ZacasZabha_amocas_h_cg_cp_rd_b17_str: .string "\"test: 81; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b17\""
-ZacasZabha_amocas_h_cg_cp_rd_b18_str: .string "\"test: 82; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b18\""
-ZacasZabha_amocas_h_cg_cp_rd_b19_str: .string "\"test: 83; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b19\""
-ZacasZabha_amocas_h_cg_cp_rd_b20_str: .string "\"test: 84; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b20\""
-ZacasZabha_amocas_h_cg_cp_rd_b21_str: .string "\"test: 85; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b21\""
-ZacasZabha_amocas_h_cg_cp_rd_b22_str: .string "\"test: 86; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b22\""
-ZacasZabha_amocas_h_cg_cp_rd_b23_str: .string "\"test: 87; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b23\""
-ZacasZabha_amocas_h_cg_cp_rd_b24_str: .string "\"test: 88; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b24\""
-ZacasZabha_amocas_h_cg_cp_rd_b25_str: .string "\"test: 89; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b25\""
-ZacasZabha_amocas_h_cg_cp_rd_b26_str: .string "\"test: 90; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b26\""
-ZacasZabha_amocas_h_cg_cp_rd_b27_str: .string "\"test: 91; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b27\""
-ZacasZabha_amocas_h_cg_cp_rd_b28_str: .string "\"test: 92; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b28\""
-ZacasZabha_amocas_h_cg_cp_rd_b29_str: .string "\"test: 93; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b29\""
-ZacasZabha_amocas_h_cg_cp_rd_b30_str: .string "\"test: 94; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b30\""
-ZacasZabha_amocas_h_cg_cp_rd_b31_str: .string "\"test: 95; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b31\""
-ZacasZabha_amocas_h_cg_cp_rs2_edges_0x0_str: .string "\"test: 96; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0x0\""
-ZacasZabha_amocas_h_cg_cp_rs2_edges_0x1_str: .string "\"test: 97; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0x1\""
-ZacasZabha_amocas_h_cg_cp_rs2_edges_0x2_str: .string "\"test: 98; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0x2\""
-ZacasZabha_amocas_h_cg_cp_rs2_edges_0x80000000_str: .string "\"test: 99; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0x80000000\""
-ZacasZabha_amocas_h_cg_cp_rs2_edges_0x80000001_str: .string "\"test: 100; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0x80000001\""
-ZacasZabha_amocas_h_cg_cp_rs2_edges_0x7fffffff_str: .string "\"test: 101; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0x7fffffff\""
-ZacasZabha_amocas_h_cg_cp_rs2_edges_0x7ffffffe_str: .string "\"test: 102; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0x7ffffffe\""
-ZacasZabha_amocas_h_cg_cp_rs2_edges_0xffffffff_str: .string "\"test: 103; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0xffffffff\""
-ZacasZabha_amocas_h_cg_cp_rs2_edges_0xfffffffe_str: .string "\"test: 104; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0xfffffffe\""
-ZacasZabha_amocas_h_cg_cp_rs2_edges_0x5bbc8872_str: .string "\"test: 105; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0x5bbc8872\""
-ZacasZabha_amocas_h_cg_cp_rs2_edges_0xaaaaaaaa_str: .string "\"test: 106; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0xaaaaaaaa\""
-ZacasZabha_amocas_h_cg_cp_rs2_edges_0x55555555_str: .string "\"test: 107; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0x55555555\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b1_str: .string "\"test: 108; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b1\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b2_str: .string "\"test: 109; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b2\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b3_str: .string "\"test: 110; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b3\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b4_str: .string "\"test: 111; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b4\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b5_str: .string "\"test: 112; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b5\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b6_str: .string "\"test: 113; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b6\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b7_str: .string "\"test: 114; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b7\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b8_str: .string "\"test: 115; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b8\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b9_str: .string "\"test: 116; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b9\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b10_str: .string "\"test: 117; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b10\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b11_str: .string "\"test: 118; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b11\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b12_str: .string "\"test: 119; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b12\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b13_str: .string "\"test: 120; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b13\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b14_str: .string "\"test: 121; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b14\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b15_str: .string "\"test: 122; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b15\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b16_str: .string "\"test: 123; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b16\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b17_str: .string "\"test: 124; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b17\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b18_str: .string "\"test: 125; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b18\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b19_str: .string "\"test: 126; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b19\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b20_str: .string "\"test: 127; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b20\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b21_str: .string "\"test: 128; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b21\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b22_str: .string "\"test: 129; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b22\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b23_str: .string "\"test: 130; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b23\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b24_str: .string "\"test: 131; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b24\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b25_str: .string "\"test: 132; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b25\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b26_str: .string "\"test: 133; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b26\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b27_str: .string "\"test: 134; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b27\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b28_str: .string "\"test: 135; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b28\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b29_str: .string "\"test: 136; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b29\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b30_str: .string "\"test: 137; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b30\""
-ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b31_str: .string "\"test: 138; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b31\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b1_str: .string "\"test: 139; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b1\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b2_str: .string "\"test: 140; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b2\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b3_str: .string "\"test: 141; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b3\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b4_str: .string "\"test: 142; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b4\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b5_str: .string "\"test: 143; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b5\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b6_str: .string "\"test: 144; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b6\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b7_str: .string "\"test: 145; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b7\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b8_str: .string "\"test: 146; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b8\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b9_str: .string "\"test: 147; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b9\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b10_str: .string "\"test: 148; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b10\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b11_str: .string "\"test: 149; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b11\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b12_str: .string "\"test: 150; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b12\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b13_str: .string "\"test: 151; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b13\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b14_str: .string "\"test: 152; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b14\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b15_str: .string "\"test: 153; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b15\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b16_str: .string "\"test: 154; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b16\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b17_str: .string "\"test: 155; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b17\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b18_str: .string "\"test: 156; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b18\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b19_str: .string "\"test: 157; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b19\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b20_str: .string "\"test: 158; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b20\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b21_str: .string "\"test: 159; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b21\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b22_str: .string "\"test: 160; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b22\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b23_str: .string "\"test: 161; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b23\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b24_str: .string "\"test: 162; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b24\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b25_str: .string "\"test: 163; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b25\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b26_str: .string "\"test: 164; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b26\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b27_str: .string "\"test: 165; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b27\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b28_str: .string "\"test: 166; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b28\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b29_str: .string "\"test: 167; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b29\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b30_str: .string "\"test: 168; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b30\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b31_str: .string "\"test: 169; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b31\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b0_str: .string "\"test: 170; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b0\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b1_str: .string "\"test: 171; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b1\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b2_str: .string "\"test: 172; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b2\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b3_str: .string "\"test: 173; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b3\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b4_str: .string "\"test: 174; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b4\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b5_str: .string "\"test: 175; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b5\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b6_str: .string "\"test: 176; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b6\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b7_str: .string "\"test: 177; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b7\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b8_str: .string "\"test: 178; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b8\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b9_str: .string "\"test: 179; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b9\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b10_str: .string "\"test: 180; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b10\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b11_str: .string "\"test: 181; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b11\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b12_str: .string "\"test: 182; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b12\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b13_str: .string "\"test: 183; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b13\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b14_str: .string "\"test: 184; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b14\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b15_str: .string "\"test: 185; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b15\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b16_str: .string "\"test: 186; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b16\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b17_str: .string "\"test: 187; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b17\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b18_str: .string "\"test: 188; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b18\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b19_str: .string "\"test: 189; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b19\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b20_str: .string "\"test: 190; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b20\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b21_str: .string "\"test: 191; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b21\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b22_str: .string "\"test: 192; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b22\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b23_str: .string "\"test: 193; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b23\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b24_str: .string "\"test: 194; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b24\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b25_str: .string "\"test: 195; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b25\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b26_str: .string "\"test: 196; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b26\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b27_str: .string "\"test: 197; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b27\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b28_str: .string "\"test: 198; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b28\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b29_str: .string "\"test: 199; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b29\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b30_str: .string "\"test: 200; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b30\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs2_b31_str: .string "\"test: 201; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b31\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b1_str: .string "\"test: 202; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b1\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b2_str: .string "\"test: 203; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b2\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b3_str: .string "\"test: 204; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b3\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b4_str: .string "\"test: 205; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b4\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b5_str: .string "\"test: 206; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b5\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b6_str: .string "\"test: 207; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b6\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b7_str: .string "\"test: 208; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b7\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b8_str: .string "\"test: 209; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b8\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b9_str: .string "\"test: 210; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b9\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b10_str: .string "\"test: 211; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b10\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b11_str: .string "\"test: 212; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b11\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b12_str: .string "\"test: 213; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b12\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b13_str: .string "\"test: 214; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b13\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b14_str: .string "\"test: 215; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b14\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b15_str: .string "\"test: 216; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b15\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b16_str: .string "\"test: 217; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b16\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b17_str: .string "\"test: 218; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b17\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b18_str: .string "\"test: 219; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b18\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b19_str: .string "\"test: 220; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b19\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b20_str: .string "\"test: 221; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b20\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b21_str: .string "\"test: 222; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b21\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b22_str: .string "\"test: 223; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b22\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b23_str: .string "\"test: 224; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b23\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b24_str: .string "\"test: 225; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b24\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b25_str: .string "\"test: 226; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b25\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b26_str: .string "\"test: 227; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b26\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b27_str: .string "\"test: 228; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b27\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b28_str: .string "\"test: 229; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b28\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b29_str: .string "\"test: 230; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b29\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b30_str: .string "\"test: 231; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b30\""
-ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b31_str: .string "\"test: 232; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b31\""
-ZacasZabha_amocas_h_cg_cp_align_hword_b0_str: .string "\"test: 233; cg: ZacasZabha_amocas.h_cg; cp: cp_align_hword; bin: b0\""
-ZacasZabha_amocas_h_cg_cp_align_hword_b2_str: .string "\"test: 234; cg: ZacasZabha_amocas.h_cg; cp: cp_align_hword; bin: b2\""
-ZacasZabha_amocas_h_cg_cp_align_hword_b4_str: .string "\"test: 235; cg: ZacasZabha_amocas.h_cg; cp: cp_align_hword; bin: b4\""
-ZacasZabha_amocas_h_cg_cp_align_hword_b6_str: .string "\"test: 236; cg: ZacasZabha_amocas.h_cg; cp: cp_align_hword; bin: b6\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b1_equal_str: .string "\"test: 1; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b1_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b1_not_equal_str: .string "\"test: 2; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b1_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b2_equal_str: .string "\"test: 3; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b2_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b2_not_equal_str: .string "\"test: 4; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b2_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b3_equal_str: .string "\"test: 5; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b3_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b3_not_equal_str: .string "\"test: 6; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b3_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b4_equal_str: .string "\"test: 7; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b4_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b4_not_equal_str: .string "\"test: 8; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b4_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b5_equal_str: .string "\"test: 9; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b5_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b5_not_equal_str: .string "\"test: 10; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b5_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b6_equal_str: .string "\"test: 11; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b6_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b6_not_equal_str: .string "\"test: 12; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b6_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b7_equal_str: .string "\"test: 13; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b7_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b7_not_equal_str: .string "\"test: 14; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b7_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b8_equal_str: .string "\"test: 15; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b8_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b8_not_equal_str: .string "\"test: 16; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b8_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b9_equal_str: .string "\"test: 17; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b9_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b9_not_equal_str: .string "\"test: 18; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b9_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b10_equal_str: .string "\"test: 19; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b10_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b10_not_equal_str: .string "\"test: 20; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b10_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b11_equal_str: .string "\"test: 21; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b11_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b11_not_equal_str: .string "\"test: 22; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b11_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b12_equal_str: .string "\"test: 23; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b12_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b12_not_equal_str: .string "\"test: 24; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b12_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b13_equal_str: .string "\"test: 25; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b13_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b13_not_equal_str: .string "\"test: 26; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b13_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b14_equal_str: .string "\"test: 27; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b14_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b14_not_equal_str: .string "\"test: 28; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b14_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b15_equal_str: .string "\"test: 29; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b15_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b15_not_equal_str: .string "\"test: 30; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b15_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b16_equal_str: .string "\"test: 31; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b16_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b16_not_equal_str: .string "\"test: 32; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b16_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b17_equal_str: .string "\"test: 33; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b17_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b17_not_equal_str: .string "\"test: 34; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b17_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b18_equal_str: .string "\"test: 35; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b18_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b18_not_equal_str: .string "\"test: 36; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b18_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b19_equal_str: .string "\"test: 37; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b19_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b19_not_equal_str: .string "\"test: 38; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b19_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b20_equal_str: .string "\"test: 39; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b20_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b20_not_equal_str: .string "\"test: 40; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b20_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b21_equal_str: .string "\"test: 41; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b21_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b21_not_equal_str: .string "\"test: 42; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b21_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b22_equal_str: .string "\"test: 43; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b22_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b22_not_equal_str: .string "\"test: 44; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b22_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b23_equal_str: .string "\"test: 45; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b23_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b23_not_equal_str: .string "\"test: 46; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b23_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b24_equal_str: .string "\"test: 47; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b24_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b24_not_equal_str: .string "\"test: 48; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b24_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b25_equal_str: .string "\"test: 49; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b25_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b25_not_equal_str: .string "\"test: 50; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b25_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b26_equal_str: .string "\"test: 51; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b26_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b26_not_equal_str: .string "\"test: 52; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b26_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b27_equal_str: .string "\"test: 53; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b27_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b27_not_equal_str: .string "\"test: 54; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b27_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b28_equal_str: .string "\"test: 55; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b28_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b28_not_equal_str: .string "\"test: 56; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b28_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b29_equal_str: .string "\"test: 57; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b29_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b29_not_equal_str: .string "\"test: 58; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b29_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b30_equal_str: .string "\"test: 59; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b30_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b30_not_equal_str: .string "\"test: 60; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b30_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b31_equal_str: .string "\"test: 61; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b31_equal\""
+ZacasZabha_amocas_h_cg_cp_rs1_nx0_b31_not_equal_str: .string "\"test: 62; cg: ZacasZabha_amocas.h_cg; cp: cp_rs1_nx0; bin: b31_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b0_equal_str: .string "\"test: 63; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b0_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b0_not_equal_str: .string "\"test: 64; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b0_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b1_equal_str: .string "\"test: 65; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b1_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b1_not_equal_str: .string "\"test: 66; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b1_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b2_equal_str: .string "\"test: 67; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b2_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b2_not_equal_str: .string "\"test: 68; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b2_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b3_equal_str: .string "\"test: 69; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b3_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b3_not_equal_str: .string "\"test: 70; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b3_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b4_equal_str: .string "\"test: 71; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b4_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b4_not_equal_str: .string "\"test: 72; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b4_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b5_equal_str: .string "\"test: 73; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b5_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b5_not_equal_str: .string "\"test: 74; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b5_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b6_equal_str: .string "\"test: 75; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b6_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b6_not_equal_str: .string "\"test: 76; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b6_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b7_equal_str: .string "\"test: 77; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b7_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b7_not_equal_str: .string "\"test: 78; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b7_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b8_equal_str: .string "\"test: 79; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b8_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b8_not_equal_str: .string "\"test: 80; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b8_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b9_equal_str: .string "\"test: 81; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b9_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b9_not_equal_str: .string "\"test: 82; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b9_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b10_equal_str: .string "\"test: 83; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b10_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b10_not_equal_str: .string "\"test: 84; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b10_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b11_equal_str: .string "\"test: 85; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b11_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b11_not_equal_str: .string "\"test: 86; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b11_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b12_equal_str: .string "\"test: 87; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b12_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b12_not_equal_str: .string "\"test: 88; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b12_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b13_equal_str: .string "\"test: 89; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b13_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b13_not_equal_str: .string "\"test: 90; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b13_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b14_equal_str: .string "\"test: 91; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b14_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b14_not_equal_str: .string "\"test: 92; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b14_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b15_equal_str: .string "\"test: 93; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b15_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b15_not_equal_str: .string "\"test: 94; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b15_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b16_equal_str: .string "\"test: 95; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b16_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b16_not_equal_str: .string "\"test: 96; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b16_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b17_equal_str: .string "\"test: 97; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b17_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b17_not_equal_str: .string "\"test: 98; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b17_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b18_equal_str: .string "\"test: 99; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b18_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b18_not_equal_str: .string "\"test: 100; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b18_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b19_equal_str: .string "\"test: 101; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b19_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b19_not_equal_str: .string "\"test: 102; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b19_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b20_equal_str: .string "\"test: 103; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b20_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b20_not_equal_str: .string "\"test: 104; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b20_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b21_equal_str: .string "\"test: 105; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b21_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b21_not_equal_str: .string "\"test: 106; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b21_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b22_equal_str: .string "\"test: 107; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b22_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b22_not_equal_str: .string "\"test: 108; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b22_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b23_equal_str: .string "\"test: 109; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b23_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b23_not_equal_str: .string "\"test: 110; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b23_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b24_equal_str: .string "\"test: 111; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b24_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b24_not_equal_str: .string "\"test: 112; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b24_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b25_equal_str: .string "\"test: 113; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b25_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b25_not_equal_str: .string "\"test: 114; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b25_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b26_equal_str: .string "\"test: 115; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b26_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b26_not_equal_str: .string "\"test: 116; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b26_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b27_equal_str: .string "\"test: 117; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b27_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b27_not_equal_str: .string "\"test: 118; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b27_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b28_equal_str: .string "\"test: 119; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b28_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b28_not_equal_str: .string "\"test: 120; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b28_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b29_equal_str: .string "\"test: 121; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b29_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b29_not_equal_str: .string "\"test: 122; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b29_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b30_equal_str: .string "\"test: 123; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b30_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b30_not_equal_str: .string "\"test: 124; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b30_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b31_equal_str: .string "\"test: 125; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b31_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_b31_not_equal_str: .string "\"test: 126; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2; bin: b31_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b0_equal_str: .string "\"test: 127; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b0_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b0_not_equal_str: .string "\"test: 128; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b0_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b1_equal_str: .string "\"test: 129; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b1_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b1_not_equal_str: .string "\"test: 130; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b1_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b2_equal_str: .string "\"test: 131; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b2_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b2_not_equal_str: .string "\"test: 132; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b2_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b3_equal_str: .string "\"test: 133; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b3_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b3_not_equal_str: .string "\"test: 134; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b3_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b4_equal_str: .string "\"test: 135; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b4_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b4_not_equal_str: .string "\"test: 136; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b4_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b5_equal_str: .string "\"test: 137; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b5_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b5_not_equal_str: .string "\"test: 138; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b5_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b6_equal_str: .string "\"test: 139; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b6_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b6_not_equal_str: .string "\"test: 140; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b6_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b7_equal_str: .string "\"test: 141; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b7_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b7_not_equal_str: .string "\"test: 142; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b7_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b8_equal_str: .string "\"test: 143; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b8_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b8_not_equal_str: .string "\"test: 144; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b8_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b9_equal_str: .string "\"test: 145; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b9_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b9_not_equal_str: .string "\"test: 146; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b9_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b10_equal_str: .string "\"test: 147; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b10_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b10_not_equal_str: .string "\"test: 148; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b10_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b11_equal_str: .string "\"test: 149; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b11_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b11_not_equal_str: .string "\"test: 150; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b11_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b12_equal_str: .string "\"test: 151; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b12_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b12_not_equal_str: .string "\"test: 152; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b12_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b13_equal_str: .string "\"test: 153; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b13_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b13_not_equal_str: .string "\"test: 154; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b13_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b14_equal_str: .string "\"test: 155; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b14_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b14_not_equal_str: .string "\"test: 156; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b14_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b15_equal_str: .string "\"test: 157; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b15_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b15_not_equal_str: .string "\"test: 158; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b15_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b16_equal_str: .string "\"test: 159; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b16_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b16_not_equal_str: .string "\"test: 160; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b16_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b17_equal_str: .string "\"test: 161; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b17_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b17_not_equal_str: .string "\"test: 162; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b17_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b18_equal_str: .string "\"test: 163; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b18_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b18_not_equal_str: .string "\"test: 164; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b18_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b19_equal_str: .string "\"test: 165; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b19_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b19_not_equal_str: .string "\"test: 166; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b19_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b20_equal_str: .string "\"test: 167; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b20_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b20_not_equal_str: .string "\"test: 168; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b20_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b21_equal_str: .string "\"test: 169; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b21_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b21_not_equal_str: .string "\"test: 170; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b21_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b22_equal_str: .string "\"test: 171; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b22_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b22_not_equal_str: .string "\"test: 172; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b22_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b23_equal_str: .string "\"test: 173; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b23_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b23_not_equal_str: .string "\"test: 174; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b23_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b24_equal_str: .string "\"test: 175; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b24_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b24_not_equal_str: .string "\"test: 176; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b24_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b25_equal_str: .string "\"test: 177; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b25_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b25_not_equal_str: .string "\"test: 178; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b25_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b26_equal_str: .string "\"test: 179; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b26_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b26_not_equal_str: .string "\"test: 180; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b26_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b27_equal_str: .string "\"test: 181; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b27_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b27_not_equal_str: .string "\"test: 182; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b27_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b28_equal_str: .string "\"test: 183; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b28_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b28_not_equal_str: .string "\"test: 184; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b28_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b29_equal_str: .string "\"test: 185; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b29_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b29_not_equal_str: .string "\"test: 186; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b29_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b30_equal_str: .string "\"test: 187; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b30_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b30_not_equal_str: .string "\"test: 188; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b30_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b31_equal_str: .string "\"test: 189; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b31_equal\""
+ZacasZabha_amocas_h_cg_cp_rd_b31_not_equal_str: .string "\"test: 190; cg: ZacasZabha_amocas.h_cg; cp: cp_rd; bin: b31_not_equal\""
+ZacasZabha_amocas_h_cg_cp_rs2_edges_0x0_str: .string "\"test: 191; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0x0\""
+ZacasZabha_amocas_h_cg_cp_rs2_edges_0x1_str: .string "\"test: 192; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0x1\""
+ZacasZabha_amocas_h_cg_cp_rs2_edges_0x2_str: .string "\"test: 193; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0x2\""
+ZacasZabha_amocas_h_cg_cp_rs2_edges_0x80000000_str: .string "\"test: 194; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0x80000000\""
+ZacasZabha_amocas_h_cg_cp_rs2_edges_0x80000001_str: .string "\"test: 195; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0x80000001\""
+ZacasZabha_amocas_h_cg_cp_rs2_edges_0x7fffffff_str: .string "\"test: 196; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0x7fffffff\""
+ZacasZabha_amocas_h_cg_cp_rs2_edges_0x7ffffffe_str: .string "\"test: 197; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0x7ffffffe\""
+ZacasZabha_amocas_h_cg_cp_rs2_edges_0xffffffff_str: .string "\"test: 198; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0xffffffff\""
+ZacasZabha_amocas_h_cg_cp_rs2_edges_0xfffffffe_str: .string "\"test: 199; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0xfffffffe\""
+ZacasZabha_amocas_h_cg_cp_rs2_edges_0x5bbc8872_str: .string "\"test: 200; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0x5bbc8872\""
+ZacasZabha_amocas_h_cg_cp_rs2_edges_0xaaaaaaaa_str: .string "\"test: 201; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0xaaaaaaaa\""
+ZacasZabha_amocas_h_cg_cp_rs2_edges_0x55555555_str: .string "\"test: 202; cg: ZacasZabha_amocas.h_cg; cp: cp_rs2_edges; bin: 0x55555555\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b1_str: .string "\"test: 203; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b1\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b2_str: .string "\"test: 204; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b2\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b3_str: .string "\"test: 205; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b3\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b4_str: .string "\"test: 206; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b4\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b5_str: .string "\"test: 207; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b5\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b6_str: .string "\"test: 208; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b6\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b7_str: .string "\"test: 209; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b7\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b8_str: .string "\"test: 210; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b8\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b9_str: .string "\"test: 211; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b9\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b10_str: .string "\"test: 212; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b10\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b11_str: .string "\"test: 213; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b11\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b12_str: .string "\"test: 214; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b12\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b13_str: .string "\"test: 215; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b13\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b14_str: .string "\"test: 216; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b14\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b15_str: .string "\"test: 217; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b15\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b16_str: .string "\"test: 218; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b16\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b17_str: .string "\"test: 219; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b17\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b18_str: .string "\"test: 220; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b18\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b19_str: .string "\"test: 221; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b19\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b20_str: .string "\"test: 222; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b20\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b21_str: .string "\"test: 223; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b21\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b22_str: .string "\"test: 224; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b22\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b23_str: .string "\"test: 225; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b23\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b24_str: .string "\"test: 226; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b24\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b25_str: .string "\"test: 227; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b25\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b26_str: .string "\"test: 228; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b26\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b27_str: .string "\"test: 229; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b27\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b28_str: .string "\"test: 230; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b28\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b29_str: .string "\"test: 231; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b29\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b30_str: .string "\"test: 232; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b30\""
+ZacasZabha_amocas_h_cg_cmp_rs1_rs2_nx0_b31_str: .string "\"test: 233; cg: ZacasZabha_amocas.h_cg; cp: cmp_rs1_rs2_nx0; bin: b31\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b1_str: .string "\"test: 234; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b1\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b2_str: .string "\"test: 235; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b2\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b3_str: .string "\"test: 236; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b3\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b4_str: .string "\"test: 237; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b4\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b5_str: .string "\"test: 238; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b5\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b6_str: .string "\"test: 239; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b6\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b7_str: .string "\"test: 240; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b7\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b8_str: .string "\"test: 241; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b8\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b9_str: .string "\"test: 242; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b9\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b10_str: .string "\"test: 243; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b10\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b11_str: .string "\"test: 244; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b11\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b12_str: .string "\"test: 245; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b12\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b13_str: .string "\"test: 246; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b13\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b14_str: .string "\"test: 247; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b14\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b15_str: .string "\"test: 248; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b15\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b16_str: .string "\"test: 249; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b16\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b17_str: .string "\"test: 250; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b17\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b18_str: .string "\"test: 251; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b18\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b19_str: .string "\"test: 252; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b19\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b20_str: .string "\"test: 253; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b20\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b21_str: .string "\"test: 254; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b21\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b22_str: .string "\"test: 255; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b22\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b23_str: .string "\"test: 256; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b23\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b24_str: .string "\"test: 257; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b24\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b25_str: .string "\"test: 258; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b25\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b26_str: .string "\"test: 259; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b26\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b27_str: .string "\"test: 260; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b27\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b28_str: .string "\"test: 261; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b28\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b29_str: .string "\"test: 262; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b29\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b30_str: .string "\"test: 263; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b30\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_nx0_b31_str: .string "\"test: 264; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_nx0; bin: b31\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b0_str: .string "\"test: 265; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b0\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b1_str: .string "\"test: 266; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b1\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b2_str: .string "\"test: 267; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b2\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b3_str: .string "\"test: 268; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b3\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b4_str: .string "\"test: 269; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b4\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b5_str: .string "\"test: 270; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b5\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b6_str: .string "\"test: 271; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b6\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b7_str: .string "\"test: 272; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b7\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b8_str: .string "\"test: 273; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b8\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b9_str: .string "\"test: 274; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b9\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b10_str: .string "\"test: 275; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b10\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b11_str: .string "\"test: 276; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b11\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b12_str: .string "\"test: 277; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b12\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b13_str: .string "\"test: 278; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b13\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b14_str: .string "\"test: 279; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b14\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b15_str: .string "\"test: 280; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b15\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b16_str: .string "\"test: 281; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b16\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b17_str: .string "\"test: 282; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b17\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b18_str: .string "\"test: 283; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b18\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b19_str: .string "\"test: 284; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b19\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b20_str: .string "\"test: 285; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b20\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b21_str: .string "\"test: 286; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b21\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b22_str: .string "\"test: 287; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b22\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b23_str: .string "\"test: 288; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b23\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b24_str: .string "\"test: 289; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b24\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b25_str: .string "\"test: 290; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b25\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b26_str: .string "\"test: 291; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b26\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b27_str: .string "\"test: 292; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b27\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b28_str: .string "\"test: 293; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b28\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b29_str: .string "\"test: 294; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b29\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b30_str: .string "\"test: 295; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b30\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs2_b31_str: .string "\"test: 296; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs2; bin: b31\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b1_str: .string "\"test: 297; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b1\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b2_str: .string "\"test: 298; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b2\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b3_str: .string "\"test: 299; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b3\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b4_str: .string "\"test: 300; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b4\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b5_str: .string "\"test: 301; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b5\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b6_str: .string "\"test: 302; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b6\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b7_str: .string "\"test: 303; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b7\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b8_str: .string "\"test: 304; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b8\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b9_str: .string "\"test: 305; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b9\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b10_str: .string "\"test: 306; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b10\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b11_str: .string "\"test: 307; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b11\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b12_str: .string "\"test: 308; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b12\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b13_str: .string "\"test: 309; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b13\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b14_str: .string "\"test: 310; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b14\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b15_str: .string "\"test: 311; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b15\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b16_str: .string "\"test: 312; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b16\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b17_str: .string "\"test: 313; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b17\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b18_str: .string "\"test: 314; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b18\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b19_str: .string "\"test: 315; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b19\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b20_str: .string "\"test: 316; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b20\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b21_str: .string "\"test: 317; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b21\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b22_str: .string "\"test: 318; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b22\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b23_str: .string "\"test: 319; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b23\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b24_str: .string "\"test: 320; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b24\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b25_str: .string "\"test: 321; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b25\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b26_str: .string "\"test: 322; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b26\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b27_str: .string "\"test: 323; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b27\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b28_str: .string "\"test: 324; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b28\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b29_str: .string "\"test: 325; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b29\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b30_str: .string "\"test: 326; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b30\""
+ZacasZabha_amocas_h_cg_cmp_rd_rs1_rs2_nx0_b31_str: .string "\"test: 327; cg: ZacasZabha_amocas.h_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b31\""
+ZacasZabha_amocas_h_cg_cp_align_hword_b0_str: .string "\"test: 328; cg: ZacasZabha_amocas.h_cg; cp: cp_align_hword; bin: b0\""
+ZacasZabha_amocas_h_cg_cp_align_hword_b2_str: .string "\"test: 329; cg: ZacasZabha_amocas.h_cg; cp: cp_align_hword; bin: b2\""
+ZacasZabha_amocas_h_cg_cp_align_hword_b4_str: .string "\"test: 330; cg: ZacasZabha_amocas.h_cg; cp: cp_align_hword; bin: b4\""
+ZacasZabha_amocas_h_cg_cp_align_hword_b6_str: .string "\"test: 331; cg: ZacasZabha_amocas.h_cg; cp: cp_align_hword; bin: b6\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

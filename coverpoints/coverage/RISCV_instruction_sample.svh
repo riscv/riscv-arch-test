@@ -2101,6 +2101,12 @@
             ins.add_vm(2);
             ins.add_v0();
         end
+        "vfncvtbf16.f.f.w"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vm(2);
+            ins.add_v0();
+        end
         "vfnmacc.vf"     : begin
             ins.add_vd(0);
             ins.add_fs1(1);

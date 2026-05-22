@@ -49,7 +49,7 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
                 asm_setup = test_data.int_regs.consume_register_pair(rd)
             else:
                 asm_setup = test_data.int_regs.consume_registers([rd])
-            
+
             if is_zacas:
                 # For amocas instructions, we want to specifically test the case where the loaded value matches the original rd value
                 rd_val = random_range(0, all_ones)
@@ -66,7 +66,9 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
                     case_desc = "non-matching (rd_val != mem_val)"
                     bin_suffix = "not_equal"
 
-                params = generate_random_params(test_data, instr_type, rd=rd, rdval=rd_val, rs1val=rs1_val, rs2val=rs2_val)
+                params = generate_random_params(
+                    test_data, instr_type, rd=rd, rdval=rd_val, rs1val=rs1_val, rs2val=rs2_val
+                )
                 params.rdval = rd_val
                 params.rs1val = rs1_val
                 params.rs2val = rs2_val
@@ -80,7 +82,7 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
                 bin_name = f"b{rd}"
 
             tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-            
+
             if asm_setup:
                 tc.code = asm_setup + "\n" + tc.code
             test_chunks.append(tc)
@@ -140,7 +142,9 @@ def make_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
                     case_desc = "non-matching (rd_val != mem_val)"
                     bin_suffix = "not_equal"
 
-                params = generate_random_params(test_data, instr_type, rs1=rs1, rdval=rd_val, rs1val=rs1_val, rs2val=rs2_val)
+                params = generate_random_params(
+                    test_data, instr_type, rs1=rs1, rdval=rd_val, rs1val=rs1_val, rs2val=rs2_val
+                )
                 params.rdval = rd_val
                 params.rs1val = rs1_val
                 params.rs2val = rs2_val
@@ -210,7 +214,9 @@ def make_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
                     case_desc = "non-matching (rd_val != mem_val)"
                     bin_suffix = "not_equal"
 
-                params = generate_random_params(test_data, instr_type, rs2=rs2, rdval=rd_val, rs1val=rs1_val, rs2val=rs2_val)
+                params = generate_random_params(
+                    test_data, instr_type, rs2=rs2, rdval=rd_val, rs1val=rs1_val, rs2val=rs2_val
+                )
                 params.rdval = rd_val
                 params.rs1val = rs1_val
                 params.rs2val = rs2_val
@@ -224,7 +230,7 @@ def make_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
                 bin_name = f"b{rs2}"
 
             tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-            
+
             if asm_setup:
                 tc.code = asm_setup + "\n" + tc.code
             test_chunks.append(tc)

@@ -1589,7 +1589,6 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
         # rewrites it after the test body is fully generated and sigupd_count is final.
         .replace("@TESTCASE_STRINGS@", generate_testcase_string_section())
         .replace("@EXTRA_DEFINES@", (f"#define RVTEST_VECTOR\n"
-                                     f"#define RVTEST_FP\n"
                                      f"#define RVTEST_SEW {sew}\n"
                                      f"#define VDSEW {vdsew}\n"
                                      + (f"\n{getPrivExtraDefines()}" if priv else "")
@@ -2267,7 +2266,7 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
           writeLine(line, "# zero reload register for deterministic mask LS comparison")
       writeLine(load_testline, "# load value stored in memory to check against signature")
 
-    if (test in vfloattypes) and (test not in fvtype):
+    if (test in vfloattypes) and (test not in fvtype) and not vlmax_mask_prod:
       fcsrsaveReg = pickScalarScratch(scalar_registers_used)
       scalar_registers_used.append(fcsrsaveReg)
       writeLine(f"csrr x{fcsrsaveReg}, fcsr", f"# save fcsr into x{fcsrsaveReg} for signature")

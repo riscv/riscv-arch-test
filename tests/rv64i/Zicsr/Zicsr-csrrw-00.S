@@ -37,19 +37,6 @@ RVTEST_BEGIN
 # Testcase cp_rs1 (Test source rs1 = x0)
   RVTEST_TESTDATA_LOAD_INT(x3, x0) # load rs1: x0 = 0x80571323577480e6
   RVTEST_TESTDATA_LOAD_INT(x3, x27) # load temp reg: x27 = 0x9615412f7f37c167
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x27
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x27
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x27
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x27, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
 Zicsr_csrrw_cg_cp_rs1_b0:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -86,847 +73,639 @@ Zicsr_csrrw_cg_cp_rs1_b0:
   # Check if x27 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x27, Zicsr_csrrw_cg_cp_rs1_b0, Zicsr_csrrw_cg_cp_rs1_b0_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x16, x11, x27
-  sltiu x16, x16, 0x000007FF
+  # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x11, Zicsr_csrrw_cg_cp_rs1_b0, Zicsr_csrrw_cg_cp_rs1_b0_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x16, instret, x0
+  csrrs x27, instret, x0
+  sub x16, x27, x16
   # Check if x16 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x16, Zicsr_csrrw_cg_cp_rs1_b0, Zicsr_csrrw_cg_cp_rs1_b0_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x16, instret, x0
-  sub x16, x16, x27
-  sltiu x27, x16, 0x000007FF
-  # Check if x27 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x27, Zicsr_csrrw_cg_cp_rs1_b0, Zicsr_csrrw_cg_cp_rs1_b0_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0xdc05c7db71fc4d56
-  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load temp reg: x8 = 0x2234990c93f3dd5c
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x8
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x8
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x8
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x8, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs1: x1 = 0x871180469c028e75
+  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load temp reg: x19 = 0xc26634885c05c7db
 Zicsr_csrrw_cg_cp_rs1_b1:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x17, fflags, x1
+  csrrw x29, fflags, x1
 #elif defined(V_SUPPORTED)
-  csrrw x17, vxsat, x1
+  csrrw x29, vxsat, x1
 #elif !defined(U_SUPPORTED)
-  csrrw x17, mepc, x1
+  csrrw x29, mepc, x1
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x17, instret, x1
+  csrrw x29, instret, x1
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x17 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x17, Zicsr_csrrw_cg_cp_rs1_b1, Zicsr_csrrw_cg_cp_rs1_b1_str)
+  # Check if x29 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_b1, Zicsr_csrrw_cg_cp_rs1_b1_str)
 // read back CSR to check updated value
-  csrrs x8, fflags, x0
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Zicsr_csrrw_cg_cp_rs1_b1, Zicsr_csrrw_cg_cp_rs1_b1_str)
+  csrrs x19, fflags, x0
+  # Check if x19 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_b1, Zicsr_csrrw_cg_cp_rs1_b1_str)
 #elif defined(V_SUPPORTED)
-  # Check if x17 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x17, Zicsr_csrrw_cg_cp_rs1_b1, Zicsr_csrrw_cg_cp_rs1_b1_str)
+  # Check if x29 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_b1, Zicsr_csrrw_cg_cp_rs1_b1_str)
 // read back CSR to check updated value
-  csrrs x8, vxsat, x0
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Zicsr_csrrw_cg_cp_rs1_b1, Zicsr_csrrw_cg_cp_rs1_b1_str)
+  csrrs x19, vxsat, x0
+  # Check if x19 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_b1, Zicsr_csrrw_cg_cp_rs1_b1_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x17 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x17, Zicsr_csrrw_cg_cp_rs1_b1, Zicsr_csrrw_cg_cp_rs1_b1_str)
+  # Check if x29 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_b1, Zicsr_csrrw_cg_cp_rs1_b1_str)
 // read back CSR to check updated value
-  csrrs x8, mepc, x0
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Zicsr_csrrw_cg_cp_rs1_b1, Zicsr_csrrw_cg_cp_rs1_b1_str)
+  csrrs x19, mepc, x0
+  # Check if x19 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_b1, Zicsr_csrrw_cg_cp_rs1_b1_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x24, x17, x8
-  sltiu x24, x24, 0x000007FF
-  # Check if x24 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x24, Zicsr_csrrw_cg_cp_rs1_b1, Zicsr_csrrw_cg_cp_rs1_b1_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x24, instret, x0
-  sub x24, x24, x8
-  sltiu x8, x24, 0x000007FF
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Zicsr_csrrw_cg_cp_rs1_b1, Zicsr_csrrw_cg_cp_rs1_b1_str)
+  # Check if x29 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_b1, Zicsr_csrrw_cg_cp_rs1_b1_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x21, instret, x0
+  csrrs x19, instret, x0
+  sub x21, x19, x21
+  # Check if x21 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_b1, Zicsr_csrrw_cg_cp_rs1_b1_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
-  mv x19, x2 # switch signature pointer register to avoid conflict with test
+  mv x28, x2 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0x6f792360b1c6f1aa
-  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load temp reg: x18 = 0x604bdc22d0189cfd
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x18
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x18
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x18
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x18, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs1: x2 = 0x2234990c93f3dd5c
+  RVTEST_TESTDATA_LOAD_INT(x3, x22) # load temp reg: x22 = 0x771006f25180f629
 Zicsr_csrrw_cg_cp_rs1_b2:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x16, fflags, x2
+  csrrw x20, fflags, x2
 #elif defined(V_SUPPORTED)
-  csrrw x16, vxsat, x2
+  csrrw x20, vxsat, x2
 #elif !defined(U_SUPPORTED)
-  csrrw x16, mepc, x2
+  csrrw x20, mepc, x2
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x16, instret, x2
+  csrrw x20, instret, x2
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x16 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x16, Zicsr_csrrw_cg_cp_rs1_b2, Zicsr_csrrw_cg_cp_rs1_b2_str)
+  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x20, Zicsr_csrrw_cg_cp_rs1_b2, Zicsr_csrrw_cg_cp_rs1_b2_str)
 // read back CSR to check updated value
-  csrrs x18, fflags, x0
-  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x18, Zicsr_csrrw_cg_cp_rs1_b2, Zicsr_csrrw_cg_cp_rs1_b2_str)
+  csrrs x22, fflags, x0
+  # Check if x22 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x22, Zicsr_csrrw_cg_cp_rs1_b2, Zicsr_csrrw_cg_cp_rs1_b2_str)
 #elif defined(V_SUPPORTED)
-  # Check if x16 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x16, Zicsr_csrrw_cg_cp_rs1_b2, Zicsr_csrrw_cg_cp_rs1_b2_str)
+  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x20, Zicsr_csrrw_cg_cp_rs1_b2, Zicsr_csrrw_cg_cp_rs1_b2_str)
 // read back CSR to check updated value
-  csrrs x18, vxsat, x0
-  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x18, Zicsr_csrrw_cg_cp_rs1_b2, Zicsr_csrrw_cg_cp_rs1_b2_str)
+  csrrs x22, vxsat, x0
+  # Check if x22 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x22, Zicsr_csrrw_cg_cp_rs1_b2, Zicsr_csrrw_cg_cp_rs1_b2_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x16 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x16, Zicsr_csrrw_cg_cp_rs1_b2, Zicsr_csrrw_cg_cp_rs1_b2_str)
+  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x20, Zicsr_csrrw_cg_cp_rs1_b2, Zicsr_csrrw_cg_cp_rs1_b2_str)
 // read back CSR to check updated value
-  csrrs x18, mepc, x0
-  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x18, Zicsr_csrrw_cg_cp_rs1_b2, Zicsr_csrrw_cg_cp_rs1_b2_str)
+  csrrs x22, mepc, x0
+  # Check if x22 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x22, Zicsr_csrrw_cg_cp_rs1_b2, Zicsr_csrrw_cg_cp_rs1_b2_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x14, x16, x18
-  sltiu x14, x14, 0x000007FF
-  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b2, Zicsr_csrrw_cg_cp_rs1_b2_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x14, instret, x0
-  sub x14, x14, x18
-  sltiu x18, x14, 0x000007FF
-  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x18, Zicsr_csrrw_cg_cp_rs1_b2, Zicsr_csrrw_cg_cp_rs1_b2_str)
+  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x20, Zicsr_csrrw_cg_cp_rs1_b2, Zicsr_csrrw_cg_cp_rs1_b2_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x29, instret, x0
+  csrrs x22, instret, x0
+  sub x29, x22, x29
+  # Check if x29 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_b2, Zicsr_csrrw_cg_cp_rs1_b2_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
   mv x15, x3 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x15, x3) # load rs1: x3 = 0xe5e7ea298947ca07
-  RVTEST_TESTDATA_LOAD_INT(x15, x18) # load temp reg: x18 = 0xf6f18f7e76569a8f
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x18
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x18
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x18
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x18, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x15, x3) # load rs1: x3 = 0x604bdc22d0189cfd
+  RVTEST_TESTDATA_LOAD_INT(x15, x13) # load temp reg: x13 = 0x3cba81b83e43745b
 Zicsr_csrrw_cg_cp_rs1_b3:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x28, fflags, x3
+  csrrw x17, fflags, x3
 #elif defined(V_SUPPORTED)
-  csrrw x28, vxsat, x3
+  csrrw x17, vxsat, x3
 #elif !defined(U_SUPPORTED)
-  csrrw x28, mepc, x3
+  csrrw x17, mepc, x3
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x28, instret, x3
+  csrrw x17, instret, x3
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_b3, Zicsr_csrrw_cg_cp_rs1_b3_str)
+  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x17, Zicsr_csrrw_cg_cp_rs1_b3, Zicsr_csrrw_cg_cp_rs1_b3_str)
 // read back CSR to check updated value
-  csrrs x18, fflags, x0
-  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x18, Zicsr_csrrw_cg_cp_rs1_b3, Zicsr_csrrw_cg_cp_rs1_b3_str)
+  csrrs x13, fflags, x0
+  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_b3, Zicsr_csrrw_cg_cp_rs1_b3_str)
 #elif defined(V_SUPPORTED)
-  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_b3, Zicsr_csrrw_cg_cp_rs1_b3_str)
+  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x17, Zicsr_csrrw_cg_cp_rs1_b3, Zicsr_csrrw_cg_cp_rs1_b3_str)
 // read back CSR to check updated value
-  csrrs x18, vxsat, x0
-  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x18, Zicsr_csrrw_cg_cp_rs1_b3, Zicsr_csrrw_cg_cp_rs1_b3_str)
+  csrrs x13, vxsat, x0
+  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_b3, Zicsr_csrrw_cg_cp_rs1_b3_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_b3, Zicsr_csrrw_cg_cp_rs1_b3_str)
+  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x17, Zicsr_csrrw_cg_cp_rs1_b3, Zicsr_csrrw_cg_cp_rs1_b3_str)
 // read back CSR to check updated value
-  csrrs x18, mepc, x0
-  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x18, Zicsr_csrrw_cg_cp_rs1_b3, Zicsr_csrrw_cg_cp_rs1_b3_str)
+  csrrs x13, mepc, x0
+  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_b3, Zicsr_csrrw_cg_cp_rs1_b3_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x13, x28, x18
-  sltiu x13, x13, 0x000007FF
-  # Check if x13 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_b3, Zicsr_csrrw_cg_cp_rs1_b3_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
+  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x17, Zicsr_csrrw_cg_cp_rs1_b3, Zicsr_csrrw_cg_cp_rs1_b3_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x29, instret, x0
   csrrs x13, instret, x0
-  sub x13, x13, x18
-  sltiu x18, x13, 0x000007FF
-  # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x18, Zicsr_csrrw_cg_cp_rs1_b3, Zicsr_csrrw_cg_cp_rs1_b3_str)
+  sub x29, x13, x29
+  # Check if x29 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_b3, Zicsr_csrrw_cg_cp_rs1_b3_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
-  mv x12, x4 # switch temp register to avoid conflict with test
-  mv x13, x5 # switch link pointer register to avoid conflict with test
+  mv x7, x4 # switch temp register to avoid conflict with test
+  mv x8, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x15, x4) # load rs1: x4 = 0x39d36cbfbb20efef
-  RVTEST_TESTDATA_LOAD_INT(x15, x26) # load temp reg: x26 = 0xbe810df3f21b1da3
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x26
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x26
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x26
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x26, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x15, x4) # load rs1: x4 = 0xe5e7ea298947ca07
+  RVTEST_TESTDATA_LOAD_INT(x15, x18) # load temp reg: x18 = 0xf6f18f7e76569a8f
 Zicsr_csrrw_cg_cp_rs1_b4:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x28, fflags, x4
+  csrrw x30, fflags, x4
 #elif defined(V_SUPPORTED)
-  csrrw x28, vxsat, x4
+  csrrw x30, vxsat, x4
 #elif !defined(U_SUPPORTED)
-  csrrw x28, mepc, x4
+  csrrw x30, mepc, x4
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x28, instret, x4
+  csrrw x30, instret, x4
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x28 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x28, Zicsr_csrrw_cg_cp_rs1_b4, Zicsr_csrrw_cg_cp_rs1_b4_str)
+  # Check if x30 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x30, Zicsr_csrrw_cg_cp_rs1_b4, Zicsr_csrrw_cg_cp_rs1_b4_str)
 // read back CSR to check updated value
-  csrrs x26, fflags, x0
-  # Check if x26 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x26, Zicsr_csrrw_cg_cp_rs1_b4, Zicsr_csrrw_cg_cp_rs1_b4_str)
+  csrrs x18, fflags, x0
+  # Check if x18 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x18, Zicsr_csrrw_cg_cp_rs1_b4, Zicsr_csrrw_cg_cp_rs1_b4_str)
 #elif defined(V_SUPPORTED)
-  # Check if x28 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x28, Zicsr_csrrw_cg_cp_rs1_b4, Zicsr_csrrw_cg_cp_rs1_b4_str)
+  # Check if x30 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x30, Zicsr_csrrw_cg_cp_rs1_b4, Zicsr_csrrw_cg_cp_rs1_b4_str)
 // read back CSR to check updated value
-  csrrs x26, vxsat, x0
-  # Check if x26 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x26, Zicsr_csrrw_cg_cp_rs1_b4, Zicsr_csrrw_cg_cp_rs1_b4_str)
+  csrrs x18, vxsat, x0
+  # Check if x18 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x18, Zicsr_csrrw_cg_cp_rs1_b4, Zicsr_csrrw_cg_cp_rs1_b4_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x28 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x28, Zicsr_csrrw_cg_cp_rs1_b4, Zicsr_csrrw_cg_cp_rs1_b4_str)
+  # Check if x30 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x30, Zicsr_csrrw_cg_cp_rs1_b4, Zicsr_csrrw_cg_cp_rs1_b4_str)
 // read back CSR to check updated value
-  csrrs x26, mepc, x0
-  # Check if x26 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x26, Zicsr_csrrw_cg_cp_rs1_b4, Zicsr_csrrw_cg_cp_rs1_b4_str)
+  csrrs x18, mepc, x0
+  # Check if x18 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x18, Zicsr_csrrw_cg_cp_rs1_b4, Zicsr_csrrw_cg_cp_rs1_b4_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x20, x28, x26
-  sltiu x20, x20, 0x000007FF
-  # Check if x20 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x20, Zicsr_csrrw_cg_cp_rs1_b4, Zicsr_csrrw_cg_cp_rs1_b4_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x20, instret, x0
-  sub x20, x20, x26
-  sltiu x26, x20, 0x000007FF
-  # Check if x26 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x26, Zicsr_csrrw_cg_cp_rs1_b4, Zicsr_csrrw_cg_cp_rs1_b4_str)
+  # Check if x30 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x30, Zicsr_csrrw_cg_cp_rs1_b4, Zicsr_csrrw_cg_cp_rs1_b4_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x13, instret, x0
+  csrrs x18, instret, x0
+  sub x13, x18, x13
+  # Check if x13 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x13, Zicsr_csrrw_cg_cp_rs1_b4, Zicsr_csrrw_cg_cp_rs1_b4_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x15, x5) # load rs1: x5 = 0x8330311c99ba1b79
-  RVTEST_TESTDATA_LOAD_INT(x15, x4) # load temp reg: x4 = 0x25a84919ac65fe77
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x4
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x4
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x4
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x4, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x15, x5) # load rs1: x5 = 0x7641a72e7cbaf835
+  RVTEST_TESTDATA_LOAD_INT(x15, x13) # load temp reg: x13 = 0x450c5abb4ca3a0b3
 Zicsr_csrrw_cg_cp_rs1_b5:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x23, fflags, x5
+  csrrw x10, fflags, x5
 #elif defined(V_SUPPORTED)
-  csrrw x23, vxsat, x5
+  csrrw x10, vxsat, x5
 #elif !defined(U_SUPPORTED)
-  csrrw x23, mepc, x5
+  csrrw x10, mepc, x5
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x23, instret, x5
+  csrrw x10, instret, x5
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x23 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x23, Zicsr_csrrw_cg_cp_rs1_b5, Zicsr_csrrw_cg_cp_rs1_b5_str)
+  # Check if x10 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x10, Zicsr_csrrw_cg_cp_rs1_b5, Zicsr_csrrw_cg_cp_rs1_b5_str)
 // read back CSR to check updated value
-  csrrs x4, fflags, x0
-  # Check if x4 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x4, Zicsr_csrrw_cg_cp_rs1_b5, Zicsr_csrrw_cg_cp_rs1_b5_str)
+  csrrs x13, fflags, x0
+  # Check if x13 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x13, Zicsr_csrrw_cg_cp_rs1_b5, Zicsr_csrrw_cg_cp_rs1_b5_str)
 #elif defined(V_SUPPORTED)
-  # Check if x23 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x23, Zicsr_csrrw_cg_cp_rs1_b5, Zicsr_csrrw_cg_cp_rs1_b5_str)
+  # Check if x10 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x10, Zicsr_csrrw_cg_cp_rs1_b5, Zicsr_csrrw_cg_cp_rs1_b5_str)
 // read back CSR to check updated value
-  csrrs x4, vxsat, x0
-  # Check if x4 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x4, Zicsr_csrrw_cg_cp_rs1_b5, Zicsr_csrrw_cg_cp_rs1_b5_str)
+  csrrs x13, vxsat, x0
+  # Check if x13 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x13, Zicsr_csrrw_cg_cp_rs1_b5, Zicsr_csrrw_cg_cp_rs1_b5_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x23 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x23, Zicsr_csrrw_cg_cp_rs1_b5, Zicsr_csrrw_cg_cp_rs1_b5_str)
+  # Check if x10 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x10, Zicsr_csrrw_cg_cp_rs1_b5, Zicsr_csrrw_cg_cp_rs1_b5_str)
 // read back CSR to check updated value
-  csrrs x4, mepc, x0
-  # Check if x4 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x4, Zicsr_csrrw_cg_cp_rs1_b5, Zicsr_csrrw_cg_cp_rs1_b5_str)
+  csrrs x13, mepc, x0
+  # Check if x13 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x13, Zicsr_csrrw_cg_cp_rs1_b5, Zicsr_csrrw_cg_cp_rs1_b5_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x6, x23, x4
-  sltiu x6, x6, 0x000007FF
-  # Check if x6 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x6, Zicsr_csrrw_cg_cp_rs1_b5, Zicsr_csrrw_cg_cp_rs1_b5_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x6, instret, x0
-  sub x6, x6, x4
-  sltiu x4, x6, 0x000007FF
-  # Check if x4 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x4, Zicsr_csrrw_cg_cp_rs1_b5, Zicsr_csrrw_cg_cp_rs1_b5_str)
+  # Check if x10 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x10, Zicsr_csrrw_cg_cp_rs1_b5, Zicsr_csrrw_cg_cp_rs1_b5_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x19, instret, x0
+  csrrs x13, instret, x0
+  sub x19, x13, x19
+  # Check if x19 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x19, Zicsr_csrrw_cg_cp_rs1_b5, Zicsr_csrrw_cg_cp_rs1_b5_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x15, x6) # load rs1: x6 = 0xf55871515267fd33
-  RVTEST_TESTDATA_LOAD_INT(x15, x10) # load temp reg: x10 = 0x5b57075136756118
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x10
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x10
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x10
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x10, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x15, x6) # load rs1: x6 = 0xbe810df3f21b1da3
+  RVTEST_TESTDATA_LOAD_INT(x15, x19) # load temp reg: x19 = 0x4bca3cc0017193d8
 Zicsr_csrrw_cg_cp_rs1_b6:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x2, fflags, x6
+  csrrw x31, fflags, x6
 #elif defined(V_SUPPORTED)
-  csrrw x2, vxsat, x6
+  csrrw x31, vxsat, x6
 #elif !defined(U_SUPPORTED)
-  csrrw x2, mepc, x6
+  csrrw x31, mepc, x6
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x2, instret, x6
+  csrrw x31, instret, x6
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x2 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x2, Zicsr_csrrw_cg_cp_rs1_b6, Zicsr_csrrw_cg_cp_rs1_b6_str)
+  # Check if x31 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x31, Zicsr_csrrw_cg_cp_rs1_b6, Zicsr_csrrw_cg_cp_rs1_b6_str)
 // read back CSR to check updated value
-  csrrs x10, fflags, x0
-  # Check if x10 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x10, Zicsr_csrrw_cg_cp_rs1_b6, Zicsr_csrrw_cg_cp_rs1_b6_str)
+  csrrs x19, fflags, x0
+  # Check if x19 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x19, Zicsr_csrrw_cg_cp_rs1_b6, Zicsr_csrrw_cg_cp_rs1_b6_str)
 #elif defined(V_SUPPORTED)
-  # Check if x2 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x2, Zicsr_csrrw_cg_cp_rs1_b6, Zicsr_csrrw_cg_cp_rs1_b6_str)
+  # Check if x31 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x31, Zicsr_csrrw_cg_cp_rs1_b6, Zicsr_csrrw_cg_cp_rs1_b6_str)
 // read back CSR to check updated value
-  csrrs x10, vxsat, x0
-  # Check if x10 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x10, Zicsr_csrrw_cg_cp_rs1_b6, Zicsr_csrrw_cg_cp_rs1_b6_str)
+  csrrs x19, vxsat, x0
+  # Check if x19 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x19, Zicsr_csrrw_cg_cp_rs1_b6, Zicsr_csrrw_cg_cp_rs1_b6_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x2 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x2, Zicsr_csrrw_cg_cp_rs1_b6, Zicsr_csrrw_cg_cp_rs1_b6_str)
+  # Check if x31 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x31, Zicsr_csrrw_cg_cp_rs1_b6, Zicsr_csrrw_cg_cp_rs1_b6_str)
 // read back CSR to check updated value
-  csrrs x10, mepc, x0
-  # Check if x10 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x10, Zicsr_csrrw_cg_cp_rs1_b6, Zicsr_csrrw_cg_cp_rs1_b6_str)
+  csrrs x19, mepc, x0
+  # Check if x19 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x19, Zicsr_csrrw_cg_cp_rs1_b6, Zicsr_csrrw_cg_cp_rs1_b6_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x31, x2, x10
-  sltiu x31, x31, 0x000007FF
-  # Check if x31 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x31, Zicsr_csrrw_cg_cp_rs1_b6, Zicsr_csrrw_cg_cp_rs1_b6_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x31, instret, x0
-  sub x31, x31, x10
-  sltiu x10, x31, 0x000007FF
-  # Check if x10 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x10, Zicsr_csrrw_cg_cp_rs1_b6, Zicsr_csrrw_cg_cp_rs1_b6_str)
+  # Check if x31 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x31, Zicsr_csrrw_cg_cp_rs1_b6, Zicsr_csrrw_cg_cp_rs1_b6_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x23, instret, x0
+  csrrs x19, instret, x0
+  sub x23, x19, x23
+  # Check if x23 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x23, Zicsr_csrrw_cg_cp_rs1_b6, Zicsr_csrrw_cg_cp_rs1_b6_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
+  mv x4, x7 # switch temp register to avoid conflict with test
+  mv x5, x8 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x15, x7) # load rs1: x7 = 0x268c0e4a521d03b2
-  RVTEST_TESTDATA_LOAD_INT(x15, x8) # load temp reg: x8 = 0x1c2272eb86895816
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x8
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x8
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x8
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x8, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x15, x7) # load rs1: x7 = 0xbb5be31db3443cdc
+  RVTEST_TESTDATA_LOAD_INT(x15, x2) # load temp reg: x2 = 0xf55871515267fd33
 Zicsr_csrrw_cg_cp_rs1_b7:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x26, fflags, x7
+  csrrw x14, fflags, x7
 #elif defined(V_SUPPORTED)
-  csrrw x26, vxsat, x7
+  csrrw x14, vxsat, x7
 #elif !defined(U_SUPPORTED)
-  csrrw x26, mepc, x7
+  csrrw x14, mepc, x7
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x26, instret, x7
+  csrrw x14, instret, x7
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x26 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x26, Zicsr_csrrw_cg_cp_rs1_b7, Zicsr_csrrw_cg_cp_rs1_b7_str)
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b7, Zicsr_csrrw_cg_cp_rs1_b7_str)
 // read back CSR to check updated value
-  csrrs x8, fflags, x0
-  # Check if x8 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x8, Zicsr_csrrw_cg_cp_rs1_b7, Zicsr_csrrw_cg_cp_rs1_b7_str)
+  csrrs x2, fflags, x0
+  # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x2, Zicsr_csrrw_cg_cp_rs1_b7, Zicsr_csrrw_cg_cp_rs1_b7_str)
 #elif defined(V_SUPPORTED)
-  # Check if x26 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x26, Zicsr_csrrw_cg_cp_rs1_b7, Zicsr_csrrw_cg_cp_rs1_b7_str)
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b7, Zicsr_csrrw_cg_cp_rs1_b7_str)
 // read back CSR to check updated value
-  csrrs x8, vxsat, x0
-  # Check if x8 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x8, Zicsr_csrrw_cg_cp_rs1_b7, Zicsr_csrrw_cg_cp_rs1_b7_str)
+  csrrs x2, vxsat, x0
+  # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x2, Zicsr_csrrw_cg_cp_rs1_b7, Zicsr_csrrw_cg_cp_rs1_b7_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x26 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x26, Zicsr_csrrw_cg_cp_rs1_b7, Zicsr_csrrw_cg_cp_rs1_b7_str)
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b7, Zicsr_csrrw_cg_cp_rs1_b7_str)
 // read back CSR to check updated value
-  csrrs x8, mepc, x0
-  # Check if x8 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x8, Zicsr_csrrw_cg_cp_rs1_b7, Zicsr_csrrw_cg_cp_rs1_b7_str)
+  csrrs x2, mepc, x0
+  # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x2, Zicsr_csrrw_cg_cp_rs1_b7, Zicsr_csrrw_cg_cp_rs1_b7_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x20, x26, x8
-  sltiu x20, x20, 0x000007FF
-  # Check if x20 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x20, Zicsr_csrrw_cg_cp_rs1_b7, Zicsr_csrrw_cg_cp_rs1_b7_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x20, instret, x0
-  sub x20, x20, x8
-  sltiu x8, x20, 0x000007FF
-  # Check if x8 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x8, Zicsr_csrrw_cg_cp_rs1_b7, Zicsr_csrrw_cg_cp_rs1_b7_str)
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b7, Zicsr_csrrw_cg_cp_rs1_b7_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x12, instret, x0
+  csrrs x2, instret, x0
+  sub x12, x2, x12
+  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x12, Zicsr_csrrw_cg_cp_rs1_b7, Zicsr_csrrw_cg_cp_rs1_b7_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x15, x8) # load rs1: x8 = 0xc40bc1b895202bdf
-  RVTEST_TESTDATA_LOAD_INT(x15, x21) # load temp reg: x21 = 0xdca5ba2e5fe63e1b
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x21
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x21
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x21
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x21, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x15, x8) # load rs1: x8 = 0x0581cc624d1de93f
+  RVTEST_TESTDATA_LOAD_INT(x15, x27) # load temp reg: x27 = 0x5b57075136756118
 Zicsr_csrrw_cg_cp_rs1_b8:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x27, fflags, x8
+  csrrw x30, fflags, x8
 #elif defined(V_SUPPORTED)
-  csrrw x27, vxsat, x8
+  csrrw x30, vxsat, x8
 #elif !defined(U_SUPPORTED)
-  csrrw x27, mepc, x8
+  csrrw x30, mepc, x8
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x27, instret, x8
+  csrrw x30, instret, x8
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x27 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x27, Zicsr_csrrw_cg_cp_rs1_b8, Zicsr_csrrw_cg_cp_rs1_b8_str)
+  # Check if x30 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x30, Zicsr_csrrw_cg_cp_rs1_b8, Zicsr_csrrw_cg_cp_rs1_b8_str)
 // read back CSR to check updated value
-  csrrs x21, fflags, x0
-  # Check if x21 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x21, Zicsr_csrrw_cg_cp_rs1_b8, Zicsr_csrrw_cg_cp_rs1_b8_str)
+  csrrs x27, fflags, x0
+  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x27, Zicsr_csrrw_cg_cp_rs1_b8, Zicsr_csrrw_cg_cp_rs1_b8_str)
 #elif defined(V_SUPPORTED)
-  # Check if x27 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x27, Zicsr_csrrw_cg_cp_rs1_b8, Zicsr_csrrw_cg_cp_rs1_b8_str)
+  # Check if x30 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x30, Zicsr_csrrw_cg_cp_rs1_b8, Zicsr_csrrw_cg_cp_rs1_b8_str)
 // read back CSR to check updated value
-  csrrs x21, vxsat, x0
-  # Check if x21 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x21, Zicsr_csrrw_cg_cp_rs1_b8, Zicsr_csrrw_cg_cp_rs1_b8_str)
+  csrrs x27, vxsat, x0
+  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x27, Zicsr_csrrw_cg_cp_rs1_b8, Zicsr_csrrw_cg_cp_rs1_b8_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x27 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x27, Zicsr_csrrw_cg_cp_rs1_b8, Zicsr_csrrw_cg_cp_rs1_b8_str)
+  # Check if x30 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x30, Zicsr_csrrw_cg_cp_rs1_b8, Zicsr_csrrw_cg_cp_rs1_b8_str)
 // read back CSR to check updated value
-  csrrs x21, mepc, x0
-  # Check if x21 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x21, Zicsr_csrrw_cg_cp_rs1_b8, Zicsr_csrrw_cg_cp_rs1_b8_str)
+  csrrs x27, mepc, x0
+  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x27, Zicsr_csrrw_cg_cp_rs1_b8, Zicsr_csrrw_cg_cp_rs1_b8_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x28, x27, x21
-  sltiu x28, x28, 0x000007FF
-  # Check if x28 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x28, Zicsr_csrrw_cg_cp_rs1_b8, Zicsr_csrrw_cg_cp_rs1_b8_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x28, instret, x0
-  sub x28, x28, x21
-  sltiu x21, x28, 0x000007FF
-  # Check if x21 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x21, Zicsr_csrrw_cg_cp_rs1_b8, Zicsr_csrrw_cg_cp_rs1_b8_str)
+  # Check if x30 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x30, Zicsr_csrrw_cg_cp_rs1_b8, Zicsr_csrrw_cg_cp_rs1_b8_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x31, instret, x0
+  csrrs x27, instret, x0
+  sub x31, x27, x31
+  # Check if x31 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x31, Zicsr_csrrw_cg_cp_rs1_b8, Zicsr_csrrw_cg_cp_rs1_b8_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x15, x9) # load rs1: x9 = 0x2627b0b45b845133
-  RVTEST_TESTDATA_LOAD_INT(x15, x2) # load temp reg: x2 = 0xc378db15356e94f9
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x2
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x2
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x2
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x2, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x15, x9) # load rs1: x9 = 0x268c0e4a521d03b2
+  RVTEST_TESTDATA_LOAD_INT(x15, x11) # load temp reg: x11 = 0x1c2272eb86895816
 Zicsr_csrrw_cg_cp_rs1_b9:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x4, fflags, x9
+  csrrw x3, fflags, x9
 #elif defined(V_SUPPORTED)
-  csrrw x4, vxsat, x9
+  csrrw x3, vxsat, x9
 #elif !defined(U_SUPPORTED)
-  csrrw x4, mepc, x9
+  csrrw x3, mepc, x9
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x4, instret, x9
+  csrrw x3, instret, x9
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x4 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x4, Zicsr_csrrw_cg_cp_rs1_b9, Zicsr_csrrw_cg_cp_rs1_b9_str)
+  # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x3, Zicsr_csrrw_cg_cp_rs1_b9, Zicsr_csrrw_cg_cp_rs1_b9_str)
 // read back CSR to check updated value
-  csrrs x2, fflags, x0
-  # Check if x2 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x2, Zicsr_csrrw_cg_cp_rs1_b9, Zicsr_csrrw_cg_cp_rs1_b9_str)
+  csrrs x11, fflags, x0
+  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x11, Zicsr_csrrw_cg_cp_rs1_b9, Zicsr_csrrw_cg_cp_rs1_b9_str)
 #elif defined(V_SUPPORTED)
-  # Check if x4 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x4, Zicsr_csrrw_cg_cp_rs1_b9, Zicsr_csrrw_cg_cp_rs1_b9_str)
+  # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x3, Zicsr_csrrw_cg_cp_rs1_b9, Zicsr_csrrw_cg_cp_rs1_b9_str)
 // read back CSR to check updated value
-  csrrs x2, vxsat, x0
-  # Check if x2 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x2, Zicsr_csrrw_cg_cp_rs1_b9, Zicsr_csrrw_cg_cp_rs1_b9_str)
+  csrrs x11, vxsat, x0
+  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x11, Zicsr_csrrw_cg_cp_rs1_b9, Zicsr_csrrw_cg_cp_rs1_b9_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x4 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x4, Zicsr_csrrw_cg_cp_rs1_b9, Zicsr_csrrw_cg_cp_rs1_b9_str)
+  # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x3, Zicsr_csrrw_cg_cp_rs1_b9, Zicsr_csrrw_cg_cp_rs1_b9_str)
 // read back CSR to check updated value
-  csrrs x2, mepc, x0
-  # Check if x2 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x2, Zicsr_csrrw_cg_cp_rs1_b9, Zicsr_csrrw_cg_cp_rs1_b9_str)
+  csrrs x11, mepc, x0
+  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x11, Zicsr_csrrw_cg_cp_rs1_b9, Zicsr_csrrw_cg_cp_rs1_b9_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x16, x4, x2
-  sltiu x16, x16, 0x000007FF
-  # Check if x16 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x16, Zicsr_csrrw_cg_cp_rs1_b9, Zicsr_csrrw_cg_cp_rs1_b9_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x16, instret, x0
-  sub x16, x16, x2
-  sltiu x2, x16, 0x000007FF
-  # Check if x2 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x2, Zicsr_csrrw_cg_cp_rs1_b9, Zicsr_csrrw_cg_cp_rs1_b9_str)
+  # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x3, Zicsr_csrrw_cg_cp_rs1_b9, Zicsr_csrrw_cg_cp_rs1_b9_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x20, instret, x0
+  csrrs x11, instret, x0
+  sub x20, x11, x20
+  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x20, Zicsr_csrrw_cg_cp_rs1_b9, Zicsr_csrrw_cg_cp_rs1_b9_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x15, x10) # load rs1: x10 = 0x0fd1df2945d267cc
-  RVTEST_TESTDATA_LOAD_INT(x15, x9) # load temp reg: x9 = 0x52f76c787ef86fb9
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x9
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x9
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x9
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x9, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x15, x10) # load rs1: x10 = 0xc40bc1b895202bdf
+  RVTEST_TESTDATA_LOAD_INT(x15, x20) # load temp reg: x20 = 0xdca5ba2e5fe63e1b
 Zicsr_csrrw_cg_cp_rs1_b10:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x16, fflags, x10
+  csrrw x25, fflags, x10
 #elif defined(V_SUPPORTED)
-  csrrw x16, vxsat, x10
+  csrrw x25, vxsat, x10
 #elif !defined(U_SUPPORTED)
-  csrrw x16, mepc, x10
+  csrrw x25, mepc, x10
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x16, instret, x10
+  csrrw x25, instret, x10
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x16 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x16, Zicsr_csrrw_cg_cp_rs1_b10, Zicsr_csrrw_cg_cp_rs1_b10_str)
+  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_b10, Zicsr_csrrw_cg_cp_rs1_b10_str)
 // read back CSR to check updated value
-  csrrs x9, fflags, x0
-  # Check if x9 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x9, Zicsr_csrrw_cg_cp_rs1_b10, Zicsr_csrrw_cg_cp_rs1_b10_str)
+  csrrs x20, fflags, x0
+  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x20, Zicsr_csrrw_cg_cp_rs1_b10, Zicsr_csrrw_cg_cp_rs1_b10_str)
 #elif defined(V_SUPPORTED)
-  # Check if x16 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x16, Zicsr_csrrw_cg_cp_rs1_b10, Zicsr_csrrw_cg_cp_rs1_b10_str)
+  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_b10, Zicsr_csrrw_cg_cp_rs1_b10_str)
 // read back CSR to check updated value
-  csrrs x9, vxsat, x0
-  # Check if x9 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x9, Zicsr_csrrw_cg_cp_rs1_b10, Zicsr_csrrw_cg_cp_rs1_b10_str)
+  csrrs x20, vxsat, x0
+  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x20, Zicsr_csrrw_cg_cp_rs1_b10, Zicsr_csrrw_cg_cp_rs1_b10_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x16 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x16, Zicsr_csrrw_cg_cp_rs1_b10, Zicsr_csrrw_cg_cp_rs1_b10_str)
+  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_b10, Zicsr_csrrw_cg_cp_rs1_b10_str)
 // read back CSR to check updated value
-  csrrs x9, mepc, x0
-  # Check if x9 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x9, Zicsr_csrrw_cg_cp_rs1_b10, Zicsr_csrrw_cg_cp_rs1_b10_str)
+  csrrs x20, mepc, x0
+  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x20, Zicsr_csrrw_cg_cp_rs1_b10, Zicsr_csrrw_cg_cp_rs1_b10_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x20, x16, x9
-  sltiu x20, x20, 0x000007FF
-  # Check if x20 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x20, Zicsr_csrrw_cg_cp_rs1_b10, Zicsr_csrrw_cg_cp_rs1_b10_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
+  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_b10, Zicsr_csrrw_cg_cp_rs1_b10_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x27, instret, x0
   csrrs x20, instret, x0
-  sub x20, x20, x9
-  sltiu x9, x20, 0x000007FF
-  # Check if x9 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x9, Zicsr_csrrw_cg_cp_rs1_b10, Zicsr_csrrw_cg_cp_rs1_b10_str)
+  sub x27, x20, x27
+  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x27, Zicsr_csrrw_cg_cp_rs1_b10, Zicsr_csrrw_cg_cp_rs1_b10_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x15, x11) # load rs1: x11 = 0x77803df76934a7fb
-  RVTEST_TESTDATA_LOAD_INT(x15, x5) # load temp reg: x5 = 0x2591b570b8bb6702
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x5
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x5
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x5
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x5, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x15, x11) # load rs1: x11 = 0xc324256fb0239b22
+  RVTEST_TESTDATA_LOAD_INT(x15, x12) # load temp reg: x12 = 0x1f08342d224610a3
 Zicsr_csrrw_cg_cp_rs1_b11:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x18, fflags, x11
+  csrrw x14, fflags, x11
 #elif defined(V_SUPPORTED)
-  csrrw x18, vxsat, x11
+  csrrw x14, vxsat, x11
 #elif !defined(U_SUPPORTED)
-  csrrw x18, mepc, x11
+  csrrw x14, mepc, x11
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x18, instret, x11
+  csrrw x14, instret, x11
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x18 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x18, Zicsr_csrrw_cg_cp_rs1_b11, Zicsr_csrrw_cg_cp_rs1_b11_str)
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b11, Zicsr_csrrw_cg_cp_rs1_b11_str)
 // read back CSR to check updated value
-  csrrs x5, fflags, x0
-  # Check if x5 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x5, Zicsr_csrrw_cg_cp_rs1_b11, Zicsr_csrrw_cg_cp_rs1_b11_str)
+  csrrs x12, fflags, x0
+  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x12, Zicsr_csrrw_cg_cp_rs1_b11, Zicsr_csrrw_cg_cp_rs1_b11_str)
 #elif defined(V_SUPPORTED)
-  # Check if x18 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x18, Zicsr_csrrw_cg_cp_rs1_b11, Zicsr_csrrw_cg_cp_rs1_b11_str)
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b11, Zicsr_csrrw_cg_cp_rs1_b11_str)
 // read back CSR to check updated value
-  csrrs x5, vxsat, x0
-  # Check if x5 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x5, Zicsr_csrrw_cg_cp_rs1_b11, Zicsr_csrrw_cg_cp_rs1_b11_str)
+  csrrs x12, vxsat, x0
+  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x12, Zicsr_csrrw_cg_cp_rs1_b11, Zicsr_csrrw_cg_cp_rs1_b11_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x18 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x18, Zicsr_csrrw_cg_cp_rs1_b11, Zicsr_csrrw_cg_cp_rs1_b11_str)
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b11, Zicsr_csrrw_cg_cp_rs1_b11_str)
 // read back CSR to check updated value
-  csrrs x5, mepc, x0
-  # Check if x5 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x5, Zicsr_csrrw_cg_cp_rs1_b11, Zicsr_csrrw_cg_cp_rs1_b11_str)
+  csrrs x12, mepc, x0
+  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x12, Zicsr_csrrw_cg_cp_rs1_b11, Zicsr_csrrw_cg_cp_rs1_b11_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x3, x18, x5
-  sltiu x3, x3, 0x000007FF
-  # Check if x3 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x3, Zicsr_csrrw_cg_cp_rs1_b11, Zicsr_csrrw_cg_cp_rs1_b11_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x3, instret, x0
-  sub x3, x3, x5
-  sltiu x5, x3, 0x000007FF
-  # Check if x5 contains the expected result. x19 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x19, x13, x12, x5, Zicsr_csrrw_cg_cp_rs1_b11, Zicsr_csrrw_cg_cp_rs1_b11_str)
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b11, Zicsr_csrrw_cg_cp_rs1_b11_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x26, instret, x0
+  csrrs x12, instret, x0
+  sub x26, x12, x26
+  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x26, Zicsr_csrrw_cg_cp_rs1_b11, Zicsr_csrrw_cg_cp_rs1_b11_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
-  mv x4, x12 # switch temp register to avoid conflict with test
-  mv x5, x13 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x15, x12) # load rs1: x12 = 0x08f7edf2638def07
-  RVTEST_TESTDATA_LOAD_INT(x15, x30) # load temp reg: x30 = 0xb0c7eb246f3578f1
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x30
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x30
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x30
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x30, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x15, x12) # load rs1: x12 = 0x921cd403d9863b57
+  RVTEST_TESTDATA_LOAD_INT(x15, x11) # load temp reg: x11 = 0x7f330e0b719ac347
 Zicsr_csrrw_cg_cp_rs1_b12:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x14, fflags, x12
+  csrrw x0, fflags, x12
 #elif defined(V_SUPPORTED)
-  csrrw x14, vxsat, x12
+  csrrw x0, vxsat, x12
 #elif !defined(U_SUPPORTED)
-  csrrw x14, mepc, x12
+  csrrw x0, mepc, x12
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x14, instret, x12
+  csrrw x0, instret, x12
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b12, Zicsr_csrrw_cg_cp_rs1_b12_str)
+  # Check if x0 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b12, Zicsr_csrrw_cg_cp_rs1_b12_str)
 // read back CSR to check updated value
-  csrrs x30, fflags, x0
-  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x30, Zicsr_csrrw_cg_cp_rs1_b12, Zicsr_csrrw_cg_cp_rs1_b12_str)
+  csrrs x11, fflags, x0
+  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x11, Zicsr_csrrw_cg_cp_rs1_b12, Zicsr_csrrw_cg_cp_rs1_b12_str)
 #elif defined(V_SUPPORTED)
-  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b12, Zicsr_csrrw_cg_cp_rs1_b12_str)
+  # Check if x0 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b12, Zicsr_csrrw_cg_cp_rs1_b12_str)
 // read back CSR to check updated value
-  csrrs x30, vxsat, x0
-  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x30, Zicsr_csrrw_cg_cp_rs1_b12, Zicsr_csrrw_cg_cp_rs1_b12_str)
+  csrrs x11, vxsat, x0
+  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x11, Zicsr_csrrw_cg_cp_rs1_b12, Zicsr_csrrw_cg_cp_rs1_b12_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b12, Zicsr_csrrw_cg_cp_rs1_b12_str)
+  # Check if x0 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b12, Zicsr_csrrw_cg_cp_rs1_b12_str)
 // read back CSR to check updated value
-  csrrs x30, mepc, x0
-  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x30, Zicsr_csrrw_cg_cp_rs1_b12, Zicsr_csrrw_cg_cp_rs1_b12_str)
+  csrrs x11, mepc, x0
+  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x11, Zicsr_csrrw_cg_cp_rs1_b12, Zicsr_csrrw_cg_cp_rs1_b12_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x26, x14, x30
-  sltiu x26, x26, 0x000007FF
-  # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x26, Zicsr_csrrw_cg_cp_rs1_b12, Zicsr_csrrw_cg_cp_rs1_b12_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x26, instret, x0
-  sub x26, x26, x30
-  sltiu x30, x26, 0x000007FF
-  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x30, Zicsr_csrrw_cg_cp_rs1_b12, Zicsr_csrrw_cg_cp_rs1_b12_str)
+  # Check if x0 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b12, Zicsr_csrrw_cg_cp_rs1_b12_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x25, instret, x0
+  csrrs x11, instret, x0
+  sub x25, x11, x25
+  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_b12, Zicsr_csrrw_cg_cp_rs1_b12_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x15, x13) # load rs1: x13 = 0x4b48cd58bb6d848a
-  RVTEST_TESTDATA_LOAD_INT(x15, x28) # load temp reg: x28 = 0xca811ef1273abf04
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x28
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x28
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x28
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x28, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x15, x13) # load rs1: x13 = 0x7208c62aaa1514d8
+  RVTEST_TESTDATA_LOAD_INT(x15, x23) # load temp reg: x23 = 0x17d12e7dd1e82632
 Zicsr_csrrw_cg_cp_rs1_b13:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -942,1250 +721,957 @@ Zicsr_csrrw_cg_cp_rs1_b13:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b13, Zicsr_csrrw_cg_cp_rs1_b13_str)
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b13, Zicsr_csrrw_cg_cp_rs1_b13_str)
 // read back CSR to check updated value
-  csrrs x28, fflags, x0
-  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_b13, Zicsr_csrrw_cg_cp_rs1_b13_str)
+  csrrs x23, fflags, x0
+  # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_b13, Zicsr_csrrw_cg_cp_rs1_b13_str)
 #elif defined(V_SUPPORTED)
-  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b13, Zicsr_csrrw_cg_cp_rs1_b13_str)
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b13, Zicsr_csrrw_cg_cp_rs1_b13_str)
 // read back CSR to check updated value
-  csrrs x28, vxsat, x0
-  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_b13, Zicsr_csrrw_cg_cp_rs1_b13_str)
+  csrrs x23, vxsat, x0
+  # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_b13, Zicsr_csrrw_cg_cp_rs1_b13_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x14 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b13, Zicsr_csrrw_cg_cp_rs1_b13_str)
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b13, Zicsr_csrrw_cg_cp_rs1_b13_str)
 // read back CSR to check updated value
-  csrrs x28, mepc, x0
-  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_b13, Zicsr_csrrw_cg_cp_rs1_b13_str)
+  csrrs x23, mepc, x0
+  # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_b13, Zicsr_csrrw_cg_cp_rs1_b13_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x1, x14, x28
-  sltiu x1, x1, 0x000007FF
-  # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x1, Zicsr_csrrw_cg_cp_rs1_b13, Zicsr_csrrw_cg_cp_rs1_b13_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x1, instret, x0
-  sub x1, x1, x28
-  sltiu x28, x1, 0x000007FF
-  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_b13, Zicsr_csrrw_cg_cp_rs1_b13_str)
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b13, Zicsr_csrrw_cg_cp_rs1_b13_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x22, instret, x0
+  csrrs x23, instret, x0
+  sub x22, x23, x22
+  # Check if x22 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x22, Zicsr_csrrw_cg_cp_rs1_b13, Zicsr_csrrw_cg_cp_rs1_b13_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x15, x14) # load rs1: x14 = 0x4b405bcade27baff
-  RVTEST_TESTDATA_LOAD_INT(x15, x22) # load temp reg: x22 = 0x8cd6396939b70561
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x22
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x22
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x22
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x22, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x15, x14) # load rs1: x14 = 0xc3cd608f2679771c
+  RVTEST_TESTDATA_LOAD_INT(x15, x16) # load temp reg: x16 = 0x0af0f052f341ad2b
 Zicsr_csrrw_cg_cp_rs1_b14:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x2, fflags, x14
+  csrrw x19, fflags, x14
 #elif defined(V_SUPPORTED)
-  csrrw x2, vxsat, x14
+  csrrw x19, vxsat, x14
 #elif !defined(U_SUPPORTED)
-  csrrw x2, mepc, x14
+  csrrw x19, mepc, x14
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x2, instret, x14
+  csrrw x19, instret, x14
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x2, Zicsr_csrrw_cg_cp_rs1_b14, Zicsr_csrrw_cg_cp_rs1_b14_str)
+  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_b14, Zicsr_csrrw_cg_cp_rs1_b14_str)
 // read back CSR to check updated value
-  csrrs x22, fflags, x0
-  # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x22, Zicsr_csrrw_cg_cp_rs1_b14, Zicsr_csrrw_cg_cp_rs1_b14_str)
+  csrrs x16, fflags, x0
+  # Check if x16 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x16, Zicsr_csrrw_cg_cp_rs1_b14, Zicsr_csrrw_cg_cp_rs1_b14_str)
 #elif defined(V_SUPPORTED)
-  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x2, Zicsr_csrrw_cg_cp_rs1_b14, Zicsr_csrrw_cg_cp_rs1_b14_str)
+  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_b14, Zicsr_csrrw_cg_cp_rs1_b14_str)
 // read back CSR to check updated value
-  csrrs x22, vxsat, x0
-  # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x22, Zicsr_csrrw_cg_cp_rs1_b14, Zicsr_csrrw_cg_cp_rs1_b14_str)
+  csrrs x16, vxsat, x0
+  # Check if x16 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x16, Zicsr_csrrw_cg_cp_rs1_b14, Zicsr_csrrw_cg_cp_rs1_b14_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x2, Zicsr_csrrw_cg_cp_rs1_b14, Zicsr_csrrw_cg_cp_rs1_b14_str)
+  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_b14, Zicsr_csrrw_cg_cp_rs1_b14_str)
 // read back CSR to check updated value
-  csrrs x22, mepc, x0
-  # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x22, Zicsr_csrrw_cg_cp_rs1_b14, Zicsr_csrrw_cg_cp_rs1_b14_str)
+  csrrs x16, mepc, x0
+  # Check if x16 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x16, Zicsr_csrrw_cg_cp_rs1_b14, Zicsr_csrrw_cg_cp_rs1_b14_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x30, x2, x22
-  sltiu x30, x30, 0x000007FF
-  # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x30, Zicsr_csrrw_cg_cp_rs1_b14, Zicsr_csrrw_cg_cp_rs1_b14_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x30, instret, x0
-  sub x30, x30, x22
-  sltiu x22, x30, 0x000007FF
-  # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x22, Zicsr_csrrw_cg_cp_rs1_b14, Zicsr_csrrw_cg_cp_rs1_b14_str)
+  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_b14, Zicsr_csrrw_cg_cp_rs1_b14_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x1, instret, x0
+  csrrs x16, instret, x0
+  sub x1, x16, x1
+  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x1, Zicsr_csrrw_cg_cp_rs1_b14, Zicsr_csrrw_cg_cp_rs1_b14_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
-  mv x16, x15 # switch data pointer register to avoid conflict with test
+  mv x10, x15 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load rs1: x15 = 0x7f8ff9dbc56ecb9a
-  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load temp reg: x23 = 0xae38fb06cc7accf4
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x23
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x23
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x23
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x23, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x15) # load rs1: x15 = 0xe6c1ccd6a591b570
+  RVTEST_TESTDATA_LOAD_INT(x10, x0) # load temp reg: x0 = 0xb72d968690d37462
 Zicsr_csrrw_cg_cp_rs1_b15:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x24, fflags, x15
+  csrrw x27, fflags, x15
 #elif defined(V_SUPPORTED)
-  csrrw x24, vxsat, x15
+  csrrw x27, vxsat, x15
 #elif !defined(U_SUPPORTED)
-  csrrw x24, mepc, x15
+  csrrw x27, mepc, x15
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x24, instret, x15
+  csrrw x27, instret, x15
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x24 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x24, Zicsr_csrrw_cg_cp_rs1_b15, Zicsr_csrrw_cg_cp_rs1_b15_str)
+  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x27, Zicsr_csrrw_cg_cp_rs1_b15, Zicsr_csrrw_cg_cp_rs1_b15_str)
 // read back CSR to check updated value
-  csrrs x23, fflags, x0
-  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_b15, Zicsr_csrrw_cg_cp_rs1_b15_str)
+  csrrs x0, fflags, x0
+  # Check if x0 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b15, Zicsr_csrrw_cg_cp_rs1_b15_str)
 #elif defined(V_SUPPORTED)
-  # Check if x24 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x24, Zicsr_csrrw_cg_cp_rs1_b15, Zicsr_csrrw_cg_cp_rs1_b15_str)
+  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x27, Zicsr_csrrw_cg_cp_rs1_b15, Zicsr_csrrw_cg_cp_rs1_b15_str)
 // read back CSR to check updated value
-  csrrs x23, vxsat, x0
-  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_b15, Zicsr_csrrw_cg_cp_rs1_b15_str)
+  csrrs x0, vxsat, x0
+  # Check if x0 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b15, Zicsr_csrrw_cg_cp_rs1_b15_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x24 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x24, Zicsr_csrrw_cg_cp_rs1_b15, Zicsr_csrrw_cg_cp_rs1_b15_str)
+  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x27, Zicsr_csrrw_cg_cp_rs1_b15, Zicsr_csrrw_cg_cp_rs1_b15_str)
 // read back CSR to check updated value
-  csrrs x23, mepc, x0
-  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_b15, Zicsr_csrrw_cg_cp_rs1_b15_str)
+  csrrs x0, mepc, x0
+  # Check if x0 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b15, Zicsr_csrrw_cg_cp_rs1_b15_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x28, x24, x23
-  sltiu x28, x28, 0x000007FF
-  # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_b15, Zicsr_csrrw_cg_cp_rs1_b15_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x28, instret, x0
-  sub x28, x28, x23
-  sltiu x23, x28, 0x000007FF
-  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_b15, Zicsr_csrrw_cg_cp_rs1_b15_str)
+  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x27, Zicsr_csrrw_cg_cp_rs1_b15, Zicsr_csrrw_cg_cp_rs1_b15_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x17, instret, x0
+  csrrs x0, instret, x0
+  sub x17, x0, x17
+  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x17, Zicsr_csrrw_cg_cp_rs1_b15, Zicsr_csrrw_cg_cp_rs1_b15_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
-  mv x15, x16 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x15, x16) # load rs1: x16 = 0xfad8792e2de4dec1
-  RVTEST_TESTDATA_LOAD_INT(x15, x11) # load temp reg: x11 = 0x084f34c2ec62ad8f
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x11
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x11
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x11
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x11, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x16) # load rs1: x16 = 0x2182d8b115957412
+  RVTEST_TESTDATA_LOAD_INT(x10, x8) # load temp reg: x8 = 0x11ec34509ea5a437
 Zicsr_csrrw_cg_cp_rs1_b16:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x0, fflags, x16
+  csrrw x21, fflags, x16
 #elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x16
+  csrrw x21, vxsat, x16
 #elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x16
+  csrrw x21, mepc, x16
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x16
+  csrrw x21, instret, x16
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x0 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b16, Zicsr_csrrw_cg_cp_rs1_b16_str)
+  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_b16, Zicsr_csrrw_cg_cp_rs1_b16_str)
 // read back CSR to check updated value
-  csrrs x11, fflags, x0
-  # Check if x11 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x11, Zicsr_csrrw_cg_cp_rs1_b16, Zicsr_csrrw_cg_cp_rs1_b16_str)
+  csrrs x8, fflags, x0
+  # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x8, Zicsr_csrrw_cg_cp_rs1_b16, Zicsr_csrrw_cg_cp_rs1_b16_str)
 #elif defined(V_SUPPORTED)
-  # Check if x0 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b16, Zicsr_csrrw_cg_cp_rs1_b16_str)
+  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_b16, Zicsr_csrrw_cg_cp_rs1_b16_str)
 // read back CSR to check updated value
-  csrrs x11, vxsat, x0
-  # Check if x11 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x11, Zicsr_csrrw_cg_cp_rs1_b16, Zicsr_csrrw_cg_cp_rs1_b16_str)
+  csrrs x8, vxsat, x0
+  # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x8, Zicsr_csrrw_cg_cp_rs1_b16, Zicsr_csrrw_cg_cp_rs1_b16_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x0 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b16, Zicsr_csrrw_cg_cp_rs1_b16_str)
+  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_b16, Zicsr_csrrw_cg_cp_rs1_b16_str)
 // read back CSR to check updated value
-  csrrs x11, mepc, x0
-  # Check if x11 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x11, Zicsr_csrrw_cg_cp_rs1_b16, Zicsr_csrrw_cg_cp_rs1_b16_str)
+  csrrs x8, mepc, x0
+  # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x8, Zicsr_csrrw_cg_cp_rs1_b16, Zicsr_csrrw_cg_cp_rs1_b16_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x9, x0, x11
-  sltiu x9, x9, 0x000007FF
-  # Check if x9 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x9, Zicsr_csrrw_cg_cp_rs1_b16, Zicsr_csrrw_cg_cp_rs1_b16_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x9, instret, x0
-  sub x9, x9, x11
-  sltiu x11, x9, 0x000007FF
-  # Check if x11 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x11, Zicsr_csrrw_cg_cp_rs1_b16, Zicsr_csrrw_cg_cp_rs1_b16_str)
+  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_b16, Zicsr_csrrw_cg_cp_rs1_b16_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x0, instret, x0
+  csrrs x8, instret, x0
+  sub x0, x8, x0
+  # Check if x0 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b16, Zicsr_csrrw_cg_cp_rs1_b16_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x15, x17) # load rs1: x17 = 0x908868a3739802ad
-  RVTEST_TESTDATA_LOAD_INT(x15, x23) # load temp reg: x23 = 0xc7b85feb7aa6e7c9
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x23
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x23
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x23
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x23, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x17) # load rs1: x17 = 0x34d75e1b329ed449
+  RVTEST_TESTDATA_LOAD_INT(x10, x12) # load temp reg: x12 = 0xa73abf04e6e23e48
 Zicsr_csrrw_cg_cp_rs1_b17:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x29, fflags, x17
+  csrrw x26, fflags, x17
 #elif defined(V_SUPPORTED)
-  csrrw x29, vxsat, x17
+  csrrw x26, vxsat, x17
 #elif !defined(U_SUPPORTED)
-  csrrw x29, mepc, x17
+  csrrw x26, mepc, x17
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x29, instret, x17
+  csrrw x26, instret, x17
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_b17, Zicsr_csrrw_cg_cp_rs1_b17_str)
+  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x26, Zicsr_csrrw_cg_cp_rs1_b17, Zicsr_csrrw_cg_cp_rs1_b17_str)
 // read back CSR to check updated value
-  csrrs x23, fflags, x0
-  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_b17, Zicsr_csrrw_cg_cp_rs1_b17_str)
+  csrrs x12, fflags, x0
+  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x12, Zicsr_csrrw_cg_cp_rs1_b17, Zicsr_csrrw_cg_cp_rs1_b17_str)
 #elif defined(V_SUPPORTED)
-  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_b17, Zicsr_csrrw_cg_cp_rs1_b17_str)
+  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x26, Zicsr_csrrw_cg_cp_rs1_b17, Zicsr_csrrw_cg_cp_rs1_b17_str)
 // read back CSR to check updated value
-  csrrs x23, vxsat, x0
-  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_b17, Zicsr_csrrw_cg_cp_rs1_b17_str)
+  csrrs x12, vxsat, x0
+  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x12, Zicsr_csrrw_cg_cp_rs1_b17, Zicsr_csrrw_cg_cp_rs1_b17_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_b17, Zicsr_csrrw_cg_cp_rs1_b17_str)
+  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x26, Zicsr_csrrw_cg_cp_rs1_b17, Zicsr_csrrw_cg_cp_rs1_b17_str)
 // read back CSR to check updated value
-  csrrs x23, mepc, x0
-  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_b17, Zicsr_csrrw_cg_cp_rs1_b17_str)
+  csrrs x12, mepc, x0
+  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x12, Zicsr_csrrw_cg_cp_rs1_b17, Zicsr_csrrw_cg_cp_rs1_b17_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x25, x29, x23
-  sltiu x25, x25, 0x000007FF
-  # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_b17, Zicsr_csrrw_cg_cp_rs1_b17_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x25, instret, x0
-  sub x25, x25, x23
-  sltiu x23, x25, 0x000007FF
-  # Check if x23 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_b17, Zicsr_csrrw_cg_cp_rs1_b17_str)
+  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x26, Zicsr_csrrw_cg_cp_rs1_b17, Zicsr_csrrw_cg_cp_rs1_b17_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x13, instret, x0
+  csrrs x12, instret, x0
+  sub x13, x12, x13
+  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_b17, Zicsr_csrrw_cg_cp_rs1_b17_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x15, x18) # load rs1: x18 = 0xabcbacc428f85c2c
-  RVTEST_TESTDATA_LOAD_INT(x15, x10) # load temp reg: x10 = 0xce3c5cea02597596
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x10
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x10
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x10
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x10, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x18) # load rs1: x18 = 0xd95e0111fe3e5242
+  RVTEST_TESTDATA_LOAD_INT(x10, x2) # load temp reg: x2 = 0x8cd6396939b70561
 Zicsr_csrrw_cg_cp_rs1_b18:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x8, fflags, x18
+  csrrw x1, fflags, x18
 #elif defined(V_SUPPORTED)
-  csrrw x8, vxsat, x18
+  csrrw x1, vxsat, x18
 #elif !defined(U_SUPPORTED)
-  csrrw x8, mepc, x18
+  csrrw x1, mepc, x18
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x8, instret, x18
+  csrrw x1, instret, x18
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x8 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x8, Zicsr_csrrw_cg_cp_rs1_b18, Zicsr_csrrw_cg_cp_rs1_b18_str)
+  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x1, Zicsr_csrrw_cg_cp_rs1_b18, Zicsr_csrrw_cg_cp_rs1_b18_str)
 // read back CSR to check updated value
-  csrrs x10, fflags, x0
-  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x10, Zicsr_csrrw_cg_cp_rs1_b18, Zicsr_csrrw_cg_cp_rs1_b18_str)
+  csrrs x2, fflags, x0
+  # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x2, Zicsr_csrrw_cg_cp_rs1_b18, Zicsr_csrrw_cg_cp_rs1_b18_str)
 #elif defined(V_SUPPORTED)
-  # Check if x8 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x8, Zicsr_csrrw_cg_cp_rs1_b18, Zicsr_csrrw_cg_cp_rs1_b18_str)
+  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x1, Zicsr_csrrw_cg_cp_rs1_b18, Zicsr_csrrw_cg_cp_rs1_b18_str)
 // read back CSR to check updated value
-  csrrs x10, vxsat, x0
-  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x10, Zicsr_csrrw_cg_cp_rs1_b18, Zicsr_csrrw_cg_cp_rs1_b18_str)
+  csrrs x2, vxsat, x0
+  # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x2, Zicsr_csrrw_cg_cp_rs1_b18, Zicsr_csrrw_cg_cp_rs1_b18_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x8 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x8, Zicsr_csrrw_cg_cp_rs1_b18, Zicsr_csrrw_cg_cp_rs1_b18_str)
+  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x1, Zicsr_csrrw_cg_cp_rs1_b18, Zicsr_csrrw_cg_cp_rs1_b18_str)
 // read back CSR to check updated value
-  csrrs x10, mepc, x0
-  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x10, Zicsr_csrrw_cg_cp_rs1_b18, Zicsr_csrrw_cg_cp_rs1_b18_str)
+  csrrs x2, mepc, x0
+  # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x2, Zicsr_csrrw_cg_cp_rs1_b18, Zicsr_csrrw_cg_cp_rs1_b18_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x31, x8, x10
-  sltiu x31, x31, 0x000007FF
-  # Check if x31 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x31, Zicsr_csrrw_cg_cp_rs1_b18, Zicsr_csrrw_cg_cp_rs1_b18_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x31, instret, x0
-  sub x31, x31, x10
-  sltiu x10, x31, 0x000007FF
-  # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x19, x5, x4, x10, Zicsr_csrrw_cg_cp_rs1_b18, Zicsr_csrrw_cg_cp_rs1_b18_str)
+  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x1, Zicsr_csrrw_cg_cp_rs1_b18, Zicsr_csrrw_cg_cp_rs1_b18_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x30, instret, x0
+  csrrs x2, instret, x0
+  sub x30, x2, x30
+  # Check if x30 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x30, Zicsr_csrrw_cg_cp_rs1_b18, Zicsr_csrrw_cg_cp_rs1_b18_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
-  mv x23, x19 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x15, x19) # load rs1: x19 = 0x9dd7655ae21aa89d
-  RVTEST_TESTDATA_LOAD_INT(x15, x22) # load temp reg: x22 = 0xf8a53cd8d6aefef2
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x22
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x22
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x22
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x22, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x19) # load rs1: x19 = 0xbdf4d3500971d2bb
+  RVTEST_TESTDATA_LOAD_INT(x10, x24) # load temp reg: x24 = 0x7f8ff9dbc56ecb9a
 Zicsr_csrrw_cg_cp_rs1_b19:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x3, fflags, x19
+  csrrw x0, fflags, x19
 #elif defined(V_SUPPORTED)
-  csrrw x3, vxsat, x19
+  csrrw x0, vxsat, x19
 #elif !defined(U_SUPPORTED)
-  csrrw x3, mepc, x19
+  csrrw x0, mepc, x19
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x3, instret, x19
+  csrrw x0, instret, x19
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x3 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x3, Zicsr_csrrw_cg_cp_rs1_b19, Zicsr_csrrw_cg_cp_rs1_b19_str)
+  # Check if x0 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b19, Zicsr_csrrw_cg_cp_rs1_b19_str)
 // read back CSR to check updated value
-  csrrs x22, fflags, x0
-  # Check if x22 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x22, Zicsr_csrrw_cg_cp_rs1_b19, Zicsr_csrrw_cg_cp_rs1_b19_str)
+  csrrs x24, fflags, x0
+  # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x24, Zicsr_csrrw_cg_cp_rs1_b19, Zicsr_csrrw_cg_cp_rs1_b19_str)
 #elif defined(V_SUPPORTED)
-  # Check if x3 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x3, Zicsr_csrrw_cg_cp_rs1_b19, Zicsr_csrrw_cg_cp_rs1_b19_str)
+  # Check if x0 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b19, Zicsr_csrrw_cg_cp_rs1_b19_str)
 // read back CSR to check updated value
-  csrrs x22, vxsat, x0
-  # Check if x22 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x22, Zicsr_csrrw_cg_cp_rs1_b19, Zicsr_csrrw_cg_cp_rs1_b19_str)
+  csrrs x24, vxsat, x0
+  # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x24, Zicsr_csrrw_cg_cp_rs1_b19, Zicsr_csrrw_cg_cp_rs1_b19_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x3 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x3, Zicsr_csrrw_cg_cp_rs1_b19, Zicsr_csrrw_cg_cp_rs1_b19_str)
+  # Check if x0 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b19, Zicsr_csrrw_cg_cp_rs1_b19_str)
 // read back CSR to check updated value
-  csrrs x22, mepc, x0
-  # Check if x22 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x22, Zicsr_csrrw_cg_cp_rs1_b19, Zicsr_csrrw_cg_cp_rs1_b19_str)
+  csrrs x24, mepc, x0
+  # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x24, Zicsr_csrrw_cg_cp_rs1_b19, Zicsr_csrrw_cg_cp_rs1_b19_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x29, x3, x22
-  sltiu x29, x29, 0x000007FF
-  # Check if x29 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_b19, Zicsr_csrrw_cg_cp_rs1_b19_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x29, instret, x0
-  sub x29, x29, x22
-  sltiu x22, x29, 0x000007FF
-  # Check if x22 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x22, Zicsr_csrrw_cg_cp_rs1_b19, Zicsr_csrrw_cg_cp_rs1_b19_str)
+  # Check if x0 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b19, Zicsr_csrrw_cg_cp_rs1_b19_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x23, instret, x0
+  csrrs x24, instret, x0
+  sub x23, x24, x23
+  # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_b19, Zicsr_csrrw_cg_cp_rs1_b19_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x15, x20) # load rs1: x20 = 0x36731f166ff592a7
-  RVTEST_TESTDATA_LOAD_INT(x15, x6) # load temp reg: x6 = 0x9dfc022aa861b010
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x6
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x6
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x6
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x6, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x20) # load rs1: x20 = 0x0957365dfbddc04c
+  RVTEST_TESTDATA_LOAD_INT(x10, x21) # load temp reg: x21 = 0xae38fb06cc7accf4
 Zicsr_csrrw_cg_cp_rs1_b20:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x14, fflags, x20
+  csrrw x24, fflags, x20
 #elif defined(V_SUPPORTED)
-  csrrw x14, vxsat, x20
+  csrrw x24, vxsat, x20
 #elif !defined(U_SUPPORTED)
-  csrrw x14, mepc, x20
+  csrrw x24, mepc, x20
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x14, instret, x20
+  csrrw x24, instret, x20
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x14 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b20, Zicsr_csrrw_cg_cp_rs1_b20_str)
+  # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x24, Zicsr_csrrw_cg_cp_rs1_b20, Zicsr_csrrw_cg_cp_rs1_b20_str)
 // read back CSR to check updated value
-  csrrs x6, fflags, x0
-  # Check if x6 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x6, Zicsr_csrrw_cg_cp_rs1_b20, Zicsr_csrrw_cg_cp_rs1_b20_str)
+  csrrs x21, fflags, x0
+  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_b20, Zicsr_csrrw_cg_cp_rs1_b20_str)
 #elif defined(V_SUPPORTED)
-  # Check if x14 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b20, Zicsr_csrrw_cg_cp_rs1_b20_str)
+  # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x24, Zicsr_csrrw_cg_cp_rs1_b20, Zicsr_csrrw_cg_cp_rs1_b20_str)
 // read back CSR to check updated value
-  csrrs x6, vxsat, x0
-  # Check if x6 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x6, Zicsr_csrrw_cg_cp_rs1_b20, Zicsr_csrrw_cg_cp_rs1_b20_str)
+  csrrs x21, vxsat, x0
+  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_b20, Zicsr_csrrw_cg_cp_rs1_b20_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x14 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b20, Zicsr_csrrw_cg_cp_rs1_b20_str)
+  # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x24, Zicsr_csrrw_cg_cp_rs1_b20, Zicsr_csrrw_cg_cp_rs1_b20_str)
 // read back CSR to check updated value
-  csrrs x6, mepc, x0
-  # Check if x6 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x6, Zicsr_csrrw_cg_cp_rs1_b20, Zicsr_csrrw_cg_cp_rs1_b20_str)
+  csrrs x21, mepc, x0
+  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_b20, Zicsr_csrrw_cg_cp_rs1_b20_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x16, x14, x6
-  sltiu x16, x16, 0x000007FF
-  # Check if x16 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x16, Zicsr_csrrw_cg_cp_rs1_b20, Zicsr_csrrw_cg_cp_rs1_b20_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x16, instret, x0
-  sub x16, x16, x6
-  sltiu x6, x16, 0x000007FF
-  # Check if x6 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x6, Zicsr_csrrw_cg_cp_rs1_b20, Zicsr_csrrw_cg_cp_rs1_b20_str)
+  # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x24, Zicsr_csrrw_cg_cp_rs1_b20, Zicsr_csrrw_cg_cp_rs1_b20_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x27, instret, x0
+  csrrs x21, instret, x0
+  sub x27, x21, x27
+  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x27, Zicsr_csrrw_cg_cp_rs1_b20, Zicsr_csrrw_cg_cp_rs1_b20_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x15, x21) # load rs1: x21 = 0xfac6c9fe8ed9a89f
-  RVTEST_TESTDATA_LOAD_INT(x15, x31) # load temp reg: x31 = 0x68e9ec51cb8ac08d
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x31
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x31
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x31
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x31, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x21) # load rs1: x21 = 0x8481452c419390a4
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load temp reg: x31 = 0xb62b71e8bcd893f1
 Zicsr_csrrw_cg_cp_rs1_b21:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x19, fflags, x21
+  csrrw x15, fflags, x21
 #elif defined(V_SUPPORTED)
-  csrrw x19, vxsat, x21
+  csrrw x15, vxsat, x21
 #elif !defined(U_SUPPORTED)
-  csrrw x19, mepc, x21
+  csrrw x15, mepc, x21
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x19, instret, x21
+  csrrw x15, instret, x21
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x19 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_b21, Zicsr_csrrw_cg_cp_rs1_b21_str)
+  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_b21, Zicsr_csrrw_cg_cp_rs1_b21_str)
 // read back CSR to check updated value
   csrrs x31, fflags, x0
-  # Check if x31 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x31, Zicsr_csrrw_cg_cp_rs1_b21, Zicsr_csrrw_cg_cp_rs1_b21_str)
+  # Check if x31 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x31, Zicsr_csrrw_cg_cp_rs1_b21, Zicsr_csrrw_cg_cp_rs1_b21_str)
 #elif defined(V_SUPPORTED)
-  # Check if x19 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_b21, Zicsr_csrrw_cg_cp_rs1_b21_str)
+  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_b21, Zicsr_csrrw_cg_cp_rs1_b21_str)
 // read back CSR to check updated value
   csrrs x31, vxsat, x0
-  # Check if x31 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x31, Zicsr_csrrw_cg_cp_rs1_b21, Zicsr_csrrw_cg_cp_rs1_b21_str)
+  # Check if x31 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x31, Zicsr_csrrw_cg_cp_rs1_b21, Zicsr_csrrw_cg_cp_rs1_b21_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x19 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_b21, Zicsr_csrrw_cg_cp_rs1_b21_str)
+  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_b21, Zicsr_csrrw_cg_cp_rs1_b21_str)
 // read back CSR to check updated value
   csrrs x31, mepc, x0
-  # Check if x31 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x31, Zicsr_csrrw_cg_cp_rs1_b21, Zicsr_csrrw_cg_cp_rs1_b21_str)
+  # Check if x31 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x31, Zicsr_csrrw_cg_cp_rs1_b21, Zicsr_csrrw_cg_cp_rs1_b21_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x16, x19, x31
-  sltiu x16, x16, 0x000007FF
-  # Check if x16 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x16, Zicsr_csrrw_cg_cp_rs1_b21, Zicsr_csrrw_cg_cp_rs1_b21_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x16, instret, x0
-  sub x16, x16, x31
-  sltiu x31, x16, 0x000007FF
-  # Check if x31 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x31, Zicsr_csrrw_cg_cp_rs1_b21, Zicsr_csrrw_cg_cp_rs1_b21_str)
+  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_b21, Zicsr_csrrw_cg_cp_rs1_b21_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x30, instret, x0
+  csrrs x31, instret, x0
+  sub x30, x31, x30
+  # Check if x30 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x30, Zicsr_csrrw_cg_cp_rs1_b21, Zicsr_csrrw_cg_cp_rs1_b21_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x15, x22) # load rs1: x22 = 0x74524bc709e3ccb3
-  RVTEST_TESTDATA_LOAD_INT(x15, x20) # load temp reg: x20 = 0xfeee832e4563af29
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x20
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x20
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x20
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x20, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x22) # load rs1: x22 = 0xade4dec1b8502317
+  RVTEST_TESTDATA_LOAD_INT(x10, x6) # load temp reg: x6 = 0xf39802adc2a2fbf1
 Zicsr_csrrw_cg_cp_rs1_b22:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x17, fflags, x22
+  csrrw x14, fflags, x22
 #elif defined(V_SUPPORTED)
-  csrrw x17, vxsat, x22
+  csrrw x14, vxsat, x22
 #elif !defined(U_SUPPORTED)
-  csrrw x17, mepc, x22
+  csrrw x14, mepc, x22
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x17, instret, x22
+  csrrw x14, instret, x22
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x17 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x17, Zicsr_csrrw_cg_cp_rs1_b22, Zicsr_csrrw_cg_cp_rs1_b22_str)
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b22, Zicsr_csrrw_cg_cp_rs1_b22_str)
 // read back CSR to check updated value
-  csrrs x20, fflags, x0
-  # Check if x20 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x20, Zicsr_csrrw_cg_cp_rs1_b22, Zicsr_csrrw_cg_cp_rs1_b22_str)
+  csrrs x6, fflags, x0
+  # Check if x6 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x6, Zicsr_csrrw_cg_cp_rs1_b22, Zicsr_csrrw_cg_cp_rs1_b22_str)
 #elif defined(V_SUPPORTED)
-  # Check if x17 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x17, Zicsr_csrrw_cg_cp_rs1_b22, Zicsr_csrrw_cg_cp_rs1_b22_str)
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b22, Zicsr_csrrw_cg_cp_rs1_b22_str)
 // read back CSR to check updated value
-  csrrs x20, vxsat, x0
-  # Check if x20 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x20, Zicsr_csrrw_cg_cp_rs1_b22, Zicsr_csrrw_cg_cp_rs1_b22_str)
+  csrrs x6, vxsat, x0
+  # Check if x6 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x6, Zicsr_csrrw_cg_cp_rs1_b22, Zicsr_csrrw_cg_cp_rs1_b22_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x17 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x17, Zicsr_csrrw_cg_cp_rs1_b22, Zicsr_csrrw_cg_cp_rs1_b22_str)
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b22, Zicsr_csrrw_cg_cp_rs1_b22_str)
 // read back CSR to check updated value
-  csrrs x20, mepc, x0
-  # Check if x20 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x20, Zicsr_csrrw_cg_cp_rs1_b22, Zicsr_csrrw_cg_cp_rs1_b22_str)
+  csrrs x6, mepc, x0
+  # Check if x6 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x6, Zicsr_csrrw_cg_cp_rs1_b22, Zicsr_csrrw_cg_cp_rs1_b22_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x0, x17, x20
-  sltiu x0, x0, 0x000007FF
-  # Check if x0 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b22, Zicsr_csrrw_cg_cp_rs1_b22_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x0, instret, x0
-  sub x0, x0, x20
-  sltiu x20, x0, 0x000007FF
-  # Check if x20 contains the expected result. x23 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x23, x5, x4, x20, Zicsr_csrrw_cg_cp_rs1_b22, Zicsr_csrrw_cg_cp_rs1_b22_str)
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b22, Zicsr_csrrw_cg_cp_rs1_b22_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x11, instret, x0
+  csrrs x6, instret, x0
+  sub x11, x6, x11
+  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x11, Zicsr_csrrw_cg_cp_rs1_b22, Zicsr_csrrw_cg_cp_rs1_b22_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
-  mv x11, x23 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x15, x23) # load rs1: x23 = 0xf52dc96d4c453a69
-  RVTEST_TESTDATA_LOAD_INT(x15, x13) # load temp reg: x13 = 0x3916d1bcc03a65a5
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x13
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x13
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x13
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x13, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x23) # load rs1: x23 = 0xc7b85feb7aa6e7c9
+  RVTEST_TESTDATA_LOAD_INT(x10, x24) # load temp reg: x24 = 0x2acf04d79d24a3fd
 Zicsr_csrrw_cg_cp_rs1_b23:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x28, fflags, x23
+  csrrw x21, fflags, x23
 #elif defined(V_SUPPORTED)
-  csrrw x28, vxsat, x23
+  csrrw x21, vxsat, x23
 #elif !defined(U_SUPPORTED)
-  csrrw x28, mepc, x23
+  csrrw x21, mepc, x23
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x28, instret, x23
+  csrrw x21, instret, x23
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x28 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_b23, Zicsr_csrrw_cg_cp_rs1_b23_str)
+  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_b23, Zicsr_csrrw_cg_cp_rs1_b23_str)
 // read back CSR to check updated value
-  csrrs x13, fflags, x0
-  # Check if x13 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_b23, Zicsr_csrrw_cg_cp_rs1_b23_str)
+  csrrs x24, fflags, x0
+  # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x24, Zicsr_csrrw_cg_cp_rs1_b23, Zicsr_csrrw_cg_cp_rs1_b23_str)
 #elif defined(V_SUPPORTED)
-  # Check if x28 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_b23, Zicsr_csrrw_cg_cp_rs1_b23_str)
+  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_b23, Zicsr_csrrw_cg_cp_rs1_b23_str)
 // read back CSR to check updated value
-  csrrs x13, vxsat, x0
-  # Check if x13 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_b23, Zicsr_csrrw_cg_cp_rs1_b23_str)
+  csrrs x24, vxsat, x0
+  # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x24, Zicsr_csrrw_cg_cp_rs1_b23, Zicsr_csrrw_cg_cp_rs1_b23_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x28 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_b23, Zicsr_csrrw_cg_cp_rs1_b23_str)
+  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_b23, Zicsr_csrrw_cg_cp_rs1_b23_str)
 // read back CSR to check updated value
-  csrrs x13, mepc, x0
-  # Check if x13 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_b23, Zicsr_csrrw_cg_cp_rs1_b23_str)
+  csrrs x24, mepc, x0
+  # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x24, Zicsr_csrrw_cg_cp_rs1_b23, Zicsr_csrrw_cg_cp_rs1_b23_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x16, x28, x13
-  sltiu x16, x16, 0x000007FF
-  # Check if x16 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x16, Zicsr_csrrw_cg_cp_rs1_b23, Zicsr_csrrw_cg_cp_rs1_b23_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x16, instret, x0
-  sub x16, x16, x13
-  sltiu x13, x16, 0x000007FF
-  # Check if x13 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_b23, Zicsr_csrrw_cg_cp_rs1_b23_str)
+  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_b23, Zicsr_csrrw_cg_cp_rs1_b23_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x7, instret, x0
+  csrrs x24, instret, x0
+  sub x7, x24, x7
+  # Check if x7 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x7, Zicsr_csrrw_cg_cp_rs1_b23, Zicsr_csrrw_cg_cp_rs1_b23_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x15, x24) # load rs1: x24 = 0x595560a3330e2dd1
-  RVTEST_TESTDATA_LOAD_INT(x15, x0) # load temp reg: x0 = 0x56ef64dcc7e23999
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x0
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x0
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x0
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x0, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x24) # load rs1: x24 = 0xbf55db0550fe8fd5
+  RVTEST_TESTDATA_LOAD_INT(x10, x13) # load temp reg: x13 = 0x1128c5459fb8923c
 Zicsr_csrrw_cg_cp_rs1_b24:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x25, fflags, x24
+  csrrw x7, fflags, x24
 #elif defined(V_SUPPORTED)
-  csrrw x25, vxsat, x24
+  csrrw x7, vxsat, x24
 #elif !defined(U_SUPPORTED)
-  csrrw x25, mepc, x24
+  csrrw x7, mepc, x24
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x25, instret, x24
+  csrrw x7, instret, x24
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x25 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_b24, Zicsr_csrrw_cg_cp_rs1_b24_str)
+  # Check if x7 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x7, Zicsr_csrrw_cg_cp_rs1_b24, Zicsr_csrrw_cg_cp_rs1_b24_str)
 // read back CSR to check updated value
-  csrrs x0, fflags, x0
-  # Check if x0 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b24, Zicsr_csrrw_cg_cp_rs1_b24_str)
+  csrrs x13, fflags, x0
+  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_b24, Zicsr_csrrw_cg_cp_rs1_b24_str)
 #elif defined(V_SUPPORTED)
-  # Check if x25 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_b24, Zicsr_csrrw_cg_cp_rs1_b24_str)
+  # Check if x7 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x7, Zicsr_csrrw_cg_cp_rs1_b24, Zicsr_csrrw_cg_cp_rs1_b24_str)
 // read back CSR to check updated value
-  csrrs x0, vxsat, x0
-  # Check if x0 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b24, Zicsr_csrrw_cg_cp_rs1_b24_str)
+  csrrs x13, vxsat, x0
+  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_b24, Zicsr_csrrw_cg_cp_rs1_b24_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x25 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_b24, Zicsr_csrrw_cg_cp_rs1_b24_str)
+  # Check if x7 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x7, Zicsr_csrrw_cg_cp_rs1_b24, Zicsr_csrrw_cg_cp_rs1_b24_str)
 // read back CSR to check updated value
-  csrrs x0, mepc, x0
-  # Check if x0 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b24, Zicsr_csrrw_cg_cp_rs1_b24_str)
+  csrrs x13, mepc, x0
+  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_b24, Zicsr_csrrw_cg_cp_rs1_b24_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x21, x25, x0
-  sltiu x21, x21, 0x000007FF
-  # Check if x21 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_b24, Zicsr_csrrw_cg_cp_rs1_b24_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x21, instret, x0
-  sub x21, x21, x0
-  sltiu x0, x21, 0x000007FF
-  # Check if x0 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b24, Zicsr_csrrw_cg_cp_rs1_b24_str)
+  # Check if x7 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x7, Zicsr_csrrw_cg_cp_rs1_b24, Zicsr_csrrw_cg_cp_rs1_b24_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x19, instret, x0
+  csrrs x13, instret, x0
+  sub x19, x13, x19
+  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_b24, Zicsr_csrrw_cg_cp_rs1_b24_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x15, x25) # load rs1: x25 = 0x1a8ce7c270e8e3bb
-  RVTEST_TESTDATA_LOAD_INT(x15, x1) # load temp reg: x1 = 0x25381ad4b3d42864
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x1
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x1
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x1
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x1, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x25) # load rs1: x25 = 0x9dd7655ae21aa89d
+  RVTEST_TESTDATA_LOAD_INT(x10, x21) # load temp reg: x21 = 0xf8a53cd8d6aefef2
 Zicsr_csrrw_cg_cp_rs1_b25:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x18, fflags, x25
+  csrrw x3, fflags, x25
 #elif defined(V_SUPPORTED)
-  csrrw x18, vxsat, x25
+  csrrw x3, vxsat, x25
 #elif !defined(U_SUPPORTED)
-  csrrw x18, mepc, x25
+  csrrw x3, mepc, x25
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x18, instret, x25
+  csrrw x3, instret, x25
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x18 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x18, Zicsr_csrrw_cg_cp_rs1_b25, Zicsr_csrrw_cg_cp_rs1_b25_str)
+  # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x3, Zicsr_csrrw_cg_cp_rs1_b25, Zicsr_csrrw_cg_cp_rs1_b25_str)
 // read back CSR to check updated value
-  csrrs x1, fflags, x0
-  # Check if x1 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x1, Zicsr_csrrw_cg_cp_rs1_b25, Zicsr_csrrw_cg_cp_rs1_b25_str)
+  csrrs x21, fflags, x0
+  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_b25, Zicsr_csrrw_cg_cp_rs1_b25_str)
 #elif defined(V_SUPPORTED)
-  # Check if x18 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x18, Zicsr_csrrw_cg_cp_rs1_b25, Zicsr_csrrw_cg_cp_rs1_b25_str)
+  # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x3, Zicsr_csrrw_cg_cp_rs1_b25, Zicsr_csrrw_cg_cp_rs1_b25_str)
 // read back CSR to check updated value
-  csrrs x1, vxsat, x0
-  # Check if x1 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x1, Zicsr_csrrw_cg_cp_rs1_b25, Zicsr_csrrw_cg_cp_rs1_b25_str)
+  csrrs x21, vxsat, x0
+  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_b25, Zicsr_csrrw_cg_cp_rs1_b25_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x18 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x18, Zicsr_csrrw_cg_cp_rs1_b25, Zicsr_csrrw_cg_cp_rs1_b25_str)
+  # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x3, Zicsr_csrrw_cg_cp_rs1_b25, Zicsr_csrrw_cg_cp_rs1_b25_str)
 // read back CSR to check updated value
-  csrrs x1, mepc, x0
-  # Check if x1 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x1, Zicsr_csrrw_cg_cp_rs1_b25, Zicsr_csrrw_cg_cp_rs1_b25_str)
+  csrrs x21, mepc, x0
+  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_b25, Zicsr_csrrw_cg_cp_rs1_b25_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x30, x18, x1
-  sltiu x30, x30, 0x000007FF
-  # Check if x30 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x30, Zicsr_csrrw_cg_cp_rs1_b25, Zicsr_csrrw_cg_cp_rs1_b25_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x30, instret, x0
-  sub x30, x30, x1
-  sltiu x1, x30, 0x000007FF
-  # Check if x1 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x1, Zicsr_csrrw_cg_cp_rs1_b25, Zicsr_csrrw_cg_cp_rs1_b25_str)
+  # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x3, Zicsr_csrrw_cg_cp_rs1_b25, Zicsr_csrrw_cg_cp_rs1_b25_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x29, instret, x0
+  csrrs x21, instret, x0
+  sub x29, x21, x29
+  # Check if x29 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_b25, Zicsr_csrrw_cg_cp_rs1_b25_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x15, x26) # load rs1: x26 = 0xf4a0a4c7e5d543d4
-  RVTEST_TESTDATA_LOAD_INT(x15, x17) # load temp reg: x17 = 0x2b58d28a6d680f86
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x17
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x17
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x17
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x17, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x26) # load rs1: x26 = 0x488f5fa575e95a78
+  RVTEST_TESTDATA_LOAD_INT(x10, x15) # load temp reg: x15 = 0x36731f166ff592a7
 Zicsr_csrrw_cg_cp_rs1_b26:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x14, fflags, x26
+  csrrw x27, fflags, x26
 #elif defined(V_SUPPORTED)
-  csrrw x14, vxsat, x26
+  csrrw x27, vxsat, x26
 #elif !defined(U_SUPPORTED)
-  csrrw x14, mepc, x26
+  csrrw x27, mepc, x26
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x14, instret, x26
+  csrrw x27, instret, x26
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x14 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b26, Zicsr_csrrw_cg_cp_rs1_b26_str)
+  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x27, Zicsr_csrrw_cg_cp_rs1_b26, Zicsr_csrrw_cg_cp_rs1_b26_str)
 // read back CSR to check updated value
-  csrrs x17, fflags, x0
-  # Check if x17 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x17, Zicsr_csrrw_cg_cp_rs1_b26, Zicsr_csrrw_cg_cp_rs1_b26_str)
+  csrrs x15, fflags, x0
+  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_b26, Zicsr_csrrw_cg_cp_rs1_b26_str)
 #elif defined(V_SUPPORTED)
-  # Check if x14 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b26, Zicsr_csrrw_cg_cp_rs1_b26_str)
+  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x27, Zicsr_csrrw_cg_cp_rs1_b26, Zicsr_csrrw_cg_cp_rs1_b26_str)
 // read back CSR to check updated value
-  csrrs x17, vxsat, x0
-  # Check if x17 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x17, Zicsr_csrrw_cg_cp_rs1_b26, Zicsr_csrrw_cg_cp_rs1_b26_str)
+  csrrs x15, vxsat, x0
+  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_b26, Zicsr_csrrw_cg_cp_rs1_b26_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x14 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b26, Zicsr_csrrw_cg_cp_rs1_b26_str)
+  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x27, Zicsr_csrrw_cg_cp_rs1_b26, Zicsr_csrrw_cg_cp_rs1_b26_str)
 // read back CSR to check updated value
-  csrrs x17, mepc, x0
-  # Check if x17 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x17, Zicsr_csrrw_cg_cp_rs1_b26, Zicsr_csrrw_cg_cp_rs1_b26_str)
+  csrrs x15, mepc, x0
+  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_b26, Zicsr_csrrw_cg_cp_rs1_b26_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x22, x14, x17
-  sltiu x22, x22, 0x000007FF
-  # Check if x22 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x22, Zicsr_csrrw_cg_cp_rs1_b26, Zicsr_csrrw_cg_cp_rs1_b26_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x22, instret, x0
-  sub x22, x22, x17
-  sltiu x17, x22, 0x000007FF
-  # Check if x17 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x17, Zicsr_csrrw_cg_cp_rs1_b26, Zicsr_csrrw_cg_cp_rs1_b26_str)
+  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x27, Zicsr_csrrw_cg_cp_rs1_b26, Zicsr_csrrw_cg_cp_rs1_b26_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x6, instret, x0
+  csrrs x15, instret, x0
+  sub x6, x15, x6
+  # Check if x6 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x6, Zicsr_csrrw_cg_cp_rs1_b26, Zicsr_csrrw_cg_cp_rs1_b26_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x15, x27) # load rs1: x27 = 0x8f90453442d9e6ef
-  RVTEST_TESTDATA_LOAD_INT(x15, x29) # load temp reg: x29 = 0x772de95e64696228
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x29
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x29
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x29
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x29, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x27) # load rs1: x27 = 0x10fc083786ac21f1
+  RVTEST_TESTDATA_LOAD_INT(x10, x15) # load temp reg: x15 = 0xff6b6cd6bf3975f8
 Zicsr_csrrw_cg_cp_rs1_b27:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x12, fflags, x27
+  csrrw x1, fflags, x27
 #elif defined(V_SUPPORTED)
-  csrrw x12, vxsat, x27
+  csrrw x1, vxsat, x27
 #elif !defined(U_SUPPORTED)
-  csrrw x12, mepc, x27
+  csrrw x1, mepc, x27
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x12, instret, x27
+  csrrw x1, instret, x27
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x12 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x12, Zicsr_csrrw_cg_cp_rs1_b27, Zicsr_csrrw_cg_cp_rs1_b27_str)
+  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x1, Zicsr_csrrw_cg_cp_rs1_b27, Zicsr_csrrw_cg_cp_rs1_b27_str)
 // read back CSR to check updated value
-  csrrs x29, fflags, x0
-  # Check if x29 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_b27, Zicsr_csrrw_cg_cp_rs1_b27_str)
+  csrrs x15, fflags, x0
+  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_b27, Zicsr_csrrw_cg_cp_rs1_b27_str)
 #elif defined(V_SUPPORTED)
-  # Check if x12 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x12, Zicsr_csrrw_cg_cp_rs1_b27, Zicsr_csrrw_cg_cp_rs1_b27_str)
+  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x1, Zicsr_csrrw_cg_cp_rs1_b27, Zicsr_csrrw_cg_cp_rs1_b27_str)
 // read back CSR to check updated value
-  csrrs x29, vxsat, x0
-  # Check if x29 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_b27, Zicsr_csrrw_cg_cp_rs1_b27_str)
+  csrrs x15, vxsat, x0
+  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_b27, Zicsr_csrrw_cg_cp_rs1_b27_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x12 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x12, Zicsr_csrrw_cg_cp_rs1_b27, Zicsr_csrrw_cg_cp_rs1_b27_str)
+  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x1, Zicsr_csrrw_cg_cp_rs1_b27, Zicsr_csrrw_cg_cp_rs1_b27_str)
 // read back CSR to check updated value
-  csrrs x29, mepc, x0
-  # Check if x29 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_b27, Zicsr_csrrw_cg_cp_rs1_b27_str)
+  csrrs x15, mepc, x0
+  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_b27, Zicsr_csrrw_cg_cp_rs1_b27_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x19, x12, x29
-  sltiu x19, x19, 0x000007FF
-  # Check if x19 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_b27, Zicsr_csrrw_cg_cp_rs1_b27_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x19, instret, x0
-  sub x19, x19, x29
-  sltiu x29, x19, 0x000007FF
-  # Check if x29 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_b27, Zicsr_csrrw_cg_cp_rs1_b27_str)
+  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x1, Zicsr_csrrw_cg_cp_rs1_b27, Zicsr_csrrw_cg_cp_rs1_b27_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x21, instret, x0
+  csrrs x15, instret, x0
+  sub x21, x15, x21
+  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_b27, Zicsr_csrrw_cg_cp_rs1_b27_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
+  mv x26, x28 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs1 (Test source rs1 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x15, x28) # load rs1: x28 = 0xbbb85d8d9ac48e03
-  RVTEST_TESTDATA_LOAD_INT(x15, x30) # load temp reg: x30 = 0xd38d80aaa0e7aa8e
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x30
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x30
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x30
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x30, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x28) # load rs1: x28 = 0xc09f5d5b1dfc022a
+  RVTEST_TESTDATA_LOAD_INT(x10, x11) # load temp reg: x11 = 0x0ed9a89f85d29ae2
 Zicsr_csrrw_cg_cp_rs1_b28:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x14, fflags, x28
+  csrrw x2, fflags, x28
 #elif defined(V_SUPPORTED)
-  csrrw x14, vxsat, x28
+  csrrw x2, vxsat, x28
 #elif !defined(U_SUPPORTED)
-  csrrw x14, mepc, x28
+  csrrw x2, mepc, x28
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x14, instret, x28
+  csrrw x2, instret, x28
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x14 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b28, Zicsr_csrrw_cg_cp_rs1_b28_str)
+  # Check if x2 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x2, Zicsr_csrrw_cg_cp_rs1_b28, Zicsr_csrrw_cg_cp_rs1_b28_str)
 // read back CSR to check updated value
-  csrrs x30, fflags, x0
-  # Check if x30 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x30, Zicsr_csrrw_cg_cp_rs1_b28, Zicsr_csrrw_cg_cp_rs1_b28_str)
+  csrrs x11, fflags, x0
+  # Check if x11 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x11, Zicsr_csrrw_cg_cp_rs1_b28, Zicsr_csrrw_cg_cp_rs1_b28_str)
 #elif defined(V_SUPPORTED)
-  # Check if x14 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b28, Zicsr_csrrw_cg_cp_rs1_b28_str)
+  # Check if x2 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x2, Zicsr_csrrw_cg_cp_rs1_b28, Zicsr_csrrw_cg_cp_rs1_b28_str)
 // read back CSR to check updated value
-  csrrs x30, vxsat, x0
-  # Check if x30 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x30, Zicsr_csrrw_cg_cp_rs1_b28, Zicsr_csrrw_cg_cp_rs1_b28_str)
+  csrrs x11, vxsat, x0
+  # Check if x11 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x11, Zicsr_csrrw_cg_cp_rs1_b28, Zicsr_csrrw_cg_cp_rs1_b28_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x14 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_b28, Zicsr_csrrw_cg_cp_rs1_b28_str)
+  # Check if x2 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x2, Zicsr_csrrw_cg_cp_rs1_b28, Zicsr_csrrw_cg_cp_rs1_b28_str)
 // read back CSR to check updated value
-  csrrs x30, mepc, x0
-  # Check if x30 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x30, Zicsr_csrrw_cg_cp_rs1_b28, Zicsr_csrrw_cg_cp_rs1_b28_str)
+  csrrs x11, mepc, x0
+  # Check if x11 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x11, Zicsr_csrrw_cg_cp_rs1_b28, Zicsr_csrrw_cg_cp_rs1_b28_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x16, x14, x30
-  sltiu x16, x16, 0x000007FF
-  # Check if x16 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x16, Zicsr_csrrw_cg_cp_rs1_b28, Zicsr_csrrw_cg_cp_rs1_b28_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x16, instret, x0
-  sub x16, x16, x30
-  sltiu x30, x16, 0x000007FF
-  # Check if x30 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x30, Zicsr_csrrw_cg_cp_rs1_b28, Zicsr_csrrw_cg_cp_rs1_b28_str)
+  # Check if x2 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x2, Zicsr_csrrw_cg_cp_rs1_b28, Zicsr_csrrw_cg_cp_rs1_b28_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x18, instret, x0
+  csrrs x11, instret, x0
+  sub x18, x11, x18
+  # Check if x18 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x18, Zicsr_csrrw_cg_cp_rs1_b28, Zicsr_csrrw_cg_cp_rs1_b28_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x15, x29) # load rs1: x29 = 0xefa30f051902e5b8
-  RVTEST_TESTDATA_LOAD_INT(x15, x8) # load temp reg: x8 = 0x2cce680a9a56212a
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x8
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x8
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x8
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x8, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x29) # load rs1: x29 = 0x68e9ec51cb8ac08d
+  RVTEST_TESTDATA_LOAD_INT(x10, x16) # load temp reg: x16 = 0xfeee832e4563af29
 Zicsr_csrrw_cg_cp_rs1_b29:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x12, fflags, x29
+  csrrw x30, fflags, x29
 #elif defined(V_SUPPORTED)
-  csrrw x12, vxsat, x29
+  csrrw x30, vxsat, x29
 #elif !defined(U_SUPPORTED)
-  csrrw x12, mepc, x29
+  csrrw x30, mepc, x29
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x12, instret, x29
+  csrrw x30, instret, x29
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x12 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x12, Zicsr_csrrw_cg_cp_rs1_b29, Zicsr_csrrw_cg_cp_rs1_b29_str)
+  # Check if x30 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x30, Zicsr_csrrw_cg_cp_rs1_b29, Zicsr_csrrw_cg_cp_rs1_b29_str)
 // read back CSR to check updated value
-  csrrs x8, fflags, x0
-  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x8, Zicsr_csrrw_cg_cp_rs1_b29, Zicsr_csrrw_cg_cp_rs1_b29_str)
+  csrrs x16, fflags, x0
+  # Check if x16 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x16, Zicsr_csrrw_cg_cp_rs1_b29, Zicsr_csrrw_cg_cp_rs1_b29_str)
 #elif defined(V_SUPPORTED)
-  # Check if x12 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x12, Zicsr_csrrw_cg_cp_rs1_b29, Zicsr_csrrw_cg_cp_rs1_b29_str)
+  # Check if x30 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x30, Zicsr_csrrw_cg_cp_rs1_b29, Zicsr_csrrw_cg_cp_rs1_b29_str)
 // read back CSR to check updated value
-  csrrs x8, vxsat, x0
-  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x8, Zicsr_csrrw_cg_cp_rs1_b29, Zicsr_csrrw_cg_cp_rs1_b29_str)
+  csrrs x16, vxsat, x0
+  # Check if x16 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x16, Zicsr_csrrw_cg_cp_rs1_b29, Zicsr_csrrw_cg_cp_rs1_b29_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x12 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x12, Zicsr_csrrw_cg_cp_rs1_b29, Zicsr_csrrw_cg_cp_rs1_b29_str)
+  # Check if x30 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x30, Zicsr_csrrw_cg_cp_rs1_b29, Zicsr_csrrw_cg_cp_rs1_b29_str)
 // read back CSR to check updated value
-  csrrs x8, mepc, x0
-  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x8, Zicsr_csrrw_cg_cp_rs1_b29, Zicsr_csrrw_cg_cp_rs1_b29_str)
+  csrrs x16, mepc, x0
+  # Check if x16 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x16, Zicsr_csrrw_cg_cp_rs1_b29, Zicsr_csrrw_cg_cp_rs1_b29_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x23, x12, x8
-  sltiu x23, x23, 0x000007FF
-  # Check if x23 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_b29, Zicsr_csrrw_cg_cp_rs1_b29_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x23, instret, x0
-  sub x23, x23, x8
-  sltiu x8, x23, 0x000007FF
-  # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x8, Zicsr_csrrw_cg_cp_rs1_b29, Zicsr_csrrw_cg_cp_rs1_b29_str)
+  # Check if x30 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x30, Zicsr_csrrw_cg_cp_rs1_b29, Zicsr_csrrw_cg_cp_rs1_b29_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x0, instret, x0
+  csrrs x16, instret, x0
+  sub x0, x16, x0
+  # Check if x0 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b29, Zicsr_csrrw_cg_cp_rs1_b29_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x15, x30) # load rs1: x30 = 0xef45574582c5801f
-  RVTEST_TESTDATA_LOAD_INT(x15, x7) # load temp reg: x7 = 0x830851ccf22eb91b
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x7
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x7
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x7
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x7, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x30) # load rs1: x30 = 0xceeb5434ae1461bf
+  RVTEST_TESTDATA_LOAD_INT(x10, x28) # load temp reg: x28 = 0xf52dc96d4c453a69
 Zicsr_csrrw_cg_cp_rs1_b30:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x12, fflags, x30
+  csrrw x15, fflags, x30
 #elif defined(V_SUPPORTED)
-  csrrw x12, vxsat, x30
+  csrrw x15, vxsat, x30
 #elif !defined(U_SUPPORTED)
-  csrrw x12, mepc, x30
+  csrrw x15, mepc, x30
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x12, instret, x30
+  csrrw x15, instret, x30
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x12 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x12, Zicsr_csrrw_cg_cp_rs1_b30, Zicsr_csrrw_cg_cp_rs1_b30_str)
+  # Check if x15 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_b30, Zicsr_csrrw_cg_cp_rs1_b30_str)
 // read back CSR to check updated value
-  csrrs x7, fflags, x0
-  # Check if x7 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x7, Zicsr_csrrw_cg_cp_rs1_b30, Zicsr_csrrw_cg_cp_rs1_b30_str)
+  csrrs x28, fflags, x0
+  # Check if x28 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_b30, Zicsr_csrrw_cg_cp_rs1_b30_str)
 #elif defined(V_SUPPORTED)
-  # Check if x12 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x12, Zicsr_csrrw_cg_cp_rs1_b30, Zicsr_csrrw_cg_cp_rs1_b30_str)
+  # Check if x15 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_b30, Zicsr_csrrw_cg_cp_rs1_b30_str)
 // read back CSR to check updated value
-  csrrs x7, vxsat, x0
-  # Check if x7 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x7, Zicsr_csrrw_cg_cp_rs1_b30, Zicsr_csrrw_cg_cp_rs1_b30_str)
+  csrrs x28, vxsat, x0
+  # Check if x28 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_b30, Zicsr_csrrw_cg_cp_rs1_b30_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x12 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x12, Zicsr_csrrw_cg_cp_rs1_b30, Zicsr_csrrw_cg_cp_rs1_b30_str)
+  # Check if x15 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_b30, Zicsr_csrrw_cg_cp_rs1_b30_str)
 // read back CSR to check updated value
-  csrrs x7, mepc, x0
-  # Check if x7 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x7, Zicsr_csrrw_cg_cp_rs1_b30, Zicsr_csrrw_cg_cp_rs1_b30_str)
+  csrrs x28, mepc, x0
+  # Check if x28 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_b30, Zicsr_csrrw_cg_cp_rs1_b30_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x26, x12, x7
-  sltiu x26, x26, 0x000007FF
-  # Check if x26 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x26, Zicsr_csrrw_cg_cp_rs1_b30, Zicsr_csrrw_cg_cp_rs1_b30_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x26, instret, x0
-  sub x26, x26, x7
-  sltiu x7, x26, 0x000007FF
-  # Check if x7 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x7, Zicsr_csrrw_cg_cp_rs1_b30, Zicsr_csrrw_cg_cp_rs1_b30_str)
+  # Check if x15 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_b30, Zicsr_csrrw_cg_cp_rs1_b30_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x13, instret, x0
+  csrrs x28, instret, x0
+  sub x13, x28, x13
+  # Check if x13 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_b30, Zicsr_csrrw_cg_cp_rs1_b30_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1 (Test source rs1 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x15, x31) # load rs1: x31 = 0x7a18df79102c7ab5
-  RVTEST_TESTDATA_LOAD_INT(x15, x7) # load temp reg: x7 = 0x3f94949a79500ff6
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x7
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x7
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x7
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x7, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs1: x31 = 0x886af7c5b916d1bc
+  RVTEST_TESTDATA_LOAD_INT(x10, x25) # load temp reg: x25 = 0x595560a3330e2dd1
 Zicsr_csrrw_cg_cp_rs1_b31:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x10, fflags, x31
+  csrrw x28, fflags, x31
 #elif defined(V_SUPPORTED)
-  csrrw x10, vxsat, x31
+  csrrw x28, vxsat, x31
 #elif !defined(U_SUPPORTED)
-  csrrw x10, mepc, x31
+  csrrw x28, mepc, x31
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x10, instret, x31
+  csrrw x28, instret, x31
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x10 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x10, Zicsr_csrrw_cg_cp_rs1_b31, Zicsr_csrrw_cg_cp_rs1_b31_str)
+  # Check if x28 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_b31, Zicsr_csrrw_cg_cp_rs1_b31_str)
 // read back CSR to check updated value
-  csrrs x7, fflags, x0
-  # Check if x7 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x7, Zicsr_csrrw_cg_cp_rs1_b31, Zicsr_csrrw_cg_cp_rs1_b31_str)
+  csrrs x25, fflags, x0
+  # Check if x25 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_b31, Zicsr_csrrw_cg_cp_rs1_b31_str)
 #elif defined(V_SUPPORTED)
-  # Check if x10 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x10, Zicsr_csrrw_cg_cp_rs1_b31, Zicsr_csrrw_cg_cp_rs1_b31_str)
+  # Check if x28 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_b31, Zicsr_csrrw_cg_cp_rs1_b31_str)
 // read back CSR to check updated value
-  csrrs x7, vxsat, x0
-  # Check if x7 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x7, Zicsr_csrrw_cg_cp_rs1_b31, Zicsr_csrrw_cg_cp_rs1_b31_str)
+  csrrs x25, vxsat, x0
+  # Check if x25 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_b31, Zicsr_csrrw_cg_cp_rs1_b31_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x10 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x10, Zicsr_csrrw_cg_cp_rs1_b31, Zicsr_csrrw_cg_cp_rs1_b31_str)
+  # Check if x28 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_b31, Zicsr_csrrw_cg_cp_rs1_b31_str)
 // read back CSR to check updated value
-  csrrs x7, mepc, x0
-  # Check if x7 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x7, Zicsr_csrrw_cg_cp_rs1_b31, Zicsr_csrrw_cg_cp_rs1_b31_str)
+  csrrs x25, mepc, x0
+  # Check if x25 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_b31, Zicsr_csrrw_cg_cp_rs1_b31_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x19, x10, x7
-  sltiu x19, x19, 0x000007FF
-  # Check if x19 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_b31, Zicsr_csrrw_cg_cp_rs1_b31_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x19, instret, x0
-  sub x19, x19, x7
-  sltiu x7, x19, 0x000007FF
-  # Check if x7 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x7, Zicsr_csrrw_cg_cp_rs1_b31, Zicsr_csrrw_cg_cp_rs1_b31_str)
+  # Check if x28 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_b31, Zicsr_csrrw_cg_cp_rs1_b31_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x0, instret, x0
+  csrrs x25, instret, x0
+  sub x0, x25, x0
+  # Check if x0 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x0, Zicsr_csrrw_cg_cp_rs1_b31, Zicsr_csrrw_cg_cp_rs1_b31_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 /////////////////////////////////
@@ -2193,21 +1679,8 @@ Zicsr_csrrw_cg_cp_rs1_b31:
 /////////////////////////////////
 
 # Testcase cp_rd (Test destination rd = x0)
-  RVTEST_TESTDATA_LOAD_INT(x15, x13) # load rs1: x13 = 0xa52858bb562a1948
-  RVTEST_TESTDATA_LOAD_INT(x15, x17) # load temp reg: x17 = 0x4c0c4fca2f290d0a
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x17
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x17
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x17
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x17, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x13) # load rs1: x13 = 0xa52858bb562a1948
+  RVTEST_TESTDATA_LOAD_INT(x10, x16) # load temp reg: x16 = 0x4c0c4fca2f290d0a
 Zicsr_csrrw_cg_cp_rd_b0:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -2223,192 +1696,144 @@ Zicsr_csrrw_cg_cp_rd_b0:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x0 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x0, Zicsr_csrrw_cg_cp_rd_b0, Zicsr_csrrw_cg_cp_rd_b0_str)
+  # Check if x0 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x0, Zicsr_csrrw_cg_cp_rd_b0, Zicsr_csrrw_cg_cp_rd_b0_str)
 // read back CSR to check updated value
-  csrrs x17, fflags, x0
-  # Check if x17 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x17, Zicsr_csrrw_cg_cp_rd_b0, Zicsr_csrrw_cg_cp_rd_b0_str)
+  csrrs x16, fflags, x0
+  # Check if x16 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x16, Zicsr_csrrw_cg_cp_rd_b0, Zicsr_csrrw_cg_cp_rd_b0_str)
 #elif defined(V_SUPPORTED)
-  # Check if x0 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x0, Zicsr_csrrw_cg_cp_rd_b0, Zicsr_csrrw_cg_cp_rd_b0_str)
+  # Check if x0 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x0, Zicsr_csrrw_cg_cp_rd_b0, Zicsr_csrrw_cg_cp_rd_b0_str)
 // read back CSR to check updated value
-  csrrs x17, vxsat, x0
-  # Check if x17 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x17, Zicsr_csrrw_cg_cp_rd_b0, Zicsr_csrrw_cg_cp_rd_b0_str)
+  csrrs x16, vxsat, x0
+  # Check if x16 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x16, Zicsr_csrrw_cg_cp_rd_b0, Zicsr_csrrw_cg_cp_rd_b0_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x0 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x0, Zicsr_csrrw_cg_cp_rd_b0, Zicsr_csrrw_cg_cp_rd_b0_str)
+  # Check if x0 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x0, Zicsr_csrrw_cg_cp_rd_b0, Zicsr_csrrw_cg_cp_rd_b0_str)
 // read back CSR to check updated value
-  csrrs x17, mepc, x0
-  # Check if x17 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x17, Zicsr_csrrw_cg_cp_rd_b0, Zicsr_csrrw_cg_cp_rd_b0_str)
+  csrrs x16, mepc, x0
+  # Check if x16 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x16, Zicsr_csrrw_cg_cp_rd_b0, Zicsr_csrrw_cg_cp_rd_b0_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x3, x0, x17
-  sltiu x3, x3, 0x000007FF
-  # Check if x3 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x3, Zicsr_csrrw_cg_cp_rd_b0, Zicsr_csrrw_cg_cp_rd_b0_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
+  # Check if x0 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x0, Zicsr_csrrw_cg_cp_rd_b0, Zicsr_csrrw_cg_cp_rd_b0_str)
+// read instret twice and record the difference to prove it ticks
   csrrs x3, instret, x0
-  sub x3, x3, x17
-  sltiu x17, x3, 0x000007FF
-  # Check if x17 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x17, Zicsr_csrrw_cg_cp_rd_b0, Zicsr_csrrw_cg_cp_rd_b0_str)
+  csrrs x16, instret, x0
+  sub x3, x16, x3
+  # Check if x3 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x3, Zicsr_csrrw_cg_cp_rd_b0, Zicsr_csrrw_cg_cp_rd_b0_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x1)
-  RVTEST_TESTDATA_LOAD_INT(x15, x25) # load rs1: x25 = 0xf4d998a50a4a01e4
-  RVTEST_TESTDATA_LOAD_INT(x15, x21) # load temp reg: x21 = 0xe41f2dbaaf383c5f
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x21
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x21
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x21
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x21, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x7) # load rs1: x7 = 0x0d980693b609d9fc
+  RVTEST_TESTDATA_LOAD_INT(x10, x2) # load temp reg: x2 = 0x2f383c5f850a3e7b
 Zicsr_csrrw_cg_cp_rd_b1:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x1, fflags, x25
+  csrrw x1, fflags, x7
 #elif defined(V_SUPPORTED)
-  csrrw x1, vxsat, x25
+  csrrw x1, vxsat, x7
 #elif !defined(U_SUPPORTED)
-  csrrw x1, mepc, x25
+  csrrw x1, mepc, x7
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x1, instret, x25
+  csrrw x1, instret, x7
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x1 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x1, Zicsr_csrrw_cg_cp_rd_b1, Zicsr_csrrw_cg_cp_rd_b1_str)
+  # Check if x1 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x1, Zicsr_csrrw_cg_cp_rd_b1, Zicsr_csrrw_cg_cp_rd_b1_str)
 // read back CSR to check updated value
-  csrrs x21, fflags, x0
-  # Check if x21 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x21, Zicsr_csrrw_cg_cp_rd_b1, Zicsr_csrrw_cg_cp_rd_b1_str)
+  csrrs x2, fflags, x0
+  # Check if x2 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x2, Zicsr_csrrw_cg_cp_rd_b1, Zicsr_csrrw_cg_cp_rd_b1_str)
 #elif defined(V_SUPPORTED)
-  # Check if x1 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x1, Zicsr_csrrw_cg_cp_rd_b1, Zicsr_csrrw_cg_cp_rd_b1_str)
+  # Check if x1 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x1, Zicsr_csrrw_cg_cp_rd_b1, Zicsr_csrrw_cg_cp_rd_b1_str)
 // read back CSR to check updated value
-  csrrs x21, vxsat, x0
-  # Check if x21 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x21, Zicsr_csrrw_cg_cp_rd_b1, Zicsr_csrrw_cg_cp_rd_b1_str)
+  csrrs x2, vxsat, x0
+  # Check if x2 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x2, Zicsr_csrrw_cg_cp_rd_b1, Zicsr_csrrw_cg_cp_rd_b1_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x1 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x1, Zicsr_csrrw_cg_cp_rd_b1, Zicsr_csrrw_cg_cp_rd_b1_str)
+  # Check if x1 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x1, Zicsr_csrrw_cg_cp_rd_b1, Zicsr_csrrw_cg_cp_rd_b1_str)
 // read back CSR to check updated value
-  csrrs x21, mepc, x0
-  # Check if x21 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x21, Zicsr_csrrw_cg_cp_rd_b1, Zicsr_csrrw_cg_cp_rd_b1_str)
+  csrrs x2, mepc, x0
+  # Check if x2 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x2, Zicsr_csrrw_cg_cp_rd_b1, Zicsr_csrrw_cg_cp_rd_b1_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x14, x1, x21
-  sltiu x14, x14, 0x000007FF
-  # Check if x14 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x14, Zicsr_csrrw_cg_cp_rd_b1, Zicsr_csrrw_cg_cp_rd_b1_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x14, instret, x0
-  sub x14, x14, x21
-  sltiu x21, x14, 0x000007FF
-  # Check if x21 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x21, Zicsr_csrrw_cg_cp_rd_b1, Zicsr_csrrw_cg_cp_rd_b1_str)
+  # Check if x1 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x1, Zicsr_csrrw_cg_cp_rd_b1, Zicsr_csrrw_cg_cp_rd_b1_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x16, instret, x0
+  csrrs x2, instret, x0
+  sub x16, x2, x16
+  # Check if x16 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x16, Zicsr_csrrw_cg_cp_rd_b1, Zicsr_csrrw_cg_cp_rd_b1_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x2)
-  RVTEST_TESTDATA_LOAD_INT(x15, x10) # load rs1: x10 = 0xbce1afa45e96ff90
-  RVTEST_TESTDATA_LOAD_INT(x15, x28) # load temp reg: x28 = 0x815e95ea06d53ba3
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x28
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x28
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x28
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x28, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x14) # load rs1: x14 = 0x148e3127cff66d2d
+  RVTEST_TESTDATA_LOAD_INT(x10, x1) # load temp reg: x1 = 0xde96ff90d0d88702
 Zicsr_csrrw_cg_cp_rd_b2:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x2, fflags, x10
+  csrrw x2, fflags, x14
 #elif defined(V_SUPPORTED)
-  csrrw x2, vxsat, x10
+  csrrw x2, vxsat, x14
 #elif !defined(U_SUPPORTED)
-  csrrw x2, mepc, x10
+  csrrw x2, mepc, x14
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x2, instret, x10
+  csrrw x2, instret, x14
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x2 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x2, Zicsr_csrrw_cg_cp_rd_b2, Zicsr_csrrw_cg_cp_rd_b2_str)
+  # Check if x2 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x2, Zicsr_csrrw_cg_cp_rd_b2, Zicsr_csrrw_cg_cp_rd_b2_str)
 // read back CSR to check updated value
-  csrrs x28, fflags, x0
-  # Check if x28 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x28, Zicsr_csrrw_cg_cp_rd_b2, Zicsr_csrrw_cg_cp_rd_b2_str)
+  csrrs x1, fflags, x0
+  # Check if x1 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x1, Zicsr_csrrw_cg_cp_rd_b2, Zicsr_csrrw_cg_cp_rd_b2_str)
 #elif defined(V_SUPPORTED)
-  # Check if x2 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x2, Zicsr_csrrw_cg_cp_rd_b2, Zicsr_csrrw_cg_cp_rd_b2_str)
+  # Check if x2 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x2, Zicsr_csrrw_cg_cp_rd_b2, Zicsr_csrrw_cg_cp_rd_b2_str)
 // read back CSR to check updated value
-  csrrs x28, vxsat, x0
-  # Check if x28 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x28, Zicsr_csrrw_cg_cp_rd_b2, Zicsr_csrrw_cg_cp_rd_b2_str)
+  csrrs x1, vxsat, x0
+  # Check if x1 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x1, Zicsr_csrrw_cg_cp_rd_b2, Zicsr_csrrw_cg_cp_rd_b2_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x2 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x2, Zicsr_csrrw_cg_cp_rd_b2, Zicsr_csrrw_cg_cp_rd_b2_str)
+  # Check if x2 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x2, Zicsr_csrrw_cg_cp_rd_b2, Zicsr_csrrw_cg_cp_rd_b2_str)
 // read back CSR to check updated value
-  csrrs x28, mepc, x0
-  # Check if x28 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x28, Zicsr_csrrw_cg_cp_rd_b2, Zicsr_csrrw_cg_cp_rd_b2_str)
+  csrrs x1, mepc, x0
+  # Check if x1 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x1, Zicsr_csrrw_cg_cp_rd_b2, Zicsr_csrrw_cg_cp_rd_b2_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x22, x2, x28
-  sltiu x22, x22, 0x000007FF
-  # Check if x22 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x22, Zicsr_csrrw_cg_cp_rd_b2, Zicsr_csrrw_cg_cp_rd_b2_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x22, instret, x0
-  sub x22, x22, x28
-  sltiu x28, x22, 0x000007FF
-  # Check if x28 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x28, Zicsr_csrrw_cg_cp_rd_b2, Zicsr_csrrw_cg_cp_rd_b2_str)
+  # Check if x2 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x2, Zicsr_csrrw_cg_cp_rd_b2, Zicsr_csrrw_cg_cp_rd_b2_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x7, instret, x0
+  csrrs x1, instret, x0
+  sub x7, x1, x7
+  # Check if x7 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x7, Zicsr_csrrw_cg_cp_rd_b2, Zicsr_csrrw_cg_cp_rd_b2_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x3)
-  RVTEST_TESTDATA_LOAD_INT(x15, x27) # load rs1: x27 = 0x47fb4efcf797d763
-  RVTEST_TESTDATA_LOAD_INT(x15, x25) # load temp reg: x25 = 0xc780b633147a6242
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x25
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x25
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x25
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x25, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x27) # load rs1: x27 = 0x815e95ea06d53ba3
+  RVTEST_TESTDATA_LOAD_INT(x10, x20) # load temp reg: x20 = 0xa0ba171960a89ed1
 Zicsr_csrrw_cg_cp_rd_b3:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -2424,1924 +1849,1472 @@ Zicsr_csrrw_cg_cp_rd_b3:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x3 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x3, Zicsr_csrrw_cg_cp_rd_b3, Zicsr_csrrw_cg_cp_rd_b3_str)
+  # Check if x3 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x3, Zicsr_csrrw_cg_cp_rd_b3, Zicsr_csrrw_cg_cp_rd_b3_str)
 // read back CSR to check updated value
-  csrrs x25, fflags, x0
-  # Check if x25 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x25, Zicsr_csrrw_cg_cp_rd_b3, Zicsr_csrrw_cg_cp_rd_b3_str)
+  csrrs x20, fflags, x0
+  # Check if x20 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x20, Zicsr_csrrw_cg_cp_rd_b3, Zicsr_csrrw_cg_cp_rd_b3_str)
 #elif defined(V_SUPPORTED)
-  # Check if x3 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x3, Zicsr_csrrw_cg_cp_rd_b3, Zicsr_csrrw_cg_cp_rd_b3_str)
+  # Check if x3 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x3, Zicsr_csrrw_cg_cp_rd_b3, Zicsr_csrrw_cg_cp_rd_b3_str)
 // read back CSR to check updated value
-  csrrs x25, vxsat, x0
-  # Check if x25 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x25, Zicsr_csrrw_cg_cp_rd_b3, Zicsr_csrrw_cg_cp_rd_b3_str)
+  csrrs x20, vxsat, x0
+  # Check if x20 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x20, Zicsr_csrrw_cg_cp_rd_b3, Zicsr_csrrw_cg_cp_rd_b3_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x3 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x3, Zicsr_csrrw_cg_cp_rd_b3, Zicsr_csrrw_cg_cp_rd_b3_str)
+  # Check if x3 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x3, Zicsr_csrrw_cg_cp_rd_b3, Zicsr_csrrw_cg_cp_rd_b3_str)
 // read back CSR to check updated value
-  csrrs x25, mepc, x0
-  # Check if x25 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x25, Zicsr_csrrw_cg_cp_rd_b3, Zicsr_csrrw_cg_cp_rd_b3_str)
+  csrrs x20, mepc, x0
+  # Check if x20 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x20, Zicsr_csrrw_cg_cp_rd_b3, Zicsr_csrrw_cg_cp_rd_b3_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x31, x3, x25
-  sltiu x31, x31, 0x000007FF
-  # Check if x31 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x31, Zicsr_csrrw_cg_cp_rd_b3, Zicsr_csrrw_cg_cp_rd_b3_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x31, instret, x0
-  sub x31, x31, x25
-  sltiu x25, x31, 0x000007FF
-  # Check if x25 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x11, x5, x4, x25, Zicsr_csrrw_cg_cp_rd_b3, Zicsr_csrrw_cg_cp_rd_b3_str)
+  # Check if x3 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x3, Zicsr_csrrw_cg_cp_rd_b3, Zicsr_csrrw_cg_cp_rd_b3_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x29, instret, x0
+  csrrs x20, instret, x0
+  sub x29, x20, x29
+  # Check if x29 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x26, x5, x4, x29, Zicsr_csrrw_cg_cp_rd_b3, Zicsr_csrrw_cg_cp_rd_b3_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
   mv x12, x4 # switch temp register to avoid conflict with test
   mv x13, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x4)
-  RVTEST_TESTDATA_LOAD_INT(x15, x1) # load rs1: x1 = 0xfd54f4ba47cc759d
-  RVTEST_TESTDATA_LOAD_INT(x15, x23) # load temp reg: x23 = 0xaf6d6b1008a649e8
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x23
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x23
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x23
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x23, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x29) # load rs1: x29 = 0x234b898d0d984e79
+  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load temp reg: x9 = 0xf60d48265fe8034c
 Zicsr_csrrw_cg_cp_rd_b4:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x4, fflags, x1
+  csrrw x4, fflags, x29
 #elif defined(V_SUPPORTED)
-  csrrw x4, vxsat, x1
+  csrrw x4, vxsat, x29
 #elif !defined(U_SUPPORTED)
-  csrrw x4, mepc, x1
+  csrrw x4, mepc, x29
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x4, instret, x1
+  csrrw x4, instret, x29
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x4 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x4, Zicsr_csrrw_cg_cp_rd_b4, Zicsr_csrrw_cg_cp_rd_b4_str)
+  # Check if x4 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x4, Zicsr_csrrw_cg_cp_rd_b4, Zicsr_csrrw_cg_cp_rd_b4_str)
 // read back CSR to check updated value
-  csrrs x23, fflags, x0
-  # Check if x23 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x23, Zicsr_csrrw_cg_cp_rd_b4, Zicsr_csrrw_cg_cp_rd_b4_str)
+  csrrs x9, fflags, x0
+  # Check if x9 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x9, Zicsr_csrrw_cg_cp_rd_b4, Zicsr_csrrw_cg_cp_rd_b4_str)
 #elif defined(V_SUPPORTED)
-  # Check if x4 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x4, Zicsr_csrrw_cg_cp_rd_b4, Zicsr_csrrw_cg_cp_rd_b4_str)
+  # Check if x4 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x4, Zicsr_csrrw_cg_cp_rd_b4, Zicsr_csrrw_cg_cp_rd_b4_str)
 // read back CSR to check updated value
-  csrrs x23, vxsat, x0
-  # Check if x23 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x23, Zicsr_csrrw_cg_cp_rd_b4, Zicsr_csrrw_cg_cp_rd_b4_str)
+  csrrs x9, vxsat, x0
+  # Check if x9 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x9, Zicsr_csrrw_cg_cp_rd_b4, Zicsr_csrrw_cg_cp_rd_b4_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x4 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x4, Zicsr_csrrw_cg_cp_rd_b4, Zicsr_csrrw_cg_cp_rd_b4_str)
+  # Check if x4 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x4, Zicsr_csrrw_cg_cp_rd_b4, Zicsr_csrrw_cg_cp_rd_b4_str)
 // read back CSR to check updated value
-  csrrs x23, mepc, x0
-  # Check if x23 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x23, Zicsr_csrrw_cg_cp_rd_b4, Zicsr_csrrw_cg_cp_rd_b4_str)
+  csrrs x9, mepc, x0
+  # Check if x9 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x9, Zicsr_csrrw_cg_cp_rd_b4, Zicsr_csrrw_cg_cp_rd_b4_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x7, x4, x23
-  sltiu x7, x7, 0x000007FF
-  # Check if x7 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x7, Zicsr_csrrw_cg_cp_rd_b4, Zicsr_csrrw_cg_cp_rd_b4_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x7, instret, x0
-  sub x7, x7, x23
-  sltiu x23, x7, 0x000007FF
-  # Check if x23 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x23, Zicsr_csrrw_cg_cp_rd_b4, Zicsr_csrrw_cg_cp_rd_b4_str)
+  # Check if x4 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x4, Zicsr_csrrw_cg_cp_rd_b4, Zicsr_csrrw_cg_cp_rd_b4_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x11, instret, x0
+  csrrs x9, instret, x0
+  sub x11, x9, x11
+  # Check if x11 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x11, Zicsr_csrrw_cg_cp_rd_b4, Zicsr_csrrw_cg_cp_rd_b4_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x5)
-  RVTEST_TESTDATA_LOAD_INT(x15, x29) # load rs1: x29 = 0xa961fae47d840aff
-  RVTEST_TESTDATA_LOAD_INT(x15, x23) # load temp reg: x23 = 0x1190a6c775565d5d
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x23
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x23
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x23
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x23, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x19) # load rs1: x19 = 0x0d39f3a90ca87c9d
+  RVTEST_TESTDATA_LOAD_INT(x10, x7) # load temp reg: x7 = 0x0a9e98e99c64ad73
 Zicsr_csrrw_cg_cp_rd_b5:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x5, fflags, x29
+  csrrw x5, fflags, x19
 #elif defined(V_SUPPORTED)
-  csrrw x5, vxsat, x29
+  csrrw x5, vxsat, x19
 #elif !defined(U_SUPPORTED)
-  csrrw x5, mepc, x29
+  csrrw x5, mepc, x19
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x5, instret, x29
+  csrrw x5, instret, x19
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x5 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x5, Zicsr_csrrw_cg_cp_rd_b5, Zicsr_csrrw_cg_cp_rd_b5_str)
+  # Check if x5 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x5, Zicsr_csrrw_cg_cp_rd_b5, Zicsr_csrrw_cg_cp_rd_b5_str)
 // read back CSR to check updated value
-  csrrs x23, fflags, x0
-  # Check if x23 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x23, Zicsr_csrrw_cg_cp_rd_b5, Zicsr_csrrw_cg_cp_rd_b5_str)
+  csrrs x7, fflags, x0
+  # Check if x7 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x7, Zicsr_csrrw_cg_cp_rd_b5, Zicsr_csrrw_cg_cp_rd_b5_str)
 #elif defined(V_SUPPORTED)
-  # Check if x5 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x5, Zicsr_csrrw_cg_cp_rd_b5, Zicsr_csrrw_cg_cp_rd_b5_str)
+  # Check if x5 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x5, Zicsr_csrrw_cg_cp_rd_b5, Zicsr_csrrw_cg_cp_rd_b5_str)
 // read back CSR to check updated value
-  csrrs x23, vxsat, x0
-  # Check if x23 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x23, Zicsr_csrrw_cg_cp_rd_b5, Zicsr_csrrw_cg_cp_rd_b5_str)
+  csrrs x7, vxsat, x0
+  # Check if x7 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x7, Zicsr_csrrw_cg_cp_rd_b5, Zicsr_csrrw_cg_cp_rd_b5_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x5 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x5, Zicsr_csrrw_cg_cp_rd_b5, Zicsr_csrrw_cg_cp_rd_b5_str)
+  # Check if x5 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x5, Zicsr_csrrw_cg_cp_rd_b5, Zicsr_csrrw_cg_cp_rd_b5_str)
 // read back CSR to check updated value
-  csrrs x23, mepc, x0
-  # Check if x23 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x23, Zicsr_csrrw_cg_cp_rd_b5, Zicsr_csrrw_cg_cp_rd_b5_str)
+  csrrs x7, mepc, x0
+  # Check if x7 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x7, Zicsr_csrrw_cg_cp_rd_b5, Zicsr_csrrw_cg_cp_rd_b5_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x7, x5, x23
-  sltiu x7, x7, 0x000007FF
-  # Check if x7 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x7, Zicsr_csrrw_cg_cp_rd_b5, Zicsr_csrrw_cg_cp_rd_b5_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
+  # Check if x5 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x5, Zicsr_csrrw_cg_cp_rd_b5, Zicsr_csrrw_cg_cp_rd_b5_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x1, instret, x0
   csrrs x7, instret, x0
-  sub x7, x7, x23
-  sltiu x23, x7, 0x000007FF
-  # Check if x23 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x23, Zicsr_csrrw_cg_cp_rd_b5, Zicsr_csrrw_cg_cp_rd_b5_str)
+  sub x1, x7, x1
+  # Check if x1 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x1, Zicsr_csrrw_cg_cp_rd_b5, Zicsr_csrrw_cg_cp_rd_b5_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x6)
-  RVTEST_TESTDATA_LOAD_INT(x15, x0) # load rs1: x0 = 0x1dd4435383e6efc5
-  RVTEST_TESTDATA_LOAD_INT(x15, x24) # load temp reg: x24 = 0x9ad643a4d9f341f4
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x24
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x24
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x24
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x24, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x5) # load rs1: x5 = 0xad04c50e56b9b150
+  RVTEST_TESTDATA_LOAD_INT(x10, x17) # load temp reg: x17 = 0x45379520a2428868
 Zicsr_csrrw_cg_cp_rd_b6:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x6, fflags, x0
+  csrrw x6, fflags, x5
 #elif defined(V_SUPPORTED)
-  csrrw x6, vxsat, x0
+  csrrw x6, vxsat, x5
 #elif !defined(U_SUPPORTED)
-  csrrw x6, mepc, x0
+  csrrw x6, mepc, x5
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x6, instret, x0
+  csrrw x6, instret, x5
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x6 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x6, Zicsr_csrrw_cg_cp_rd_b6, Zicsr_csrrw_cg_cp_rd_b6_str)
+  # Check if x6 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x6, Zicsr_csrrw_cg_cp_rd_b6, Zicsr_csrrw_cg_cp_rd_b6_str)
 // read back CSR to check updated value
-  csrrs x24, fflags, x0
-  # Check if x24 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x24, Zicsr_csrrw_cg_cp_rd_b6, Zicsr_csrrw_cg_cp_rd_b6_str)
+  csrrs x17, fflags, x0
+  # Check if x17 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x17, Zicsr_csrrw_cg_cp_rd_b6, Zicsr_csrrw_cg_cp_rd_b6_str)
 #elif defined(V_SUPPORTED)
-  # Check if x6 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x6, Zicsr_csrrw_cg_cp_rd_b6, Zicsr_csrrw_cg_cp_rd_b6_str)
+  # Check if x6 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x6, Zicsr_csrrw_cg_cp_rd_b6, Zicsr_csrrw_cg_cp_rd_b6_str)
 // read back CSR to check updated value
-  csrrs x24, vxsat, x0
-  # Check if x24 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x24, Zicsr_csrrw_cg_cp_rd_b6, Zicsr_csrrw_cg_cp_rd_b6_str)
+  csrrs x17, vxsat, x0
+  # Check if x17 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x17, Zicsr_csrrw_cg_cp_rd_b6, Zicsr_csrrw_cg_cp_rd_b6_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x6 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x6, Zicsr_csrrw_cg_cp_rd_b6, Zicsr_csrrw_cg_cp_rd_b6_str)
+  # Check if x6 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x6, Zicsr_csrrw_cg_cp_rd_b6, Zicsr_csrrw_cg_cp_rd_b6_str)
 // read back CSR to check updated value
-  csrrs x24, mepc, x0
-  # Check if x24 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x24, Zicsr_csrrw_cg_cp_rd_b6, Zicsr_csrrw_cg_cp_rd_b6_str)
+  csrrs x17, mepc, x0
+  # Check if x17 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x17, Zicsr_csrrw_cg_cp_rd_b6, Zicsr_csrrw_cg_cp_rd_b6_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x9, x6, x24
-  sltiu x9, x9, 0x000007FF
-  # Check if x9 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x9, Zicsr_csrrw_cg_cp_rd_b6, Zicsr_csrrw_cg_cp_rd_b6_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x9, instret, x0
-  sub x9, x9, x24
-  sltiu x24, x9, 0x000007FF
-  # Check if x24 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x24, Zicsr_csrrw_cg_cp_rd_b6, Zicsr_csrrw_cg_cp_rd_b6_str)
+  # Check if x6 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x6, Zicsr_csrrw_cg_cp_rd_b6, Zicsr_csrrw_cg_cp_rd_b6_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x7, instret, x0
+  csrrs x17, instret, x0
+  sub x7, x17, x7
+  # Check if x7 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x7, Zicsr_csrrw_cg_cp_rd_b6, Zicsr_csrrw_cg_cp_rd_b6_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x7)
-  RVTEST_TESTDATA_LOAD_INT(x15, x23) # load rs1: x23 = 0xa5db3019949f604a
-  RVTEST_TESTDATA_LOAD_INT(x15, x14) # load temp reg: x14 = 0x8cf4e1cba882a55c
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x14
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x14
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x14
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x14, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x18) # load rs1: x18 = 0x64f674d0d45feb0a
+  RVTEST_TESTDATA_LOAD_INT(x10, x23) # load temp reg: x23 = 0x9ad643a4d9f341f4
 Zicsr_csrrw_cg_cp_rd_b7:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x7, fflags, x23
+  csrrw x7, fflags, x18
 #elif defined(V_SUPPORTED)
-  csrrw x7, vxsat, x23
+  csrrw x7, vxsat, x18
 #elif !defined(U_SUPPORTED)
-  csrrw x7, mepc, x23
+  csrrw x7, mepc, x18
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x7, instret, x23
+  csrrw x7, instret, x18
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x7 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x7, Zicsr_csrrw_cg_cp_rd_b7, Zicsr_csrrw_cg_cp_rd_b7_str)
+  # Check if x7 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x7, Zicsr_csrrw_cg_cp_rd_b7, Zicsr_csrrw_cg_cp_rd_b7_str)
 // read back CSR to check updated value
-  csrrs x14, fflags, x0
-  # Check if x14 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x14, Zicsr_csrrw_cg_cp_rd_b7, Zicsr_csrrw_cg_cp_rd_b7_str)
+  csrrs x23, fflags, x0
+  # Check if x23 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x23, Zicsr_csrrw_cg_cp_rd_b7, Zicsr_csrrw_cg_cp_rd_b7_str)
 #elif defined(V_SUPPORTED)
-  # Check if x7 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x7, Zicsr_csrrw_cg_cp_rd_b7, Zicsr_csrrw_cg_cp_rd_b7_str)
+  # Check if x7 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x7, Zicsr_csrrw_cg_cp_rd_b7, Zicsr_csrrw_cg_cp_rd_b7_str)
 // read back CSR to check updated value
-  csrrs x14, vxsat, x0
-  # Check if x14 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x14, Zicsr_csrrw_cg_cp_rd_b7, Zicsr_csrrw_cg_cp_rd_b7_str)
+  csrrs x23, vxsat, x0
+  # Check if x23 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x23, Zicsr_csrrw_cg_cp_rd_b7, Zicsr_csrrw_cg_cp_rd_b7_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x7 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x7, Zicsr_csrrw_cg_cp_rd_b7, Zicsr_csrrw_cg_cp_rd_b7_str)
+  # Check if x7 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x7, Zicsr_csrrw_cg_cp_rd_b7, Zicsr_csrrw_cg_cp_rd_b7_str)
 // read back CSR to check updated value
-  csrrs x14, mepc, x0
-  # Check if x14 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x14, Zicsr_csrrw_cg_cp_rd_b7, Zicsr_csrrw_cg_cp_rd_b7_str)
+  csrrs x23, mepc, x0
+  # Check if x23 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x23, Zicsr_csrrw_cg_cp_rd_b7, Zicsr_csrrw_cg_cp_rd_b7_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x6, x7, x14
-  sltiu x6, x6, 0x000007FF
-  # Check if x6 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x6, Zicsr_csrrw_cg_cp_rd_b7, Zicsr_csrrw_cg_cp_rd_b7_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x6, instret, x0
-  sub x6, x6, x14
-  sltiu x14, x6, 0x000007FF
-  # Check if x14 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x14, Zicsr_csrrw_cg_cp_rd_b7, Zicsr_csrrw_cg_cp_rd_b7_str)
+  # Check if x7 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x7, Zicsr_csrrw_cg_cp_rd_b7, Zicsr_csrrw_cg_cp_rd_b7_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x8, instret, x0
+  csrrs x23, instret, x0
+  sub x8, x23, x8
+  # Check if x8 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x8, Zicsr_csrrw_cg_cp_rd_b7, Zicsr_csrrw_cg_cp_rd_b7_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x8)
-  RVTEST_TESTDATA_LOAD_INT(x15, x23) # load rs1: x23 = 0x5731ec94c82edcbf
-  RVTEST_TESTDATA_LOAD_INT(x15, x17) # load temp reg: x17 = 0xb6481d1894158ff8
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x17
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x17
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x17
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x17, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x2) # load rs1: x2 = 0xa5db3019949f604a
+  RVTEST_TESTDATA_LOAD_INT(x10, x15) # load temp reg: x15 = 0x8cf4e1cba882a55c
 Zicsr_csrrw_cg_cp_rd_b8:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x8, fflags, x23
+  csrrw x8, fflags, x2
 #elif defined(V_SUPPORTED)
-  csrrw x8, vxsat, x23
+  csrrw x8, vxsat, x2
 #elif !defined(U_SUPPORTED)
-  csrrw x8, mepc, x23
+  csrrw x8, mepc, x2
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x8, instret, x23
+  csrrw x8, instret, x2
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x8 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x8, Zicsr_csrrw_cg_cp_rd_b8, Zicsr_csrrw_cg_cp_rd_b8_str)
+  # Check if x8 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x8, Zicsr_csrrw_cg_cp_rd_b8, Zicsr_csrrw_cg_cp_rd_b8_str)
 // read back CSR to check updated value
-  csrrs x17, fflags, x0
-  # Check if x17 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x17, Zicsr_csrrw_cg_cp_rd_b8, Zicsr_csrrw_cg_cp_rd_b8_str)
+  csrrs x15, fflags, x0
+  # Check if x15 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x15, Zicsr_csrrw_cg_cp_rd_b8, Zicsr_csrrw_cg_cp_rd_b8_str)
 #elif defined(V_SUPPORTED)
-  # Check if x8 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x8, Zicsr_csrrw_cg_cp_rd_b8, Zicsr_csrrw_cg_cp_rd_b8_str)
+  # Check if x8 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x8, Zicsr_csrrw_cg_cp_rd_b8, Zicsr_csrrw_cg_cp_rd_b8_str)
 // read back CSR to check updated value
-  csrrs x17, vxsat, x0
-  # Check if x17 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x17, Zicsr_csrrw_cg_cp_rd_b8, Zicsr_csrrw_cg_cp_rd_b8_str)
+  csrrs x15, vxsat, x0
+  # Check if x15 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x15, Zicsr_csrrw_cg_cp_rd_b8, Zicsr_csrrw_cg_cp_rd_b8_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x8 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x8, Zicsr_csrrw_cg_cp_rd_b8, Zicsr_csrrw_cg_cp_rd_b8_str)
+  # Check if x8 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x8, Zicsr_csrrw_cg_cp_rd_b8, Zicsr_csrrw_cg_cp_rd_b8_str)
 // read back CSR to check updated value
-  csrrs x17, mepc, x0
-  # Check if x17 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x17, Zicsr_csrrw_cg_cp_rd_b8, Zicsr_csrrw_cg_cp_rd_b8_str)
+  csrrs x15, mepc, x0
+  # Check if x15 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x15, Zicsr_csrrw_cg_cp_rd_b8, Zicsr_csrrw_cg_cp_rd_b8_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x21, x8, x17
-  sltiu x21, x21, 0x000007FF
-  # Check if x21 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x21, Zicsr_csrrw_cg_cp_rd_b8, Zicsr_csrrw_cg_cp_rd_b8_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x21, instret, x0
-  sub x21, x21, x17
-  sltiu x17, x21, 0x000007FF
-  # Check if x17 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x17, Zicsr_csrrw_cg_cp_rd_b8, Zicsr_csrrw_cg_cp_rd_b8_str)
+  # Check if x8 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x8, Zicsr_csrrw_cg_cp_rd_b8, Zicsr_csrrw_cg_cp_rd_b8_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x7, instret, x0
+  csrrs x15, instret, x0
+  sub x7, x15, x7
+  # Check if x7 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x7, Zicsr_csrrw_cg_cp_rd_b8, Zicsr_csrrw_cg_cp_rd_b8_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x9)
-  RVTEST_TESTDATA_LOAD_INT(x15, x21) # load rs1: x21 = 0x5cbdc7275554048e
-  RVTEST_TESTDATA_LOAD_INT(x15, x20) # load temp reg: x20 = 0x1fe051c3fc55d803
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x20
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x20
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x20
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x20, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x10, x23) # load rs1: x23 = 0x5ebc6e861b2d2778
+  RVTEST_TESTDATA_LOAD_INT(x10, x22) # load temp reg: x22 = 0x5731ec94c82edcbf
 Zicsr_csrrw_cg_cp_rd_b9:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x9, fflags, x21
+  csrrw x9, fflags, x23
 #elif defined(V_SUPPORTED)
-  csrrw x9, vxsat, x21
+  csrrw x9, vxsat, x23
 #elif !defined(U_SUPPORTED)
-  csrrw x9, mepc, x21
+  csrrw x9, mepc, x23
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x9, instret, x21
+  csrrw x9, instret, x23
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x9 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x9, Zicsr_csrrw_cg_cp_rd_b9, Zicsr_csrrw_cg_cp_rd_b9_str)
+  # Check if x9 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x9, Zicsr_csrrw_cg_cp_rd_b9, Zicsr_csrrw_cg_cp_rd_b9_str)
 // read back CSR to check updated value
-  csrrs x20, fflags, x0
-  # Check if x20 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x20, Zicsr_csrrw_cg_cp_rd_b9, Zicsr_csrrw_cg_cp_rd_b9_str)
+  csrrs x22, fflags, x0
+  # Check if x22 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x22, Zicsr_csrrw_cg_cp_rd_b9, Zicsr_csrrw_cg_cp_rd_b9_str)
 #elif defined(V_SUPPORTED)
-  # Check if x9 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x9, Zicsr_csrrw_cg_cp_rd_b9, Zicsr_csrrw_cg_cp_rd_b9_str)
+  # Check if x9 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x9, Zicsr_csrrw_cg_cp_rd_b9, Zicsr_csrrw_cg_cp_rd_b9_str)
 // read back CSR to check updated value
-  csrrs x20, vxsat, x0
-  # Check if x20 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x20, Zicsr_csrrw_cg_cp_rd_b9, Zicsr_csrrw_cg_cp_rd_b9_str)
+  csrrs x22, vxsat, x0
+  # Check if x22 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x22, Zicsr_csrrw_cg_cp_rd_b9, Zicsr_csrrw_cg_cp_rd_b9_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x9 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x9, Zicsr_csrrw_cg_cp_rd_b9, Zicsr_csrrw_cg_cp_rd_b9_str)
+  # Check if x9 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x9, Zicsr_csrrw_cg_cp_rd_b9, Zicsr_csrrw_cg_cp_rd_b9_str)
 // read back CSR to check updated value
-  csrrs x20, mepc, x0
-  # Check if x20 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x20, Zicsr_csrrw_cg_cp_rd_b9, Zicsr_csrrw_cg_cp_rd_b9_str)
+  csrrs x22, mepc, x0
+  # Check if x22 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x22, Zicsr_csrrw_cg_cp_rd_b9, Zicsr_csrrw_cg_cp_rd_b9_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x14, x9, x20
-  sltiu x14, x14, 0x000007FF
-  # Check if x14 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x14, Zicsr_csrrw_cg_cp_rd_b9, Zicsr_csrrw_cg_cp_rd_b9_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x14, instret, x0
-  sub x14, x14, x20
-  sltiu x20, x14, 0x000007FF
-  # Check if x20 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x20, Zicsr_csrrw_cg_cp_rd_b9, Zicsr_csrrw_cg_cp_rd_b9_str)
+  # Check if x9 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x9, Zicsr_csrrw_cg_cp_rd_b9, Zicsr_csrrw_cg_cp_rd_b9_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x16, instret, x0
+  csrrs x22, instret, x0
+  sub x16, x22, x16
+  # Check if x16 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x16, Zicsr_csrrw_cg_cp_rd_b9, Zicsr_csrrw_cg_cp_rd_b9_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
+  mv x30, x10 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x10)
-  RVTEST_TESTDATA_LOAD_INT(x15, x20) # load rs1: x20 = 0xbea2a634dbfde426
-  RVTEST_TESTDATA_LOAD_INT(x15, x29) # load temp reg: x29 = 0x7f383ee0c568dcd0
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x29
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x29
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x29
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x29, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x30, x28) # load rs1: x28 = 0x14158ff8b6eed96f
+  RVTEST_TESTDATA_LOAD_INT(x30, x9) # load temp reg: x9 = 0x168990bf7c22670e
 Zicsr_csrrw_cg_cp_rd_b10:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x10, fflags, x20
+  csrrw x10, fflags, x28
 #elif defined(V_SUPPORTED)
-  csrrw x10, vxsat, x20
+  csrrw x10, vxsat, x28
 #elif !defined(U_SUPPORTED)
-  csrrw x10, mepc, x20
+  csrrw x10, mepc, x28
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x10, instret, x20
+  csrrw x10, instret, x28
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x10 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x10, Zicsr_csrrw_cg_cp_rd_b10, Zicsr_csrrw_cg_cp_rd_b10_str)
+  # Check if x10 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x10, Zicsr_csrrw_cg_cp_rd_b10, Zicsr_csrrw_cg_cp_rd_b10_str)
 // read back CSR to check updated value
-  csrrs x29, fflags, x0
-  # Check if x29 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x29, Zicsr_csrrw_cg_cp_rd_b10, Zicsr_csrrw_cg_cp_rd_b10_str)
+  csrrs x9, fflags, x0
+  # Check if x9 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x9, Zicsr_csrrw_cg_cp_rd_b10, Zicsr_csrrw_cg_cp_rd_b10_str)
 #elif defined(V_SUPPORTED)
-  # Check if x10 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x10, Zicsr_csrrw_cg_cp_rd_b10, Zicsr_csrrw_cg_cp_rd_b10_str)
+  # Check if x10 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x10, Zicsr_csrrw_cg_cp_rd_b10, Zicsr_csrrw_cg_cp_rd_b10_str)
 // read back CSR to check updated value
-  csrrs x29, vxsat, x0
-  # Check if x29 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x29, Zicsr_csrrw_cg_cp_rd_b10, Zicsr_csrrw_cg_cp_rd_b10_str)
+  csrrs x9, vxsat, x0
+  # Check if x9 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x9, Zicsr_csrrw_cg_cp_rd_b10, Zicsr_csrrw_cg_cp_rd_b10_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x10 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x10, Zicsr_csrrw_cg_cp_rd_b10, Zicsr_csrrw_cg_cp_rd_b10_str)
+  # Check if x10 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x10, Zicsr_csrrw_cg_cp_rd_b10, Zicsr_csrrw_cg_cp_rd_b10_str)
 // read back CSR to check updated value
-  csrrs x29, mepc, x0
-  # Check if x29 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x29, Zicsr_csrrw_cg_cp_rd_b10, Zicsr_csrrw_cg_cp_rd_b10_str)
+  csrrs x9, mepc, x0
+  # Check if x9 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x9, Zicsr_csrrw_cg_cp_rd_b10, Zicsr_csrrw_cg_cp_rd_b10_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x27, x10, x29
-  sltiu x27, x27, 0x000007FF
-  # Check if x27 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x27, Zicsr_csrrw_cg_cp_rd_b10, Zicsr_csrrw_cg_cp_rd_b10_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x27, instret, x0
-  sub x27, x27, x29
-  sltiu x29, x27, 0x000007FF
-  # Check if x29 contains the expected result. x11 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x11, x13, x12, x29, Zicsr_csrrw_cg_cp_rd_b10, Zicsr_csrrw_cg_cp_rd_b10_str)
+  # Check if x10 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x10, Zicsr_csrrw_cg_cp_rd_b10, Zicsr_csrrw_cg_cp_rd_b10_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x14, instret, x0
+  csrrs x9, instret, x0
+  sub x14, x9, x14
+  # Check if x14 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x14, Zicsr_csrrw_cg_cp_rd_b10, Zicsr_csrrw_cg_cp_rd_b10_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
-  mv x10, x11 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x11)
-  RVTEST_TESTDATA_LOAD_INT(x15, x7) # load rs1: x7 = 0x444dbbb1ed33b463
-  RVTEST_TESTDATA_LOAD_INT(x15, x26) # load temp reg: x26 = 0x1297b418888727b8
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x26
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x26
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x26
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x26, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x30, x19) # load rs1: x19 = 0x5cbdc7275554048e
+  RVTEST_TESTDATA_LOAD_INT(x30, x18) # load temp reg: x18 = 0x1fe051c3fc55d803
 Zicsr_csrrw_cg_cp_rd_b11:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x11, fflags, x7
+  csrrw x11, fflags, x19
 #elif defined(V_SUPPORTED)
-  csrrw x11, vxsat, x7
+  csrrw x11, vxsat, x19
 #elif !defined(U_SUPPORTED)
-  csrrw x11, mepc, x7
+  csrrw x11, mepc, x19
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x11, instret, x7
+  csrrw x11, instret, x19
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x11 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x11, Zicsr_csrrw_cg_cp_rd_b11, Zicsr_csrrw_cg_cp_rd_b11_str)
+  # Check if x11 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x11, Zicsr_csrrw_cg_cp_rd_b11, Zicsr_csrrw_cg_cp_rd_b11_str)
 // read back CSR to check updated value
-  csrrs x26, fflags, x0
-  # Check if x26 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x26, Zicsr_csrrw_cg_cp_rd_b11, Zicsr_csrrw_cg_cp_rd_b11_str)
+  csrrs x18, fflags, x0
+  # Check if x18 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x18, Zicsr_csrrw_cg_cp_rd_b11, Zicsr_csrrw_cg_cp_rd_b11_str)
 #elif defined(V_SUPPORTED)
-  # Check if x11 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x11, Zicsr_csrrw_cg_cp_rd_b11, Zicsr_csrrw_cg_cp_rd_b11_str)
+  # Check if x11 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x11, Zicsr_csrrw_cg_cp_rd_b11, Zicsr_csrrw_cg_cp_rd_b11_str)
 // read back CSR to check updated value
-  csrrs x26, vxsat, x0
-  # Check if x26 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x26, Zicsr_csrrw_cg_cp_rd_b11, Zicsr_csrrw_cg_cp_rd_b11_str)
+  csrrs x18, vxsat, x0
+  # Check if x18 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x18, Zicsr_csrrw_cg_cp_rd_b11, Zicsr_csrrw_cg_cp_rd_b11_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x11 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x11, Zicsr_csrrw_cg_cp_rd_b11, Zicsr_csrrw_cg_cp_rd_b11_str)
+  # Check if x11 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x11, Zicsr_csrrw_cg_cp_rd_b11, Zicsr_csrrw_cg_cp_rd_b11_str)
 // read back CSR to check updated value
-  csrrs x26, mepc, x0
-  # Check if x26 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x26, Zicsr_csrrw_cg_cp_rd_b11, Zicsr_csrrw_cg_cp_rd_b11_str)
+  csrrs x18, mepc, x0
+  # Check if x18 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x18, Zicsr_csrrw_cg_cp_rd_b11, Zicsr_csrrw_cg_cp_rd_b11_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x18, x11, x26
-  sltiu x18, x18, 0x000007FF
-  # Check if x18 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x18, Zicsr_csrrw_cg_cp_rd_b11, Zicsr_csrrw_cg_cp_rd_b11_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
+  # Check if x11 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x11, Zicsr_csrrw_cg_cp_rd_b11, Zicsr_csrrw_cg_cp_rd_b11_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x10, instret, x0
   csrrs x18, instret, x0
-  sub x18, x18, x26
-  sltiu x26, x18, 0x000007FF
-  # Check if x26 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x26, Zicsr_csrrw_cg_cp_rd_b11, Zicsr_csrrw_cg_cp_rd_b11_str)
+  sub x10, x18, x10
+  # Check if x10 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x26, x13, x12, x10, Zicsr_csrrw_cg_cp_rd_b11, Zicsr_csrrw_cg_cp_rd_b11_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
-  mv x4, x12 # switch temp register to avoid conflict with test
-  mv x5, x13 # switch link pointer register to avoid conflict with test
+  mv x7, x12 # switch temp register to avoid conflict with test
+  mv x8, x13 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x12)
-  RVTEST_TESTDATA_LOAD_INT(x15, x7) # load rs1: x7 = 0x6056a723a423a647
-  RVTEST_TESTDATA_LOAD_INT(x15, x21) # load temp reg: x21 = 0xcf5b6f173daa8da3
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x21
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x21
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x21
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x21, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x30, x13) # load rs1: x13 = 0xd574fe6a1d44f3ee
+  RVTEST_TESTDATA_LOAD_INT(x30, x19) # load temp reg: x19 = 0xbea2a634dbfde426
 Zicsr_csrrw_cg_cp_rd_b12:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x12, fflags, x7
+  csrrw x12, fflags, x13
 #elif defined(V_SUPPORTED)
-  csrrw x12, vxsat, x7
+  csrrw x12, vxsat, x13
 #elif !defined(U_SUPPORTED)
-  csrrw x12, mepc, x7
+  csrrw x12, mepc, x13
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x12, instret, x7
+  csrrw x12, instret, x13
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x12 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x12, Zicsr_csrrw_cg_cp_rd_b12, Zicsr_csrrw_cg_cp_rd_b12_str)
+  # Check if x12 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x12, Zicsr_csrrw_cg_cp_rd_b12, Zicsr_csrrw_cg_cp_rd_b12_str)
 // read back CSR to check updated value
-  csrrs x21, fflags, x0
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rd_b12, Zicsr_csrrw_cg_cp_rd_b12_str)
+  csrrs x19, fflags, x0
+  # Check if x19 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x19, Zicsr_csrrw_cg_cp_rd_b12, Zicsr_csrrw_cg_cp_rd_b12_str)
 #elif defined(V_SUPPORTED)
-  # Check if x12 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x12, Zicsr_csrrw_cg_cp_rd_b12, Zicsr_csrrw_cg_cp_rd_b12_str)
+  # Check if x12 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x12, Zicsr_csrrw_cg_cp_rd_b12, Zicsr_csrrw_cg_cp_rd_b12_str)
 // read back CSR to check updated value
-  csrrs x21, vxsat, x0
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rd_b12, Zicsr_csrrw_cg_cp_rd_b12_str)
+  csrrs x19, vxsat, x0
+  # Check if x19 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x19, Zicsr_csrrw_cg_cp_rd_b12, Zicsr_csrrw_cg_cp_rd_b12_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x12 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x12, Zicsr_csrrw_cg_cp_rd_b12, Zicsr_csrrw_cg_cp_rd_b12_str)
+  # Check if x12 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x12, Zicsr_csrrw_cg_cp_rd_b12, Zicsr_csrrw_cg_cp_rd_b12_str)
 // read back CSR to check updated value
-  csrrs x21, mepc, x0
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rd_b12, Zicsr_csrrw_cg_cp_rd_b12_str)
+  csrrs x19, mepc, x0
+  # Check if x19 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x19, Zicsr_csrrw_cg_cp_rd_b12, Zicsr_csrrw_cg_cp_rd_b12_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x28, x12, x21
-  sltiu x28, x28, 0x000007FF
-  # Check if x28 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x28, Zicsr_csrrw_cg_cp_rd_b12, Zicsr_csrrw_cg_cp_rd_b12_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x28, instret, x0
-  sub x28, x28, x21
-  sltiu x21, x28, 0x000007FF
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rd_b12, Zicsr_csrrw_cg_cp_rd_b12_str)
+  # Check if x12 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x12, Zicsr_csrrw_cg_cp_rd_b12, Zicsr_csrrw_cg_cp_rd_b12_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x29, instret, x0
+  csrrs x19, instret, x0
+  sub x29, x19, x29
+  # Check if x29 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x29, Zicsr_csrrw_cg_cp_rd_b12, Zicsr_csrrw_cg_cp_rd_b12_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x13)
-  RVTEST_TESTDATA_LOAD_INT(x15, x29) # load rs1: x29 = 0x103f161c817468e9
-  RVTEST_TESTDATA_LOAD_INT(x15, x26) # load temp reg: x26 = 0xd642113a989ccb02
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x26
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x26
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x26
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x26, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x30, x28) # load rs1: x28 = 0x6aad49772a6f76cd
+  RVTEST_TESTDATA_LOAD_INT(x30, x29) # load temp reg: x29 = 0xb3a704759297b418
 Zicsr_csrrw_cg_cp_rd_b13:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x13, fflags, x29
+  csrrw x13, fflags, x28
 #elif defined(V_SUPPORTED)
-  csrrw x13, vxsat, x29
+  csrrw x13, vxsat, x28
 #elif !defined(U_SUPPORTED)
-  csrrw x13, mepc, x29
+  csrrw x13, mepc, x28
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x13, instret, x29
+  csrrw x13, instret, x28
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rd_b13, Zicsr_csrrw_cg_cp_rd_b13_str)
+  # Check if x13 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x13, Zicsr_csrrw_cg_cp_rd_b13, Zicsr_csrrw_cg_cp_rd_b13_str)
 // read back CSR to check updated value
-  csrrs x26, fflags, x0
-  # Check if x26 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x26, Zicsr_csrrw_cg_cp_rd_b13, Zicsr_csrrw_cg_cp_rd_b13_str)
+  csrrs x29, fflags, x0
+  # Check if x29 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x29, Zicsr_csrrw_cg_cp_rd_b13, Zicsr_csrrw_cg_cp_rd_b13_str)
 #elif defined(V_SUPPORTED)
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rd_b13, Zicsr_csrrw_cg_cp_rd_b13_str)
+  # Check if x13 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x13, Zicsr_csrrw_cg_cp_rd_b13, Zicsr_csrrw_cg_cp_rd_b13_str)
 // read back CSR to check updated value
-  csrrs x26, vxsat, x0
-  # Check if x26 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x26, Zicsr_csrrw_cg_cp_rd_b13, Zicsr_csrrw_cg_cp_rd_b13_str)
+  csrrs x29, vxsat, x0
+  # Check if x29 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x29, Zicsr_csrrw_cg_cp_rd_b13, Zicsr_csrrw_cg_cp_rd_b13_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rd_b13, Zicsr_csrrw_cg_cp_rd_b13_str)
+  # Check if x13 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x13, Zicsr_csrrw_cg_cp_rd_b13, Zicsr_csrrw_cg_cp_rd_b13_str)
 // read back CSR to check updated value
-  csrrs x26, mepc, x0
-  # Check if x26 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x26, Zicsr_csrrw_cg_cp_rd_b13, Zicsr_csrrw_cg_cp_rd_b13_str)
+  csrrs x29, mepc, x0
+  # Check if x29 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x29, Zicsr_csrrw_cg_cp_rd_b13, Zicsr_csrrw_cg_cp_rd_b13_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x16, x13, x26
-  sltiu x16, x16, 0x000007FF
-  # Check if x16 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x16, Zicsr_csrrw_cg_cp_rd_b13, Zicsr_csrrw_cg_cp_rd_b13_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x16, instret, x0
-  sub x16, x16, x26
-  sltiu x26, x16, 0x000007FF
-  # Check if x26 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x26, Zicsr_csrrw_cg_cp_rd_b13, Zicsr_csrrw_cg_cp_rd_b13_str)
+  # Check if x13 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x13, Zicsr_csrrw_cg_cp_rd_b13, Zicsr_csrrw_cg_cp_rd_b13_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x23, instret, x0
+  csrrs x29, instret, x0
+  sub x23, x29, x23
+  # Check if x23 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x23, Zicsr_csrrw_cg_cp_rd_b13, Zicsr_csrrw_cg_cp_rd_b13_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x14)
-  RVTEST_TESTDATA_LOAD_INT(x15, x2) # load rs1: x2 = 0x31ec8b86a18ad691
-  RVTEST_TESTDATA_LOAD_INT(x15, x24) # load temp reg: x24 = 0x6e5f9b1bbc70f231
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x24
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x24
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x24
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x24, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x30, x5) # load rs1: x5 = 0xc6ca8f78eb8d2158
+  RVTEST_TESTDATA_LOAD_INT(x30, x6) # load temp reg: x6 = 0x6056a723a423a647
 Zicsr_csrrw_cg_cp_rd_b14:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x14, fflags, x2
+  csrrw x14, fflags, x5
 #elif defined(V_SUPPORTED)
-  csrrw x14, vxsat, x2
+  csrrw x14, vxsat, x5
 #elif !defined(U_SUPPORTED)
-  csrrw x14, mepc, x2
+  csrrw x14, mepc, x5
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x14, instret, x2
+  csrrw x14, instret, x5
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x14, Zicsr_csrrw_cg_cp_rd_b14, Zicsr_csrrw_cg_cp_rd_b14_str)
+  # Check if x14 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x14, Zicsr_csrrw_cg_cp_rd_b14, Zicsr_csrrw_cg_cp_rd_b14_str)
 // read back CSR to check updated value
-  csrrs x24, fflags, x0
-  # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x24, Zicsr_csrrw_cg_cp_rd_b14, Zicsr_csrrw_cg_cp_rd_b14_str)
+  csrrs x6, fflags, x0
+  # Check if x6 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x6, Zicsr_csrrw_cg_cp_rd_b14, Zicsr_csrrw_cg_cp_rd_b14_str)
 #elif defined(V_SUPPORTED)
-  # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x14, Zicsr_csrrw_cg_cp_rd_b14, Zicsr_csrrw_cg_cp_rd_b14_str)
+  # Check if x14 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x14, Zicsr_csrrw_cg_cp_rd_b14, Zicsr_csrrw_cg_cp_rd_b14_str)
 // read back CSR to check updated value
-  csrrs x24, vxsat, x0
-  # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x24, Zicsr_csrrw_cg_cp_rd_b14, Zicsr_csrrw_cg_cp_rd_b14_str)
+  csrrs x6, vxsat, x0
+  # Check if x6 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x6, Zicsr_csrrw_cg_cp_rd_b14, Zicsr_csrrw_cg_cp_rd_b14_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x14, Zicsr_csrrw_cg_cp_rd_b14, Zicsr_csrrw_cg_cp_rd_b14_str)
+  # Check if x14 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x14, Zicsr_csrrw_cg_cp_rd_b14, Zicsr_csrrw_cg_cp_rd_b14_str)
 // read back CSR to check updated value
-  csrrs x24, mepc, x0
-  # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x24, Zicsr_csrrw_cg_cp_rd_b14, Zicsr_csrrw_cg_cp_rd_b14_str)
+  csrrs x6, mepc, x0
+  # Check if x6 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x6, Zicsr_csrrw_cg_cp_rd_b14, Zicsr_csrrw_cg_cp_rd_b14_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x3, x14, x24
-  sltiu x3, x3, 0x000007FF
-  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x3, Zicsr_csrrw_cg_cp_rd_b14, Zicsr_csrrw_cg_cp_rd_b14_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x3, instret, x0
-  sub x3, x3, x24
-  sltiu x24, x3, 0x000007FF
-  # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x24, Zicsr_csrrw_cg_cp_rd_b14, Zicsr_csrrw_cg_cp_rd_b14_str)
+  # Check if x14 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x14, Zicsr_csrrw_cg_cp_rd_b14, Zicsr_csrrw_cg_cp_rd_b14_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x20, instret, x0
+  csrrs x6, instret, x0
+  sub x20, x6, x20
+  # Check if x20 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x20, Zicsr_csrrw_cg_cp_rd_b14, Zicsr_csrrw_cg_cp_rd_b14_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
-  mv x16, x15 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x15)
-  RVTEST_TESTDATA_LOAD_INT(x16, x28) # load rs1: x28 = 0x76bfd9a0ca998c2f
-  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load temp reg: x30 = 0xca61240a435bb154
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x30
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x30
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x30
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x30, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x30, x9) # load rs1: x9 = 0x7af6c466aa1a7a4b
+  RVTEST_TESTDATA_LOAD_INT(x30, x29) # load temp reg: x29 = 0x43b0c23fbacbf327
 Zicsr_csrrw_cg_cp_rd_b15:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x15, fflags, x28
+  csrrw x15, fflags, x9
 #elif defined(V_SUPPORTED)
-  csrrw x15, vxsat, x28
+  csrrw x15, vxsat, x9
 #elif !defined(U_SUPPORTED)
-  csrrw x15, mepc, x28
+  csrrw x15, mepc, x9
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x15, instret, x28
+  csrrw x15, instret, x9
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x15, Zicsr_csrrw_cg_cp_rd_b15, Zicsr_csrrw_cg_cp_rd_b15_str)
+  # Check if x15 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x15, Zicsr_csrrw_cg_cp_rd_b15, Zicsr_csrrw_cg_cp_rd_b15_str)
 // read back CSR to check updated value
-  csrrs x30, fflags, x0
-  # Check if x30 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x30, Zicsr_csrrw_cg_cp_rd_b15, Zicsr_csrrw_cg_cp_rd_b15_str)
+  csrrs x29, fflags, x0
+  # Check if x29 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x29, Zicsr_csrrw_cg_cp_rd_b15, Zicsr_csrrw_cg_cp_rd_b15_str)
 #elif defined(V_SUPPORTED)
-  # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x15, Zicsr_csrrw_cg_cp_rd_b15, Zicsr_csrrw_cg_cp_rd_b15_str)
+  # Check if x15 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x15, Zicsr_csrrw_cg_cp_rd_b15, Zicsr_csrrw_cg_cp_rd_b15_str)
 // read back CSR to check updated value
-  csrrs x30, vxsat, x0
-  # Check if x30 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x30, Zicsr_csrrw_cg_cp_rd_b15, Zicsr_csrrw_cg_cp_rd_b15_str)
+  csrrs x29, vxsat, x0
+  # Check if x29 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x29, Zicsr_csrrw_cg_cp_rd_b15, Zicsr_csrrw_cg_cp_rd_b15_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x15, Zicsr_csrrw_cg_cp_rd_b15, Zicsr_csrrw_cg_cp_rd_b15_str)
+  # Check if x15 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x15, Zicsr_csrrw_cg_cp_rd_b15, Zicsr_csrrw_cg_cp_rd_b15_str)
 // read back CSR to check updated value
-  csrrs x30, mepc, x0
-  # Check if x30 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x30, Zicsr_csrrw_cg_cp_rd_b15, Zicsr_csrrw_cg_cp_rd_b15_str)
+  csrrs x29, mepc, x0
+  # Check if x29 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x29, Zicsr_csrrw_cg_cp_rd_b15, Zicsr_csrrw_cg_cp_rd_b15_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x23, x15, x30
-  sltiu x23, x23, 0x000007FF
-  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x23, Zicsr_csrrw_cg_cp_rd_b15, Zicsr_csrrw_cg_cp_rd_b15_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x23, instret, x0
-  sub x23, x23, x30
-  sltiu x30, x23, 0x000007FF
-  # Check if x30 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x30, Zicsr_csrrw_cg_cp_rd_b15, Zicsr_csrrw_cg_cp_rd_b15_str)
+  # Check if x15 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x15, Zicsr_csrrw_cg_cp_rd_b15, Zicsr_csrrw_cg_cp_rd_b15_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x11, instret, x0
+  csrrs x29, instret, x0
+  sub x11, x29, x11
+  # Check if x11 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x11, Zicsr_csrrw_cg_cp_rd_b15, Zicsr_csrrw_cg_cp_rd_b15_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
-  mv x18, x16 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x16)
-  RVTEST_TESTDATA_LOAD_INT(x18, x6) # load rs1: x6 = 0x2442244cb7ab0ed5
-  RVTEST_TESTDATA_LOAD_INT(x18, x22) # load temp reg: x22 = 0xd53dda0dfadac6ad
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x22
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x22
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x22
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x22, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x30, x20) # load rs1: x20 = 0x103f161c817468e9
+  RVTEST_TESTDATA_LOAD_INT(x30, x25) # load temp reg: x25 = 0xd642113a989ccb02
 Zicsr_csrrw_cg_cp_rd_b16:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x16, fflags, x6
+  csrrw x16, fflags, x20
 #elif defined(V_SUPPORTED)
-  csrrw x16, vxsat, x6
+  csrrw x16, vxsat, x20
 #elif !defined(U_SUPPORTED)
-  csrrw x16, mepc, x6
+  csrrw x16, mepc, x20
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x16, instret, x6
+  csrrw x16, instret, x20
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x16 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x16, Zicsr_csrrw_cg_cp_rd_b16, Zicsr_csrrw_cg_cp_rd_b16_str)
+  # Check if x16 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x16, Zicsr_csrrw_cg_cp_rd_b16, Zicsr_csrrw_cg_cp_rd_b16_str)
 // read back CSR to check updated value
-  csrrs x22, fflags, x0
-  # Check if x22 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x22, Zicsr_csrrw_cg_cp_rd_b16, Zicsr_csrrw_cg_cp_rd_b16_str)
+  csrrs x25, fflags, x0
+  # Check if x25 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x25, Zicsr_csrrw_cg_cp_rd_b16, Zicsr_csrrw_cg_cp_rd_b16_str)
 #elif defined(V_SUPPORTED)
-  # Check if x16 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x16, Zicsr_csrrw_cg_cp_rd_b16, Zicsr_csrrw_cg_cp_rd_b16_str)
+  # Check if x16 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x16, Zicsr_csrrw_cg_cp_rd_b16, Zicsr_csrrw_cg_cp_rd_b16_str)
 // read back CSR to check updated value
-  csrrs x22, vxsat, x0
-  # Check if x22 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x22, Zicsr_csrrw_cg_cp_rd_b16, Zicsr_csrrw_cg_cp_rd_b16_str)
+  csrrs x25, vxsat, x0
+  # Check if x25 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x25, Zicsr_csrrw_cg_cp_rd_b16, Zicsr_csrrw_cg_cp_rd_b16_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x16 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x16, Zicsr_csrrw_cg_cp_rd_b16, Zicsr_csrrw_cg_cp_rd_b16_str)
+  # Check if x16 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x16, Zicsr_csrrw_cg_cp_rd_b16, Zicsr_csrrw_cg_cp_rd_b16_str)
 // read back CSR to check updated value
-  csrrs x22, mepc, x0
-  # Check if x22 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x22, Zicsr_csrrw_cg_cp_rd_b16, Zicsr_csrrw_cg_cp_rd_b16_str)
+  csrrs x25, mepc, x0
+  # Check if x25 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x25, Zicsr_csrrw_cg_cp_rd_b16, Zicsr_csrrw_cg_cp_rd_b16_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x9, x16, x22
-  sltiu x9, x9, 0x000007FF
-  # Check if x9 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x9, Zicsr_csrrw_cg_cp_rd_b16, Zicsr_csrrw_cg_cp_rd_b16_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x9, instret, x0
-  sub x9, x9, x22
-  sltiu x22, x9, 0x000007FF
-  # Check if x22 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x22, Zicsr_csrrw_cg_cp_rd_b16, Zicsr_csrrw_cg_cp_rd_b16_str)
+  # Check if x16 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x16, Zicsr_csrrw_cg_cp_rd_b16, Zicsr_csrrw_cg_cp_rd_b16_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x13, instret, x0
+  csrrs x25, instret, x0
+  sub x13, x25, x13
+  # Check if x13 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x13, Zicsr_csrrw_cg_cp_rd_b16, Zicsr_csrrw_cg_cp_rd_b16_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x17)
-  RVTEST_TESTDATA_LOAD_INT(x18, x3) # load rs1: x3 = 0xc2ca59a26bdc6334
-  RVTEST_TESTDATA_LOAD_INT(x18, x19) # load temp reg: x19 = 0x9180f44cc4722615
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x19
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x19
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x19
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x19, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x30, x10) # load rs1: x10 = 0x193df294e3f53e63
+  RVTEST_TESTDATA_LOAD_INT(x30, x2) # load temp reg: x2 = 0x31ec8b86a18ad691
 Zicsr_csrrw_cg_cp_rd_b17:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x17, fflags, x3
+  csrrw x17, fflags, x10
 #elif defined(V_SUPPORTED)
-  csrrw x17, vxsat, x3
+  csrrw x17, vxsat, x10
 #elif !defined(U_SUPPORTED)
-  csrrw x17, mepc, x3
+  csrrw x17, mepc, x10
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x17, instret, x3
+  csrrw x17, instret, x10
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x17 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x17, Zicsr_csrrw_cg_cp_rd_b17, Zicsr_csrrw_cg_cp_rd_b17_str)
+  # Check if x17 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x17, Zicsr_csrrw_cg_cp_rd_b17, Zicsr_csrrw_cg_cp_rd_b17_str)
 // read back CSR to check updated value
-  csrrs x19, fflags, x0
-  # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x19, Zicsr_csrrw_cg_cp_rd_b17, Zicsr_csrrw_cg_cp_rd_b17_str)
+  csrrs x2, fflags, x0
+  # Check if x2 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x2, Zicsr_csrrw_cg_cp_rd_b17, Zicsr_csrrw_cg_cp_rd_b17_str)
 #elif defined(V_SUPPORTED)
-  # Check if x17 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x17, Zicsr_csrrw_cg_cp_rd_b17, Zicsr_csrrw_cg_cp_rd_b17_str)
+  # Check if x17 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x17, Zicsr_csrrw_cg_cp_rd_b17, Zicsr_csrrw_cg_cp_rd_b17_str)
 // read back CSR to check updated value
-  csrrs x19, vxsat, x0
-  # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x19, Zicsr_csrrw_cg_cp_rd_b17, Zicsr_csrrw_cg_cp_rd_b17_str)
+  csrrs x2, vxsat, x0
+  # Check if x2 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x2, Zicsr_csrrw_cg_cp_rd_b17, Zicsr_csrrw_cg_cp_rd_b17_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x17 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x17, Zicsr_csrrw_cg_cp_rd_b17, Zicsr_csrrw_cg_cp_rd_b17_str)
+  # Check if x17 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x17, Zicsr_csrrw_cg_cp_rd_b17, Zicsr_csrrw_cg_cp_rd_b17_str)
 // read back CSR to check updated value
-  csrrs x19, mepc, x0
-  # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x19, Zicsr_csrrw_cg_cp_rd_b17, Zicsr_csrrw_cg_cp_rd_b17_str)
+  csrrs x2, mepc, x0
+  # Check if x2 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x2, Zicsr_csrrw_cg_cp_rd_b17, Zicsr_csrrw_cg_cp_rd_b17_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x28, x17, x19
-  sltiu x28, x28, 0x000007FF
-  # Check if x28 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x28, Zicsr_csrrw_cg_cp_rd_b17, Zicsr_csrrw_cg_cp_rd_b17_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x28, instret, x0
-  sub x28, x28, x19
-  sltiu x19, x28, 0x000007FF
-  # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x19, Zicsr_csrrw_cg_cp_rd_b17, Zicsr_csrrw_cg_cp_rd_b17_str)
-#else
-  #error no CSR known for testing
-#endif
-
-  mv x16, x18 # switch data pointer register to avoid conflict with test
-# Testcase cp_rd (Test destination rd = x18)
-  RVTEST_TESTDATA_LOAD_INT(x16, x6) # load rs1: x6 = 0x174b58270c856a83
-  RVTEST_TESTDATA_LOAD_INT(x16, x2) # load temp reg: x2 = 0x47b4ee7d25074b46
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x2
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x2
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x2
-#elif defined(ZICNTR_SUPPORTED)
+  # Check if x17 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x17, Zicsr_csrrw_cg_cp_rd_b17, Zicsr_csrrw_cg_cp_rd_b17_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x23, instret, x0
   csrrs x2, instret, x0
+  sub x23, x2, x23
+  # Check if x23 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x23, Zicsr_csrrw_cg_cp_rd_b17, Zicsr_csrrw_cg_cp_rd_b17_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
+# Testcase cp_rd (Test destination rd = x18)
+  RVTEST_TESTDATA_LOAD_INT(x30, x20) # load rs1: x20 = 0xd972ef40dfd900c3
+  RVTEST_TESTDATA_LOAD_INT(x30, x28) # load temp reg: x28 = 0x76bfd9a0ca998c2f
 Zicsr_csrrw_cg_cp_rd_b18:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x18, fflags, x6
+  csrrw x18, fflags, x20
 #elif defined(V_SUPPORTED)
-  csrrw x18, vxsat, x6
+  csrrw x18, vxsat, x20
 #elif !defined(U_SUPPORTED)
-  csrrw x18, mepc, x6
+  csrrw x18, mepc, x20
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x18, instret, x6
+  csrrw x18, instret, x20
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x18 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x18, Zicsr_csrrw_cg_cp_rd_b18, Zicsr_csrrw_cg_cp_rd_b18_str)
+  # Check if x18 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x18, Zicsr_csrrw_cg_cp_rd_b18, Zicsr_csrrw_cg_cp_rd_b18_str)
 // read back CSR to check updated value
-  csrrs x2, fflags, x0
-  # Check if x2 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x2, Zicsr_csrrw_cg_cp_rd_b18, Zicsr_csrrw_cg_cp_rd_b18_str)
+  csrrs x28, fflags, x0
+  # Check if x28 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x28, Zicsr_csrrw_cg_cp_rd_b18, Zicsr_csrrw_cg_cp_rd_b18_str)
 #elif defined(V_SUPPORTED)
-  # Check if x18 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x18, Zicsr_csrrw_cg_cp_rd_b18, Zicsr_csrrw_cg_cp_rd_b18_str)
+  # Check if x18 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x18, Zicsr_csrrw_cg_cp_rd_b18, Zicsr_csrrw_cg_cp_rd_b18_str)
 // read back CSR to check updated value
-  csrrs x2, vxsat, x0
-  # Check if x2 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x2, Zicsr_csrrw_cg_cp_rd_b18, Zicsr_csrrw_cg_cp_rd_b18_str)
+  csrrs x28, vxsat, x0
+  # Check if x28 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x28, Zicsr_csrrw_cg_cp_rd_b18, Zicsr_csrrw_cg_cp_rd_b18_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x18 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x18, Zicsr_csrrw_cg_cp_rd_b18, Zicsr_csrrw_cg_cp_rd_b18_str)
+  # Check if x18 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x18, Zicsr_csrrw_cg_cp_rd_b18, Zicsr_csrrw_cg_cp_rd_b18_str)
 // read back CSR to check updated value
-  csrrs x2, mepc, x0
-  # Check if x2 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x2, Zicsr_csrrw_cg_cp_rd_b18, Zicsr_csrrw_cg_cp_rd_b18_str)
+  csrrs x28, mepc, x0
+  # Check if x28 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x28, Zicsr_csrrw_cg_cp_rd_b18, Zicsr_csrrw_cg_cp_rd_b18_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x26, x18, x2
-  sltiu x26, x26, 0x000007FF
-  # Check if x26 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x26, Zicsr_csrrw_cg_cp_rd_b18, Zicsr_csrrw_cg_cp_rd_b18_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x26, instret, x0
-  sub x26, x26, x2
-  sltiu x2, x26, 0x000007FF
-  # Check if x2 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x2, Zicsr_csrrw_cg_cp_rd_b18, Zicsr_csrrw_cg_cp_rd_b18_str)
+  # Check if x18 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x18, Zicsr_csrrw_cg_cp_rd_b18, Zicsr_csrrw_cg_cp_rd_b18_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x31, instret, x0
+  csrrs x28, instret, x0
+  sub x31, x28, x31
+  # Check if x31 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x31, Zicsr_csrrw_cg_cp_rd_b18, Zicsr_csrrw_cg_cp_rd_b18_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x19)
-  RVTEST_TESTDATA_LOAD_INT(x16, x12) # load rs1: x12 = 0x659d039fb33f0de0
-  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load temp reg: x3 = 0xaf8e6ba0d20ce6de
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x3
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x3
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x3
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x3, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x30, x1) # load rs1: x1 = 0xc35bb1549e87565a
+  RVTEST_TESTDATA_LOAD_INT(x30, x4) # load temp reg: x4 = 0x3ff85d7a937f9ecb
 Zicsr_csrrw_cg_cp_rd_b19:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x19, fflags, x12
+  csrrw x19, fflags, x1
 #elif defined(V_SUPPORTED)
-  csrrw x19, vxsat, x12
+  csrrw x19, vxsat, x1
 #elif !defined(U_SUPPORTED)
-  csrrw x19, mepc, x12
+  csrrw x19, mepc, x1
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x19, instret, x12
+  csrrw x19, instret, x1
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x19, Zicsr_csrrw_cg_cp_rd_b19, Zicsr_csrrw_cg_cp_rd_b19_str)
+  # Check if x19 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x19, Zicsr_csrrw_cg_cp_rd_b19, Zicsr_csrrw_cg_cp_rd_b19_str)
 // read back CSR to check updated value
-  csrrs x3, fflags, x0
-  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x3, Zicsr_csrrw_cg_cp_rd_b19, Zicsr_csrrw_cg_cp_rd_b19_str)
+  csrrs x4, fflags, x0
+  # Check if x4 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x4, Zicsr_csrrw_cg_cp_rd_b19, Zicsr_csrrw_cg_cp_rd_b19_str)
 #elif defined(V_SUPPORTED)
-  # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x19, Zicsr_csrrw_cg_cp_rd_b19, Zicsr_csrrw_cg_cp_rd_b19_str)
+  # Check if x19 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x19, Zicsr_csrrw_cg_cp_rd_b19, Zicsr_csrrw_cg_cp_rd_b19_str)
 // read back CSR to check updated value
-  csrrs x3, vxsat, x0
-  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x3, Zicsr_csrrw_cg_cp_rd_b19, Zicsr_csrrw_cg_cp_rd_b19_str)
+  csrrs x4, vxsat, x0
+  # Check if x4 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x4, Zicsr_csrrw_cg_cp_rd_b19, Zicsr_csrrw_cg_cp_rd_b19_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x19, Zicsr_csrrw_cg_cp_rd_b19, Zicsr_csrrw_cg_cp_rd_b19_str)
+  # Check if x19 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x19, Zicsr_csrrw_cg_cp_rd_b19, Zicsr_csrrw_cg_cp_rd_b19_str)
 // read back CSR to check updated value
-  csrrs x3, mepc, x0
-  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x3, Zicsr_csrrw_cg_cp_rd_b19, Zicsr_csrrw_cg_cp_rd_b19_str)
+  csrrs x4, mepc, x0
+  # Check if x4 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x4, Zicsr_csrrw_cg_cp_rd_b19, Zicsr_csrrw_cg_cp_rd_b19_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x29, x19, x3
-  sltiu x29, x29, 0x000007FF
-  # Check if x29 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x29, Zicsr_csrrw_cg_cp_rd_b19, Zicsr_csrrw_cg_cp_rd_b19_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x29, instret, x0
-  sub x29, x29, x3
-  sltiu x3, x29, 0x000007FF
-  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x3, Zicsr_csrrw_cg_cp_rd_b19, Zicsr_csrrw_cg_cp_rd_b19_str)
+  # Check if x19 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x19, Zicsr_csrrw_cg_cp_rd_b19, Zicsr_csrrw_cg_cp_rd_b19_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x2, instret, x0
+  csrrs x4, instret, x0
+  sub x2, x4, x2
+  # Check if x2 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x2, Zicsr_csrrw_cg_cp_rd_b19, Zicsr_csrrw_cg_cp_rd_b19_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x20)
-  RVTEST_TESTDATA_LOAD_INT(x16, x9) # load rs1: x9 = 0xa2f015f1a15cb84f
-  RVTEST_TESTDATA_LOAD_INT(x16, x21) # load temp reg: x21 = 0x2614f9ec09cabc9b
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x21
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x21
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x21
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x21, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x30, x11) # load rs1: x11 = 0xd53dda0dfadac6ad
+  RVTEST_TESTDATA_LOAD_INT(x30, x6) # load temp reg: x6 = 0xc046cb8d6c05a3c6
 Zicsr_csrrw_cg_cp_rd_b20:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x20, fflags, x9
+  csrrw x20, fflags, x11
 #elif defined(V_SUPPORTED)
-  csrrw x20, vxsat, x9
+  csrrw x20, vxsat, x11
 #elif !defined(U_SUPPORTED)
-  csrrw x20, mepc, x9
+  csrrw x20, mepc, x11
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x20, instret, x9
+  csrrw x20, instret, x11
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x20 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x20, Zicsr_csrrw_cg_cp_rd_b20, Zicsr_csrrw_cg_cp_rd_b20_str)
+  # Check if x20 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x20, Zicsr_csrrw_cg_cp_rd_b20, Zicsr_csrrw_cg_cp_rd_b20_str)
 // read back CSR to check updated value
-  csrrs x21, fflags, x0
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rd_b20, Zicsr_csrrw_cg_cp_rd_b20_str)
+  csrrs x6, fflags, x0
+  # Check if x6 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x6, Zicsr_csrrw_cg_cp_rd_b20, Zicsr_csrrw_cg_cp_rd_b20_str)
 #elif defined(V_SUPPORTED)
-  # Check if x20 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x20, Zicsr_csrrw_cg_cp_rd_b20, Zicsr_csrrw_cg_cp_rd_b20_str)
+  # Check if x20 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x20, Zicsr_csrrw_cg_cp_rd_b20, Zicsr_csrrw_cg_cp_rd_b20_str)
 // read back CSR to check updated value
-  csrrs x21, vxsat, x0
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rd_b20, Zicsr_csrrw_cg_cp_rd_b20_str)
+  csrrs x6, vxsat, x0
+  # Check if x6 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x6, Zicsr_csrrw_cg_cp_rd_b20, Zicsr_csrrw_cg_cp_rd_b20_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x20 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x20, Zicsr_csrrw_cg_cp_rd_b20, Zicsr_csrrw_cg_cp_rd_b20_str)
+  # Check if x20 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x20, Zicsr_csrrw_cg_cp_rd_b20, Zicsr_csrrw_cg_cp_rd_b20_str)
 // read back CSR to check updated value
-  csrrs x21, mepc, x0
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rd_b20, Zicsr_csrrw_cg_cp_rd_b20_str)
+  csrrs x6, mepc, x0
+  # Check if x6 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x6, Zicsr_csrrw_cg_cp_rd_b20, Zicsr_csrrw_cg_cp_rd_b20_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x23, x20, x21
-  sltiu x23, x23, 0x000007FF
-  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x23, Zicsr_csrrw_cg_cp_rd_b20, Zicsr_csrrw_cg_cp_rd_b20_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x23, instret, x0
-  sub x23, x23, x21
-  sltiu x21, x23, 0x000007FF
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rd_b20, Zicsr_csrrw_cg_cp_rd_b20_str)
+  # Check if x20 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x20, Zicsr_csrrw_cg_cp_rd_b20, Zicsr_csrrw_cg_cp_rd_b20_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x3, instret, x0
+  csrrs x6, instret, x0
+  sub x3, x6, x3
+  # Check if x3 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x3, Zicsr_csrrw_cg_cp_rd_b20, Zicsr_csrrw_cg_cp_rd_b20_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x21)
-  RVTEST_TESTDATA_LOAD_INT(x16, x31) # load rs1: x31 = 0x0c3542070ce10972
-  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load temp reg: x15 = 0x1888e258bba19538
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x15
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x15
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x15
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x15, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x30, x3) # load rs1: x3 = 0x77eb2670108191bd
+  RVTEST_TESTDATA_LOAD_INT(x30, x11) # load temp reg: x11 = 0xeaa8354c71c56e45
 Zicsr_csrrw_cg_cp_rd_b21:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x21, fflags, x31
+  csrrw x21, fflags, x3
 #elif defined(V_SUPPORTED)
-  csrrw x21, vxsat, x31
+  csrrw x21, vxsat, x3
 #elif !defined(U_SUPPORTED)
-  csrrw x21, mepc, x31
+  csrrw x21, mepc, x3
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x21, instret, x31
+  csrrw x21, instret, x3
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rd_b21, Zicsr_csrrw_cg_cp_rd_b21_str)
+  # Check if x21 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x21, Zicsr_csrrw_cg_cp_rd_b21, Zicsr_csrrw_cg_cp_rd_b21_str)
 // read back CSR to check updated value
-  csrrs x15, fflags, x0
-  # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x15, Zicsr_csrrw_cg_cp_rd_b21, Zicsr_csrrw_cg_cp_rd_b21_str)
+  csrrs x11, fflags, x0
+  # Check if x11 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x11, Zicsr_csrrw_cg_cp_rd_b21, Zicsr_csrrw_cg_cp_rd_b21_str)
 #elif defined(V_SUPPORTED)
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rd_b21, Zicsr_csrrw_cg_cp_rd_b21_str)
+  # Check if x21 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x21, Zicsr_csrrw_cg_cp_rd_b21, Zicsr_csrrw_cg_cp_rd_b21_str)
 // read back CSR to check updated value
-  csrrs x15, vxsat, x0
-  # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x15, Zicsr_csrrw_cg_cp_rd_b21, Zicsr_csrrw_cg_cp_rd_b21_str)
+  csrrs x11, vxsat, x0
+  # Check if x11 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x11, Zicsr_csrrw_cg_cp_rd_b21, Zicsr_csrrw_cg_cp_rd_b21_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rd_b21, Zicsr_csrrw_cg_cp_rd_b21_str)
+  # Check if x21 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x21, Zicsr_csrrw_cg_cp_rd_b21, Zicsr_csrrw_cg_cp_rd_b21_str)
 // read back CSR to check updated value
-  csrrs x15, mepc, x0
-  # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x15, Zicsr_csrrw_cg_cp_rd_b21, Zicsr_csrrw_cg_cp_rd_b21_str)
+  csrrs x11, mepc, x0
+  # Check if x11 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x11, Zicsr_csrrw_cg_cp_rd_b21, Zicsr_csrrw_cg_cp_rd_b21_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x26, x21, x15
-  sltiu x26, x26, 0x000007FF
-  # Check if x26 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x26, Zicsr_csrrw_cg_cp_rd_b21, Zicsr_csrrw_cg_cp_rd_b21_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x26, instret, x0
-  sub x26, x26, x15
-  sltiu x15, x26, 0x000007FF
-  # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x15, Zicsr_csrrw_cg_cp_rd_b21, Zicsr_csrrw_cg_cp_rd_b21_str)
+  # Check if x21 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x21, Zicsr_csrrw_cg_cp_rd_b21, Zicsr_csrrw_cg_cp_rd_b21_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x12, instret, x0
+  csrrs x11, instret, x0
+  sub x12, x11, x12
+  # Check if x12 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x12, Zicsr_csrrw_cg_cp_rd_b21, Zicsr_csrrw_cg_cp_rd_b21_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x22)
-  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load rs1: x3 = 0x1b86865e10f56bc2
-  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load temp reg: x30 = 0x5a329995ee1f4879
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x30
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x30
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x30
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x30, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x30, x28) # load rs1: x28 = 0x83ab12bee62ae23c
+  RVTEST_TESTDATA_LOAD_INT(x30, x31) # load temp reg: x31 = 0xa6c04bce47189d8f
 Zicsr_csrrw_cg_cp_rd_b22:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x22, fflags, x3
+  csrrw x22, fflags, x28
 #elif defined(V_SUPPORTED)
-  csrrw x22, vxsat, x3
+  csrrw x22, vxsat, x28
 #elif !defined(U_SUPPORTED)
-  csrrw x22, mepc, x3
+  csrrw x22, mepc, x28
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x22, instret, x3
+  csrrw x22, instret, x28
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x22 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x22, Zicsr_csrrw_cg_cp_rd_b22, Zicsr_csrrw_cg_cp_rd_b22_str)
+  # Check if x22 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x22, Zicsr_csrrw_cg_cp_rd_b22, Zicsr_csrrw_cg_cp_rd_b22_str)
 // read back CSR to check updated value
-  csrrs x30, fflags, x0
-  # Check if x30 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x30, Zicsr_csrrw_cg_cp_rd_b22, Zicsr_csrrw_cg_cp_rd_b22_str)
+  csrrs x31, fflags, x0
+  # Check if x31 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x31, Zicsr_csrrw_cg_cp_rd_b22, Zicsr_csrrw_cg_cp_rd_b22_str)
 #elif defined(V_SUPPORTED)
-  # Check if x22 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x22, Zicsr_csrrw_cg_cp_rd_b22, Zicsr_csrrw_cg_cp_rd_b22_str)
+  # Check if x22 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x22, Zicsr_csrrw_cg_cp_rd_b22, Zicsr_csrrw_cg_cp_rd_b22_str)
 // read back CSR to check updated value
-  csrrs x30, vxsat, x0
-  # Check if x30 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x30, Zicsr_csrrw_cg_cp_rd_b22, Zicsr_csrrw_cg_cp_rd_b22_str)
+  csrrs x31, vxsat, x0
+  # Check if x31 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x31, Zicsr_csrrw_cg_cp_rd_b22, Zicsr_csrrw_cg_cp_rd_b22_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x22 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x22, Zicsr_csrrw_cg_cp_rd_b22, Zicsr_csrrw_cg_cp_rd_b22_str)
+  # Check if x22 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x22, Zicsr_csrrw_cg_cp_rd_b22, Zicsr_csrrw_cg_cp_rd_b22_str)
 // read back CSR to check updated value
-  csrrs x30, mepc, x0
-  # Check if x30 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x30, Zicsr_csrrw_cg_cp_rd_b22, Zicsr_csrrw_cg_cp_rd_b22_str)
+  csrrs x31, mepc, x0
+  # Check if x31 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x31, Zicsr_csrrw_cg_cp_rd_b22, Zicsr_csrrw_cg_cp_rd_b22_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x24, x22, x30
-  sltiu x24, x24, 0x000007FF
-  # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x24, Zicsr_csrrw_cg_cp_rd_b22, Zicsr_csrrw_cg_cp_rd_b22_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x24, instret, x0
-  sub x24, x24, x30
-  sltiu x30, x24, 0x000007FF
-  # Check if x30 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x30, Zicsr_csrrw_cg_cp_rd_b22, Zicsr_csrrw_cg_cp_rd_b22_str)
+  # Check if x22 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x22, Zicsr_csrrw_cg_cp_rd_b22, Zicsr_csrrw_cg_cp_rd_b22_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x20, instret, x0
+  csrrs x31, instret, x0
+  sub x20, x31, x20
+  # Check if x20 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x20, Zicsr_csrrw_cg_cp_rd_b22, Zicsr_csrrw_cg_cp_rd_b22_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x23)
-  RVTEST_TESTDATA_LOAD_INT(x16, x20) # load rs1: x20 = 0xc7ac0fdddcf19778
-  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load temp reg: x3 = 0x58e423de53f03dd6
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x3
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x3
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x3
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x3, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x30, x14) # load rs1: x14 = 0x7152c91fa0b5378d
+  RVTEST_TESTDATA_LOAD_INT(x30, x11) # load temp reg: x11 = 0x659d039fb33f0de0
 Zicsr_csrrw_cg_cp_rd_b23:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x23, fflags, x20
+  csrrw x23, fflags, x14
 #elif defined(V_SUPPORTED)
-  csrrw x23, vxsat, x20
+  csrrw x23, vxsat, x14
 #elif !defined(U_SUPPORTED)
-  csrrw x23, mepc, x20
+  csrrw x23, mepc, x14
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x23, instret, x20
+  csrrw x23, instret, x14
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x23, Zicsr_csrrw_cg_cp_rd_b23, Zicsr_csrrw_cg_cp_rd_b23_str)
+  # Check if x23 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x23, Zicsr_csrrw_cg_cp_rd_b23, Zicsr_csrrw_cg_cp_rd_b23_str)
 // read back CSR to check updated value
-  csrrs x3, fflags, x0
-  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x3, Zicsr_csrrw_cg_cp_rd_b23, Zicsr_csrrw_cg_cp_rd_b23_str)
+  csrrs x11, fflags, x0
+  # Check if x11 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x11, Zicsr_csrrw_cg_cp_rd_b23, Zicsr_csrrw_cg_cp_rd_b23_str)
 #elif defined(V_SUPPORTED)
-  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x23, Zicsr_csrrw_cg_cp_rd_b23, Zicsr_csrrw_cg_cp_rd_b23_str)
+  # Check if x23 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x23, Zicsr_csrrw_cg_cp_rd_b23, Zicsr_csrrw_cg_cp_rd_b23_str)
 // read back CSR to check updated value
-  csrrs x3, vxsat, x0
-  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x3, Zicsr_csrrw_cg_cp_rd_b23, Zicsr_csrrw_cg_cp_rd_b23_str)
+  csrrs x11, vxsat, x0
+  # Check if x11 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x11, Zicsr_csrrw_cg_cp_rd_b23, Zicsr_csrrw_cg_cp_rd_b23_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x23, Zicsr_csrrw_cg_cp_rd_b23, Zicsr_csrrw_cg_cp_rd_b23_str)
+  # Check if x23 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x23, Zicsr_csrrw_cg_cp_rd_b23, Zicsr_csrrw_cg_cp_rd_b23_str)
 // read back CSR to check updated value
-  csrrs x3, mepc, x0
-  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x3, Zicsr_csrrw_cg_cp_rd_b23, Zicsr_csrrw_cg_cp_rd_b23_str)
+  csrrs x11, mepc, x0
+  # Check if x11 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x11, Zicsr_csrrw_cg_cp_rd_b23, Zicsr_csrrw_cg_cp_rd_b23_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x13, x23, x3
-  sltiu x13, x13, 0x000007FF
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rd_b23, Zicsr_csrrw_cg_cp_rd_b23_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x13, instret, x0
-  sub x13, x13, x3
-  sltiu x3, x13, 0x000007FF
-  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x3, Zicsr_csrrw_cg_cp_rd_b23, Zicsr_csrrw_cg_cp_rd_b23_str)
+  # Check if x23 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x23, Zicsr_csrrw_cg_cp_rd_b23, Zicsr_csrrw_cg_cp_rd_b23_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x3, instret, x0
+  csrrs x11, instret, x0
+  sub x3, x11, x3
+  # Check if x3 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x3, Zicsr_csrrw_cg_cp_rd_b23, Zicsr_csrrw_cg_cp_rd_b23_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x24)
-  RVTEST_TESTDATA_LOAD_INT(x16, x18) # load rs1: x18 = 0xf1c2350eed436c95
-  RVTEST_TESTDATA_LOAD_INT(x16, x27) # load temp reg: x27 = 0xe4f2d3f813d7d6c9
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x27
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x27
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x27
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x27, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x30, x31) # load rs1: x31 = 0x8b20c5d949751d43
+  RVTEST_TESTDATA_LOAD_INT(x30, x9) # load temp reg: x9 = 0xa2f015f1a15cb84f
 Zicsr_csrrw_cg_cp_rd_b24:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x24, fflags, x18
+  csrrw x24, fflags, x31
 #elif defined(V_SUPPORTED)
-  csrrw x24, vxsat, x18
+  csrrw x24, vxsat, x31
 #elif !defined(U_SUPPORTED)
-  csrrw x24, mepc, x18
+  csrrw x24, mepc, x31
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x24, instret, x18
+  csrrw x24, instret, x31
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x24, Zicsr_csrrw_cg_cp_rd_b24, Zicsr_csrrw_cg_cp_rd_b24_str)
+  # Check if x24 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x24, Zicsr_csrrw_cg_cp_rd_b24, Zicsr_csrrw_cg_cp_rd_b24_str)
 // read back CSR to check updated value
-  csrrs x27, fflags, x0
-  # Check if x27 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x27, Zicsr_csrrw_cg_cp_rd_b24, Zicsr_csrrw_cg_cp_rd_b24_str)
+  csrrs x9, fflags, x0
+  # Check if x9 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x9, Zicsr_csrrw_cg_cp_rd_b24, Zicsr_csrrw_cg_cp_rd_b24_str)
 #elif defined(V_SUPPORTED)
-  # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x24, Zicsr_csrrw_cg_cp_rd_b24, Zicsr_csrrw_cg_cp_rd_b24_str)
+  # Check if x24 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x24, Zicsr_csrrw_cg_cp_rd_b24, Zicsr_csrrw_cg_cp_rd_b24_str)
 // read back CSR to check updated value
-  csrrs x27, vxsat, x0
-  # Check if x27 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x27, Zicsr_csrrw_cg_cp_rd_b24, Zicsr_csrrw_cg_cp_rd_b24_str)
+  csrrs x9, vxsat, x0
+  # Check if x9 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x9, Zicsr_csrrw_cg_cp_rd_b24, Zicsr_csrrw_cg_cp_rd_b24_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x24, Zicsr_csrrw_cg_cp_rd_b24, Zicsr_csrrw_cg_cp_rd_b24_str)
+  # Check if x24 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x24, Zicsr_csrrw_cg_cp_rd_b24, Zicsr_csrrw_cg_cp_rd_b24_str)
 // read back CSR to check updated value
-  csrrs x27, mepc, x0
-  # Check if x27 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x27, Zicsr_csrrw_cg_cp_rd_b24, Zicsr_csrrw_cg_cp_rd_b24_str)
+  csrrs x9, mepc, x0
+  # Check if x9 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x9, Zicsr_csrrw_cg_cp_rd_b24, Zicsr_csrrw_cg_cp_rd_b24_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x14, x24, x27
-  sltiu x14, x14, 0x000007FF
-  # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x14, Zicsr_csrrw_cg_cp_rd_b24, Zicsr_csrrw_cg_cp_rd_b24_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x14, instret, x0
-  sub x14, x14, x27
-  sltiu x27, x14, 0x000007FF
-  # Check if x27 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x27, Zicsr_csrrw_cg_cp_rd_b24, Zicsr_csrrw_cg_cp_rd_b24_str)
+  # Check if x24 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x24, Zicsr_csrrw_cg_cp_rd_b24, Zicsr_csrrw_cg_cp_rd_b24_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x18, instret, x0
+  csrrs x9, instret, x0
+  sub x18, x9, x18
+  # Check if x18 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x18, Zicsr_csrrw_cg_cp_rd_b24, Zicsr_csrrw_cg_cp_rd_b24_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x25)
-  RVTEST_TESTDATA_LOAD_INT(x16, x27) # load rs1: x27 = 0xeba433a4f9e63c6a
-  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load temp reg: x13 = 0x46775bde0091f09e
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x13
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x13
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x13
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x13, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x30, x1) # load rs1: x1 = 0xe72232ab1da6edf4
+  RVTEST_TESTDATA_LOAD_INT(x30, x13) # load temp reg: x13 = 0x3aeec3b2b42ee705
 Zicsr_csrrw_cg_cp_rd_b25:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x25, fflags, x27
+  csrrw x25, fflags, x1
 #elif defined(V_SUPPORTED)
-  csrrw x25, vxsat, x27
+  csrrw x25, vxsat, x1
 #elif !defined(U_SUPPORTED)
-  csrrw x25, mepc, x27
+  csrrw x25, mepc, x1
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x25, instret, x27
+  csrrw x25, instret, x1
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x25 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x25, Zicsr_csrrw_cg_cp_rd_b25, Zicsr_csrrw_cg_cp_rd_b25_str)
+  # Check if x25 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x25, Zicsr_csrrw_cg_cp_rd_b25, Zicsr_csrrw_cg_cp_rd_b25_str)
 // read back CSR to check updated value
   csrrs x13, fflags, x0
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rd_b25, Zicsr_csrrw_cg_cp_rd_b25_str)
+  # Check if x13 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x13, Zicsr_csrrw_cg_cp_rd_b25, Zicsr_csrrw_cg_cp_rd_b25_str)
 #elif defined(V_SUPPORTED)
-  # Check if x25 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x25, Zicsr_csrrw_cg_cp_rd_b25, Zicsr_csrrw_cg_cp_rd_b25_str)
+  # Check if x25 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x25, Zicsr_csrrw_cg_cp_rd_b25, Zicsr_csrrw_cg_cp_rd_b25_str)
 // read back CSR to check updated value
   csrrs x13, vxsat, x0
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rd_b25, Zicsr_csrrw_cg_cp_rd_b25_str)
+  # Check if x13 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x13, Zicsr_csrrw_cg_cp_rd_b25, Zicsr_csrrw_cg_cp_rd_b25_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x25 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x25, Zicsr_csrrw_cg_cp_rd_b25, Zicsr_csrrw_cg_cp_rd_b25_str)
+  # Check if x25 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x25, Zicsr_csrrw_cg_cp_rd_b25, Zicsr_csrrw_cg_cp_rd_b25_str)
 // read back CSR to check updated value
   csrrs x13, mepc, x0
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rd_b25, Zicsr_csrrw_cg_cp_rd_b25_str)
+  # Check if x13 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x13, Zicsr_csrrw_cg_cp_rd_b25, Zicsr_csrrw_cg_cp_rd_b25_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x17, x25, x13
-  sltiu x17, x17, 0x000007FF
-  # Check if x17 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x17, Zicsr_csrrw_cg_cp_rd_b25, Zicsr_csrrw_cg_cp_rd_b25_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x17, instret, x0
-  sub x17, x17, x13
-  sltiu x13, x17, 0x000007FF
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rd_b25, Zicsr_csrrw_cg_cp_rd_b25_str)
+  # Check if x25 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x25, Zicsr_csrrw_cg_cp_rd_b25, Zicsr_csrrw_cg_cp_rd_b25_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x20, instret, x0
+  csrrs x13, instret, x0
+  sub x20, x13, x20
+  # Check if x20 contains the expected result. x26 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x26, x8, x7, x20, Zicsr_csrrw_cg_cp_rd_b25, Zicsr_csrrw_cg_cp_rd_b25_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
+  mv x15, x26 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x26)
-  RVTEST_TESTDATA_LOAD_INT(x16, x6) # load rs1: x6 = 0x49e87406a759aed7
-  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load temp reg: x22 = 0xaa1a42612b83c50d
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x22
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x22
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x22
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x22, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x30, x3) # load rs1: x3 = 0x6804d44c2737dfeb
+  RVTEST_TESTDATA_LOAD_INT(x30, x18) # load temp reg: x18 = 0xf1c2350eed436c95
 Zicsr_csrrw_cg_cp_rd_b26:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x26, fflags, x6
+  csrrw x26, fflags, x3
 #elif defined(V_SUPPORTED)
-  csrrw x26, vxsat, x6
+  csrrw x26, vxsat, x3
 #elif !defined(U_SUPPORTED)
-  csrrw x26, mepc, x6
+  csrrw x26, mepc, x3
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x26, instret, x6
+  csrrw x26, instret, x3
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x26 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x26, Zicsr_csrrw_cg_cp_rd_b26, Zicsr_csrrw_cg_cp_rd_b26_str)
+  # Check if x26 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x26, Zicsr_csrrw_cg_cp_rd_b26, Zicsr_csrrw_cg_cp_rd_b26_str)
 // read back CSR to check updated value
-  csrrs x22, fflags, x0
-  # Check if x22 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x22, Zicsr_csrrw_cg_cp_rd_b26, Zicsr_csrrw_cg_cp_rd_b26_str)
+  csrrs x18, fflags, x0
+  # Check if x18 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x18, Zicsr_csrrw_cg_cp_rd_b26, Zicsr_csrrw_cg_cp_rd_b26_str)
 #elif defined(V_SUPPORTED)
-  # Check if x26 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x26, Zicsr_csrrw_cg_cp_rd_b26, Zicsr_csrrw_cg_cp_rd_b26_str)
+  # Check if x26 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x26, Zicsr_csrrw_cg_cp_rd_b26, Zicsr_csrrw_cg_cp_rd_b26_str)
 // read back CSR to check updated value
-  csrrs x22, vxsat, x0
-  # Check if x22 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x22, Zicsr_csrrw_cg_cp_rd_b26, Zicsr_csrrw_cg_cp_rd_b26_str)
+  csrrs x18, vxsat, x0
+  # Check if x18 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x18, Zicsr_csrrw_cg_cp_rd_b26, Zicsr_csrrw_cg_cp_rd_b26_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x26 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x26, Zicsr_csrrw_cg_cp_rd_b26, Zicsr_csrrw_cg_cp_rd_b26_str)
+  # Check if x26 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x26, Zicsr_csrrw_cg_cp_rd_b26, Zicsr_csrrw_cg_cp_rd_b26_str)
 // read back CSR to check updated value
-  csrrs x22, mepc, x0
-  # Check if x22 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x22, Zicsr_csrrw_cg_cp_rd_b26, Zicsr_csrrw_cg_cp_rd_b26_str)
+  csrrs x18, mepc, x0
+  # Check if x18 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x18, Zicsr_csrrw_cg_cp_rd_b26, Zicsr_csrrw_cg_cp_rd_b26_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x19, x26, x22
-  sltiu x19, x19, 0x000007FF
-  # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x19, Zicsr_csrrw_cg_cp_rd_b26, Zicsr_csrrw_cg_cp_rd_b26_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x19, instret, x0
-  sub x19, x19, x22
-  sltiu x22, x19, 0x000007FF
-  # Check if x22 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x22, Zicsr_csrrw_cg_cp_rd_b26, Zicsr_csrrw_cg_cp_rd_b26_str)
+  # Check if x26 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x26, Zicsr_csrrw_cg_cp_rd_b26, Zicsr_csrrw_cg_cp_rd_b26_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x27, instret, x0
+  csrrs x18, instret, x0
+  sub x27, x18, x27
+  # Check if x27 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x27, Zicsr_csrrw_cg_cp_rd_b26, Zicsr_csrrw_cg_cp_rd_b26_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x27)
-  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load rs1: x11 = 0x94e4ebe46a7bc024
-  RVTEST_TESTDATA_LOAD_INT(x16, x12) # load temp reg: x12 = 0x23266240e0d49202
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x12
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x12
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x12
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x12, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x30, x2) # load rs1: x2 = 0xae20120d64f2d3f8
+  RVTEST_TESTDATA_LOAD_INT(x30, x23) # load temp reg: x23 = 0x79e63c6abb3cb703
 Zicsr_csrrw_cg_cp_rd_b27:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x27, fflags, x11
+  csrrw x27, fflags, x2
 #elif defined(V_SUPPORTED)
-  csrrw x27, vxsat, x11
+  csrrw x27, vxsat, x2
 #elif !defined(U_SUPPORTED)
-  csrrw x27, mepc, x11
+  csrrw x27, mepc, x2
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x27, instret, x11
+  csrrw x27, instret, x2
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x27 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x27, Zicsr_csrrw_cg_cp_rd_b27, Zicsr_csrrw_cg_cp_rd_b27_str)
+  # Check if x27 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x27, Zicsr_csrrw_cg_cp_rd_b27, Zicsr_csrrw_cg_cp_rd_b27_str)
 // read back CSR to check updated value
-  csrrs x12, fflags, x0
-  # Check if x12 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x12, Zicsr_csrrw_cg_cp_rd_b27, Zicsr_csrrw_cg_cp_rd_b27_str)
+  csrrs x23, fflags, x0
+  # Check if x23 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x23, Zicsr_csrrw_cg_cp_rd_b27, Zicsr_csrrw_cg_cp_rd_b27_str)
 #elif defined(V_SUPPORTED)
-  # Check if x27 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x27, Zicsr_csrrw_cg_cp_rd_b27, Zicsr_csrrw_cg_cp_rd_b27_str)
+  # Check if x27 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x27, Zicsr_csrrw_cg_cp_rd_b27, Zicsr_csrrw_cg_cp_rd_b27_str)
 // read back CSR to check updated value
-  csrrs x12, vxsat, x0
-  # Check if x12 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x12, Zicsr_csrrw_cg_cp_rd_b27, Zicsr_csrrw_cg_cp_rd_b27_str)
+  csrrs x23, vxsat, x0
+  # Check if x23 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x23, Zicsr_csrrw_cg_cp_rd_b27, Zicsr_csrrw_cg_cp_rd_b27_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x27 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x27, Zicsr_csrrw_cg_cp_rd_b27, Zicsr_csrrw_cg_cp_rd_b27_str)
+  # Check if x27 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x27, Zicsr_csrrw_cg_cp_rd_b27, Zicsr_csrrw_cg_cp_rd_b27_str)
 // read back CSR to check updated value
-  csrrs x12, mepc, x0
-  # Check if x12 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x12, Zicsr_csrrw_cg_cp_rd_b27, Zicsr_csrrw_cg_cp_rd_b27_str)
+  csrrs x23, mepc, x0
+  # Check if x23 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x23, Zicsr_csrrw_cg_cp_rd_b27, Zicsr_csrrw_cg_cp_rd_b27_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x9, x27, x12
-  sltiu x9, x9, 0x000007FF
-  # Check if x9 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x9, Zicsr_csrrw_cg_cp_rd_b27, Zicsr_csrrw_cg_cp_rd_b27_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x9, instret, x0
-  sub x9, x9, x12
-  sltiu x12, x9, 0x000007FF
-  # Check if x12 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x12, Zicsr_csrrw_cg_cp_rd_b27, Zicsr_csrrw_cg_cp_rd_b27_str)
+  # Check if x27 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x27, Zicsr_csrrw_cg_cp_rd_b27, Zicsr_csrrw_cg_cp_rd_b27_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x0, instret, x0
+  csrrs x23, instret, x0
+  sub x0, x23, x0
+  # Check if x0 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x0, Zicsr_csrrw_cg_cp_rd_b27, Zicsr_csrrw_cg_cp_rd_b27_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x28)
-  RVTEST_TESTDATA_LOAD_INT(x16, x24) # load rs1: x24 = 0x85e4a2fea22595e4
-  RVTEST_TESTDATA_LOAD_INT(x16, x12) # load temp reg: x12 = 0xa5957c2f0d4ad493
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x12
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x12
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x12
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x12, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x30, x12) # load rs1: x12 = 0x46775bde0091f09e
+  RVTEST_TESTDATA_LOAD_INT(x30, x31) # load temp reg: x31 = 0x61836dc45e2d8457
 Zicsr_csrrw_cg_cp_rd_b28:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x28, fflags, x24
+  csrrw x28, fflags, x12
 #elif defined(V_SUPPORTED)
-  csrrw x28, vxsat, x24
+  csrrw x28, vxsat, x12
 #elif !defined(U_SUPPORTED)
-  csrrw x28, mepc, x24
+  csrrw x28, mepc, x12
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x28, instret, x24
+  csrrw x28, instret, x12
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x28 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x28, Zicsr_csrrw_cg_cp_rd_b28, Zicsr_csrrw_cg_cp_rd_b28_str)
+  # Check if x28 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x28, Zicsr_csrrw_cg_cp_rd_b28, Zicsr_csrrw_cg_cp_rd_b28_str)
 // read back CSR to check updated value
-  csrrs x12, fflags, x0
-  # Check if x12 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x12, Zicsr_csrrw_cg_cp_rd_b28, Zicsr_csrrw_cg_cp_rd_b28_str)
+  csrrs x31, fflags, x0
+  # Check if x31 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x31, Zicsr_csrrw_cg_cp_rd_b28, Zicsr_csrrw_cg_cp_rd_b28_str)
 #elif defined(V_SUPPORTED)
-  # Check if x28 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x28, Zicsr_csrrw_cg_cp_rd_b28, Zicsr_csrrw_cg_cp_rd_b28_str)
+  # Check if x28 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x28, Zicsr_csrrw_cg_cp_rd_b28, Zicsr_csrrw_cg_cp_rd_b28_str)
 // read back CSR to check updated value
-  csrrs x12, vxsat, x0
-  # Check if x12 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x12, Zicsr_csrrw_cg_cp_rd_b28, Zicsr_csrrw_cg_cp_rd_b28_str)
+  csrrs x31, vxsat, x0
+  # Check if x31 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x31, Zicsr_csrrw_cg_cp_rd_b28, Zicsr_csrrw_cg_cp_rd_b28_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x28 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x28, Zicsr_csrrw_cg_cp_rd_b28, Zicsr_csrrw_cg_cp_rd_b28_str)
+  # Check if x28 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x28, Zicsr_csrrw_cg_cp_rd_b28, Zicsr_csrrw_cg_cp_rd_b28_str)
 // read back CSR to check updated value
-  csrrs x12, mepc, x0
-  # Check if x12 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x12, Zicsr_csrrw_cg_cp_rd_b28, Zicsr_csrrw_cg_cp_rd_b28_str)
+  csrrs x31, mepc, x0
+  # Check if x31 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x31, Zicsr_csrrw_cg_cp_rd_b28, Zicsr_csrrw_cg_cp_rd_b28_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x13, x28, x12
-  sltiu x13, x13, 0x000007FF
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rd_b28, Zicsr_csrrw_cg_cp_rd_b28_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x13, instret, x0
-  sub x13, x13, x12
-  sltiu x12, x13, 0x000007FF
-  # Check if x12 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x12, Zicsr_csrrw_cg_cp_rd_b28, Zicsr_csrrw_cg_cp_rd_b28_str)
+  # Check if x28 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x28, Zicsr_csrrw_cg_cp_rd_b28, Zicsr_csrrw_cg_cp_rd_b28_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x24, instret, x0
+  csrrs x31, instret, x0
+  sub x24, x31, x24
+  # Check if x24 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x24, Zicsr_csrrw_cg_cp_rd_b28, Zicsr_csrrw_cg_cp_rd_b28_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x29)
-  RVTEST_TESTDATA_LOAD_INT(x16, x9) # load rs1: x9 = 0x97985352f312b804
-  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load temp reg: x11 = 0x11d83e91a6000417
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x11
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x11
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x11
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x11, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x30, x28) # load rs1: x28 = 0xaa1a42612b83c50d
+  RVTEST_TESTDATA_LOAD_INT(x30, x17) # load temp reg: x17 = 0xc6ef522fbfa38398
 Zicsr_csrrw_cg_cp_rd_b29:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x29, fflags, x9
+  csrrw x29, fflags, x28
 #elif defined(V_SUPPORTED)
-  csrrw x29, vxsat, x9
+  csrrw x29, vxsat, x28
 #elif !defined(U_SUPPORTED)
-  csrrw x29, mepc, x9
+  csrrw x29, mepc, x28
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x29, instret, x9
+  csrrw x29, instret, x28
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x29 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x29, Zicsr_csrrw_cg_cp_rd_b29, Zicsr_csrrw_cg_cp_rd_b29_str)
+  # Check if x29 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x29, Zicsr_csrrw_cg_cp_rd_b29, Zicsr_csrrw_cg_cp_rd_b29_str)
 // read back CSR to check updated value
-  csrrs x11, fflags, x0
-  # Check if x11 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x11, Zicsr_csrrw_cg_cp_rd_b29, Zicsr_csrrw_cg_cp_rd_b29_str)
+  csrrs x17, fflags, x0
+  # Check if x17 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x17, Zicsr_csrrw_cg_cp_rd_b29, Zicsr_csrrw_cg_cp_rd_b29_str)
 #elif defined(V_SUPPORTED)
-  # Check if x29 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x29, Zicsr_csrrw_cg_cp_rd_b29, Zicsr_csrrw_cg_cp_rd_b29_str)
+  # Check if x29 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x29, Zicsr_csrrw_cg_cp_rd_b29, Zicsr_csrrw_cg_cp_rd_b29_str)
 // read back CSR to check updated value
-  csrrs x11, vxsat, x0
-  # Check if x11 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x11, Zicsr_csrrw_cg_cp_rd_b29, Zicsr_csrrw_cg_cp_rd_b29_str)
+  csrrs x17, vxsat, x0
+  # Check if x17 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x17, Zicsr_csrrw_cg_cp_rd_b29, Zicsr_csrrw_cg_cp_rd_b29_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x29 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x29, Zicsr_csrrw_cg_cp_rd_b29, Zicsr_csrrw_cg_cp_rd_b29_str)
+  # Check if x29 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x29, Zicsr_csrrw_cg_cp_rd_b29, Zicsr_csrrw_cg_cp_rd_b29_str)
 // read back CSR to check updated value
-  csrrs x11, mepc, x0
-  # Check if x11 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x11, Zicsr_csrrw_cg_cp_rd_b29, Zicsr_csrrw_cg_cp_rd_b29_str)
+  csrrs x17, mepc, x0
+  # Check if x17 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x17, Zicsr_csrrw_cg_cp_rd_b29, Zicsr_csrrw_cg_cp_rd_b29_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x21, x29, x11
-  sltiu x21, x21, 0x000007FF
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rd_b29, Zicsr_csrrw_cg_cp_rd_b29_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x21, instret, x0
-  sub x21, x21, x11
-  sltiu x11, x21, 0x000007FF
-  # Check if x11 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x11, Zicsr_csrrw_cg_cp_rd_b29, Zicsr_csrrw_cg_cp_rd_b29_str)
-#else
-  #error no CSR known for testing
-#endif
-
-# Testcase cp_rd (Test destination rd = x30)
-  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load rs1: x11 = 0xa9fb2e5014060b3c
-  RVTEST_TESTDATA_LOAD_INT(x16, x17) # load temp reg: x17 = 0x3cea14a003d2c122
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x17
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x17
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x17
-#elif defined(ZICNTR_SUPPORTED)
+  # Check if x29 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x29, Zicsr_csrrw_cg_cp_rd_b29, Zicsr_csrrw_cg_cp_rd_b29_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x2, instret, x0
   csrrs x17, instret, x0
+  sub x2, x17, x2
+  # Check if x2 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x2, Zicsr_csrrw_cg_cp_rd_b29, Zicsr_csrrw_cg_cp_rd_b29_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
+  mv x16, x30 # switch data pointer register to avoid conflict with test
+# Testcase cp_rd (Test destination rd = x30)
+  RVTEST_TESTDATA_LOAD_INT(x16, x10) # load rs1: x10 = 0x23266240e0d49202
+  RVTEST_TESTDATA_LOAD_INT(x16, x9) # load temp reg: x9 = 0x6f5148d44645a8ee
 Zicsr_csrrw_cg_cp_rd_b30:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x30, fflags, x11
+  csrrw x30, fflags, x10
 #elif defined(V_SUPPORTED)
-  csrrw x30, vxsat, x11
+  csrrw x30, vxsat, x10
 #elif !defined(U_SUPPORTED)
-  csrrw x30, mepc, x11
+  csrrw x30, mepc, x10
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x30, instret, x11
+  csrrw x30, instret, x10
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x30 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x30, Zicsr_csrrw_cg_cp_rd_b30, Zicsr_csrrw_cg_cp_rd_b30_str)
+  # Check if x30 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x30, Zicsr_csrrw_cg_cp_rd_b30, Zicsr_csrrw_cg_cp_rd_b30_str)
 // read back CSR to check updated value
-  csrrs x17, fflags, x0
-  # Check if x17 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x17, Zicsr_csrrw_cg_cp_rd_b30, Zicsr_csrrw_cg_cp_rd_b30_str)
+  csrrs x9, fflags, x0
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cp_rd_b30, Zicsr_csrrw_cg_cp_rd_b30_str)
 #elif defined(V_SUPPORTED)
-  # Check if x30 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x30, Zicsr_csrrw_cg_cp_rd_b30, Zicsr_csrrw_cg_cp_rd_b30_str)
+  # Check if x30 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x30, Zicsr_csrrw_cg_cp_rd_b30, Zicsr_csrrw_cg_cp_rd_b30_str)
 // read back CSR to check updated value
-  csrrs x17, vxsat, x0
-  # Check if x17 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x17, Zicsr_csrrw_cg_cp_rd_b30, Zicsr_csrrw_cg_cp_rd_b30_str)
+  csrrs x9, vxsat, x0
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cp_rd_b30, Zicsr_csrrw_cg_cp_rd_b30_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x30 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x30, Zicsr_csrrw_cg_cp_rd_b30, Zicsr_csrrw_cg_cp_rd_b30_str)
+  # Check if x30 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x30, Zicsr_csrrw_cg_cp_rd_b30, Zicsr_csrrw_cg_cp_rd_b30_str)
 // read back CSR to check updated value
-  csrrs x17, mepc, x0
-  # Check if x17 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x17, Zicsr_csrrw_cg_cp_rd_b30, Zicsr_csrrw_cg_cp_rd_b30_str)
+  csrrs x9, mepc, x0
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cp_rd_b30, Zicsr_csrrw_cg_cp_rd_b30_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x21, x30, x17
-  sltiu x21, x21, 0x000007FF
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rd_b30, Zicsr_csrrw_cg_cp_rd_b30_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x21, instret, x0
-  sub x21, x21, x17
-  sltiu x17, x21, 0x000007FF
-  # Check if x17 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x17, Zicsr_csrrw_cg_cp_rd_b30, Zicsr_csrrw_cg_cp_rd_b30_str)
+  # Check if x30 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x30, Zicsr_csrrw_cg_cp_rd_b30, Zicsr_csrrw_cg_cp_rd_b30_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x26, instret, x0
+  csrrs x9, instret, x0
+  sub x26, x9, x26
+  # Check if x26 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x26, Zicsr_csrrw_cg_cp_rd_b30, Zicsr_csrrw_cg_cp_rd_b30_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rd (Test destination rd = x31)
-  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load rs1: x11 = 0x54f51d082f04a338
-  RVTEST_TESTDATA_LOAD_INT(x16, x6) # load temp reg: x6 = 0x02ec78b727e99781
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x6
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x6
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x6
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x6, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x24) # load rs1: x24 = 0x85e4a2fea22595e4
+  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load temp reg: x11 = 0xa5957c2f0d4ad493
 Zicsr_csrrw_cg_cp_rd_b31:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x31, fflags, x11
+  csrrw x31, fflags, x24
 #elif defined(V_SUPPORTED)
-  csrrw x31, vxsat, x11
+  csrrw x31, vxsat, x24
 #elif !defined(U_SUPPORTED)
-  csrrw x31, mepc, x11
+  csrrw x31, mepc, x24
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x31, instret, x11
+  csrrw x31, instret, x24
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x31 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x31, Zicsr_csrrw_cg_cp_rd_b31, Zicsr_csrrw_cg_cp_rd_b31_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x31, Zicsr_csrrw_cg_cp_rd_b31, Zicsr_csrrw_cg_cp_rd_b31_str)
 // read back CSR to check updated value
-  csrrs x6, fflags, x0
-  # Check if x6 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x6, Zicsr_csrrw_cg_cp_rd_b31, Zicsr_csrrw_cg_cp_rd_b31_str)
+  csrrs x11, fflags, x0
+  # Check if x11 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x11, Zicsr_csrrw_cg_cp_rd_b31, Zicsr_csrrw_cg_cp_rd_b31_str)
 #elif defined(V_SUPPORTED)
-  # Check if x31 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x31, Zicsr_csrrw_cg_cp_rd_b31, Zicsr_csrrw_cg_cp_rd_b31_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x31, Zicsr_csrrw_cg_cp_rd_b31, Zicsr_csrrw_cg_cp_rd_b31_str)
 // read back CSR to check updated value
-  csrrs x6, vxsat, x0
-  # Check if x6 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x6, Zicsr_csrrw_cg_cp_rd_b31, Zicsr_csrrw_cg_cp_rd_b31_str)
+  csrrs x11, vxsat, x0
+  # Check if x11 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x11, Zicsr_csrrw_cg_cp_rd_b31, Zicsr_csrrw_cg_cp_rd_b31_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x31 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x31, Zicsr_csrrw_cg_cp_rd_b31, Zicsr_csrrw_cg_cp_rd_b31_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x31, Zicsr_csrrw_cg_cp_rd_b31, Zicsr_csrrw_cg_cp_rd_b31_str)
 // read back CSR to check updated value
-  csrrs x6, mepc, x0
-  # Check if x6 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x6, Zicsr_csrrw_cg_cp_rd_b31, Zicsr_csrrw_cg_cp_rd_b31_str)
+  csrrs x11, mepc, x0
+  # Check if x11 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x11, Zicsr_csrrw_cg_cp_rd_b31, Zicsr_csrrw_cg_cp_rd_b31_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x24, x31, x6
-  sltiu x24, x24, 0x000007FF
-  # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x24, Zicsr_csrrw_cg_cp_rd_b31, Zicsr_csrrw_cg_cp_rd_b31_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x24, instret, x0
-  sub x24, x24, x6
-  sltiu x6, x24, 0x000007FF
-  # Check if x6 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x6, Zicsr_csrrw_cg_cp_rd_b31, Zicsr_csrrw_cg_cp_rd_b31_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x31, Zicsr_csrrw_cg_cp_rd_b31, Zicsr_csrrw_cg_cp_rd_b31_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x12, instret, x0
+  csrrs x11, instret, x0
+  sub x12, x11, x12
+  # Check if x12 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x12, Zicsr_csrrw_cg_cp_rd_b31, Zicsr_csrrw_cg_cp_rd_b31_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 /////////////////////////////////
@@ -4351,1073 +3324,817 @@ Zicsr_csrrw_cg_cp_rd_b31:
 # Testcase cp_rs1_edges (Test source rs1 value = 0x0000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x16, x17) # load rs1: x17 = 0x0000000000000000
   RVTEST_TESTDATA_LOAD_INT(x16, x21) # load temp reg: x21 = 0x029351c6b1be2258
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x21
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x21
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x21
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x21, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
 Zicsr_csrrw_cg_cp_rs1_edges_0x0:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x14, fflags, x17
+  csrrw x13, fflags, x17
 #elif defined(V_SUPPORTED)
-  csrrw x14, vxsat, x17
+  csrrw x13, vxsat, x17
 #elif !defined(U_SUPPORTED)
-  csrrw x14, mepc, x17
+  csrrw x13, mepc, x17
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x14, instret, x17
+  csrrw x13, instret, x17
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_edges_0x0, Zicsr_csrrw_cg_cp_rs1_edges_0x0_str)
+  # Check if x13 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x13, Zicsr_csrrw_cg_cp_rs1_edges_0x0, Zicsr_csrrw_cg_cp_rs1_edges_0x0_str)
 // read back CSR to check updated value
   csrrs x21, fflags, x0
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_edges_0x0, Zicsr_csrrw_cg_cp_rs1_edges_0x0_str)
+  # Check if x21 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x21, Zicsr_csrrw_cg_cp_rs1_edges_0x0, Zicsr_csrrw_cg_cp_rs1_edges_0x0_str)
 #elif defined(V_SUPPORTED)
-  # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_edges_0x0, Zicsr_csrrw_cg_cp_rs1_edges_0x0_str)
+  # Check if x13 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x13, Zicsr_csrrw_cg_cp_rs1_edges_0x0, Zicsr_csrrw_cg_cp_rs1_edges_0x0_str)
 // read back CSR to check updated value
   csrrs x21, vxsat, x0
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_edges_0x0, Zicsr_csrrw_cg_cp_rs1_edges_0x0_str)
+  # Check if x21 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x21, Zicsr_csrrw_cg_cp_rs1_edges_0x0, Zicsr_csrrw_cg_cp_rs1_edges_0x0_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_edges_0x0, Zicsr_csrrw_cg_cp_rs1_edges_0x0_str)
+  # Check if x13 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x13, Zicsr_csrrw_cg_cp_rs1_edges_0x0, Zicsr_csrrw_cg_cp_rs1_edges_0x0_str)
 // read back CSR to check updated value
   csrrs x21, mepc, x0
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_edges_0x0, Zicsr_csrrw_cg_cp_rs1_edges_0x0_str)
+  # Check if x21 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x21, Zicsr_csrrw_cg_cp_rs1_edges_0x0, Zicsr_csrrw_cg_cp_rs1_edges_0x0_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x19, x14, x21
-  sltiu x19, x19, 0x000007FF
-  # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_edges_0x0, Zicsr_csrrw_cg_cp_rs1_edges_0x0_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
+  # Check if x13 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x13, Zicsr_csrrw_cg_cp_rs1_edges_0x0, Zicsr_csrrw_cg_cp_rs1_edges_0x0_str)
+// read instret twice and record the difference to prove it ticks
   csrrs x19, instret, x0
-  sub x19, x19, x21
-  sltiu x21, x19, 0x000007FF
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_edges_0x0, Zicsr_csrrw_cg_cp_rs1_edges_0x0_str)
+  csrrs x21, instret, x0
+  sub x19, x21, x19
+  # Check if x19 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x19, Zicsr_csrrw_cg_cp_rs1_edges_0x0, Zicsr_csrrw_cg_cp_rs1_edges_0x0_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x16, x26) # load rs1: x26 = 0x0000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x16, x28) # load temp reg: x28 = 0x598f99939222cedf
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x28
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x28
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x28
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x28, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x27) # load rs1: x27 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x16, x6) # load temp reg: x6 = 0xf8d3648ed98f9993
 Zicsr_csrrw_cg_cp_rs1_edges_0x1:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x21, fflags, x26
+  csrrw x11, fflags, x27
 #elif defined(V_SUPPORTED)
-  csrrw x21, vxsat, x26
+  csrrw x11, vxsat, x27
 #elif !defined(U_SUPPORTED)
-  csrrw x21, mepc, x26
+  csrrw x11, mepc, x27
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x21, instret, x26
+  csrrw x11, instret, x27
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_edges_0x1, Zicsr_csrrw_cg_cp_rs1_edges_0x1_str)
+  # Check if x11 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x11, Zicsr_csrrw_cg_cp_rs1_edges_0x1, Zicsr_csrrw_cg_cp_rs1_edges_0x1_str)
 // read back CSR to check updated value
-  csrrs x28, fflags, x0
-  # Check if x28 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_edges_0x1, Zicsr_csrrw_cg_cp_rs1_edges_0x1_str)
+  csrrs x6, fflags, x0
+  # Check if x6 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x6, Zicsr_csrrw_cg_cp_rs1_edges_0x1, Zicsr_csrrw_cg_cp_rs1_edges_0x1_str)
 #elif defined(V_SUPPORTED)
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_edges_0x1, Zicsr_csrrw_cg_cp_rs1_edges_0x1_str)
+  # Check if x11 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x11, Zicsr_csrrw_cg_cp_rs1_edges_0x1, Zicsr_csrrw_cg_cp_rs1_edges_0x1_str)
 // read back CSR to check updated value
-  csrrs x28, vxsat, x0
-  # Check if x28 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_edges_0x1, Zicsr_csrrw_cg_cp_rs1_edges_0x1_str)
+  csrrs x6, vxsat, x0
+  # Check if x6 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x6, Zicsr_csrrw_cg_cp_rs1_edges_0x1, Zicsr_csrrw_cg_cp_rs1_edges_0x1_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_edges_0x1, Zicsr_csrrw_cg_cp_rs1_edges_0x1_str)
+  # Check if x11 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x11, Zicsr_csrrw_cg_cp_rs1_edges_0x1, Zicsr_csrrw_cg_cp_rs1_edges_0x1_str)
 // read back CSR to check updated value
-  csrrs x28, mepc, x0
-  # Check if x28 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_edges_0x1, Zicsr_csrrw_cg_cp_rs1_edges_0x1_str)
+  csrrs x6, mepc, x0
+  # Check if x6 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x6, Zicsr_csrrw_cg_cp_rs1_edges_0x1, Zicsr_csrrw_cg_cp_rs1_edges_0x1_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x3, x21, x28
-  sltiu x3, x3, 0x000007FF
-  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x3, Zicsr_csrrw_cg_cp_rs1_edges_0x1, Zicsr_csrrw_cg_cp_rs1_edges_0x1_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x3, instret, x0
-  sub x3, x3, x28
-  sltiu x28, x3, 0x000007FF
-  # Check if x28 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x28, Zicsr_csrrw_cg_cp_rs1_edges_0x1, Zicsr_csrrw_cg_cp_rs1_edges_0x1_str)
+  # Check if x11 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x11, Zicsr_csrrw_cg_cp_rs1_edges_0x1, Zicsr_csrrw_cg_cp_rs1_edges_0x1_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x20, instret, x0
+  csrrs x6, instret, x0
+  sub x20, x6, x20
+  # Check if x20 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x20, Zicsr_csrrw_cg_cp_rs1_edges_0x1, Zicsr_csrrw_cg_cp_rs1_edges_0x1_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x16, x14) # load rs1: x14 = 0x0000000000000002
-  RVTEST_TESTDATA_LOAD_INT(x16, x25) # load temp reg: x25 = 0x28423c7fdb94ffdf
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x25
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x25
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x25
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x25, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x2) # load rs1: x2 = 0x0000000000000002
+  RVTEST_TESTDATA_LOAD_INT(x16, x9) # load temp reg: x9 = 0xba4690ddf67f4626
 Zicsr_csrrw_cg_cp_rs1_edges_0x2:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x11, fflags, x14
+  csrrw x31, fflags, x2
 #elif defined(V_SUPPORTED)
-  csrrw x11, vxsat, x14
+  csrrw x31, vxsat, x2
 #elif !defined(U_SUPPORTED)
-  csrrw x11, mepc, x14
+  csrrw x31, mepc, x2
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x11, instret, x14
+  csrrw x31, instret, x2
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x11 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x11, Zicsr_csrrw_cg_cp_rs1_edges_0x2, Zicsr_csrrw_cg_cp_rs1_edges_0x2_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x31, Zicsr_csrrw_cg_cp_rs1_edges_0x2, Zicsr_csrrw_cg_cp_rs1_edges_0x2_str)
 // read back CSR to check updated value
-  csrrs x25, fflags, x0
-  # Check if x25 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_edges_0x2, Zicsr_csrrw_cg_cp_rs1_edges_0x2_str)
+  csrrs x9, fflags, x0
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cp_rs1_edges_0x2, Zicsr_csrrw_cg_cp_rs1_edges_0x2_str)
 #elif defined(V_SUPPORTED)
-  # Check if x11 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x11, Zicsr_csrrw_cg_cp_rs1_edges_0x2, Zicsr_csrrw_cg_cp_rs1_edges_0x2_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x31, Zicsr_csrrw_cg_cp_rs1_edges_0x2, Zicsr_csrrw_cg_cp_rs1_edges_0x2_str)
 // read back CSR to check updated value
-  csrrs x25, vxsat, x0
-  # Check if x25 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_edges_0x2, Zicsr_csrrw_cg_cp_rs1_edges_0x2_str)
+  csrrs x9, vxsat, x0
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cp_rs1_edges_0x2, Zicsr_csrrw_cg_cp_rs1_edges_0x2_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x11 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x11, Zicsr_csrrw_cg_cp_rs1_edges_0x2, Zicsr_csrrw_cg_cp_rs1_edges_0x2_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x31, Zicsr_csrrw_cg_cp_rs1_edges_0x2, Zicsr_csrrw_cg_cp_rs1_edges_0x2_str)
 // read back CSR to check updated value
-  csrrs x25, mepc, x0
-  # Check if x25 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_edges_0x2, Zicsr_csrrw_cg_cp_rs1_edges_0x2_str)
+  csrrs x9, mepc, x0
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cp_rs1_edges_0x2, Zicsr_csrrw_cg_cp_rs1_edges_0x2_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x7, x11, x25
-  sltiu x7, x7, 0x000007FF
-  # Check if x7 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x7, Zicsr_csrrw_cg_cp_rs1_edges_0x2, Zicsr_csrrw_cg_cp_rs1_edges_0x2_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x7, instret, x0
-  sub x7, x7, x25
-  sltiu x25, x7, 0x000007FF
-  # Check if x25 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_edges_0x2, Zicsr_csrrw_cg_cp_rs1_edges_0x2_str)
+  # Check if x31 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x31, Zicsr_csrrw_cg_cp_rs1_edges_0x2, Zicsr_csrrw_cg_cp_rs1_edges_0x2_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x24, instret, x0
+  csrrs x9, instret, x0
+  sub x24, x9, x24
+  # Check if x24 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x24, Zicsr_csrrw_cg_cp_rs1_edges_0x2, Zicsr_csrrw_cg_cp_rs1_edges_0x2_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x8000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x16, x7) # load rs1: x7 = 0x8000000000000000
-  RVTEST_TESTDATA_LOAD_INT(x16, x27) # load temp reg: x27 = 0x0bea3b74ef73ad9a
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x27
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x27
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x27
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x27, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x1) # load rs1: x1 = 0x8000000000000000
+  RVTEST_TESTDATA_LOAD_INT(x16, x9) # load temp reg: x9 = 0xee0d530a42458851
 Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x18, fflags, x7
+  csrrw x26, fflags, x1
 #elif defined(V_SUPPORTED)
-  csrrw x18, vxsat, x7
+  csrrw x26, vxsat, x1
 #elif !defined(U_SUPPORTED)
-  csrrw x18, mepc, x7
+  csrrw x26, mepc, x1
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x18, instret, x7
+  csrrw x26, instret, x1
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x18 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x18, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000_str)
+  # Check if x26 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x26, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000_str)
 // read back CSR to check updated value
-  csrrs x27, fflags, x0
-  # Check if x27 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x27, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000_str)
+  csrrs x9, fflags, x0
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000_str)
 #elif defined(V_SUPPORTED)
-  # Check if x18 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x18, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000_str)
+  # Check if x26 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x26, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000_str)
 // read back CSR to check updated value
-  csrrs x27, vxsat, x0
-  # Check if x27 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x27, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000_str)
+  csrrs x9, vxsat, x0
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x18 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x18, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000_str)
+  # Check if x26 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x26, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000_str)
 // read back CSR to check updated value
-  csrrs x27, mepc, x0
-  # Check if x27 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x27, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000_str)
+  csrrs x9, mepc, x0
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x14, x18, x27
-  sltiu x14, x14, 0x000007FF
-  # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x14, instret, x0
-  sub x14, x14, x27
-  sltiu x27, x14, 0x000007FF
-  # Check if x27 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x27, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000_str)
+  # Check if x26 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x26, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x27, instret, x0
+  csrrs x9, instret, x0
+  sub x27, x9, x27
+  # Check if x27 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x27, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000000_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x8000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x16, x14) # load rs1: x14 = 0x8000000000000001
-  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load temp reg: x13 = 0x08f5765199ea06e2
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x13
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x13
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x13
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x13, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load rs1: x23 = 0x8000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x16, x14) # load temp reg: x14 = 0x1fd280cb4e9af263
 Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x19, fflags, x14
+  csrrw x9, fflags, x23
 #elif defined(V_SUPPORTED)
-  csrrw x19, vxsat, x14
+  csrrw x9, vxsat, x23
 #elif !defined(U_SUPPORTED)
-  csrrw x19, mepc, x14
+  csrrw x9, mepc, x23
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x19, instret, x14
+  csrrw x9, instret, x23
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001_str)
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001_str)
 // read back CSR to check updated value
-  csrrs x13, fflags, x0
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001_str)
+  csrrs x14, fflags, x0
+  # Check if x14 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x14, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001_str)
 #elif defined(V_SUPPORTED)
-  # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001_str)
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001_str)
 // read back CSR to check updated value
-  csrrs x13, vxsat, x0
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001_str)
+  csrrs x14, vxsat, x0
+  # Check if x14 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x14, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001_str)
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001_str)
 // read back CSR to check updated value
-  csrrs x13, mepc, x0
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001_str)
+  csrrs x14, mepc, x0
+  # Check if x14 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x14, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x8, x19, x13
-  sltiu x8, x8, 0x000007FF
-  # Check if x8 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x8, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x8, instret, x0
-  sub x8, x8, x13
-  sltiu x13, x8, 0x000007FF
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001_str)
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x26, instret, x0
+  csrrs x14, instret, x0
+  sub x26, x14, x26
+  # Check if x26 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x26, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001, Zicsr_csrrw_cg_cp_rs1_edges_0x8000000000000001_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x16, x7) # load rs1: x7 = 0x7fffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x16, x9) # load temp reg: x9 = 0x7c887d67da54951e
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x9
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x9
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x9
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x9, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x10) # load rs1: x10 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x16, x9) # load temp reg: x9 = 0xdec4739e705ae690
 Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x15, fflags, x7
+  csrrw x22, fflags, x10
 #elif defined(V_SUPPORTED)
-  csrrw x15, vxsat, x7
+  csrrw x22, vxsat, x10
 #elif !defined(U_SUPPORTED)
-  csrrw x15, mepc, x7
+  csrrw x22, mepc, x10
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x15, instret, x7
+  csrrw x22, instret, x10
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff_str)
+  # Check if x22 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x22, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff_str)
 // read back CSR to check updated value
   csrrs x9, fflags, x0
-  # Check if x9 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x9, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff_str)
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff_str)
 #elif defined(V_SUPPORTED)
-  # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff_str)
+  # Check if x22 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x22, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff_str)
 // read back CSR to check updated value
   csrrs x9, vxsat, x0
-  # Check if x9 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x9, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff_str)
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff_str)
+  # Check if x22 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x22, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff_str)
 // read back CSR to check updated value
   csrrs x9, mepc, x0
-  # Check if x9 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x9, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff_str)
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x13, x15, x9
-  sltiu x13, x13, 0x000007FF
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x13, instret, x0
-  sub x13, x13, x9
-  sltiu x9, x13, 0x000007FF
-  # Check if x9 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x9, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff_str)
+  # Check if x22 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x22, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x5, instret, x0
+  csrrs x9, instret, x0
+  sub x5, x9, x5
+  # Check if x5 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x5, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0x7fffffffffffffff_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x7ffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load rs1: x30 = 0x7ffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x16, x7) # load temp reg: x7 = 0x2f861e1a073ea01c
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x7
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x7
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x7
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x7, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x12) # load rs1: x12 = 0x7ffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x16, x21) # load temp reg: x21 = 0xa24964e1c6c38df9
 Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x29, fflags, x30
+  csrrw x1, fflags, x12
 #elif defined(V_SUPPORTED)
-  csrrw x29, vxsat, x30
+  csrrw x1, vxsat, x12
 #elif !defined(U_SUPPORTED)
-  csrrw x29, mepc, x30
+  csrrw x1, mepc, x12
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x29, instret, x30
+  csrrw x1, instret, x12
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x29 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe_str)
+  # Check if x1 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x1, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe_str)
 // read back CSR to check updated value
-  csrrs x7, fflags, x0
-  # Check if x7 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x7, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe_str)
+  csrrs x21, fflags, x0
+  # Check if x21 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x21, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe_str)
 #elif defined(V_SUPPORTED)
-  # Check if x29 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe_str)
+  # Check if x1 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x1, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe_str)
 // read back CSR to check updated value
-  csrrs x7, vxsat, x0
-  # Check if x7 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x7, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe_str)
+  csrrs x21, vxsat, x0
+  # Check if x21 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x21, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x29 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe_str)
+  # Check if x1 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x1, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe_str)
 // read back CSR to check updated value
-  csrrs x7, mepc, x0
-  # Check if x7 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x7, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe_str)
+  csrrs x21, mepc, x0
+  # Check if x21 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x21, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x19, x29, x7
-  sltiu x19, x19, 0x000007FF
-  # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x19, instret, x0
-  sub x19, x19, x7
-  sltiu x7, x19, 0x000007FF
-  # Check if x7 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x7, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe_str)
+  # Check if x1 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x1, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x28, instret, x0
+  csrrs x21, instret, x0
+  sub x28, x21, x28
+  # Check if x28 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x28, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0x7ffffffffffffffe_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load rs1: x11 = 0xffffffffffffffff
-  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load temp reg: x3 = 0x2ba29c1f1ed5a9e6
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x3
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x3
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x3
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x3, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x20) # load rs1: x20 = 0xffffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x16, x28) # load temp reg: x28 = 0x447667ed5a25a594
 Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x13, fflags, x11
+  csrrw x9, fflags, x20
 #elif defined(V_SUPPORTED)
-  csrrw x13, vxsat, x11
+  csrrw x9, vxsat, x20
 #elif !defined(U_SUPPORTED)
-  csrrw x13, mepc, x11
+  csrrw x9, mepc, x20
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x13, instret, x11
+  csrrw x9, instret, x20
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff_str)
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff_str)
 // read back CSR to check updated value
-  csrrs x3, fflags, x0
-  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x3, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff_str)
+  csrrs x28, fflags, x0
+  # Check if x28 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x28, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff_str)
 #elif defined(V_SUPPORTED)
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff_str)
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff_str)
 // read back CSR to check updated value
-  csrrs x3, vxsat, x0
-  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x3, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff_str)
+  csrrs x28, vxsat, x0
+  # Check if x28 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x28, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff_str)
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff_str)
 // read back CSR to check updated value
-  csrrs x3, mepc, x0
-  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x3, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff_str)
+  csrrs x28, mepc, x0
+  # Check if x28 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x28, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x24, x13, x3
-  sltiu x24, x24, 0x000007FF
-  # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x24, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x24, instret, x0
-  sub x24, x24, x3
-  sltiu x3, x24, 0x000007FF
-  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x3, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff_str)
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x10, instret, x0
+  csrrs x28, instret, x0
+  sub x10, x28, x10
+  # Check if x10 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x10, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffffffffffff_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load rs1: x11 = 0xfffffffffffffffe
-  RVTEST_TESTDATA_LOAD_INT(x16, x1) # load temp reg: x1 = 0x44854a51d812ccb0
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x1
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x1
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x1
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x1, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x5) # load rs1: x5 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x16, x28) # load temp reg: x28 = 0x0c30a5eb4cbce927
 Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x13, fflags, x11
+  csrrw x3, fflags, x5
 #elif defined(V_SUPPORTED)
-  csrrw x13, vxsat, x11
+  csrrw x3, vxsat, x5
 #elif !defined(U_SUPPORTED)
-  csrrw x13, mepc, x11
+  csrrw x3, mepc, x5
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x13, instret, x11
+  csrrw x3, instret, x5
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe_str)
+  # Check if x3 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x3, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe_str)
 // read back CSR to check updated value
-  csrrs x1, fflags, x0
-  # Check if x1 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x1, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe_str)
+  csrrs x28, fflags, x0
+  # Check if x28 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x28, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe_str)
 #elif defined(V_SUPPORTED)
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe_str)
+  # Check if x3 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x3, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe_str)
 // read back CSR to check updated value
-  csrrs x1, vxsat, x0
-  # Check if x1 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x1, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe_str)
+  csrrs x28, vxsat, x0
+  # Check if x28 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x28, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe_str)
+  # Check if x3 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x3, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe_str)
 // read back CSR to check updated value
-  csrrs x1, mepc, x0
-  # Check if x1 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x1, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe_str)
+  csrrs x28, mepc, x0
+  # Check if x28 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x28, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x21, x13, x1
-  sltiu x21, x21, 0x000007FF
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x21, instret, x0
-  sub x21, x21, x1
-  sltiu x1, x21, 0x000007FF
-  # Check if x1 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x1, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe_str)
+  # Check if x3 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x3, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x30, instret, x0
+  csrrs x28, instret, x0
+  sub x30, x28, x30
+  # Check if x30 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x30, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffffffffffe_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x16, x31) # load rs1: x31 = 0x5bbc887763ae86f2
-  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load temp reg: x23 = 0x222b1687909629fa
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x23
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x23
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x23
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x23, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load rs1: x13 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load temp reg: x11 = 0x77ee96a0ffaca932
 Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x21, fflags, x31
+  csrrw x6, fflags, x13
 #elif defined(V_SUPPORTED)
-  csrrw x21, vxsat, x31
+  csrrw x6, vxsat, x13
 #elif !defined(U_SUPPORTED)
-  csrrw x21, mepc, x31
+  csrrw x6, mepc, x13
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x21, instret, x31
+  csrrw x6, instret, x13
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2_str)
+  # Check if x6 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x6, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2_str)
 // read back CSR to check updated value
-  csrrs x23, fflags, x0
-  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2_str)
+  csrrs x11, fflags, x0
+  # Check if x11 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x11, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2_str)
 #elif defined(V_SUPPORTED)
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2_str)
+  # Check if x6 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x6, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2_str)
 // read back CSR to check updated value
-  csrrs x23, vxsat, x0
-  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2_str)
+  csrrs x11, vxsat, x0
+  # Check if x11 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x11, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x21 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x21, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2_str)
+  # Check if x6 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x6, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2_str)
 // read back CSR to check updated value
-  csrrs x23, mepc, x0
-  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2_str)
+  csrrs x11, mepc, x0
+  # Check if x11 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x11, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x15, x21, x23
-  sltiu x15, x15, 0x000007FF
-  # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x15, instret, x0
-  sub x15, x15, x23
-  sltiu x23, x15, 0x000007FF
-  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2_str)
+  # Check if x6 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x6, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x27, instret, x0
+  csrrs x11, instret, x0
+  sub x27, x11, x27
+  # Check if x27 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x27, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2, Zicsr_csrrw_cg_cp_rs1_edges_0x5bbc887763ae86f2_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0xaaaaaaaaaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load rs1: x15 = 0xaaaaaaaaaaaaaaaa
-  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load temp reg: x23 = 0x33de1c56053af44b
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x23
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x23
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x23
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x23, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load rs1: x23 = 0xaaaaaaaaaaaaaaaa
+  RVTEST_TESTDATA_LOAD_INT(x16, x21) # load temp reg: x21 = 0x1381b4699e8f9d1a
 Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x18, fflags, x15
+  csrrw x12, fflags, x23
 #elif defined(V_SUPPORTED)
-  csrrw x18, vxsat, x15
+  csrrw x12, vxsat, x23
 #elif !defined(U_SUPPORTED)
-  csrrw x18, mepc, x15
+  csrrw x12, mepc, x23
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x18, instret, x15
+  csrrw x12, instret, x23
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x18 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x18, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str)
+  # Check if x12 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x12, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str)
 // read back CSR to check updated value
-  csrrs x23, fflags, x0
-  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str)
+  csrrs x21, fflags, x0
+  # Check if x21 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x21, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str)
 #elif defined(V_SUPPORTED)
-  # Check if x18 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x18, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str)
+  # Check if x12 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x12, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str)
 // read back CSR to check updated value
-  csrrs x23, vxsat, x0
-  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str)
+  csrrs x21, vxsat, x0
+  # Check if x21 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x21, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x18 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x18, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str)
+  # Check if x12 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x12, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str)
 // read back CSR to check updated value
-  csrrs x23, mepc, x0
-  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str)
+  csrrs x21, mepc, x0
+  # Check if x21 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x21, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x8, x18, x23
-  sltiu x8, x8, 0x000007FF
-  # Check if x8 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x8, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x8, instret, x0
-  sub x8, x8, x23
-  sltiu x23, x8, 0x000007FF
-  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str)
+  # Check if x12 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x12, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x30, instret, x0
+  csrrs x21, instret, x0
+  sub x30, x21, x30
+  # Check if x30 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x30, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa, Zicsr_csrrw_cg_cp_rs1_edges_0xaaaaaaaaaaaaaaaa_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x16, x2) # load rs1: x2 = 0x5555555555555555
-  RVTEST_TESTDATA_LOAD_INT(x16, x29) # load temp reg: x29 = 0x87c68ff61d39af52
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x29
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x29
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x29
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x29, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load rs1: x11 = 0x5555555555555555
+  RVTEST_TESTDATA_LOAD_INT(x16, x4) # load temp reg: x4 = 0xb5f4bda1f1aed341
 Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x13, fflags, x2
+  csrrw x24, fflags, x11
 #elif defined(V_SUPPORTED)
-  csrrw x13, vxsat, x2
+  csrrw x24, vxsat, x11
 #elif !defined(U_SUPPORTED)
-  csrrw x13, mepc, x2
+  csrrw x24, mepc, x11
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x13, instret, x2
+  csrrw x24, instret, x11
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555_str)
+  # Check if x24 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x24, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555_str)
 // read back CSR to check updated value
-  csrrs x29, fflags, x0
-  # Check if x29 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555_str)
+  csrrs x4, fflags, x0
+  # Check if x4 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x4, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555_str)
 #elif defined(V_SUPPORTED)
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555_str)
+  # Check if x24 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x24, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555_str)
 // read back CSR to check updated value
-  csrrs x29, vxsat, x0
-  # Check if x29 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555_str)
+  csrrs x4, vxsat, x0
+  # Check if x4 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x4, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555_str)
+  # Check if x24 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x24, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555_str)
 // read back CSR to check updated value
-  csrrs x29, mepc, x0
-  # Check if x29 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555_str)
+  csrrs x4, mepc, x0
+  # Check if x4 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x4, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x31, x13, x29
-  sltiu x31, x31, 0x000007FF
-  # Check if x31 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x31, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x31, instret, x0
-  sub x31, x31, x29
-  sltiu x29, x31, 0x000007FF
-  # Check if x29 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555_str)
+  # Check if x24 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x24, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x25, instret, x0
+  csrrs x4, instret, x0
+  sub x25, x4, x25
+  # Check if x25 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x25, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555, Zicsr_csrrw_cg_cp_rs1_edges_0x5555555555555555_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000000ffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x16, x19) # load rs1: x19 = 0x00000000ffffffff
-  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load temp reg: x13 = 0x8d7a7bb4eac3668c
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x13
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x13
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x13
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x13, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x1) # load rs1: x1 = 0x00000000ffffffff
+  RVTEST_TESTDATA_LOAD_INT(x16, x20) # load temp reg: x20 = 0xe51171acb6a6e44c
 Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x17, fflags, x19
+  csrrw x29, fflags, x1
 #elif defined(V_SUPPORTED)
-  csrrw x17, vxsat, x19
+  csrrw x29, vxsat, x1
 #elif !defined(U_SUPPORTED)
-  csrrw x17, mepc, x19
+  csrrw x29, mepc, x1
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x17, instret, x19
+  csrrw x29, instret, x1
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x17 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x17, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff_str)
+  # Check if x29 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x29, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff_str)
 // read back CSR to check updated value
-  csrrs x13, fflags, x0
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff_str)
+  csrrs x20, fflags, x0
+  # Check if x20 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x20, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff_str)
 #elif defined(V_SUPPORTED)
-  # Check if x17 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x17, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff_str)
+  # Check if x29 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x29, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff_str)
 // read back CSR to check updated value
-  csrrs x13, vxsat, x0
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff_str)
+  csrrs x20, vxsat, x0
+  # Check if x20 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x20, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x17 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x17, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff_str)
+  # Check if x29 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x29, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff_str)
 // read back CSR to check updated value
-  csrrs x13, mepc, x0
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff_str)
+  csrrs x20, mepc, x0
+  # Check if x20 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x20, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x15, x17, x13
-  sltiu x15, x15, 0x000007FF
-  # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x15, instret, x0
-  sub x15, x15, x13
-  sltiu x13, x15, 0x000007FF
-  # Check if x13 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x13, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff_str)
+  # Check if x29 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x29, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x22, instret, x0
+  csrrs x20, instret, x0
+  sub x22, x20, x22
+  # Check if x22 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x22, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff, Zicsr_csrrw_cg_cp_rs1_edges_0xffffffff_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x16, x21) # load rs1: x21 = 0x00000000fffffffe
-  RVTEST_TESTDATA_LOAD_INT(x16, x20) # load temp reg: x20 = 0xc4d5859ad11439f8
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x20
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x20
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x20
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x20, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load rs1: x22 = 0x00000000fffffffe
+  RVTEST_TESTDATA_LOAD_INT(x16, x27) # load temp reg: x27 = 0x83b40afd9ca03615
 Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x25, fflags, x21
+  csrrw x30, fflags, x22
 #elif defined(V_SUPPORTED)
-  csrrw x25, vxsat, x21
+  csrrw x30, vxsat, x22
 #elif !defined(U_SUPPORTED)
-  csrrw x25, mepc, x21
+  csrrw x30, mepc, x22
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x25, instret, x21
+  csrrw x30, instret, x22
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x25 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe_str)
+  # Check if x30 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x30, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe_str)
 // read back CSR to check updated value
-  csrrs x20, fflags, x0
-  # Check if x20 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x20, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe_str)
+  csrrs x27, fflags, x0
+  # Check if x27 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x27, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe_str)
 #elif defined(V_SUPPORTED)
-  # Check if x25 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe_str)
+  # Check if x30 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x30, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe_str)
 // read back CSR to check updated value
-  csrrs x20, vxsat, x0
-  # Check if x20 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x20, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe_str)
+  csrrs x27, vxsat, x0
+  # Check if x27 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x27, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x25 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe_str)
+  # Check if x30 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x30, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe_str)
 // read back CSR to check updated value
-  csrrs x20, mepc, x0
-  # Check if x20 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x20, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe_str)
+  csrrs x27, mepc, x0
+  # Check if x27 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x27, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x14, x25, x20
-  sltiu x14, x14, 0x000007FF
-  # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x14, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x14, instret, x0
-  sub x14, x14, x20
-  sltiu x20, x14, 0x000007FF
-  # Check if x20 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x20, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe_str)
+  # Check if x30 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x30, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x24, instret, x0
+  csrrs x27, instret, x0
+  sub x24, x27, x24
+  # Check if x24 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x24, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe, Zicsr_csrrw_cg_cp_rs1_edges_0xfffffffe_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x0000000100000000)
-  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load rs1: x22 = 0x0000000100000000
-  RVTEST_TESTDATA_LOAD_INT(x16, x29) # load temp reg: x29 = 0x5d861d9047d438aa
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x29
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x29
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x29
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x29, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x26) # load rs1: x26 = 0x0000000100000000
+  RVTEST_TESTDATA_LOAD_INT(x16, x4) # load temp reg: x4 = 0xeff6e2d864d62cfb
 Zicsr_csrrw_cg_cp_rs1_edges_0x100000000:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x19, fflags, x22
+  csrrw x23, fflags, x26
 #elif defined(V_SUPPORTED)
-  csrrw x19, vxsat, x22
+  csrrw x23, vxsat, x26
 #elif !defined(U_SUPPORTED)
-  csrrw x19, mepc, x22
+  csrrw x23, mepc, x26
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x19, instret, x22
+  csrrw x23, instret, x26
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000_str)
+  # Check if x23 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x23, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000_str)
 // read back CSR to check updated value
-  csrrs x29, fflags, x0
-  # Check if x29 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000_str)
+  csrrs x4, fflags, x0
+  # Check if x4 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x4, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000_str)
 #elif defined(V_SUPPORTED)
-  # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000_str)
+  # Check if x23 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x23, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000_str)
 // read back CSR to check updated value
-  csrrs x29, vxsat, x0
-  # Check if x29 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000_str)
+  csrrs x4, vxsat, x0
+  # Check if x4 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x4, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x19 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x19, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000_str)
+  # Check if x23 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x23, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000_str)
 // read back CSR to check updated value
-  csrrs x29, mepc, x0
-  # Check if x29 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000_str)
+  csrrs x4, mepc, x0
+  # Check if x4 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x4, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x23, x19, x29
-  sltiu x23, x23, 0x000007FF
-  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x23, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x23, instret, x0
-  sub x23, x23, x29
-  sltiu x29, x23, 0x000007FF
-  # Check if x29 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000_str)
+  # Check if x23 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x23, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x28, instret, x0
+  csrrs x4, instret, x0
+  sub x28, x4, x28
+  # Check if x28 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x28, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000, Zicsr_csrrw_cg_cp_rs1_edges_0x100000000_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cp_rs1_edges (Test source rs1 value = 0x0000000100000001)
-  RVTEST_TESTDATA_LOAD_INT(x16, x6) # load rs1: x6 = 0x0000000100000001
-  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load temp reg: x15 = 0x779a1dee8b6a91cb
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x15
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x15
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x15
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x15, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x14) # load rs1: x14 = 0x0000000100000001
+  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load temp reg: x23 = 0x33de1c56053af44b
 Zicsr_csrrw_cg_cp_rs1_edges_0x100000001:
 // perform operation
 #if defined(F_SUPPORTED)
-  csrrw x25, fflags, x6
+  csrrw x18, fflags, x14
 #elif defined(V_SUPPORTED)
-  csrrw x25, vxsat, x6
+  csrrw x18, vxsat, x14
 #elif !defined(U_SUPPORTED)
-  csrrw x25, mepc, x6
+  csrrw x18, mepc, x14
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x25, instret, x6
+  csrrw x18, instret, x14
 #else
   #error no CSR known for testing
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x25 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001_str)
+  # Check if x18 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x18, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001_str)
 // read back CSR to check updated value
-  csrrs x15, fflags, x0
-  # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001_str)
+  csrrs x23, fflags, x0
+  # Check if x23 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x23, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001_str)
 #elif defined(V_SUPPORTED)
-  # Check if x25 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001_str)
+  # Check if x18 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x18, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001_str)
 // read back CSR to check updated value
-  csrrs x15, vxsat, x0
-  # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001_str)
+  csrrs x23, vxsat, x0
+  # Check if x23 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x23, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x25 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x25, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001_str)
+  # Check if x18 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x18, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001_str)
 // read back CSR to check updated value
-  csrrs x15, mepc, x0
-  # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001_str)
+  csrrs x23, mepc, x0
+  # Check if x23 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x23, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x29, x25, x15
-  sltiu x29, x29, 0x000007FF
-  # Check if x29 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x29, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x29, instret, x0
-  sub x29, x29, x15
-  sltiu x15, x29, 0x000007FF
-  # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x15, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001_str)
+  # Check if x18 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x18, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x6, instret, x0
+  csrrs x23, instret, x0
+  sub x6, x23, x6
+  # Check if x6 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x6, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001, Zicsr_csrrw_cg_cp_rs1_edges_0x100000001_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 /////////////////////////////////
@@ -5427,19 +4144,6 @@ Zicsr_csrrw_cg_cp_rs1_edges_0x100000001:
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x0)
   RVTEST_TESTDATA_LOAD_INT(x16, x0) # load rs1: x0 = 0x260fdf4f1010b257
   RVTEST_TESTDATA_LOAD_INT(x16, x22) # load temp reg: x22 = 0xa86be39e3866e9f4
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x22
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x22
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x22
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x22, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
 Zicsr_csrrw_cg_cmp_rd_rs1_b0:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -5455,58 +4159,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b0:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x0 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x0, Zicsr_csrrw_cg_cmp_rd_rs1_b0, Zicsr_csrrw_cg_cmp_rd_rs1_b0_str)
+  # Check if x0 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x0, Zicsr_csrrw_cg_cmp_rd_rs1_b0, Zicsr_csrrw_cg_cmp_rd_rs1_b0_str)
 // read back CSR to check updated value
   csrrs x22, fflags, x0
-  # Check if x22 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b0, Zicsr_csrrw_cg_cmp_rd_rs1_b0_str)
+  # Check if x22 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b0, Zicsr_csrrw_cg_cmp_rd_rs1_b0_str)
 #elif defined(V_SUPPORTED)
-  # Check if x0 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x0, Zicsr_csrrw_cg_cmp_rd_rs1_b0, Zicsr_csrrw_cg_cmp_rd_rs1_b0_str)
+  # Check if x0 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x0, Zicsr_csrrw_cg_cmp_rd_rs1_b0, Zicsr_csrrw_cg_cmp_rd_rs1_b0_str)
 // read back CSR to check updated value
   csrrs x22, vxsat, x0
-  # Check if x22 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b0, Zicsr_csrrw_cg_cmp_rd_rs1_b0_str)
+  # Check if x22 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b0, Zicsr_csrrw_cg_cmp_rd_rs1_b0_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x0 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x0, Zicsr_csrrw_cg_cmp_rd_rs1_b0, Zicsr_csrrw_cg_cmp_rd_rs1_b0_str)
+  # Check if x0 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x0, Zicsr_csrrw_cg_cmp_rd_rs1_b0, Zicsr_csrrw_cg_cmp_rd_rs1_b0_str)
 // read back CSR to check updated value
   csrrs x22, mepc, x0
-  # Check if x22 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b0, Zicsr_csrrw_cg_cmp_rd_rs1_b0_str)
+  # Check if x22 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b0, Zicsr_csrrw_cg_cmp_rd_rs1_b0_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x23, x0, x22
-  sltiu x23, x23, 0x000007FF
-  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x23, Zicsr_csrrw_cg_cmp_rd_rs1_b0, Zicsr_csrrw_cg_cmp_rd_rs1_b0_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
+  # Check if x0 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x0, Zicsr_csrrw_cg_cmp_rd_rs1_b0, Zicsr_csrrw_cg_cmp_rd_rs1_b0_str)
+// read instret twice and record the difference to prove it ticks
   csrrs x23, instret, x0
-  sub x23, x23, x22
-  sltiu x22, x23, 0x000007FF
-  # Check if x22 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b0, Zicsr_csrrw_cg_cmp_rd_rs1_b0_str)
+  csrrs x22, instret, x0
+  sub x23, x22, x23
+  # Check if x23 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x23, Zicsr_csrrw_cg_cmp_rd_rs1_b0, Zicsr_csrrw_cg_cmp_rd_rs1_b0_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x16, x1) # load rs1: x1 = 0x9238906ebaf8fe87
-  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load temp reg: x23 = 0x05520aa58b5c519c
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x23
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x23
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x23
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x23, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x1) # load rs1: x1 = 0xb40682fb8d58d944
+  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load temp reg: x23 = 0x504170e1c8dd6ed6
 Zicsr_csrrw_cg_cmp_rd_rs1_b1:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -5522,58 +4210,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b1:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x1 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x1, Zicsr_csrrw_cg_cmp_rd_rs1_b1, Zicsr_csrrw_cg_cmp_rd_rs1_b1_str)
+  # Check if x1 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x1, Zicsr_csrrw_cg_cmp_rd_rs1_b1, Zicsr_csrrw_cg_cmp_rd_rs1_b1_str)
 // read back CSR to check updated value
   csrrs x23, fflags, x0
-  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x23, Zicsr_csrrw_cg_cmp_rd_rs1_b1, Zicsr_csrrw_cg_cmp_rd_rs1_b1_str)
+  # Check if x23 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x23, Zicsr_csrrw_cg_cmp_rd_rs1_b1, Zicsr_csrrw_cg_cmp_rd_rs1_b1_str)
 #elif defined(V_SUPPORTED)
-  # Check if x1 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x1, Zicsr_csrrw_cg_cmp_rd_rs1_b1, Zicsr_csrrw_cg_cmp_rd_rs1_b1_str)
+  # Check if x1 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x1, Zicsr_csrrw_cg_cmp_rd_rs1_b1, Zicsr_csrrw_cg_cmp_rd_rs1_b1_str)
 // read back CSR to check updated value
   csrrs x23, vxsat, x0
-  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x23, Zicsr_csrrw_cg_cmp_rd_rs1_b1, Zicsr_csrrw_cg_cmp_rd_rs1_b1_str)
+  # Check if x23 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x23, Zicsr_csrrw_cg_cmp_rd_rs1_b1, Zicsr_csrrw_cg_cmp_rd_rs1_b1_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x1 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x1, Zicsr_csrrw_cg_cmp_rd_rs1_b1, Zicsr_csrrw_cg_cmp_rd_rs1_b1_str)
+  # Check if x1 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x1, Zicsr_csrrw_cg_cmp_rd_rs1_b1, Zicsr_csrrw_cg_cmp_rd_rs1_b1_str)
 // read back CSR to check updated value
   csrrs x23, mepc, x0
-  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x23, Zicsr_csrrw_cg_cmp_rd_rs1_b1, Zicsr_csrrw_cg_cmp_rd_rs1_b1_str)
+  # Check if x23 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x23, Zicsr_csrrw_cg_cmp_rd_rs1_b1, Zicsr_csrrw_cg_cmp_rd_rs1_b1_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x6, x1, x23
-  sltiu x6, x6, 0x000007FF
-  # Check if x6 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x6, Zicsr_csrrw_cg_cmp_rd_rs1_b1, Zicsr_csrrw_cg_cmp_rd_rs1_b1_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x6, instret, x0
-  sub x6, x6, x23
-  sltiu x23, x6, 0x000007FF
-  # Check if x23 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x23, Zicsr_csrrw_cg_cmp_rd_rs1_b1, Zicsr_csrrw_cg_cmp_rd_rs1_b1_str)
+  # Check if x1 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x1, Zicsr_csrrw_cg_cmp_rd_rs1_b1, Zicsr_csrrw_cg_cmp_rd_rs1_b1_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x21, instret, x0
+  csrrs x23, instret, x0
+  sub x21, x23, x21
+  # Check if x21 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b1, Zicsr_csrrw_cg_cmp_rd_rs1_b1_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x16, x2) # load rs1: x2 = 0x2642ae4550449f4b
-  RVTEST_TESTDATA_LOAD_INT(x16, x24) # load temp reg: x24 = 0x1a995b639b85fcc4
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x24
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x24
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x24
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x24, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x2) # load rs1: x2 = 0x3af8fe87edcc9dbf
+  RVTEST_TESTDATA_LOAD_INT(x16, x12) # load temp reg: x12 = 0xd1d15941e89ee5be
 Zicsr_csrrw_cg_cmp_rd_rs1_b2:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -5589,58 +4261,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b2:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x2 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x2, Zicsr_csrrw_cg_cmp_rd_rs1_b2, Zicsr_csrrw_cg_cmp_rd_rs1_b2_str)
+  # Check if x2 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x2, Zicsr_csrrw_cg_cmp_rd_rs1_b2, Zicsr_csrrw_cg_cmp_rd_rs1_b2_str)
 // read back CSR to check updated value
-  csrrs x24, fflags, x0
-  # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x24, Zicsr_csrrw_cg_cmp_rd_rs1_b2, Zicsr_csrrw_cg_cmp_rd_rs1_b2_str)
+  csrrs x12, fflags, x0
+  # Check if x12 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x12, Zicsr_csrrw_cg_cmp_rd_rs1_b2, Zicsr_csrrw_cg_cmp_rd_rs1_b2_str)
 #elif defined(V_SUPPORTED)
-  # Check if x2 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x2, Zicsr_csrrw_cg_cmp_rd_rs1_b2, Zicsr_csrrw_cg_cmp_rd_rs1_b2_str)
+  # Check if x2 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x2, Zicsr_csrrw_cg_cmp_rd_rs1_b2, Zicsr_csrrw_cg_cmp_rd_rs1_b2_str)
 // read back CSR to check updated value
-  csrrs x24, vxsat, x0
-  # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x24, Zicsr_csrrw_cg_cmp_rd_rs1_b2, Zicsr_csrrw_cg_cmp_rd_rs1_b2_str)
+  csrrs x12, vxsat, x0
+  # Check if x12 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x12, Zicsr_csrrw_cg_cmp_rd_rs1_b2, Zicsr_csrrw_cg_cmp_rd_rs1_b2_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x2 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x2, Zicsr_csrrw_cg_cmp_rd_rs1_b2, Zicsr_csrrw_cg_cmp_rd_rs1_b2_str)
+  # Check if x2 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x2, Zicsr_csrrw_cg_cmp_rd_rs1_b2, Zicsr_csrrw_cg_cmp_rd_rs1_b2_str)
 // read back CSR to check updated value
-  csrrs x24, mepc, x0
-  # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x24, Zicsr_csrrw_cg_cmp_rd_rs1_b2, Zicsr_csrrw_cg_cmp_rd_rs1_b2_str)
+  csrrs x12, mepc, x0
+  # Check if x12 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x12, Zicsr_csrrw_cg_cmp_rd_rs1_b2, Zicsr_csrrw_cg_cmp_rd_rs1_b2_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x3, x2, x24
-  sltiu x3, x3, 0x000007FF
-  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x3, Zicsr_csrrw_cg_cmp_rd_rs1_b2, Zicsr_csrrw_cg_cmp_rd_rs1_b2_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x3, instret, x0
-  sub x3, x3, x24
-  sltiu x24, x3, 0x000007FF
-  # Check if x24 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x24, Zicsr_csrrw_cg_cmp_rd_rs1_b2, Zicsr_csrrw_cg_cmp_rd_rs1_b2_str)
+  # Check if x2 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x2, Zicsr_csrrw_cg_cmp_rd_rs1_b2, Zicsr_csrrw_cg_cmp_rd_rs1_b2_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x26, instret, x0
+  csrrs x12, instret, x0
+  sub x26, x12, x26
+  # Check if x26 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x26, Zicsr_csrrw_cg_cmp_rd_rs1_b2, Zicsr_csrrw_cg_cmp_rd_rs1_b2_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load rs1: x3 = 0x5a1b01db23e6a47c
-  RVTEST_TESTDATA_LOAD_INT(x16, x2) # load temp reg: x2 = 0xb17ddb8c4c1d8638
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x2
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x2
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x2
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x2, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load rs1: x3 = 0xa03709fcfc795e97
+  RVTEST_TESTDATA_LOAD_INT(x16, x14) # load temp reg: x14 = 0xabef6dad11ad67a6
 Zicsr_csrrw_cg_cmp_rd_rs1_b3:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -5656,60 +4312,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b3:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x3, Zicsr_csrrw_cg_cmp_rd_rs1_b3, Zicsr_csrrw_cg_cmp_rd_rs1_b3_str)
+  # Check if x3 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x3, Zicsr_csrrw_cg_cmp_rd_rs1_b3, Zicsr_csrrw_cg_cmp_rd_rs1_b3_str)
 // read back CSR to check updated value
-  csrrs x2, fflags, x0
-  # Check if x2 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x2, Zicsr_csrrw_cg_cmp_rd_rs1_b3, Zicsr_csrrw_cg_cmp_rd_rs1_b3_str)
+  csrrs x14, fflags, x0
+  # Check if x14 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b3, Zicsr_csrrw_cg_cmp_rd_rs1_b3_str)
 #elif defined(V_SUPPORTED)
-  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x3, Zicsr_csrrw_cg_cmp_rd_rs1_b3, Zicsr_csrrw_cg_cmp_rd_rs1_b3_str)
+  # Check if x3 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x3, Zicsr_csrrw_cg_cmp_rd_rs1_b3, Zicsr_csrrw_cg_cmp_rd_rs1_b3_str)
 // read back CSR to check updated value
-  csrrs x2, vxsat, x0
-  # Check if x2 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x2, Zicsr_csrrw_cg_cmp_rd_rs1_b3, Zicsr_csrrw_cg_cmp_rd_rs1_b3_str)
+  csrrs x14, vxsat, x0
+  # Check if x14 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b3, Zicsr_csrrw_cg_cmp_rd_rs1_b3_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x3, Zicsr_csrrw_cg_cmp_rd_rs1_b3, Zicsr_csrrw_cg_cmp_rd_rs1_b3_str)
+  # Check if x3 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x3, Zicsr_csrrw_cg_cmp_rd_rs1_b3, Zicsr_csrrw_cg_cmp_rd_rs1_b3_str)
 // read back CSR to check updated value
-  csrrs x2, mepc, x0
-  # Check if x2 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x2, Zicsr_csrrw_cg_cmp_rd_rs1_b3, Zicsr_csrrw_cg_cmp_rd_rs1_b3_str)
+  csrrs x14, mepc, x0
+  # Check if x14 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b3, Zicsr_csrrw_cg_cmp_rd_rs1_b3_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x25, x3, x2
-  sltiu x25, x25, 0x000007FF
-  # Check if x25 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x25, Zicsr_csrrw_cg_cmp_rd_rs1_b3, Zicsr_csrrw_cg_cmp_rd_rs1_b3_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x25, instret, x0
-  sub x25, x25, x2
-  sltiu x2, x25, 0x000007FF
-  # Check if x2 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x10, x5, x4, x2, Zicsr_csrrw_cg_cmp_rd_rs1_b3, Zicsr_csrrw_cg_cmp_rd_rs1_b3_str)
+  # Check if x3 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x3, Zicsr_csrrw_cg_cmp_rd_rs1_b3, Zicsr_csrrw_cg_cmp_rd_rs1_b3_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x12, instret, x0
+  csrrs x14, instret, x0
+  sub x12, x14, x12
+  # Check if x12 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x12, Zicsr_csrrw_cg_cmp_rd_rs1_b3, Zicsr_csrrw_cg_cmp_rd_rs1_b3_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
-  mv x7, x4 # switch temp register to avoid conflict with test
-  mv x8, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x16, x4) # load rs1: x4 = 0xe14fe209d754ff8a
-  RVTEST_TESTDATA_LOAD_INT(x16, x28) # load temp reg: x28 = 0x63bf53b89f01c121
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x28
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x28
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x28
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x28, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x4) # load rs1: x4 = 0x18c599c24112f4da
+  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load temp reg: x3 = 0xe14fe209d754ff8a
 Zicsr_csrrw_cg_cmp_rd_rs1_b4:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -5725,58 +4363,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b4:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x4 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x4, Zicsr_csrrw_cg_cmp_rd_rs1_b4, Zicsr_csrrw_cg_cmp_rd_rs1_b4_str)
+  # Check if x4 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x4, Zicsr_csrrw_cg_cmp_rd_rs1_b4, Zicsr_csrrw_cg_cmp_rd_rs1_b4_str)
 // read back CSR to check updated value
-  csrrs x28, fflags, x0
-  # Check if x28 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b4, Zicsr_csrrw_cg_cmp_rd_rs1_b4_str)
+  csrrs x3, fflags, x0
+  # Check if x3 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x3, Zicsr_csrrw_cg_cmp_rd_rs1_b4, Zicsr_csrrw_cg_cmp_rd_rs1_b4_str)
 #elif defined(V_SUPPORTED)
-  # Check if x4 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x4, Zicsr_csrrw_cg_cmp_rd_rs1_b4, Zicsr_csrrw_cg_cmp_rd_rs1_b4_str)
+  # Check if x4 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x4, Zicsr_csrrw_cg_cmp_rd_rs1_b4, Zicsr_csrrw_cg_cmp_rd_rs1_b4_str)
 // read back CSR to check updated value
-  csrrs x28, vxsat, x0
-  # Check if x28 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b4, Zicsr_csrrw_cg_cmp_rd_rs1_b4_str)
+  csrrs x3, vxsat, x0
+  # Check if x3 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x3, Zicsr_csrrw_cg_cmp_rd_rs1_b4, Zicsr_csrrw_cg_cmp_rd_rs1_b4_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x4 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x4, Zicsr_csrrw_cg_cmp_rd_rs1_b4, Zicsr_csrrw_cg_cmp_rd_rs1_b4_str)
+  # Check if x4 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x4, Zicsr_csrrw_cg_cmp_rd_rs1_b4, Zicsr_csrrw_cg_cmp_rd_rs1_b4_str)
 // read back CSR to check updated value
-  csrrs x28, mepc, x0
-  # Check if x28 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b4, Zicsr_csrrw_cg_cmp_rd_rs1_b4_str)
+  csrrs x3, mepc, x0
+  # Check if x3 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x3, Zicsr_csrrw_cg_cmp_rd_rs1_b4, Zicsr_csrrw_cg_cmp_rd_rs1_b4_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x19, x4, x28
-  sltiu x19, x19, 0x000007FF
-  # Check if x19 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x19, Zicsr_csrrw_cg_cmp_rd_rs1_b4, Zicsr_csrrw_cg_cmp_rd_rs1_b4_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x19, instret, x0
-  sub x19, x19, x28
-  sltiu x28, x19, 0x000007FF
-  # Check if x28 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b4, Zicsr_csrrw_cg_cmp_rd_rs1_b4_str)
+  # Check if x4 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x4, Zicsr_csrrw_cg_cmp_rd_rs1_b4, Zicsr_csrrw_cg_cmp_rd_rs1_b4_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x29, instret, x0
+  csrrs x3, instret, x0
+  sub x29, x3, x29
+  # Check if x29 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b4, Zicsr_csrrw_cg_cmp_rd_rs1_b4_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x16, x5) # load rs1: x5 = 0x1afc5613b596ba21
-  RVTEST_TESTDATA_LOAD_INT(x16, x29) # load temp reg: x29 = 0x14e5062047142ed1
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x29
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x29
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x29
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x29, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x5) # load rs1: x5 = 0x63bf53b89f01c121
+  RVTEST_TESTDATA_LOAD_INT(x16, x19) # load temp reg: x19 = 0x14e5062047142ed1
 Zicsr_csrrw_cg_cmp_rd_rs1_b5:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -5792,58 +4414,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b5:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x5 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x5, Zicsr_csrrw_cg_cmp_rd_rs1_b5, Zicsr_csrrw_cg_cmp_rd_rs1_b5_str)
+  # Check if x5 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x5, Zicsr_csrrw_cg_cmp_rd_rs1_b5, Zicsr_csrrw_cg_cmp_rd_rs1_b5_str)
 // read back CSR to check updated value
-  csrrs x29, fflags, x0
-  # Check if x29 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b5, Zicsr_csrrw_cg_cmp_rd_rs1_b5_str)
+  csrrs x19, fflags, x0
+  # Check if x19 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x19, Zicsr_csrrw_cg_cmp_rd_rs1_b5, Zicsr_csrrw_cg_cmp_rd_rs1_b5_str)
 #elif defined(V_SUPPORTED)
-  # Check if x5 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x5, Zicsr_csrrw_cg_cmp_rd_rs1_b5, Zicsr_csrrw_cg_cmp_rd_rs1_b5_str)
+  # Check if x5 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x5, Zicsr_csrrw_cg_cmp_rd_rs1_b5, Zicsr_csrrw_cg_cmp_rd_rs1_b5_str)
 // read back CSR to check updated value
-  csrrs x29, vxsat, x0
-  # Check if x29 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b5, Zicsr_csrrw_cg_cmp_rd_rs1_b5_str)
+  csrrs x19, vxsat, x0
+  # Check if x19 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x19, Zicsr_csrrw_cg_cmp_rd_rs1_b5, Zicsr_csrrw_cg_cmp_rd_rs1_b5_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x5 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x5, Zicsr_csrrw_cg_cmp_rd_rs1_b5, Zicsr_csrrw_cg_cmp_rd_rs1_b5_str)
+  # Check if x5 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x5, Zicsr_csrrw_cg_cmp_rd_rs1_b5, Zicsr_csrrw_cg_cmp_rd_rs1_b5_str)
 // read back CSR to check updated value
-  csrrs x29, mepc, x0
-  # Check if x29 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b5, Zicsr_csrrw_cg_cmp_rd_rs1_b5_str)
+  csrrs x19, mepc, x0
+  # Check if x19 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x19, Zicsr_csrrw_cg_cmp_rd_rs1_b5, Zicsr_csrrw_cg_cmp_rd_rs1_b5_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x12, x5, x29
-  sltiu x12, x12, 0x000007FF
-  # Check if x12 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x12, Zicsr_csrrw_cg_cmp_rd_rs1_b5, Zicsr_csrrw_cg_cmp_rd_rs1_b5_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x12, instret, x0
-  sub x12, x12, x29
-  sltiu x29, x12, 0x000007FF
-  # Check if x29 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b5, Zicsr_csrrw_cg_cmp_rd_rs1_b5_str)
+  # Check if x5 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x5, Zicsr_csrrw_cg_cmp_rd_rs1_b5, Zicsr_csrrw_cg_cmp_rd_rs1_b5_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x11, instret, x0
+  csrrs x19, instret, x0
+  sub x11, x19, x11
+  # Check if x11 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x11, Zicsr_csrrw_cg_cmp_rd_rs1_b5, Zicsr_csrrw_cg_cmp_rd_rs1_b5_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x16, x6) # load rs1: x6 = 0x25336784e05bc2e1
-  RVTEST_TESTDATA_LOAD_INT(x16, x28) # load temp reg: x28 = 0xf8f06373ef8d1bb7
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x28
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x28
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x28
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x28, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x6) # load rs1: x6 = 0x69cad46a48553db9
+  RVTEST_TESTDATA_LOAD_INT(x16, x10) # load temp reg: x10 = 0x25336784e05bc2e1
 Zicsr_csrrw_cg_cmp_rd_rs1_b6:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -5859,60 +4465,44 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b6:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x6 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x6, Zicsr_csrrw_cg_cmp_rd_rs1_b6, Zicsr_csrrw_cg_cmp_rd_rs1_b6_str)
+  # Check if x6 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x6, Zicsr_csrrw_cg_cmp_rd_rs1_b6, Zicsr_csrrw_cg_cmp_rd_rs1_b6_str)
 // read back CSR to check updated value
-  csrrs x28, fflags, x0
-  # Check if x28 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b6, Zicsr_csrrw_cg_cmp_rd_rs1_b6_str)
+  csrrs x10, fflags, x0
+  # Check if x10 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x10, Zicsr_csrrw_cg_cmp_rd_rs1_b6, Zicsr_csrrw_cg_cmp_rd_rs1_b6_str)
 #elif defined(V_SUPPORTED)
-  # Check if x6 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x6, Zicsr_csrrw_cg_cmp_rd_rs1_b6, Zicsr_csrrw_cg_cmp_rd_rs1_b6_str)
+  # Check if x6 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x6, Zicsr_csrrw_cg_cmp_rd_rs1_b6, Zicsr_csrrw_cg_cmp_rd_rs1_b6_str)
 // read back CSR to check updated value
-  csrrs x28, vxsat, x0
-  # Check if x28 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b6, Zicsr_csrrw_cg_cmp_rd_rs1_b6_str)
+  csrrs x10, vxsat, x0
+  # Check if x10 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x10, Zicsr_csrrw_cg_cmp_rd_rs1_b6, Zicsr_csrrw_cg_cmp_rd_rs1_b6_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x6 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x6, Zicsr_csrrw_cg_cmp_rd_rs1_b6, Zicsr_csrrw_cg_cmp_rd_rs1_b6_str)
+  # Check if x6 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x6, Zicsr_csrrw_cg_cmp_rd_rs1_b6, Zicsr_csrrw_cg_cmp_rd_rs1_b6_str)
 // read back CSR to check updated value
-  csrrs x28, mepc, x0
-  # Check if x28 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b6, Zicsr_csrrw_cg_cmp_rd_rs1_b6_str)
+  csrrs x10, mepc, x0
+  # Check if x10 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x10, Zicsr_csrrw_cg_cmp_rd_rs1_b6, Zicsr_csrrw_cg_cmp_rd_rs1_b6_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x24, x6, x28
-  sltiu x24, x24, 0x000007FF
-  # Check if x24 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x24, Zicsr_csrrw_cg_cmp_rd_rs1_b6, Zicsr_csrrw_cg_cmp_rd_rs1_b6_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x24, instret, x0
-  sub x24, x24, x28
-  sltiu x28, x24, 0x000007FF
-  # Check if x28 contains the expected result. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x10, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b6, Zicsr_csrrw_cg_cmp_rd_rs1_b6_str)
+  # Check if x6 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x6, Zicsr_csrrw_cg_cmp_rd_rs1_b6, Zicsr_csrrw_cg_cmp_rd_rs1_b6_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x29, instret, x0
+  csrrs x10, instret, x0
+  sub x29, x10, x29
+  # Check if x29 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b6, Zicsr_csrrw_cg_cmp_rd_rs1_b6_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
   mv x12, x7 # switch temp register to avoid conflict with test
   mv x13, x8 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x16, x7) # load rs1: x7 = 0x78a3a8ab3ae7cebd
-  RVTEST_TESTDATA_LOAD_INT(x16, x29) # load temp reg: x29 = 0xf29ddeba4cc82a15
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x29
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x29
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x29
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x29, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x7) # load rs1: x7 = 0xf92c0c6374b5a5c4
+  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load temp reg: x11 = 0x06b1ec3debe3cadc
 Zicsr_csrrw_cg_cmp_rd_rs1_b7:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -5928,58 +4518,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b7:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x7 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x7, Zicsr_csrrw_cg_cmp_rd_rs1_b7, Zicsr_csrrw_cg_cmp_rd_rs1_b7_str)
+  # Check if x7 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x7, Zicsr_csrrw_cg_cmp_rd_rs1_b7, Zicsr_csrrw_cg_cmp_rd_rs1_b7_str)
 // read back CSR to check updated value
-  csrrs x29, fflags, x0
-  # Check if x29 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b7, Zicsr_csrrw_cg_cmp_rd_rs1_b7_str)
+  csrrs x11, fflags, x0
+  # Check if x11 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x11, Zicsr_csrrw_cg_cmp_rd_rs1_b7, Zicsr_csrrw_cg_cmp_rd_rs1_b7_str)
 #elif defined(V_SUPPORTED)
-  # Check if x7 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x7, Zicsr_csrrw_cg_cmp_rd_rs1_b7, Zicsr_csrrw_cg_cmp_rd_rs1_b7_str)
+  # Check if x7 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x7, Zicsr_csrrw_cg_cmp_rd_rs1_b7, Zicsr_csrrw_cg_cmp_rd_rs1_b7_str)
 // read back CSR to check updated value
-  csrrs x29, vxsat, x0
-  # Check if x29 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b7, Zicsr_csrrw_cg_cmp_rd_rs1_b7_str)
+  csrrs x11, vxsat, x0
+  # Check if x11 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x11, Zicsr_csrrw_cg_cmp_rd_rs1_b7, Zicsr_csrrw_cg_cmp_rd_rs1_b7_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x7 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x7, Zicsr_csrrw_cg_cmp_rd_rs1_b7, Zicsr_csrrw_cg_cmp_rd_rs1_b7_str)
+  # Check if x7 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x7, Zicsr_csrrw_cg_cmp_rd_rs1_b7, Zicsr_csrrw_cg_cmp_rd_rs1_b7_str)
 // read back CSR to check updated value
-  csrrs x29, mepc, x0
-  # Check if x29 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b7, Zicsr_csrrw_cg_cmp_rd_rs1_b7_str)
+  csrrs x11, mepc, x0
+  # Check if x11 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x11, Zicsr_csrrw_cg_cmp_rd_rs1_b7, Zicsr_csrrw_cg_cmp_rd_rs1_b7_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x18, x7, x29
-  sltiu x18, x18, 0x000007FF
-  # Check if x18 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b7, Zicsr_csrrw_cg_cmp_rd_rs1_b7_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x18, instret, x0
-  sub x18, x18, x29
-  sltiu x29, x18, 0x000007FF
-  # Check if x29 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b7, Zicsr_csrrw_cg_cmp_rd_rs1_b7_str)
+  # Check if x7 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x7, Zicsr_csrrw_cg_cmp_rd_rs1_b7, Zicsr_csrrw_cg_cmp_rd_rs1_b7_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x21, instret, x0
+  csrrs x11, instret, x0
+  sub x21, x11, x21
+  # Check if x21 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b7, Zicsr_csrrw_cg_cmp_rd_rs1_b7_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x16, x8) # load rs1: x8 = 0x64a081247a9b7097
-  RVTEST_TESTDATA_LOAD_INT(x16, x4) # load temp reg: x4 = 0x8f48f928b65bcac1
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x4
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x4
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x4
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x4, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x8) # load rs1: x8 = 0x657e8c405ebf1dd8
+  RVTEST_TESTDATA_LOAD_INT(x16, x7) # load temp reg: x7 = 0x292ec371c7a99c19
 Zicsr_csrrw_cg_cmp_rd_rs1_b8:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -5995,58 +4569,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b8:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x8 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x8, Zicsr_csrrw_cg_cmp_rd_rs1_b8, Zicsr_csrrw_cg_cmp_rd_rs1_b8_str)
+  # Check if x8 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x8, Zicsr_csrrw_cg_cmp_rd_rs1_b8, Zicsr_csrrw_cg_cmp_rd_rs1_b8_str)
 // read back CSR to check updated value
-  csrrs x4, fflags, x0
-  # Check if x4 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x4, Zicsr_csrrw_cg_cmp_rd_rs1_b8, Zicsr_csrrw_cg_cmp_rd_rs1_b8_str)
+  csrrs x7, fflags, x0
+  # Check if x7 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x7, Zicsr_csrrw_cg_cmp_rd_rs1_b8, Zicsr_csrrw_cg_cmp_rd_rs1_b8_str)
 #elif defined(V_SUPPORTED)
-  # Check if x8 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x8, Zicsr_csrrw_cg_cmp_rd_rs1_b8, Zicsr_csrrw_cg_cmp_rd_rs1_b8_str)
+  # Check if x8 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x8, Zicsr_csrrw_cg_cmp_rd_rs1_b8, Zicsr_csrrw_cg_cmp_rd_rs1_b8_str)
 // read back CSR to check updated value
-  csrrs x4, vxsat, x0
-  # Check if x4 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x4, Zicsr_csrrw_cg_cmp_rd_rs1_b8, Zicsr_csrrw_cg_cmp_rd_rs1_b8_str)
+  csrrs x7, vxsat, x0
+  # Check if x7 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x7, Zicsr_csrrw_cg_cmp_rd_rs1_b8, Zicsr_csrrw_cg_cmp_rd_rs1_b8_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x8 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x8, Zicsr_csrrw_cg_cmp_rd_rs1_b8, Zicsr_csrrw_cg_cmp_rd_rs1_b8_str)
+  # Check if x8 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x8, Zicsr_csrrw_cg_cmp_rd_rs1_b8, Zicsr_csrrw_cg_cmp_rd_rs1_b8_str)
 // read back CSR to check updated value
-  csrrs x4, mepc, x0
-  # Check if x4 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x4, Zicsr_csrrw_cg_cmp_rd_rs1_b8, Zicsr_csrrw_cg_cmp_rd_rs1_b8_str)
+  csrrs x7, mepc, x0
+  # Check if x7 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x7, Zicsr_csrrw_cg_cmp_rd_rs1_b8, Zicsr_csrrw_cg_cmp_rd_rs1_b8_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x20, x8, x4
-  sltiu x20, x20, 0x000007FF
-  # Check if x20 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x20, Zicsr_csrrw_cg_cmp_rd_rs1_b8, Zicsr_csrrw_cg_cmp_rd_rs1_b8_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x20, instret, x0
-  sub x20, x20, x4
-  sltiu x4, x20, 0x000007FF
-  # Check if x4 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x4, Zicsr_csrrw_cg_cmp_rd_rs1_b8, Zicsr_csrrw_cg_cmp_rd_rs1_b8_str)
+  # Check if x8 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x8, Zicsr_csrrw_cg_cmp_rd_rs1_b8, Zicsr_csrrw_cg_cmp_rd_rs1_b8_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x10, instret, x0
+  csrrs x7, instret, x0
+  sub x10, x7, x10
+  # Check if x10 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x10, Zicsr_csrrw_cg_cmp_rd_rs1_b8, Zicsr_csrrw_cg_cmp_rd_rs1_b8_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x16, x9) # load rs1: x9 = 0xa11ed534f0b9ef78
-  RVTEST_TESTDATA_LOAD_INT(x16, x31) # load temp reg: x31 = 0x604809aa701350ab
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x31
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x31
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x31
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x31, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x9) # load rs1: x9 = 0xccc82a15a22fc949
+  RVTEST_TESTDATA_LOAD_INT(x16, x10) # load temp reg: x10 = 0xec932bacf30a681a
 Zicsr_csrrw_cg_cmp_rd_rs1_b9:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -6062,59 +4620,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b9:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x9 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x9, Zicsr_csrrw_cg_cmp_rd_rs1_b9, Zicsr_csrrw_cg_cmp_rd_rs1_b9_str)
+  # Check if x9 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x9, Zicsr_csrrw_cg_cmp_rd_rs1_b9, Zicsr_csrrw_cg_cmp_rd_rs1_b9_str)
 // read back CSR to check updated value
-  csrrs x31, fflags, x0
-  # Check if x31 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x31, Zicsr_csrrw_cg_cmp_rd_rs1_b9, Zicsr_csrrw_cg_cmp_rd_rs1_b9_str)
+  csrrs x10, fflags, x0
+  # Check if x10 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x10, Zicsr_csrrw_cg_cmp_rd_rs1_b9, Zicsr_csrrw_cg_cmp_rd_rs1_b9_str)
 #elif defined(V_SUPPORTED)
-  # Check if x9 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x9, Zicsr_csrrw_cg_cmp_rd_rs1_b9, Zicsr_csrrw_cg_cmp_rd_rs1_b9_str)
+  # Check if x9 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x9, Zicsr_csrrw_cg_cmp_rd_rs1_b9, Zicsr_csrrw_cg_cmp_rd_rs1_b9_str)
 // read back CSR to check updated value
-  csrrs x31, vxsat, x0
-  # Check if x31 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x31, Zicsr_csrrw_cg_cmp_rd_rs1_b9, Zicsr_csrrw_cg_cmp_rd_rs1_b9_str)
+  csrrs x10, vxsat, x0
+  # Check if x10 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x10, Zicsr_csrrw_cg_cmp_rd_rs1_b9, Zicsr_csrrw_cg_cmp_rd_rs1_b9_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x9 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x9, Zicsr_csrrw_cg_cmp_rd_rs1_b9, Zicsr_csrrw_cg_cmp_rd_rs1_b9_str)
+  # Check if x9 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x9, Zicsr_csrrw_cg_cmp_rd_rs1_b9, Zicsr_csrrw_cg_cmp_rd_rs1_b9_str)
 // read back CSR to check updated value
-  csrrs x31, mepc, x0
-  # Check if x31 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x31, Zicsr_csrrw_cg_cmp_rd_rs1_b9, Zicsr_csrrw_cg_cmp_rd_rs1_b9_str)
+  csrrs x10, mepc, x0
+  # Check if x10 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x10, Zicsr_csrrw_cg_cmp_rd_rs1_b9, Zicsr_csrrw_cg_cmp_rd_rs1_b9_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x30, x9, x31
-  sltiu x30, x30, 0x000007FF
-  # Check if x30 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x30, Zicsr_csrrw_cg_cmp_rd_rs1_b9, Zicsr_csrrw_cg_cmp_rd_rs1_b9_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x30, instret, x0
-  sub x30, x30, x31
-  sltiu x31, x30, 0x000007FF
-  # Check if x31 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x31, Zicsr_csrrw_cg_cmp_rd_rs1_b9, Zicsr_csrrw_cg_cmp_rd_rs1_b9_str)
+  # Check if x9 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x9, Zicsr_csrrw_cg_cmp_rd_rs1_b9, Zicsr_csrrw_cg_cmp_rd_rs1_b9_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x21, instret, x0
+  csrrs x10, instret, x0
+  sub x21, x10, x21
+  # Check if x21 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b9, Zicsr_csrrw_cg_cmp_rd_rs1_b9_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
-  mv x3, x10 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x16, x10) # load rs1: x10 = 0x09815c3ff25c3021
-  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load temp reg: x15 = 0xd8afcd4c47312da2
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x15
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x15
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x15
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x15, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x10) # load rs1: x10 = 0x64a081247a9b7097
+  RVTEST_TESTDATA_LOAD_INT(x16, x4) # load temp reg: x4 = 0x8f48f928b65bcac1
 Zicsr_csrrw_cg_cmp_rd_rs1_b10:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -6130,58 +4671,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b10:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x10 contains the expected result. x3 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x3, x13, x12, x10, Zicsr_csrrw_cg_cmp_rd_rs1_b10, Zicsr_csrrw_cg_cmp_rd_rs1_b10_str)
+  # Check if x10 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x10, Zicsr_csrrw_cg_cmp_rd_rs1_b10, Zicsr_csrrw_cg_cmp_rd_rs1_b10_str)
 // read back CSR to check updated value
-  csrrs x15, fflags, x0
-  # Check if x15 contains the expected result. x3 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x3, x13, x12, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b10, Zicsr_csrrw_cg_cmp_rd_rs1_b10_str)
+  csrrs x4, fflags, x0
+  # Check if x4 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x4, Zicsr_csrrw_cg_cmp_rd_rs1_b10, Zicsr_csrrw_cg_cmp_rd_rs1_b10_str)
 #elif defined(V_SUPPORTED)
-  # Check if x10 contains the expected result. x3 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x3, x13, x12, x10, Zicsr_csrrw_cg_cmp_rd_rs1_b10, Zicsr_csrrw_cg_cmp_rd_rs1_b10_str)
+  # Check if x10 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x10, Zicsr_csrrw_cg_cmp_rd_rs1_b10, Zicsr_csrrw_cg_cmp_rd_rs1_b10_str)
 // read back CSR to check updated value
-  csrrs x15, vxsat, x0
-  # Check if x15 contains the expected result. x3 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x3, x13, x12, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b10, Zicsr_csrrw_cg_cmp_rd_rs1_b10_str)
+  csrrs x4, vxsat, x0
+  # Check if x4 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x4, Zicsr_csrrw_cg_cmp_rd_rs1_b10, Zicsr_csrrw_cg_cmp_rd_rs1_b10_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x10 contains the expected result. x3 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x3, x13, x12, x10, Zicsr_csrrw_cg_cmp_rd_rs1_b10, Zicsr_csrrw_cg_cmp_rd_rs1_b10_str)
+  # Check if x10 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x10, Zicsr_csrrw_cg_cmp_rd_rs1_b10, Zicsr_csrrw_cg_cmp_rd_rs1_b10_str)
 // read back CSR to check updated value
-  csrrs x15, mepc, x0
-  # Check if x15 contains the expected result. x3 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x3, x13, x12, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b10, Zicsr_csrrw_cg_cmp_rd_rs1_b10_str)
+  csrrs x4, mepc, x0
+  # Check if x4 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x4, Zicsr_csrrw_cg_cmp_rd_rs1_b10, Zicsr_csrrw_cg_cmp_rd_rs1_b10_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x0, x10, x15
-  sltiu x0, x0, 0x000007FF
-  # Check if x0 contains the expected result. x3 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x3, x13, x12, x0, Zicsr_csrrw_cg_cmp_rd_rs1_b10, Zicsr_csrrw_cg_cmp_rd_rs1_b10_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x0, instret, x0
-  sub x0, x0, x15
-  sltiu x15, x0, 0x000007FF
-  # Check if x15 contains the expected result. x3 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x3, x13, x12, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b10, Zicsr_csrrw_cg_cmp_rd_rs1_b10_str)
+  # Check if x10 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x10, Zicsr_csrrw_cg_cmp_rd_rs1_b10, Zicsr_csrrw_cg_cmp_rd_rs1_b10_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x20, instret, x0
+  csrrs x4, instret, x0
+  sub x20, x4, x20
+  # Check if x20 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x20, Zicsr_csrrw_cg_cmp_rd_rs1_b10, Zicsr_csrrw_cg_cmp_rd_rs1_b10_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load rs1: x11 = 0x1cae755162f3c7d0
-  RVTEST_TESTDATA_LOAD_INT(x16, x14) # load temp reg: x14 = 0x4cfc9388d76618bf
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x14
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x14
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x14
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x14, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load rs1: x11 = 0x132afabe6a9c1db3
+  RVTEST_TESTDATA_LOAD_INT(x16, x29) # load temp reg: x29 = 0x70b9ef78d08f5f1f
 Zicsr_csrrw_cg_cmp_rd_rs1_b11:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -6197,60 +4722,44 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b11:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x11 contains the expected result. x3 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x3, x13, x12, x11, Zicsr_csrrw_cg_cmp_rd_rs1_b11, Zicsr_csrrw_cg_cmp_rd_rs1_b11_str)
+  # Check if x11 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x11, Zicsr_csrrw_cg_cmp_rd_rs1_b11, Zicsr_csrrw_cg_cmp_rd_rs1_b11_str)
 // read back CSR to check updated value
-  csrrs x14, fflags, x0
-  # Check if x14 contains the expected result. x3 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x3, x13, x12, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b11, Zicsr_csrrw_cg_cmp_rd_rs1_b11_str)
+  csrrs x29, fflags, x0
+  # Check if x29 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b11, Zicsr_csrrw_cg_cmp_rd_rs1_b11_str)
 #elif defined(V_SUPPORTED)
-  # Check if x11 contains the expected result. x3 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x3, x13, x12, x11, Zicsr_csrrw_cg_cmp_rd_rs1_b11, Zicsr_csrrw_cg_cmp_rd_rs1_b11_str)
+  # Check if x11 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x11, Zicsr_csrrw_cg_cmp_rd_rs1_b11, Zicsr_csrrw_cg_cmp_rd_rs1_b11_str)
 // read back CSR to check updated value
-  csrrs x14, vxsat, x0
-  # Check if x14 contains the expected result. x3 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x3, x13, x12, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b11, Zicsr_csrrw_cg_cmp_rd_rs1_b11_str)
+  csrrs x29, vxsat, x0
+  # Check if x29 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b11, Zicsr_csrrw_cg_cmp_rd_rs1_b11_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x11 contains the expected result. x3 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x3, x13, x12, x11, Zicsr_csrrw_cg_cmp_rd_rs1_b11, Zicsr_csrrw_cg_cmp_rd_rs1_b11_str)
+  # Check if x11 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x11, Zicsr_csrrw_cg_cmp_rd_rs1_b11, Zicsr_csrrw_cg_cmp_rd_rs1_b11_str)
 // read back CSR to check updated value
-  csrrs x14, mepc, x0
-  # Check if x14 contains the expected result. x3 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x3, x13, x12, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b11, Zicsr_csrrw_cg_cmp_rd_rs1_b11_str)
+  csrrs x29, mepc, x0
+  # Check if x29 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b11, Zicsr_csrrw_cg_cmp_rd_rs1_b11_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x28, x11, x14
-  sltiu x28, x28, 0x000007FF
-  # Check if x28 contains the expected result. x3 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x3, x13, x12, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b11, Zicsr_csrrw_cg_cmp_rd_rs1_b11_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x28, instret, x0
-  sub x28, x28, x14
-  sltiu x14, x28, 0x000007FF
-  # Check if x14 contains the expected result. x3 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x3, x13, x12, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b11, Zicsr_csrrw_cg_cmp_rd_rs1_b11_str)
+  # Check if x11 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x11, Zicsr_csrrw_cg_cmp_rd_rs1_b11, Zicsr_csrrw_cg_cmp_rd_rs1_b11_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x9, instret, x0
+  csrrs x29, instret, x0
+  sub x9, x29, x9
+  # Check if x9 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x15, x13, x12, x9, Zicsr_csrrw_cg_cmp_rd_rs1_b11, Zicsr_csrrw_cg_cmp_rd_rs1_b11_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
   mv x7, x12 # switch temp register to avoid conflict with test
   mv x8, x13 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x16, x12) # load rs1: x12 = 0x1e7385e13242ab4a
-  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load temp reg: x15 = 0xe2b011e7a1b3d7bc
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x15
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x15
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x15
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x15, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x12) # load rs1: x12 = 0x28dd360d6f5aeb32
+  RVTEST_TESTDATA_LOAD_INT(x16, x9) # load temp reg: x9 = 0xefae060e89815c3f
 Zicsr_csrrw_cg_cmp_rd_rs1_b12:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -6266,58 +4775,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b12:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x12 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x12, Zicsr_csrrw_cg_cmp_rd_rs1_b12, Zicsr_csrrw_cg_cmp_rd_rs1_b12_str)
+  # Check if x12 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x12, Zicsr_csrrw_cg_cmp_rd_rs1_b12, Zicsr_csrrw_cg_cmp_rd_rs1_b12_str)
 // read back CSR to check updated value
-  csrrs x15, fflags, x0
-  # Check if x15 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b12, Zicsr_csrrw_cg_cmp_rd_rs1_b12_str)
+  csrrs x9, fflags, x0
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cmp_rd_rs1_b12, Zicsr_csrrw_cg_cmp_rd_rs1_b12_str)
 #elif defined(V_SUPPORTED)
-  # Check if x12 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x12, Zicsr_csrrw_cg_cmp_rd_rs1_b12, Zicsr_csrrw_cg_cmp_rd_rs1_b12_str)
+  # Check if x12 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x12, Zicsr_csrrw_cg_cmp_rd_rs1_b12, Zicsr_csrrw_cg_cmp_rd_rs1_b12_str)
 // read back CSR to check updated value
-  csrrs x15, vxsat, x0
-  # Check if x15 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b12, Zicsr_csrrw_cg_cmp_rd_rs1_b12_str)
+  csrrs x9, vxsat, x0
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cmp_rd_rs1_b12, Zicsr_csrrw_cg_cmp_rd_rs1_b12_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x12 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x12, Zicsr_csrrw_cg_cmp_rd_rs1_b12, Zicsr_csrrw_cg_cmp_rd_rs1_b12_str)
+  # Check if x12 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x12, Zicsr_csrrw_cg_cmp_rd_rs1_b12, Zicsr_csrrw_cg_cmp_rd_rs1_b12_str)
 // read back CSR to check updated value
-  csrrs x15, mepc, x0
-  # Check if x15 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b12, Zicsr_csrrw_cg_cmp_rd_rs1_b12_str)
+  csrrs x9, mepc, x0
+  # Check if x9 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x9, Zicsr_csrrw_cg_cmp_rd_rs1_b12, Zicsr_csrrw_cg_cmp_rd_rs1_b12_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x13, x12, x15
-  sltiu x13, x13, 0x000007FF
-  # Check if x13 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x13, Zicsr_csrrw_cg_cmp_rd_rs1_b12, Zicsr_csrrw_cg_cmp_rd_rs1_b12_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x13, instret, x0
-  sub x13, x13, x15
-  sltiu x15, x13, 0x000007FF
-  # Check if x15 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b12, Zicsr_csrrw_cg_cmp_rd_rs1_b12_str)
+  # Check if x12 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x12, Zicsr_csrrw_cg_cmp_rd_rs1_b12, Zicsr_csrrw_cg_cmp_rd_rs1_b12_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x22, instret, x0
+  csrrs x9, instret, x0
+  sub x22, x9, x22
+  # Check if x22 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b12, Zicsr_csrrw_cg_cmp_rd_rs1_b12_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load rs1: x13 = 0x56a1d92f0d6eb7cc
-  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load temp reg: x15 = 0xaee3b4a308b6876a
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x15
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x15
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x15
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x15, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load rs1: x13 = 0x09ce66cf48655723
+  RVTEST_TESTDATA_LOAD_INT(x16, x14) # load temp reg: x14 = 0x3748442f05c3cbb9
 Zicsr_csrrw_cg_cmp_rd_rs1_b13:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -6333,58 +4826,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b13:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x13 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x13, Zicsr_csrrw_cg_cmp_rd_rs1_b13, Zicsr_csrrw_cg_cmp_rd_rs1_b13_str)
+  # Check if x13 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x13, Zicsr_csrrw_cg_cmp_rd_rs1_b13, Zicsr_csrrw_cg_cmp_rd_rs1_b13_str)
 // read back CSR to check updated value
-  csrrs x15, fflags, x0
-  # Check if x15 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b13, Zicsr_csrrw_cg_cmp_rd_rs1_b13_str)
+  csrrs x14, fflags, x0
+  # Check if x14 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b13, Zicsr_csrrw_cg_cmp_rd_rs1_b13_str)
 #elif defined(V_SUPPORTED)
-  # Check if x13 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x13, Zicsr_csrrw_cg_cmp_rd_rs1_b13, Zicsr_csrrw_cg_cmp_rd_rs1_b13_str)
+  # Check if x13 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x13, Zicsr_csrrw_cg_cmp_rd_rs1_b13, Zicsr_csrrw_cg_cmp_rd_rs1_b13_str)
 // read back CSR to check updated value
-  csrrs x15, vxsat, x0
-  # Check if x15 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b13, Zicsr_csrrw_cg_cmp_rd_rs1_b13_str)
+  csrrs x14, vxsat, x0
+  # Check if x14 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b13, Zicsr_csrrw_cg_cmp_rd_rs1_b13_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x13 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x13, Zicsr_csrrw_cg_cmp_rd_rs1_b13, Zicsr_csrrw_cg_cmp_rd_rs1_b13_str)
+  # Check if x13 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x13, Zicsr_csrrw_cg_cmp_rd_rs1_b13, Zicsr_csrrw_cg_cmp_rd_rs1_b13_str)
 // read back CSR to check updated value
-  csrrs x15, mepc, x0
-  # Check if x15 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b13, Zicsr_csrrw_cg_cmp_rd_rs1_b13_str)
+  csrrs x14, mepc, x0
+  # Check if x14 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b13, Zicsr_csrrw_cg_cmp_rd_rs1_b13_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x26, x13, x15
-  sltiu x26, x26, 0x000007FF
-  # Check if x26 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x26, Zicsr_csrrw_cg_cmp_rd_rs1_b13, Zicsr_csrrw_cg_cmp_rd_rs1_b13_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x26, instret, x0
-  sub x26, x26, x15
-  sltiu x15, x26, 0x000007FF
-  # Check if x15 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b13, Zicsr_csrrw_cg_cmp_rd_rs1_b13_str)
+  # Check if x13 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x13, Zicsr_csrrw_cg_cmp_rd_rs1_b13, Zicsr_csrrw_cg_cmp_rd_rs1_b13_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x24, instret, x0
+  csrrs x14, instret, x0
+  sub x24, x14, x24
+  # Check if x24 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x24, Zicsr_csrrw_cg_cmp_rd_rs1_b13, Zicsr_csrrw_cg_cmp_rd_rs1_b13_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x16, x14) # load rs1: x14 = 0x80c77d8dcef85a37
-  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load temp reg: x13 = 0x2e9d780b8a6d650f
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x13
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x13
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x13
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x13, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x14) # load rs1: x14 = 0x5af0c96dbaa5d2a9
+  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load temp reg: x22 = 0x1cae755162f3c7d0
 Zicsr_csrrw_cg_cmp_rd_rs1_b14:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -6400,58 +4877,43 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b14:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x14 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b14, Zicsr_csrrw_cg_cmp_rd_rs1_b14_str)
+  # Check if x14 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b14, Zicsr_csrrw_cg_cmp_rd_rs1_b14_str)
 // read back CSR to check updated value
-  csrrs x13, fflags, x0
-  # Check if x13 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x13, Zicsr_csrrw_cg_cmp_rd_rs1_b14, Zicsr_csrrw_cg_cmp_rd_rs1_b14_str)
+  csrrs x22, fflags, x0
+  # Check if x22 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b14, Zicsr_csrrw_cg_cmp_rd_rs1_b14_str)
 #elif defined(V_SUPPORTED)
-  # Check if x14 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b14, Zicsr_csrrw_cg_cmp_rd_rs1_b14_str)
+  # Check if x14 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b14, Zicsr_csrrw_cg_cmp_rd_rs1_b14_str)
 // read back CSR to check updated value
-  csrrs x13, vxsat, x0
-  # Check if x13 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x13, Zicsr_csrrw_cg_cmp_rd_rs1_b14, Zicsr_csrrw_cg_cmp_rd_rs1_b14_str)
+  csrrs x22, vxsat, x0
+  # Check if x22 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b14, Zicsr_csrrw_cg_cmp_rd_rs1_b14_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x14 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b14, Zicsr_csrrw_cg_cmp_rd_rs1_b14_str)
+  # Check if x14 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b14, Zicsr_csrrw_cg_cmp_rd_rs1_b14_str)
 // read back CSR to check updated value
-  csrrs x13, mepc, x0
-  # Check if x13 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x13, Zicsr_csrrw_cg_cmp_rd_rs1_b14, Zicsr_csrrw_cg_cmp_rd_rs1_b14_str)
+  csrrs x22, mepc, x0
+  # Check if x22 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b14, Zicsr_csrrw_cg_cmp_rd_rs1_b14_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x22, x14, x13
-  sltiu x22, x22, 0x000007FF
-  # Check if x22 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b14, Zicsr_csrrw_cg_cmp_rd_rs1_b14_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
+  # Check if x14 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b14, Zicsr_csrrw_cg_cmp_rd_rs1_b14_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x12, instret, x0
   csrrs x22, instret, x0
-  sub x22, x22, x13
-  sltiu x13, x22, 0x000007FF
-  # Check if x13 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x13, Zicsr_csrrw_cg_cmp_rd_rs1_b14, Zicsr_csrrw_cg_cmp_rd_rs1_b14_str)
+  sub x12, x22, x12
+  # Check if x12 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x15, x8, x7, x12, Zicsr_csrrw_cg_cmp_rd_rs1_b14, Zicsr_csrrw_cg_cmp_rd_rs1_b14_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
+  mv x22, x15 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load rs1: x15 = 0xc2e85b3f15b04b2b
-  RVTEST_TESTDATA_LOAD_INT(x16, x31) # load temp reg: x31 = 0x82fb69c07d9a1570
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x31
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x31
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x31
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x31, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load rs1: x15 = 0xedee4d6a81eca491
+  RVTEST_TESTDATA_LOAD_INT(x16, x24) # load temp reg: x24 = 0x6b93e5dc08ecec21
 Zicsr_csrrw_cg_cmp_rd_rs1_b15:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -6467,59 +4929,43 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b15:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x15 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b15, Zicsr_csrrw_cg_cmp_rd_rs1_b15_str)
+  # Check if x15 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b15, Zicsr_csrrw_cg_cmp_rd_rs1_b15_str)
 // read back CSR to check updated value
-  csrrs x31, fflags, x0
-  # Check if x31 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x31, Zicsr_csrrw_cg_cmp_rd_rs1_b15, Zicsr_csrrw_cg_cmp_rd_rs1_b15_str)
+  csrrs x24, fflags, x0
+  # Check if x24 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x24, Zicsr_csrrw_cg_cmp_rd_rs1_b15, Zicsr_csrrw_cg_cmp_rd_rs1_b15_str)
 #elif defined(V_SUPPORTED)
-  # Check if x15 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b15, Zicsr_csrrw_cg_cmp_rd_rs1_b15_str)
+  # Check if x15 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b15, Zicsr_csrrw_cg_cmp_rd_rs1_b15_str)
 // read back CSR to check updated value
-  csrrs x31, vxsat, x0
-  # Check if x31 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x31, Zicsr_csrrw_cg_cmp_rd_rs1_b15, Zicsr_csrrw_cg_cmp_rd_rs1_b15_str)
+  csrrs x24, vxsat, x0
+  # Check if x24 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x24, Zicsr_csrrw_cg_cmp_rd_rs1_b15, Zicsr_csrrw_cg_cmp_rd_rs1_b15_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x15 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b15, Zicsr_csrrw_cg_cmp_rd_rs1_b15_str)
+  # Check if x15 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b15, Zicsr_csrrw_cg_cmp_rd_rs1_b15_str)
 // read back CSR to check updated value
-  csrrs x31, mepc, x0
-  # Check if x31 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x31, Zicsr_csrrw_cg_cmp_rd_rs1_b15, Zicsr_csrrw_cg_cmp_rd_rs1_b15_str)
+  csrrs x24, mepc, x0
+  # Check if x24 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x24, Zicsr_csrrw_cg_cmp_rd_rs1_b15, Zicsr_csrrw_cg_cmp_rd_rs1_b15_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x26, x15, x31
-  sltiu x26, x26, 0x000007FF
-  # Check if x26 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x26, Zicsr_csrrw_cg_cmp_rd_rs1_b15, Zicsr_csrrw_cg_cmp_rd_rs1_b15_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x26, instret, x0
-  sub x26, x26, x31
-  sltiu x31, x26, 0x000007FF
-  # Check if x31 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x31, Zicsr_csrrw_cg_cmp_rd_rs1_b15, Zicsr_csrrw_cg_cmp_rd_rs1_b15_str)
+  # Check if x15 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b15, Zicsr_csrrw_cg_cmp_rd_rs1_b15_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x11, instret, x0
+  csrrs x24, instret, x0
+  sub x11, x24, x11
+  # Check if x11 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x11, Zicsr_csrrw_cg_cmp_rd_rs1_b15, Zicsr_csrrw_cg_cmp_rd_rs1_b15_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
-  mv x11, x16 # switch data pointer register to avoid conflict with test
+  mv x1, x16 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x11, x16) # load rs1: x16 = 0x8f719b6cc738768a
-  RVTEST_TESTDATA_LOAD_INT(x11, x10) # load temp reg: x10 = 0x6d32f12d5dc5da76
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x10
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x10
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x10
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x10, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x1, x16) # load rs1: x16 = 0xa85b3148cf0ea803
+  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load temp reg: x30 = 0xe2b011e7a1b3d7bc
 Zicsr_csrrw_cg_cmp_rd_rs1_b16:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -6535,58 +4981,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b16:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x16 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b16, Zicsr_csrrw_cg_cmp_rd_rs1_b16_str)
+  # Check if x16 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b16, Zicsr_csrrw_cg_cmp_rd_rs1_b16_str)
 // read back CSR to check updated value
-  csrrs x10, fflags, x0
-  # Check if x10 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x10, Zicsr_csrrw_cg_cmp_rd_rs1_b16, Zicsr_csrrw_cg_cmp_rd_rs1_b16_str)
+  csrrs x30, fflags, x0
+  # Check if x30 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x30, Zicsr_csrrw_cg_cmp_rd_rs1_b16, Zicsr_csrrw_cg_cmp_rd_rs1_b16_str)
 #elif defined(V_SUPPORTED)
-  # Check if x16 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b16, Zicsr_csrrw_cg_cmp_rd_rs1_b16_str)
+  # Check if x16 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b16, Zicsr_csrrw_cg_cmp_rd_rs1_b16_str)
 // read back CSR to check updated value
-  csrrs x10, vxsat, x0
-  # Check if x10 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x10, Zicsr_csrrw_cg_cmp_rd_rs1_b16, Zicsr_csrrw_cg_cmp_rd_rs1_b16_str)
+  csrrs x30, vxsat, x0
+  # Check if x30 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x30, Zicsr_csrrw_cg_cmp_rd_rs1_b16, Zicsr_csrrw_cg_cmp_rd_rs1_b16_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x16 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b16, Zicsr_csrrw_cg_cmp_rd_rs1_b16_str)
+  # Check if x16 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b16, Zicsr_csrrw_cg_cmp_rd_rs1_b16_str)
 // read back CSR to check updated value
-  csrrs x10, mepc, x0
-  # Check if x10 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x10, Zicsr_csrrw_cg_cmp_rd_rs1_b16, Zicsr_csrrw_cg_cmp_rd_rs1_b16_str)
+  csrrs x30, mepc, x0
+  # Check if x30 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x30, Zicsr_csrrw_cg_cmp_rd_rs1_b16, Zicsr_csrrw_cg_cmp_rd_rs1_b16_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x22, x16, x10
-  sltiu x22, x22, 0x000007FF
-  # Check if x22 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b16, Zicsr_csrrw_cg_cmp_rd_rs1_b16_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x22, instret, x0
-  sub x22, x22, x10
-  sltiu x10, x22, 0x000007FF
-  # Check if x10 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x10, Zicsr_csrrw_cg_cmp_rd_rs1_b16, Zicsr_csrrw_cg_cmp_rd_rs1_b16_str)
+  # Check if x16 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b16, Zicsr_csrrw_cg_cmp_rd_rs1_b16_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x12, instret, x0
+  csrrs x30, instret, x0
+  sub x12, x30, x12
+  # Check if x12 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x12, Zicsr_csrrw_cg_cmp_rd_rs1_b16, Zicsr_csrrw_cg_cmp_rd_rs1_b16_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x11, x17) # load rs1: x17 = 0x3064a63c4e12f554
-  RVTEST_TESTDATA_LOAD_INT(x11, x2) # load temp reg: x2 = 0x9530fa28edb84caf
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x2
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x2
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x2
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x2, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load rs1: x17 = 0x56a1d92f0d6eb7cc
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load temp reg: x14 = 0xaee3b4a308b6876a
 Zicsr_csrrw_cg_cmp_rd_rs1_b17:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -6602,58 +5032,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b17:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x17 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x17, Zicsr_csrrw_cg_cmp_rd_rs1_b17, Zicsr_csrrw_cg_cmp_rd_rs1_b17_str)
+  # Check if x17 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x17, Zicsr_csrrw_cg_cmp_rd_rs1_b17, Zicsr_csrrw_cg_cmp_rd_rs1_b17_str)
 // read back CSR to check updated value
-  csrrs x2, fflags, x0
-  # Check if x2 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x2, Zicsr_csrrw_cg_cmp_rd_rs1_b17, Zicsr_csrrw_cg_cmp_rd_rs1_b17_str)
+  csrrs x14, fflags, x0
+  # Check if x14 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b17, Zicsr_csrrw_cg_cmp_rd_rs1_b17_str)
 #elif defined(V_SUPPORTED)
-  # Check if x17 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x17, Zicsr_csrrw_cg_cmp_rd_rs1_b17, Zicsr_csrrw_cg_cmp_rd_rs1_b17_str)
+  # Check if x17 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x17, Zicsr_csrrw_cg_cmp_rd_rs1_b17, Zicsr_csrrw_cg_cmp_rd_rs1_b17_str)
 // read back CSR to check updated value
-  csrrs x2, vxsat, x0
-  # Check if x2 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x2, Zicsr_csrrw_cg_cmp_rd_rs1_b17, Zicsr_csrrw_cg_cmp_rd_rs1_b17_str)
+  csrrs x14, vxsat, x0
+  # Check if x14 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b17, Zicsr_csrrw_cg_cmp_rd_rs1_b17_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x17 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x17, Zicsr_csrrw_cg_cmp_rd_rs1_b17, Zicsr_csrrw_cg_cmp_rd_rs1_b17_str)
+  # Check if x17 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x17, Zicsr_csrrw_cg_cmp_rd_rs1_b17, Zicsr_csrrw_cg_cmp_rd_rs1_b17_str)
 // read back CSR to check updated value
-  csrrs x2, mepc, x0
-  # Check if x2 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x2, Zicsr_csrrw_cg_cmp_rd_rs1_b17, Zicsr_csrrw_cg_cmp_rd_rs1_b17_str)
+  csrrs x14, mepc, x0
+  # Check if x14 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x14, Zicsr_csrrw_cg_cmp_rd_rs1_b17, Zicsr_csrrw_cg_cmp_rd_rs1_b17_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x25, x17, x2
-  sltiu x25, x25, 0x000007FF
-  # Check if x25 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x25, Zicsr_csrrw_cg_cmp_rd_rs1_b17, Zicsr_csrrw_cg_cmp_rd_rs1_b17_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x25, instret, x0
-  sub x25, x25, x2
-  sltiu x2, x25, 0x000007FF
-  # Check if x2 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x2, Zicsr_csrrw_cg_cmp_rd_rs1_b17, Zicsr_csrrw_cg_cmp_rd_rs1_b17_str)
+  # Check if x17 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x17, Zicsr_csrrw_cg_cmp_rd_rs1_b17, Zicsr_csrrw_cg_cmp_rd_rs1_b17_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x26, instret, x0
+  csrrs x14, instret, x0
+  sub x26, x14, x26
+  # Check if x26 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x26, Zicsr_csrrw_cg_cmp_rd_rs1_b17, Zicsr_csrrw_cg_cmp_rd_rs1_b17_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x11, x18) # load rs1: x18 = 0xcb61cc6514365b5f
-  RVTEST_TESTDATA_LOAD_INT(x11, x17) # load temp reg: x17 = 0xa41420fd34dd3a57
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x17
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x17
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x17
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x17, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x1, x18) # load rs1: x18 = 0x818e330500c77d8d
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load temp reg: x21 = 0x95b04b2b25016819
 Zicsr_csrrw_cg_cmp_rd_rs1_b18:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -6669,58 +5083,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b18:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x18 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b18, Zicsr_csrrw_cg_cmp_rd_rs1_b18_str)
+  # Check if x18 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b18, Zicsr_csrrw_cg_cmp_rd_rs1_b18_str)
 // read back CSR to check updated value
-  csrrs x17, fflags, x0
-  # Check if x17 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x17, Zicsr_csrrw_cg_cmp_rd_rs1_b18, Zicsr_csrrw_cg_cmp_rd_rs1_b18_str)
+  csrrs x21, fflags, x0
+  # Check if x21 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b18, Zicsr_csrrw_cg_cmp_rd_rs1_b18_str)
 #elif defined(V_SUPPORTED)
-  # Check if x18 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b18, Zicsr_csrrw_cg_cmp_rd_rs1_b18_str)
+  # Check if x18 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b18, Zicsr_csrrw_cg_cmp_rd_rs1_b18_str)
 // read back CSR to check updated value
-  csrrs x17, vxsat, x0
-  # Check if x17 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x17, Zicsr_csrrw_cg_cmp_rd_rs1_b18, Zicsr_csrrw_cg_cmp_rd_rs1_b18_str)
+  csrrs x21, vxsat, x0
+  # Check if x21 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b18, Zicsr_csrrw_cg_cmp_rd_rs1_b18_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x18 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b18, Zicsr_csrrw_cg_cmp_rd_rs1_b18_str)
+  # Check if x18 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b18, Zicsr_csrrw_cg_cmp_rd_rs1_b18_str)
 // read back CSR to check updated value
-  csrrs x17, mepc, x0
-  # Check if x17 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x17, Zicsr_csrrw_cg_cmp_rd_rs1_b18, Zicsr_csrrw_cg_cmp_rd_rs1_b18_str)
+  csrrs x21, mepc, x0
+  # Check if x21 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b18, Zicsr_csrrw_cg_cmp_rd_rs1_b18_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x16, x18, x17
-  sltiu x16, x16, 0x000007FF
-  # Check if x16 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b18, Zicsr_csrrw_cg_cmp_rd_rs1_b18_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x16, instret, x0
-  sub x16, x16, x17
-  sltiu x17, x16, 0x000007FF
-  # Check if x17 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x17, Zicsr_csrrw_cg_cmp_rd_rs1_b18, Zicsr_csrrw_cg_cmp_rd_rs1_b18_str)
+  # Check if x18 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b18, Zicsr_csrrw_cg_cmp_rd_rs1_b18_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x10, instret, x0
+  csrrs x21, instret, x0
+  sub x10, x21, x10
+  # Check if x10 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x10, Zicsr_csrrw_cg_cmp_rd_rs1_b18, Zicsr_csrrw_cg_cmp_rd_rs1_b18_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x11, x19) # load rs1: x19 = 0x63afa9f3296118c2
-  RVTEST_TESTDATA_LOAD_INT(x11, x25) # load temp reg: x25 = 0x915c45d12bd5b49a
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x25
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x25
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x25
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x25, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load rs1: x19 = 0xfd9a1570d33b4182
+  RVTEST_TESTDATA_LOAD_INT(x1, x16) # load temp reg: x16 = 0x460f31742178517a
 Zicsr_csrrw_cg_cmp_rd_rs1_b19:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -6736,58 +5134,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b19:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x19 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x19, Zicsr_csrrw_cg_cmp_rd_rs1_b19, Zicsr_csrrw_cg_cmp_rd_rs1_b19_str)
+  # Check if x19 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x19, Zicsr_csrrw_cg_cmp_rd_rs1_b19, Zicsr_csrrw_cg_cmp_rd_rs1_b19_str)
 // read back CSR to check updated value
-  csrrs x25, fflags, x0
-  # Check if x25 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x25, Zicsr_csrrw_cg_cmp_rd_rs1_b19, Zicsr_csrrw_cg_cmp_rd_rs1_b19_str)
+  csrrs x16, fflags, x0
+  # Check if x16 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b19, Zicsr_csrrw_cg_cmp_rd_rs1_b19_str)
 #elif defined(V_SUPPORTED)
-  # Check if x19 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x19, Zicsr_csrrw_cg_cmp_rd_rs1_b19, Zicsr_csrrw_cg_cmp_rd_rs1_b19_str)
+  # Check if x19 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x19, Zicsr_csrrw_cg_cmp_rd_rs1_b19, Zicsr_csrrw_cg_cmp_rd_rs1_b19_str)
 // read back CSR to check updated value
-  csrrs x25, vxsat, x0
-  # Check if x25 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x25, Zicsr_csrrw_cg_cmp_rd_rs1_b19, Zicsr_csrrw_cg_cmp_rd_rs1_b19_str)
+  csrrs x16, vxsat, x0
+  # Check if x16 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b19, Zicsr_csrrw_cg_cmp_rd_rs1_b19_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x19 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x19, Zicsr_csrrw_cg_cmp_rd_rs1_b19, Zicsr_csrrw_cg_cmp_rd_rs1_b19_str)
+  # Check if x19 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x19, Zicsr_csrrw_cg_cmp_rd_rs1_b19, Zicsr_csrrw_cg_cmp_rd_rs1_b19_str)
 // read back CSR to check updated value
-  csrrs x25, mepc, x0
-  # Check if x25 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x25, Zicsr_csrrw_cg_cmp_rd_rs1_b19, Zicsr_csrrw_cg_cmp_rd_rs1_b19_str)
+  csrrs x16, mepc, x0
+  # Check if x16 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b19, Zicsr_csrrw_cg_cmp_rd_rs1_b19_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x30, x19, x25
-  sltiu x30, x30, 0x000007FF
-  # Check if x30 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x30, Zicsr_csrrw_cg_cmp_rd_rs1_b19, Zicsr_csrrw_cg_cmp_rd_rs1_b19_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
+  # Check if x19 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x19, Zicsr_csrrw_cg_cmp_rd_rs1_b19, Zicsr_csrrw_cg_cmp_rd_rs1_b19_str)
+// read instret twice and record the difference to prove it ticks
   csrrs x30, instret, x0
-  sub x30, x30, x25
-  sltiu x25, x30, 0x000007FF
-  # Check if x25 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x25, Zicsr_csrrw_cg_cmp_rd_rs1_b19, Zicsr_csrrw_cg_cmp_rd_rs1_b19_str)
+  csrrs x16, instret, x0
+  sub x30, x16, x30
+  # Check if x30 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x30, Zicsr_csrrw_cg_cmp_rd_rs1_b19, Zicsr_csrrw_cg_cmp_rd_rs1_b19_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x11, x20) # load rs1: x20 = 0xa5af7af70b1080ed
-  RVTEST_TESTDATA_LOAD_INT(x11, x28) # load temp reg: x28 = 0xadc1772eadcdbecc
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x28
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x28
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x28
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x28, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs1: x20 = 0xd4b3e8a40f719b6c
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load temp reg: x28 = 0x79c0bb4a8ef06792
 Zicsr_csrrw_cg_cmp_rd_rs1_b20:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -6803,58 +5185,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b20:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x20 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x20, Zicsr_csrrw_cg_cmp_rd_rs1_b20, Zicsr_csrrw_cg_cmp_rd_rs1_b20_str)
+  # Check if x20 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x20, Zicsr_csrrw_cg_cmp_rd_rs1_b20, Zicsr_csrrw_cg_cmp_rd_rs1_b20_str)
 // read back CSR to check updated value
   csrrs x28, fflags, x0
-  # Check if x28 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b20, Zicsr_csrrw_cg_cmp_rd_rs1_b20_str)
+  # Check if x28 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b20, Zicsr_csrrw_cg_cmp_rd_rs1_b20_str)
 #elif defined(V_SUPPORTED)
-  # Check if x20 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x20, Zicsr_csrrw_cg_cmp_rd_rs1_b20, Zicsr_csrrw_cg_cmp_rd_rs1_b20_str)
+  # Check if x20 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x20, Zicsr_csrrw_cg_cmp_rd_rs1_b20, Zicsr_csrrw_cg_cmp_rd_rs1_b20_str)
 // read back CSR to check updated value
   csrrs x28, vxsat, x0
-  # Check if x28 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b20, Zicsr_csrrw_cg_cmp_rd_rs1_b20_str)
+  # Check if x28 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b20, Zicsr_csrrw_cg_cmp_rd_rs1_b20_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x20 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x20, Zicsr_csrrw_cg_cmp_rd_rs1_b20, Zicsr_csrrw_cg_cmp_rd_rs1_b20_str)
+  # Check if x20 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x20, Zicsr_csrrw_cg_cmp_rd_rs1_b20, Zicsr_csrrw_cg_cmp_rd_rs1_b20_str)
 // read back CSR to check updated value
   csrrs x28, mepc, x0
-  # Check if x28 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b20, Zicsr_csrrw_cg_cmp_rd_rs1_b20_str)
+  # Check if x28 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b20, Zicsr_csrrw_cg_cmp_rd_rs1_b20_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x18, x20, x28
-  sltiu x18, x18, 0x000007FF
-  # Check if x18 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b20, Zicsr_csrrw_cg_cmp_rd_rs1_b20_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x18, instret, x0
-  sub x18, x18, x28
-  sltiu x28, x18, 0x000007FF
-  # Check if x28 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b20, Zicsr_csrrw_cg_cmp_rd_rs1_b20_str)
+  # Check if x20 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x20, Zicsr_csrrw_cg_cmp_rd_rs1_b20, Zicsr_csrrw_cg_cmp_rd_rs1_b20_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x9, instret, x0
+  csrrs x28, instret, x0
+  sub x9, x28, x9
+  # Check if x9 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x9, Zicsr_csrrw_cg_cmp_rd_rs1_b20, Zicsr_csrrw_cg_cmp_rd_rs1_b20_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x11, x21) # load rs1: x21 = 0x177bf789ec1c5e57
-  RVTEST_TESTDATA_LOAD_INT(x11, x19) # load temp reg: x19 = 0x1be03ffb86e2d09c
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x19
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x19
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x19
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x19, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs1: x21 = 0xb8bfa447ae17fe7d
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load temp reg: x15 = 0x7aacc2960d93dad9
 Zicsr_csrrw_cg_cmp_rd_rs1_b21:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -6870,58 +5236,43 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b21:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x21 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b21, Zicsr_csrrw_cg_cmp_rd_rs1_b21_str)
+  # Check if x21 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b21, Zicsr_csrrw_cg_cmp_rd_rs1_b21_str)
 // read back CSR to check updated value
-  csrrs x19, fflags, x0
-  # Check if x19 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x19, Zicsr_csrrw_cg_cmp_rd_rs1_b21, Zicsr_csrrw_cg_cmp_rd_rs1_b21_str)
+  csrrs x15, fflags, x0
+  # Check if x15 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b21, Zicsr_csrrw_cg_cmp_rd_rs1_b21_str)
 #elif defined(V_SUPPORTED)
-  # Check if x21 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b21, Zicsr_csrrw_cg_cmp_rd_rs1_b21_str)
+  # Check if x21 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b21, Zicsr_csrrw_cg_cmp_rd_rs1_b21_str)
 // read back CSR to check updated value
-  csrrs x19, vxsat, x0
-  # Check if x19 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x19, Zicsr_csrrw_cg_cmp_rd_rs1_b21, Zicsr_csrrw_cg_cmp_rd_rs1_b21_str)
+  csrrs x15, vxsat, x0
+  # Check if x15 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b21, Zicsr_csrrw_cg_cmp_rd_rs1_b21_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x21 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b21, Zicsr_csrrw_cg_cmp_rd_rs1_b21_str)
+  # Check if x21 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b21, Zicsr_csrrw_cg_cmp_rd_rs1_b21_str)
 // read back CSR to check updated value
-  csrrs x19, mepc, x0
-  # Check if x19 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x19, Zicsr_csrrw_cg_cmp_rd_rs1_b21, Zicsr_csrrw_cg_cmp_rd_rs1_b21_str)
+  csrrs x15, mepc, x0
+  # Check if x15 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b21, Zicsr_csrrw_cg_cmp_rd_rs1_b21_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x24, x21, x19
-  sltiu x24, x24, 0x000007FF
-  # Check if x24 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x24, Zicsr_csrrw_cg_cmp_rd_rs1_b21, Zicsr_csrrw_cg_cmp_rd_rs1_b21_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x24, instret, x0
-  sub x24, x24, x19
-  sltiu x19, x24, 0x000007FF
-  # Check if x19 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x19, Zicsr_csrrw_cg_cmp_rd_rs1_b21, Zicsr_csrrw_cg_cmp_rd_rs1_b21_str)
+  # Check if x21 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b21, Zicsr_csrrw_cg_cmp_rd_rs1_b21_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x12, instret, x0
+  csrrs x15, instret, x0
+  sub x12, x15, x12
+  # Check if x12 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x12, Zicsr_csrrw_cg_cmp_rd_rs1_b21, Zicsr_csrrw_cg_cmp_rd_rs1_b21_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
+  mv x17, x22 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x11, x22) # load rs1: x22 = 0xa1df335d938f2de5
-  RVTEST_TESTDATA_LOAD_INT(x11, x18) # load temp reg: x18 = 0x616a730973eca1d6
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x18
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x18
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x18
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x18, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs1: x22 = 0x6db84caf124668a7
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load temp reg: x5 = 0xd187c5349fc074bd
 Zicsr_csrrw_cg_cmp_rd_rs1_b22:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -6937,58 +5288,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b22:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x22 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b22, Zicsr_csrrw_cg_cmp_rd_rs1_b22_str)
+  # Check if x22 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b22, Zicsr_csrrw_cg_cmp_rd_rs1_b22_str)
 // read back CSR to check updated value
-  csrrs x18, fflags, x0
-  # Check if x18 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b22, Zicsr_csrrw_cg_cmp_rd_rs1_b22_str)
+  csrrs x5, fflags, x0
+  # Check if x5 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x5, Zicsr_csrrw_cg_cmp_rd_rs1_b22, Zicsr_csrrw_cg_cmp_rd_rs1_b22_str)
 #elif defined(V_SUPPORTED)
-  # Check if x22 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b22, Zicsr_csrrw_cg_cmp_rd_rs1_b22_str)
+  # Check if x22 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b22, Zicsr_csrrw_cg_cmp_rd_rs1_b22_str)
 // read back CSR to check updated value
-  csrrs x18, vxsat, x0
-  # Check if x18 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b22, Zicsr_csrrw_cg_cmp_rd_rs1_b22_str)
+  csrrs x5, vxsat, x0
+  # Check if x5 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x5, Zicsr_csrrw_cg_cmp_rd_rs1_b22, Zicsr_csrrw_cg_cmp_rd_rs1_b22_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x22 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b22, Zicsr_csrrw_cg_cmp_rd_rs1_b22_str)
+  # Check if x22 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b22, Zicsr_csrrw_cg_cmp_rd_rs1_b22_str)
 // read back CSR to check updated value
-  csrrs x18, mepc, x0
-  # Check if x18 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b22, Zicsr_csrrw_cg_cmp_rd_rs1_b22_str)
+  csrrs x5, mepc, x0
+  # Check if x5 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x5, Zicsr_csrrw_cg_cmp_rd_rs1_b22, Zicsr_csrrw_cg_cmp_rd_rs1_b22_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x13, x22, x18
-  sltiu x13, x13, 0x000007FF
-  # Check if x13 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x13, Zicsr_csrrw_cg_cmp_rd_rs1_b22, Zicsr_csrrw_cg_cmp_rd_rs1_b22_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x13, instret, x0
-  sub x13, x13, x18
-  sltiu x18, x13, 0x000007FF
-  # Check if x18 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b22, Zicsr_csrrw_cg_cmp_rd_rs1_b22_str)
+  # Check if x22 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x22, Zicsr_csrrw_cg_cmp_rd_rs1_b22, Zicsr_csrrw_cg_cmp_rd_rs1_b22_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x3, instret, x0
+  csrrs x5, instret, x0
+  sub x3, x5, x3
+  # Check if x3 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x3, Zicsr_csrrw_cg_cmp_rd_rs1_b22, Zicsr_csrrw_cg_cmp_rd_rs1_b22_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x11, x23) # load rs1: x23 = 0xb35b079c68394c95
-  RVTEST_TESTDATA_LOAD_INT(x11, x16) # load temp reg: x16 = 0xbe9eb4a6deb6a6dd
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x16
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x16
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x16
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x16, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs1: x23 = 0xa3fe6cf24b61cc65
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load temp reg: x28 = 0xa41420fd34dd3a57
 Zicsr_csrrw_cg_cmp_rd_rs1_b23:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -7004,58 +5339,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b23:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x23 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x23, Zicsr_csrrw_cg_cmp_rd_rs1_b23, Zicsr_csrrw_cg_cmp_rd_rs1_b23_str)
+  # Check if x23 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x23, Zicsr_csrrw_cg_cmp_rd_rs1_b23, Zicsr_csrrw_cg_cmp_rd_rs1_b23_str)
 // read back CSR to check updated value
-  csrrs x16, fflags, x0
-  # Check if x16 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b23, Zicsr_csrrw_cg_cmp_rd_rs1_b23_str)
+  csrrs x28, fflags, x0
+  # Check if x28 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b23, Zicsr_csrrw_cg_cmp_rd_rs1_b23_str)
 #elif defined(V_SUPPORTED)
-  # Check if x23 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x23, Zicsr_csrrw_cg_cmp_rd_rs1_b23, Zicsr_csrrw_cg_cmp_rd_rs1_b23_str)
+  # Check if x23 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x23, Zicsr_csrrw_cg_cmp_rd_rs1_b23, Zicsr_csrrw_cg_cmp_rd_rs1_b23_str)
 // read back CSR to check updated value
-  csrrs x16, vxsat, x0
-  # Check if x16 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b23, Zicsr_csrrw_cg_cmp_rd_rs1_b23_str)
+  csrrs x28, vxsat, x0
+  # Check if x28 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b23, Zicsr_csrrw_cg_cmp_rd_rs1_b23_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x23 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x23, Zicsr_csrrw_cg_cmp_rd_rs1_b23, Zicsr_csrrw_cg_cmp_rd_rs1_b23_str)
+  # Check if x23 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x23, Zicsr_csrrw_cg_cmp_rd_rs1_b23, Zicsr_csrrw_cg_cmp_rd_rs1_b23_str)
 // read back CSR to check updated value
-  csrrs x16, mepc, x0
-  # Check if x16 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b23, Zicsr_csrrw_cg_cmp_rd_rs1_b23_str)
+  csrrs x28, mepc, x0
+  # Check if x28 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b23, Zicsr_csrrw_cg_cmp_rd_rs1_b23_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x4, x23, x16
-  sltiu x4, x4, 0x000007FF
-  # Check if x4 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x4, Zicsr_csrrw_cg_cmp_rd_rs1_b23, Zicsr_csrrw_cg_cmp_rd_rs1_b23_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x4, instret, x0
-  sub x4, x4, x16
-  sltiu x16, x4, 0x000007FF
-  # Check if x16 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b23, Zicsr_csrrw_cg_cmp_rd_rs1_b23_str)
+  # Check if x23 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x23, Zicsr_csrrw_cg_cmp_rd_rs1_b23, Zicsr_csrrw_cg_cmp_rd_rs1_b23_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x15, instret, x0
+  csrrs x28, instret, x0
+  sub x15, x28, x15
+  # Check if x15 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b23, Zicsr_csrrw_cg_cmp_rd_rs1_b23_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x11, x24) # load rs1: x24 = 0xb9abb83cb713cb14
-  RVTEST_TESTDATA_LOAD_INT(x11, x29) # load temp reg: x29 = 0x5d52957f04723738
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x29
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x29
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x29
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x29, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x1, x24) # load rs1: x24 = 0x0750e64aed715595
+  RVTEST_TESTDATA_LOAD_INT(x1, x16) # load temp reg: x16 = 0xabd5b49aa1bfbbd9
 Zicsr_csrrw_cg_cmp_rd_rs1_b24:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -7071,58 +5390,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b24:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x24 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x24, Zicsr_csrrw_cg_cmp_rd_rs1_b24, Zicsr_csrrw_cg_cmp_rd_rs1_b24_str)
+  # Check if x24 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x24, Zicsr_csrrw_cg_cmp_rd_rs1_b24, Zicsr_csrrw_cg_cmp_rd_rs1_b24_str)
 // read back CSR to check updated value
-  csrrs x29, fflags, x0
-  # Check if x29 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b24, Zicsr_csrrw_cg_cmp_rd_rs1_b24_str)
+  csrrs x16, fflags, x0
+  # Check if x16 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b24, Zicsr_csrrw_cg_cmp_rd_rs1_b24_str)
 #elif defined(V_SUPPORTED)
-  # Check if x24 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x24, Zicsr_csrrw_cg_cmp_rd_rs1_b24, Zicsr_csrrw_cg_cmp_rd_rs1_b24_str)
+  # Check if x24 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x24, Zicsr_csrrw_cg_cmp_rd_rs1_b24, Zicsr_csrrw_cg_cmp_rd_rs1_b24_str)
 // read back CSR to check updated value
-  csrrs x29, vxsat, x0
-  # Check if x29 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b24, Zicsr_csrrw_cg_cmp_rd_rs1_b24_str)
+  csrrs x16, vxsat, x0
+  # Check if x16 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b24, Zicsr_csrrw_cg_cmp_rd_rs1_b24_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x24 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x24, Zicsr_csrrw_cg_cmp_rd_rs1_b24, Zicsr_csrrw_cg_cmp_rd_rs1_b24_str)
+  # Check if x24 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x24, Zicsr_csrrw_cg_cmp_rd_rs1_b24, Zicsr_csrrw_cg_cmp_rd_rs1_b24_str)
 // read back CSR to check updated value
-  csrrs x29, mepc, x0
-  # Check if x29 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b24, Zicsr_csrrw_cg_cmp_rd_rs1_b24_str)
+  csrrs x16, mepc, x0
+  # Check if x16 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b24, Zicsr_csrrw_cg_cmp_rd_rs1_b24_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x4, x24, x29
-  sltiu x4, x4, 0x000007FF
-  # Check if x4 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x4, Zicsr_csrrw_cg_cmp_rd_rs1_b24, Zicsr_csrrw_cg_cmp_rd_rs1_b24_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
+  # Check if x24 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x24, Zicsr_csrrw_cg_cmp_rd_rs1_b24, Zicsr_csrrw_cg_cmp_rd_rs1_b24_str)
+// read instret twice and record the difference to prove it ticks
   csrrs x4, instret, x0
-  sub x4, x4, x29
-  sltiu x29, x4, 0x000007FF
-  # Check if x29 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b24, Zicsr_csrrw_cg_cmp_rd_rs1_b24_str)
+  csrrs x16, instret, x0
+  sub x4, x16, x4
+  # Check if x4 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x4, Zicsr_csrrw_cg_cmp_rd_rs1_b24, Zicsr_csrrw_cg_cmp_rd_rs1_b24_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x11, x25) # load rs1: x25 = 0x45231389ddb942ef
-  RVTEST_TESTDATA_LOAD_INT(x11, x18) # load temp reg: x18 = 0x7b43157b7cb0b827
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x18
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x18
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x18
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x18, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs1: x25 = 0xa5af7af70b1080ed
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load temp reg: x28 = 0xadc1772eadcdbecc
 Zicsr_csrrw_cg_cmp_rd_rs1_b25:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -7138,58 +5441,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b25:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x25 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x25, Zicsr_csrrw_cg_cmp_rd_rs1_b25, Zicsr_csrrw_cg_cmp_rd_rs1_b25_str)
+  # Check if x25 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x25, Zicsr_csrrw_cg_cmp_rd_rs1_b25, Zicsr_csrrw_cg_cmp_rd_rs1_b25_str)
 // read back CSR to check updated value
-  csrrs x18, fflags, x0
-  # Check if x18 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b25, Zicsr_csrrw_cg_cmp_rd_rs1_b25_str)
+  csrrs x28, fflags, x0
+  # Check if x28 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b25, Zicsr_csrrw_cg_cmp_rd_rs1_b25_str)
 #elif defined(V_SUPPORTED)
-  # Check if x25 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x25, Zicsr_csrrw_cg_cmp_rd_rs1_b25, Zicsr_csrrw_cg_cmp_rd_rs1_b25_str)
+  # Check if x25 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x25, Zicsr_csrrw_cg_cmp_rd_rs1_b25, Zicsr_csrrw_cg_cmp_rd_rs1_b25_str)
 // read back CSR to check updated value
-  csrrs x18, vxsat, x0
-  # Check if x18 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b25, Zicsr_csrrw_cg_cmp_rd_rs1_b25_str)
+  csrrs x28, vxsat, x0
+  # Check if x28 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b25, Zicsr_csrrw_cg_cmp_rd_rs1_b25_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x25 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x25, Zicsr_csrrw_cg_cmp_rd_rs1_b25, Zicsr_csrrw_cg_cmp_rd_rs1_b25_str)
+  # Check if x25 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x25, Zicsr_csrrw_cg_cmp_rd_rs1_b25, Zicsr_csrrw_cg_cmp_rd_rs1_b25_str)
 // read back CSR to check updated value
-  csrrs x18, mepc, x0
-  # Check if x18 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b25, Zicsr_csrrw_cg_cmp_rd_rs1_b25_str)
+  csrrs x28, mepc, x0
+  # Check if x28 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b25, Zicsr_csrrw_cg_cmp_rd_rs1_b25_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x5, x25, x18
-  sltiu x5, x5, 0x000007FF
-  # Check if x5 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x5, Zicsr_csrrw_cg_cmp_rd_rs1_b25, Zicsr_csrrw_cg_cmp_rd_rs1_b25_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x5, instret, x0
-  sub x5, x5, x18
-  sltiu x18, x5, 0x000007FF
-  # Check if x18 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b25, Zicsr_csrrw_cg_cmp_rd_rs1_b25_str)
+  # Check if x25 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x25, Zicsr_csrrw_cg_cmp_rd_rs1_b25, Zicsr_csrrw_cg_cmp_rd_rs1_b25_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x18, instret, x0
+  csrrs x28, instret, x0
+  sub x18, x28, x18
+  # Check if x18 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b25, Zicsr_csrrw_cg_cmp_rd_rs1_b25_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x11, x26) # load rs1: x26 = 0x92fb3412f180a9c0
-  RVTEST_TESTDATA_LOAD_INT(x11, x21) # load temp reg: x21 = 0xc097550fdd0ed940
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x21
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x21
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x21
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x21, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs1: x26 = 0xd1088a54977bf789
+  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load temp reg: x20 = 0xa1df335d938f2de5
 Zicsr_csrrw_cg_cmp_rd_rs1_b26:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -7205,58 +5492,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b26:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x26 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x26, Zicsr_csrrw_cg_cmp_rd_rs1_b26, Zicsr_csrrw_cg_cmp_rd_rs1_b26_str)
+  # Check if x26 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x26, Zicsr_csrrw_cg_cmp_rd_rs1_b26, Zicsr_csrrw_cg_cmp_rd_rs1_b26_str)
 // read back CSR to check updated value
-  csrrs x21, fflags, x0
-  # Check if x21 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b26, Zicsr_csrrw_cg_cmp_rd_rs1_b26_str)
+  csrrs x20, fflags, x0
+  # Check if x20 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x20, Zicsr_csrrw_cg_cmp_rd_rs1_b26, Zicsr_csrrw_cg_cmp_rd_rs1_b26_str)
 #elif defined(V_SUPPORTED)
-  # Check if x26 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x26, Zicsr_csrrw_cg_cmp_rd_rs1_b26, Zicsr_csrrw_cg_cmp_rd_rs1_b26_str)
+  # Check if x26 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x26, Zicsr_csrrw_cg_cmp_rd_rs1_b26, Zicsr_csrrw_cg_cmp_rd_rs1_b26_str)
 // read back CSR to check updated value
-  csrrs x21, vxsat, x0
-  # Check if x21 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b26, Zicsr_csrrw_cg_cmp_rd_rs1_b26_str)
+  csrrs x20, vxsat, x0
+  # Check if x20 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x20, Zicsr_csrrw_cg_cmp_rd_rs1_b26, Zicsr_csrrw_cg_cmp_rd_rs1_b26_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x26 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x26, Zicsr_csrrw_cg_cmp_rd_rs1_b26, Zicsr_csrrw_cg_cmp_rd_rs1_b26_str)
+  # Check if x26 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x26, Zicsr_csrrw_cg_cmp_rd_rs1_b26, Zicsr_csrrw_cg_cmp_rd_rs1_b26_str)
 // read back CSR to check updated value
-  csrrs x21, mepc, x0
-  # Check if x21 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b26, Zicsr_csrrw_cg_cmp_rd_rs1_b26_str)
+  csrrs x20, mepc, x0
+  # Check if x20 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x20, Zicsr_csrrw_cg_cmp_rd_rs1_b26, Zicsr_csrrw_cg_cmp_rd_rs1_b26_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x17, x26, x21
-  sltiu x17, x17, 0x000007FF
-  # Check if x17 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x17, Zicsr_csrrw_cg_cmp_rd_rs1_b26, Zicsr_csrrw_cg_cmp_rd_rs1_b26_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x17, instret, x0
-  sub x17, x17, x21
-  sltiu x21, x17, 0x000007FF
-  # Check if x21 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b26, Zicsr_csrrw_cg_cmp_rd_rs1_b26_str)
+  # Check if x26 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x26, Zicsr_csrrw_cg_cmp_rd_rs1_b26, Zicsr_csrrw_cg_cmp_rd_rs1_b26_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x18, instret, x0
+  csrrs x20, instret, x0
+  sub x18, x20, x18
+  # Check if x18 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b26, Zicsr_csrrw_cg_cmp_rd_rs1_b26_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x11, x27) # load rs1: x27 = 0xebb38cfa18172e66
-  RVTEST_TESTDATA_LOAD_INT(x11, x15) # load temp reg: x15 = 0x42e8d00d09fa50d6
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x15
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x15
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x15
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x15, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs1: x27 = 0x616a730973eca1d6
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load temp reg: x12 = 0x057979c34cbec6e7
 Zicsr_csrrw_cg_cmp_rd_rs1_b27:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -7272,58 +5543,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b27:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x27 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x27, Zicsr_csrrw_cg_cmp_rd_rs1_b27, Zicsr_csrrw_cg_cmp_rd_rs1_b27_str)
+  # Check if x27 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x27, Zicsr_csrrw_cg_cmp_rd_rs1_b27, Zicsr_csrrw_cg_cmp_rd_rs1_b27_str)
 // read back CSR to check updated value
-  csrrs x15, fflags, x0
-  # Check if x15 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b27, Zicsr_csrrw_cg_cmp_rd_rs1_b27_str)
+  csrrs x12, fflags, x0
+  # Check if x12 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x12, Zicsr_csrrw_cg_cmp_rd_rs1_b27, Zicsr_csrrw_cg_cmp_rd_rs1_b27_str)
 #elif defined(V_SUPPORTED)
-  # Check if x27 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x27, Zicsr_csrrw_cg_cmp_rd_rs1_b27, Zicsr_csrrw_cg_cmp_rd_rs1_b27_str)
+  # Check if x27 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x27, Zicsr_csrrw_cg_cmp_rd_rs1_b27, Zicsr_csrrw_cg_cmp_rd_rs1_b27_str)
 // read back CSR to check updated value
-  csrrs x15, vxsat, x0
-  # Check if x15 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b27, Zicsr_csrrw_cg_cmp_rd_rs1_b27_str)
+  csrrs x12, vxsat, x0
+  # Check if x12 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x12, Zicsr_csrrw_cg_cmp_rd_rs1_b27, Zicsr_csrrw_cg_cmp_rd_rs1_b27_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x27 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x27, Zicsr_csrrw_cg_cmp_rd_rs1_b27, Zicsr_csrrw_cg_cmp_rd_rs1_b27_str)
+  # Check if x27 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x27, Zicsr_csrrw_cg_cmp_rd_rs1_b27, Zicsr_csrrw_cg_cmp_rd_rs1_b27_str)
 // read back CSR to check updated value
-  csrrs x15, mepc, x0
-  # Check if x15 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b27, Zicsr_csrrw_cg_cmp_rd_rs1_b27_str)
+  csrrs x12, mepc, x0
+  # Check if x12 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x12, Zicsr_csrrw_cg_cmp_rd_rs1_b27, Zicsr_csrrw_cg_cmp_rd_rs1_b27_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x28, x27, x15
-  sltiu x28, x28, 0x000007FF
-  # Check if x28 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b27, Zicsr_csrrw_cg_cmp_rd_rs1_b27_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x28, instret, x0
-  sub x28, x28, x15
-  sltiu x15, x28, 0x000007FF
-  # Check if x15 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x15, Zicsr_csrrw_cg_cmp_rd_rs1_b27, Zicsr_csrrw_cg_cmp_rd_rs1_b27_str)
+  # Check if x27 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x27, Zicsr_csrrw_cg_cmp_rd_rs1_b27, Zicsr_csrrw_cg_cmp_rd_rs1_b27_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x18, instret, x0
+  csrrs x12, instret, x0
+  sub x18, x12, x18
+  # Check if x18 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b27, Zicsr_csrrw_cg_cmp_rd_rs1_b27_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x11, x28) # load rs1: x28 = 0x00a36655d58bcb23
-  RVTEST_TESTDATA_LOAD_INT(x11, x16) # load temp reg: x16 = 0x9d0cbca2839eec63
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x16
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x16
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x16
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x16, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs1: x28 = 0xb95d1911335b079c
+  RVTEST_TESTDATA_LOAD_INT(x1, x16) # load temp reg: x16 = 0x8c7af2ad3e9eb4a6
 Zicsr_csrrw_cg_cmp_rd_rs1_b28:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -7339,58 +5594,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b28:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x28 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b28, Zicsr_csrrw_cg_cmp_rd_rs1_b28_str)
+  # Check if x28 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b28, Zicsr_csrrw_cg_cmp_rd_rs1_b28_str)
 // read back CSR to check updated value
   csrrs x16, fflags, x0
-  # Check if x16 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b28, Zicsr_csrrw_cg_cmp_rd_rs1_b28_str)
+  # Check if x16 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b28, Zicsr_csrrw_cg_cmp_rd_rs1_b28_str)
 #elif defined(V_SUPPORTED)
-  # Check if x28 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b28, Zicsr_csrrw_cg_cmp_rd_rs1_b28_str)
+  # Check if x28 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b28, Zicsr_csrrw_cg_cmp_rd_rs1_b28_str)
 // read back CSR to check updated value
   csrrs x16, vxsat, x0
-  # Check if x16 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b28, Zicsr_csrrw_cg_cmp_rd_rs1_b28_str)
+  # Check if x16 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b28, Zicsr_csrrw_cg_cmp_rd_rs1_b28_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x28 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b28, Zicsr_csrrw_cg_cmp_rd_rs1_b28_str)
+  # Check if x28 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b28, Zicsr_csrrw_cg_cmp_rd_rs1_b28_str)
 // read back CSR to check updated value
   csrrs x16, mepc, x0
-  # Check if x16 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b28, Zicsr_csrrw_cg_cmp_rd_rs1_b28_str)
+  # Check if x16 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b28, Zicsr_csrrw_cg_cmp_rd_rs1_b28_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x0, x28, x16
-  sltiu x0, x0, 0x000007FF
-  # Check if x0 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x0, Zicsr_csrrw_cg_cmp_rd_rs1_b28, Zicsr_csrrw_cg_cmp_rd_rs1_b28_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x0, instret, x0
-  sub x0, x0, x16
-  sltiu x16, x0, 0x000007FF
-  # Check if x16 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b28, Zicsr_csrrw_cg_cmp_rd_rs1_b28_str)
+  # Check if x28 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b28, Zicsr_csrrw_cg_cmp_rd_rs1_b28_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x3, instret, x0
+  csrrs x16, instret, x0
+  sub x3, x16, x3
+  # Check if x3 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x3, Zicsr_csrrw_cg_cmp_rd_rs1_b28, Zicsr_csrrw_cg_cmp_rd_rs1_b28_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x29) # load rs1: x29 = 0xe57f22b0364f41c0
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load temp reg: x31 = 0x6c66af5e2297ccbe
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x31
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x31
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x31
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x31, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs1: x29 = 0x3713cb148dcf0df9
+  RVTEST_TESTDATA_LOAD_INT(x1, x16) # load temp reg: x16 = 0x9c1286b26212a1e4
 Zicsr_csrrw_cg_cmp_rd_rs1_b29:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -7406,58 +5645,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b29:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x29 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b29, Zicsr_csrrw_cg_cmp_rd_rs1_b29_str)
+  # Check if x29 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b29, Zicsr_csrrw_cg_cmp_rd_rs1_b29_str)
 // read back CSR to check updated value
-  csrrs x31, fflags, x0
-  # Check if x31 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x31, Zicsr_csrrw_cg_cmp_rd_rs1_b29, Zicsr_csrrw_cg_cmp_rd_rs1_b29_str)
+  csrrs x16, fflags, x0
+  # Check if x16 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b29, Zicsr_csrrw_cg_cmp_rd_rs1_b29_str)
 #elif defined(V_SUPPORTED)
-  # Check if x29 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b29, Zicsr_csrrw_cg_cmp_rd_rs1_b29_str)
+  # Check if x29 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b29, Zicsr_csrrw_cg_cmp_rd_rs1_b29_str)
 // read back CSR to check updated value
-  csrrs x31, vxsat, x0
-  # Check if x31 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x31, Zicsr_csrrw_cg_cmp_rd_rs1_b29, Zicsr_csrrw_cg_cmp_rd_rs1_b29_str)
+  csrrs x16, vxsat, x0
+  # Check if x16 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b29, Zicsr_csrrw_cg_cmp_rd_rs1_b29_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x29 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b29, Zicsr_csrrw_cg_cmp_rd_rs1_b29_str)
+  # Check if x29 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b29, Zicsr_csrrw_cg_cmp_rd_rs1_b29_str)
 // read back CSR to check updated value
-  csrrs x31, mepc, x0
-  # Check if x31 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x31, Zicsr_csrrw_cg_cmp_rd_rs1_b29, Zicsr_csrrw_cg_cmp_rd_rs1_b29_str)
+  csrrs x16, mepc, x0
+  # Check if x16 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b29, Zicsr_csrrw_cg_cmp_rd_rs1_b29_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x4, x29, x31
-  sltiu x4, x4, 0x000007FF
-  # Check if x4 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x4, Zicsr_csrrw_cg_cmp_rd_rs1_b29, Zicsr_csrrw_cg_cmp_rd_rs1_b29_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x4, instret, x0
-  sub x4, x4, x31
-  sltiu x31, x4, 0x000007FF
-  # Check if x31 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x31, Zicsr_csrrw_cg_cmp_rd_rs1_b29, Zicsr_csrrw_cg_cmp_rd_rs1_b29_str)
+  # Check if x29 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x29, Zicsr_csrrw_cg_cmp_rd_rs1_b29, Zicsr_csrrw_cg_cmp_rd_rs1_b29_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x3, instret, x0
+  csrrs x16, instret, x0
+  sub x3, x16, x3
+  # Check if x3 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x3, Zicsr_csrrw_cg_cmp_rd_rs1_b29, Zicsr_csrrw_cg_cmp_rd_rs1_b29_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x11, x30) # load rs1: x30 = 0x36dc435f71d9f8fe
-  RVTEST_TESTDATA_LOAD_INT(x11, x28) # load temp reg: x28 = 0x0df354373c744793
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x28
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x28
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x28
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x28, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs1: x30 = 0x45231389ddb942ef
+  RVTEST_TESTDATA_LOAD_INT(x1, x18) # load temp reg: x18 = 0x7b43157b7cb0b827
 Zicsr_csrrw_cg_cmp_rd_rs1_b30:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -7473,58 +5696,42 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b30:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x30 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x30, Zicsr_csrrw_cg_cmp_rd_rs1_b30, Zicsr_csrrw_cg_cmp_rd_rs1_b30_str)
+  # Check if x30 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x30, Zicsr_csrrw_cg_cmp_rd_rs1_b30, Zicsr_csrrw_cg_cmp_rd_rs1_b30_str)
 // read back CSR to check updated value
-  csrrs x28, fflags, x0
-  # Check if x28 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b30, Zicsr_csrrw_cg_cmp_rd_rs1_b30_str)
+  csrrs x18, fflags, x0
+  # Check if x18 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b30, Zicsr_csrrw_cg_cmp_rd_rs1_b30_str)
 #elif defined(V_SUPPORTED)
-  # Check if x30 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x30, Zicsr_csrrw_cg_cmp_rd_rs1_b30, Zicsr_csrrw_cg_cmp_rd_rs1_b30_str)
+  # Check if x30 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x30, Zicsr_csrrw_cg_cmp_rd_rs1_b30, Zicsr_csrrw_cg_cmp_rd_rs1_b30_str)
 // read back CSR to check updated value
-  csrrs x28, vxsat, x0
-  # Check if x28 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b30, Zicsr_csrrw_cg_cmp_rd_rs1_b30_str)
+  csrrs x18, vxsat, x0
+  # Check if x18 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b30, Zicsr_csrrw_cg_cmp_rd_rs1_b30_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x30 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x30, Zicsr_csrrw_cg_cmp_rd_rs1_b30, Zicsr_csrrw_cg_cmp_rd_rs1_b30_str)
+  # Check if x30 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x30, Zicsr_csrrw_cg_cmp_rd_rs1_b30, Zicsr_csrrw_cg_cmp_rd_rs1_b30_str)
 // read back CSR to check updated value
-  csrrs x28, mepc, x0
-  # Check if x28 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b30, Zicsr_csrrw_cg_cmp_rd_rs1_b30_str)
+  csrrs x18, mepc, x0
+  # Check if x18 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x18, Zicsr_csrrw_cg_cmp_rd_rs1_b30, Zicsr_csrrw_cg_cmp_rd_rs1_b30_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x20, x30, x28
-  sltiu x20, x20, 0x000007FF
-  # Check if x20 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x20, Zicsr_csrrw_cg_cmp_rd_rs1_b30, Zicsr_csrrw_cg_cmp_rd_rs1_b30_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x20, instret, x0
-  sub x20, x20, x28
-  sltiu x28, x20, 0x000007FF
-  # Check if x28 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x28, Zicsr_csrrw_cg_cmp_rd_rs1_b30, Zicsr_csrrw_cg_cmp_rd_rs1_b30_str)
+  # Check if x30 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x30, Zicsr_csrrw_cg_cmp_rd_rs1_b30, Zicsr_csrrw_cg_cmp_rd_rs1_b30_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x5, instret, x0
+  csrrs x18, instret, x0
+  sub x5, x18, x5
+  # Check if x5 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x5, Zicsr_csrrw_cg_cmp_rd_rs1_b30, Zicsr_csrrw_cg_cmp_rd_rs1_b30_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
 # Testcase cmp_rd_rs1 (Test rd = rs1 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs1: x31 = 0xc5b563f750e02258
-  RVTEST_TESTDATA_LOAD_INT(x11, x21) # load temp reg: x21 = 0x29fd7f20653eabb5
-// Initialize CSR with random value or capture 'before' sample
-#if defined(F_SUPPORTED)
-  csrrw x0, fflags, x21
-#elif defined(V_SUPPORTED)
-  csrrw x0, vxsat, x21
-#elif !defined(U_SUPPORTED)
-  csrrw x0, mepc, x21
-#elif defined(ZICNTR_SUPPORTED)
-  csrrs x21, instret, x0
-#else
-  #error no CSR known for testing
-#endif
-
+  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs1: x31 = 0xc097550fdd0ed940
+  RVTEST_TESTDATA_LOAD_INT(x1, x16) # load temp reg: x16 = 0xe820c5f4c373c473
 Zicsr_csrrw_cg_cmp_rd_rs1_b31:
 // perform operation
 #if defined(F_SUPPORTED)
@@ -7540,43 +5747,40 @@ Zicsr_csrrw_cg_cmp_rd_rs1_b31:
 #endif
 
 #if defined(F_SUPPORTED)
-  # Check if x31 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x31, Zicsr_csrrw_cg_cmp_rd_rs1_b31, Zicsr_csrrw_cg_cmp_rd_rs1_b31_str)
+  # Check if x31 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x31, Zicsr_csrrw_cg_cmp_rd_rs1_b31, Zicsr_csrrw_cg_cmp_rd_rs1_b31_str)
 // read back CSR to check updated value
-  csrrs x21, fflags, x0
-  # Check if x21 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b31, Zicsr_csrrw_cg_cmp_rd_rs1_b31_str)
+  csrrs x16, fflags, x0
+  # Check if x16 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b31, Zicsr_csrrw_cg_cmp_rd_rs1_b31_str)
 #elif defined(V_SUPPORTED)
-  # Check if x31 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x31, Zicsr_csrrw_cg_cmp_rd_rs1_b31, Zicsr_csrrw_cg_cmp_rd_rs1_b31_str)
+  # Check if x31 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x31, Zicsr_csrrw_cg_cmp_rd_rs1_b31, Zicsr_csrrw_cg_cmp_rd_rs1_b31_str)
 // read back CSR to check updated value
-  csrrs x21, vxsat, x0
-  # Check if x21 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b31, Zicsr_csrrw_cg_cmp_rd_rs1_b31_str)
+  csrrs x16, vxsat, x0
+  # Check if x16 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b31, Zicsr_csrrw_cg_cmp_rd_rs1_b31_str)
 #elif !defined(U_SUPPORTED)
-  # Check if x31 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x31, Zicsr_csrrw_cg_cmp_rd_rs1_b31, Zicsr_csrrw_cg_cmp_rd_rs1_b31_str)
+  # Check if x31 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x31, Zicsr_csrrw_cg_cmp_rd_rs1_b31, Zicsr_csrrw_cg_cmp_rd_rs1_b31_str)
 // read back CSR to check updated value
-  csrrs x21, mepc, x0
-  # Check if x21 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b31, Zicsr_csrrw_cg_cmp_rd_rs1_b31_str)
+  csrrs x16, mepc, x0
+  # Check if x16 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x16, Zicsr_csrrw_cg_cmp_rd_rs1_b31, Zicsr_csrrw_cg_cmp_rd_rs1_b31_str)
 #elif defined(ZICNTR_SUPPORTED)
-// 1. Validate 'rd' (architectural return) against 'before' sample using safe dynamic scratch
-  sub x5, x31, x21
-  sltiu x5, x5, 0x000007FF
-  # Check if x5 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x5, Zicsr_csrrw_cg_cmp_rd_rs1_b31, Zicsr_csrrw_cg_cmp_rd_rs1_b31_str)
-// 2. Validate 'after' counter state (safe to clobber rs2 now)
-  csrrs x5, instret, x0
-  sub x5, x5, x21
-  sltiu x21, x5, 0x000007FF
-  # Check if x21 contains the expected result. x3 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x3, x8, x7, x21, Zicsr_csrrw_cg_cmp_rd_rs1_b31, Zicsr_csrrw_cg_cmp_rd_rs1_b31_str)
+  # Check if x31 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x31, Zicsr_csrrw_cg_cmp_rd_rs1_b31, Zicsr_csrrw_cg_cmp_rd_rs1_b31_str)
+// read instret twice and record the difference to prove it ticks
+  csrrs x12, instret, x0
+  csrrs x16, instret, x0
+  sub x12, x16, x12
+  # Check if x12 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x17, x8, x7, x12, Zicsr_csrrw_cg_cmp_rd_rs1_b31, Zicsr_csrrw_cg_cmp_rd_rs1_b31_str)
 #else
-  #error no CSR known for testing
+#error no CSR known for testing
 #endif
 
-  mv x2, x3 # restore signature pointer to default register for teardown
+  mv x2, x17 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -7587,228 +5791,228 @@ RVTEST_DATA_BEGIN
 // Test data
 .dword 0x80571323577480e6
 .dword 0x9615412f7f37c167
-.dword 0xdc05c7db71fc4d56
+.dword 0x871180469c028e75
+.dword 0xc26634885c05c7db
 .dword 0x2234990c93f3dd5c
-.dword 0x6f792360b1c6f1aa
+.dword 0x771006f25180f629
 .dword 0x604bdc22d0189cfd
+.dword 0x3cba81b83e43745b
 .dword 0xe5e7ea298947ca07
 .dword 0xf6f18f7e76569a8f
-.dword 0x39d36cbfbb20efef
+.dword 0x7641a72e7cbaf835
+.dword 0x450c5abb4ca3a0b3
 .dword 0xbe810df3f21b1da3
-.dword 0x8330311c99ba1b79
-.dword 0x25a84919ac65fe77
+.dword 0x4bca3cc0017193d8
+.dword 0xbb5be31db3443cdc
 .dword 0xf55871515267fd33
+.dword 0x0581cc624d1de93f
 .dword 0x5b57075136756118
 .dword 0x268c0e4a521d03b2
 .dword 0x1c2272eb86895816
 .dword 0xc40bc1b895202bdf
 .dword 0xdca5ba2e5fe63e1b
-.dword 0x2627b0b45b845133
-.dword 0xc378db15356e94f9
-.dword 0x0fd1df2945d267cc
-.dword 0x52f76c787ef86fb9
-.dword 0x77803df76934a7fb
-.dword 0x2591b570b8bb6702
-.dword 0x08f7edf2638def07
-.dword 0xb0c7eb246f3578f1
-.dword 0x4b48cd58bb6d848a
-.dword 0xca811ef1273abf04
-.dword 0x4b405bcade27baff
+.dword 0xc324256fb0239b22
+.dword 0x1f08342d224610a3
+.dword 0x921cd403d9863b57
+.dword 0x7f330e0b719ac347
+.dword 0x7208c62aaa1514d8
+.dword 0x17d12e7dd1e82632
+.dword 0xc3cd608f2679771c
+.dword 0x0af0f052f341ad2b
+.dword 0xe6c1ccd6a591b570
+.dword 0xb72d968690d37462
+.dword 0x2182d8b115957412
+.dword 0x11ec34509ea5a437
+.dword 0x34d75e1b329ed449
+.dword 0xa73abf04e6e23e48
+.dword 0xd95e0111fe3e5242
 .dword 0x8cd6396939b70561
+.dword 0xbdf4d3500971d2bb
 .dword 0x7f8ff9dbc56ecb9a
+.dword 0x0957365dfbddc04c
 .dword 0xae38fb06cc7accf4
-.dword 0xfad8792e2de4dec1
-.dword 0x084f34c2ec62ad8f
-.dword 0x908868a3739802ad
+.dword 0x8481452c419390a4
+.dword 0xb62b71e8bcd893f1
+.dword 0xade4dec1b8502317
+.dword 0xf39802adc2a2fbf1
 .dword 0xc7b85feb7aa6e7c9
-.dword 0xabcbacc428f85c2c
-.dword 0xce3c5cea02597596
+.dword 0x2acf04d79d24a3fd
+.dword 0xbf55db0550fe8fd5
+.dword 0x1128c5459fb8923c
 .dword 0x9dd7655ae21aa89d
 .dword 0xf8a53cd8d6aefef2
+.dword 0x488f5fa575e95a78
 .dword 0x36731f166ff592a7
-.dword 0x9dfc022aa861b010
-.dword 0xfac6c9fe8ed9a89f
+.dword 0x10fc083786ac21f1
+.dword 0xff6b6cd6bf3975f8
+.dword 0xc09f5d5b1dfc022a
+.dword 0x0ed9a89f85d29ae2
 .dword 0x68e9ec51cb8ac08d
-.dword 0x74524bc709e3ccb3
 .dword 0xfeee832e4563af29
+.dword 0xceeb5434ae1461bf
 .dword 0xf52dc96d4c453a69
-.dword 0x3916d1bcc03a65a5
+.dword 0x886af7c5b916d1bc
 .dword 0x595560a3330e2dd1
-.dword 0x56ef64dcc7e23999
-.dword 0x1a8ce7c270e8e3bb
-.dword 0x25381ad4b3d42864
-.dword 0xf4a0a4c7e5d543d4
-.dword 0x2b58d28a6d680f86
-.dword 0x8f90453442d9e6ef
-.dword 0x772de95e64696228
-.dword 0xbbb85d8d9ac48e03
-.dword 0xd38d80aaa0e7aa8e
-.dword 0xefa30f051902e5b8
-.dword 0x2cce680a9a56212a
-.dword 0xef45574582c5801f
-.dword 0x830851ccf22eb91b
-.dword 0x7a18df79102c7ab5
-.dword 0x3f94949a79500ff6
 .dword 0xa52858bb562a1948
 .dword 0x4c0c4fca2f290d0a
-.dword 0xf4d998a50a4a01e4
-.dword 0xe41f2dbaaf383c5f
-.dword 0xbce1afa45e96ff90
+.dword 0x0d980693b609d9fc
+.dword 0x2f383c5f850a3e7b
+.dword 0x148e3127cff66d2d
+.dword 0xde96ff90d0d88702
 .dword 0x815e95ea06d53ba3
-.dword 0x47fb4efcf797d763
-.dword 0xc780b633147a6242
-.dword 0xfd54f4ba47cc759d
-.dword 0xaf6d6b1008a649e8
-.dword 0xa961fae47d840aff
-.dword 0x1190a6c775565d5d
-.dword 0x1dd4435383e6efc5
+.dword 0xa0ba171960a89ed1
+.dword 0x234b898d0d984e79
+.dword 0xf60d48265fe8034c
+.dword 0x0d39f3a90ca87c9d
+.dword 0x0a9e98e99c64ad73
+.dword 0xad04c50e56b9b150
+.dword 0x45379520a2428868
+.dword 0x64f674d0d45feb0a
 .dword 0x9ad643a4d9f341f4
 .dword 0xa5db3019949f604a
 .dword 0x8cf4e1cba882a55c
+.dword 0x5ebc6e861b2d2778
 .dword 0x5731ec94c82edcbf
-.dword 0xb6481d1894158ff8
+.dword 0x14158ff8b6eed96f
+.dword 0x168990bf7c22670e
 .dword 0x5cbdc7275554048e
 .dword 0x1fe051c3fc55d803
+.dword 0xd574fe6a1d44f3ee
 .dword 0xbea2a634dbfde426
-.dword 0x7f383ee0c568dcd0
-.dword 0x444dbbb1ed33b463
-.dword 0x1297b418888727b8
+.dword 0x6aad49772a6f76cd
+.dword 0xb3a704759297b418
+.dword 0xc6ca8f78eb8d2158
 .dword 0x6056a723a423a647
-.dword 0xcf5b6f173daa8da3
+.dword 0x7af6c466aa1a7a4b
+.dword 0x43b0c23fbacbf327
 .dword 0x103f161c817468e9
 .dword 0xd642113a989ccb02
+.dword 0x193df294e3f53e63
 .dword 0x31ec8b86a18ad691
-.dword 0x6e5f9b1bbc70f231
+.dword 0xd972ef40dfd900c3
 .dword 0x76bfd9a0ca998c2f
-.dword 0xca61240a435bb154
-.dword 0x2442244cb7ab0ed5
+.dword 0xc35bb1549e87565a
+.dword 0x3ff85d7a937f9ecb
 .dword 0xd53dda0dfadac6ad
-.dword 0xc2ca59a26bdc6334
-.dword 0x9180f44cc4722615
-.dword 0x174b58270c856a83
-.dword 0x47b4ee7d25074b46
+.dword 0xc046cb8d6c05a3c6
+.dword 0x77eb2670108191bd
+.dword 0xeaa8354c71c56e45
+.dword 0x83ab12bee62ae23c
+.dword 0xa6c04bce47189d8f
+.dword 0x7152c91fa0b5378d
 .dword 0x659d039fb33f0de0
-.dword 0xaf8e6ba0d20ce6de
+.dword 0x8b20c5d949751d43
 .dword 0xa2f015f1a15cb84f
-.dword 0x2614f9ec09cabc9b
-.dword 0x0c3542070ce10972
-.dword 0x1888e258bba19538
-.dword 0x1b86865e10f56bc2
-.dword 0x5a329995ee1f4879
-.dword 0xc7ac0fdddcf19778
-.dword 0x58e423de53f03dd6
+.dword 0xe72232ab1da6edf4
+.dword 0x3aeec3b2b42ee705
+.dword 0x6804d44c2737dfeb
 .dword 0xf1c2350eed436c95
-.dword 0xe4f2d3f813d7d6c9
-.dword 0xeba433a4f9e63c6a
+.dword 0xae20120d64f2d3f8
+.dword 0x79e63c6abb3cb703
 .dword 0x46775bde0091f09e
-.dword 0x49e87406a759aed7
+.dword 0x61836dc45e2d8457
 .dword 0xaa1a42612b83c50d
-.dword 0x94e4ebe46a7bc024
+.dword 0xc6ef522fbfa38398
 .dword 0x23266240e0d49202
+.dword 0x6f5148d44645a8ee
 .dword 0x85e4a2fea22595e4
 .dword 0xa5957c2f0d4ad493
-.dword 0x97985352f312b804
-.dword 0x11d83e91a6000417
-.dword 0xa9fb2e5014060b3c
-.dword 0x3cea14a003d2c122
-.dword 0x54f51d082f04a338
-.dword 0x02ec78b727e99781
 .dword 0x0000000000000000
 .dword 0x029351c6b1be2258
 .dword 0x0000000000000001
-.dword 0x598f99939222cedf
+.dword 0xf8d3648ed98f9993
 .dword 0x0000000000000002
-.dword 0x28423c7fdb94ffdf
+.dword 0xba4690ddf67f4626
 .dword 0x8000000000000000
-.dword 0x0bea3b74ef73ad9a
+.dword 0xee0d530a42458851
 .dword 0x8000000000000001
-.dword 0x08f5765199ea06e2
+.dword 0x1fd280cb4e9af263
 .dword 0x7fffffffffffffff
-.dword 0x7c887d67da54951e
+.dword 0xdec4739e705ae690
 .dword 0x7ffffffffffffffe
-.dword 0x2f861e1a073ea01c
+.dword 0xa24964e1c6c38df9
 .dword 0xffffffffffffffff
-.dword 0x2ba29c1f1ed5a9e6
+.dword 0x447667ed5a25a594
 .dword 0xfffffffffffffffe
-.dword 0x44854a51d812ccb0
+.dword 0x0c30a5eb4cbce927
 .dword 0x5bbc887763ae86f2
-.dword 0x222b1687909629fa
+.dword 0x77ee96a0ffaca932
 .dword 0xaaaaaaaaaaaaaaaa
-.dword 0x33de1c56053af44b
+.dword 0x1381b4699e8f9d1a
 .dword 0x5555555555555555
-.dword 0x87c68ff61d39af52
+.dword 0xb5f4bda1f1aed341
 .dword 0x00000000ffffffff
-.dword 0x8d7a7bb4eac3668c
+.dword 0xe51171acb6a6e44c
 .dword 0x00000000fffffffe
-.dword 0xc4d5859ad11439f8
+.dword 0x83b40afd9ca03615
 .dword 0x0000000100000000
-.dword 0x5d861d9047d438aa
+.dword 0xeff6e2d864d62cfb
 .dword 0x0000000100000001
-.dword 0x779a1dee8b6a91cb
+.dword 0x33de1c56053af44b
 .dword 0x260fdf4f1010b257
 .dword 0xa86be39e3866e9f4
-.dword 0x9238906ebaf8fe87
-.dword 0x05520aa58b5c519c
-.dword 0x2642ae4550449f4b
-.dword 0x1a995b639b85fcc4
-.dword 0x5a1b01db23e6a47c
-.dword 0xb17ddb8c4c1d8638
+.dword 0xb40682fb8d58d944
+.dword 0x504170e1c8dd6ed6
+.dword 0x3af8fe87edcc9dbf
+.dword 0xd1d15941e89ee5be
+.dword 0xa03709fcfc795e97
+.dword 0xabef6dad11ad67a6
+.dword 0x18c599c24112f4da
 .dword 0xe14fe209d754ff8a
 .dword 0x63bf53b89f01c121
-.dword 0x1afc5613b596ba21
 .dword 0x14e5062047142ed1
+.dword 0x69cad46a48553db9
 .dword 0x25336784e05bc2e1
-.dword 0xf8f06373ef8d1bb7
-.dword 0x78a3a8ab3ae7cebd
-.dword 0xf29ddeba4cc82a15
+.dword 0xf92c0c6374b5a5c4
+.dword 0x06b1ec3debe3cadc
+.dword 0x657e8c405ebf1dd8
+.dword 0x292ec371c7a99c19
+.dword 0xccc82a15a22fc949
+.dword 0xec932bacf30a681a
 .dword 0x64a081247a9b7097
 .dword 0x8f48f928b65bcac1
-.dword 0xa11ed534f0b9ef78
-.dword 0x604809aa701350ab
-.dword 0x09815c3ff25c3021
-.dword 0xd8afcd4c47312da2
+.dword 0x132afabe6a9c1db3
+.dword 0x70b9ef78d08f5f1f
+.dword 0x28dd360d6f5aeb32
+.dword 0xefae060e89815c3f
+.dword 0x09ce66cf48655723
+.dword 0x3748442f05c3cbb9
+.dword 0x5af0c96dbaa5d2a9
 .dword 0x1cae755162f3c7d0
-.dword 0x4cfc9388d76618bf
-.dword 0x1e7385e13242ab4a
+.dword 0xedee4d6a81eca491
+.dword 0x6b93e5dc08ecec21
+.dword 0xa85b3148cf0ea803
 .dword 0xe2b011e7a1b3d7bc
 .dword 0x56a1d92f0d6eb7cc
 .dword 0xaee3b4a308b6876a
-.dword 0x80c77d8dcef85a37
-.dword 0x2e9d780b8a6d650f
-.dword 0xc2e85b3f15b04b2b
-.dword 0x82fb69c07d9a1570
-.dword 0x8f719b6cc738768a
-.dword 0x6d32f12d5dc5da76
-.dword 0x3064a63c4e12f554
-.dword 0x9530fa28edb84caf
-.dword 0xcb61cc6514365b5f
+.dword 0x818e330500c77d8d
+.dword 0x95b04b2b25016819
+.dword 0xfd9a1570d33b4182
+.dword 0x460f31742178517a
+.dword 0xd4b3e8a40f719b6c
+.dword 0x79c0bb4a8ef06792
+.dword 0xb8bfa447ae17fe7d
+.dword 0x7aacc2960d93dad9
+.dword 0x6db84caf124668a7
+.dword 0xd187c5349fc074bd
+.dword 0xa3fe6cf24b61cc65
 .dword 0xa41420fd34dd3a57
-.dword 0x63afa9f3296118c2
-.dword 0x915c45d12bd5b49a
+.dword 0x0750e64aed715595
+.dword 0xabd5b49aa1bfbbd9
 .dword 0xa5af7af70b1080ed
 .dword 0xadc1772eadcdbecc
-.dword 0x177bf789ec1c5e57
-.dword 0x1be03ffb86e2d09c
+.dword 0xd1088a54977bf789
 .dword 0xa1df335d938f2de5
 .dword 0x616a730973eca1d6
-.dword 0xb35b079c68394c95
-.dword 0xbe9eb4a6deb6a6dd
-.dword 0xb9abb83cb713cb14
-.dword 0x5d52957f04723738
+.dword 0x057979c34cbec6e7
+.dword 0xb95d1911335b079c
+.dword 0x8c7af2ad3e9eb4a6
+.dword 0x3713cb148dcf0df9
+.dword 0x9c1286b26212a1e4
 .dword 0x45231389ddb942ef
 .dword 0x7b43157b7cb0b827
-.dword 0x92fb3412f180a9c0
 .dword 0xc097550fdd0ed940
-.dword 0xebb38cfa18172e66
-.dword 0x42e8d00d09fa50d6
-.dword 0x00a36655d58bcb23
-.dword 0x9d0cbca2839eec63
-.dword 0xe57f22b0364f41c0
-.dword 0x6c66af5e2297ccbe
-.dword 0x36dc435f71d9f8fe
-.dword 0x0df354373c744793
-.dword 0xc5b563f750e02258
-.dword 0x29fd7f20653eabb5
+.dword 0xe820c5f4c373c473
 
 // Testcase strings
 Zicsr_csrrw_cg_cp_rs1_b0_str: .string "\"test: 1; cg: Zicsr_csrrw_cg; cp: cp_rs1; bin: b0\""

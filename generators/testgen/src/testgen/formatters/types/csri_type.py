@@ -16,24 +16,6 @@ csri_config = InstructionTypeConfig(
     imm_signed=False
 )
 
-
-def zicsr_acccess_setup(rs2: int, scratch_reg: int) -> str:
-    """Helper to initialize CSR or sample 'before' counter value."""
-    return (
-        "#if defined(F_SUPPORTED)\n"
-        f"csrrw x0, fflags, x{rs2}\n"
-        "#elif defined(V_SUPPORTED)\n"
-        f"csrrw x0, vxsat, x{rs2}\n"
-        "#elif !defined(U_SUPPORTED)\n"
-        f"csrrw x0, mepc, x{rs2}\n"
-        "#elif defined(ZICNTR_SUPPORTED)\n"
-        f"csrrs x{scratch_reg}, instret, x0\n"
-        "#else\n"
-        "#error no CSR known for testing\n"
-        "#endif\n"
-    )
-
-
 def zicsr_acccessi(instr_name: str, rd: int, immval: int) -> str:
     """Helper function to determine which CSR to use for testing based on supported extensions."""
     # Use writable unprivileged extension CSRs if any exist,
@@ -53,7 +35,6 @@ def zicsr_acccessi(instr_name: str, rd: int, immval: int) -> str:
         "#endif\n"
     )
 
-
 @add_instruction_formatter("CSRI", csri_config)
 def format_csri_type(
     instr_name: str, test_data: TestData, params: InstructionParams
@@ -63,25 +44,14 @@ def format_csri_type(
     assert params.immval is not None
     assert params.rd is not None
 
-    forbidden = {params.rd, params.rs2}
     allocated = []
-    scratch_reg = None
     
     try:
-        allocated = test_data.int_regs.get_registers(len(forbidden) + 1)
-        
-        for reg in allocated:
-            if reg not in forbidden:
-                scratch_reg = reg
-                break
-                
-        if scratch_reg is None:
-            raise RuntimeError("Allocator returned non-unique registers violating contract.")
+        allocated = test_data.int_regs.get_registers(1)
+        scratch_reg = allocated[0]
 
         setup = [
             load_int_reg("temp reg", params.rs2, params.rs2val, test_data),
-            "// Initialize CSR with random value or capture 'before' sample",
-            zicsr_acccess_setup(params.rs2, scratch_reg),
         ]
         test = [
             "// perform operation",
@@ -104,10 +74,12 @@ def format_csri_type(
             f"csrrs x{params.rs2}, mepc, x0",
             write_sigupd(params.rs2, test_data, "int"),
             "#elif defined(ZICNTR_SUPPORTED)",
-            "// Read instret after execution, subtract 'before' sample, and record difference",
+            write_sigupd(params.rd, test_data, "int"),
+            "// read instret twice and record the difference to prove it ticks",
+            f"csrrs x{scratch_reg}, instret, x0",
             f"csrrs x{params.rs2}, instret, x0",
-            f"sub x{params.rs2}, x{params.rs2}, x{scratch_reg}",
-            write_sigupd(params.rs2, test_data, "int"),     
+            f"sub x{scratch_reg}, x{params.rs2}, x{scratch_reg}",
+            write_sigupd(scratch_reg, test_data, "int"),     
             "#else",
             "#error no CSR known for testing",
             "#endif",

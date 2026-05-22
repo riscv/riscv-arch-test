@@ -10,31 +10,11 @@ from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
 
+# Strict native ABI.
 csr_config = InstructionTypeConfig(required_params={"rd", "rs1", "rs1val", "rs2", "rs2val"})
-
-
-def zicsr_acccess_setup(rs2: int, scratch_reg: int) -> str:
-    """Helper to initialize CSR or sample 'before' counter value."""
-    return (
-        "#if defined(F_SUPPORTED)\n"
-        f"csrrw x0, fflags, x{rs2}\n"
-        "#elif defined(V_SUPPORTED)\n"
-        f"csrrw x0, vxsat, x{rs2}\n"
-        "#elif !defined(U_SUPPORTED)\n"
-        f"csrrw x0, mepc, x{rs2}\n"
-        "#elif defined(ZICNTR_SUPPORTED)\n"
-        f"csrrs x{scratch_reg}, instret, x0\n"
-        "#else\n"
-        "#error no CSR known for testing\n"
-        "#endif\n"
-    )
-
 
 def zicsr_acccess(instr_name: str, rd: int, rs1: int) -> str:
     """Helper function to determine which CSR to use for testing based on supported extensions."""
-    # Use writable unprivileged extension CSRs if any exist,
-    # else use mepc if U is not supported
-    # else use instret (which is not writable, but at least can be accessed)
     return (
         "#if defined(F_SUPPORTED)\n"
         f"{instr_name} x{rd}, fflags, x{rs1}\n"
@@ -49,7 +29,6 @@ def zicsr_acccess(instr_name: str, rd: int, rs1: int) -> str:
         "#endif\n"
     )
 
-
 @add_instruction_formatter("CSR", csr_config)
 def format_csr_type(
     instr_name: str, test_data: TestData, params: InstructionParams
@@ -59,26 +38,15 @@ def format_csr_type(
     assert params.rs2 is not None and params.rs2val is not None
     assert params.rd is not None
 
-    forbidden = {params.rd, params.rs1, params.rs2}
     allocated = []
-    scratch_reg = None
     
     try:
-        allocated = test_data.int_regs.get_registers(len(forbidden) + 1)
-        
-        for reg in allocated:
-            if reg not in forbidden:
-                scratch_reg = reg
-                break
-                
-        if scratch_reg is None:
-            raise RuntimeError("Allocator returned non-unique registers violating contract.")
+        allocated = test_data.int_regs.get_registers(1)
+        scratch_reg = allocated[0]
 
         setup = [
             load_int_reg("rs1", params.rs1, params.rs1val, test_data),
             load_int_reg("temp reg", params.rs2, params.rs2val, test_data),
-            "// Initialize CSR with random value or capture 'before' sample",
-            zicsr_acccess_setup(params.rs2, scratch_reg),
         ]
         test = [
             "// perform operation",
@@ -101,10 +69,12 @@ def format_csr_type(
             f"csrrs x{params.rs2}, mepc, x0",
             write_sigupd(params.rs2, test_data, "int"),
             "#elif defined(ZICNTR_SUPPORTED)",
-            "// Read instret after execution, subtract 'before' sample, and record difference",
+            write_sigupd(params.rd, test_data, "int"),
+            "// read instret twice and record the difference to prove it ticks",
+            f"csrrs x{scratch_reg}, instret, x0",
             f"csrrs x{params.rs2}, instret, x0",
-            f"sub x{params.rs2}, x{params.rs2}, x{scratch_reg}",
-            write_sigupd(params.rs2, test_data, "int"),     
+            f"sub x{scratch_reg}, x{params.rs2}, x{scratch_reg}",
+            write_sigupd(scratch_reg, test_data, "int"),     
             "#else",
             "#error no CSR known for testing",
             "#endif",

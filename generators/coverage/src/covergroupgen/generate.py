@@ -100,7 +100,7 @@ VECTOR_PREFIXES = ("Vx", "Zv", "Vls", "Vf")
 PRIV_VECTOR_PREFIXES = ("ExceptionsV", "SsstrictV", "MisalignedV")
 
 # Subset of vector prefixes that support widening instructions.
-VECTOR_WIDEN_PREFIXES = ("Vx", "Vls", "Vf")
+VECTOR_WIDEN_PREFIXES = ("Vx", "Vls", "Vf", "Zvfhmin", "Zvfbfmin", "Zvfbfwma")
 
 
 # Map instruction Type code → (has_vd_reg_group, has_vs1_reg_group, has_vs2_reg_group).

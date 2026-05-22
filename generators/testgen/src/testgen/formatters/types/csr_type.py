@@ -40,13 +40,9 @@ def format_csr_type(
     assert params.rs2 is not None and params.rs2val is not None
     assert params.rd is not None
 
-    allocated = []
+    scratch_reg = test_data.int_regs.get_register()
     
     try:
-        allocated = test_data.int_regs.get_registers(1)
-        scratch_reg = allocated[0]
-        # Dedicated scratch register used for instret delta calculation.
-
         setup = [
             load_int_reg("rs1", params.rs1, params.rs1val, test_data),
             load_int_reg("temp reg", params.rs2, params.rs2val, test_data),
@@ -85,5 +81,4 @@ def format_csr_type(
         return (setup, test, check)
 
     finally:
-        if allocated:
-            test_data.int_regs.return_registers(allocated)
+        test_data.int_regs.return_register(scratch_reg)

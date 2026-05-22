@@ -1435,11 +1435,10 @@ def genVtestdata(test, sew):
         test_data += genVsedges(test, sew, test[-2:])
       elif (test in xvmtype) or (test in maskopins):
         test_data += genVsedges(test, sew, "eew1")
-      elif (test in widening_mac_ins):
-        test_data += genVsedgesFP(test, sew, "1")
-        test_data += genVsedgesFP(test, sew, "2")
       elif (test in vfloattypes):
         test_data += genVsedgesFP(test, sew, "1")
+        if (test in widening_mac_ins):
+          test_data += genVsedgesFP(test, sew, "2")
       else:
         test_data += genVsedges(test, sew, "1")
 
@@ -1530,8 +1529,8 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
 
       ext_parts = re.findall(r'Z[a-z]+|[A-Z]', extension)
 
-      ext_parts_no_I = ["zifencei"]
-      ext_str_no_I = "_zifenci"
+      ext_parts_no_I = []
+      ext_str_no_I = "_zifencei"
       for ext in ext_parts:
         if ext == "I":
           continue

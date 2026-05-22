@@ -417,7 +417,7 @@ def make_vs2_fs1_edges(instruction, sew, vs2edges):
   for f1 in fedgesv:
     for v2 in vs2edges:
       f1_val = fedgesv[f1]
-      description = "cr_vs2_rs1_edges"
+      description = "cr_vs2_fs1_edges"
       cp = f"cp_vs2_fs1_edges_b{f1}_{v2}"
       instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vs2_val_pointer = v2, fs1_val = f1_val)
 
@@ -1423,13 +1423,13 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
 
     if (test in vd_widen_ins) or (test in vs2_widen_ins):
       if (sew == 8):
-        f.write("#if ELEN > 8\n")
+        f.write("#if UDB_ELEN > 8\n")
       elif (sew == 16):
-        f.write("#if ELEN > 16\n")
+        f.write("#if UDB_ELEN > 16\n")
       elif (sew == 32):
-        f.write("#if ELEN > 32\n")
+        f.write("#if UDB_ELEN > 32\n")
       elif (sew == 64):
-        f.write("#if ELEN > 64\n")
+        f.write("#if UDB_ELEN > 64\n")
 
     clearCustomData()
     coverpoints = list(testplans[extension][test])

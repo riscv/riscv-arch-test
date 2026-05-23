@@ -27,6 +27,7 @@ def _generate_trigger_mti_tests(test_data: TestData) -> list[str]:
     r1, r_mtime, r_mtimecmp, r_temp, r_temp2 = test_data.int_regs.get_registers(5, exclude_regs=[])
 
     lines = [
+        "#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)",
         comment_banner(
             "cp_trigger_mti",
             "With mstatus.MIE = {0/1}, and mie = all 1s, use MTIMECMP to cause mip.MTIP",
@@ -59,7 +60,7 @@ def _generate_trigger_mti_tests(test_data: TestData) -> list[str]:
             f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
         ]
     )
-
+    lines.append("#endif // RVMODEL_MTIME_ADDRESS")
     test_data.int_regs.return_registers([r1, r_mtime, r_mtimecmp, r_temp, r_temp2])
     return lines
 
@@ -205,6 +206,9 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
             for int_pending in ["meip", "mtip", "msip"]:
                 binname = f"mie_{mstatus_mie}_{int_pending}_{enable_name}"
 
+                if int_pending == "mtip":
+                    lines.append("#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)")
+
                 lines.extend(
                     [
                         "CSRW(mie, zero)",  # disable interrupts
@@ -233,6 +237,9 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
                     lines.append("RVTEST_CLR_MSW_INT")
 
                 lines.append("")
+
+                if int_pending == "mtip":
+                    lines.append("#endif // RVMODEL_MTIME_ADDRESS")
 
     test_data.int_regs.return_registers([r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_val, r_mie_save])
     return lines
@@ -273,6 +280,10 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
 
         # Raise each interrupt type
         for int_pending in ["meip", "mtip", "msip"]:
+
+            if int_pending == "mtip":
+                lines.append("#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)")
+
             lines.extend(
                 [
                     f"# Testcase: {mode_name}_{int_pending}",
@@ -306,6 +317,9 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
                 lines.append("RVTEST_CLR_MSW_INT")
 
             lines.append("")
+
+            if int_pending == "mtip":
+                lines.append("#endif // RVMODEL_MTIME_ADDRESS")
 
     lines.append("CSRCI mtvec, 1     # restore mtvec.MODE = 00 (direct)")
 
@@ -345,6 +359,10 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
         )
 
         for mip_bits in range(8):
+
+            if mip_bits & 2:
+                lines.append("#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)")
+
             lines.extend(
                 [
                     "CSRW(mie, zero)",  # disable interrupts
@@ -373,6 +391,9 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
                 ]
             )
 
+            if mip_bits & 2:
+                lines.append("#endif // RVMODEL_MTIME_ADDRESS")
+
     test_data.int_regs.return_registers([r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_mask, r_scratch])
     return lines
 
@@ -385,6 +406,7 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
     r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3, r_scratch = test_data.int_regs.get_registers(7, exclude_regs=[])
 
     lines = [
+        "#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)",
         comment_banner(
             "cp_wfi",
             "Cross Product of mstatus.MIE = {0/1}, mstatus.TW = {0/1}, mie.MTIE = 1\nWFI instruction",
@@ -447,7 +469,7 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
                     "",
                 ]
             )
-
+    lines.append("#endif // RVMODEL_MTIME_ADDRESS")
     test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3, r_scratch])
     return lines
 

@@ -805,6 +805,9 @@ def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
             for mie_name, mie_bit in mie_bits:
                 binname = f"{mideleg_name}_{mip_name}_{mie_name}"
 
+                if mip_name == "mtip":
+                    lines.append("#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)")
+
                 # === M-MODE SETUP ===
                 lines.extend(
                     [
@@ -921,6 +924,9 @@ def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
                 else:
                     lines.append(mip_clr)
 
+                if mip_name == "mtip":
+                    lines.append("#endif // RVMODEL_MTIME_ADDRESS")
+
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
     return lines
 
@@ -959,6 +965,9 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
 
         for int_name, int_bit, int_set, int_clr, uses_timer in interrupts:
             binname = f"{stvec_mode_name}_{int_name}"
+
+            if int_name == "mtip":
+                lines.append("#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)")
 
             # === M-MODE SETUP ===
             lines.extend(
@@ -1074,6 +1083,9 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
             else:
                 lines.append(int_clr)
 
+            if int_name == "mtip":
+                lines.append("#endif // RVMODEL_MTIME_ADDRESS")
+
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
     return lines
 
@@ -1182,6 +1194,8 @@ def _generate_priority_mip_s_tests(test_data: TestData) -> list[str]:
         (1, 1, 1, "nodeleg_m_111"),
     ]
     for meip, mtip, msip, binname in m_patterns:
+        if mtip:
+            lines.append("#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)")
         lines.extend(["", f"# cp_priority_mip_s_m: {binname}"])
         lines.extend(_setup("0x0"))
         if msip:
@@ -1198,6 +1212,8 @@ def _generate_priority_mip_s_tests(test_data: TestData) -> list[str]:
             lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
         if meip:
             lines.append("RVTEST_CLR_MEXT_INT")
+        if mtip:
+            lines.append("#endif // RVMODEL_MTIME_ADDRESS")
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
     return lines
@@ -1621,6 +1637,7 @@ def _generate_wfi_s_tests(test_data: TestData) -> list[str]:
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
 
     lines = [
+        "#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)",
         comment_banner(
             "cp_wfi_s",
             "Test WFI from S-mode with MTIP\nCross: MIE={0,1} × SIE={0,1} × mideleg={0,0x222} × TW={0,1}",
@@ -1743,6 +1760,7 @@ def _generate_wfi_s_tests(test_data: TestData) -> list[str]:
                     )
                     lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
 
+    lines.append("#endif // RVMODEL_MTIME_ADDRESS")
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
     return lines
 
@@ -1759,6 +1777,7 @@ def _generate_wfi_timeout_s_tests(test_data: TestData) -> list[str]:
     r_temp, r_stimecmp, r_scratch = test_data.int_regs.get_registers(3, exclude_regs=[])
 
     lines = [
+        "#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)",
         comment_banner(
             "cp_wfi_timeout_s",
             "Test WFI timeout from S-mode and U-mode\n"
@@ -1876,6 +1895,7 @@ def _generate_wfi_timeout_s_tests(test_data: TestData) -> list[str]:
                         )
                         lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
 
+    lines.append("#endif // RVMODEL_MTIME_ADDRESS")
     test_data.int_regs.return_registers([r_temp, r_stimecmp, r_scratch])
     return lines
 
@@ -1928,6 +1948,9 @@ def _generate_interrupts_m_tests(test_data: TestData) -> list[str]:
 
                     mideleg_name = ["zeros", "ones"][mideleg_val]
                     binname = f"mie{mie_val}_{mideleg_name}_{mip_name}_{mie_name}"
+
+                    if mip_name == "mtip":
+                        lines.append("#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)")
 
                     # === SETUP ===
                     lines.extend(
@@ -2070,6 +2093,9 @@ def _generate_interrupts_m_tests(test_data: TestData) -> list[str]:
                             )
                         else:
                             lines.append(clr_fn)
+
+                    if mip_name == "mtip":
+                        lines.append("#endif // RVMODEL_MTIME_ADDRESS")
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
     return lines
@@ -2223,6 +2249,9 @@ def _generate_priority_mip_m_tests(test_data: TestData) -> list[str]:
         seip = (mip_pattern >> 4) & 1
         meip = (mip_pattern >> 5) & 1
 
+        if mtip:
+            lines.append("#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)")
+
         binname = f"priority_mip_{mip_pattern:02x}"
 
         lines.extend(
@@ -2278,6 +2307,8 @@ def _generate_priority_mip_m_tests(test_data: TestData) -> list[str]:
             lines.append("RVTEST_SET_SEXT_INT")
         if meip:
             lines.append("RVTEST_SET_MEXT_INT")
+        if mtip:
+            lines.append("#endif // RVMODEL_MTIME_ADDRESS")
 
         lines.append("nop")
 
@@ -2446,6 +2477,7 @@ def _generate_wfi_m_tests(test_data: TestData) -> list[str]:
     r_mtime, r_mtimecmp, r_temp1, r_temp2, r_temp3, r_temp4 = test_data.int_regs.get_registers(6, exclude_regs=[])
 
     lines = [
+        "#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)",
         comment_banner(
             "cp_wfi_m",
             "Test WFI in M-mode with MTIP\n8 tests: MIE × SIE × TW combinations",
@@ -2534,6 +2566,7 @@ def _generate_wfi_m_tests(test_data: TestData) -> list[str]:
                 )
                 lines.extend(clr_mtimer_int(r_temp1, r_mtimecmp))
 
+    lines.append("#endif // RVMODEL_MTIME_ADDRESS")
     test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_temp1, r_temp2, r_temp3, r_temp4])
     return lines
 
@@ -2550,6 +2583,7 @@ def _generate_trigger_mti_m_tests(test_data: TestData) -> list[str]:
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
 
     lines = [
+        "#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)",
         comment_banner(
             "cp_trigger_mti_m",
             "Test MTIP trigger when MIE rises via CSRRS instruction",
@@ -2618,6 +2652,7 @@ def _generate_trigger_mti_m_tests(test_data: TestData) -> list[str]:
     )
     lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
 
+    lines.append("#endif // RVMODEL_MTIME_ADDRESS")
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
     return lines
 

@@ -41,8 +41,12 @@
       "poke_mask": "0x800002cf00fe7faa"
     },
     "mie": {
-      "mask": "0x2222",
-      "poke_mask": "0x2222"
+      "mask": "0x2aaa", // ensuring that all non writable bits remain as read only 0
+      "poke_mask": "0x2aaa"
+    },
+    "mip": {
+      "mask": "0x2222", // determines what bits of mip can be set by M-mode software [SEIP, STIP, SSIP]
+      "poke_mask": "0x2aaa" //determines what bits of mip can be set by simulator injecting external events
     },
     "stvec": {
       "mask": "0xFFFFFFFFFFFFFFFD" // don't allow setting MODE field to 2 (reserved)
@@ -68,7 +72,19 @@
     "stoptrace",
     "emittrace"
   ],
-
+  "aplic": {
+    "num_sources": 1,
+    "domains": {
+      "maplic": {
+        "base": "0x0c000000",
+        "size": "0x00100000",
+        "parent": null,
+        "is_machine": true,
+        "hart_indices": [0],
+        "child_index": 0
+      }
+    }
+  },
   "vector": {
     "always_mark_dirty": true,
     "bytes_per_vec": 32,
@@ -90,7 +106,7 @@
     "trap_non_zero_vstart": true,
     "tt_clear_tval_vl_egs": true,
     "tt_fp_usum_tree_reduction": ["e16", "e32", "e64"],
-    "update_whole_mask": true
+    "update_whole_mask": false
   },
 
   "wfi_timeout": 200

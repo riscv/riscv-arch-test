@@ -17,28 +17,27 @@ implemented_extensions:
   - { name: Zca, version: "= 1.0.0" }
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0" }
+  - { name: U, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.12.0" }
 
 params:
   # XLEN parameters (VERIFIED)
   MXLEN: 32
-  #UXLEN: [32] # Why is this a 'Flow Sequence' when MXLEN is an integer?
+  UXLEN: [32]
   PHYS_ADDR_WIDTH: 32
 
   # MISA (!VERIFIED)
   MUTABLE_MISA_M: false
   MUTABLE_MISA_C: false
-  #MUTABLE_MISA_U: false
-  # UDB says:Parameter is not defined by this config: 'MUTABLE_MISA_U'.
-  # Needs: ((`Sm=1.11.0`{false} || `Sm=1.12.0`{true} || `Sm=1.13.0`{false}) && (!`Sm=1.11.0`{false} || !`Sm=1.12.0`{true}) && (!`Sm=1.11.0`{false} || !`Sm=1.13.0`{false}) && (!`Sm=1.12.0`{true} || !`Sm=1.13.0`{false}) && `U=1.0.0`{false} && `U>=0`{false} && `Sm>=0`{true})
+  MUTABLE_MISA_U: false
   MISA_CSR_IMPLEMENTED: true
 
   # endianness (VERIFIED)
   M_MODE_ENDIANNESS: little
-  #U_MODE_ENDIANNESS: little
+  U_MODE_ENDIANNESS: little
 
   # trap/exception behavior (VERIFIED)
-  #TRAP_ON_ECALL_FROM_U: true
+  TRAP_ON_ECALL_FROM_U: true
   TRAP_ON_ECALL_FROM_M: true
   TRAP_ON_EBREAK: true
   TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
@@ -65,7 +64,7 @@ params:
 
   # CSR / implementation IDs (VERIFIED)
   ARCH_ID_VALUE: 0x23
-  # IMP_ID_VALUE is gated by MIMPID_IMPLEMENTED=true; omitted because mimpid is read-only-0 in RTL
+  # IMP_ID_VALUE omitted — cs_registers.rst § "Machine Implementation ID (mimpid)": Reset Value 0x0000_0000 (read-only-0 == not implemented per spec)
   VENDOR_ID_BANK: 0xC
   VENDOR_ID_OFFSET: 0x2
 
@@ -79,13 +78,13 @@ params:
   #  Needs: ((`Sm=1.11.0`{false} || `Sm=1.12.0`{true} || `Sm=1.13.0`{false}) && !`(MTVEC_ACCESS=="ro")`{false} && (!`Sm=1.11.0`{false} || !`Sm=1.12.0`{true}) && (!`Sm=1.11.0`{false} || !`Sm=1.13.0`{false}) && (!`Sm=1.12.0`{true} || !`Sm=1.13.0`{false}) && `Sm>=0`{true} && `(MTVEC_ACCESS=="rw")`{true} && `$array_includes?(MTVEC_MODES, 0)`{false})
 
   # Sm params (VERIFIED)
-  PRECISE_SYNCHRONOUS_EXCEPTIONS: true # VERIFIED — 2-stage in-order pipeline, no imprecise-exception path in RTL
-  MARCHID_IMPLEMENTED: true # VERIFIED — cve2_pkg.sv:563 MARCHID=32'd35; cs_registers.sv:272 returns non-zero
-  MIMPID_IMPLEMENTED: false # VERIFIED — cve2_pkg.sv:572 CSR_MIMPID_VALUE=32'b0 hardcoded (spec: read-only-0 == not implemented)
-  PMA_GRANULARITY: 2 # VERIFIED — no PMA hardware in RTL; 32-bit OBI bus with byte enables (load_store_unit.sv:32 data_be_o[3:0]) => 4-byte (2^2) natural granule; matches cv32e40p precedent
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true # VERIFIED — exception_interrupts.rst § "Exceptions and Interrupts": mepc set to current program counter; 2-stage in-order pipeline has no imprecise exception path
+  MARCHID_IMPLEMENTED: true # VERIFIED — cs_registers.rst § "Machine Architecture ID (marchid)": CSR (0xF12) implemented with fixed CSR_MARCHID_VALUE; value 0x23 (35 decimal) allocated specifically to cve2
+  MIMPID_IMPLEMENTED: false # VERIFIED — cs_registers.rst § "Machine Implementation ID (mimpid)": Reset Value 0x0000_0000; CSR_MIMPID_VALUE parameter hardcoded to 0 (read-only-0 == not implemented per spec)
+  PMA_GRANULARITY: 2 # VERIFIED — no PMA hardware; load_store_unit.rst § "Data-Side Memory Interface": data_be_o[3:0] byte enable on 32-bit OBI bus => 4-byte (2^2) natural granule
 
   # CONFIG PTR (VERIFIED)
-  CONFIG_PTR_ADDRESS: 0x0 # VERIFIED — cve2_pkg.sv:577 CSR_MCONFIGPTR_VALUE=32'b0 hardcoded
+  CONFIG_PTR_ADDRESS: 0x0 # mconfigptr (0xF15) not listed in CVE2 manual CSR table (01_specification/index.rst § "Control and Status Registers (CSRs)"); defaults to 0
 
   # HPM (VERIFIED)
   HPM_EVENTS: [0]
@@ -123,6 +122,7 @@ params:
       false,
       false, # 24..31
     ]
+  MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
     [
       true,

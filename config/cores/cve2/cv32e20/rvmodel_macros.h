@@ -7,6 +7,8 @@
 
 #define RVMODEL_DATA_SECTION
 
+#define STANDARD_SM_SUPPORTED
+
 ##### STARTUP #####
 
 # Perform boot operations. Can be empty or left undefined unless needed for
@@ -74,10 +76,6 @@
 3:
 
 ##### MTVEC Alignment #####
-
-// CV32E20 RTL forces mtvec.BASE to 256-byte alignment
-// Value is log2(bytes): 8 => 256-byte alignment (matches cv32e20.yaml).
-#define RVMODEL_MTVEC_ALIGN 8
 
 ##### Interrupt Latency #####
 

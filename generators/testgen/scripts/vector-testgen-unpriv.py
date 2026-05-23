@@ -39,9 +39,11 @@ from rich.progress import (
 import vector_testgen_common as common
 from vector_testgen_common import (
   ARCH_VERIF,
+  bf16_instructions,
   getSigReg,
   getFlen,
   fedges,
+  fedgesBF16,
   fedgesD,
   fedgesH,
   freg_count,
@@ -184,7 +186,12 @@ def make_vd_vs2(instruction, sew, rng, lmul = 1):
   for v in rng:
     description = f"cmp_vd_vs2 (Test vd = vs2 = v{v})"
     cp = f"cp_vd_vs2_b{v}"
-    instruction_data = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), lmul = lmul, vd = v, vs2 = v)
+    try:
+      instruction_data = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), lmul = lmul, vd = v, vs2 = v)
+    except ValueError:
+      # Spec forbids this overlap at this v (e.g., indexed LS with EEW != SEW
+      # where partial overlap rules exclude this register). Skip.
+      continue
 
     writeTest(description, instruction, cp, instruction_data, sew=sew, lmul = lmul)
     incrementBasetestCount()
@@ -228,7 +235,11 @@ def make_vs3_vs2(instruction, sew, rng, lmul = 1):
   for v in rng:
     description       = "cmp_vs3_vs2 (Test vs3 = vs2 = v" + str(v) + ")"
     cp = f"cp_vs3_vs2_b{v}"
-    instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), lmul = lmul, vs3 = v, vs2 = v)
+    try:
+      instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), lmul = lmul, vs3 = v, vs2 = v)
+    except ValueError:
+      # Spec forbids this overlap at this v (partial-overlap rules). Skip.
+      continue
 
     writeTest(description, instruction, cp, instruction_data, sew=sew, lmul = lmul)
     incrementBasetestCount()
@@ -359,6 +370,8 @@ def make_rs1_edges_v(instruction, sew, redgesv):
 def make_fs1_edges_v(instruction, sew):
   if sew == 64:
     fedgesv = fedgesD
+  elif sew == 16 and instruction in bf16_instructions:
+    fedgesv = fedgesBF16
   elif sew == 16:
     fedgesv = fedgesH
   else:
@@ -394,6 +407,8 @@ def make_vs2_rs1_edges(instruction, sew, vs2edges):
 def make_vs2_fs1_edges(instruction, sew, vs2edges):
   if sew == 64:
     fedgesv = fedgesD
+  elif sew == 16 and instruction in bf16_instructions:
+    fedgesv = fedgesBF16
   elif sew == 16:
     fedgesv = fedgesH
   else:
@@ -402,7 +417,7 @@ def make_vs2_fs1_edges(instruction, sew, vs2edges):
   for f1 in fedgesv:
     for v2 in vs2edges:
       f1_val = fedgesv[f1]
-      description = "cr_vs2_rs1_edges"
+      description = "cr_vs2_fs1_edges"
       cp = f"cp_vs2_fs1_edges_b{f1}_{v2}"
       instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vs2_val_pointer = v2, fs1_val = f1_val)
 
@@ -470,6 +485,8 @@ def _get_fflags_pairs(instruction: str, sew: int) -> list[tuple[str, dict[str, o
   """
   if sew == 64:
     edge_dict = fedgesD
+  elif sew == 16 and instruction in bf16_instructions:
+    edge_dict = fedgesBF16
   elif sew == 16:
     edge_dict = fedgesH
   else:
@@ -528,6 +545,33 @@ def _get_fflags_pairs(instruction: str, sew: int) -> list[tuple[str, dict[str, o
     pairs.append(("NX", {"vs2_val_pointer": "vs_corner_f_pos1p5_emul1"}))
     # OF: rec7(min_subnorm) overflows
     pairs.append(("OF", {"vs2_val_pointer": "vs_corner_f_min_subnorm_emul1"}))
+
+  elif base_name == "vfwcvtbf16":
+    # NV: sNaN conversion
+    pairs.append(("NV", { "vs2_val_pointer": "vs_corner_f_sNaN_payload1_emul1" }))
+
+  elif base_name == "vfncvtbf16":
+    # NV: sNaN conversion
+    pairs.append(("NV", { "vs2_val_pointer": "vs_corner_f_sNaN_payload1_emul2" }))
+    # UF: Only something below bf16 minsubnorm (which has the same exponent as f32) can underflow here
+    pairs.append(("UF", { "vs2_val_pointer": "vs_corner_f_min_subnorm_emul2" }))
+    # OF: Only something above bf16 maxnorm (which has the same exponent as f32) can overflow here
+    pairs.append(("OF", { "vs2_val_pointer": "vs_corner_f_negmaxnorm_emul2" }))
+
+  elif base_name == "vfwmaccbf16":
+    kwargs = {
+      "vd_val_pointer": "vs_corner_f_pos0_emul2",
+      "vs2_val_pointer": "vs_corner_f_min_subnorm_emul1",
+    }
+    if suffix == "vv":
+      kwargs["vs1_val_pointer"] = "vs_corner_f_min_subnorm_emul1"
+    else:
+      kwargs["fs1_val"] = edge_dict["min_subnorm"]
+    pairs.append(("UF", kwargs))
+
+  elif base_name == "vfncvt" and suffix == "f":
+    # NV: sNaN conversion
+    pairs.append(("NV", { "vs2_val_pointer": "vs_corner_f_sNaN_payload1_emul2" }))
 
   return pairs
 
@@ -900,6 +944,7 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cp_rs2_edges_ls_e64"        : make_rs2_edges_v(test, sew, redges_ls_e64, lmul = getBaseLmul(test, sew))
     elif coverpoint == "cp_rs1_edges"               : make_rs1_edges_v(test, sew, redgesv)
     elif coverpoint == "cp_fs1_edges_v"             : make_fs1_edges_v(test, sew)
+    elif coverpoint == "cp_fs1_edges_v_bf16"        : make_fs1_edges_v(test, sew)
     elif coverpoint == "cmp_rs1_rs2"                  : make_rs1_rs2_v(test, sew, range(xreg_count))
     elif coverpoint == "cp_imm_5bit"                  : make_imm_v(test, sew)
     elif coverpoint == "cp_imm_5bit_u"                : make_imm_v(test, sew)
@@ -939,6 +984,10 @@ def makeTest(coverpoints, test, sew=None):
       max_sew = int(coverpoint.split("_")[-1])
       if sew <= max_sew:
         make_vd_vs2(test, sew, range(vreg_count), getBaseLmul(test, sew))
+    elif coverpoint == "cmp_vd_vs2_eew_eq_sew":
+      eew = getInstructionEEW(test)
+      if eew is None or eew == sew:
+        make_vd_vs2(test, sew, range(vreg_count), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vd_vs2_nv0"               : make_vd_vs2(test, sew, range(1,vreg_count), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vd_vs2_emul2"             : make_vd_vs2(test, sew, range(0,vreg_count,2), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vd_vs2_emul4"             : make_vd_vs2(test, sew, range(0,vreg_count,4), getBaseLmul(test, sew))
@@ -953,6 +1002,10 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cmp_vd_vs1_vs2"               : make_vd_vs1_vs2(test, sew, range(vreg_count))
     elif coverpoint == "cmp_vd_vs1_vs2_nv0"           : make_vd_vs1_vs2(test, sew, range(1,vreg_count))
     elif coverpoint == "cmp_vs3_vs2"                  : make_vs3_vs2(test, sew, range(vreg_count), getBaseLmul(test, sew))
+    elif coverpoint == "cmp_vs3_vs2_eew_eq_sew":
+      eew = getInstructionEEW(test)
+      if eew is None or eew == sew:
+        make_vs3_vs2(test, sew, range(vreg_count), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vs3_vs2_lte30"            : make_vs3_vs2(test, sew, range(vreg_count-1), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vs3_vs2_lte29"            : make_vs3_vs2(test, sew, range(vreg_count-2), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vs3_vs2_lte28"            : make_vs3_vs2(test, sew, range(vreg_count-3), getBaseLmul(test, sew))
@@ -970,22 +1023,26 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cp_vs2_edges_eew1"          : make_vs2_edges(test, sew, vedgeseew1, vl=8)  # assume vl = 8 for mask logical instr
     elif coverpoint == "cp_vs2_edges_ls"            : make_vs2_edges(test, sew, v_edges_ls, lmul=getBaseLmul(test, sew))
     elif coverpoint == "cp_vs2_edges_f"             : make_vs2_edges(test, sew, vfedgesemul1)
+    elif coverpoint == "cp_vs2_edges_f_bf16"        : make_vs2_edges(test, sew, vfedgesemul1)
     elif coverpoint == "cp_vs2_edges_f_emul2"       : make_vs2_edges(test, sew, vfedgesemul2)
     elif coverpoint == "cp_vs1_edges"               : make_vs1_edges(test, sew, vedgesemul1)
     elif coverpoint == "cp_vs1_edges_emul2"         : make_vs1_edges(test, sew, vedgesemul2)
     elif coverpoint == "cp_vs1_edges_eew1"          : make_vs1_edges(test, sew, vedgeseew1, vl=8)  # assume vl = 8 for mask logical instr
     elif coverpoint == "cp_vs1_edges_f"             : make_vs1_edges(test, sew, vfedgesemul1)
+    elif coverpoint == "cp_vs1_edges_f_bf16"        : make_vs1_edges(test, sew, vfedgesemul1)
     elif coverpoint == "cp_vs1_edges_f_emul2"       : make_vs1_edges(test, sew, vfedgesemul2)
     elif coverpoint == "cr_vs2_vs1_edges"           : make_vs2_vs1_edges(test, sew, vedgesemul1, vedgesemul1)
     elif coverpoint == "cr_vs2_vs1_edges_wv"        : make_vs2_vs1_edges(test, sew, vedgesemul2, vedgesemul1)
     elif coverpoint == "cr_vs2_vs1_edges_wred"      : make_vs2_vs1_edges(test, sew, vedgesemul1, vedgesemul2)
     elif coverpoint == "cr_vs2_vs1_edges_mm"        : make_vs2_vs1_edges(test, sew, vedgeseew1, vedgeseew1, vl=8)
     elif coverpoint == "cr_vs2_vs1_edges_f"         : make_vs2_vs1_edges(test, sew, vfedgesemul1, vfedgesemul1)
+    elif coverpoint == "cr_vs2_vs1_edges_f_bf16"    : make_vs2_vs1_edges(test, sew, vfedgesemul1, vfedgesemul1)
     elif coverpoint == "cr_vs2_vs1_edges_fwv"       : make_vs2_vs1_edges(test, sew, vfedgesemul2, vfedgesemul1)
     elif coverpoint == "cr_vs2_vs1_edges_fwred"     : make_vs2_vs1_edges(test, sew, vfedgesemul1, vfedgesemul2)
     elif coverpoint == "cr_vs2_rs1_edges"           : make_vs2_rs1_edges(test, sew, vedgesemul1)
     elif coverpoint == "cr_vs2_rs1_edges_wx"        : make_vs2_rs1_edges(test, sew, vedgesemul2)
     elif coverpoint == "cr_vs2_fs1_edges"           : make_vs2_fs1_edges(test, sew, vfedgesemul1)
+    elif coverpoint == "cr_vs2_fs1_edges_bf16"      : make_vs2_fs1_edges(test, sew, vfedgesemul1)
     elif coverpoint == "cr_vs2_fs1_edges_wf"        : make_vs2_fs1_edges(test, sew, vfedgesemul2)
     elif coverpoint == "cr_vs2_imm_edges"           : make_vs2_imm_edges(test, sew, vedgesemul1)
     elif coverpoint == "cr_vs2_imm_edges_u"         : make_vs2_imm_edges(test, sew, vedgesemul1)
@@ -1087,14 +1144,14 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cp_custom_vshiftn_upperbits_rs1_ones"         : make_custom_vshift_upperbits_r1_ones(test, sew, "rs1", narrow=True)
     elif coverpoint == "cp_custom_vindexedges_index_ge_vlmax"         : make_custom_vindexedges_index_ge_vlmax(test, sew)
     elif coverpoint == "cp_custom_vindexedges_index_gt_vl_lt_vlmax"   : make_custom_vindexedges_index_gt_vl_lt_vlmax(test, sew)
-    elif coverpoint[:2] != "cp"                                       : pass # skip all the helper coverpoints
+    elif coverpoint[:2] not in ("cp", "cr")                           : pass # skip all the helper coverpoints
     elif coverpoint in REGISTRY                                       : setCurrentCoverpoint(coverpoint); REGISTRY[coverpoint](test, sew)   # call the registered function (cp_custom_**)
     else:
       print("Warning: " + coverpoint + " not implemented yet for " + test)
 
 def coverpointInclusions(coverpoints):
   applicable_coverpoints = coverpoints
-  for coverpoint in coverpoints:
+  for coverpoint in list(coverpoints):
     if ((coverpoint in ['RV32', 'RV64', 'EFFEW8', 'EFFEW16', 'EFFEW32', 'EFFEW64']) or
         ("sample" in coverpoint))                                  : applicable_coverpoints.remove(coverpoint)
     elif coverpoint[:3] not in ["cp_", "cmp", "cr_"]               : applicable_coverpoints.remove(coverpoint) # skip all the helper coverpoints
@@ -1223,9 +1280,9 @@ def getcovergroups(coverdefdir, coverfiles, xlen):
         ingroup = True
       if (re.search("endgroup", line)):
         ingroup = False
-      if ((not ingroup) and re.search('`ifdef XLEN32', line)):
+      if ((not ingroup) and re.search('`ifdef UDB_MXLEN_32', line)):
         mode = 32
-      if ((not ingroup) and re.search('`ifdef XLEN64', line)):
+      if ((not ingroup) and re.search('`ifdef UDB_MXLEN_64', line)):
         mode = 64
       # only look for coverpoints if we are of the proper xlen
       #print("mode: " + str(mode) + " xlen: " + str(xlen) + " " + line)
@@ -1259,6 +1316,19 @@ def _setup_worker() -> None:
   """Per-process initialization used by both serial and parallel runs."""
   common.writeLine = writeLine
   import_all_modules(custom)
+
+def _detect_sew(pathname: str) -> int:
+  for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$', r'/VlsCustom(\d+)$', r'/VfCustom(\d+)$', r'/Zvbb(\d+)$', r'/Zvkb(\d+)$', r'/Zvbc(\d+)$']:
+    match = re.search(pattern, pathname)
+    if match:
+        return int(match.group(1))
+
+  for pattern in [r'/Zvfbfmin$', r'/Zvfhmin$', r'/Zvfbfwma$']:
+    match = re.search(pattern, pathname)
+    if match:
+      return 16
+
+  return 8
 
 
 def generate_extension(xlen_arg: int, extension_arg: str) -> str:
@@ -1307,13 +1377,7 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
 
   os.makedirs(pathname, exist_ok=True)  # noqa: PTH103
 
-  for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$', r'/VlsCustom(\d+)$', r'/VfCustom(\d+)$', r'/Zvbb(\d+)$', r'/Zvkb(\d+)$', r'/Zvbc(\d+)$']:
-    match = re.search(pattern, pathname)
-    if match:
-        sew = int(match.group(1))
-        break
-  else:
-    sew = 8
+  sew = _detect_sew(pathname)
 
   instructions = list(testplans[extension].keys())
   applicable_instructions = list(testplans[extension].keys())
@@ -1345,14 +1409,6 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
       float_en = "\n# set mstatus.FS to 10 to enable fp\nli t0,0x4000\ncsrs mstatus, t0\n\n"
       f.write(float_en)
 
-    for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$', r'/VlsCustom(\d+)$', r'/VfCustom(\d+)$', r'/Zvbb(\d+)$', r'/Zvkb(\d+)$', r'/Zvbc(\d+)$']:
-      sew_match = re.search(pattern, pathname)
-      if sew_match:
-          sew = int(sew_match.group(1))
-          break
-    else:
-      sew = 8
-
     if extension.startswith(("VfCustom", "Vf")) and sew > 32:
       setFlen(sew)
     else:
@@ -1367,13 +1423,13 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
 
     if (test in vd_widen_ins) or (test in vs2_widen_ins):
       if (sew == 8):
-        f.write("#if ELEN > 8\n")
+        f.write("#if UDB_ELEN > 8\n")
       elif (sew == 16):
-        f.write("#if ELEN > 16\n")
+        f.write("#if UDB_ELEN > 16\n")
       elif (sew == 32):
-        f.write("#if ELEN > 32\n")
+        f.write("#if UDB_ELEN > 32\n")
       elif (sew == 64):
-        f.write("#if ELEN > 64\n")
+        f.write("#if UDB_ELEN > 64\n")
 
     clearCustomData()
     coverpoints = list(testplans[extension][test])

@@ -6,6 +6,8 @@
   "labels": ["dependencies"],
   "prHourlyLimit": 4,
   "prConcurrentLimit": 10,
+  "minimumReleaseAge": "7 days",
+  "internalChecksFilter": "strict",
   "git-submodules": {
     "enabled": true
   },
@@ -79,9 +81,29 @@
       "depNameTemplate": "llvm/llvm-project",
       "datasourceTemplate": "github-tags",
       "extractVersionTemplate": "^llvmorg-(?<version>\\d+)\\.\\d+\\.\\d+$"
+    },
+    {
+      "description": "Bundler version recorded in Gemfile.lock (kept in sync with .mise.toml gem:bundler)",
+      "customType": "regex",
+      "managerFilePatterns": ["/^framework/src/act/data/Gemfile\\.lock$/"],
+      "matchStrings": ["BUNDLED WITH\\s+(?<currentValue>[\\d.]+)"],
+      "depNameTemplate": "gem:bundler",
+      "packageNameTemplate": "bundler",
+      "datasourceTemplate": "rubygems"
     }
   ],
   "packageRules": [
+    {
+      "description": "Always use the latest version of specified packages",
+      "matchDepNames": [
+        "tenstorrent/whisper",
+        "udb",
+        "udb-gen",
+        "idlc",
+        "udb_helpers"
+      ],
+      "minimumReleaseAge": null
+    },
     {
       "description": "Do not update Ruby language versions",
       "matchDepNames": ["ruby"],
@@ -93,9 +115,33 @@
       "groupName": "ruff"
     },
     {
+      "description": "Automerge non-major ruff bumps; majors stay grouped for manual review",
+      "matchDepNames": ["ruff", "astral-sh/ruff-pre-commit"],
+      "matchUpdateTypes": ["digest", "patch", "minor"],
+      "automerge": true
+    },
+    {
       "description": "Keep uv in sync across .mise.toml and the pre-commit hook",
       "matchDepNames": ["uv", "astral-sh/uv-pre-commit"],
       "groupName": "uv"
+    },
+    {
+      "description": "Automerge non-major uv bumps; majors stay grouped for manual review",
+      "matchDepNames": ["uv", "astral-sh/uv-pre-commit"],
+      "matchUpdateTypes": ["digest", "patch", "minor"],
+      "automerge": true
+    },
+    {
+      "description": "Automerge non-major bundler bumps (.mise.toml gem:bundler + Gemfile.lock BUNDLED WITH update together as one dep); majors reviewed manually",
+      "matchDepNames": ["gem:bundler"],
+      "matchUpdateTypes": ["digest", "patch", "minor"],
+      "automerge": true
+    },
+    {
+      "description": "Automerge non-major Python package updates (pydantic, typer, pyjson5, ruamel-yaml, pyright, etc.); majors still reviewed manually",
+      "matchDatasources": ["pypi"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "automerge": true
     },
     {
       "description": "Group all GitHub Actions updates into one PR; auto-merge non-major bumps (digests, patches, minors)",
@@ -131,12 +177,6 @@
       ],
       "matchUpdateTypes": ["major"],
       "groupName": "pre-commit hooks (major)",
-      "schedule": ["before 6am on monday"]
-    },
-    {
-      "description": "Pyright moves fast; keep it in its own PR",
-      "matchPackageNames": ["pyright"],
-      "groupName": "pyright",
       "schedule": ["before 6am on monday"]
     }
   ]

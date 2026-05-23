@@ -2,7 +2,6 @@
 // cp_ssstrictv_ls_mew_reserved
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // Vector load/store with mew=1 (bit 28), reserved encoding
     mew_set: coverpoint ins.current.insn[28] {

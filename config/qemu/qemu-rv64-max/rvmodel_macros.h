@@ -14,6 +14,8 @@
         _semihost_exit_fail: .dword 0x20023; .dword 1;                  \
         .popsection
 
+#define STANDARD_SM_SUPPORTED
+
 ##### STARTUP #####
 
 # Perform boot operations. Can be empty or left undefined unless needed for

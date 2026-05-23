@@ -20,7 +20,7 @@
 //               have been tested thoroughly. With pmpcfg.L=1, pmpcfg.XWR=101,
 //               attempt to lw and sw to each standard region. Read should succeed
 //               and write should fail, proving all PMP entries are usable.
-//               Supports RVMODEL_NUM_PMPS = 16 or 64.
+//               Supports UDB_NUM_PMP_ENTRIES = 16 or 64.
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
@@ -28,7 +28,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "pmpsm_all_entries_check.S"
@@ -40,10 +40,10 @@
 
 RVTEST_BEGIN
 
-#if RVMODEL_PMP_GRAIN != 0
-  #define g   (1 << (RVMODEL_PMP_GRAIN + 2))
+#if UDB_PMP_GRANULARITY != 2
+  #define g   (1 << (UDB_PMP_GRANULARITY))
 #else
-  #define g   (1 << (RVMODEL_PMP_GRAIN + 3))
+  #define g   (1 << (UDB_PMP_GRANULARITY + 1))
 #endif
 
 // ---------------------------------------------------------------------------
@@ -96,7 +96,7 @@ RVTEST_BEGIN
 #define PMP_REGION_0    ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT
 
 // Slots 16-62 (64-PMP only)
-#if RVMODEL_NUM_PMPS == 64
+#if UDB_NUM_PMP_ENTRIES == 64
 #define PMP_REGION_62   ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP6_CFG_SHIFT
 #define PMP_REGION_61   ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP5_CFG_SHIFT
 #define PMP_REGION_60   ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP4_CFG_SHIFT
@@ -144,7 +144,7 @@ RVTEST_BEGIN
 #define PMP_REGION_18   ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT
 #define PMP_REGION_17   ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT
 #define PMP_REGION_16   ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT
-#endif  // RVMODEL_NUM_PMPS == 64
+#endif  // UDB_NUM_PMP_ENTRIES == 64
 
 // ---------------------------------------------------------------------------
 // Address helpers
@@ -152,9 +152,9 @@ RVTEST_BEGIN
 #define PMPADDRESS_TOP_GLOBAL   -1              // Covers entire address space
 #define REGIONSTART     TEST_FOR_EXECUTION      // RAM_BASE_ADDR + PROGRAM_SIZE
 
-#if RVMODEL_PMP_GRAIN != 0
-    #define PMP_MASK        ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
-    #define PMP_REGION_SIZE (1 << (RVMODEL_PMP_GRAIN - 1)) - 1
+#if UDB_PMP_GRANULARITY != 2
+    #define PMP_MASK        ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
+    #define PMP_REGION_SIZE (1 << (UDB_PMP_GRANULARITY - 3)) - 1
 #else
     #define PMP_MASK        ~0
     #define PMP_REGION_SIZE 0
@@ -181,14 +181,14 @@ RVTEST_BEGIN
 main:
     // Zero all pmpcfg registers
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
     csrw pmpcfgi, x0
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // Zero all pmpaddr registers
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -199,25 +199,25 @@ main:
     //   16-PMP : last entry = pmpaddr15, config byte lives in pmpcfg2[PMP7]
     //   64-PMP : last entry = pmpaddr63, config byte lives in pmpcfg14[PMP7]
     // -----------------------------------------------------------------------
-#if RVMODEL_NUM_PMPS == 64
+#if UDB_NUM_PMP_ENTRIES == 64
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw pmpaddr63, x4
     LI(x4, PMP_REGION_GLOBAL)
     csrw pmpcfg14, x4
-#elif RVMODEL_NUM_PMPS == 16
+#elif UDB_NUM_PMP_ENTRIES == 16
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw pmpaddr15, x4
     LI(x4, PMP_REGION_GLOBAL)
     csrw pmpcfg2, x4
 #else
-    #error "Unsupported RVMODEL_NUM_PMPS value; only 16 and 64 are supported."
+    #error "Unsupported UDB_NUM_PMP_ENTRIES value; only 16 and 64 are supported."
 #endif
 
 // ===========================================================================
 // TEST CASES — 64-PMP ONLY (slots 16-62, test cases 1-47)
 // Slots 0-14 follow as test cases 48-62 in this build.
 // ===========================================================================
-#if RVMODEL_NUM_PMPS == 64
+#if UDB_NUM_PMP_ENTRIES == 64
 
 // Test Case: 1 — slot 62, pmpcfg14
     SET_PMP_ENTRY pmpaddr62, pmpcfg14, PMP_REGION_62
@@ -467,7 +467,7 @@ main:
     SET_PMP_ENTRY pmpaddr0, pmpcfg0, PMP_REGION_0
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_62
 
-#endif  // RVMODEL_NUM_PMPS == 64
+#endif  // UDB_NUM_PMP_ENTRIES == 64
 
 // ===========================================================================
 // TEST CASES — 16-PMP ONLY (slots 14-0, test cases 1-15)
@@ -475,7 +475,7 @@ main:
 // pmpcfg2 covers pmpaddr8-15  (RV64: one 64-bit CSR = 8 entries)
 // pmpcfg0 covers pmpaddr0-7
 // ===========================================================================
-#if RVMODEL_NUM_PMPS == 16
+#if UDB_NUM_PMP_ENTRIES == 16
 
 // Test Case: 1 — slot 14, pmpcfg2
     SET_PMP_ENTRY pmpaddr14, pmpcfg2, PMP_REGION_14
@@ -537,7 +537,7 @@ main:
     SET_PMP_ENTRY pmpaddr0, pmpcfg0, PMP_REGION_0
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
 
-#endif  // RVMODEL_NUM_PMPS == 16
+#endif  // UDB_NUM_PMP_ENTRIES == 16
 
     j exit                                                  // Verification complete
 
@@ -551,12 +551,12 @@ test_1_str: .string "\"test: 1; cp: cp_pmpm64_lw\""
 test_2_str: .string "\"test: 2; cp: cp_pmpm64_sw\""
 
 .align 12
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jr ra
 
 TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept (1<<(UDB_PMP_GRANULARITY))
     nop
     .endr
 

@@ -13,7 +13,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from act.build import BuildTask, PythonAction, SubprocessAction, SymlinkAction
-from act.config import CompilerType, Config, CoverageSimulator
+from act.config import CompilerType, Config, CoverageSimulator, RefModelType, spike_isa_string
 from act.coverreport import generate_report, merge_summaries
 from act.parse_test_constraints import TestMetadata
 from act.sail_to_rvvi import sailLog2Trace
@@ -38,7 +38,7 @@ _OBJDUMP_FLAGS_DEBUG = [*_OBJDUMP_FLAGS_COMMON, "-t", "-s"]
 # ---------------------------------------------------------------------------
 
 
-def _compiler_cmd(config: Config, xlen: int, tests_dir: Path) -> list[str]:
+def _compiler_cmd(config: Config, xlen: int, tests_dir: Path, udb_header_dir: Path) -> list[str]:
     """Build the full compiler command list including compiler-specific and common flags."""
     cmd = [str(config.compiler_exe)]
     if config.compiler_type == CompilerType.CLANG:
@@ -52,11 +52,41 @@ def _compiler_cmd(config: Config, xlen: int, tests_dir: Path) -> list[str]:
             "-mcmodel=medany",
             "-nostdlib",
             f"-I{tests_dir}/env",
+            f"-I{udb_header_dir.absolute()}",
         ]
     )
     if config.compiler_type == CompilerType.GCC:
         cmd.extend(["-Wl,--no-warn-rwx-segments"])
     return cmd
+
+
+def _ref_model_sig_cmd(
+    config: Config,
+    sig_elf: Path,
+    sig_file: Path,
+    sig_trace_file: Path,
+    xlen: int,
+    debug: bool,
+) -> list[str]:
+    """Build the command for invoking the reference model to produce a signature file."""
+    if config.ref_model_type == RefModelType.SAIL:
+        sail_config_path = config.dut_include_dir / "sail.json"
+        cmd = [str(config.ref_model_exe)]
+        if debug:
+            cmd.append("--trace")
+            cmd.extend(["--trace-output", str(sig_trace_file)])
+        cmd.extend(["--config", str(sail_config_path)])
+        cmd.extend(config.ref_model_type.signature_flags(sig_file, xlen // 8))
+        cmd.append(str(sig_elf))
+        return cmd
+    if config.ref_model_type == RefModelType.SPIKE:
+        cmd = [str(config.ref_model_exe), f"--isa={spike_isa_string(xlen)}"]
+        if debug:
+            cmd.extend(["-l", "--log-commits", f"--log={sig_trace_file}"])
+        cmd.extend(config.ref_model_type.signature_flags(sig_file, xlen // 8))
+        cmd.append(str(sig_elf))
+        return cmd
+    raise ValueError(f"Unsupported reference model type: {config.ref_model_type}")
 
 
 # ---------------------------------------------------------------------------
@@ -72,14 +102,14 @@ def gen_compile_tasks(
     config: Config,
     compiler_cmd: list[str],
     compile_inputs: tuple[Path, ...] = (),
-    sail_inputs: tuple[Path, ...] = (),
+    ref_model_inputs: tuple[Path, ...] = (),
     debug: bool = False,
     fast: bool = False,
 ) -> list[BuildTask]:
     """Generate BuildTasks for the compilation pipeline of a single test.
 
     Build Pipeline:
-        add.S -> add.sig.elf -> add.sig (sail) -> add.results (sig_modify) -> add.elf
+        add.S -> add.sig.elf -> add.sig (ref model) -> add.results (sig_modify) -> add.elf
         Optional: add.sig.elf.objdump (if debug), add.elf.objdump (if not fast)
 
     Args:
@@ -90,7 +120,7 @@ def gen_compile_tasks(
         config: Configuration object.
         compiler_cmd: Pre-built compiler command prefix (from _compiler_cmd).
         compile_inputs: Shared inputs for compilation (env headers, DUT headers, linker script).
-        sail_inputs: Shared inputs for the Sail reference model (e.g. sail.json).
+        ref_model_inputs: Shared inputs for the reference model (e.g. sail.json for Sail).
         debug: Whether to generate debug output (signature objdump and trace files).
         fast: Whether to disable objdump generation for faster builds.
     """
@@ -105,10 +135,10 @@ def gen_compile_tasks(
     sig_trace_file = build_dir / test_name.with_suffix(".sig.trace")
     sig_log_file = build_dir / test_name.with_suffix(".sig.log")
     final_elf = elf_dir / test_name.with_suffix(".elf")
-    sail_config_path = config.dut_include_dir / "sail.json"
 
     # Metadata — substitute ${XLEN} placeholder used by priv tests
     march = test_metadata.march.replace("${XLEN}", str(xlen))
+    # Always include zifencei so the trap handler's fence.i can be assembled.
     test_flen = test_metadata.flen
     test_path = test_metadata.test_path
     mabi = f"{'i' if xlen == 32 else ''}lp{xlen}{'e' if test_metadata.e_ext else ''}"
@@ -121,7 +151,6 @@ def gen_compile_tasks(
         f"-march={march}",
         f"-mabi={mabi}",
         "-DSIGNATURE",
-        f"-DXLEN={xlen}",
         f"-DTEST_FLEN={test_flen}",
         str(test_path),
     ]
@@ -147,21 +176,14 @@ def gen_compile_tasks(
             )
         )
 
-    # 2. sig – run Sail reference model
-    sail_cmd = [str(config.ref_model_exe)]
-    if debug:
-        sail_cmd.append("--trace")
-        sail_cmd.extend(["--trace-output", str(sig_trace_file)])
-    sail_cmd.extend(["--config", str(sail_config_path)])
-    sail_cmd.extend(config.ref_model_type.signature_flags(sig_file, xlen // 8))
-    sail_cmd.append(str(sig_elf))
-
+    # 2. sig – run reference model
+    ref_model_cmd = _ref_model_sig_cmd(config, sig_elf, sig_file, sig_trace_file, xlen, debug)
     tasks.append(
         BuildTask(
             outputs=(sig_file,),
             deps=(sig_elf,),
-            extra_inputs=sail_inputs,
-            action=SubprocessAction(cmd=sail_cmd, stdout_file=sig_log_file),
+            extra_inputs=ref_model_inputs,
+            action=SubprocessAction(cmd=ref_model_cmd, stdout_file=sig_log_file),
         )
     )
 
@@ -236,10 +258,19 @@ def gen_rvvi_tasks(
     test_name: Path,
     base_dir: Path,
     config: Config,
-    sail_inputs: tuple[Path, ...] = (),
+    ref_model_inputs: tuple[Path, ...] = (),
     fast: bool = False,
 ) -> list[BuildTask]:
-    """Generate BuildTasks for RVVI trace generation (coverage pipeline)."""
+    """Generate BuildTasks for RVVI trace generation (coverage pipeline).
+
+    Only supported when the reference model is Sail; the converter parses Sail's
+    trace format.
+    """
+    if config.ref_model_type != RefModelType.SAIL:
+        raise ValueError(
+            f"Coverage trace generation requires the Sail reference model, "
+            f"but ref_model_type={config.ref_model_type.value} was selected."
+        )
     tasks: list[BuildTask] = []
 
     # Paths
@@ -276,7 +307,7 @@ def gen_rvvi_tasks(
         BuildTask(
             outputs=(sail_trace,),
             deps=(elf,),
-            extra_inputs=sail_inputs,
+            extra_inputs=ref_model_inputs,
             action=SubprocessAction(cmd=sail_cmd, stdout_file=sail_log),
         )
     )
@@ -298,8 +329,10 @@ def gen_coverage_tasks(
     coverpoint_dir: Path,
     base_dir: Path,
     config_report_dir: Path,
-    dut_header_dir: Path,
+    udb_header_dir: Path,
+    env_header_dir: Path,
     coverage_simulator: CoverageSimulator,
+    verbose: bool = False,
 ) -> list[BuildTask]:
     """Generate BuildTasks for coverage UCDB generation, reports, and summary merging."""
     tasks: list[BuildTask] = []
@@ -316,11 +349,13 @@ def gen_coverage_tasks(
     sim_script = Path(str(act_resources / script_name)).absolute()
 
     # Collect file dependencies for staleness checking.
-    # Coverage simulation depends on coverpoints, fcov infrastructure, DUT config headers, and the simulator script.
+    # Coverage simulation depends on coverpoints, fcov infrastructure, generated DUT
+    # config header (in udb_header_dir), and the simulator script.
     coverpoint_files = tuple(sorted(p.absolute() for p in coverpoint_dir.rglob("*") if p.is_file()))
     fcov_files = tuple(sorted(p.absolute() for p in fcov_path.rglob("*") if p.is_file()))
-    dut_svh_files = tuple(sorted(p.absolute() for p in dut_header_dir.iterdir() if p.suffix == ".svh"))
-    coverage_inputs = (*coverpoint_files, *fcov_files, *dut_svh_files, sim_script)
+    udb_svh_files = tuple(sorted(p.absolute() for p in udb_header_dir.iterdir() if p.suffix == ".svh"))
+    env_svh_files = tuple(sorted(p.absolute() for p in env_header_dir.iterdir() if p.suffix == ".svh"))
+    coverage_inputs = (*coverpoint_files, *fcov_files, *udb_svh_files, *env_svh_files, sim_script)
 
     for coverage_group, traces in sorted(coverage_targets.items()):
         # Paths
@@ -347,6 +382,8 @@ def gen_coverage_tasks(
             tracelist_file.write_text(tracelist_contents)
 
         # Coverage collection task
+        coverage_tag = f"{coverage_group.stem.upper()}_COVERAGE"
+        coverage_defines = f"{coverage_tag} FCOV_VERBOSE" if verbose else coverage_tag
         if coverage_simulator == CoverageSimulator.QUESTA:
             do_script = (
                 f"do {sim_script} "
@@ -355,8 +392,9 @@ def gen_coverage_tasks(
                 f"{work_dir} "
                 f"{fcov_path} "
                 f"{coverpoint_dir} "
-                f"{dut_header_dir} "
-                f"{{{coverage_group.stem.upper()}_COVERAGE}}"
+                f"{udb_header_dir} "
+                f"{env_header_dir} "
+                f"{{{coverage_defines}}}"
             )
             coverage_cmd = ["vsim", "-c", "-do", do_script]
         else:
@@ -368,8 +406,9 @@ def gen_coverage_tasks(
                 str(work_dir),
                 str(fcov_path),
                 str(coverpoint_dir),
-                str(dut_header_dir),
-                f"{coverage_group.stem.upper()}_COVERAGE",
+                str(udb_header_dir),
+                str(env_header_dir),
+                coverage_defines,
             ]
 
         # Deps: all rvvi traces for this coverage group must be done
@@ -428,8 +467,16 @@ def generate_build_plan(
     coverage_simulator: CoverageSimulator,
     debug: bool = False,
     fast: bool = False,
+    verbose: bool = False,
 ) -> list[BuildTask]:
     """Build the full DAG of tasks for a single config."""
+    if coverage_enabled and config.ref_model_type != RefModelType.SAIL:
+        raise ValueError(
+            "Coverage generation is only supported with the Sail reference model, "
+            f"but ref_model_type={config.ref_model_type.value} was selected for "
+            f"config '{config.name}'. Switch back to Sail or drop --coverage."
+        )
+
     tasks: list[BuildTask] = []
 
     config_wkdir = workdir / config.name
@@ -437,17 +484,21 @@ def generate_build_plan(
     config_report_dir = config_wkdir / "reports"
 
     coverage_targets: defaultdict[Path, list[Path]] = defaultdict(list)
-    compiler_cmd = _compiler_cmd(config, xlen, tests_dir)
+    compiler_cmd = _compiler_cmd(config, xlen, tests_dir, config_wkdir)
 
     # Collect shared file dependencies that affect all compilations.
     # Any change to env headers, DUT headers, or the linker script should trigger recompilation.
     env_headers = tuple(sorted(p.absolute() for p in (tests_dir / "env").iterdir() if p.is_file()))
     dut_headers = tuple(sorted(p.absolute() for p in config.dut_include_dir.iterdir() if p.suffix == ".h"))
-    compile_inputs = (*env_headers, *dut_headers, config.linker_script.absolute())
+    udb_headers = tuple(sorted(p.absolute() for p in config_wkdir.iterdir() if p.suffix == ".h"))
+    compile_inputs = (*env_headers, *dut_headers, *udb_headers, config.linker_script.absolute())
 
-    # Sail config affects reference model output
-    sail_config = config.dut_include_dir / "sail.json"
-    sail_inputs = (sail_config.absolute(),) if sail_config.exists() else ()
+    # Sail config affects reference model output (Spike has no equivalent file).
+    ref_model_inputs: tuple[Path, ...] = ()
+    if config.ref_model_type == RefModelType.SAIL:
+        sail_config = config.dut_include_dir / "sail.json"
+        if sail_config.exists():
+            ref_model_inputs = (sail_config.absolute(),)
 
     for test_name_str, test_metadata in sorted(selected_tests.items()):
         test_name = Path(test_name_str)
@@ -462,7 +513,7 @@ def generate_build_plan(
                 config,
                 compiler_cmd,
                 compile_inputs,
-                sail_inputs,
+                ref_model_inputs,
                 debug,
                 fast,
             )
@@ -480,7 +531,7 @@ def generate_build_plan(
                     test_name,
                     config_wkdir,
                     config,
-                    sail_inputs,
+                    ref_model_inputs,
                     fast,
                 )
             )
@@ -493,8 +544,10 @@ def generate_build_plan(
                 coverpoint_dir,
                 config_coverage_dir,
                 config_report_dir,
-                config.dut_include_dir,
+                config_wkdir,
+                tests_dir / "env",
                 coverage_simulator,
+                verbose,
             )
         )
 

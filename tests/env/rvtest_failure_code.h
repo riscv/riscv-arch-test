@@ -375,8 +375,6 @@
     failedtest_saveresults:
         # Dispatch based on failure type
         lw x9, failure_type
-        li x10, 3
-        beq x9, x10, failedtest_saveresults_trap  # type 3: trap abort, skip register/value extraction
 #if defined(F_SUPPORTED) || defined(ZFINX_SUPPORTED)
         li x10, 1
         beq x9, x10, failedtest_saveresults_fp
@@ -467,7 +465,7 @@
         la x6, scratch
         FP_LREG x7, 0(x6)
         SREG x7, 272(DEFAULT_TEMP_REG)    # failing_value (lower/only)
-    #if CONFIG_FLEN > XLEN
+    #if CONFIG_FLEN > UDB_MXLEN
         LREG x7, REGWIDTH(x6)
         la x8, failing_value_upper
         SREG x7, 0(x8)                    # failing_value upper half
@@ -487,7 +485,7 @@
         # Load full expected FP value from signature
         LREG x7, 0(x6)
         SREG x7, 280(DEFAULT_TEMP_REG)    # expected_value (lower/only)
-    #if CONFIG_FLEN > XLEN
+    #if CONFIG_FLEN > UDB_MXLEN
         LREG x7, SIG_STRIDE(x6)
         la x8, expected_value_upper
         SREG x7, 0(x8)                    # expected_value upper half
@@ -721,9 +719,6 @@
 
 #endif // RVTEST_VECTOR
 
-    failedtest_saveresults_trap:
-        # Trap abort: no register/value extraction, fall through to common to load string pointer
-
     failedtest_saveresults_common:
         # After the jal instruction there are two XLEN-sized pointers: the instruction address and the test string pointer
         # The jal returns to DEFAULT_LINK_REG, which points to the data after jal  (i.e., the first pointer itself)
@@ -780,9 +775,9 @@
         LA(a0, newlinestr)
         call rvmodel_io_write_str
 
-        # Trap abort: skip instruction/address/register/value fields, they are meaningless
-        lw a0, failure_type
-        li a1, 3
+        # Trap abort sentinel: skip instruction/address/register/value fields
+        LREG a0, failing_value
+        LI(a1, 0xBAD0DEAD)
         beq a0, a1, failedtest_report_traphandler
 
         # Print failing instruction (detect 16-bit compressed vs 32-bit)
@@ -1004,7 +999,7 @@
         lw a0, failure_type
         li a1, 1
         bne a0, a1, failedtest_report_badval_not_fp
-    #if defined(F_SUPPORTED) && CONFIG_FLEN > XLEN
+    #if defined(F_SUPPORTED) && CONFIG_FLEN > UDB_MXLEN
         # FP with CONFIG_FLEN > XLEN: combined hex "0xUPPER_LOWER"
         LREG a0, failing_value_upper
         LREG a1, failing_value
@@ -1031,7 +1026,7 @@
         lw a0, failure_type
         li a1, 1
         bne a0, a1, failedtest_report_expval_not_fp
-    #if defined(F_SUPPORTED) && CONFIG_FLEN > XLEN
+    #if defined(F_SUPPORTED) && CONFIG_FLEN > UDB_MXLEN
         # FP with CONFIG_FLEN > XLEN: combined hex "0xUPPER_LOWER"
         LREG a0, expected_value_upper
         LREG a1, expected_value
@@ -1163,7 +1158,7 @@
         ret
 
 
-#if defined(F_SUPPORTED) && CONFIG_FLEN > XLEN || defined(RVTEST_VECTOR)
+#if defined(F_SUPPORTED) && CONFIG_FLEN > UDB_MXLEN || defined(RVTEST_VECTOR)
     # Convert two XLEN-wide values to combined hex string: "0xUPPER_LOWER\n\0"
     # a0: upper XLEN-bit value
     # a1: lower XLEN-bit value
@@ -1235,7 +1230,7 @@
         .fill 2, 4, 0xfeedf00dbaaaaaad
     failure_string_ptr:
         .fill 2, 4, 0xfeedf00dbaaaaaad
-#if defined(F_SUPPORTED) && CONFIG_FLEN > XLEN
+#if defined(F_SUPPORTED) && CONFIG_FLEN > UDB_MXLEN
     failing_value_upper:
         .fill 2, 4, 0xfeedf00dbaaaaaad
     expected_value_upper:

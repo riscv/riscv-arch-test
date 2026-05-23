@@ -37,7 +37,9 @@ def _make_fs_edges(
     for edge_val in edges:
         for frm_mode in frm_modes:
             params = generate_random_params(
-                test_data, instr_type, exclude_regs=[0],
+                test_data,
+                instr_type,
+                exclude_regs=[0],
                 **{val_key: edge_val},
                 frm=frm_mode,
             )

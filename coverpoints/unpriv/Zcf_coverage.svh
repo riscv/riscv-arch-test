@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZCF
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
 covergroup Zcf_c_flw_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "c.flw"  iff (ins.trap == 0 )  {
@@ -97,7 +97,7 @@ endgroup
 function void zcf_sample(int hart, int issue, ins_t ins);
 
     case (traceDataQ[hart][issue][0].inst_name)
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
         "c.flw"     : begin
             Zcf_c_flw_cg.sample(ins);
         end

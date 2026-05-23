@@ -13,7 +13,7 @@
 // Remove NORUN once Sail supports Big Endian
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv32, NORUN]
-# MARCH: rv32i_zicsr
+# MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv32_mstatus_sbe_and_sum_set_Smode.S"

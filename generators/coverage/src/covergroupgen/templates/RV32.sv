@@ -1,1 +1,1 @@
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32

@@ -117,6 +117,7 @@ params:
       false,
       false, # 24..31 (unimplemented)
     ]
+  MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN: # VERIFIED — perf_counters.rst § "Controlling the counters from software": bit 0=mcycle, bit 2=minstret, bit X=mhpmcounterX; control_status_registers.rst § "Machine Counter-Inhibit register (mcountinhibit)": non-implemented counters read 0
     [
       true, # index 0 (MCYCLE inhibit)

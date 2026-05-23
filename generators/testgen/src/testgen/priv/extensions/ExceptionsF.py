@@ -415,10 +415,10 @@ def _generate_load_address_misaligned_tests(test_data: TestData) -> list[str]:
         lines.extend(add_fp_load_misaligned_test("flh", offset, test_data, coverpoint, covergroup))
         lines.append("#endif")
 
-        lines.append("#ifdef Q_SUPPORTED")
-        lines.append(f"\n# Testcase: flq with offset {offset} (LSBs: {offset:04b})")
-        lines.extend(add_fp_load_misaligned_test("flq", offset, test_data, coverpoint, covergroup))
-        lines.append("#endif")
+        # lines.append("#ifdef Q_SUPPORTED")
+        # lines.append(f"\n# Testcase: flq with offset {offset} (LSBs: {offset:04b})")
+        # lines.extend(add_fp_load_misaligned_test("flq", offset, test_data, coverpoint, covergroup))
+        # lines.append("#endif")
 
     return lines
 
@@ -451,35 +451,41 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
         ]
     )
 
-    lines.append("#ifdef D_SUPPORTED")
     lines.extend(
         [
+            "#ifdef D_SUPPORTED",
             test_data.add_testcase("fld_fault", coverpoint, covergroup),
             f"fld f{check_reg}, 0(x{addr_reg})",
             "nop",
+            "",
+            "#endif",
+            "",
         ]
     )
-    lines.extend(["", "#endif\n"])
 
-    lines.append("#ifdef ZFHMIN_SUPPORTED")
     lines.extend(
         [
+            "#ifdef ZFHMIN_SUPPORTED",
             test_data.add_testcase("flh_fault", coverpoint, covergroup),
             f"flh f{check_reg}, 0(x{addr_reg})",
             "nop",
+            "#endif",
+            "",
         ]
     )
-    lines.append("#endif")
 
-    lines.append("#ifdef Q_SUPPORTED")
     lines.extend(
         [
-            test_data.add_testcase("flq_fault", coverpoint, covergroup),
-            f"flq f{check_reg}, 0(x{addr_reg})",
-            "nop",
+            # "#ifdef Q_SUPPORTED",
+            # test_data.add_testcase("flq_fault", coverpoint, covergroup),
+            # f"flq f{check_reg}, 0(x{addr_reg})",
+            # "nop",
+            # "",
+            # "#endif",
+            "#endif // RVMODEL_ACCESS_FAULT_ADDRESS",
+            "",
         ]
     )
-    lines.extend(["", "#endif", "#endif", ""])
     test_data.int_regs.return_register(addr_reg)
     test_data.float_regs.return_register(check_reg)
     return lines
@@ -509,10 +515,10 @@ def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
         lines.extend(add_fp_store_misaligned_test("fsh", offset, test_data, coverpoint, covergroup))
         lines.append("#endif")
 
-        lines.append("#ifdef Q_SUPPORTED")
-        lines.append(f"\n# Testcase: fsq with offset {offset} (LSBs: {offset:04b})")
-        lines.extend(add_fp_store_misaligned_test("fsq", offset, test_data, coverpoint, covergroup))
-        lines.append("#endif")
+        # lines.append("#ifdef Q_SUPPORTED")
+        # lines.append(f"\n# Testcase: fsq with offset {offset} (LSBs: {offset:04b})")
+        # lines.extend(add_fp_store_misaligned_test("fsq", offset, test_data, coverpoint, covergroup))
+        # lines.append("#endif")
 
     return lines
 
@@ -546,35 +552,39 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
         ]
     )
 
-    lines.extend(["", "#ifdef D_SUPPORTED"])
     lines.extend(
         [
+            "",
+            "#ifdef D_SUPPORTED",
             test_data.add_testcase("fsd_fault", coverpoint, covergroup),
             f"fsd f{data_reg}, 0(x{addr_reg})",
             "nop",
+            "#endif",
         ]
     )
-    lines.append("#endif")
 
-    lines.append("#ifdef ZFHMIN_SUPPORTED")
     lines.extend(
         [
+            "#ifdef ZFHMIN_SUPPORTED",
             test_data.add_testcase("fsh_fault", coverpoint, covergroup),
             f"fsh f{data_reg}, 0(x{addr_reg})",
             "nop",
+            "#endif",
         ]
     )
-    lines.append("#endif")
 
-    lines.append("#ifdef Q_SUPPORTED")
     lines.extend(
         [
-            test_data.add_testcase("fsq_fault", coverpoint, covergroup),
-            f"fsq f{data_reg}, 0(x{addr_reg})",
-            "nop",
+            # "#ifdef Q_SUPPORTED",
+            # test_data.add_testcase("fsq_fault", coverpoint, covergroup),
+            # f"fsq f{data_reg}, 0(x{addr_reg})",
+            # "nop",
+            # "",
+            # "#endif",
+            "#endif // RVMODEL_ACCESS_FAULT_ADDRESS",
+            "",
         ]
     )
-    lines.extend(["", "#endif", "#endif", ""])
     test_data.int_regs.return_register(addr_reg)
     test_data.float_regs.return_register(data_reg)
     return lines

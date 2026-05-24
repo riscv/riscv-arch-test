@@ -36,11 +36,24 @@ git init "$INSTALL_DIR/cv32e40p-dv"
   git checkout FETCH_HEAD
 )
 
-# 3. Build the Verilator binary for rv32imcf (only one in CI matrix for now).
+# 3. Build a Verilator binary per cv32e40p config (TEST = certification_<config>).
 make -C "$INSTALL_DIR/cv32e40p-dv/sim/core" \
     verilate \
     CV_CORE_CONFIG=rv32imcf \
     TEST=certification_rv32imcf \
+    -j"$(nproc)"
+
+make -C "$INSTALL_DIR/cv32e40p-dv/sim/core" \
+    verilate \
+    CV_CORE_CONFIG=rv32imc \
+    TEST=certification_rv32imc \
+    -j"$(nproc)"
+
+# v1.0.0_rv32imc also clones the pinned v1.0.0 RTL (Makefile handles it).
+make -C "$INSTALL_DIR/cv32e40p-dv/sim/core" \
+    verilate \
+    CV_CORE_CONFIG=v1.0.0_rv32imc \
+    TEST=certification_v1.0.0_rv32imc \
     -j"$(nproc)"
 
 # 4. Drop the per-test wrapper into $INSTALL_DIR/bin for easy invocation from CI

@@ -2091,6 +2091,8 @@ excpt_\__MODE__\()hndlr_tbl:
 
 \__MODE__\()clr_Mext_int:                            // M-mode external interrupt: clear + save intID
         RVMODEL_CLR_MEXT_INT(T2, T5)
+        // TRAP_SIGUPD(T4, T3, 3, \__MODE__\()clr_Mext_int, \__MODE__\()clr_Mext_int_str)  // Save intID
+        // removed because cause mepc might be different across different DUTs
         j       resto_\__MODE__\()rtn
 
 \__MODE__\()clr_Ssw_int:                             // S-mode software interrupt

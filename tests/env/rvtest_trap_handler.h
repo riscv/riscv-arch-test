@@ -137,25 +137,7 @@
 #endif
 
 //==============================================================================
-// SECTION 2: MTVEC ALIGNMENT
-//
-// MTVEC_ALIGN controls the alignment of the trampoline table. The RISC-V spec
-// requires the vectored mode base address to be aligned to at least 4 bytes
-// times the number of supported interrupt causes. Most implementations require
-// 64-byte (2^6) alignment to fit on a cache line boundary.
-//
-// DUTs can override this via RVMODEL_MTVEC_ALIGN if their hardware requires
-// a different alignment (e.g., CLIC implementations may need 2^8).
-//==============================================================================
-
-#ifndef RVMODEL_MTVEC_ALIGN
-  #define MTVEC_ALIGN 6                          // default: 2^6 = 64-byte alignment
-#else
-  #define MTVEC_ALIGN RVMODEL_MTVEC_ALIGN        // use DUT-specified alignment
-#endif
-
-//==============================================================================
-// SECTION 3: ARCHITECTURE CONSTANTS
+// SECTION 2: ARCHITECTURE CONSTANTS
 //
 // NUM_SPECD_INTCAUSES:  number of specified interrupt causes (0..23)
 // NUM_SPECD_EXCPTCAUSES: number of specified exception causes (0..23)
@@ -177,7 +159,7 @@
 #endif
 
 //==============================================================================
-// SECTION 4: T-SBI (TEST SUPERVISOR BINARY INTERFACE) CONSTANTS
+// SECTION 3: T-SBI (TEST SUPERVISOR BINARY INTERFACE) CONSTANTS
 //
 // These #define constants specify the operation codes passed in a0 when making
 // T-SBI calls via ecall. The handler checks a0 against these values to dispatch
@@ -216,7 +198,7 @@
 #define TSBI_RESERVED_RET   (-1)                 // return value for unrecognized operations
 
 //==============================================================================
-// SECTION 5: FENCE INSTRUCTION CONFIGURATION
+// SECTION 4: FENCE INSTRUCTION CONFIGURATION
 //
 // RVMODEL_FENCEI: instruction used to synchronize the instruction stream after
 // writing code to memory (e.g., when the trampoline is relocated, or when
@@ -238,10 +220,6 @@
   #endif
 #endif
 
-#ifndef RVMODEL_CLEAN_SIG
-  #define RVMODEL_CLEAN_SIG  RVMODEL_FENCEI      // signature region cleanup (same as fencei by default)
-#endif
-
 #ifndef _VA_SZ_
   #if UDB_MXLEN==32
     #define _VA_SZ_ 32                           // RV32: 32-bit virtual address
@@ -251,7 +229,7 @@
 #endif
 
 //==============================================================================
-// SECTION 6: MODE ENCODING CONSTANTS
+// SECTION 5: MODE ENCODING CONSTANTS
 //
 // These constants encode privilege modes in various formats:
 //   - *MODE_SIG: 2-bit mode identifier stored in trap signature word 0 (bits 1:0)
@@ -277,7 +255,7 @@
 #define MPP_MMODE (3<<MPP_LSB)                   // MPP value for M-mode (11 << 11 = 0x1800)
 
 //==============================================================================
-// SECTION 7: TRAMPOLINE AND SAVE AREA SIZE CALCULATIONS
+// SECTION 6: TRAMPOLINE AND SAVE AREA SIZE CALCULATIONS
 //
 // The trampoline is the vectored interrupt entry point. It consists of:
 //   1. VECTOR SPREADER: UDB_MXLEN jump instructions (one per possible vector)
@@ -304,7 +282,7 @@
 #define int_hndlr_tblsz (UDB_MXLEN*2*WDBYTSZ)                                // size of combined int+exception dispatch tables
 
 //==============================================================================
-// SECTION 8: SAVE AREA OFFSET DEFINITIONS
+// SECTION 7: SAVE AREA OFFSET DEFINITIONS
 //
 // These #define constants give byte offsets from the top of a mode's save area
 // (Xtramptbl_sv, stored in xSCRATCH, loaded into sp on trap entry).
@@ -350,21 +328,7 @@
 #define tsbi_csr_scratch_off        rvmodel_sv_off  // T-SBI dynamic instruction scratch offset
 
 //==============================================================================
-// SECTION 9: VARIADIC ARGUMENT HELPERS
-//
-// These macros extract the Nth argument from a __VA_ARGS__ list.
-// Used by RVTEST_SAVE_GPRS to accept an optional bitmask argument.
-//==============================================================================
-
-#define _ARG5(_1ST,_2ND, _3RD,_4TH,_5TH,...) _5TH  // extract 5th argument
-#define _ARG4(_1ST,_2ND, _3RD,_4TH,...) _4TH        // extract 4th argument
-#define _ARG3(_1ST,_2ND, _3RD, ...) _3RD             // extract 3rd argument
-#define _ARG2(_1ST,_2ND, ...) _2ND                   // extract 2nd argument
-#define _ARG1(_1ST,...) _1ST                          // extract 1st argument
-#define NARG(...) _ARG5(__VA_OPT__(__VA_ARGS__,)4,3,2,1,0)  // count arguments (0-4)
-
-//==============================================================================
-// SECTION 10: INSTANTIATE_MODE_MACRO
+// SECTION 8: INSTANTIATE_MODE_MACRO
 //
 // Helper macro that replicates a given macro for each supported privilege mode.
 // Called as: INSTANTIATE_MODE_MACRO RVTEST_TRAP_HANDLER
@@ -389,7 +353,7 @@
 .endm
 
 //==============================================================================
-// SECTION 11: CSR RENAME MACROS
+// SECTION 9: CSR RENAME MACROS
 //
 // XCSR_RENAME <MODE> sets assembler symbols (CSR_XSTATUS, CSR_XEPC, etc.)
 // to the actual CSR names for the specified mode. This allows the handler
@@ -499,128 +463,7 @@
 .endm
 
 //==============================================================================
-// SECTION 12: RVTEST_SAVE_GPRS
-//
-// Debug-only macro that saves selected GPRs to the signature region.
-// Used at test end to capture register state for debugging.
-//
-// Parameters:
-//   _BR:  base register (loaded with target label address)
-//   _LBL: label of the save area
-//   ...:  optional bitmask selecting which registers to save (default: all)
-//
-// NOTE: This modifies the base register. Register values containing
-//   addresses will NOT be relocated for virtual memory.
-//==============================================================================
-
-#define RVTEST_SAVE_GPRS(_BR, _LBL, ...)                ;\
-        .option push                                    ;\
-        .option norvc                                   ;\
-        .set __SV_MASK__,  -1 /* default: save all */   ;\
-    .if NARG(__VA_ARGS__) == 1                          ;\
-        .set __SV_MASK__,  _ARG1(__VA_OPT__(__VA_ARGS__,0)) ;\
-    .endif                                              ;\
-    .set offset, 0                                      ;\
-    LA(_BR, _LBL)                    /* load save area base address */;\
-    .if (__SV_MASK__ &        (0x2)) == 0x2             ;\
-    RVTEST_SIGUPD(_BR, x1)          /* save x1  (ra) if bit 1 set */;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &        (0x4)) == 0x4             ;\
-    RVTEST_SIGUPD(_BR, x2)          /* save x2  (sp) if bit 2 set */;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &        (0x8)) == 0x8             ;\
-    RVTEST_SIGUPD(_BR, x3)          /* save x3  (gp) if bit 3 set */;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &       (0x10)) == 0x10            ;\
-    RVTEST_SIGUPD(_BR, x4)          /* save x4  (tp) if bit 4 set */;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &       (0x20)) == 0x20            ;\
-    RVTEST_SIGUPD(_BR, x5)          /* save x5  (t0) if bit 5 set */;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &       (0x40)) == 0x40            ;\
-    RVTEST_SIGUPD(_BR, x6)                              ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &       (0x80)) == 0x80            ;\
-    RVTEST_SIGUPD(_BR, x7)                              ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &      (0x100)) == 0x100           ;\
-    RVTEST_SIGUPD(_BR, x8)                              ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &      (0x200)) == 0x200           ;\
-    RVTEST_SIGUPD(_BR, x9)                              ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &      (0x400)) == 0x400           ;\
-    RVTEST_SIGUPD(_BR, x10)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &      (0x800)) == 0x800           ;\
-    RVTEST_SIGUPD(_BR, x11)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &     (0x1000)) == 0x1000          ;\
-    RVTEST_SIGUPD(_BR, x12)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &     (0x2000)) == 0x2000          ;\
-    RVTEST_SIGUPD(_BR, x13)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &     (0x4000)) == 0x4000          ;\
-    RVTEST_SIGUPD(_BR, x14)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &     (0x8000)) == 0x8000          ;\
-    RVTEST_SIGUPD(_BR, x15)                             ;\
-    .endif                                              ;\
-#ifndef E_SUPPORTED                                     ;\
-    .if (__SV_MASK__ &    (0x10000)) == 0x10000         ;\
-    RVTEST_SIGUPD(_BR, x16)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &    (0x20000)) == 0x20000         ;\
-    RVTEST_SIGUPD(_BR, x17)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &    (0x40000)) == 0x40000         ;\
-    RVTEST_SIGUPD(_BR, x18)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &    (0x80000)) == 0x80000         ;\
-    RVTEST_SIGUPD(_BR, x19)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &   (0x100000)) == 0x100000        ;\
-    RVTEST_SIGUPD(_BR, x20)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &   (0x200000)) == 0x200000        ;\
-    RVTEST_SIGUPD(_BR, x21)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &   (0x400000)) == 0x400000        ;\
-    RVTEST_SIGUPD(_BR, x22)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &   (0x800000)) == 0x800000        ;\
-    RVTEST_SIGUPD(_BR, x23)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &  (0x1000000)) == 0x1000000       ;\
-    RVTEST_SIGUPD(_BR, x24)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &  (0x2000000)) == 0x2000000       ;\
-    RVTEST_SIGUPD(_BR, x25)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &  (0x4000000)) == 0x4000000       ;\
-    RVTEST_SIGUPD(_BR, x26)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &  (0x8000000)) == 0x8000000       ;\
-    RVTEST_SIGUPD(_BR, x27)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ & (0x10000000)) == 0x10000000      ;\
-    RVTEST_SIGUPD(_BR, x28)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ & (0x20000000)) == 0x20000000      ;\
-    RVTEST_SIGUPD(_BR, x29)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ & (0x40000000)) == 0x40000000      ;\
-    RVTEST_SIGUPD(_BR, x30)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ & (0x80000000)) == 0x80000000      ;\
-    RVTEST_SIGUPD(_BR, x31)                             ;\
-    .endif                                              ;\
-#endif                                                  ;\
-    .option pop
-
-//==============================================================================
-// SECTION 13: LEGACY MODE-SWITCHING MACROS (x3==0 convention)
+// SECTION 10: LEGACY MODE-SWITCHING MACROS (x3==0 convention)
 //
 // These macros use the ORIGINAL ACT convention where x3 is set to 0 before
 // an ecall to signal "return to higher privilege mode immediately."  The trap
@@ -695,7 +538,7 @@
 .endm
 
 //==============================================================================
-// SECTION 14: T-SBI CONVENIENCE MACROS FOR TESTS
+// SECTION 11: T-SBI CONVENIENCE MACROS FOR TESTS
 //
 // These macros provide a clean test-facing interface for the a0-based T-SBI
 // calling convention. Unlike the legacy GOTO_MMODE (which uses x3==0), these
@@ -810,7 +653,7 @@
 
 
 //==============================================================================
-// SECTION 15: RVTEST_GOTO_LOWER_MODE
+// SECTION 12: RVTEST_GOTO_LOWER_MODE
 //
 // Boot-time macro to transition from M-mode to a lower privilege mode.
 // Used by RVTEST_BOOT_TO_SMODE and RVTEST_BOOT_TO_UMODE during boot sequence.
@@ -921,7 +764,7 @@
 .endm
 
 //==============================================================================
-// SECTION 16: DEFAULT INTERRUPT MACROS
+// SECTION 13: DEFAULT INTERRUPT MACROS
 //
 // If the DUT does not define RVMODEL_SET/CLR_xxx_INT macros, these defaults
 // are used. The default action is to jump to cleanup_epilogs, which terminates
@@ -977,7 +820,7 @@
 //==============================================================================
 //==============================================================================
 //
-//  SECTION 17: RVTEST_TRAP_PROLOG
+//  SECTION 14: RVTEST_TRAP_PROLOG
 //
 //  Per-mode trap handler initialization. Called once per mode during boot.
 //  Sets up:
@@ -1131,7 +974,7 @@ rvtest_\__MODE__\()prolog_done:
 //==============================================================================
 //==============================================================================
 //
-//  SECTION 18: RVTEST_TRAP_HANDLER
+//  SECTION 15: RVTEST_TRAP_HANDLER
 //
 //  The main trap handler macro. This is the heart of the ACT4 framework.
 //  One copy is instantiated per supported privilege mode (M, S, H, V).
@@ -1424,7 +1267,9 @@ tsbi_\__MODE__\()goto_m:
   #ifdef H_SUPPORTED
         LI(     T2, (1<<MPV_LSB))                    // T2 = MPV bit mask
     #if (UDB_MXLEN==32)
-        csrc    CSR_MSTATUSH, T2                      // RV32: clear MPV in mstatush (not virtual)
+        #ifndef SM1P11P0_SUPPORTED
+                csrc    CSR_MSTATUSH, T2             // RV32: clear MPV in mstatush (not virtual)
+        #endif
     #else
         slli    T2, T2, 32                            // RV64: shift MPV to upper half of mstatus
         csrc    CSR_MSTATUS, T2                       // RV64: clear MPV in mstatus
@@ -1441,7 +1286,9 @@ tsbi_\__MODE__\()goto_s:
   #ifdef H_SUPPORTED
         LI(     T2, (1<<MPV_LSB))                    // T2 = MPV bit mask
     #if (UDB_MXLEN==32)
-        csrc    CSR_MSTATUSH, T2                      // RV32: clear MPV (not virtual)
+        #ifndef SM1P11P0_SUPPORTED
+                csrc    CSR_MSTATUSH, T2             // RV32: clear MPV (not virtual)
+        #endif
     #else
         slli    T2, T2, 32                            // RV64: shift to upper half
         csrc    CSR_MSTATUS, T2                       // RV64: clear MPV
@@ -1456,7 +1303,9 @@ tsbi_\__MODE__\()goto_u:
   #ifdef H_SUPPORTED
         LI(     T2, (1<<MPV_LSB))                    // T2 = MPV bit mask
     #if (UDB_MXLEN==32)
-        csrc    CSR_MSTATUSH, T2                      // RV32: clear MPV (not virtual)
+        #ifndef SM1P11P0_SUPPORTED
+                csrc    CSR_MSTATUSH, T2             // RV32: clear MPV (not virtual)
+        #endif
     #else
         slli    T2, T2, 32                            // RV64: shift to upper half
         csrc    CSR_MSTATUS, T2                       // RV64: clear MPV
@@ -1473,7 +1322,9 @@ tsbi_\__MODE__\()goto_vs:
         csrs    CSR_MSTATUS, T4                       // set MPP = 01 (S-mode)
         LI(     T2, (1<<MPV_LSB))                    // T2 = MPV bit mask
     #if (UDB_MXLEN==32)
-        csrs    CSR_MSTATUSH, T2                      // RV32: set MPV=1 in mstatush (virtualized)
+        #ifndef SM1P11P0_SUPPORTED
+                csrs    CSR_MSTATUSH, T2                      // RV32: set MPV=1 in mstatush (virtualized)
+        #endif
     #else
         slli    T2, T2, 32                            // RV64: shift to upper half
         csrs    CSR_MSTATUS, T2                       // RV64: set MPV=1 in mstatus
@@ -1486,7 +1337,9 @@ tsbi_\__MODE__\()goto_vu:
         csrc    CSR_MSTATUS, T4                       // clear MPP = 00 (U-mode)
         LI(     T2, (1<<MPV_LSB))                    // T2 = MPV bit mask
     #if (UDB_MXLEN==32)
-        csrs    CSR_MSTATUSH, T2                      // RV32: set MPV=1 in mstatush (virtualized)
+        #ifndef SM1P11P0_SUPPORTED
+                csrs    CSR_MSTATUSH, T2             // RV32: set MPV=1 in mstatush (virtualized)
+        #endif
     #else
         slli    T2, T2, 32                            // RV64: shift to upper half
         csrs    CSR_MSTATUS, T2                       // RV64: set MPV=1 in mstatus
@@ -1739,7 +1592,7 @@ tsbi_\__MODE__\()handle_forwarded:
 .endif
 
 //==============================================================================
-// NORMAL TRAP HANDLING (unchanged from original)
+// NORMAL TRAP HANDLING
 //
 // Reached when the trap is NOT a T-SBI call (either not an ecall,
 // or an ecall with x3==0 that was already handled by the legacy path,
@@ -1881,7 +1734,7 @@ sv_\__MODE__\()cause:
         bltz    T5, common_\__MODE__\()int_handler   // if MSB=1 -> interrupt -> branch to int handler
 
 //==============================================================================
-// EXCEPTION HANDLER (unchanged from original)
+// EXCEPTION HANDLER
 // Handles EPC relocation, tval recording, and instruction skipping.
 //==============================================================================
 
@@ -1929,7 +1782,7 @@ common_\__MODE__\()excpt_handler:
                 csrr    T6, CSR_MSTATUS
         #else
           #ifndef SM1P11P0_SUPPORTED
-            csrr    T6, CSR_MSTATUSH
+                csrr    T6, CSR_MSTATUSH
           #else
             li      T6, 0                   // no H: MPV always 0
           #endif
@@ -2367,7 +2220,7 @@ rtn_fm_mmode:
 //==============================================================================
 //==============================================================================
 //
-//  SECTION 19: RVTEST_TRAP_EPILOG
+//  SECTION 16: RVTEST_TRAP_EPILOG
 //
 //  Per-mode cleanup, run after test completion.
 //  Restores xEDELEG, xSATP, xSCRATCH, xTVEC, and any relocated trampoline code.
@@ -2467,7 +2320,7 @@ rvtest_\__MODE__\()end:                            // epilog is done for this mo
 //==============================================================================
 //==============================================================================
 //
-//  SECTION 20: RVTEST_TRAP_SAVEAREA
+//  SECTION 17: RVTEST_TRAP_SAVEAREA
 //
 //  Allocates and initializes the per-mode save area in the .data section.
 //  One copy per supported mode (M, S/HS, VS), instantiated by

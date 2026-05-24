@@ -2,14 +2,6 @@
 # riscv-arch-test assembly test failure handling code
 # Jordan Carlin jcarlin@hmc.edu October 2025
 # SPDX-License-Identifier: Apache-2.0
-#
-# Enhanced trap failure diagnostics added May 2026
-# - Trap failure subtypes for per-word mismatch identification
-# - xcause human-readable name decoding
-# - Full trap signature entry context printing (mode, cause, epc, tval)
-# - Extra/missing trap detection with count
-# - Interrupt-specific diagnostics (xip, intID)
-
 // Macro to define failure detection code (functions)
 // This is instantiated after test code near the end of RVTEST_CODE_END in test_setup.h
 .macro RVTEST_FAILURE_CODE
@@ -59,6 +51,7 @@
         sw x1, 0(x9)                   # failure_type = 3 (trap handler)
         mv DEFAULT_TEMP_REG, x9        # move scratch base into DEFAULT_TEMP_REG
         mv DEFAULT_LINK_REG, x7        # move return address into DEFAULT_LINK_REG
+        # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
         j failedtest_saveregs
 
 #ifdef F_SUPPORTED
@@ -508,7 +501,7 @@
         # --------------------------------------------------
         # Save failing instruction, address and vd
         # --------------------------------------------------
-    #if (UDB_MXLEN == 64)
+    #ifdef UDB_MXLEN_64
         lwu x6, 0(DEFAULT_LINK_REG)      # load lower 32 bits of instruction address
         lw  x7, 4(DEFAULT_LINK_REG)      # load upper 32 bits
         slli x7, x7, 32
@@ -754,7 +747,7 @@
         //--------------------------------------------------------------
         // Load the failure string pointer from the embedded data
         //--------------------------------------------------------------
-    #if (UDB_MXLEN == 64)
+    #ifdef UDB_MXLEN_64
         lwu x6, REGWIDTH(DEFAULT_LINK_REG)
         lw  x7, REGWIDTH+4(DEFAULT_LINK_REG)
         slli x7, x7, 32
@@ -768,7 +761,7 @@
         //--------------------------------------------------------------
         // Load the address of the failing check (instruction pointer)
         //--------------------------------------------------------------
-    #if (UDB_MXLEN == 64)
+    #ifdef UDB_MXLEN_64
         lwu x6, 0(DEFAULT_LINK_REG)
         lw  x7, 4(DEFAULT_LINK_REG)
         slli x7, x7, 32
@@ -1075,7 +1068,7 @@
 
         # Save failing address (loaded from embedded instruction pointer after jal)
         # Only guaranteed to be 4-byte aligned, so need to load in 4-byte chunks on rv64
-    #if (UDB_MXLEN == 64)
+    #ifdef UDB_MXLEN_64
         lwu x6, 0(DEFAULT_LINK_REG)      # load lower 32 bits of instruction address
         lw  x7, 4(DEFAULT_LINK_REG)      # load upper 32 bits
         slli x7, x7, 32
@@ -1099,7 +1092,7 @@
 
         # Get pointer to failure string (loaded from second embedded pointer after jal)
         # Only guaranteed to be 4-byte aligned, so need to load in 4-byte chunks on rv64
-    #if (UDB_MXLEN == 64)
+    #ifdef UDB_MXLEN_64
         lwu x6, REGWIDTH(DEFAULT_LINK_REG)       # load lower 32 bits of string pointer
         lw  x7, REGWIDTH+4(DEFAULT_LINK_REG)      # load upper 32 bits
         slli x7, x7, 32
@@ -1746,7 +1739,7 @@
         // Index into exception name pointer table
         la a1, trap_excpt_name_tbl
         slli a2, a0, 2                           # cause * 4 (pointer size on RV32)
-    #if (UDB_MXLEN == 64)
+    #ifdef UDB_MXLEN_64
         slli a2, a0, 3                           # cause * 8 (pointer size on RV64)
     #endif
         add a1, a1, a2
@@ -1763,7 +1756,7 @@
 
         la a1, trap_int_name_tbl
         slli a2, a0, 2
-    #if (UDB_MXLEN == 64)
+    #ifdef UDB_MXLEN_64
         slli a2, a0, 3
     #endif
         add a1, a1, a2

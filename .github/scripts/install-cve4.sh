@@ -11,7 +11,7 @@ INSTALL_DIR="${1:?Usage: install-cve4.sh <install-dir>}"
 CVE4_DV_REPO="https://github.com/openhwgroup/cv32e40p-dv-review.git"
 CVE4_DV_COMMIT="a1c4ec501e82f23987d1d74625b70a6cd1dfc2e1"
 CVE40X_DV_REPO="https://github.com/karabambus/cv32e40x-dv.git"
-CVE40X_DV_COMMIT="52250973ca5ba8d25c4ec1646dd7ecc1a86c0727"
+CVE40X_DV_COMMIT="0089a160af843b327a4d3d6909ac291654d363a3"
 CVE40X_CORE_HASH="18c88fd78a37f270c8301c552f5fd0f564d0ab20"  # pin cv32e40x RTL
 VERILATOR_VERSION="v5.042"
 

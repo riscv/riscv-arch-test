@@ -78,6 +78,8 @@ for cfg in rv32imc rv32imcab; do
       verilate \
       CV_CORE_CONFIG="$cfg" \
       CV_CORE_HASH="$CVE40X_CORE_HASH" \
+      CV_SW_TOOLCHAIN=/usr/local \
+      CV_SW_PREFIX=riscv64-unknown-elf- \
       -j"$(nproc)"
 done
 

@@ -1,6 +1,7 @@
 # rvmodel_macros.h
-# RVMODEL macro definitions for OpenHW CVA6 (cv64a60ax) core
-# SPDX-License-Identifier: Apache-2.0
+# DUT-specific macro definitions for Sail reference model
+# Jordan Carlin jcarlin@hmc.edu October 2025, Sadhvi Narayana sanarayanan@hmc.edu February 2026
+# SPDX-License-Identifier: BSD-3-Clause
 
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
@@ -12,6 +13,8 @@
         .align 8; .global tohost; tohost: .dword 0;         \
         .align 8; .global fromhost; fromhost: .dword 0;     \
         .popsection
+
+#define STANDARD_SM_SUPPORTED
 
 ##### STARTUP #####
 
@@ -30,7 +33,7 @@
 
 ##### TERMINATION #####
 
-// CVA6 uses HTIF (Host-Target Interface) to terminate simulation.
+// SAIL uses HTIF (Host-Target Interface) to terminate simulation.
 // Writing to 'tohost' with value 1 indicates success, 3 indicates failure.
 
 # Terminate test with a pass indication.

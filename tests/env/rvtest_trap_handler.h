@@ -938,6 +938,9 @@ init_\__MODE__\()tvec:
         csrr    T3, CSR_XTVEC
         SREG    T3, xtvec_sav_off(T1)   // save orig mtvec+mode in tvec_save
         andi    T2, T3, WDBYTMSK        // extract mode bits (2 LSBs)
+#if !defined(UDB_MTVEC_MODES_0) && defined(UDB_MTVEC_MODES_1)
+        ori     T2, x0, 1               // vectored-only core: force vectored (MODE=0 wouldn't round-trip)
+#endif
         LREG    T4, tentry_addr_off(T1) // points to bottom of trampoline_sv area
         addi    T4, T4, -actual_tramp_sz// calc top of trampoline sv (common entry pt) avoiding an LA()
         or      T2, T4, T2              // merge .mode & tramp ptr and store to both XTVEC, tvec_new

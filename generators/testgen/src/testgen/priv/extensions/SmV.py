@@ -8,6 +8,7 @@
 
 """SmV privileged test generator: vector CSRs and vtype/vl/vstart behavior in M-mode."""
 
+from testgen.asm.csr import gen_csr_read_sigupd
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
@@ -51,14 +52,14 @@ def _gen_vcsrrswc(test_data: TestData, temp_reg: int) -> list[str]:
     ]
     lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
     lines.extend(_vector_setup(temp_reg))
-    save_reg = test_data.int_regs.get_register()
+    save_reg, check_reg = test_data.int_regs.get_registers(2)
     lines.append(f"LI(x{save_reg}, -1)  # all 1s mask for csr ops")
     for csr in _VECTOR_CSRS:
         for op_name, op in (("csrrs", "CSRS"), ("csrrc", "CSRC"), ("csrrw", "CSRW")):
             lines.append(test_data.add_testcase(f"{csr}_{op_name}", coverpoint, _CG))
             lines.append(f"{op}({csr}, x{save_reg})  # {op_name} {csr}")
-            lines.append("nop")
-    test_data.int_regs.return_registers([save_reg])
+            lines.append(gen_csr_read_sigupd(check_reg, (csr, None), test_data))
+    test_data.int_regs.return_registers([save_reg, check_reg])
     return lines
 
 
@@ -72,26 +73,10 @@ def _gen_vcsrs_walking1s(test_data: TestData, temp_reg: int) -> list[str]:
     ]
     lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
     lines.extend(_vector_setup(temp_reg))
-    walk_reg, mask_reg = test_data.int_regs.get_registers(2)
-    for csr in _VECTOR_CSRS_WR:
-        lines.append(f"# walking-1s on {csr}")
-        lines.append(f"LI(x{mask_reg}, -1)  # all 1s")
-        lines.append(f"LI(x{walk_reg}, 1)   # one-hot starting at bit 0")
-        # We need to walk all XLEN bits; emit for both 32 and 64 via #if
-        lines.append(".rept __riscv_xlen")
-        # Note: .rept doesn't access __riscv_xlen as a number; emit per-bit explicitly with #if guard
-        lines.append(".endr")
-    # Replace the .rept stub with explicit unroll: emit bit-by-bit with #if for RV64 high bits
-    lines = lines[
-        : lines.index(
-            comment_banner(
-                coverpoint, "csrrw walking-1s into vstart/vxsat/vxrm/vcsr (covers walking_ones_rs1 bins 0..XLEN-1)"
-            )
-        )
-        + 1
-    ]
-    lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
-    lines.extend(_vector_setup(temp_reg))
+    # Walk one bit at a time, reading the CSR back after each write so the
+    # signature captures how the DUT latched it. RV64 high bits are guarded by
+    # #if so the RV32 build only emits the low 32.
+    walk_reg, mask_reg, check_reg = test_data.int_regs.get_registers(3)
     for csr in _VECTOR_CSRS_WR:
         lines.append(f"# walking-1s on {csr}")
         lines.append(f"LI(x{mask_reg}, -1)  # all 1s")
@@ -100,15 +85,17 @@ def _gen_vcsrs_walking1s(test_data: TestData, temp_reg: int) -> list[str]:
             lines.append(f"CSRC({csr}, x{mask_reg})  # clear all bits")
             lines.append(test_data.add_testcase(f"{csr}_bit_{i}", coverpoint, _CG))
             lines.append(f"CSRW({csr}, x{walk_reg})  # walking-1 bit {i}")
+            lines.append(gen_csr_read_sigupd(check_reg, (csr, None), test_data))
             lines.append(f"slli x{walk_reg}, x{walk_reg}, 1")
         lines.append("#if __riscv_xlen == 64")
         for i in range(32, 64):
             lines.append(f"CSRC({csr}, x{mask_reg})  # clear all bits")
             lines.append(test_data.add_testcase(f"{csr}_bit_{i}", coverpoint, _CG))
             lines.append(f"CSRW({csr}, x{walk_reg})  # walking-1 bit {i}")
+            lines.append(gen_csr_read_sigupd(check_reg, (csr, None), test_data))
             lines.append(f"slli x{walk_reg}, x{walk_reg}, 1")
         lines.append("#endif")
-    test_data.int_regs.return_registers([walk_reg, mask_reg])
+    test_data.int_regs.return_registers([walk_reg, mask_reg, check_reg])
     return lines
 
 
@@ -495,11 +482,12 @@ def _gen_vstart_oob(test_data: TestData, temp_reg: int) -> list[str]:
     coverpoint = "cp_vstart_out_of_bounds"
     lines = [comment_banner(coverpoint, "csrrw vstart with rs1 = 2^16 (above max VLEN-1)")]
     lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
-    rs1_reg = test_data.int_regs.get_register()
+    rs1_reg, check_reg = test_data.int_regs.get_registers(2)
     lines.append(f"LI(x{rs1_reg}, 0x10000)  # 2^16")
     lines.append(test_data.add_testcase("vstart_oob", coverpoint, _CG))
     lines.append(f"CSRW(vstart, x{rs1_reg})")
-    test_data.int_regs.return_registers([rs1_reg])
+    lines.append(gen_csr_read_sigupd(check_reg, ("vstart", None), test_data))
+    test_data.int_regs.return_registers([rs1_reg, check_reg])
     return lines
 
 

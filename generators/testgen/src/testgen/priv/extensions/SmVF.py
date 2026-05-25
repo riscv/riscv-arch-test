@@ -8,6 +8,7 @@
 
 """SmVF privileged test generator: vector-FP × mstatus.FS state."""
 
+from testgen.asm.csr import gen_csr_read_sigupd
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
@@ -69,6 +70,7 @@ def _gen_fs_state_affecting_csr(test_data: TestData, temp_reg: int) -> list[str]
     lines = [
         comment_banner(coverpoint, "vfdiv.vv 1.0/0.0 under FS=Initial/Clean; sets DZ in fflags"),
     ]
+    check_reg = test_data.int_regs.get_register()
     for fs in (1, 2):
         for trial in range(3):
             lines.extend(_set_fs_vs(fs=3, vs=3, temp_reg=temp_reg))
@@ -80,7 +82,7 @@ def _gen_fs_state_affecting_csr(test_data: TestData, temp_reg: int) -> list[str]
             lines.extend(_set_fs_vs(fs=fs, vs=3, temp_reg=temp_reg))
             lines.append(test_data.add_testcase(f"vfdiv_vv_fs{fs}_t{trial}", coverpoint, _CG))
             lines.append("vfdiv.vv v3, v1, v2  # 1.0/0.0 -> +inf, DZ flag")
-            lines.append("nop")
+            lines.append(gen_csr_read_sigupd(check_reg, ("fflags", None), test_data))
     # Also exercise an exception with vfadd inf-inf and vfmul 0*inf
     for fs in (1, 2):
         lines.extend(_set_fs_vs(fs=3, vs=3, temp_reg=temp_reg))
@@ -95,7 +97,8 @@ def _gen_fs_state_affecting_csr(test_data: TestData, temp_reg: int) -> list[str]
         lines.extend(_set_fs_vs(fs=fs, vs=3, temp_reg=temp_reg))
         lines.append(test_data.add_testcase(f"vfadd_inf_minf_fs{fs}", coverpoint, _CG))
         lines.append("vfadd.vv v3, v6, v7  # inf + -inf -> NV flag")
-        lines.append("nop")
+        lines.append(gen_csr_read_sigupd(check_reg, ("fflags", None), test_data))
+    test_data.int_regs.return_registers([check_reg])
     return lines
 
 

@@ -12,7 +12,7 @@
     // (writable_hpm_counters[2 .. 0]) are ignored.
     "writable_hpm_counters": {
       "len": 32,
-      "value": "0x000001F8"
+      "value": "0x000001FF"
     },
     // The top 29 bits in this value control whether the
     // corresponding bits of the `scounteren` CSR that control HPM
@@ -84,7 +84,9 @@
       // This specifies the number of usable PMP entries.
       // Entries higher than this are read-only-zero.
       // The value must be less than or equal to `count`.
-      "usable_count": 8,
+      // NOTE: CVA6 RTL has NrPMPEntries=8 (entries 8-15 are read-only zero),
+      // but Sail requires usable_count=16 for correct PMP test behavior.
+      "usable_count": 16,
       "tor_supported": true,
       "na4_supported": false,
       "napot_supported": true

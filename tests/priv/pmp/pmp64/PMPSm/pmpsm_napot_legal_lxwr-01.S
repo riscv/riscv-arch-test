@@ -76,7 +76,8 @@ RVTEST_BEGIN
 3:
     nop
 
-    addi a4, a4, (g-8)                  // REGIONSTART + g - 4
+    LI(t6, (g-8))                  // REGIONSTART + g - 4
+    add a4, a4, t6
     LA(x1, 4f)                            // Store the return Address in x1
     jalr ra, 0(a4)
     nop
@@ -132,7 +133,8 @@ RVTEST_BEGIN
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_6, test_6_str)
 
 
-    addi a5, a5, (g-8)                                       // REGIONSTART + g - 4
+    LI(t6, (g-8))                                       // REGIONSTART + g - 4
+    add a5, a5, t6
 
     \TEST_CASE\()_7:
     sw a4, 0(a5)
@@ -201,7 +203,8 @@ RVTEST_BEGIN
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_17, test_17_str)
 
 
-    addi a5, a5, (g-8)
+    LI(t6, (g-8))
+    add a5, a5, t6
 
     \TEST_CASE\()_18:
     lw a4, 0(a5)

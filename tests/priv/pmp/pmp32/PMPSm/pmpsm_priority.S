@@ -117,7 +117,7 @@ main:
 
     LA(x4, TEST_FOR_EXECUTION)
     srl x4, x4, PMP_SHIFT
-    addi x5, x0, g
+    LI(x5, g)
 
     // REGIONSTART in even PMPADDR
     .set pmpaddri, CSR_PMPADDR0
@@ -130,7 +130,8 @@ main:
     LA(x5, TEST_FOR_EXECUTION)
     .set pmpaddri, CSR_PMPADDR0+1
     .rept 7
-    addi x5, x5, g
+    LI(t6, g)
+    add x5, x5, t6
     srl x6, x5, PMP_SHIFT
     csrw pmpaddri, x6
     .set pmpaddri, pmpaddri+2

@@ -21,7 +21,8 @@ its own covergroup name, CSR skip set, and privilege-specific preamble.
 
 Register exclusion
 ------------------
-ALL scratch registers are chosen from {x7..x31} only.  The following
+ALL working registers (register operands in generated encodings) are chosen
+from {x7..x31} only.  The following
 registers are permanently excluded:
 
   x0  zero — hardware constant
@@ -360,26 +361,26 @@ def generate_illegal_instr(
     emit_raw_words(lines, "cp_store", "0000000RRRRR01000EEE000000100011")
     emit_raw_words(lines, "cp_fstore", "0000000RRRRR01000EEE000000100111")
 
-    # ── Fence / CBO — rs1=x8, rd=011RR, offset=0 ──────────────────────
+    # ── Fence / CBO — rs1=x8, rd=00000, offset=0 ──────────────────────
     _emit_reg_init(lines)
-    emit_raw_words(lines, "cp_fence_cbo", "00000000000001000EEE011RR0001111")
+    emit_raw_words(lines, "cp_fence_cbo", "00000000000001000EEE000000001111")
     # CBO immediate sweep: rs1=x8, rd=00000 (CBO has no rd)
     _emit_reg_init(lines)
     emit_raw_words(lines, "cp_cbo_immediate", "EEEEEEEEEEEE01000010000000001111")
-    # CBO rd sweep: rs1=x8, rd=1EEEE (swept x16-x31) offset=0
+    # CBO rd sweep: rs1=x8, rd=EEEEE (swept x0-x31) offset=0
     _emit_reg_init(lines)
-    emit_raw_words(lines, "cp_cbo_rd", "000000000000010000101EEEE0001111")
+    emit_raw_words(lines, "cp_cbo_rd", "00000000000001000010EEEEE0001111")
 
-    # ── Atomics — rs1=x8, rd=011RR ──────────────────────────────────
-    # AMO: funct5 | aq | rl | rs2 | rs1=01000 | funct3 | rd=011RR | opcode
+    # ── Atomics — rs1=x8, rd=011RR (x12-x15) ────────────────────────
+    # AMO: funct5 | aq | rl | rs2 | rs1=01000 | funct3 | rd=011RR (x12-x15) | opcode
     _emit_reg_init(lines)
     emit_raw_words(lines, "cp_atomic_funct3", "RRRRRRRRRRRR01000EEE011RR0101111", exclusion=AMO_EXCLUSIONS)
     emit_raw_words(lines, "cp_atomic_funct7", "EEEEERRRRRRR0100001E011RR0101111", exclusion=AMO_EXCLUSIONS)
     emit_raw_words(lines, "cp_lrsc", "00010RREEEEE0100001E011RR0101111", exclusion=AMO_EXCLUSIONS)
 
-    # ── amocas odd-register sweep — rs1=x8, rd = {x16-x31} ────────────────────────────
+    # ── amocas odd-register sweep — rs1=x8, rs2=RRRRe (even+odd), rd=011RE={x12-x15} ──
     _emit_reg_init(lines)
-    emit_raw_words(lines, "cp_amocas_odd", "00101RRRRRR001000EEER1REE0101111")
+    emit_raw_words(lines, "cp_amocas_odd", "00101RRRRRRE01000EEE011RE0101111")
 
     # ── I-type / IW-type — all registers randomized ───────────────────
     emit_raw_words(lines, "cp_Itype", "EEEEEEEEEEEERRRRRE01RRRRR0010011")
@@ -624,7 +625,7 @@ def generate_compressed_instr(
     emit_raw_words(
         lines,
         "compressed00",
-        "EEEEEEEEE00000000",  # rd'=EEE, rs1'=EEE, rs2'=EEE, offset=0, opcode=00
+        "EEEEEEEEEEEEEE00",
         length=16,
         exclusion=[
             "XXXXXXXXXXX000XX",  # rd' = x8 — clobbers scratch base pointer
@@ -649,12 +650,12 @@ def generate_compressed_instr(
         reinit_interval=50,
     )
 
-    # Quadrant 10: upper half swept (bit[15]=1 fixed)
+    # Quadrant 10: fully exhaustive except for c.jr/c.jalr/c.ebreak (random jump/trap)
     # reinit_interval keeps registers fresh as valid loads/stores clobber them.
     emit_raw_words(
         lines,
         "compressed10",
-        "1EEEEEEEEEEEEE10",
+        "EEEEEEEEEEEEEE10",
         length=16,
         exclusion=[
             "1000XXXXX0000010",  # c.jr rs1!=0 — random jump

@@ -20,7 +20,7 @@
     }
 
     // High bits [XLEN-1:8] - reserved bits that should set vill
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
     rs2_walking1s_high: coverpoint ins.current.rs2_val iff (ins.current.rs1_val != 0) {
         bins bit8  = {64'h0000_0000_0000_0100};
         bins bit9  = {64'h0000_0000_0000_0200};

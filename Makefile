@@ -126,7 +126,7 @@ help:
 	  'vector-tests'        'Generate vector test sources' \
 	  'coverage'            'Build with coverage instrumentation for $$(COVERAGE_CONFIG_FILES)' \
 	  'regression'          'Clean, run coverage, then every config with a run_cmd.txt' \
-	  'clean'               'Remove build artifacts (preserves extensions.txt)' \
+	  'clean'               'Remove build artifacts (preserves extensions.txt and .validated)' \
 	  'clean-tests'         'Remove generated test sources'
 	@printf '\n\033[1mGenerators:\033[0m\n'
 	@printf '  \033[36m%-20s\033[0m %s\n' \
@@ -180,7 +180,7 @@ elfs: tests
 .PHONY: clean
 clean:
 	@if [ -d $(WORKDIR) ]; then \
-		find $(WORKDIR) \( -type f -o -type l \) ! -name 'extensions.txt' -delete; \
+		find $(WORKDIR) \( -type f -o -type l \) ! -name 'extensions.txt' ! -name '.validated' -delete; \
 		find $(WORKDIR) -type d -empty -delete; \
 	fi
 

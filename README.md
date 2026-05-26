@@ -378,7 +378,7 @@ Contributors are always welcome. There are several ways to contribute:
 
 - [Open issues](https://github.com/riscv/riscv-arch-test/issues/new) with bug reports or feature requests.
 - [Submit PRs](https://github.com/riscv/riscv-arch-test/pulls) that fix open issues, add tests for new extensions, or add a new feature. Before opening a PR, make sure to review the guidelines and helpful tips in [`CONTRIBUTING.md`](./CONTRIBUTING.md)
-- Join the [ACT SIG mailing list](https://lists.riscv.org/g/sig-arch-test) or the biweekly [ACT SIG meetings](https://tech.riscv.org/calendar/). The mailing list and meetings are only open to RISC-V members.
+- Join the [ACT SIG mailing list](https://lists.riscv.org/g/sig-arch-test). The mailing list and meetings are only open to RISC-V members.
 
 ## Licensing
 

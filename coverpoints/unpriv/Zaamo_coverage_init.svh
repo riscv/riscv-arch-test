@@ -19,7 +19,7 @@
     Zaamo_amoor_w_cg = new(); Zaamo_amoor_w_cg.set_inst_name("obj_Zaamo_amoor_w");
     Zaamo_amoswap_w_cg = new(); Zaamo_amoswap_w_cg.set_inst_name("obj_Zaamo_amoswap_w");
     Zaamo_amoxor_w_cg = new(); Zaamo_amoxor_w_cg.set_inst_name("obj_Zaamo_amoxor_w");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     Zaamo_amoadd_d_cg = new(); Zaamo_amoadd_d_cg.set_inst_name("obj_Zaamo_amoadd_d");
     Zaamo_amoand_d_cg = new(); Zaamo_amoand_d_cg.set_inst_name("obj_Zaamo_amoand_d");
     Zaamo_amomax_d_cg = new(); Zaamo_amomax_d_cg.set_inst_name("obj_Zaamo_amomax_d");

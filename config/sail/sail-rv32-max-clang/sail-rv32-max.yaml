@@ -52,7 +52,7 @@ implemented_extensions:
   - { name: Sstvecv, version: "= 1.0.0" }
   - { name: Ssu32xl, version: "= 1.0.0" }
   - { name: Ssube, version: "= 1.0.0" }
-  - { name: Sv32, version: "= 1.13.0" }
+  - { name: Sv32, version: "= 1.0.0" }
   - { name: Svade, version: "= 1.0.0" }
   - { name: Svadu, version: "= 1.0.0" }
   - { name: Svbare, version: "= 1.0.0" }
@@ -68,7 +68,7 @@ implemented_extensions:
   - { name: Zalasr, version: "= 1.0.0" }
   - { name: Zalrsc, version: "= 1.0.0" }
   - { name: Zama16b, version: "= 1.0.0" }
-  - { name: Zawrs, version: "= 1.0.1" }
+  - { name: Zawrs, version: "= 1.0.0" }
   - { name: Zba, version: "= 1.0.0" }
   - { name: Zbb, version: "= 1.0.0" }
   - { name: Zbc, version: "= 1.0.0" }
@@ -320,6 +320,7 @@ params:
       true,
     ]
   HPM_EVENTS: [0]
+  MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
     [
       true,

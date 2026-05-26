@@ -17,28 +17,27 @@ implemented_extensions:
   - { name: Zca, version: "= 1.0.0" }
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0" }
+  - { name: U, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.12.0" }
 
 params:
   # XLEN parameters (VERIFIED)
   MXLEN: 32
-  #UXLEN: [32] # Why is this a 'Flow Sequence' when MXLEN is an integer?
+  UXLEN: [32]
   PHYS_ADDR_WIDTH: 32
 
   # MISA (!VERIFIED)
   MUTABLE_MISA_M: false
   MUTABLE_MISA_C: false
-  #MUTABLE_MISA_U: false
-  # UDB says:Parameter is not defined by this config: 'MUTABLE_MISA_U'.
-  # Needs: ((`Sm=1.11.0`{false} || `Sm=1.12.0`{true} || `Sm=1.13.0`{false}) && (!`Sm=1.11.0`{false} || !`Sm=1.12.0`{true}) && (!`Sm=1.11.0`{false} || !`Sm=1.13.0`{false}) && (!`Sm=1.12.0`{true} || !`Sm=1.13.0`{false}) && `U=1.0.0`{false} && `U>=0`{false} && `Sm>=0`{true})
+  MUTABLE_MISA_U: false
   MISA_CSR_IMPLEMENTED: true
 
   # endianness (VERIFIED)
   M_MODE_ENDIANNESS: little
-  #U_MODE_ENDIANNESS: little
+  U_MODE_ENDIANNESS: little
 
   # trap/exception behavior (VERIFIED)
-  #TRAP_ON_ECALL_FROM_U: true
+  TRAP_ON_ECALL_FROM_U: true
   TRAP_ON_ECALL_FROM_M: true
   TRAP_ON_EBREAK: true
   TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
@@ -123,6 +122,7 @@ params:
       false,
       false, # 24..31
     ]
+  MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
     [
       true,

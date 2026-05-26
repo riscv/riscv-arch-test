@@ -20,7 +20,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv32]
-# MARCH: rv32i_zicsr
+# MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv32_spage_mstatus_sum_set_Smode.S"

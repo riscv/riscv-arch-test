@@ -49,19 +49,19 @@ normative_rule_definitions:
   # respectively. When a hart is executing in privilege mode x, interrupts are
   # globally enabled when xIE=1 and globally disabled when xIE=0.
   - names: [mstatus_mie_op]
-    coverpoint: ["InterruptsSm_cg/cp_interupts"]
+    coverpoint: ["InterruptsSm_cg/cp_interrupts"]
 
   # each privilege mode x that can respond to interrupts has a two-level stack of
   # interrupt-enable bits and privilege modes. xPIE holds the value of the
   # interrupt-enable bit active prior to the trap, and xPP holds the previous
   # privilege mode.
   - names: [mstatus_xpie_op, mstatus_xpp_op]
-    coverpoint: ["InterruptsSm_cg/cp_interupts"]
+    coverpoint: ["InterruptsSm_cg/cp_interrupts"]
 
   # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to
   # the value of xIE; xIE is set to 0; and xPP is set to y.
   - names: [mstatus_xpie_trap_op, mstatus_xie_trap_op, mstatus_xpp_trap_op]
-    coverpoint: ["InterruptsSm_cg/cp_interupts"]
+    coverpoint: ["InterruptsSm_cg/cp_interrupts"]
 
   # The TW (Timeout Wait) bit is a WARL field that supports intercepting the WFI
   # instruction (see &lt;&lt;wfi&gt;&gt;).

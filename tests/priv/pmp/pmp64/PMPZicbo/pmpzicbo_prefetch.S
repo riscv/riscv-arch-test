@@ -23,7 +23,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr_zicbop
+# MARCH: rv64i_zicsr_zifencei_zicbop
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "pmpzicbo_prefetch.S"
@@ -60,14 +60,14 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -207,7 +207,7 @@ test_2_str:  .string "\"test: 2;  cp: pmpzicbo_prefetch_r\""
 test_3_str:  .string "\"test: 3;  cp: pmpzicbo_prefetch_w\""
 
 .align 12
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 
 TEST_FOR_EXECUTION_1:
     .rept 1024

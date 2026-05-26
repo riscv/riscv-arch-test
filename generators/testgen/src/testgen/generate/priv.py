@@ -37,80 +37,68 @@ _SPLIT_TESTSUITES: frozenset[str] = frozenset({"SsstrictSm", "SsstrictS", "Ssstr
 # well under one second on Sail even when every instruction traps.
 _LINES_PER_FILE: int = 8000
 
-# Fast illegal-instruction trap handler, prepended to every split file.
-#
-# Why here and not in the generator?
-# The generator body is split across many files. If the preamble is only in
-# the generator's first lines it ends up only in file -00. Files -01, -02 ...
-# start mid-body and have no mtvec override, so they use the standard framework
-# handler (installed by RVTEST_TRAP_PROLOG). The standard handler writes 4 words
-# to the trap-signature region on every trap; with 15k-150k expected traps the
-# signature overflows, corrupting the signature pointer and causing Sail to enter
-# an infinite fetch-fault loop.
-#
-# By prepending these lines to every split file we guarantee that mtvec is
-# redirected to our fast handler at the start of every file's code section,
-# after RVTEST_TRAP_PROLOG has already run.
-#
-# Handler design
-# --------------
-# mcause is checked FIRST, before touching any save area or general registers.
-# - cause != 2: jump to Mtrampoline immediately with a clean CPU state.
-#   Mtrampoline (exported .global from arch_test.h RVTEST_TRAP_HANDLER) is the
-#   real framework handler — it handles store/fetch faults and epilog traps
-#   correctly, ending the test cleanly when appropriate.
-# - cause == 2 (illegal instruction): check mtval bits[1:0].
-#   - bits[1:0] != 11 (compressed): Mtrampoline handles it.
-#   - bits[1:0] == 11 (uncompressed): advance mepc+4 and mret directly.
-#     Clobbers t0 and t1 only — acceptable for Ssstrict.
-#
-# The handler is defined before ssstrict_test_body: so that the LA() forward
-# reference resolves within this single translation unit.
+#     "// ── Fast illegal-instruction handler (prepended to every Ssstrict file) ────",
+#     "// Handles ALL illegal instruction traps — writes mcause, mepc and mtval to",
+#     "// signature on each trap, then advances mepc by 2 or 4.",
+#     "//",
+#     "// Assumptions:",
+#     "//   - Machine mode has read access to the trapping instruction (PMP/physical",
+#     "//     memory allows M-mode instruction reads at the faulting PC).",
+#     "//   - Address translation is disabled (bare/Sv modes off) so the handler can",
+#     "//     read the instruction word directly from mepc without manipulating",
+#     "//     mstatus.MPRV.",
+#     "//",
+#     "// Instruction-width detection reads bits[1:0] from mepc directly.",
+#     "// Width computation is branchless:",
+#     "//   bits[1:0] = 0b11 (uncompressed) → advance = 4",
+#     "//   bits[1:0] != 0b11 (compressed)  → advance = 2",
+#     "//   Formula: advance = ((bits[1:0] >> 1) + 1) << 1",
+#     "//",
+#     "// Register usage:",
+#     "//   t0 (x5)  — scratch throughout: CSR reads, instruction word, advance amount",
+#     "//   t1 (x6)  — touched ONLY at the very end (csrr mepc / add / csrw) and in",
+#     "//              the othertrap path.
 _FAST_HANDLER_PREFIX: list[str] = [
-    "",
-    "// ── Fast illegal-instruction handler (prepended to every Ssstrict file) ────",
-    "// Handles ALL illegal instruction traps — writes mcause, mepc and mtval to signature on each trap.",
-    "// 32-bit (bits[1:0]==11): advance mepc+4.",
-    "// 16-bit (bits[1:0]!=11): advance mepc+2.",
-    "// Any non-illegal trap: hand off to Mtrampoline (real framework handler).",
-    "//",
-    "// Uses t0 (x5) and x2 (the signature pointer, advanced by SIG_STRIDE per trap).",
-    "// t1 (x6) is deliberately never touched: when rvtest_strap_routine is defined",
-    "// (SsstrictS/U), x6 holds the Mtrampoline trap-signature pointer. Clobbering it",
-    "// corrupts that pointer and causes RVTEST_CODE_END signature-offset checks to fail.",
     "\tj ssstrict_test_body",
     "",
     "\t.align 4",
     "trap_handler_fastillegalinstr:",
-    "\tcsrr t0, mcause         # Check the cause",
-    "\tli t1, 2                # Illegal Instruction cause = 2",
-    "\tbne t0, t1, othertrap   # not illegal instruction, use regular handler",
+    "\tcsrr t0, mcause                 # read trap cause",
+    "\tli   t1, 2                      # Illegal Instruction cause = 2",
+    "\tbne  t0, t1, othertrap          # not illegal instruction — use regular handler",
     "illegalinstruction:",
-    "\tSREG t0, 0(x2)          # store mcause (=2) to signature",
-    "\taddi x2, x2, SIG_STRIDE # advance signature pointer",
-    "\tcsrr t0, mepc",
-    "\tSREG t0, 0(x2)          # store mepc to signature",
+    "\tSREG t0, 0(x2)                  # store mcause (=2) to signature",
     "\taddi x2, x2, SIG_STRIDE",
-    "\tcsrr t0, mtval          # get the faulting instruction encoding",
-    "\tSREG t0, 0(x2)          # store mtval to signature",
+    "\tcsrr t0, mepc",
+    "\tSREG t0, 0(x2)                  # store mepc to signature",
     "\taddi x2, x2, SIG_STRIDE",
-    "\tandi t0, t0, 3          # extract bits[1:0] into t0 (t0 still holds mtval)",
-    "\tli t1, 3                # uncompressed marker = 0b11",
-    "\tbeq t0, t1, uncompressedillegalinstructionreturn  # bits[1:0]==11 → uncompressed",
-    "compressedillegalinstructionreturn:",
+    "\tcsrr t0, mtval",
+    "\tSREG t0, 0(x2)                  # store mtval to signature",
+    "\taddi x2, x2, SIG_STRIDE",
+    "    # Branchless mepc advance — reads bits[1:0] from *mepc using lhu.",
+    "    # lhu (not lw) is used because mepc is only guaranteed 2-byte aligned;",
+    "    # a 4-byte lw at a 2n address would misalign on cores without HW misaligned",
+    "    # support. bits[1:0] are sufficient for width detection and fit in 16 bits.",
+    "    # PMP/MPRV: safe because Ssstrict tests run with full PMP permissions",
+    "    # (R=1,W=1,X=1) and address translation disabled, so M-mode can always",
+    "    # load from mepc without needing to set mstatus.MPRV.",
+    "    # advance = (((bits[1:0]+1) >> 2) + 1) << 1  =  4 if bits[1:0]==0b11, else 2.",
+    "    # (bits[1:0]+1)>>2 is 1 only for 0b11; all other values (0b10,0b01,0b00) give 0.",
     "\tcsrr t0, mepc",
-    "\taddi t0, t0, 2          # compressed: skip 2 bytes",
-    "\tj doneillegalinstructionreturn",
-    "uncompressedillegalinstructionreturn:",
-    "\tcsrr t0, mepc",
-    "\taddi t0, t0, 4          # uncompressed: skip 4 bytes",
-    "doneillegalinstructionreturn:",
-    "\tcsrw mepc, t0",
+    "\tlhu  t0, 0(t0)                  # load lower 16 bits from *mepc (always 2-byte aligned)",
+    "\tandi t0, t0, 3                  # t0 = bits[1:0]",
+    "\taddi t0, t0, 1                  # t0 = bits[1:0]+1; equals 4 only when was 0b11",
+    "\tsrli t0, t0, 2                  # t0 = 1 iff uncompressed (0b11), else 0",
+    "\taddi t0, t0, 1                  # t0 = 2 or 1",
+    "\tslli t0, t0, 1                  # t0 = 4 (uncompressed) or 2 (compressed)",
+    "\tcsrr t1, mepc                   # t1 = mepc  (t1 first written here)",
+    "\tadd  t1, t1, t0                 # t1 = mepc + advance",
+    "\tcsrw mepc, t1",
     "\tmret",
     "",
     "othertrap:",
     "\tcsrr t1, mtval",
-    "\tbgez t0, Mtrampoline    # msb clear = exception, jump to full handler",
+    "\tj    Mtrampoline                # hand off all non-illegal-instruction traps",
     "",
     "ssstrict_test_body:",
     "\tLA(t0, trap_handler_fastillegalinstr)",
@@ -118,7 +106,6 @@ _FAST_HANDLER_PREFIX: list[str] = [
     "\t.align 4",
     "",
 ]
-
 _SPLIT_FILE_GPR_INIT: list[str] = (
     [
         "",

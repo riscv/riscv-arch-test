@@ -112,10 +112,6 @@
 // The default RVTEST_IDLE_FOR_TIMER_INTERRUPT spins RVMODEL_TIMER_INT_SOON_DELAY iterations
 // (200 instructions), which only advances mtime by ~2 ticks — far less than the 100-tick
 // stimecmp offset. Override with a 200x multiplier so the spin outlasts the timer delay.
-// in-case that the utils.h file gets read first and already defines RVTEST_IDLE_FOR_TIMER_INTERRUPT, we want to overwrtie it
-#ifdef RVTEST_IDLE_FOR_TIMER_INTERRUPT
-  #undef RVTEST_IDLE_FOR_TIMER_INTERRUPT
-#endif
 
 #define RVTEST_IDLE_FOR_TIMER_INTERRUPT(_R1) \
     LI(_R1, RVMODEL_TIMER_INT_SOON_DELAY * 200); \

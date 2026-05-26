@@ -10,8 +10,16 @@
 from __future__ import annotations
 
 import re
+from pathlib import Path
 
-from act.parse_test_constraints import TestMetadata
+from act.config import Config, load_config
+from act.parse_test_constraints import TestMetadata, TestYamlHeaderError, generate_test_dict
+from act.parse_udb_config import (
+    generate_udb_files,
+    get_config_implemented_extensions,
+    get_config_params,
+    get_implemented_extensions,
+)
 
 PRIV_EXTENSIONS = {"Sm", "S", "U"}
 
@@ -80,4 +88,56 @@ def select_tests(
             test_params = test_metadata.params
             if check_test_params(test_params, config_params):
                 selected_tests[test_name] = test_metadata
+    return selected_tests
+
+
+def select_tests_for_config_data(
+    config_file: Path,
+    full_test_dict: dict[str, TestMetadata],
+    workdir: Path,
+    *,
+    validate_tools: bool = True,
+    generate_udb: bool = True,
+) -> tuple[Config, dict[str, ConfigParamValue], dict[str, TestMetadata]]:
+    """Return config data and tests selected by the ACT framework for a single config."""
+    config = load_config(config_file, validate_tools=validate_tools)
+    config_dir = workdir / config.udb_config.stem
+    config_dir.mkdir(parents=True, exist_ok=True)
+
+    if generate_udb:
+        generate_udb_files(config.udb_config, config_dir)
+        implemented_extensions = get_implemented_extensions(config_dir / "extensions.txt")
+    else:
+        implemented_extensions = get_config_implemented_extensions(config.udb_config)
+    config_params = get_config_params(config.udb_config)
+
+    selected_tests = select_tests(
+        full_test_dict, implemented_extensions, config_params, include_priv_tests=config.include_priv_tests
+    )
+    return config, config_params, selected_tests
+
+
+def select_tests_for_config(
+    config_file: Path,
+    test_dir: Path,
+    workdir: Path,
+    extensions: str = "all",
+    exclude: str = "",
+) -> dict[str, TestMetadata]:
+    """Return tests selected by the ACT framework for a single config.
+
+    This is the reusable framework-level selection path shared by CI matrix
+    discovery. It intentionally skips simulator and compiler executable
+    validation so lightweight discovery jobs can compute the same selected
+    test set without installing those tools first.
+    """
+    try:
+        full_test_dict = generate_test_dict(test_dir, extensions, exclude)
+    except TestYamlHeaderError as e:
+        e.print()
+        raise
+
+    _, _, selected_tests = select_tests_for_config_data(
+        config_file, full_test_dict, workdir, validate_tools=False, generate_udb=False
+    )
     return selected_tests

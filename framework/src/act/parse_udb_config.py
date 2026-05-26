@@ -82,6 +82,23 @@ def get_config_params(udb_config_file: Path) -> dict[str, int | bool | str | lis
     return config_params
 
 
+def get_config_implemented_extensions(udb_config_file: Path) -> set[str]:
+    """Return implemented extension names declared by a fully-configured UDB yaml."""
+    yaml = YAML(typ="safe", pure=True)
+    udb_config = yaml.load(udb_config_file.read_text())
+    implemented_extensions: set[str] = set()
+    for extension in udb_config["implemented_extensions"]:
+        if isinstance(extension, dict):
+            name = extension.get("name")
+        elif isinstance(extension, (list, tuple)):
+            name = extension[0] if extension else None
+        else:
+            name = extension
+        if isinstance(name, str) and name:
+            implemented_extensions.add(name)
+    return implemented_extensions
+
+
 def generate_extension_list(udb_config_file: Path, output_dir: Path) -> None:
     extension_list_file = output_dir / "extensions.txt"
     if not extension_list_file.exists() or (extension_list_file.stat().st_mtime < udb_config_file.stat().st_mtime):

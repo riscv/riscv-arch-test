@@ -19,11 +19,10 @@ from rich import print as rprint
 
 from act.build import BuildTask, build
 from act.build_plan import generate_build_plan
-from act.config import CoverageSimulator, load_config
+from act.config import CoverageSimulator
 from act.coverreport import print_coverage_summary
 from act.parse_test_constraints import TestYamlHeaderError, generate_test_dict
-from act.parse_udb_config import generate_udb_files, get_config_params, get_implemented_extensions
-from act.select_tests import select_tests
+from act.select_tests import select_tests_for_config_data
 
 # CLI interface setup
 act_app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
@@ -102,20 +101,7 @@ def run_act(
     config_names: list[str] = []
     tasks: list[BuildTask] = []
     for config_file in config_files:
-        # Load configuration
-        config = load_config(config_file)
-        config_dir = workdir / config.udb_config.stem
-        config_dir.mkdir(parents=True, exist_ok=True)
-
-        # UDB integration
-        generate_udb_files(config.udb_config, config_dir)
-        implemented_extensions = get_implemented_extensions(config_dir / "extensions.txt")
-        config_params = get_config_params(config.udb_config)
-
-        # Select tests for config
-        selected_tests = select_tests(
-            full_test_dict, implemented_extensions, config_params, include_priv_tests=config.include_priv_tests
-        )
+        config, config_params, selected_tests = select_tests_for_config_data(config_file, full_test_dict, workdir)
         mxlen = config_params["MXLEN"]
         if not isinstance(mxlen, int):
             raise TypeError(f"MXLEN must be an integer, got {type(mxlen)}: {mxlen!r}")

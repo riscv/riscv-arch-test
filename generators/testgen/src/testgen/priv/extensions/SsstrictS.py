@@ -48,6 +48,7 @@ _S_CSR_SKIP: frozenset[int] = frozenset(
     + [0x144]  # sip   — skip: all-ones write asserts SSIP software interrupt; covered in shadow test
     + [0x105]  # stvec   — skip: stvec not to update itself
     + [0x140]  # sscratch   — skip: sscratch not to update itself
+    + [0x5A8]  # scontext — skip: Sail traps (unimplemented Sdtrig), Spike does not; diverges signature
     + list(range(0x200, 0x300))  # H-mode std0 — skip: accessible from HS-mode
     + list(range(0x600, 0x700))  # H-mode std1 — skip: HS-mode ambiguity
     + list(range(0xA00, 0xB00))  # H-mode std2 — skip: HS-mode ambiguity

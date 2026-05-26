@@ -3,7 +3,6 @@
 // RISC-V Architectural Functional Coverage Covergroups
 // Written by : Ayesha Anwar ayesha.anwaar2005@gmail.com
 // Copyright (C) 2024 Harvey Mudd College, 10x Engineers, UET Lahore, Habib University
-// Written by : Ayesha Anwar ayesha.anwaar2005@gmail.com
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -24,9 +23,9 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
             bins sstateen3 = {CSR_SSTATEEN3};
     }
 
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
     csr_walk: coverpoint ins.current.rs1_val {
-            // bits [3:63] are WRPI
+            // bits [3:63] are WPRI; bit 0 (C) is readonly-zero
             `ifdef ZFINX_SUPPORTED
                 wildcard bins walking1_1  = {64'b??????????????????????????????????????????????????????????????1?};
             `endif
@@ -35,10 +34,10 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
             `endif
             wildcard bins walking0_1  = {64'b??????????????????????????????????????????????????????????????0?};
             wildcard bins walking0_2  = {64'b?????????????????????????????????????????????????????????????0??};
-}
+    }
     `else
     csr_walk: coverpoint ins.current.csr[ins.current.insn[31:20]] {
-            // bits [3:31] are WRPI
+            // bits [3:31] are WPRI; bit 0 (C) is readonly-zero
             `ifdef ZFINX_SUPPORTED
                 wildcard bins walking1_1  = {32'b??????????????????????????????1?};
             `endif
@@ -47,19 +46,25 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
             `endif
             wildcard bins walking0_1  = {32'b??????????????????????????????0?};
             wildcard bins walking0_2  = {32'b?????????????????????????????0??};
-
     }
     `endif
 
-    se0_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "SE0") {
-            bins se0_disabled = {1'b0};
-            bins se0_enabled  = {1'b1};
-    }
-    sstateen0_fcsr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "sstateen0", "fcsr") {
-            bins fcsr_zero = {1'b0};
-            bins fcsr_one  = {1'b1};
-    }
+    // SE0 is bit 63 of mstateen0 on RV64, bit 31 of mstateen0h on RV32
+    `ifdef UDB_MXLEN_64
+        se0_state: coverpoint ins.current.csr[CSR_MSTATEEN0][63] {
+                bins se0_enabled  = {1'b1};
+        }
+    `else
+        se0_state: coverpoint ins.current.csr[CSR_MSTATEEN0H][31] {
+                bins se0_enabled  = {1'b1};
+        }
+    `endif
+
     `ifdef ZFINX_SUPPORTED
+        sstateen0_fcsr_bit: coverpoint ins.current.csr[CSR_SSTATEEN0][1] {
+                bins fcsr_zero = {1'b0};
+                bins fcsr_one  = {1'b1};
+        }
         fcsr_lower_mode_csrs: coverpoint ins.current.csr[31:20] {
                 wildcard bins frm    = {CSR_FRM};
                 wildcard bins fflags = {CSR_FFLAGS};
@@ -74,8 +79,9 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
                 wildcard bins fmv_wx   = {FMV_W_X};
                 wildcard bins fclass_s = {FCLASS_S};
         }
-     `ifdef ZCMT_SUPPORTED
-        jvt_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "sstateen0", "jvt") {
+    `endif
+    `ifdef ZCMT_SUPPORTED
+        jvt_state: coverpoint ins.current.csr[CSR_SSTATEEN0][2] {
                 bins jvt_disabled = {1'b0};
                 bins jvt_enabled  = {1'b1};
         }
@@ -86,25 +92,23 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
     `ifdef ZFINX_SUPPORTED
         cp_fcsr_lower: cross priv_mode_s_u, misa_F, se0_state, sstateen0_fcsr_bit, csrops, fcsr_lower_mode_csrs {
                 ignore_bins ig1 = binsof(misa_F.F_set)   && binsof(sstateen0_fcsr_bit.fcsr_zero);
-                ignore_bins ig2 = binsof(misa_F.F_clear)  && binsof(sstateen0_fcsr_bit.fcsr_zero);
-                ignore_bins ig3 = binsof(se0_state.se0_disabled);
+                ignore_bins ig2 = binsof(misa_F.F_clear) && binsof(sstateen0_fcsr_bit.fcsr_zero);
         }
         cp_fcsr_lower_fp_instrs: cross priv_mode_u, misa_F, se0_state, sstateen0_fcsr_bit, fp_instrs {
                 ignore_bins ig1 = binsof(misa_F.F_set)   && binsof(sstateen0_fcsr_bit.fcsr_zero);
-                ignore_bins ig2 = binsof(misa_F.F_clear)  && binsof(sstateen0_fcsr_bit.fcsr_zero);
-                ignore_bins ig3 = binsof(se0_state.se0_disabled);
+                ignore_bins ig2 = binsof(misa_F.F_clear) && binsof(sstateen0_fcsr_bit.fcsr_zero);
         }
     `endif
-    cp_mstateen0_se0_controls_sstateen0: cross csrrw, se0_state, sstateen_csrs {
+    cp_mstateen0_se0_controls_sstateen0: cross csrops, se0_state, sstateen_csrs {
             ignore_bins ig1 = binsof(sstateen_csrs.sstateen1);
             ignore_bins ig2 = binsof(sstateen_csrs.sstateen2);
             ignore_bins ig3 = binsof(sstateen_csrs.sstateen3);
     }
-    cp_csr_illegal_accesses: cross priv_mode_u, csr, csrops, se0_state;
-    cp_walking_ones:         cross csr, csrops, csr_walk, se0_state;
+    cp_csr_illegal_accesses: cross priv_mode_u, sstateen_csrs, csrops, se0_state;
+    cp_walking_ones:         cross sstateen_csrs, csrops, csr_walk, se0_state;
     `ifdef ZCMT_SUPPORTED
-        cp_jvt:                  cross csrrw, jvt_csr, jvt_state, se0_state;
-        cp_jvt_lower_mode:       cross priv_mode_u, csrops, jvt_csr, jvt_state, se0_state;
+        cp_jvt:              cross csrops, jvt_csr, jvt_state, se0_state;
+        cp_jvt_lower_mode:   cross priv_mode_u, csrops, jvt_csr, jvt_state, se0_state;
     `endif
 
 endgroup

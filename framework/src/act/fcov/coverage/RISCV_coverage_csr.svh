@@ -966,5 +966,12 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       default: val = 0; // Todo: error
     endcase
   end
+  if (name == "sstateen0") begin
+    case(field)
+        "fcsr"   : val = (val >> 1) & 'h1;
+        "jvt"    : val = (val >> 2) & 'h1;
+        default: val = 0;
+    endcase
+  end
   return val;
 endfunction

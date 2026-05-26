@@ -32,12 +32,12 @@ $ make -j$(nproc) CONFIG_FILES=config/cores/cve4/cv32e40p-v1-rv32imc/test_config
 
 Four configurations are provided:
 
-| Config                        | ISA      | Notes                              |
-| ----------------------------- | -------- | ---------------------------------- |
-| `cv32e40s-rv32imc`            | RV32IMC  | Base config, no PMA, no PMP        |
-| `cv32e40s-rv32imc-pma`        | RV32IMC  | PMA enabled (1 region)             |
-| `cv32e40s-rv32imc-pma-pmp`    | RV32IMC  | PMA and PMP enabled (16 entries)   |
-| `cv32e40s-rv32imcb-pma-pmp`   | RV32IMCB | PMA and PMP enabled, B extensions  |
+| Config                      | ISA      | Notes                             |
+| --------------------------- | -------- | --------------------------------- |
+| `cv32e40s-rv32imc`          | RV32IMC  | Base config, no PMA, no PMP       |
+| `cv32e40s-rv32imc-pma`      | RV32IMC  | PMA enabled (1 region)            |
+| `cv32e40s-rv32imc-pma-pmp`  | RV32IMC  | PMA and PMP enabled (16 entries)  |
+| `cv32e40s-rv32imcb-pma-pmp` | RV32IMCB | PMA and PMP enabled, B extensions |
 
 To build the UDB configuration, coverage files and ELFs, run one of the following
 commands from the top of your working copy of this repo:
@@ -47,4 +47,21 @@ $ make -j$(nproc) CONFIG_FILES=config/cores/cve4/cv32e40s-rv32imc/test_config.ya
 $ make -j$(nproc) CONFIG_FILES=config/cores/cve4/cv32e40s-rv32imc-pma/test_config.yaml
 $ make -j$(nproc) CONFIG_FILES=config/cores/cve4/cv32e40s-rv32imc-pma-pmp/test_config.yaml
 $ make -j$(nproc) CONFIG_FILES=config/cores/cve4/cv32e40s-rv32imcb-pma-pmp/test_config.yaml
+```
+
+### CV32E40X
+
+Two configurations are provided:
+
+| Config               | ISA        | Notes                       |
+| -------------------- | ---------- | --------------------------- |
+| `cv32e40x-rv32imc`   | RV32IMC    | v0.10.0, base configuration |
+| `cv32e40x-rv32imcab` | RV32IMCZba | v0.10.0, with B extension   |
+
+To build the UDB configuration, coverage files and ELFs, run one of the following
+commands from the top of your working copy of this repo:
+
+```
+$ make -j$(nproc) CONFIG_FILES=config/cores/cve4/cv32e40x-rv32imc/test_config.yaml
+$ make -j$(nproc) CONFIG_FILES=config/cores/cve4/cv32e40x-rv32imcab/test_config.yaml
 ```

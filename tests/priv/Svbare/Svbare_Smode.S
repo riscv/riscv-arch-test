@@ -11,7 +11,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, S]
-# MARCH: rv${XLEN}i_zicsr
+# MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "Svbare_Smode.S"

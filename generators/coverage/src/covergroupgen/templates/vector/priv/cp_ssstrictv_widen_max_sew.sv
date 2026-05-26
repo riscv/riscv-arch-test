@@ -2,7 +2,6 @@
 // cp_ssstrictv_widen_max_sew
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // Widening at MAX_SEW: destination EEW = 2*SEW > ELEN, must trap
     // Covers all widening instructions (including widening reductions)
@@ -14,10 +13,11 @@
         bins four = {2};
     }
 
-    trap_occurred: coverpoint ins.trap {
-        bins trapped = {1'b1};
-    }
 
-    cp_ssstrictv_widen_max_sew: cross std_trap_vec, vtype_all_sew_supported, vtype_lmul_widen, trap_occurred;
+    cp_ssstrictv_widen_max_sew: cross std_trap_vec, vtype_all_sew_supported, vtype_lmul_widen {
+        // Only SEW=ELEN_max (sixtyfour) yields dest EEW > ELEN at any LMUL≥1;
+        // smaller SEWs do not violate the encoding so std_trap_vec * (sew_8/16/32, lmul_*) is unreachable.
+        ignore_bins below_max_sew = binsof(vtype_all_sew_supported) intersect {0, 1, 2};
+    }
 
 //// end cp_ssstrictv_widen_max_sew /////////////////////////////////////////////////////////////////////////

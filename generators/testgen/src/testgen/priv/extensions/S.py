@@ -153,7 +153,7 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "",
-            "#ifdef SS1P13_SUPPORTED",
+            "#ifdef S1P13P0_SUPPORTED",
             "#if __riscv_xlen == 64",
             comment_banner(
                 f"{coverpoint}",
@@ -184,8 +184,8 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
         [
             "",
             f"CSRW(sstatus, x{save_reg})        # restore sstatus after Ss1p13 UXL tests",
-            "#endif // XLEN64",
-            "#endif // SS1P13_SUPPORTED",
+            "#endif // UDB_MXLEN_64",
+            "#endif // S1P13P0_SUPPORTED",
         ]
     )
 
@@ -571,7 +571,11 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
         ),
     )
     for csr in (
-        list(range(0x300, 0x400)) + list(range(0x700, 0x800)) + list(range(0xB00, 0xC00)) + list(range(0xF00, 0x1000))
+        list(range(0x300, 0x400))
+        + list(range(0x700, 0x7AA))  # exclude 0x7AA mscontext, which is accessible from S-mode
+        + list(range(0x7AB, 0x800))
+        + list(range(0xB00, 0xC00))
+        + list(range(0xF00, 0x1000))
     ):
         lines.extend(
             [

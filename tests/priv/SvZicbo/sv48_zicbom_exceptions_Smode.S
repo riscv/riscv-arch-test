@@ -124,7 +124,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv48, Zicbom]
-# MARCH: rv64i_zicsr_zicbom
+# MARCH: rv64i_zicsr_zifencei_zicbom
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv48_zicbom_exceptions_Smode.S"

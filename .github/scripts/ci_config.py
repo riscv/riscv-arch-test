@@ -12,9 +12,14 @@
 
 Reads config/<simulator>/ci.yaml for simulator-level settings and
 config/<simulator>/<config>/run_cmd.txt for per-config run commands. Each
-config is fanned out into N shards (per the simulator's ``shards`` setting);
-the EXTENSIONS list for each shard is computed once here via weighted
-Longest-Processing-Time bin-packing over the testsuites.
+config is fanned out into N shards; the shard count comes from the
+simulator's ``shards`` default, optionally overridden per-config via the
+``config_shards`` map (e.g. shard the ``gc`` variants of cvw heavily but
+leave ``imc`` variants un-sharded). The EXTENSIONS list for each shard is
+computed here via weighted Longest-Processing-Time bin-packing over the
+testsuites that the config actually implements. Suite weights are the
+summed byte size of the tracked ``.S`` files under each suite, which is a
+much better proxy for runtime than a raw file count.
 
 Usage:
     .github/scripts/ci_config.py    # JSON matrix for GitHub Actions
@@ -27,7 +32,7 @@ import heapq
 import json
 import subprocess
 import sys
-from collections import Counter
+from collections.abc import Mapping
 from functools import cache
 from pathlib import Path
 
@@ -51,15 +56,75 @@ def _list_testsuites() -> list[str]:
     return sorted({*get_extensions(REPO_ROOT / "testplans"), *get_priv_test_extensions()})
 
 
-def _suite_weights(suites: list[str]) -> dict[str, int]:
-    """Estimate per-suite cost by counting tracked .S files under tests/<*>/<suite>/.
+@cache
+def _priv_required_extensions() -> dict[str, frozenset[str]]:
+    """Return a mapping of priv testsuite name → required UDB extensions."""
+    sys.path.insert(0, str(REPO_ROOT / "generators" / "testgen" / "src"))
+    from testgen.priv import (  # type: ignore[import-not-found]
+        get_priv_test_extensions,
+        get_priv_test_required_extensions,
+    )
 
-    ``git ls-files`` is used so this is deterministic on any clean checkout
-    and requires no prior test-generation step in CI.
+    return {suite: frozenset(get_priv_test_required_extensions(suite) or []) for suite in get_priv_test_extensions()}
+
+
+@cache
+def _implemented_extensions(udb_config_path: Path) -> frozenset[str]:
+    """Return the set of extension names declared in a UDB ``fully configured`` yaml.
+
+    The ACT configs we shard are all ``type: fully configured``, so the
+    ``implemented_extensions`` list is the authoritative set of extensions
+    that a config implements. We deliberately do not invoke ``udb`` here —
+    the discover-configs job is intentionally lightweight (no Ruby), and
+    reading the yaml directly is plenty for the shard-grouping heuristic.
+    """
+    yaml = YAML(typ="safe", pure=True)
+    with udb_config_path.open() as f:
+        data = yaml.load(f) or {}
+    names: set[str] = set()
+    for ext in data.get("implemented_extensions") or []:
+        if isinstance(ext, dict) and "name" in ext:
+            names.add(str(ext["name"]))
+        elif isinstance(ext, (list, tuple)) and ext:
+            # Spec also allows [name, version] form.
+            names.add(str(ext[0]))
+        elif isinstance(ext, str):
+            names.add(ext)
+    return frozenset(names)
+
+
+def _select_suites_for_config(udb_config_path: Path) -> tuple[str, ...]:
+    """Return the sorted suites that a config actually implements.
+
+    Unpriv suites are keyed by extension name, so they're included when the
+    extension appears in the UDB config. Priv suites can require several
+    extensions at once (e.g. ``InterruptsS`` needs ``Sm``, ``S``, ``I``,
+    ``Zicsr``); they're included only when *all* required extensions are
+    implemented.
+    """
+    implemented = _implemented_extensions(udb_config_path)
+    priv_required = _priv_required_extensions()
+    selected: list[str] = []
+    for suite in _list_testsuites():
+        if suite in priv_required:
+            if priv_required[suite].issubset(implemented):
+                selected.append(suite)
+        elif suite in implemented:
+            selected.append(suite)
+    return tuple(sorted(selected))
+
+
+def _suite_weights(suites: tuple[str, ...]) -> dict[str, int]:
+    """Estimate per-suite cost by summing bytes of tracked .S files under tests/<*>/<suite>/.
+
+    File size is a much better runtime proxy than raw file counts because a
+    single large test (e.g. a vector or interrupt suite) can dwarf many
+    small ones. ``git ls-files`` keeps this deterministic on any clean
+    checkout and avoids depending on a prior test-generation step in CI.
     """
     try:
         out = subprocess.run(
-            ["git", "-C", str(REPO_ROOT), "ls-files", "tests"],
+            ["git", "-C", str(REPO_ROOT), "ls-files", "-z", "tests"],
             check=True,
             capture_output=True,
             text=True,
@@ -68,39 +133,44 @@ def _suite_weights(suites: list[str]) -> dict[str, int]:
         return dict.fromkeys(suites, _DEFAULT_SUITE_WEIGHT)
 
     suite_set = set(suites)
-    counter: Counter[str] = Counter()
-    for line in out.splitlines():
-        if not line.endswith(".S"):
+    sizes: dict[str, int] = dict.fromkeys(suites, 0)
+    for rel_path in out.split("\0"):
+        if not rel_path.endswith(".S"):
             continue
         # Layout is tests/<bucket>/<suite>/<file>.S where <bucket> is one of
         # rv32i, rv32e, rv64i, rv64e, priv. The suite name is the
         # second-to-last path component.
-        parts = line.split("/")
+        parts = rel_path.split("/")
         if len(parts) < 3:
             continue
         suite = parts[-2]
-        if suite in suite_set:
-            counter[suite] += 1
+        if suite not in suite_set:
+            continue
+        try:
+            sizes[suite] += (REPO_ROOT / rel_path).stat().st_size
+        except OSError:
+            continue
 
-    return {suite: counter.get(suite, _DEFAULT_SUITE_WEIGHT) or _DEFAULT_SUITE_WEIGHT for suite in suites}
+    return {suite: sizes[suite] or _DEFAULT_SUITE_WEIGHT for suite in suites}
 
 
 @cache
-def _shard_assignments(shard_total: int, exclude: str = "") -> tuple[tuple[str, ...], ...]:
+def _shard_assignments(suites: tuple[str, ...], shard_total: int, exclude: str = "") -> tuple[tuple[str, ...], ...]:
     """Return the sorted suite tuple for every shard using LPT bin-packing.
 
-    Suites are sorted by descending weight (ties broken by suite name for
-    determinism) and each is placed on the currently-lightest shard via a
-    min-heap. Excluded suites are dropped from each shard's final list. The
-    result is cached because every config under a given simulator shares the
-    same ``(shard_total, exclude)`` pair, and the assignment is otherwise pure.
+    ``suites`` is the set of testsuites that the *config* implements (so
+    e.g. an integer-only config doesn't get F/D/V suites scheduled on its
+    shards). They're sorted by descending weight (ties broken by suite name
+    for determinism) and each is placed on the currently-lightest shard via
+    a min-heap. Excluded suites are dropped from each shard's final list.
+    The result is cached because different configs that share the same
+    ``(suites, shard_total, exclude)`` tuple get the same answer.
     """
     if shard_total < 1:
         raise ValueError(f"shard_total must be >= 1, got {shard_total}")
 
-    all_suites = _list_testsuites()
-    weights = _suite_weights(all_suites)
-    ordered = sorted(all_suites, key=lambda s: (-weights[s], s))
+    weights = _suite_weights(suites)
+    ordered = sorted(suites, key=lambda s: (-weights[s], s))
 
     heap: list[tuple[int, int, list[str]]] = [(0, i, []) for i in range(shard_total)]
     heapq.heapify(heap)
@@ -120,6 +190,20 @@ def load_simulator_ci_yaml(ci_yaml_path: Path) -> dict:
     with ci_yaml_path.open() as f:
         data = yaml.load(f)
     return data if data else {}
+
+
+def _resolve_udb_config(test_config_path: Path) -> Path:
+    """Return the absolute path to the UDB config referenced by ``test_config.yaml``."""
+    yaml = YAML(typ="safe", pure=True)
+    with test_config_path.open() as f:
+        test_cfg = yaml.load(f) or {}
+    udb_config = test_cfg.get("udb_config")
+    if not udb_config:
+        raise ValueError(f"{test_config_path}: missing required 'udb_config' field")
+    udb_path = Path(udb_config)
+    if not udb_path.is_absolute():
+        udb_path = test_config_path.parent / udb_path
+    return udb_path.resolve()
 
 
 def file_hash(path: Path) -> str:
@@ -148,12 +232,18 @@ def discover_configs(config_dir: Path) -> list[dict]:
         setup_script = sim_config.get("setup_script", "")
         exclude_configs: set[str] = set(sim_config.get("exclude_configs", []))
         # Number of CI runners to split each config across. Defaults to 1
-        # (no sharding). Slow simulators / configs benefit from a higher value
-        # — the test universe is split into N round-robin chunks by
-        # shard_extensions.py and each shard runs as its own matrix entry.
-        shards = int(sim_config.get("shards", 1))
-        if shards < 1:
-            raise ValueError(f"{sim_ci_yaml}: 'shards' must be >= 1, got {shards}")
+        # (no sharding). Slow simulators / configs benefit from a higher
+        # value — the testsuites are split into N bin-packed shards and
+        # each runs as its own matrix entry. ``config_shards`` overrides
+        # the default per-config so that, e.g., only the heavy ``gc``
+        # configs of cvw are sharded and the lighter ``imc`` config still
+        # runs as a single job.
+        default_shards = int(sim_config.get("shards", 1))
+        if default_shards < 1:
+            raise ValueError(f"{sim_ci_yaml}: 'shards' must be >= 1, got {default_shards}")
+        config_shards_override = sim_config.get("config_shards") or {}
+        if not isinstance(config_shards_override, Mapping):
+            raise TypeError(f"{sim_ci_yaml}: 'config_shards' must be a mapping of config name to shard count")
 
         # Cache key is derived from the install script's content hash.
         # When the script changes (e.g., version bump), the cache automatically invalidates.
@@ -172,9 +262,15 @@ def discover_configs(config_dir: Path) -> list[dict]:
                 continue
 
             run_cmd = run_cmd_file.read_text().strip()
-            config_file = str(run_cmd_file.parent / "test_config.yaml")
+            config_file = run_cmd_file.parent / "test_config.yaml"
 
-            shard_lists = _shard_assignments(shards, exclude_extensions)
+            shards = int(config_shards_override.get(config_name, default_shards))
+            if shards < 1:
+                raise ValueError(f"{sim_ci_yaml}: 'config_shards[{config_name}]' must be >= 1, got {shards}")
+
+            udb_config_path = _resolve_udb_config(config_file)
+            selected_suites = _select_suites_for_config(udb_config_path)
+            shard_lists = _shard_assignments(selected_suites, shards, exclude_extensions)
 
             for shard_index in range(shards):
                 # When not sharded, keep the historical entry shape so the job
@@ -184,7 +280,7 @@ def discover_configs(config_dir: Path) -> list[dict]:
                     {
                         "simulator": sim_name,
                         "config": config_name,
-                        "config_file": config_file,
+                        "config_file": str(config_file),
                         "run_cmd": run_cmd,
                         "exclude_extensions": exclude_extensions,
                         "install_script": install_script,

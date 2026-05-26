@@ -8,4 +8,10 @@ exclude_extensions: "Sm,InterruptsSm,InterruptsS,InterruptsU,InterruptsSstc,PMPS
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cvw.sh"
 setup_script: ".github/scripts/setup-cvw.sh"
-shards: 3
+# Default to a single shard; only the heavyweight ``gc`` configs benefit
+# from sharding. ``imc`` runs the full implemented test set quickly enough
+# in a single job, so paying the extra runner cost there isn't worth it.
+shards: 1
+config_shards:
+  cvw-rv32gc: 3
+  cvw-rv64gc: 3

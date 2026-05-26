@@ -42,7 +42,7 @@ from ruamel.yaml import YAML
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "framework" / "src"))
 
-from act.select_tests import select_tests_for_config  # type: ignore[import-not-found]
+from act.select_tests import select_tests_for_config
 
 _DEFAULT_SUITE_WEIGHT = 1  # for suites that have no checked-in .S files yet
 
@@ -53,7 +53,9 @@ def _selected_suite_weights(config_file: Path, exclude: str) -> tuple[tuple[str,
 
     The cache key includes ``exclude`` because ACT applies exclusions before
     test selection; the same config can legitimately produce different
-    suite weights when simulator-level exclusions differ.
+    suite weights when simulator-level exclusions differ. The selected test
+    set is small enough that per-file ``stat`` calls are cheap, and this
+    keeps the weighting tied exactly to ACT's selected tests.
     """
     selected_tests = select_tests_for_config(config_file, REPO_ROOT / "tests", REPO_ROOT / "work", exclude=exclude)
     weights: dict[str, int] = {}
@@ -140,7 +142,10 @@ def discover_configs(config_dir: Path) -> list[dict]:
             raise ValueError(f"{sim_ci_yaml}: 'shards' must be >= 1, got {default_shards}")
         config_shards_override = sim_config.get("config_shards") or {}
         if not isinstance(config_shards_override, Mapping):
-            raise TypeError(f"{sim_ci_yaml}: 'config_shards' must be a mapping of config name to shard count")
+            raise TypeError(
+                f"{sim_ci_yaml}: 'config_shards' must be a mapping of config name to shard count, "
+                f"got {type(config_shards_override).__name__}"
+            )
 
         # Cache key is derived from the install script's content hash.
         # When the script changes (e.g., version bump), the cache automatically invalidates.

@@ -110,10 +110,7 @@
 // The default RVTEST_IDLE_FOR_TIMER_INTERRUPT spins RVMODEL_TIMER_INT_SOON_DELAY iterations
 // (200 instructions), which only advances mtime by ~2 ticks — far less than the 100-tick
 // stimecmp offset. Override with a 200x multiplier so the spin outlasts the timer delay.
-#define RVTEST_IDLE_FOR_TIMER_INTERRUPT(_R1) \
-    LI(_R1, RVMODEL_TIMER_INT_SOON_DELAY * 200); \
-    99: addi _R1, _R1, -1; \
-        bnez _R1, 99b;
+#define RVMODEL_TIMER_INT_SOON_DELAY_CYCLES (RVMODEL_TIMER_INT_SOON_DELAY * 200)
 
 #define CLINT_BASE_ADDRESS 0x02000000
 #define MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)

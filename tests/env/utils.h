@@ -429,11 +429,17 @@
     99: addi _R1, _R1, -1; \
         bnez _R1, 99b;
 
-#ifndef RVTEST_IDLE_FOR_TIMER_INTERRUPT
-#define RVTEST_IDLE_FOR_TIMER_INTERRUPT(_R1) \
-    LI(_R1, RVMODEL_TIMER_INT_SOON_DELAY); \
-    99: addi _R1, _R1, -1; \
-        bnez _R1, 99b;
+// Spike and QEMU have CLINT timer at slower frequency than the clock that the processor runs on, a 200x multiplier is included to ensure that the interrupt fires
+#ifdef RVMODEL_TIMER_INT_SOON_DELAY_CYCLES
+  #define RVTEST_IDLE_FOR_TIMER_INTERRUPT(_R1) \
+      LI(_R1, RVMODEL_TIMER_INT_SOON_DELAY); \
+      99: addi _R1, _R1, -1; \
+          bnez _R1, 99b;
+#else
+  #define RVTEST_IDLE_FOR_TIMER_INTERRUPT(_R1) \
+      LI(_R1, RVMODEL_TIMER_INT_SOON_DELAY); \
+      99: addi _R1, _R1, -1; \
+          bnez _R1, 99b;
 #endif
 
 // Using generic RVTEST macros that can be invoked by tests, which then jump to the appropriate RVMODEL macros that implement the interrupt setup for the specific target platform.

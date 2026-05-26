@@ -199,10 +199,8 @@
     },
     "clock_frequency": 1000000000,
     "instructions_per_tick": 2,
-    "wfi_is_nop": true,
-    // Maximum time before a WFI/WRS instruction expires. CV32E20 treats WFI as NOP
-    // so this field has no effect, but the schema requires it.
-    "max_time_to_wait": 10
+    "wfi_is_nop": false,
+    "max_time_to_wait": 1000
   },
   "extensions": {
     "M": {
@@ -241,7 +239,7 @@
       "supported": false
     },
     "U": {
-      "supported": true
+      "supported": false
     },
     "Zibi": {
       "supported": false

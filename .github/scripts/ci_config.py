@@ -37,12 +37,11 @@ from collections.abc import Mapping
 from functools import cache
 from pathlib import Path
 
-from ruamel.yaml import YAML
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "framework" / "src"))
 
 from act.select_tests import select_tests_for_config
+from ruamel.yaml import YAML
 
 _DEFAULT_SUITE_WEIGHT = 1  # for suites that have no checked-in .S files yet
 

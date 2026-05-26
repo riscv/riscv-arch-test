@@ -13,7 +13,7 @@ import re
 from pathlib import Path
 
 from act.config import Config, load_config
-from act.parse_test_constraints import TestMetadata, TestYamlHeaderError, generate_test_dict
+from act.parse_test_constraints import TestMetadata, generate_test_dict
 from act.parse_udb_config import (
     generate_udb_files,
     get_config_implemented_extensions,
@@ -131,12 +131,7 @@ def select_tests_for_config(
     validation so lightweight discovery jobs can compute the same selected
     test set without installing those tools first.
     """
-    try:
-        full_test_dict = generate_test_dict(test_dir, extensions, exclude)
-    except TestYamlHeaderError as e:
-        e.print()
-        raise
-
+    full_test_dict = generate_test_dict(test_dir, extensions, exclude)
     _, _, selected_tests = select_tests_for_config_data(
         config_file, full_test_dict, workdir, validate_tools=False, generate_udb=False
     )

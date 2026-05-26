@@ -82,19 +82,25 @@ def get_config_params(udb_config_file: Path) -> dict[str, int | bool | str | lis
     return config_params
 
 
+def _extract_extension_name(extension: object) -> str | None:
+    """Extract an extension name from a UDB ``implemented_extensions`` entry."""
+    if isinstance(extension, dict):
+        name = extension.get("name")
+    elif isinstance(extension, (list, tuple)):
+        name = extension[0] if extension else None
+    else:
+        name = extension
+    return name if isinstance(name, str) and name else None
+
+
 def get_config_implemented_extensions(udb_config_file: Path) -> set[str]:
     """Return implemented extension names declared by a fully-configured UDB yaml."""
     yaml = YAML(typ="safe", pure=True)
     udb_config = yaml.load(udb_config_file.read_text())
     implemented_extensions: set[str] = set()
     for extension in udb_config["implemented_extensions"]:
-        if isinstance(extension, dict):
-            name = extension.get("name")
-        elif isinstance(extension, (list, tuple)):
-            name = extension[0] if extension else None
-        else:
-            name = extension
-        if isinstance(name, str) and name:
+        name = _extract_extension_name(extension)
+        if name is not None:
             implemented_extensions.add(name)
     return implemented_extensions
 

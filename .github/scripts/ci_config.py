@@ -49,7 +49,12 @@ _DEFAULT_SUITE_WEIGHT = 1  # for suites that have no checked-in .S files yet
 
 @cache
 def _selected_suite_weights(config_file: Path, exclude: str) -> tuple[tuple[str, int], ...]:
-    """Return selected suite weights for a config using ACT's selection path."""
+    """Return selected suite weights for a config using ACT's selection path.
+
+    The cache key includes ``exclude`` because ACT applies exclusions before
+    test selection; the same config can legitimately produce different
+    suite weights when simulator-level exclusions differ.
+    """
     selected_tests = select_tests_for_config(config_file, REPO_ROOT / "tests", REPO_ROOT / "work", exclude=exclude)
     weights: dict[str, int] = {}
     for test_name in selected_tests:
@@ -57,7 +62,7 @@ def _selected_suite_weights(config_file: Path, exclude: str) -> tuple[tuple[str,
         test_path = REPO_ROOT / "tests" / test_name
         try:
             weight = test_path.stat().st_size
-        except OSError:
+        except FileNotFoundError:
             weight = _DEFAULT_SUITE_WEIGHT
         weights[suite] = weights.get(suite, 0) + weight
 

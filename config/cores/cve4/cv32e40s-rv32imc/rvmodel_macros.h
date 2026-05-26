@@ -7,6 +7,8 @@
 
 #define RVMODEL_DATA_SECTION
 
+#define STANDARD_SM_SUPPORTED
+
 ##### STARTUP #####
 
 # Perform boot operations.

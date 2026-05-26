@@ -161,6 +161,7 @@ params:
       false,
       false, # 24..31
     ]
+  MCOUNTINHIBIT_IMPLEMENTED: true # VERIFIED — mcountinhibit CSR exists; bits 0 (mcycle) and 2 (minstret) writable
   COUNTINHIBIT_EN: # VERIFIED — bit 0 (mcycle) and bit 2 (minstret) writable; others hardwired 0 (User Manual, Control and Status Registers)
     [
       true, # index 0 (MCYCLE inhibit)

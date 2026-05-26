@@ -319,7 +319,14 @@ else
         fi
 
         run_cmd=$(cat "$run_cmd_file")
+        # Skip leading KEY=VALUE env overrides to find the actual command name
         first_word="${run_cmd%% *}"
+        while [[ "$first_word" == *=* ]]; do
+            run_cmd_rest="${run_cmd#* }"
+            first_word="${run_cmd_rest%% *}"
+            run_cmd="$run_cmd_rest"
+        done
+        run_cmd=$(cat "$run_cmd_file")  # restore original for run_tests.py
 
         # Warn if runner is not in PATH — environment issue, not a config failure
         if ! command -v "$first_word" &>/dev/null; then

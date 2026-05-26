@@ -47,7 +47,7 @@ _DEFAULT_SUITE_WEIGHT = 1  # for suites that have no checked-in .S files yet
 
 
 @cache
-def _selected_suite_weights(config_file: Path, exclude: str) -> tuple[tuple[str, int], ...]:
+def _selected_suite_weights(config_file: Path, exclude: str, workdir: Path) -> tuple[tuple[str, int], ...]:
     """Return selected suite weights for a config using ACT's selection path.
 
     The cache key includes ``exclude`` because ACT applies exclusions before
@@ -56,10 +56,13 @@ def _selected_suite_weights(config_file: Path, exclude: str) -> tuple[tuple[str,
     set is small enough that per-file ``stat`` calls are cheap, and this
     keeps the weighting tied exactly to ACT's selected tests.
     """
-    selected_tests = select_tests_for_config(config_file, REPO_ROOT / "tests", REPO_ROOT / "work", exclude=exclude)
+    selected_tests = select_tests_for_config(config_file, REPO_ROOT / "tests", workdir, exclude=exclude)
     weights: dict[str, int] = {}
     for test_name in selected_tests:
-        suite = Path(test_name).parent.name
+        test_parts = Path(test_name).parts
+        if len(test_parts) < 3:
+            raise ValueError(f"Selected test path must have layout <bucket>/<suite>/<file>.S, got {test_name}")
+        suite = test_parts[-2]
         test_path = REPO_ROOT / "tests" / test_name
         try:
             weight = test_path.stat().st_size
@@ -109,9 +112,11 @@ def file_hash(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()[:12]
 
 
-def discover_configs(config_dir: Path) -> list[dict]:
+def discover_configs(config_dir: Path, workdir: Path | None = None) -> list[dict]:
     """Discover all CI-enabled configs and return matrix entries."""
     entries: list[dict] = []
+    if workdir is None:
+        workdir = REPO_ROOT / "work" / "ci-config"
 
     for sim_ci_yaml in sorted(config_dir.rglob("*/ci.yaml")):
         sim_dir = sim_ci_yaml.parent
@@ -145,6 +150,18 @@ def discover_configs(config_dir: Path) -> list[dict]:
                 f"{sim_ci_yaml}: 'config_shards' must be a mapping of config name to shard count, "
                 f"got {type(config_shards_override).__name__}"
             )
+        config_shards: dict[str, int] = {}
+        for config_name, shard_count in config_shards_override.items():
+            try:
+                config_shards[str(config_name)] = int(shard_count)
+            except (TypeError, ValueError) as e:
+                raise TypeError(
+                    f"{sim_ci_yaml}: 'config_shards[{config_name}]' must be a positive integer, got {shard_count!r}"
+                ) from e
+            if config_shards[str(config_name)] < 1:
+                raise ValueError(
+                    f"{sim_ci_yaml}: 'config_shards[{config_name}]' must be >= 1, got {config_shards[str(config_name)]}"
+                )
 
         # Cache key is derived from the install script's content hash.
         # When the script changes (e.g., version bump), the cache automatically invalidates.
@@ -165,11 +182,11 @@ def discover_configs(config_dir: Path) -> list[dict]:
             run_cmd = run_cmd_file.read_text().strip()
             config_file = run_cmd_file.parent / "test_config.yaml"
 
-            shards = int(config_shards_override.get(config_name, default_shards))
+            shards = config_shards.get(config_name, default_shards)
             if shards < 1:
                 raise ValueError(f"{sim_ci_yaml}: 'config_shards[{config_name}]' must be >= 1, got {shards}")
 
-            suite_weights = _selected_suite_weights(config_file, exclude_extensions)
+            suite_weights = _selected_suite_weights(config_file, exclude_extensions, workdir)
             shard_lists = _shard_assignments(suite_weights, shards)
 
             for shard_index in range(shards):

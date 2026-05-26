@@ -98,7 +98,11 @@ def get_config_implemented_extensions(udb_config_file: Path) -> set[str]:
     yaml = YAML(typ="safe", pure=True)
     udb_config = yaml.load(udb_config_file.read_text())
     implemented_extensions: set[str] = set()
-    for extension in udb_config["implemented_extensions"]:
+    try:
+        extension_entries = udb_config["implemented_extensions"]
+    except KeyError as e:
+        raise ValueError(f"{udb_config_file}: missing required 'implemented_extensions' field") from e
+    for extension in extension_entries:
         name = _extract_extension_name(extension)
         if name is not None:
             implemented_extensions.add(name)

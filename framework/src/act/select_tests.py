@@ -99,7 +99,18 @@ def select_tests_for_config_data(
     validate_tools: bool = True,
     generate_udb: bool = True,
 ) -> tuple[Config, dict[str, ConfigParamValue], dict[str, TestMetadata]]:
-    """Return config data and tests selected by the ACT framework for a single config."""
+    """Return config data and tests selected by the ACT framework for a single config.
+
+    Args:
+        config_file: ACT test config file to load.
+        full_test_dict: Candidate tests, usually from ``generate_test_dict``.
+        workdir: Directory used for generated UDB outputs when ``generate_udb`` is true.
+        validate_tools: Validate configured compiler and simulator executables when true.
+            CI discovery sets this false because it runs before those tools are installed.
+        generate_udb: Generate and read ``extensions.txt`` via UDB when true. CI discovery
+            sets this false and reads ``implemented_extensions`` directly from fully
+            configured UDB yaml instead.
+    """
     config = load_config(config_file, validate_tools=validate_tools)
     config_dir = workdir / config.udb_config.stem
     config_dir.mkdir(parents=True, exist_ok=True)

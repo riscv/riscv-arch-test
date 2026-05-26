@@ -110,7 +110,7 @@
         // independently of the scalar case above, but uses the same
         // option values.
         "vector": {
-          "None": null
+          "Some": "AlignmentException"
         },
         // A misaligned LR/SC currently always faults, and this field can specify
         // whether it generates an access fault (use `"AccessFault"`)

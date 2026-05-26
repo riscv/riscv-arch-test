@@ -1,1 +1,0 @@
-CVE40S_CERT_DIR=certification_rv32imc run-cv32e40s.sh

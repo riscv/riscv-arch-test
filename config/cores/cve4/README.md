@@ -5,7 +5,11 @@ SPDX-License-Identifier: Apache-2.0
 
 ## DUT Configurations for the CVE4 Family
 
+The CVE4 family is a collection of 32-bit, 4-stage in-order RISC-V cores for embedded platforms that started from the PULP RI5CY core.
+
 ### CV32E40P
+
+[CV32E40P](https://github.com/openhwgroup/cv32e40p) implements the RV32IM[F|Zfinx]C instruction set architecture and the PULP custom extensions for achieving higher code density, performance, and energy efficiency. It started its life as a fork of the OR10N CPU core that is based on the OpenRISC ISA.
 
 Three configurations are provided:
 
@@ -29,6 +33,8 @@ $ make -j$(nproc) CONFIG_FILES=config/cores/cve4/cv32e40p-v1-rv32imc/test_config
 ```
 
 ### CV32E40S
+
+[CV32E40S](https://github.com/openhwgroup/cv32e40s) is aimed at security applications and offers both Machine mode and User mode, an enhanced PMP, as well as various anti-tampering features.
 
 Four configurations are provided:
 

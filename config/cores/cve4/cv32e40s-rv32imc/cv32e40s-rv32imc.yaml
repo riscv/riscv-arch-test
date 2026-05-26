@@ -73,8 +73,8 @@ params:
   MTVEC_MODES: [0, 1] # VERIFIED — MODE bit[0] writable; 0x0=non-vectored, 0x1=vectored (User Manual, Control and Status Registers)
   MTVEC_ACCESS: rw
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom # VERIFIED — MODE bit[1] hardwired 0, bit[0] writable; writes always valid (User Manual, Control and Status Registers)
-  MTVEC_BASE_ALIGNMENT_VECTORED: 256 # VERIFIED — BASE[31:7] writable, bits[6:2] hardwired 0 (User Manual, Control and Status Registers)
-  MTVEC_BASE_ALIGNMENT_DIRECT: 256 # VERIFIED — same alignment applies in direct mode (User Manual, Control and Status Registers)
+  MTVEC_BASE_ALIGNMENT_VECTORED: 128 # VERIFIED — CSR_BASIC_MTVEC_MASK=0xFFFFFF81; BASE[31:7] writable, bits[6:2] hardwired 0 -> 2^7 = 128-byte alignment
+  MTVEC_BASE_ALIGNMENT_DIRECT: 128 # VERIFIED — same mask applies in direct mode
 
   # Sm params
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true # VERIFIED — mepc set to current PC on exception

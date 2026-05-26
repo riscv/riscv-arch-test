@@ -1,0 +1,1 @@
+CVE40S_CERT_DIR=certification_rv32imc-pma run-cv32e40s.sh

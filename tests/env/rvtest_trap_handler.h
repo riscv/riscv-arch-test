@@ -914,21 +914,21 @@ init_\__MODE__\()satp:
 
 //---------- Save and set xTVEC ----------
 init_\__MODE__\()tvec:
-        csrr    T3, CSR_XTVEC
-        SREG    T3, xtvec_sav_off(T1)   // save orig mtvec+mode in tvec_save
-        andi    T2, T3, WDBYTMSK        // extract mode bits (2 LSBs)
+        csrr    T3, CSR_XTVEC                     // T3 = current xTVEC value (address + mode bits)
+        SREG    T3, xtvec_sav_off(T1)              // save original xTVEC in save area
+        andi    T2, T3, WDBYTMSK                   // T2 = mode bits from original xTVEC (bits 1:0)
 #if !defined(UDB_MTVEC_MODES_0) && defined(UDB_MTVEC_MODES_1)
-        ori     T2, x0, 1               // vectored-only core: force vectored (MODE=0 wouldn't round-trip)
+        ori     T2, x0, 1                          // T2 = 1 (vectored), vectored-only core can't round-trip MODE=0
 #elif defined(UDB_MTVEC_MODES_0) && !defined(UDB_MTVEC_MODES_1)
-        andi    T2, T2, ~WDBYTMSK       // direct-only core: force direct (MODE=1 wouldn't round-trip)
+        andi    T2, T2, ~WDBYTMSK                  // T2 = mode bits cleared (direct), direct-only core can't round-trip MODE=1
 #endif
-        LREG    T4, tentry_addr_off(T1) // points to bottom of trampoline_sv area
-        addi    T4, T4, -actual_tramp_sz// calc top of trampoline sv (common entry pt) avoiding an LA()
-        or      T2, T4, T2              // merge .mode & tramp ptr and store to both XTVEC, tvec_new
-        SREG    T2, xtvec_new_off(T1)
-        csrw    CSR_XTVEC, T2           // write xtvec with trap_trampoline+mode, so trap will go to the trampoline
+        LREG    T4, tentry_addr_off(T1)            // T4 = common entry point (end of trampoline)
+        addi    T4, T4, -actual_tramp_sz           // T4 = start of trampoline (entry point - tramp size)
+        or      T2, T4, T2                         // T2 = trampoline start + original mode bits
+        SREG    T2, xtvec_new_off(T1)              // save new xTVEC value in save area
+        csrw    CSR_XTVEC, T2                      // attempt to write trampoline address to xTVEC
 
-        csrr    T5, CSR_XTVEC           // now read new_mtval back & make sure we could write it
+        csrr    T5, CSR_XTVEC                      // read back xTVEC to verify it was written
 #ifndef HANDLER_TESTCODE_ONLY
         beq     T5, T2, rvtest_\__MODE__\()prolog_done  // if readback matches, xTVEC is writable. Done!
 #endif

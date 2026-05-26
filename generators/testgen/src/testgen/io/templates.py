@@ -57,11 +57,17 @@ def insert_header_template(
     if extra_defines is None:
         extra_defines = []
     extra_defines.extend(generate_defines_from_extensions(all_extensions))
+    # Optional REQUIRED_EXTENSIONS_ANY_OF line (only emitted when the test config sets it)
+    if test_config.required_extensions_any_of:
+        any_of_line = f"# REQUIRED_EXTENSIONS_ANY_OF: {test_config.required_extensions_any_of}\n"
+    else:
+        any_of_line = ""
     # Replace placeholders
     template = (
         template.replace("@TEST_PATH@", f"{test_file}")
         .replace("@TEST_FILE_NAME@", f"{test_file.name}")
         .replace("@EXTENSION_LIST@", f"{ext_components}")
+        .replace("@REQUIRED_EXTENSIONS_ANY_OF_LINE@", any_of_line)
         .replace("@PARAMS@", format_params(params, ext_components))
         .replace("@MARCH@", march)
         .replace("@EXTRA_DEFINES@", "\n".join(extra_defines))

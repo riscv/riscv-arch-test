@@ -44,6 +44,9 @@ class TestMetadata(BaseModel):
 
     test_path: FilePath
     required_extensions: set[str] = Field(alias="REQUIRED_EXTENSIONS", min_length=1)
+    # At least one of these must hold. An entry prefixed with '~' means the extension
+    # must be absent (e.g. '~U' = U-mode not implemented). Empty means no such constraint.
+    required_extensions_any_of: list[str] = Field(alias="REQUIRED_EXTENSIONS_ANY_OF", default_factory=list)
     march: str = Field(alias="MARCH", pattern=r"rv(?:32|64|\$\{XLEN\})[ieg].*")
     params: dict[str, int | bool | str] = Field(default_factory=dict)
 

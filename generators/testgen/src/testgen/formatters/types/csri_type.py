@@ -16,8 +16,10 @@ csri_config = InstructionTypeConfig(required_params={"rd", "rs2", "rs2val", "imm
 
 def zicsr_acccessi(instr_name: str, rd: int, rs2: int, immval: int) -> str:
     """Helper function to determine which CSR to use for testing based on supported extensions."""
-    # Priority: unprivileged writable (F/V) > unprivileged read-only (Zicntr) >
-    #           M-mode writable (Sm/mepc) > S-mode writable (Ss/sepc) > error
+    # Use writable unprivileged extension CSRs if any exist,
+    # else use mepc if U is not supported
+    # else use instret (which is not writable, but at least can be accessed)
+    # The suite is gated by REQUIRED_EXTENSIONS_ANY_OF so cores with none of these are skipped.
 
     # instret requires special treatment because it is not writable, and the value is not initialized
     if instr_name in ["csrrw", "csrrwi"] or rs2 == 0 or rd == 0:
@@ -34,12 +36,10 @@ def zicsr_acccessi(instr_name: str, rd: int, rs2: int, immval: int) -> str:
         f"{instr_name} x{rd}, fflags, {immval}\n"
         "#elif defined(V_SUPPORTED)\n"
         f"{instr_name} x{rd}, vxsat, {immval}\n"
+        "#elif !defined(U_SUPPORTED)\n"
+        f"{instr_name} x{rd}, mepc, {immval}\n"
         "#elif defined(ZICNTR_SUPPORTED)\n"
         f"{instret_access}\n"
-        "#elif defined(SM_SUPPORTED)\n"
-        f"{instr_name} x{rd}, mepc, {immval}\n"
-        "#elif defined(SS_SUPPORTED)\n"
-        f"{instr_name} x{rd}, sepc, {immval}\n"
         "#else\n"
         f"  #error no CSR known for testing\n"
         "#endif\n"

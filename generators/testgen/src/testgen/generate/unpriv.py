@@ -66,7 +66,18 @@ def generate_unpriv_extension_tests(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     flen = get_flen_for_extension(testsuite)
-    test_config = TestConfig(xlen=xlen, flen=flen, testsuite=testsuite, E_ext=E_ext)
+    # Zicsr tests need an accessible CSR. fflags/vxsat/instret are usable from any
+    # privilege mode; mepc is only safe when there is no U mode (test runs in M mode).
+    # Gate the suite so it is skipped for U-mode cores that lack F/V/Zicntr instead of
+    # emitting accesses that would trap in U mode.
+    required_extensions_any_of = ["F", "V", "Zicntr", "~U"] if testsuite == "Zicsr" else None
+    test_config = TestConfig(
+        xlen=xlen,
+        flen=flen,
+        testsuite=testsuite,
+        E_ext=E_ext,
+        required_extensions_any_of=required_extensions_any_of,
+    )
 
     # Iterate through each instruction in the testsuite; generate separate test files for each
     for instr_data in instructions:

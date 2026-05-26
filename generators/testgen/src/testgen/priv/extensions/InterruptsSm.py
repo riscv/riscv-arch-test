@@ -263,7 +263,6 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
     # Test both mtvec modes; gate each mode on its own MTVEC_MODES parameter so single-mode
     # cores (direct-only or vectored-only) only exercise the mode they implement.
     for mode, mode_name in [(0, "direct"), (1, "vectored")]:
-        mode_guard = "UDB_MTVEC_MODES_0" if mode == 0 else "UDB_MTVEC_MODES_1"
         lines.append(f"#ifdef UDB_MTVEC_MODES_{mode}")
         lines.extend(
             [

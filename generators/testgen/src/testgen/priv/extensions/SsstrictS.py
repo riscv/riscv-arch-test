@@ -44,6 +44,8 @@ _S_CSR_SKIP: frozenset[int] = frozenset(
     [0x180]  # satp  — skip: TLB flush / address-translation mode change
     + [0x104]  # sie   — skip: all-ones write enables S-mode interrupts; covered in shadow test
     + [0x144]  # sip   — skip: all-ones write asserts SSIP software interrupt; covered in shadow test
+    + [0x105]  # stvec   — skip: stvec not to update itself
+    + [0x140]  # sscratch   — skip: sscratch not to update itself
     + list(range(0x200, 0x300))  # H-mode std0 — skip: accessible from HS-mode
     + list(range(0x600, 0x700))  # H-mode std1 — skip: HS-mode ambiguity
     + list(range(0xA00, 0xB00))  # H-mode std2 — skip: HS-mode ambiguity
@@ -81,60 +83,18 @@ def _generate_csr_tests_s(test_data: TestData) -> list[str]:
         )
     )
 
-    # Switch to S-mode — no trailing blank so the splitter cannot cut between
-    # this and the first CSR instruction.  Every file that contains sweep code
-    # must have the GOTO Smode either preceding it (in a prior file) or as its
-    # own first executable line.
-    lines.extend(
-        [
-            "",
-            "# Switch to supervisor mode for CSR sweep",
-            "\tRVTEST_GOTO_LOWER_MODE Smode",
-        ]
-    )
-
-    # The S-mode CSR sweep stays in S-mode continuously from the opening
-    # RVTEST_GOTO_LOWER_MODE Smode (above) to the closing RVTEST_GOTO_MMODE
-    # (below).  No intra-sweep mode switches are emitted.
-    #
-    # Why no batch boundaries with GOTO Mmode/Smode pairs:
-    # RVTEST_GOTO_MMODE is a preprocessor no-op on some configs
-    # (including RV32 sail-rv32-max) — it generates zero machine code.  Emitting
-    # it inside the sweep therefore leaves us in S-mode.  GOTO Smode then executes
-    # from S-mode: its first instruction is an M-mode CSR read that traps as
-    # illegal.  The fast handler advances mepc+4, skipping only that instruction,
-    # and execution falls into the middle of the macro with a corrupt register
-    # value.  The subsequent lw using that register hits an invalid address,
-    # producing a load-access-fault.  Mtrampoline (not the fast handler) catches
-    # it, saves S-mode sp=0 into the framework save area, and later rtn_fm_mmode
-    # restores sp=0 → epilog store-access-fault → infinite fetch-fault loop.
-    #
-    # Safe split-file invariant (no GOTO pairs needed):
-    # The only instructions in the sweep body are csrr / li / csrrw / csrrs /
-    # csrrc — all either trap as illegal (M-mode CSRs from S-mode, handled by
-    # the fast handler) or execute silently (S/U-mode CSRs from S-mode).
-    # Neither path fires Mtrampoline.  Therefore the framework save area is never
-    # written during the sweep, and it retains the valid M-mode sp written by the
-    # GOTO Smode that opened the sweep (either at the start of this function for
-    # the first file that contains the sweep opening, or by the previous file's
-    # setup for subsequent files).  When RVTEST_CODE_END's ecall fires from
-    # S-mode, rtn_fm_mmode restores that valid sp and the epilog succeeds.
-    #
-    # Blank lines every 10 CSRs give the splitter enough cut points without any
-    # mode-switch instructions at the boundaries.
+    # Mode switch is handled by _SPLIT_FILE_SMODE_GPR_INIT prepended to every
+    # split file by generate/priv.py: each file starts from M-mode, runs
+    # RVTEST_GOTO_LOWER_MODE Smode (writing a valid M-mode sp into the framework
+    # save area), then reloads GPRs before entering the body.  The body itself
+    # stays entirely in S-mode — illegal accesses to M-mode CSRs are caught by
+    # the S-mode strap handler (stvec) which writes scause/sepc/stval to the
+    # signature and advances sepc.  RVTEST_CODE_END's ecall from S-mode is not
+    # delegated (medeleg bit 9 is 0), so it goes to Mtrampoline which restores
+    # the saved M-mode sp and ends the test cleanly.
     all_csrs = [a for a in range(4096) if a not in _S_CSR_SKIP]
     lines.extend(generate_csr_sweep_body(test_data, covergroup, all_csrs))
-
-    # Final return to M-mode after last batch
-    lines.extend(
-        [
-            "",
-            "# Return to machine mode after S-mode CSR sweep",
-            "\tRVTEST_GOTO_MMODE",
-            "\tcsrw    mie, x0",
-            "",
-        ]
-    )
+    lines.append("")
 
     return lines
 
@@ -245,7 +205,6 @@ def _generate_shadow_csr(test_data: TestData) -> list[str]:
         [
             "",
             "\tRVTEST_GOTO_MMODE",
-            "\tcsrw    mie, x0",  # re-disable interrupts after Mtrampoline ecall return
             "",
         ]
     )
@@ -258,7 +217,7 @@ def _generate_shadow_csr(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "SsstrictS",
-    required_extensions=["Sm", "S", "Zicsr"],
+    required_extensions=["S", "Zicsr"],
     march_extensions=[
         # Zcf excluded — RV32-only.
         # Vector excluded — covered by SsstrictV.

@@ -9,19 +9,22 @@
 
 """SsstrictU — user-mode strict/negative compliance tests.
 
-The fast trap handler is NOT emitted here — generate/priv.py prepends it
-to every split file so every generated .S file redirects mtvec immediately
-after RVTEST_TRAP_PROLOG.
+The fast S-mode trap handler is NOT emitted here — generate/priv.py prepends
+_FAST_SMODE_HANDLER_PREFIX (which installs strap_handler_fastillegalinstr at
+stvec and delegates illegal instructions to S-mode via medeleg) plus
+_SPLIT_FILE_UMODE_GPR_INIT (which issues RVTEST_GOTO_LOWER_MODE Umode) to
+every split file.
 
 Structure
 ---------
-1. Switch to U-mode via RVTEST_GOTO_LOWER_MODE Umode.
+1. Per-split-file prefix switches to U-mode; the body stays in U-mode.
 2. CSR sweep from U-mode (user-privilege CSRs only: 0x000-0x0FF,
    0x400-0x4FF, 0xC00-0xCBF).
-   - All S/H/M CSRs raise illegal-instruction from U-mode.
+   - All S/H/M CSRs raise illegal-instruction from U-mode, trapped by
+     strap_handler_fastillegalinstr which records scause/sepc/stval.
    - Custom and reserved ranges are skipped.
-3. Return to M-mode, then run the illegal instruction and compressed
-   sweeps (from M-mode so the fast handler handles every trap correctly).
+3. Illegal instruction and compressed sweeps (appended by make_ssstrictu;
+   still run under the S-mode delegation so traps are handled correctly).
 """
 
 from random import seed
@@ -75,35 +78,17 @@ def _generate_csr_tests_u(test_data: TestData) -> list[str]:
         )
     )
 
-    # Switch to U-mode — no trailing blank so the splitter cannot cut between
-    # this and the first CSR instruction.
-    lines.extend(
-        [
-            "",
-            "# Switch to user mode for CSR sweep",
-            "\tRVTEST_GOTO_LOWER_MODE Umode",
-        ]
-    )
-
-    # The U-mode CSR sweep stays in U-mode continuously from the opening
-    # RVTEST_GOTO_LOWER_MODE Umode to the closing RVTEST_GOTO_MMODE.
-    # No intra-sweep mode switches are emitted — same rationale as SsstrictS.py:
-    # RVTEST_GOTO_MMODE is a no-op on some configs, so any intra-sweep
-    # GOTO Umode would execute from U-mode, crashing identically.
-    # All CSR accesses from U-mode either trap as illegal (handled by fast handler)
-    # or execute silently — Mtrampoline is never fired, save area sp stays valid.
+    # Mode switch is handled by _SPLIT_FILE_UMODE_GPR_INIT prepended to every
+    # split file by generate/priv.py: each file starts from M-mode, runs
+    # RVTEST_GOTO_LOWER_MODE Umode, then reloads GPRs before entering the body.
+    # The body stays entirely in U-mode — all CSR accesses either trap as illegal
+    # (caught by strap_handler_fastillegalinstr which writes scause/sepc/stval to
+    # the signature and advances sepc) or execute silently.  RVTEST_CODE_END's
+    # ecall from U-mode is not delegated, so it goes to Mtrampoline which restores
+    # the saved M-mode sp and ends the test cleanly.
     all_csrs = sorted(_U_CSR_ACCESSIBLE)
     lines.extend(generate_csr_sweep_body(test_data, covergroup, all_csrs))
-
-    # Final return to M-mode after last batch
-    lines.extend(
-        [
-            "",
-            "# Return to machine mode after U-mode CSR sweep",
-            "\tRVTEST_GOTO_MMODE",
-            "",
-        ]
-    )
+    lines.append("")
 
     return lines
 

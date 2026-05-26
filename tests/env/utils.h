@@ -423,8 +423,9 @@
 
 // Interrupt Macros
 // Idle for interrupt latency
+// using LA to ensure that the tests have consistent code length across different simulators
 #define RVTEST_IDLE_FOR_INTERRUPT(_R1) \
-    LI(_R1, RVMODEL_INTERRUPT_LATENCY); \
+    LA(_R1, RVMODEL_INTERRUPT_LATENCY); \
     99: addi _R1, _R1, -1; \
         bnez _R1, 99b;
 

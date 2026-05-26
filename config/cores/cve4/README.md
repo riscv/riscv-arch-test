@@ -9,7 +9,7 @@ The CVE4 family is a collection of 32-bit, 4-stage in-order RISC-V cores for emb
 
 ### CV32E40P
 
-[CV32E40P](https://github.com/openhwgroup/cv32e40p) implements the RV32IM[F|Zfinx]C instruction set architecture and the PULP custom extensions for achieving higher code density, performance, and energy efficiency. It started its life as a fork of the OR10N CPU core that is based on the OpenRISC ISA.
+[CV32E40P](https://github.com/openhwgroup/cv32e40p) ([docs](https://docs.openhwgroup.org/projects/cv32e40p-user-manual/en/latest/)) implements the RV32IM[F|Zfinx]C instruction set architecture and the PULP custom extensions for achieving higher code density, performance, and energy efficiency. It started its life as a fork of the OR10N CPU core that is based on the OpenRISC ISA.
 
 Three configurations are provided:
 
@@ -34,7 +34,7 @@ $ make -j$(nproc) CONFIG_FILES=config/cores/cve4/cv32e40p-v1-rv32imc/test_config
 
 ### CV32E40S
 
-[CV32E40S](https://github.com/openhwgroup/cv32e40s) is aimed at security applications and offers both Machine mode and User mode, an enhanced PMP, as well as various anti-tampering features.
+[CV32E40S](https://github.com/openhwgroup/cv32e40s) ([docs](https://docs.openhwgroup.org/projects/cv32e40s-user-manual/en/latest/)) is aimed at security applications and offers both Machine mode and User mode, an enhanced PMP, as well as various anti-tampering features.
 
 Four configurations are provided:
 
@@ -56,6 +56,8 @@ $ make -j$(nproc) CONFIG_FILES=config/cores/cve4/cv32e40s-rv32imcb-pma-pmp/test_
 ```
 
 ### CV32E40X
+
+[CV32E40X](https://github.com/openhwgroup/cv32e40x) ([docs](https://docs.openhwgroup.org/projects/cv32e40x-user-manual/en/latest/)) is aimed at compute intensive applications and offers a general purpose extension interface by which custom instructions can be added external to the core.
 
 Two configurations are provided:
 

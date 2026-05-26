@@ -160,7 +160,6 @@ def _parse_trap_words(sig_path: Path, xlen: int) -> list[int] | None:
     """Parse the trap signature region from a .sig file. Returns None if no trap canary found."""
     trap_canary = TRAP_CANARY_32 if xlen == 32 else TRAP_CANARY_64
     end_canary = END_CANARY_32 if xlen == 32 else END_CANARY_64
-    deadbeef = DEADBEEF_32 if xlen == 32 else DEADBEEF_64
 
     sig_text = sig_path.read_text()
     lines = [line.strip() for line in sig_text.splitlines() if line.strip()]

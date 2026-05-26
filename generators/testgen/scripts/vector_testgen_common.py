@@ -2336,25 +2336,25 @@ def getLMULIfdef(lmul):
 def getELENIfdef(instruction):
   ifdef = ""
   if   instruction in eew64_ins:
-    ifdef = "ELEN >= 64 & "
+    ifdef = "UDB_ELEN >= 64 & "
   elif instruction in eew32_ins:
-    ifdef = "ELEN >= 32 & "
+    ifdef = "UDB_ELEN >= 32 & "
   elif instruction in eew16_ins:
-    ifdef = "ELEN >= 16 & "
+    ifdef = "UDB_ELEN >= 16 & "
   elif instruction in eew8_ins:
-    ifdef = "ELEN >= 8 & "
+    ifdef = "UDB_ELEN >= 8 & "
   return ifdef
 
 def getSEWMINIfdef(instruction):
   ifdef = ""
   if   instruction in eew64_ins:
-    ifdef = "SEWMIN <= 64 & "
+    ifdef = "UDB_SEWMIN <= 64 & "
   elif instruction in eew32_ins:
-    ifdef = "SEWMIN <= 32 & "
+    ifdef = "UDB_SEWMIN <= 32 & "
   elif instruction in eew16_ins:
-    ifdef = "SEWMIN <= 16 & "
+    ifdef = "UDB_SEWMIN <= 16 & "
   elif instruction in eew8_ins:
-    ifdef = "SEWMIN <= 8 & "
+    ifdef = "UDB_SEWMIN <= 8 & "
   return ifdef
 
 def getMaxIndexEEWIfdef(instruction):

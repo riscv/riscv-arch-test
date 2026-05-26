@@ -117,7 +117,6 @@ main:
 
     LA(x4, TEST_FOR_EXECUTION)
     srl x4, x4, PMP_SHIFT
-    LI(x5, g)
 
     // REGIONSTART in even PMPADDR
     .set pmpaddri, CSR_PMPADDR0

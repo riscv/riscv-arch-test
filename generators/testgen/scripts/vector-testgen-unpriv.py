@@ -152,7 +152,7 @@ def make_vl_0(instruction, sew, lmul = 1):
 def make_vs3(instruction, sew, rng, lmul = 1):
 
   for v in rng:
-    description = "cp_vs2 (Test source vs3 = v" + str(v) + ")"
+    description = "cp_vs3 (Test source vs3 = v" + str(v) + ")"
     cp = f"cp_vs3_b{v}"
     instruction_data = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), lmul = lmul, vs3 = v)
 
@@ -168,6 +168,39 @@ def make_vs2(instruction, sew, rng, lmul = 1):
     instruction_data = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), lmul = lmul, vs2 = v)
 
     writeTest(description, instruction, cp, instruction_data, sew=sew, lmul = lmul)
+    incrementBasetestCount()
+    vsAddressCount()
+
+def make_vs2_egs(instruction, sew, egs, rng):
+  # When egs = 4, we want to conditionally enable tests based on VLEN
+  # longer VLENs require less LMUL, so we want to calculate use the ZVLXXB_SUPPORTED macros
+  # in the assembly files to compile with the correct LMUL
+
+  for v in rng:
+    description = "cp_vs2 (Test source vs2 = v" + str(v) + ")"
+    cp = f"cp_vs2_b{v}"
+    instruction_data = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), lmul = lmul, vs2 = v)
+
+    # Crypto Instructions do not go above 256 bits in one unit
+    used_ifdef = False
+    for vlen in [64, 128]:
+      if sew * egs > vlen:
+        if not used_ifdef:
+          writeLine("#if ZVL{vlen}B_SUPPORTED")
+          used_ifdef = True
+        else:
+          writeLine("#elif ZVL{vlen}B_SUPPORTED")
+
+
+      else:
+        break
+
+    if used_ifdef:
+      writeLine("#else")
+    writeTest(description, instruction, cp, instruction_data, sew=sew, lmul = lmul)
+    if not used_ifdef:
+      writeLine("#endif")
+
     incrementBasetestCount()
     vsAddressCount()
 
@@ -977,6 +1010,7 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cp_vs2_emul2"                 : make_vs2(test, sew, range(0,vreg_count,2), getBaseLmul(test, sew))
     elif coverpoint == "cp_vs2_emul4"                 : make_vs2(test, sew, range(0,vreg_count,4), getBaseLmul(test, sew))
     elif coverpoint == "cp_vs2_emul8"                 : make_vs2(test, sew, range(0,vreg_count,8), getBaseLmul(test, sew))
+    elif coverpoint == "cp_vs2_egs4"                  : make_vs2_egs4(test, sew, range(vreg_count))
     elif coverpoint == "cp_vs1"                       : make_vs1(test, sew, range(vreg_count))
     elif coverpoint == "cp_vs1_nv0"                   : make_vs1(test, sew, range(1,vreg_count))
     elif coverpoint == "cp_vs1_emul2"                 : make_vs1(test, sew, range(0,vreg_count,2))
@@ -1324,10 +1358,10 @@ def _detect_sew(pathname: str) -> int:
     if match:
         return int(match.group(1))
 
-  for pattern in [r'/Zvfbfmin$', r'/Zvfhmin$', r'/Zvfbfwma$']:
+  for pattern, sew in [(r'/Zvfbfmin$', 16), (r'/Zvfhmin$', 16), (r'/Zvfbfwma$', 16), (r'/Zvkg$', 32)]:
     match = re.search(pattern, pathname)
     if match:
-      return 16
+      return sew
 
   return 8
 

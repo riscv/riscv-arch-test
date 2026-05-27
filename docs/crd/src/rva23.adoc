@@ -76,10 +76,10 @@ Invisible traps are traps to emulate a function in firmware that is not implemen
 
 The M-mode trap handler performs the following functions:
 
-1) Check if the trap is a T-SBI call and if so, perform the requested T-SBI function and return from the `ecall`.
-2) Call custom firmware, if any exists, to handle invisible traps.  The custom firmware will save registers relative to `sp`, inspect machine state to see if the trap is an invisible trap, and if so, perform the function, clean up, and return to the appropriate place (perhaps the instruction after the one that trapped, or an S-mode handler if the custom firmware expects S-mode to receive the trap next).  If the trap is not an invisible trap, the custom firmware will return to the next step of the M-mode trap handler.
-3) Check if the trap is a test of undelegated traps to M-mode, and if so, write/compare a trap signature of the standard values expected in `mepc`, `mcause`, `mtval` and `mstatus.MPV/MPP/MPIE/MPELP`.
-4) Set up `sstatus`, `sepc`, `scause`, `stval` with values coming from the machine-mode trap CSRs, and return to the S-mode trap handler to effectively delegate to S-mode.
+. Check if the trap is a T-SBI call and if so, perform the requested T-SBI function and return from the `ecall`.
+. Call custom firmware, if any exists, to handle invisible traps.  The custom firmware will save registers relative to `sp`, inspect machine state to see if the trap is an invisible trap, and if so, perform the function, clean up, and return to the appropriate place (perhaps the instruction after the one that trapped, or an S-mode handler if the custom firmware expects S-mode to receive the trap next).  If the trap is not an invisible trap, the custom firmware will return to the next step of the M-mode trap handler.
+. Check if the trap is a test of undelegated traps to M-mode, and if so, write/compare a trap signature of the standard values expected in `mepc`, `mcause`, `mtval` and `mstatus.MPV/MPP/MPIE/MPELP`.
+. Set up `sstatus`, `sepc`, `scause`, `stval` with values coming from the machine-mode trap CSRs, and return to the S-mode trap handler to effectively delegate to S-mode.
 
 === SBI Control of M-mode CSRs
 
@@ -92,7 +92,7 @@ RVA23 certification requires that the SBI provide methods of emulating every wri
 | `mstatus` | TSR, TW, TVM
 | `mcounteren` | All fields not hardwired to 0 must be controllable to allow testing of counter access from lower privilege modes.
 | `mcountinhibit` | All fields not hardwired to 0 must be controllable to allow testing of counter behavior from lower privilege modes.
-| `mip` | Interrupts are controlled with RVMODEL macros.  SEIP, STIP, and SSIP may be controlled with T-SBI accesses to mip.
+| `mip` | Interrupts are controlled with RVMODEL macros.  SEIP, STIP, and SSIP may be controlled with T-SBI accesses to `mip`.
 | `mie` | MEIE, MSIE, MTIE control whether these interrupts are enabled.
 | `menvcfg` | STCE, PBMTE, ADUE, PMM, CBZE, CBCFE, CBIE, SSE, LPE, FIOM must be controllable to allow testing of the behavior of lower privilege modes with these features enabled and disabled. Note that some bits may be read-only zero. CDE, DTE are OUT-OF-SCOPE because they do not relate to RVA23 features. All writable fields must be controllable to allow testing of the behavior of lower privilege modes when certain features are disabled.
 | `mseccfg` | PMM, SSEED, and USEED must be controllable to allow testing of the behavior of lower privilege modes when certain features are disabled.  Note that some bits may be read-only zero. MLPE, RLB, MMWP, MML are OUT-OF-SCOPE because they do not relate to RVA23 features.
@@ -146,7 +146,7 @@ The user must provide:
 * Custom firmware, if any, to handle invisible traps.
 * Custom boot code, if standard M-mode boot code does not run on the DUT or if additional configuration is necessary.
 
-=== NOTES
+=== Notes
 
 The following items are still open for discussion:
 

@@ -10,7 +10,6 @@
 ##################################
 # libraries
 ##################################
-import csv
 import math
 import os
 import re
@@ -3431,26 +3430,28 @@ def readTestplans(priv=False):
             else:
                 is_vector = (arch.startswith("V") or arch.startswith("Zv"))
             if is_vector:
-                with open(os.path.join(coverplanDir, file)) as csvfile:
-                    reader = csv.DictReader(csvfile)
-                    tp = dict()
-                    for row in reader:
-                        #print(f"row = {row}")
-                        if ("Instruction" not in row):
-                            print("Error reading testplan "+ file+".  Did you remember to shrink the .csv files after expanding?")
-                            exit(1)
-                        instr = row["Instruction"]
-                        cps = []
-                        del row["Instruction"]
-                        for key, value in row.items():
-                            if (type(value) is str and value != ''):
-                                if(key == "Type"):
-                                    cps.append("sample_" + value)
-                                else:
-                                    if (value != "x"): # for special entries, append the entry name (e.g. cp_rd_edges becomes cp_rd_edges_lui)
-                                        key = key + "_" + value
-                                    cps.append(key)
-                        tp[instr] = cps
+                # Delegate per-row parsing to the shared scalar testplan reader
+                # (testgen.io.testplans.read_testplan) and rebuild the legacy
+                # vector dict[instr -> [coverpoint tokens]] shape on top of it.
+                # Preserves byte-identical token order: sample_<Type> first,
+                # then RV32/RV64 markers (if x), then per-column tokens in CSV
+                # order with `_<value>` suffix for non-`x` cells.
+                from pathlib import Path as _Path
+                from testgen.io.testplans import read_testplan as _read_testplan
+                try:
+                    rows = _read_testplan(_Path(coverplanDir) / file)
+                except KeyError:
+                    print("Error reading testplan "+ file+".  Did you remember to shrink the .csv files after expanding?")
+                    exit(1)
+                tp = dict()
+                for td in rows:
+                    cps = ["sample_" + td.instr_type]
+                    if td.rv32:
+                        cps.append("RV32")
+                    if td.rv64:
+                        cps.append("RV64")
+                    cps.extend(td.coverpoints)
+                    tp[td.instr_name] = cps
                 testplans[arch] = tp
                 if ("Vx" in arch and not arch.startswith("Exceptions") and not arch.startswith("Ssstrict")):
                     for effew in ["8", "16", "32", "64"]:

@@ -297,7 +297,7 @@ covergroup SmV_cg with function sample(ins_t ins);
 
     vl_nonzero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
         //Any value between max and 1
-        bins target = {[`UDB_MXLEN'h10000:`UDB_MXLEN'h1]};
+        bins target = {[64'h10000:64'h1]};
     }
 
     cp_vtype_vill_set_vl_0 : cross vsetvl_instruction, rs1_non_zero, rs2_vill_set, vl_nonzero;

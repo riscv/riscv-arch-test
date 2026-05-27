@@ -106,7 +106,7 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
                 test_data.add_testcase(f"{csr}_walk", coverpoint, covergroup),
             ]
         )
-        lines.extend(csr_walk_test(test_data, (csr, None), covergroup, coverpoint))
+        lines.extend(csr_walk_test(test_data, (csr, 0x7), covergroup, coverpoint))
 
     lines.append("#if __riscv_xlen == 32")
     for csr in ["mstateen0h", "mstateen1h", "mstateen2h", "mstateen3h"]:
@@ -116,7 +116,7 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
                 test_data.add_testcase(f"{csr}_walk", coverpoint, covergroup),
             ]
         )
-        lines.extend(csr_walk_test(test_data, (csr, None), covergroup, coverpoint))
+        lines.extend(csr_walk_test(test_data, (csr, 0x7), covergroup, coverpoint))
     lines.append("#endif  // __riscv_xlen == 32")
 
     return lines

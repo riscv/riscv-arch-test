@@ -429,9 +429,11 @@
     99: addi _R1, _R1, -1; \
         bnez _R1, 99b;
 
-// Spike and QEMU have CLINT timer at slower frequency than the clock that the processor runs on, a 200x multiplier is included to ensure that the interrupt fires
+// For the models that have timer running slower than the core clock, converts from timer ticks to cycles
+#define RVTEST_TIMER_INT_SOON_DELAY_CYCLES (RVMODEL_TIMER_INT_SOON_DELAY * RVMODEL_MAX_CYCLES_PER_TIMER)
+
 #define RVTEST_IDLE_FOR_TIMER_INTERRUPT(_R1) \
-    LI(_R1, RVMODEL_TIMER_INT_SOON_DELAY_CYCLES); \
+    LI(_R1, RVTEST_TIMER_INT_SOON_DELAY_CYCLES); \
     99: addi _R1, _R1, -1; \
         bnez _R1, 99b;
 

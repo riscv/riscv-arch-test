@@ -62,10 +62,9 @@
 #ifndef RVMODEL_TIMER_INT_SOON_DELAY
   #error "RVMODEL_TIMER_INT_SOON_DELAY not defined. Make sure to define it in rvmodel_macros.h."
 #endif
-// For Spike/QEMU, which have the CLINT ticks slower than the core clock, define RVMODEL_TIMER_INT_SOON_DELAY_CYCLES with a 200x multiplier;
-// otherwise the idle loop spins for RVMODEL_TIMER_INT_SOON_DELAY iterations.
-#ifndef RVMODEL_TIMER_INT_SOON_DELAY_CYCLES
-  #define RVMODEL_TIMER_INT_SOON_DELAY_CYCLES RVMODEL_TIMER_INT_SOON_DELAY
+
+#ifndef RVMODEL_MAX_CYCLES_PER_TIMER
+  #define RVMODEL_MAX_CYCLES_PER_TIMER 1
 #endif
 
 ##### Machine Interrupts #####

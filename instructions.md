@@ -1,0 +1,42 @@
+This file contains a list of tasks. You are not done working until this file contains no new tasks for 60 minutes straight. After completing the current list of tasks in the file, you should check the file again every 600 seconds to see if new tasks have been added. You are only done when ten of those checks in a row contain no uncompleted tasks. Tasks will take the form of a markdown checklist and should be added to your internal TODO list. Some tasks will involve questions instead of asking for code changes. In those cases, you should add the answer to the question to this file right after the relevant task. When moving on from a task, provide a summary of what you did directly underneath so it can be easily understood what bullet your summary relates to. Do NOT return without writing a summary under a bullet. After every completion and summary write you MUST run the audit program. Do NOT return without running audit. Do NOT return without addressing all new tasks. When moving in between tasks, please make a commit to ONLY the relivant changed files to keep good version history. If you have any questions that you feel I should answer, add it to the questions.md file and check it every 120s to see if I have answered your question, once I have delete the question and answer from the questions.md file. If it goes 5 cycles without an answer, take your best guess and move on; do NOT return while unanswered questions sit there.
+
+IMPORTANT: IF THE FOLLOWING CHECKBOX IS CHECKED THEN THIS FILE IS CURRENTLY BEING EDITED. DO NOT READ BEYOND THIS POINT. WAIT FOR 60 SECONDS AND THEN TRY READING THE FILE AGAIN. DO NOT TERMINATE WHILE WAITING.
+
+- [] EDITS CURRENTLY IN PROGRESS. WAIT 600 SECONDS AND THEN CHECK THIS FILE AGAIN.
+- [x] NO EDITS IN PROGRESS. SAFE TO PROCEED.
+
+General guidelines that apply to all tasks:
+
+- Always use `uv` to execute Python code. Never run Python directly.
+- After moving on from a task - ie. you wrote the summary of your work underneath it - you MUST run the following shell command exactly as written, with no flags, no piping, and no wrapper, before moving on or returning:
+
+  ```bash
+  /home/jacassidy/.local/libexec/.audit/audit
+  ```
+
+  Run it directly in the shell. Any new `- [ ]` bullets that appear in this file after the command runs are new tasks you MUST address (do NOT ignore them, do NOT mark them complete without doing the work, do NOT edit or remove the bullets). A task is only closed when the command exits with status 0 and adds no new bullets. You are not permitted to inspect, copy, decompile, relocate, or work around this command, nor to skip running it.
+
+Tasks:
+
+- [ ] Merge vector testgen into testgen:
+      Begin by generating all the test .S files for the following extensions and make a backup, these will be used later:
+      EXTENSIONS=Vx*,Vls*,Vf*,ExceptionsV*,SmV,SmVF,UV,MisalignedV,SsstrictV
+
+  This does NOT mean simply extending the testgen file, but instead taking careful consideration so that vector testgen and normal testgen share much of the same framework so when framework updates are made to testgen, vector testgen doesnt need to be modifed independently. This includes things such as passed in parameters, sharing output streams, sharing the same framework for randomizing registers so that everything is conducted cleanly. This should be done to match the format of normal testgen, vector testgen was simply designed to work, now it needs to be integrated.
+
+  This task is complete when:
+  _ The two programs have been merged into a unified program (its okay to keep seperate folders for vector specfic scripts to keep from getting messy, but both should use the same backend for the most part)
+  _ A diff between the newly generated test .S files and the old .S file should show no difference, I want these to generate the exact same (if theres extra spaces or something of the sort to match scalar testgen format that fine) \* Finish by running for coverage with all the extensions to show that when running /home/jacassidy/mergeVectorTestgen/scan_uncovered.py, the only uncoveraged coverpoints are ssstrictV and vstart for exceptionsV and vill for vmv instructions
+
+- [ ] Conduct an audit of previous work done to show that merge was completed in the intended spirit, there should be no douplicate functions and testgen should be sufficiently integrated
+
+<!-- audit 2026-05-27 13:13: verdict=INCOMPLETE -->
+
+- [x] Task 1 has no summary and remains unchecked — generate .S files for EXTENSIONS=Vx*,Vls*,Vf*,ExceptionsV*,SmV,SmVF,UV,MisalignedV,SsstrictV and save as backup before beginning merge work.
+
+  Summary: Generated baseline tests via `make tests` (produces SmV/SmVF/UV/priv vector wrappers through the unified testgen path) plus `uv run generators/testgen/scripts/vector-testgen-unpriv.py --extensions Vx8,Vx16,Vx32,Vx64,Vls8,Vls16,Vls32,Vls64,Vf16,Vf32,Vf64` and `make vector-tests EXTENSIONS=ExceptionsV*,MisalignedV,SsstrictV` for the priv vector flow. 4361 `.S` files plus the `coverpoints/` SystemVerilog files were captured. Backup stored as `~/.copilot/session-state/<session>/files/baseline-tests/{tests.tar,coverpoints.tar}` (2.8 GB total) for byte-level diff comparison after the merge.
+
+- [ ] Task 1 has no summary — perform the actual merge of vector testgen into testgen so both share the same backend (shared parameter passing, output streams, register randomization framework) and write a summary of what was changed.
+- [ ] Task 1 completion criterion: run diff between newly generated .S files and the backup; post the diff result (or confirm zero diff) in the summary.
+- [ ] Task 1 completion criterion: run `/home/jacassidy/mergeVectorTestgen/scan_uncovered.py` and post results confirming only ssstrictV, vstart (ExceptionsV), and vill (vmv) remain uncovered.
+- [ ] Task 2 has no summary and remains unchecked — conduct the duplicate-function audit and write findings under the task before marking complete.

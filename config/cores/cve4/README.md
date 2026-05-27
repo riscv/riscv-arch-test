@@ -3,7 +3,9 @@ Copyright (c) 2026 Eclipse Foundation
 SPDX-License-Identifier: Apache-2.0
 --->
 
-## DUT Configuration for the CV32E40P
+## DUT Configurations for CV32E40P and CV32E40X
+
+### CV32E40P
 
 Three configurations are provided:
 
@@ -24,4 +26,21 @@ commands from the top of your working copy of this repo:
 $ make -j$(nproc) CONFIG_FILES=config/cores/cve4/cv32e40p-v2-rv32imc/test_config.yaml
 $ make -j$(nproc) CONFIG_FILES=config/cores/cve4/cv32e40p-v2-rv32imcf/test_config.yaml
 $ make -j$(nproc) CONFIG_FILES=config/cores/cve4/cv32e40p-v1-rv32imc/test_config.yaml
+```
+
+### CV32E40X
+
+Two configurations are provided:
+
+| Config               | ISA        | Notes                       |
+| -------------------- | ---------- | --------------------------- |
+| `cv32e40x-rv32imc`   | RV32IMC    | v0.10.0, base configuration |
+| `cv32e40x-rv32imcab` | RV32IMCZba | v0.10.0, with B extension   |
+
+To build the UDB configuration, coverage files and ELFs, run one of the following
+commands from the top of your working copy of this repo:
+
+```
+$ make -j$(nproc) CONFIG_FILES=config/cores/cve4/cv32e40x-rv32imc/test_config.yaml
+$ make -j$(nproc) CONFIG_FILES=config/cores/cve4/cv32e40x-rv32imcab/test_config.yaml
 ```

@@ -250,7 +250,7 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
         wildcard bins hlv_w  = {HLV_W};
         wildcard bins hlvx_hu = {HLVX_HU};
         wildcard bins hlvx_wu = {HLVX_WU};
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             wildcard bins hlv_d = {HLV_D};
             wildcard bins hlv_wu = {HLV_WU};
         `endif
@@ -261,7 +261,7 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
         wildcard bins hsv_b  = {HSV_B};
         wildcard bins hsv_h  = {HSV_H};
         wildcard bins hsv_w  = {HSV_W};
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             wildcard bins hsv_d = {HSV_D};
         `endif
     }
@@ -330,7 +330,7 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
         bins vstval = {CSR_VSTVAL};
     }
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
         hedelegh: coverpoint ins.current.insn[31:20] {
                 bins hedelegh_read = {CSR_HEDELEGH};
         }
@@ -471,7 +471,7 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
     cp_virtual_instr_vs_sret: cross sret, hstatus_vtsr_enabled, priv_mode_vs;
     cp_virtual_instr_vs_s_vma_instr: cross sfence_sinval_vma, hstatus_vtvm_enabled, priv_mode_vs;
     cp_virtual_instr_vs_satp: cross csrr, satp, hstatus_vtvm_enabled, priv_mode_vs;
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
         cp_virtual_instr_vs_rv32_instreth_mcounter: cross csrr, instreth, mcounteren_enabled_ir, hcounteren_disabled_ir, priv_mode_vs;
         cp_virtual_instr_vs_rv32_hedelegh: cross csrr, hedelegh, priv_mode_vs;
     `endif
@@ -488,7 +488,7 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
     cp_virtual_instr_vu_wfi: cross wfi, mstatus_tw_disabled, priv_mode_vu;
     cp_virtual_instr_vu_sret: cross sret, priv_mode_vu;
     cp_virtual_instr_vu_sfence_vma: cross sfence_vma, priv_mode_vu;
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
         cp_virtual_instr_vu_rv32_instreth_1: cross csrr, instreth, hcounteren_disabled_ir, scounteren_enabled_ir, mcounteren_enabled_ir, priv_mode_vu;
         cp_virtual_instr_vu_rv32_instreth_2: cross csrr, instreth, hcounteren_enabled_ir, scounteren_disabled_ir, mcounteren_enabled_ir, priv_mode_vu;
         cp_virtual_instr_vu_rv32_hedelegh: cross csrr, hedelegh, priv_mode_vu;
@@ -522,7 +522,7 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
         hlv_illegal_address: coverpoint ins.current.rs1_val {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
         }
-        address_legality: coverpoint ((ins.current.imm + ins.current.rs1_val) & ~(`XLEN'h3)) == (`RVMODEL_ACCESS_FAULT_ADDRESS & ~(`XLEN'h3)) {
+        address_legality: coverpoint ((ins.current.imm + ins.current.rs1_val) & ~(`UDB_MXLEN'h3)) == (`RVMODEL_ACCESS_FAULT_ADDRESS & ~(`UDB_MXLEN'h3)) {
             bins legal = {0};
             bins illegal = {1};
         }

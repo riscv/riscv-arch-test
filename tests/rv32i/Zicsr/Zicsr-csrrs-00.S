@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zicsr']
 # params:
 #   MXLEN: 32
-# MARCH: rv32i_zicsr
+# MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -46,9 +46,9 @@ RVTEST_BEGIN
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x31
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x31
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b0:
@@ -60,9 +60,9 @@ Zicsr_csrrs_cg_cp_rs1_b0:
 #elif !defined(U_SUPPORTED)
   csrrs x8, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x8, instret, x0
+  li x8, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -75,9 +75,9 @@ Zicsr_csrrs_cg_cp_rs1_b0:
 #elif !defined(U_SUPPORTED)
   csrrs x31, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x31, instret, x0
+  li x31, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x31 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -95,9 +95,9 @@ Zicsr_csrrs_cg_cp_rs1_b0:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x9
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x9
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b1:
@@ -109,9 +109,12 @@ Zicsr_csrrs_cg_cp_rs1_b1:
 #elif !defined(U_SUPPORTED)
   csrrs x30, mepc, x1
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x30, instret, x1
+  csrrs x1, instret, x0
+  csrrs x30, instret, x0
+  sub x30, x30, x1  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x30 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -124,9 +127,9 @@ Zicsr_csrrs_cg_cp_rs1_b1:
 #elif !defined(U_SUPPORTED)
   csrrs x9, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x9, instret, x0
+  li x9, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -145,9 +148,9 @@ Zicsr_csrrs_cg_cp_rs1_b1:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x18
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x18
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b2:
@@ -159,9 +162,12 @@ Zicsr_csrrs_cg_cp_rs1_b2:
 #elif !defined(U_SUPPORTED)
   csrrs x12, mepc, x2
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x12, instret, x2
+  csrrs x2, instret, x0
+  csrrs x12, instret, x0
+  sub x12, x12, x2  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -174,9 +180,9 @@ Zicsr_csrrs_cg_cp_rs1_b2:
 #elif !defined(U_SUPPORTED)
   csrrs x18, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x18, instret, x0
+  li x18, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x18 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -195,9 +201,9 @@ Zicsr_csrrs_cg_cp_rs1_b2:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x30
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x30
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b3:
@@ -209,9 +215,12 @@ Zicsr_csrrs_cg_cp_rs1_b3:
 #elif !defined(U_SUPPORTED)
   csrrs x10, mepc, x3
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x10, instret, x3
+  csrrs x3, instret, x0
+  csrrs x10, instret, x0
+  sub x10, x10, x3  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -224,9 +233,9 @@ Zicsr_csrrs_cg_cp_rs1_b3:
 #elif !defined(U_SUPPORTED)
   csrrs x30, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x30, instret, x0
+  li x30, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -246,9 +255,9 @@ Zicsr_csrrs_cg_cp_rs1_b3:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x3
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x3
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b4:
@@ -260,9 +269,12 @@ Zicsr_csrrs_cg_cp_rs1_b4:
 #elif !defined(U_SUPPORTED)
   csrrs x15, mepc, x4
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x15, instret, x4
+  csrrs x4, instret, x0
+  csrrs x15, instret, x0
+  sub x15, x15, x4  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x15 contains the expected result. x19 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -275,9 +287,9 @@ Zicsr_csrrs_cg_cp_rs1_b4:
 #elif !defined(U_SUPPORTED)
   csrrs x3, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x3, instret, x0
+  li x3, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x3 contains the expected result. x19 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -295,9 +307,9 @@ Zicsr_csrrs_cg_cp_rs1_b4:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x25
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x25
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b5:
@@ -309,9 +321,12 @@ Zicsr_csrrs_cg_cp_rs1_b5:
 #elif !defined(U_SUPPORTED)
   csrrs x2, mepc, x5
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x2, instret, x5
+  csrrs x5, instret, x0
+  csrrs x2, instret, x0
+  sub x2, x2, x5  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x2 contains the expected result. x19 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -324,9 +339,9 @@ Zicsr_csrrs_cg_cp_rs1_b5:
 #elif !defined(U_SUPPORTED)
   csrrs x25, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x25, instret, x0
+  li x25, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x25 contains the expected result. x19 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -344,9 +359,9 @@ Zicsr_csrrs_cg_cp_rs1_b5:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x13
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x13
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b6:
@@ -358,9 +373,12 @@ Zicsr_csrrs_cg_cp_rs1_b6:
 #elif !defined(U_SUPPORTED)
   csrrs x16, mepc, x6
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x16, instret, x6
+  csrrs x6, instret, x0
+  csrrs x16, instret, x0
+  sub x16, x16, x6  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x16 contains the expected result. x19 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -373,9 +391,9 @@ Zicsr_csrrs_cg_cp_rs1_b6:
 #elif !defined(U_SUPPORTED)
   csrrs x13, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x13, instret, x0
+  li x13, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x13 contains the expected result. x19 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
@@ -395,9 +413,9 @@ Zicsr_csrrs_cg_cp_rs1_b6:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x3
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x3
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b7:
@@ -409,9 +427,12 @@ Zicsr_csrrs_cg_cp_rs1_b7:
 #elif !defined(U_SUPPORTED)
   csrrs x12, mepc, x7
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x12, instret, x7
+  csrrs x7, instret, x0
+  csrrs x12, instret, x0
+  sub x12, x12, x7  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x12 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -424,9 +445,9 @@ Zicsr_csrrs_cg_cp_rs1_b7:
 #elif !defined(U_SUPPORTED)
   csrrs x3, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x3, instret, x0
+  li x3, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -444,9 +465,9 @@ Zicsr_csrrs_cg_cp_rs1_b7:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x15
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x15
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b8:
@@ -458,9 +479,12 @@ Zicsr_csrrs_cg_cp_rs1_b8:
 #elif !defined(U_SUPPORTED)
   csrrs x17, mepc, x8
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x17, instret, x8
+  csrrs x8, instret, x0
+  csrrs x17, instret, x0
+  sub x17, x17, x8  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x17 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -473,9 +497,9 @@ Zicsr_csrrs_cg_cp_rs1_b8:
 #elif !defined(U_SUPPORTED)
   csrrs x15, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x15, instret, x0
+  li x15, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x15 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -493,9 +517,9 @@ Zicsr_csrrs_cg_cp_rs1_b8:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x2
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x2
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b9:
@@ -507,9 +531,12 @@ Zicsr_csrrs_cg_cp_rs1_b9:
 #elif !defined(U_SUPPORTED)
   csrrs x26, mepc, x9
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x26, instret, x9
+  csrrs x9, instret, x0
+  csrrs x26, instret, x0
+  sub x26, x26, x9  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -522,9 +549,9 @@ Zicsr_csrrs_cg_cp_rs1_b9:
 #elif !defined(U_SUPPORTED)
   csrrs x2, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x2, instret, x0
+  li x2, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -542,9 +569,9 @@ Zicsr_csrrs_cg_cp_rs1_b9:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x29
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x29
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b10:
@@ -556,9 +583,12 @@ Zicsr_csrrs_cg_cp_rs1_b10:
 #elif !defined(U_SUPPORTED)
   csrrs x3, mepc, x10
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x3, instret, x10
+  csrrs x10, instret, x0
+  csrrs x3, instret, x0
+  sub x3, x3, x10  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x3 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -571,9 +601,9 @@ Zicsr_csrrs_cg_cp_rs1_b10:
 #elif !defined(U_SUPPORTED)
   csrrs x29, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x29, instret, x0
+  li x29, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x29 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -591,9 +621,9 @@ Zicsr_csrrs_cg_cp_rs1_b10:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x30
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x30
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b11:
@@ -605,9 +635,12 @@ Zicsr_csrrs_cg_cp_rs1_b11:
 #elif !defined(U_SUPPORTED)
   csrrs x2, mepc, x11
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x2, instret, x11
+  csrrs x11, instret, x0
+  csrrs x2, instret, x0
+  sub x2, x2, x11  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x2 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -620,9 +653,9 @@ Zicsr_csrrs_cg_cp_rs1_b11:
 #elif !defined(U_SUPPORTED)
   csrrs x30, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x30, instret, x0
+  li x30, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -640,9 +673,9 @@ Zicsr_csrrs_cg_cp_rs1_b11:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x25
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x25
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b12:
@@ -654,9 +687,12 @@ Zicsr_csrrs_cg_cp_rs1_b12:
 #elif !defined(U_SUPPORTED)
   csrrs x1, mepc, x12
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x1, instret, x12
+  csrrs x12, instret, x0
+  csrrs x1, instret, x0
+  sub x1, x1, x12  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x1 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -669,9 +705,9 @@ Zicsr_csrrs_cg_cp_rs1_b12:
 #elif !defined(U_SUPPORTED)
   csrrs x25, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x25, instret, x0
+  li x25, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x25 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -689,9 +725,9 @@ Zicsr_csrrs_cg_cp_rs1_b12:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x16
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x16
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b13:
@@ -703,9 +739,12 @@ Zicsr_csrrs_cg_cp_rs1_b13:
 #elif !defined(U_SUPPORTED)
   csrrs x28, mepc, x13
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x28, instret, x13
+  csrrs x13, instret, x0
+  csrrs x28, instret, x0
+  sub x28, x28, x13  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x28 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -718,9 +757,9 @@ Zicsr_csrrs_cg_cp_rs1_b13:
 #elif !defined(U_SUPPORTED)
   csrrs x16, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x16, instret, x0
+  li x16, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x16 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -738,9 +777,9 @@ Zicsr_csrrs_cg_cp_rs1_b13:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x26
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x26
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b14:
@@ -752,9 +791,12 @@ Zicsr_csrrs_cg_cp_rs1_b14:
 #elif !defined(U_SUPPORTED)
   csrrs x22, mepc, x14
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x22, instret, x14
+  csrrs x14, instret, x0
+  csrrs x22, instret, x0
+  sub x22, x22, x14  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -767,9 +809,9 @@ Zicsr_csrrs_cg_cp_rs1_b14:
 #elif !defined(U_SUPPORTED)
   csrrs x26, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x26, instret, x0
+  li x26, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x26 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -787,9 +829,9 @@ Zicsr_csrrs_cg_cp_rs1_b14:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x24
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x24
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b15:
@@ -801,9 +843,12 @@ Zicsr_csrrs_cg_cp_rs1_b15:
 #elif !defined(U_SUPPORTED)
   csrrs x27, mepc, x15
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x27, instret, x15
+  csrrs x15, instret, x0
+  csrrs x27, instret, x0
+  sub x27, x27, x15  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x27 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -816,9 +861,9 @@ Zicsr_csrrs_cg_cp_rs1_b15:
 #elif !defined(U_SUPPORTED)
   csrrs x24, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x24, instret, x0
+  li x24, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x24 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -836,9 +881,9 @@ Zicsr_csrrs_cg_cp_rs1_b15:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x15
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x15
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b16:
@@ -850,9 +895,12 @@ Zicsr_csrrs_cg_cp_rs1_b16:
 #elif !defined(U_SUPPORTED)
   csrrs x30, mepc, x16
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x30, instret, x16
+  csrrs x16, instret, x0
+  csrrs x30, instret, x0
+  sub x30, x30, x16  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x30 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -865,9 +913,9 @@ Zicsr_csrrs_cg_cp_rs1_b16:
 #elif !defined(U_SUPPORTED)
   csrrs x15, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x15, instret, x0
+  li x15, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x15 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -885,9 +933,9 @@ Zicsr_csrrs_cg_cp_rs1_b16:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x22
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x22
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b17:
@@ -899,9 +947,12 @@ Zicsr_csrrs_cg_cp_rs1_b17:
 #elif !defined(U_SUPPORTED)
   csrrs x10, mepc, x17
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x10, instret, x17
+  csrrs x17, instret, x0
+  csrrs x10, instret, x0
+  sub x10, x10, x17  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x10 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -914,9 +965,9 @@ Zicsr_csrrs_cg_cp_rs1_b17:
 #elif !defined(U_SUPPORTED)
   csrrs x22, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x22, instret, x0
+  li x22, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x22 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -935,9 +986,9 @@ Zicsr_csrrs_cg_cp_rs1_b17:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x13
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x13
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b18:
@@ -949,9 +1000,12 @@ Zicsr_csrrs_cg_cp_rs1_b18:
 #elif !defined(U_SUPPORTED)
   csrrs x15, mepc, x18
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x15, instret, x18
+  csrrs x18, instret, x0
+  csrrs x15, instret, x0
+  sub x15, x15, x18  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x15 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -964,9 +1018,9 @@ Zicsr_csrrs_cg_cp_rs1_b18:
 #elif !defined(U_SUPPORTED)
   csrrs x13, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x13, instret, x0
+  li x13, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x13 contains the expected result. x19 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -985,9 +1039,9 @@ Zicsr_csrrs_cg_cp_rs1_b18:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x2
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x2
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b19:
@@ -999,9 +1053,9 @@ Zicsr_csrrs_cg_cp_rs1_b19:
 #elif !defined(U_SUPPORTED)
   csrrs x0, mepc, x19
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x0, instret, x19
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x0 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1014,9 +1068,9 @@ Zicsr_csrrs_cg_cp_rs1_b19:
 #elif !defined(U_SUPPORTED)
   csrrs x2, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x2, instret, x0
+  li x2, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x2 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1034,9 +1088,9 @@ Zicsr_csrrs_cg_cp_rs1_b19:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x14
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x14
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b20:
@@ -1048,9 +1102,12 @@ Zicsr_csrrs_cg_cp_rs1_b20:
 #elif !defined(U_SUPPORTED)
   csrrs x18, mepc, x20
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x18, instret, x20
+  csrrs x20, instret, x0
+  csrrs x18, instret, x0
+  sub x18, x18, x20  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x18 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1063,9 +1120,9 @@ Zicsr_csrrs_cg_cp_rs1_b20:
 #elif !defined(U_SUPPORTED)
   csrrs x14, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x14, instret, x0
+  li x14, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x14 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1083,9 +1140,9 @@ Zicsr_csrrs_cg_cp_rs1_b20:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x18
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x18
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b21:
@@ -1097,9 +1154,12 @@ Zicsr_csrrs_cg_cp_rs1_b21:
 #elif !defined(U_SUPPORTED)
   csrrs x23, mepc, x21
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x23, instret, x21
+  csrrs x21, instret, x0
+  csrrs x23, instret, x0
+  sub x23, x23, x21  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x23 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1112,9 +1172,9 @@ Zicsr_csrrs_cg_cp_rs1_b21:
 #elif !defined(U_SUPPORTED)
   csrrs x18, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x18, instret, x0
+  li x18, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x18 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1132,9 +1192,9 @@ Zicsr_csrrs_cg_cp_rs1_b21:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x30
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x30
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b22:
@@ -1146,9 +1206,12 @@ Zicsr_csrrs_cg_cp_rs1_b22:
 #elif !defined(U_SUPPORTED)
   csrrs x13, mepc, x22
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x13, instret, x22
+  csrrs x22, instret, x0
+  csrrs x13, instret, x0
+  sub x13, x13, x22  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x13 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1161,9 +1224,9 @@ Zicsr_csrrs_cg_cp_rs1_b22:
 #elif !defined(U_SUPPORTED)
   csrrs x30, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x30, instret, x0
+  li x30, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x30 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1181,9 +1244,9 @@ Zicsr_csrrs_cg_cp_rs1_b22:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x11
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x11
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b23:
@@ -1195,9 +1258,12 @@ Zicsr_csrrs_cg_cp_rs1_b23:
 #elif !defined(U_SUPPORTED)
   csrrs x29, mepc, x23
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x29, instret, x23
+  csrrs x23, instret, x0
+  csrrs x29, instret, x0
+  sub x29, x29, x23  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x29 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1210,9 +1276,9 @@ Zicsr_csrrs_cg_cp_rs1_b23:
 #elif !defined(U_SUPPORTED)
   csrrs x11, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x11, instret, x0
+  li x11, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x11 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1230,9 +1296,9 @@ Zicsr_csrrs_cg_cp_rs1_b23:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x25
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x25
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b24:
@@ -1244,9 +1310,12 @@ Zicsr_csrrs_cg_cp_rs1_b24:
 #elif !defined(U_SUPPORTED)
   csrrs x6, mepc, x24
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x6, instret, x24
+  csrrs x24, instret, x0
+  csrrs x6, instret, x0
+  sub x6, x6, x24  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x6 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1259,9 +1328,9 @@ Zicsr_csrrs_cg_cp_rs1_b24:
 #elif !defined(U_SUPPORTED)
   csrrs x25, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x25, instret, x0
+  li x25, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x25 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1279,9 +1348,9 @@ Zicsr_csrrs_cg_cp_rs1_b24:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x16
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x16
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b25:
@@ -1293,9 +1362,12 @@ Zicsr_csrrs_cg_cp_rs1_b25:
 #elif !defined(U_SUPPORTED)
   csrrs x28, mepc, x25
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x28, instret, x25
+  csrrs x25, instret, x0
+  csrrs x28, instret, x0
+  sub x28, x28, x25  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x28 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1308,9 +1380,9 @@ Zicsr_csrrs_cg_cp_rs1_b25:
 #elif !defined(U_SUPPORTED)
   csrrs x16, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x16, instret, x0
+  li x16, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x16 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1328,9 +1400,9 @@ Zicsr_csrrs_cg_cp_rs1_b25:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x18
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x18
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b26:
@@ -1342,9 +1414,12 @@ Zicsr_csrrs_cg_cp_rs1_b26:
 #elif !defined(U_SUPPORTED)
   csrrs x17, mepc, x26
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x17, instret, x26
+  csrrs x26, instret, x0
+  csrrs x17, instret, x0
+  sub x17, x17, x26  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x17 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1357,9 +1432,9 @@ Zicsr_csrrs_cg_cp_rs1_b26:
 #elif !defined(U_SUPPORTED)
   csrrs x18, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x18, instret, x0
+  li x18, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x18 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1378,9 +1453,9 @@ Zicsr_csrrs_cg_cp_rs1_b26:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x13
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x13
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b27:
@@ -1392,9 +1467,12 @@ Zicsr_csrrs_cg_cp_rs1_b27:
 #elif !defined(U_SUPPORTED)
   csrrs x11, mepc, x27
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x11, instret, x27
+  csrrs x27, instret, x0
+  csrrs x11, instret, x0
+  sub x11, x11, x27  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x11 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1407,9 +1485,9 @@ Zicsr_csrrs_cg_cp_rs1_b27:
 #elif !defined(U_SUPPORTED)
   csrrs x13, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x13, instret, x0
+  li x13, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x13 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1427,9 +1505,9 @@ Zicsr_csrrs_cg_cp_rs1_b27:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x15
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x15
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b28:
@@ -1441,9 +1519,12 @@ Zicsr_csrrs_cg_cp_rs1_b28:
 #elif !defined(U_SUPPORTED)
   csrrs x24, mepc, x28
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x24, instret, x28
+  csrrs x28, instret, x0
+  csrrs x24, instret, x0
+  sub x24, x24, x28  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x24 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1456,9 +1537,9 @@ Zicsr_csrrs_cg_cp_rs1_b28:
 #elif !defined(U_SUPPORTED)
   csrrs x15, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x15, instret, x0
+  li x15, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x15 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1476,9 +1557,9 @@ Zicsr_csrrs_cg_cp_rs1_b28:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x18
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x18
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b29:
@@ -1490,9 +1571,12 @@ Zicsr_csrrs_cg_cp_rs1_b29:
 #elif !defined(U_SUPPORTED)
   csrrs x3, mepc, x29
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x3, instret, x29
+  csrrs x29, instret, x0
+  csrrs x3, instret, x0
+  sub x3, x3, x29  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x3 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1505,9 +1589,9 @@ Zicsr_csrrs_cg_cp_rs1_b29:
 #elif !defined(U_SUPPORTED)
   csrrs x18, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x18, instret, x0
+  li x18, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x18 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1525,9 +1609,9 @@ Zicsr_csrrs_cg_cp_rs1_b29:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x0
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b30:
@@ -1539,9 +1623,12 @@ Zicsr_csrrs_cg_cp_rs1_b30:
 #elif !defined(U_SUPPORTED)
   csrrs x20, mepc, x30
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x20, instret, x30
+  csrrs x30, instret, x0
+  csrrs x20, instret, x0
+  sub x20, x20, x30  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x20 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1554,9 +1641,9 @@ Zicsr_csrrs_cg_cp_rs1_b30:
 #elif !defined(U_SUPPORTED)
   csrrs x0, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x0, instret, x0
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x0 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1574,9 +1661,9 @@ Zicsr_csrrs_cg_cp_rs1_b30:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x24
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x24
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_b31:
@@ -1588,9 +1675,12 @@ Zicsr_csrrs_cg_cp_rs1_b31:
 #elif !defined(U_SUPPORTED)
   csrrs x25, mepc, x31
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x25, instret, x31
+  csrrs x31, instret, x0
+  csrrs x25, instret, x0
+  sub x25, x25, x31  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x25 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1603,9 +1693,9 @@ Zicsr_csrrs_cg_cp_rs1_b31:
 #elif !defined(U_SUPPORTED)
   csrrs x24, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x24, instret, x0
+  li x24, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x24 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1627,9 +1717,9 @@ Zicsr_csrrs_cg_cp_rs1_b31:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x25
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x25
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b0:
@@ -1641,9 +1731,9 @@ Zicsr_csrrs_cg_cp_rd_b0:
 #elif !defined(U_SUPPORTED)
   csrrs x0, mepc, x28
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x0, instret, x28
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x0 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1656,9 +1746,9 @@ Zicsr_csrrs_cg_cp_rd_b0:
 #elif !defined(U_SUPPORTED)
   csrrs x25, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x25, instret, x0
+  li x25, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x25 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1676,9 +1766,9 @@ Zicsr_csrrs_cg_cp_rd_b0:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x7
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x7
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b1:
@@ -1690,9 +1780,12 @@ Zicsr_csrrs_cg_cp_rd_b1:
 #elif !defined(U_SUPPORTED)
   csrrs x1, mepc, x31
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x1, instret, x31
+  csrrs x31, instret, x0
+  csrrs x1, instret, x0
+  sub x1, x1, x31  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x1 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1705,9 +1798,9 @@ Zicsr_csrrs_cg_cp_rd_b1:
 #elif !defined(U_SUPPORTED)
   csrrs x7, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x7, instret, x0
+  li x7, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x7 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1725,9 +1818,9 @@ Zicsr_csrrs_cg_cp_rd_b1:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x3
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x3
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b2:
@@ -1739,9 +1832,12 @@ Zicsr_csrrs_cg_cp_rd_b2:
 #elif !defined(U_SUPPORTED)
   csrrs x2, mepc, x29
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x2, instret, x29
+  csrrs x29, instret, x0
+  csrrs x2, instret, x0
+  sub x2, x2, x29  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x2 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1754,9 +1850,9 @@ Zicsr_csrrs_cg_cp_rd_b2:
 #elif !defined(U_SUPPORTED)
   csrrs x3, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x3, instret, x0
+  li x3, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x3 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1774,9 +1870,9 @@ Zicsr_csrrs_cg_cp_rd_b2:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x31
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x31
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b3:
@@ -1788,9 +1884,12 @@ Zicsr_csrrs_cg_cp_rd_b3:
 #elif !defined(U_SUPPORTED)
   csrrs x3, mepc, x12
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x3, instret, x12
+  csrrs x12, instret, x0
+  csrrs x3, instret, x0
+  sub x3, x3, x12  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x3 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1803,9 +1902,9 @@ Zicsr_csrrs_cg_cp_rd_b3:
 #elif !defined(U_SUPPORTED)
   csrrs x31, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x31, instret, x0
+  li x31, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x31 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -1825,9 +1924,9 @@ Zicsr_csrrs_cg_cp_rd_b3:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x18
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x18
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b4:
@@ -1839,9 +1938,12 @@ Zicsr_csrrs_cg_cp_rd_b4:
 #elif !defined(U_SUPPORTED)
   csrrs x4, mepc, x15
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x4, instret, x15
+  csrrs x15, instret, x0
+  csrrs x4, instret, x0
+  sub x4, x4, x15  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x4 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -1854,9 +1956,9 @@ Zicsr_csrrs_cg_cp_rd_b4:
 #elif !defined(U_SUPPORTED)
   csrrs x18, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x18, instret, x0
+  li x18, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x18 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -1874,9 +1976,9 @@ Zicsr_csrrs_cg_cp_rd_b4:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x18
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x18
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b5:
@@ -1888,9 +1990,12 @@ Zicsr_csrrs_cg_cp_rd_b5:
 #elif !defined(U_SUPPORTED)
   csrrs x5, mepc, x27
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x5, instret, x27
+  csrrs x27, instret, x0
+  csrrs x5, instret, x0
+  sub x5, x5, x27  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x5 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -1903,9 +2008,9 @@ Zicsr_csrrs_cg_cp_rd_b5:
 #elif !defined(U_SUPPORTED)
   csrrs x18, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x18, instret, x0
+  li x18, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x18 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -1923,9 +2028,9 @@ Zicsr_csrrs_cg_cp_rd_b5:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x1
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x1
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b6:
@@ -1937,9 +2042,12 @@ Zicsr_csrrs_cg_cp_rd_b6:
 #elif !defined(U_SUPPORTED)
   csrrs x6, mepc, x22
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x6, instret, x22
+  csrrs x22, instret, x0
+  csrrs x6, instret, x0
+  sub x6, x6, x22  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x6 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -1952,9 +2060,9 @@ Zicsr_csrrs_cg_cp_rd_b6:
 #elif !defined(U_SUPPORTED)
   csrrs x1, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x1, instret, x0
+  li x1, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x1 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -1972,9 +2080,9 @@ Zicsr_csrrs_cg_cp_rd_b6:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x0
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b7:
@@ -1986,9 +2094,12 @@ Zicsr_csrrs_cg_cp_rd_b7:
 #elif !defined(U_SUPPORTED)
   csrrs x7, mepc, x3
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x7, instret, x3
+  csrrs x3, instret, x0
+  csrrs x7, instret, x0
+  sub x7, x7, x3  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x7 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -2001,9 +2112,9 @@ Zicsr_csrrs_cg_cp_rd_b7:
 #elif !defined(U_SUPPORTED)
   csrrs x0, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x0, instret, x0
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x0 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -2021,9 +2132,9 @@ Zicsr_csrrs_cg_cp_rd_b7:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x7
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x7
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b8:
@@ -2035,9 +2146,12 @@ Zicsr_csrrs_cg_cp_rd_b8:
 #elif !defined(U_SUPPORTED)
   csrrs x8, mepc, x29
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x8, instret, x29
+  csrrs x29, instret, x0
+  csrrs x8, instret, x0
+  sub x8, x8, x29  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x8 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -2050,9 +2164,9 @@ Zicsr_csrrs_cg_cp_rd_b8:
 #elif !defined(U_SUPPORTED)
   csrrs x7, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x7, instret, x0
+  li x7, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x7 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -2071,9 +2185,9 @@ Zicsr_csrrs_cg_cp_rd_b8:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x31
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x31
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b9:
@@ -2085,9 +2199,12 @@ Zicsr_csrrs_cg_cp_rd_b9:
 #elif !defined(U_SUPPORTED)
   csrrs x9, mepc, x7
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x9, instret, x7
+  csrrs x7, instret, x0
+  csrrs x9, instret, x0
+  sub x9, x9, x7  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x9 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -2100,9 +2217,9 @@ Zicsr_csrrs_cg_cp_rd_b9:
 #elif !defined(U_SUPPORTED)
   csrrs x31, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x31, instret, x0
+  li x31, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x31 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -2120,9 +2237,9 @@ Zicsr_csrrs_cg_cp_rd_b9:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x8
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x8
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b10:
@@ -2134,9 +2251,9 @@ Zicsr_csrrs_cg_cp_rd_b10:
 #elif !defined(U_SUPPORTED)
   csrrs x10, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x10, instret, x0
+  li x10, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x10 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -2149,9 +2266,9 @@ Zicsr_csrrs_cg_cp_rd_b10:
 #elif !defined(U_SUPPORTED)
   csrrs x8, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x8, instret, x0
+  li x8, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x8 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -2169,9 +2286,9 @@ Zicsr_csrrs_cg_cp_rd_b10:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x5
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x5
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b11:
@@ -2183,9 +2300,9 @@ Zicsr_csrrs_cg_cp_rd_b11:
 #elif !defined(U_SUPPORTED)
   csrrs x11, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x11, instret, x0
+  li x11, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x11 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -2198,9 +2315,9 @@ Zicsr_csrrs_cg_cp_rd_b11:
 #elif !defined(U_SUPPORTED)
   csrrs x5, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x5, instret, x0
+  li x5, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x5 contains the expected result. x26 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -2220,9 +2337,9 @@ Zicsr_csrrs_cg_cp_rd_b11:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x2
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x2
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b12:
@@ -2234,9 +2351,9 @@ Zicsr_csrrs_cg_cp_rd_b12:
 #elif !defined(U_SUPPORTED)
   csrrs x12, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x12, instret, x0
+  li x12, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x12 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2249,9 +2366,9 @@ Zicsr_csrrs_cg_cp_rd_b12:
 #elif !defined(U_SUPPORTED)
   csrrs x2, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x2, instret, x0
+  li x2, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x2 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2269,9 +2386,9 @@ Zicsr_csrrs_cg_cp_rd_b12:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x28
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x28
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b13:
@@ -2283,9 +2400,12 @@ Zicsr_csrrs_cg_cp_rd_b13:
 #elif !defined(U_SUPPORTED)
   csrrs x13, mepc, x9
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x13, instret, x9
+  csrrs x9, instret, x0
+  csrrs x13, instret, x0
+  sub x13, x13, x9  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x13 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2298,9 +2418,9 @@ Zicsr_csrrs_cg_cp_rd_b13:
 #elif !defined(U_SUPPORTED)
   csrrs x28, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x28, instret, x0
+  li x28, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x28 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2318,9 +2438,9 @@ Zicsr_csrrs_cg_cp_rd_b13:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x8
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x8
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b14:
@@ -2332,9 +2452,12 @@ Zicsr_csrrs_cg_cp_rd_b14:
 #elif !defined(U_SUPPORTED)
   csrrs x14, mepc, x17
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x14, instret, x17
+  csrrs x17, instret, x0
+  csrrs x14, instret, x0
+  sub x14, x14, x17  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x14 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2347,9 +2470,9 @@ Zicsr_csrrs_cg_cp_rd_b14:
 #elif !defined(U_SUPPORTED)
   csrrs x8, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x8, instret, x0
+  li x8, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x8 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2367,9 +2490,9 @@ Zicsr_csrrs_cg_cp_rd_b14:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x6
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x6
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b15:
@@ -2381,9 +2504,12 @@ Zicsr_csrrs_cg_cp_rd_b15:
 #elif !defined(U_SUPPORTED)
   csrrs x15, mepc, x1
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x15, instret, x1
+  csrrs x1, instret, x0
+  csrrs x15, instret, x0
+  sub x15, x15, x1  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x15 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2396,9 +2522,9 @@ Zicsr_csrrs_cg_cp_rd_b15:
 #elif !defined(U_SUPPORTED)
   csrrs x6, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x6, instret, x0
+  li x6, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x6 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2416,9 +2542,9 @@ Zicsr_csrrs_cg_cp_rd_b15:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x27
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x27
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b16:
@@ -2430,9 +2556,12 @@ Zicsr_csrrs_cg_cp_rd_b16:
 #elif !defined(U_SUPPORTED)
   csrrs x16, mepc, x13
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x16, instret, x13
+  csrrs x13, instret, x0
+  csrrs x16, instret, x0
+  sub x16, x16, x13  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x16 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2445,9 +2574,9 @@ Zicsr_csrrs_cg_cp_rd_b16:
 #elif !defined(U_SUPPORTED)
   csrrs x27, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x27, instret, x0
+  li x27, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x27 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2465,9 +2594,9 @@ Zicsr_csrrs_cg_cp_rd_b16:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x10
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x10
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b17:
@@ -2479,9 +2608,12 @@ Zicsr_csrrs_cg_cp_rd_b17:
 #elif !defined(U_SUPPORTED)
   csrrs x17, mepc, x9
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x17, instret, x9
+  csrrs x9, instret, x0
+  csrrs x17, instret, x0
+  sub x17, x17, x9  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x17 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2494,9 +2626,9 @@ Zicsr_csrrs_cg_cp_rd_b17:
 #elif !defined(U_SUPPORTED)
   csrrs x10, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x10, instret, x0
+  li x10, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x10 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2514,9 +2646,9 @@ Zicsr_csrrs_cg_cp_rd_b17:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x31
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x31
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b18:
@@ -2528,9 +2660,12 @@ Zicsr_csrrs_cg_cp_rd_b18:
 #elif !defined(U_SUPPORTED)
   csrrs x18, mepc, x8
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x18, instret, x8
+  csrrs x8, instret, x0
+  csrrs x18, instret, x0
+  sub x18, x18, x8  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x18 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2543,9 +2678,9 @@ Zicsr_csrrs_cg_cp_rd_b18:
 #elif !defined(U_SUPPORTED)
   csrrs x31, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x31, instret, x0
+  li x31, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x31 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2564,9 +2699,9 @@ Zicsr_csrrs_cg_cp_rd_b18:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x10
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x10
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b19:
@@ -2578,9 +2713,12 @@ Zicsr_csrrs_cg_cp_rd_b19:
 #elif !defined(U_SUPPORTED)
   csrrs x19, mepc, x24
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x19, instret, x24
+  csrrs x24, instret, x0
+  csrrs x19, instret, x0
+  sub x19, x19, x24  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x19 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2593,9 +2731,9 @@ Zicsr_csrrs_cg_cp_rd_b19:
 #elif !defined(U_SUPPORTED)
   csrrs x10, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x10, instret, x0
+  li x10, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x10 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2614,9 +2752,9 @@ Zicsr_csrrs_cg_cp_rd_b19:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x3
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x3
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b20:
@@ -2628,9 +2766,12 @@ Zicsr_csrrs_cg_cp_rd_b20:
 #elif !defined(U_SUPPORTED)
   csrrs x20, mepc, x9
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x20, instret, x9
+  csrrs x9, instret, x0
+  csrrs x20, instret, x0
+  sub x20, x20, x9  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x20 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2643,9 +2784,9 @@ Zicsr_csrrs_cg_cp_rd_b20:
 #elif !defined(U_SUPPORTED)
   csrrs x3, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x3, instret, x0
+  li x3, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x3 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2663,9 +2804,9 @@ Zicsr_csrrs_cg_cp_rd_b20:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x6
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x6
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b21:
@@ -2677,9 +2818,12 @@ Zicsr_csrrs_cg_cp_rd_b21:
 #elif !defined(U_SUPPORTED)
   csrrs x21, mepc, x28
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x21, instret, x28
+  csrrs x28, instret, x0
+  csrrs x21, instret, x0
+  sub x21, x21, x28  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x21 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2692,9 +2836,9 @@ Zicsr_csrrs_cg_cp_rd_b21:
 #elif !defined(U_SUPPORTED)
   csrrs x6, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x6, instret, x0
+  li x6, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x6 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2712,9 +2856,9 @@ Zicsr_csrrs_cg_cp_rd_b21:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x9
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x9
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b22:
@@ -2726,9 +2870,12 @@ Zicsr_csrrs_cg_cp_rd_b22:
 #elif !defined(U_SUPPORTED)
   csrrs x22, mepc, x8
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x22, instret, x8
+  csrrs x8, instret, x0
+  csrrs x22, instret, x0
+  sub x22, x22, x8  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x22 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2741,9 +2888,9 @@ Zicsr_csrrs_cg_cp_rd_b22:
 #elif !defined(U_SUPPORTED)
   csrrs x9, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x9, instret, x0
+  li x9, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x9 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2761,9 +2908,9 @@ Zicsr_csrrs_cg_cp_rd_b22:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x0
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b23:
@@ -2775,9 +2922,12 @@ Zicsr_csrrs_cg_cp_rd_b23:
 #elif !defined(U_SUPPORTED)
   csrrs x23, mepc, x31
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x23, instret, x31
+  csrrs x31, instret, x0
+  csrrs x23, instret, x0
+  sub x23, x23, x31  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x23 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2790,9 +2940,9 @@ Zicsr_csrrs_cg_cp_rd_b23:
 #elif !defined(U_SUPPORTED)
   csrrs x0, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x0, instret, x0
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x0 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2810,9 +2960,9 @@ Zicsr_csrrs_cg_cp_rd_b23:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x12
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x12
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b24:
@@ -2824,9 +2974,12 @@ Zicsr_csrrs_cg_cp_rd_b24:
 #elif !defined(U_SUPPORTED)
   csrrs x24, mepc, x25
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x24, instret, x25
+  csrrs x25, instret, x0
+  csrrs x24, instret, x0
+  sub x24, x24, x25  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x24 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2839,9 +2992,9 @@ Zicsr_csrrs_cg_cp_rd_b24:
 #elif !defined(U_SUPPORTED)
   csrrs x12, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x12, instret, x0
+  li x12, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x12 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2859,9 +3012,9 @@ Zicsr_csrrs_cg_cp_rd_b24:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x21
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x21
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b25:
@@ -2873,9 +3026,12 @@ Zicsr_csrrs_cg_cp_rd_b25:
 #elif !defined(U_SUPPORTED)
   csrrs x25, mepc, x24
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x25, instret, x24
+  csrrs x24, instret, x0
+  csrrs x25, instret, x0
+  sub x25, x25, x24  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x25 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2888,9 +3044,9 @@ Zicsr_csrrs_cg_cp_rd_b25:
 #elif !defined(U_SUPPORTED)
   csrrs x21, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x21, instret, x0
+  li x21, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x21 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2909,9 +3065,9 @@ Zicsr_csrrs_cg_cp_rd_b25:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x23
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x23
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b26:
@@ -2923,9 +3079,9 @@ Zicsr_csrrs_cg_cp_rd_b26:
 #elif !defined(U_SUPPORTED)
   csrrs x26, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x26, instret, x0
+  li x26, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x26 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2938,9 +3094,9 @@ Zicsr_csrrs_cg_cp_rd_b26:
 #elif !defined(U_SUPPORTED)
   csrrs x23, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x23, instret, x0
+  li x23, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x23 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2958,9 +3114,9 @@ Zicsr_csrrs_cg_cp_rd_b26:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x11
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x11
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b27:
@@ -2972,9 +3128,12 @@ Zicsr_csrrs_cg_cp_rd_b27:
 #elif !defined(U_SUPPORTED)
   csrrs x27, mepc, x13
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x27, instret, x13
+  csrrs x13, instret, x0
+  csrrs x27, instret, x0
+  sub x27, x27, x13  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x27 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -2987,9 +3146,9 @@ Zicsr_csrrs_cg_cp_rd_b27:
 #elif !defined(U_SUPPORTED)
   csrrs x11, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x11, instret, x0
+  li x11, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x11 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3007,9 +3166,9 @@ Zicsr_csrrs_cg_cp_rd_b27:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x17
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x17
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b28:
@@ -3021,9 +3180,9 @@ Zicsr_csrrs_cg_cp_rd_b28:
 #elif !defined(U_SUPPORTED)
   csrrs x28, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x28, instret, x0
+  li x28, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x28 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3036,9 +3195,9 @@ Zicsr_csrrs_cg_cp_rd_b28:
 #elif !defined(U_SUPPORTED)
   csrrs x17, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x17, instret, x0
+  li x17, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x17 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3056,9 +3215,9 @@ Zicsr_csrrs_cg_cp_rd_b28:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x17
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x17
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b29:
@@ -3070,9 +3229,9 @@ Zicsr_csrrs_cg_cp_rd_b29:
 #elif !defined(U_SUPPORTED)
   csrrs x29, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x29, instret, x0
+  li x29, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x29 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3085,9 +3244,9 @@ Zicsr_csrrs_cg_cp_rd_b29:
 #elif !defined(U_SUPPORTED)
   csrrs x17, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x17, instret, x0
+  li x17, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x17 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3105,9 +3264,9 @@ Zicsr_csrrs_cg_cp_rd_b29:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x21
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x21
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b30:
@@ -3119,9 +3278,12 @@ Zicsr_csrrs_cg_cp_rd_b30:
 #elif !defined(U_SUPPORTED)
   csrrs x30, mepc, x27
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x30, instret, x27
+  csrrs x27, instret, x0
+  csrrs x30, instret, x0
+  sub x30, x30, x27  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x30 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3134,9 +3296,9 @@ Zicsr_csrrs_cg_cp_rd_b30:
 #elif !defined(U_SUPPORTED)
   csrrs x21, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x21, instret, x0
+  li x21, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x21 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3154,9 +3316,9 @@ Zicsr_csrrs_cg_cp_rd_b30:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x8
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x8
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rd_b31:
@@ -3168,9 +3330,12 @@ Zicsr_csrrs_cg_cp_rd_b31:
 #elif !defined(U_SUPPORTED)
   csrrs x31, mepc, x7
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x31, instret, x7
+  csrrs x7, instret, x0
+  csrrs x31, instret, x0
+  sub x31, x31, x7  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x31 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3183,9 +3348,9 @@ Zicsr_csrrs_cg_cp_rd_b31:
 #elif !defined(U_SUPPORTED)
   csrrs x8, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x8, instret, x0
+  li x8, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x8 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3207,9 +3372,9 @@ Zicsr_csrrs_cg_cp_rd_b31:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x20
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x20
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_edges_0x0:
@@ -3221,9 +3386,12 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x0:
 #elif !defined(U_SUPPORTED)
   csrrs x8, mepc, x1
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x8, instret, x1
+  csrrs x1, instret, x0
+  csrrs x8, instret, x0
+  sub x8, x8, x1  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x8 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3236,9 +3404,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x0:
 #elif !defined(U_SUPPORTED)
   csrrs x20, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x20, instret, x0
+  li x20, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x20 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3256,9 +3424,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x0:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x12
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x12
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_edges_0x1:
@@ -3270,9 +3438,12 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x1:
 #elif !defined(U_SUPPORTED)
   csrrs x20, mepc, x2
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x20, instret, x2
+  csrrs x2, instret, x0
+  csrrs x20, instret, x0
+  sub x20, x20, x2  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x20 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3285,9 +3456,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x1:
 #elif !defined(U_SUPPORTED)
   csrrs x12, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x12, instret, x0
+  li x12, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x12 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3305,9 +3476,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x1:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x18
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x18
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_edges_0x2:
@@ -3319,9 +3490,12 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x2:
 #elif !defined(U_SUPPORTED)
   csrrs x17, mepc, x16
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x17, instret, x16
+  csrrs x16, instret, x0
+  csrrs x17, instret, x0
+  sub x17, x17, x16  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x17 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3334,9 +3508,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x2:
 #elif !defined(U_SUPPORTED)
   csrrs x18, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x18, instret, x0
+  li x18, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x18 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3354,9 +3528,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x2:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x1
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x1
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_edges_0x80000000:
@@ -3368,9 +3542,12 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x80000000:
 #elif !defined(U_SUPPORTED)
   csrrs x26, mepc, x29
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x26, instret, x29
+  csrrs x29, instret, x0
+  csrrs x26, instret, x0
+  sub x26, x26, x29  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x26 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3383,9 +3560,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x80000000:
 #elif !defined(U_SUPPORTED)
   csrrs x1, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x1, instret, x0
+  li x1, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x1 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3403,9 +3580,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x80000000:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x24
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x24
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_edges_0x80000001:
@@ -3417,9 +3594,12 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x80000001:
 #elif !defined(U_SUPPORTED)
   csrrs x20, mepc, x12
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x20, instret, x12
+  csrrs x12, instret, x0
+  csrrs x20, instret, x0
+  sub x20, x20, x12  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x20 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3432,9 +3612,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x80000001:
 #elif !defined(U_SUPPORTED)
   csrrs x24, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x24, instret, x0
+  li x24, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x24 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3452,9 +3632,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x80000001:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x22
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x22
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_edges_0x7fffffff:
@@ -3466,9 +3646,12 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x7fffffff:
 #elif !defined(U_SUPPORTED)
   csrrs x8, mepc, x11
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x8, instret, x11
+  csrrs x11, instret, x0
+  csrrs x8, instret, x0
+  sub x8, x8, x11  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x8 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3481,9 +3664,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x7fffffff:
 #elif !defined(U_SUPPORTED)
   csrrs x22, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x22, instret, x0
+  li x22, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x22 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3501,9 +3684,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x7fffffff:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x12
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x12
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_edges_0x7ffffffe:
@@ -3515,9 +3698,12 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x7ffffffe:
 #elif !defined(U_SUPPORTED)
   csrrs x16, mepc, x20
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x16, instret, x20
+  csrrs x20, instret, x0
+  csrrs x16, instret, x0
+  sub x16, x16, x20  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x16 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3530,9 +3716,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x7ffffffe:
 #elif !defined(U_SUPPORTED)
   csrrs x12, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x12, instret, x0
+  li x12, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x12 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3550,9 +3736,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x7ffffffe:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x13
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x13
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_edges_0xffffffff:
@@ -3564,9 +3750,12 @@ Zicsr_csrrs_cg_cp_rs1_edges_0xffffffff:
 #elif !defined(U_SUPPORTED)
   csrrs x21, mepc, x12
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x21, instret, x12
+  csrrs x12, instret, x0
+  csrrs x21, instret, x0
+  sub x21, x21, x12  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x21 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3579,9 +3768,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0xffffffff:
 #elif !defined(U_SUPPORTED)
   csrrs x13, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x13, instret, x0
+  li x13, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x13 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3599,9 +3788,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0xffffffff:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x22
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x22
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_edges_0xfffffffe:
@@ -3613,9 +3802,12 @@ Zicsr_csrrs_cg_cp_rs1_edges_0xfffffffe:
 #elif !defined(U_SUPPORTED)
   csrrs x18, mepc, x25
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x18, instret, x25
+  csrrs x25, instret, x0
+  csrrs x18, instret, x0
+  sub x18, x18, x25  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x18 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3628,9 +3820,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0xfffffffe:
 #elif !defined(U_SUPPORTED)
   csrrs x22, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x22, instret, x0
+  li x22, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x22 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3648,9 +3840,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0xfffffffe:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x25
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x25
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_edges_0x5bbc8872:
@@ -3662,9 +3854,12 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x5bbc8872:
 #elif !defined(U_SUPPORTED)
   csrrs x18, mepc, x10
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x18, instret, x10
+  csrrs x10, instret, x0
+  csrrs x18, instret, x0
+  sub x18, x18, x10  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x18 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3677,9 +3872,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x5bbc8872:
 #elif !defined(U_SUPPORTED)
   csrrs x25, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x25, instret, x0
+  li x25, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x25 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3697,9 +3892,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x5bbc8872:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x12
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x12
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_edges_0xaaaaaaaa:
@@ -3711,9 +3906,12 @@ Zicsr_csrrs_cg_cp_rs1_edges_0xaaaaaaaa:
 #elif !defined(U_SUPPORTED)
   csrrs x21, mepc, x20
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x21, instret, x20
+  csrrs x20, instret, x0
+  csrrs x21, instret, x0
+  sub x21, x21, x20  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x21 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3726,9 +3924,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0xaaaaaaaa:
 #elif !defined(U_SUPPORTED)
   csrrs x12, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x12, instret, x0
+  li x12, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x12 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3746,9 +3944,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0xaaaaaaaa:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x11
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x11
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cp_rs1_edges_0x55555555:
@@ -3760,9 +3958,12 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x55555555:
 #elif !defined(U_SUPPORTED)
   csrrs x3, mepc, x24
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x3, instret, x24
+  csrrs x24, instret, x0
+  csrrs x3, instret, x0
+  sub x3, x3, x24  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x3 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3775,9 +3976,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x55555555:
 #elif !defined(U_SUPPORTED)
   csrrs x11, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x11, instret, x0
+  li x11, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x11 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3799,9 +4000,9 @@ Zicsr_csrrs_cg_cp_rs1_edges_0x55555555:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x2
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x2
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b0:
@@ -3813,9 +4014,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b0:
 #elif !defined(U_SUPPORTED)
   csrrs x0, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x0, instret, x0
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x0 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3828,9 +4029,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b0:
 #elif !defined(U_SUPPORTED)
   csrrs x2, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x2, instret, x0
+  li x2, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x2 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3848,9 +4049,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b0:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x26
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x26
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b1:
@@ -3862,9 +4063,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b1:
 #elif !defined(U_SUPPORTED)
   csrrs x1, mepc, x1
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x1, instret, x1
+  csrrs x1, instret, x0
+  csrrs x1, instret, x0
+  sub x1, x1, x1  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x1 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3877,9 +4081,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b1:
 #elif !defined(U_SUPPORTED)
   csrrs x26, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x26, instret, x0
+  li x26, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x26 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3897,9 +4101,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b1:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x13
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x13
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b2:
@@ -3911,9 +4115,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b2:
 #elif !defined(U_SUPPORTED)
   csrrs x2, mepc, x2
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x2, instret, x2
+  csrrs x2, instret, x0
+  csrrs x2, instret, x0
+  sub x2, x2, x2  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x2 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3926,9 +4133,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b2:
 #elif !defined(U_SUPPORTED)
   csrrs x13, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x13, instret, x0
+  li x13, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x13 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3946,9 +4153,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b2:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x6
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x6
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b3:
@@ -3960,9 +4167,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b3:
 #elif !defined(U_SUPPORTED)
   csrrs x3, mepc, x3
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x3, instret, x3
+  csrrs x3, instret, x0
+  csrrs x3, instret, x0
+  sub x3, x3, x3  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x3 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3975,9 +4185,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b3:
 #elif !defined(U_SUPPORTED)
   csrrs x6, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x6, instret, x0
+  li x6, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x6 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -3997,9 +4207,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b3:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x17
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x17
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b4:
@@ -4011,9 +4221,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b4:
 #elif !defined(U_SUPPORTED)
   csrrs x4, mepc, x4
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x4, instret, x4
+  csrrs x4, instret, x0
+  csrrs x4, instret, x0
+  sub x4, x4, x4  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x4 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -4026,9 +4239,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b4:
 #elif !defined(U_SUPPORTED)
   csrrs x17, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x17, instret, x0
+  li x17, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x17 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -4046,9 +4259,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b4:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x8
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x8
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b5:
@@ -4060,9 +4273,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b5:
 #elif !defined(U_SUPPORTED)
   csrrs x5, mepc, x5
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x5, instret, x5
+  csrrs x5, instret, x0
+  csrrs x5, instret, x0
+  sub x5, x5, x5  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x5 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -4075,9 +4291,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b5:
 #elif !defined(U_SUPPORTED)
   csrrs x8, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x8, instret, x0
+  li x8, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x8 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -4095,9 +4311,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b5:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x31
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x31
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b6:
@@ -4109,9 +4325,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b6:
 #elif !defined(U_SUPPORTED)
   csrrs x6, mepc, x6
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x6, instret, x6
+  csrrs x6, instret, x0
+  csrrs x6, instret, x0
+  sub x6, x6, x6  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x6 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -4124,9 +4343,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b6:
 #elif !defined(U_SUPPORTED)
   csrrs x31, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x31, instret, x0
+  li x31, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x31 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -4144,9 +4363,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b6:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x30
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x30
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b7:
@@ -4158,9 +4377,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b7:
 #elif !defined(U_SUPPORTED)
   csrrs x7, mepc, x7
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x7, instret, x7
+  csrrs x7, instret, x0
+  csrrs x7, instret, x0
+  sub x7, x7, x7  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x7 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -4173,9 +4395,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b7:
 #elif !defined(U_SUPPORTED)
   csrrs x30, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x30, instret, x0
+  li x30, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x30 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -4193,9 +4415,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b7:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x22
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x22
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b8:
@@ -4207,9 +4429,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b8:
 #elif !defined(U_SUPPORTED)
   csrrs x8, mepc, x8
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x8, instret, x8
+  csrrs x8, instret, x0
+  csrrs x8, instret, x0
+  sub x8, x8, x8  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x8 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -4222,9 +4447,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b8:
 #elif !defined(U_SUPPORTED)
   csrrs x22, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x22, instret, x0
+  li x22, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x22 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -4242,9 +4467,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b8:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x27
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x27
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b9:
@@ -4256,9 +4481,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b9:
 #elif !defined(U_SUPPORTED)
   csrrs x9, mepc, x9
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x9, instret, x9
+  csrrs x9, instret, x0
+  csrrs x9, instret, x0
+  sub x9, x9, x9  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x9 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -4271,9 +4499,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b9:
 #elif !defined(U_SUPPORTED)
   csrrs x27, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x27, instret, x0
+  li x27, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x27 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -4291,9 +4519,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b9:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x8
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x8
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b10:
@@ -4305,9 +4533,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b10:
 #elif !defined(U_SUPPORTED)
   csrrs x10, mepc, x10
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x10, instret, x10
+  csrrs x10, instret, x0
+  csrrs x10, instret, x0
+  sub x10, x10, x10  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x10 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -4320,9 +4551,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b10:
 #elif !defined(U_SUPPORTED)
   csrrs x8, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x8, instret, x0
+  li x8, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x8 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -4340,9 +4571,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b10:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x4
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x4
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b11:
@@ -4354,9 +4585,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b11:
 #elif !defined(U_SUPPORTED)
   csrrs x11, mepc, x11
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x11, instret, x11
+  csrrs x11, instret, x0
+  csrrs x11, instret, x0
+  sub x11, x11, x11  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x11 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -4369,9 +4603,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b11:
 #elif !defined(U_SUPPORTED)
   csrrs x4, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x4, instret, x0
+  li x4, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x4 contains the expected result. x15 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
@@ -4391,9 +4625,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b11:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x27
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x27
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b12:
@@ -4405,9 +4639,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b12:
 #elif !defined(U_SUPPORTED)
   csrrs x12, mepc, x12
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x12, instret, x12
+  csrrs x12, instret, x0
+  csrrs x12, instret, x0
+  sub x12, x12, x12  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x12 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4420,9 +4657,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b12:
 #elif !defined(U_SUPPORTED)
   csrrs x27, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x27, instret, x0
+  li x27, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x27 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4440,9 +4677,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b12:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x21
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x21
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b13:
@@ -4454,9 +4691,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b13:
 #elif !defined(U_SUPPORTED)
   csrrs x13, mepc, x13
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x13, instret, x13
+  csrrs x13, instret, x0
+  csrrs x13, instret, x0
+  sub x13, x13, x13  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x13 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4469,9 +4709,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b13:
 #elif !defined(U_SUPPORTED)
   csrrs x21, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x21, instret, x0
+  li x21, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x21 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4489,9 +4729,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b13:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x26
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x26
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b14:
@@ -4503,9 +4743,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b14:
 #elif !defined(U_SUPPORTED)
   csrrs x14, mepc, x14
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x14, instret, x14
+  csrrs x14, instret, x0
+  csrrs x14, instret, x0
+  sub x14, x14, x14  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x14 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4518,9 +4761,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b14:
 #elif !defined(U_SUPPORTED)
   csrrs x26, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x26, instret, x0
+  li x26, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x26 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4539,9 +4782,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b14:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x24
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x24
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b15:
@@ -4553,9 +4796,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b15:
 #elif !defined(U_SUPPORTED)
   csrrs x15, mepc, x15
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x15, instret, x15
+  csrrs x15, instret, x0
+  csrrs x15, instret, x0
+  sub x15, x15, x15  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x15 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4568,9 +4814,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b15:
 #elif !defined(U_SUPPORTED)
   csrrs x24, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x24, instret, x0
+  li x24, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4588,9 +4834,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b15:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x28
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x28
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b16:
@@ -4602,9 +4848,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b16:
 #elif !defined(U_SUPPORTED)
   csrrs x16, mepc, x16
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x16, instret, x16
+  csrrs x16, instret, x0
+  csrrs x16, instret, x0
+  sub x16, x16, x16  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x16 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4617,9 +4866,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b16:
 #elif !defined(U_SUPPORTED)
   csrrs x28, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x28, instret, x0
+  li x28, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x28 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4637,9 +4886,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b16:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x11
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x11
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b17:
@@ -4651,9 +4900,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b17:
 #elif !defined(U_SUPPORTED)
   csrrs x17, mepc, x17
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x17, instret, x17
+  csrrs x17, instret, x0
+  csrrs x17, instret, x0
+  sub x17, x17, x17  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x17 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4666,9 +4918,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b17:
 #elif !defined(U_SUPPORTED)
   csrrs x11, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x11, instret, x0
+  li x11, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4686,9 +4938,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b17:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x14
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x14
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b18:
@@ -4700,9 +4952,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b18:
 #elif !defined(U_SUPPORTED)
   csrrs x18, mepc, x18
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x18, instret, x18
+  csrrs x18, instret, x0
+  csrrs x18, instret, x0
+  sub x18, x18, x18  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x18 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4715,9 +4970,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b18:
 #elif !defined(U_SUPPORTED)
   csrrs x14, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x14, instret, x0
+  li x14, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4736,9 +4991,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b18:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x17
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x17
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b19:
@@ -4750,9 +5005,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b19:
 #elif !defined(U_SUPPORTED)
   csrrs x19, mepc, x19
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x19, instret, x19
+  csrrs x19, instret, x0
+  csrrs x19, instret, x0
+  sub x19, x19, x19  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x19 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4765,9 +5023,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b19:
 #elif !defined(U_SUPPORTED)
   csrrs x17, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x17, instret, x0
+  li x17, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x17 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4785,9 +5043,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b19:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x8
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x8
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b20:
@@ -4799,9 +5057,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b20:
 #elif !defined(U_SUPPORTED)
   csrrs x20, mepc, x20
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x20, instret, x20
+  csrrs x20, instret, x0
+  csrrs x20, instret, x0
+  sub x20, x20, x20  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x20 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4814,9 +5075,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b20:
 #elif !defined(U_SUPPORTED)
   csrrs x8, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x8, instret, x0
+  li x8, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x8 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4834,9 +5095,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b20:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x30
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x30
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b21:
@@ -4848,9 +5109,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b21:
 #elif !defined(U_SUPPORTED)
   csrrs x21, mepc, x21
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x21, instret, x21
+  csrrs x21, instret, x0
+  csrrs x21, instret, x0
+  sub x21, x21, x21  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x21 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4863,9 +5127,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b21:
 #elif !defined(U_SUPPORTED)
   csrrs x30, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x30, instret, x0
+  li x30, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x30 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4883,9 +5147,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b21:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x25
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x25
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b22:
@@ -4897,9 +5161,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b22:
 #elif !defined(U_SUPPORTED)
   csrrs x22, mepc, x22
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x22, instret, x22
+  csrrs x22, instret, x0
+  csrrs x22, instret, x0
+  sub x22, x22, x22  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x22 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4912,9 +5179,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b22:
 #elif !defined(U_SUPPORTED)
   csrrs x25, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x25, instret, x0
+  li x25, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4932,9 +5199,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b22:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x22
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x22
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b23:
@@ -4946,9 +5213,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b23:
 #elif !defined(U_SUPPORTED)
   csrrs x23, mepc, x23
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x23, instret, x23
+  csrrs x23, instret, x0
+  csrrs x23, instret, x0
+  sub x23, x23, x23  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x23 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4961,9 +5231,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b23:
 #elif !defined(U_SUPPORTED)
   csrrs x22, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x22, instret, x0
+  li x22, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x22 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -4981,9 +5251,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b23:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x31
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x31
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b24:
@@ -4995,9 +5265,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b24:
 #elif !defined(U_SUPPORTED)
   csrrs x24, mepc, x24
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x24, instret, x24
+  csrrs x24, instret, x0
+  csrrs x24, instret, x0
+  sub x24, x24, x24  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x24 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -5010,9 +5283,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b24:
 #elif !defined(U_SUPPORTED)
   csrrs x31, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x31, instret, x0
+  li x31, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -5030,9 +5303,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b24:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x1
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x1
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b25:
@@ -5044,9 +5317,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b25:
 #elif !defined(U_SUPPORTED)
   csrrs x25, mepc, x25
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x25, instret, x25
+  csrrs x25, instret, x0
+  csrrs x25, instret, x0
+  sub x25, x25, x25  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x25 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -5059,9 +5335,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b25:
 #elif !defined(U_SUPPORTED)
   csrrs x1, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x1, instret, x0
+  li x1, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x1 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -5079,9 +5355,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b25:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x11
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x11
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b26:
@@ -5093,9 +5369,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b26:
 #elif !defined(U_SUPPORTED)
   csrrs x26, mepc, x26
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x26, instret, x26
+  csrrs x26, instret, x0
+  csrrs x26, instret, x0
+  sub x26, x26, x26  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x26 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -5108,9 +5387,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b26:
 #elif !defined(U_SUPPORTED)
   csrrs x11, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x11, instret, x0
+  li x11, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x11 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -5128,9 +5407,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b26:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x6
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x6
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b27:
@@ -5142,9 +5421,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b27:
 #elif !defined(U_SUPPORTED)
   csrrs x27, mepc, x27
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x27, instret, x27
+  csrrs x27, instret, x0
+  csrrs x27, instret, x0
+  sub x27, x27, x27  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x27 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -5157,9 +5439,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b27:
 #elif !defined(U_SUPPORTED)
   csrrs x6, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x6, instret, x0
+  li x6, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x6 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -5177,9 +5459,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b27:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x14
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x14
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b28:
@@ -5191,9 +5473,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b28:
 #elif !defined(U_SUPPORTED)
   csrrs x28, mepc, x28
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x28, instret, x28
+  csrrs x28, instret, x0
+  csrrs x28, instret, x0
+  sub x28, x28, x28  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x28 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -5206,9 +5491,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b28:
 #elif !defined(U_SUPPORTED)
   csrrs x14, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x14, instret, x0
+  li x14, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x14 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -5226,9 +5511,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b28:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x23
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x23
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b29:
@@ -5240,9 +5525,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b29:
 #elif !defined(U_SUPPORTED)
   csrrs x29, mepc, x29
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x29, instret, x29
+  csrrs x29, instret, x0
+  csrrs x29, instret, x0
+  sub x29, x29, x29  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x29 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -5255,9 +5543,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b29:
 #elif !defined(U_SUPPORTED)
   csrrs x23, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x23, instret, x0
+  li x23, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x23 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -5275,9 +5563,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b29:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x22
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x22
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b30:
@@ -5289,9 +5577,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b30:
 #elif !defined(U_SUPPORTED)
   csrrs x30, mepc, x30
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x30, instret, x30
+  csrrs x30, instret, x0
+  csrrs x30, instret, x0
+  sub x30, x30, x30  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x30 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -5304,9 +5595,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b30:
 #elif !defined(U_SUPPORTED)
   csrrs x22, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x22, instret, x0
+  li x22, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x22 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -5324,9 +5615,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b30:
 #elif !defined(U_SUPPORTED)
   csrrw x0, mepc, x22
 #elif defined(ZICNTR_SUPPORTED)
-  csrrw x0, instret, x22
+  li x0, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
 Zicsr_csrrs_cg_cmp_rd_rs1_b31:
@@ -5338,9 +5629,12 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b31:
 #elif !defined(U_SUPPORTED)
   csrrs x31, mepc, x31
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x31, instret, x31
+  csrrs x31, instret, x0
+  csrrs x31, instret, x0
+  sub x31, x31, x31  # check that instret value has incremented
+
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x31 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
@@ -5353,9 +5647,9 @@ Zicsr_csrrs_cg_cmp_rd_rs1_b31:
 #elif !defined(U_SUPPORTED)
   csrrs x22, mepc, x0
 #elif defined(ZICNTR_SUPPORTED)
-  csrrs x22, instret, x0
+  li x22, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0
 #else
-  Error: no CSR known for testing
+  #error no CSR known for testing
 #endif
 
   # Check if x22 contains the expected result. x3 is the signature ptr, x5 is the link ptr, x4 is a temp reg.

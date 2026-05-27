@@ -107,7 +107,7 @@ covergroup ZicntrH_cg with function sample(ins_t ins);
         bins hpmcounter30_disabled  = {44'b110000011110_10111111111111111111111111111111};
         bins hpmcounter31_disabled  = {44'b110000011111_01111111111111111111111111111111};
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
         bins cycleh_enabled         = {44'b110010000000_00000000000000000000000000000001};
         bins timeh_enabled          = {44'b110010000001_00000000000000000000000000000010};
         bins instreth_enabled       = {44'b110010000010_00000000000000000000000000000100};
@@ -242,7 +242,7 @@ covergroup ZicntrH_cg with function sample(ins_t ins);
         bins hpmcounter30_disabled  = {44'b110000011110_10111111111111111111111111111111};
         bins hpmcounter31_disabled  = {44'b110000011111_01111111111111111111111111111111};
 
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins cycleh_enabled         = {44'b110010000000_00000000000000000000000000000001};
             bins timeh_enabled          = {44'b110010000001_00000000000000000000000000000010};
             bins instreth_enabled       = {44'b110010000010_00000000000000000000000000000100};
@@ -378,7 +378,7 @@ covergroup ZicntrH_cg with function sample(ins_t ins);
         bins hpmcounter30_disabled  = {44'b110000011110_10111111111111111111111111111111};
         bins hpmcounter31_disabled  = {44'b110000011111_01111111111111111111111111111111};
 
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
         bins cycleh_enabled         = {44'b110010000000_00000000000000000000000000000001};
         bins timeh_enabled          = {44'b110010000001_00000000000000000000000000000010};
         bins instreth_enabled       = {44'b110010000010_00000000000000000000000000000100};
@@ -451,7 +451,7 @@ covergroup ZicntrH_cg with function sample(ins_t ins);
         wildcard bins csrr = {CSRR};
     }
 
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         csrr_time: coverpoint ins.current.insn {
             wildcard bins csrr_time = {32'b011000000101_00000_010_?????_1110011}; // 0x605
     }
@@ -463,7 +463,7 @@ covergroup ZicntrH_cg with function sample(ins_t ins);
     `endif
 
 
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
     cp_htimedelta: coverpoint {ins.current.csr[CSR_HTIMEDELTA][63:0]} {
         bins htimedelta_zero  = {64'h0};
         bins htimedelta_2p30  = {64'h0000000040000000};     //  2^30

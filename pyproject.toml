@@ -3,6 +3,9 @@
 # Jordan Carlin jcarlin@hmc.edu October 2025
 # SPDX-License-Identifier: Apache-2.0
 
+[tool.uv]
+exclude-newer = "7 days"
+
 [tool.uv.workspace]
 members = ["framework", "generators/testgen", "generators/coverage"]
 

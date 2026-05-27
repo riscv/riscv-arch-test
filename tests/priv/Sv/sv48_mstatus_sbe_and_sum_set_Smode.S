@@ -19,7 +19,7 @@
 // Remove NORUN once Sail supports Big Endian
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv48, NORUN]
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv48_mstatus_sbe_and_sum_set_Smode.S"

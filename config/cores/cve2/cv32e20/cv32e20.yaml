@@ -17,27 +17,22 @@ implemented_extensions:
   - { name: Zca, version: "= 1.0.0" }
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0" }
-  - { name: U, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.12.0" }
 
 params:
   # XLEN parameters (VERIFIED)
   MXLEN: 32
-  UXLEN: [32]
   PHYS_ADDR_WIDTH: 32
 
   # MISA (!VERIFIED)
   MUTABLE_MISA_M: false
   MUTABLE_MISA_C: false
-  MUTABLE_MISA_U: false
   MISA_CSR_IMPLEMENTED: true
 
   # endianness (VERIFIED)
   M_MODE_ENDIANNESS: little
-  U_MODE_ENDIANNESS: little
 
   # trap/exception behavior (VERIFIED)
-  TRAP_ON_ECALL_FROM_U: true
   TRAP_ON_ECALL_FROM_M: true
   TRAP_ON_EBREAK: true
   TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true

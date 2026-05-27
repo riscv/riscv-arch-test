@@ -11,7 +11,6 @@
 
 Provides:
   - Encoding generation helpers (_gen_encodings, _emit_raw_words)
-  - Common exclusion lists (CBO, AMO, op31)
   - CSR sweep body emitter (generate_csr_sweep_body)
   - Illegal 32-bit instruction sweep (generate_illegal_instr)
   - Vector illegal instruction sweep (generate_vector_illegal_instr)
@@ -22,7 +21,8 @@ its own covergroup name, CSR skip set, and privilege-specific preamble.
 
 Register exclusion
 ------------------
-ALL scratch registers are chosen from {x7..x31} only.  The following
+ALL working registers (register operands in generated encodings) are chosen
+from {x7..x31} only.  The following
 registers are permanently excluded:
 
   x0  zero — hardware constant
@@ -78,10 +78,6 @@ SCRATCH_BASE_REG: int = 8  # x8 / s0
 
 AMO_EXCLUSIONS: list[str] = [
     "01001XXXXXXXXXXXXXXXXXXXX0101111",  # ssamoswap (Ssamoswap)
-]
-# x2 is the signature pointer — must never be clobbered as rd (destination register)
-X2_RD_EXCLUSION: list[str] = [
-    "XXXXXXXXXXXXXXXXXXXX00010XXXXXXX",  # Exclude x2 as rd in all templates
 ]
 
 # Privileged/SYSTEM instruction exclusions shared by all modes.
@@ -312,9 +308,6 @@ def generate_illegal_instr(
 
     Load/store offsets are zeroed so accesses land exactly at scratch,
     avoiding writes to random addresses outside the scratch region.
-
-    Reserved op31 excluded — RISC-V spec reserves bits[6:0]=1111111 for
-    >=192-bit instructions; QEMU/Whisper interpret this literally.
     """
     coverpoint = "cp_illegal_instruction"
     lines: list[str] = []
@@ -322,9 +315,6 @@ def generate_illegal_instr(
     lines.append(
         comment_banner(
             coverpoint,
-            "Exhaustive reserved/illegal 32-bit encoding sweep from M-mode.\n"
-            "Reserved op31 excluded — variable-length ambiguity across platforms.\n"
-            "All register fields randomized; offsets zeroed for loads/stores.",
         )
     )
 
@@ -353,139 +343,143 @@ def generate_illegal_instr(
         ("Reserved op23", "RRRRRRRRRRRRRRRRRRRRRRRRR1011111"),
         ("Reserved op26", "RRRRRRRRRRRRRRRRRRRRRRRRR1101011"),
         ("Reserved op31", "RRRRRRRRRRRRRRRRRRRRRRRRR1111111"),
-        # op31 excluded — variable-length ambiguity across QEMU/Whisper
     ]:
         emit_raw_words(lines, cmt, tmpl)
 
-    # ── Loads — offset=0, all registers randomized ────────────────────
-    # I-type: imm[11:0]=0 | rs1 | funct3 | rd | opcode
-    # rs1 points to scratch (via _emit_reg_init), offset=0 so load
-    # accesses exactly scratch — no risk of hitting unmapped memory.
+    # ── Loads — rs1=x8 (scratch), rd=x12-x15 (randomized), offset=0 ──
+    # I-type: imm[11:0]=0 | rs1=01000 | funct3=EEE | rd=011RR | opcode
+    # rs1 fixed to x8 (scratch base), rd sweeps x12-x15 via RR bits,
+    # offset zeroed so load accesses exactly scratch.
     _emit_reg_init(lines)
-    emit_raw_words(lines, "cp_load", "RRRRRRRRRRRRRRRRREEERRRRR0000011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_fload", "RRRRRRRRRRRRRRRRREEERRRRR0000111", exclusion=X2_RD_EXCLUSION)
+    emit_raw_words(lines, "cp_load", "00000000000001000EEE011RR0000011")
+    emit_raw_words(lines, "cp_fload", "00000000000001000EEE011RR0000111")
 
-    # ── Stores — offset=0, all registers randomized ──────────────────
-    # S-type: imm[11:5]=0 | rs2 | rs1 | funct3 | imm[4:0]=0 | opcode
-    # rs1 points to scratch, offset=0, rs2 value doesn't matter
-    # (store data is irrelevant for trap testing).
+    # ── Stores — rs1=x8 (scratch), rs2=RRRRR (randomized), offset=0 ──
+    # S-type: imm[11:5]=0 | rs2=RRRRR | rs1=01000 | funct3=EEE | imm[4:0]=0 | opcode
+    # rs1 fixed to x8, offset zeroed, rs2 value irrelevant for trap testing.
     _emit_reg_init(lines)
-    emit_raw_words(lines, "cp_store", "RRRRRRRRRRRR00000EEERRRRR0100011")
-    emit_raw_words(lines, "cp_fstore", "RRRRRRRRRRRR00000EEERRRRR0100111")
+    emit_raw_words(lines, "cp_store", "0000000RRRRR01000EEE000000100011")
+    emit_raw_words(lines, "cp_fstore", "0000000RRRRR01000EEE000000100111")
 
-    # ── Fence / CBO ───────────────────────────────────────────────────
-    # Fence/CBO funct3 sweep: offset=0
+    # ── Fence / CBO — rs1=x8, rd=00000, offset=0 ──────────────────────
     _emit_reg_init(lines)
-    emit_raw_words(lines, "cp_fence_cbo", "RRRRRRRRRRRRRRRRREEERRRRR0001111", exclusion=X2_RD_EXCLUSION)
-    # CBO immediate sweep: rs1 randomized, rd=0 (CBO has no rd)
+    emit_raw_words(lines, "cp_fence_cbo", "00000000000001000EEE000000001111")
+    # CBO immediate sweep: rs1=x8, rd=00000 (CBO has no rd)
     _emit_reg_init(lines)
-    emit_raw_words(lines, "cp_cbo_immediate", "EEEEEEEEEEEE00000010000000001111", exclusion=X2_RD_EXCLUSION)
-    # CBO rd sweep: rs1 randomized
+    emit_raw_words(lines, "cp_cbo_immediate", "EEEEEEEEEEEE01000010000000001111")
+    # CBO rd sweep: rs1=x8, rd=EEEEE (swept x0-x31) offset=0
     _emit_reg_init(lines)
-    emit_raw_words(lines, "cp_cbo_rd", "00000000000RRRRRR010EEEEE0001111", exclusion=X2_RD_EXCLUSION)
+    emit_raw_words(lines, "cp_cbo_rd", "00000000000001000010EEEEE0001111")
 
-    # ── Atomics — all registers randomized ────────────────────────────
-    # AMO: funct5 | aq | rl | rs2 | rs1 | funct3 | rd | opcode
-    # No offset field; rs1 points to scratch via _emit_reg_init.
+    # ── Atomics — rs1=x8, rd=011RR (x12-x15) ────────────────────────
+    # AMO: funct5 | aq | rl | rs2 | rs1=01000 | funct3 | rd=011RR (x12-x15) | opcode
     _emit_reg_init(lines)
-    emit_raw_words(
-        lines, "cp_atomic_funct3", "RRRRRRRRRRRR00000EEERRRRR0101111", exclusion=AMO_EXCLUSIONS + X2_RD_EXCLUSION
-    )
-    emit_raw_words(
-        lines, "cp_atomic_funct7", "EEEEERRRRRRR0000001ERRRRR0101111", exclusion=AMO_EXCLUSIONS + X2_RD_EXCLUSION
-    )
-    emit_raw_words(lines, "cp_lrsc", "00010RREEEEE0000001ERRRRR0101111", exclusion=AMO_EXCLUSIONS + X2_RD_EXCLUSION)
+    emit_raw_words(lines, "cp_atomic_funct3", "RRRRRRRRRRRR01000EEE011RR0101111", exclusion=AMO_EXCLUSIONS)
+    emit_raw_words(lines, "cp_atomic_funct7", "EEEEERRRRRRR0100001E011RR0101111", exclusion=AMO_EXCLUSIONS)
+    emit_raw_words(lines, "cp_lrsc", "00010RREEEEE0100001E011RR0101111", exclusion=AMO_EXCLUSIONS)
 
-    # ── amocas odd-register sweep ─────────────────────────────────────
+    # ── amocas odd-register sweep — rs1=x8, rs2=RRRRe (even+odd), rd=011RE={x12-x15} ──
     _emit_reg_init(lines)
-    emit_raw_words(lines, "cp_amocas_odd", "00101RRRRRRE01000EEERRRRE0101111", exclusion=X2_RD_EXCLUSION)
+    emit_raw_words(lines, "cp_amocas_odd", "00101RRRRRRE01000EEE011RE0101111")
 
     # ── I-type / IW-type — all registers randomized ───────────────────
-    emit_raw_words(lines, "cp_Itype", "EEEEEEEEEEEERRRRRE01RRRRR0010011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_llAItype", "RRRRRRRRRRRRRRRRREEERRRRR0010011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_aes64ks1i", "0011000EEEEERRRRR001RRRRR0010011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_IWtype", "RRRRRRRRRRRRRRRRREEERRRRR0011011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_IWshift", "EEEEEEERRRRRRRRRRE01RRRRR0011011", exclusion=X2_RD_EXCLUSION)
+    emit_raw_words(lines, "cp_Itype", "EEEEEEEEEEEERRRRRE01RRRRR0010011")
+    emit_raw_words(lines, "cp_llAItype", "RRRRRRRRRRRRRRRRREEERRRRR0010011")
+    emit_raw_words(lines, "cp_aes64ks1i", "0011000EEEEERRRRR001RRRRR0010011")
+    emit_raw_words(lines, "cp_IWtype", "RRRRRRRRRRRRRRRRREEERRRRR0011011")
+    emit_raw_words(lines, "cp_IWshift", "EEEEEEERRRRRRRRRRE01RRRRR0011011")
 
     # ── R-type / RW-type — all registers randomized ───────────────────
-    emit_raw_words(lines, "cp_rtype", "EEEEEEERRRRRRRRRREEERRRRR0110011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_rwtype", "EEEEEEERRRRRRRRRREEERRRRR0111011", exclusion=X2_RD_EXCLUSION)
+    emit_raw_words(lines, "cp_rtype", "EEEEEEERRRRRRRRRREEERRRRR0110011")
+    emit_raw_words(lines, "cp_rwtype", "EEEEEEERRRRRRRRRREEERRRRR0111011")
 
     # ── FP — all registers randomized ─────────────────────────────────
-    emit_raw_words(lines, "cp_ftype", "EEEEERRRRRRRRRRRREEERRRRR1010011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_fsqrt", "0101100EEEEERRRRRRRRRRRRR1010011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_fclass", "1110000EEEEERRRRR001RRRRR1010011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_fcvtif", "1100000EEE00RRRRR000RRRRR1010011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_fcvtif_fmt", "11000EE000EERRRRR000RRRRR1010011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_fcvtfi", "1101000EEER00RRRR000RRRRR1010011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_fcvtfi_fmt", "11010EE000EERRRRR000RRRRR1010011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_fcvtff", "0100000EEER00RRRR000RRRRR1010011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_fcvtff_fmt", "01000EEEEEEERRRRR000RRRRR1010011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_fmvif", "11100EEEEEEERRRRR000RRRRR1010011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_fli", "11110EEEEEEERRRRR000RRRRR1010011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_fmvfi", "11110EEEEEEERRRRR000RRRRR1010011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_fmvh", "11100EEEEEEERRRRR000RRRRR1010011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_fmvp", "10110EERRRRRRRRRR000RRRRR1010011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_cvtmodwd", "11000EEEEEEERRRRR001RRRRR1010011", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_fcvtmodwdfrm", "110000101000RRRRREEERRRRR1010011", exclusion=X2_RD_EXCLUSION)
+    emit_raw_words(lines, "cp_ftype", "EEEEERRRRRRRRRRRREEERRRRR1010011")
+    emit_raw_words(lines, "cp_fsqrt", "0101100EEEEERRRRRRRRRRRRR1010011")
+    emit_raw_words(lines, "cp_fclass", "1110000EEEEERRRRR001RRRRR1010011")
+    emit_raw_words(lines, "cp_fcvtif", "1100000EEE00RRRRR000RRRRR1010011")
+    emit_raw_words(lines, "cp_fcvtif_fmt", "11000EE000EERRRRR000RRRRR1010011")
+    emit_raw_words(lines, "cp_fcvtfi", "1101000EEER00RRRR000RRRRR1010011")
+    emit_raw_words(lines, "cp_fcvtfi_fmt", "11010EE000EERRRRR000RRRRR1010011")
+    emit_raw_words(lines, "cp_fcvtff", "0100000EEER00RRRR000RRRRR1010011")
+    emit_raw_words(lines, "cp_fcvtff_fmt", "01000EEEEEEERRRRR000RRRRR1010011")
+    emit_raw_words(lines, "cp_fmvif", "11100EEEEEEERRRRR000RRRRR1010011")
+    emit_raw_words(lines, "cp_fli", "11110EEEEEEERRRRR000RRRRR1010011")
+    emit_raw_words(lines, "cp_fmvfi", "11110EEEEEEERRRRR000RRRRR1010011")
+    emit_raw_words(lines, "cp_fmvh", "11100EEEEEEERRRRR000RRRRR1010011")
+    emit_raw_words(lines, "cp_fmvp", "10110EERRRRRRRRRR000RRRRR1010011")
+    emit_raw_words(lines, "cp_cvtmodwd", "11000EEEEEEERRRRR001RRRRR1010011")
+    emit_raw_words(lines, "cp_fcvtmodwdfrm", "110000101000RRRRREEERRRRR1010011")
 
     # ── Branch / JALR — all registers randomized ──────────────────────
     emit_raw_words(lines, "cp_branch2", "RRRRRRRRRRRRRRRRR010RRRRR1100011")  # branches have no rd
     emit_raw_words(lines, "cp_branch3", "RRRRRRRRRRRRRRRRR011RRRRR1100011")  # branches have no rd
-    emit_raw_words(lines, "cp_jalr0", "RRRRRRRRRRRRRRRRREE1RRRRR1100111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_jalr1", "RRRRRRRRRRRRRRRRR010RRRRR1100111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_jalr2", "RRRRRRRRRRRRRRRRR100RRRRR1100111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_jalr3", "RRRRRRRRRRRRRRRRR110RRRRR1100111", exclusion=X2_RD_EXCLUSION)
+    emit_raw_words(lines, "cp_jalr0", "RRRRRRRRRRRRRRRRREE1RRRRR1100111")
+    emit_raw_words(lines, "cp_jalr1", "RRRRRRRRRRRRRRRRR010RRRRR1100111")
+    emit_raw_words(lines, "cp_jalr2", "RRRRRRRRRRRRRRRRR100RRRRR1100111")
+    emit_raw_words(lines, "cp_jalr3", "RRRRRRRRRRRRRRRRR110RRRRR1100111")
 
     # ── Privileged / SYSTEM ───────────────────────────────────────────
-    emit_raw_words(lines, "cp_privileged_f3", "00000000000100000EEE000001110011", exclusion=X2_RD_EXCLUSION)
+    emit_raw_words(lines, "cp_privileged_f3", "00000000000100000EEE000001110011")
     emit_raw_words(
         lines,
         "cp_privileged_000",
         "EEEEEEEEEEEE00000000000001110011",
-        exclusion=PRIVILEGED_000_EXCLUSIONS + X2_RD_EXCLUSION,
+        exclusion=PRIVILEGED_000_EXCLUSIONS,
     )
     emit_raw_words(
         lines,
         "cp_privileged_rd",
         "00000000000000000000EEEEE1110011",
-        exclusion=["00000000000000000000000001110011"] + X2_RD_EXCLUSION,
+        exclusion=[
+            "00000000000000000000000001110011",  # exclude ecall
+            "XXXXXXXXXXXXXXXXXXXX00010XXXXXXX",  # exclude rd=x2 (sp)
+            "XXXXXXXXXXXXXXXXXXXX01000XXXXXXX",  # exclude rd=x8 (scratch base)
+        ],
     )
     emit_raw_words(
         lines,
         "cp_privileged_rs2",
         "000000000000EEEEE000000001110011",
-        exclusion=["00000000000000000000000001110011"] + X2_RD_EXCLUSION,
+        exclusion=["00000000000000000000000001110011"],
     )
 
     # ── Reserved FMA / fence ──────────────────────────────────────────
-    emit_raw_words(lines, "cp_reserved_fma", "RRRRRRRRRRRRRRRRREEERRRRR100EE11", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_reserved_fence_fm", "EEEE00000000RRRRR000RRRRR0001111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_reserved_fence_rs1", "00001111111100001000RRRRE0001111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_reserved_fence_rd", "000011111111RRRRE000000010001111", exclusion=X2_RD_EXCLUSION)
+    emit_raw_words(lines, "cp_reserved_fma", "RRRRRRRRRRRRRRRRREEERRRRR100EE11")
+    emit_raw_words(lines, "cp_reserved_fence_fm", "EEEE00000000RRRRR000RRRRR0001111")
+    emit_raw_words(
+        lines,
+        "cp_reserved_fence_rs1",
+        "00001111111100001000RRRRE0001111",
+        exclusion=[
+            "XXXXXXXXXXXXXXXXXXXX00010XXXXXXX",  # exclude rd=x2 (sp)
+            "XXXXXXXXXXXXXXXXXXXX01000XXXXXXX",  # exclude rd=x8 (scratch base)
+        ],
+    )
+    emit_raw_words(lines, "cp_reserved_fence_rd", "000011111111RRRRE000000010001111")
 
     # ── Upper register sweep (E extension) ────────────────────────────
     lines.append(comment_banner("cp_upperreg", "x16-x31 — trap when E extension active"))
     for cmt, tmpl in [
         ("cp_upperreg_rs1_add", "0000000000011EEEE000000010110011"),
-        ("cp_upperreg_rs2_add", "00000001EEEE00001000000100110011"),
+        ("cp_upperreg_rs2_add", "00000001EEEE00001000011100110011"),
         ("cp_upperreg_rd_add", "000000000001000010001EEEE0110011"),
         ("cp_upperreg_rs1_mul", "0000001000011EEEE000000010110011"),
-        ("cp_upperreg_rs2_mul", "00000011EEEE00001000000100110011"),
+        ("cp_upperreg_rs2_mul", "00000011EEEE00001000011100110011"),
         ("cp_upperreg_rd_mul", "000000100001000010001EEEE0110011"),
         ("cp_upperreg_rs1_fadd-s", "0000000000011EEEE000000011010011"),
-        ("cp_upperreg_rs2_fadd-s", "00000001EEEE00001000000101010011"),
+        ("cp_upperreg_rs2_fadd-s", "00000001EEEE00001000011101010011"),
         ("cp_upperreg_rd_fadd-s", "000000000001000010001EEEE1010011"),
-        ("cp_upperreg_imm_rs1_addi0", "0000000000001EEEE000000010010011"),
-        ("cp_upperreg_imm_rs1_addi1", "1111111111111EEEE000000010010011"),
+        ("cp_upperreg_imm_rs1_addi0", "0000000000001EEEE000011100010011"),
+        ("cp_upperreg_imm_rs1_addi1", "1111111111111EEEE000011100010011"),
         ("cp_upperreg_imm_rd_addi0", "000000000000000010001EEEE0010011"),
         ("cp_upperreg_imm_rd_addi1", "111111111111000010001EEEE0010011"),
         ("cp_upperreg_fmv_x_w_rs1", "1110000000001EEEE000000011010011"),
         ("cp_upperreg_fmv_x_w_rd", "111000000000000010001EEEE1010011"),
-        ("cp_upperreg_fmv_w_x_rs1", "1111000000001EEEE000000011010011"),
+        ("cp_upperreg_fmv_w_x_rs1", "1111000000001EEEE000011101010011"),
         ("cp_upperreg_fmv_w_x_rd", "111100000000000010001EEEE1010011"),
     ]:
-        emit_raw_words(lines, cmt, tmpl, exclusion=X2_RD_EXCLUSION)
+        emit_raw_words(lines, cmt, tmpl)
 
     return lines
 
@@ -520,11 +514,11 @@ def generate_vector_illegal_instr(
     lines.append(comment_banner("vset* reserved encodings", "Reserved bits in vsetvl/vsetvli/vsetivli"))
 
     _emit_vector_init(lines)
-    emit_raw_words(lines, "cp_v_vsetvl", "10EEEEERRRRRRRRRR111RRRRR1010111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_v_vsetvli_sew", "0000RR1EERRRRRRRR111RRRRR1010111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_v_vsetvli_res", "EEE0RR0RRRRRRRRRR111RRRRR1010111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_v_vsetivli_sew", "1100RR1EERRRRRRRR111RRRRR1010111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_v_vsetivli_res", "11EERR0RRRRRRRRRR111RRRRR1010111", exclusion=X2_RD_EXCLUSION)
+    emit_raw_words(lines, "cp_v_vsetvl", "10EEEEERRRRRRRRRR111RRRRR1010111")
+    emit_raw_words(lines, "cp_v_vsetvli_sew", "0000RR1EERRRRRRRR111RRRRR1010111")
+    emit_raw_words(lines, "cp_v_vsetvli_res", "EEE0RR0RRRRRRRRRR111RRRRR1010111")
+    emit_raw_words(lines, "cp_v_vsetivli_sew", "1100RR1EERRRRRRRR111RRRRR1010111")
+    emit_raw_words(lines, "cp_v_vsetivli_res", "11EERR0RRRRRRRRRR111RRRRR1010111")
 
     # ── Reserved vector loads ─────────────────────────────────────────
     # rs1 randomized — all safe regs pre-loaded with scratch address.
@@ -533,37 +527,41 @@ def generate_vector_illegal_instr(
     lines.append(comment_banner("Vector load reserved encodings", "Reserved mew/width/lumop for vector loads"))
 
     _emit_vector_init(lines)
-    emit_raw_words(lines, "cp_vl_0_000", "RRR0RRRRRRRRRRRRR000RRRRR0000111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_vl_0_101", "RRR0RRRRRRRRRRRRR101RRRRR0000111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_vl_0_110", "RRR0RRRRRRRRRRRRR110RRRRR0000111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_vl_0_111", "RRR0RRRRRRRRRRRRR111RRRRR0000111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_vl_1_000", "RRR1RRRRRRRRRRRRR000RRRRR0000111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_vl_1_101", "RRR1RRRRRRRRRRRRR101RRRRR0000111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_vl_1_110", "RRR1RRRRRRRRRRRRR110RRRRR0000111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_vl_1_111", "RRR1RRRRRRRRRRRRR111RRRRR0000111", exclusion=X2_RD_EXCLUSION)
-    # lumop sweep — mop=00 (unit-stride), vm=1
-    emit_raw_words(lines, "cp_vl_lumop_8", "RRR0001EEEEERRRRR000RRRRR0000111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_vl_lumop_16", "RRR0001EEEEERRRRR101RRRRR0000111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_vl_lumop_32", "RRR0001EEEEERRRRR110RRRRR0000111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_vl_lumop_64", "RRR0001EEEEERRRRR111RRRRR0000111", exclusion=X2_RD_EXCLUSION)
+    # mew=0, reserved width values — rs1=x8, vd=011RR
+    emit_raw_words(lines, "cp_vl_0_000", "RRR0RRRRRRRR01000000011RR0000111")
+    emit_raw_words(lines, "cp_vl_0_101", "RRR0RRRRRRRR01000101011RR0000111")
+    emit_raw_words(lines, "cp_vl_0_110", "RRR0RRRRRRRR01000110011RR0000111")
+    emit_raw_words(lines, "cp_vl_0_111", "RRR0RRRRRRRR01000111011RR0000111")
+    # mew=1, reserved width values — rs1=x8, vd=011RR
+    emit_raw_words(lines, "cp_vl_1_000", "RRR1RRRRRRRR01000000011RR0000111")
+    emit_raw_words(lines, "cp_vl_1_101", "RRR1RRRRRRRR01000101011RR0000111")
+    emit_raw_words(lines, "cp_vl_1_110", "RRR1RRRRRRRR01000110011RR0000111")
+    emit_raw_words(lines, "cp_vl_1_111", "RRR1RRRRRRRR01000111011RR0000111")
+    # lumop sweep — mop=00, vm=1, rs1=x8, vd=011RR
+    emit_raw_words(lines, "cp_vl_lumop_8", "RRR0001EEEEE01000000011RR0000111")
+    emit_raw_words(lines, "cp_vl_lumop_16", "RRR0001EEEEE01000101011RR0000111")
+    emit_raw_words(lines, "cp_vl_lumop_32", "RRR0001EEEEE01000110011RR0000111")
+    emit_raw_words(lines, "cp_vl_lumop_64", "RRR0001EEEEE01000111011RR0000111")
 
     # ── Reserved vector stores ────────────────────────────────────────
     lines.append(comment_banner("Vector store reserved encodings", "Reserved mew/width/lumop for vector stores"))
 
     _emit_vector_init(lines)
-    emit_raw_words(lines, "cp_vs_0_000", "RRR0RRRRRRRRRRRRR000RRRRR0100111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_vs_0_101", "RRR0RRRRRRRRRRRRR101RRRRR0100111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_vs_0_110", "RRR0RRRRRRRRRRRRR110RRRRR0100111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_vs_0_111", "RRR0RRRRRRRRRRRRR111RRRRR0100111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_vs_1_000", "RRR1RRRRRRRRRRRRR000RRRRR0100111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_vs_1_101", "RRR1RRRRRRRRRRRRR101RRRRR0100111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_vs_1_110", "RRR1RRRRRRRRRRRRR110RRRRR0100111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_vs_1_111", "RRR1RRRRRRRRRRRRR111RRRRR0100111", exclusion=X2_RD_EXCLUSION)
-    # sumop sweep — mop=00 (unit-stride), vm=1
-    emit_raw_words(lines, "cp_vs_lumop_8", "RRR0001EEEEERRRRR000RRRRR0100111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_vs_lumop_16", "RRR0001EEEEERRRRR101RRRRR0100111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_vs_lumop_32", "RRR0001EEEEERRRRR110RRRRR0100111", exclusion=X2_RD_EXCLUSION)
-    emit_raw_words(lines, "cp_vs_lumop_64", "RRR0001EEEEERRRRR111RRRRR0100111", exclusion=X2_RD_EXCLUSION)
+    # mew=0, reserved width values — rs1=x8, vs3=011RR
+    emit_raw_words(lines, "cp_vs_0_000", "RRR0RRRRRRRR01000000011RR0100111")
+    emit_raw_words(lines, "cp_vs_0_101", "RRR0RRRRRRRR01000101011RR0100111")
+    emit_raw_words(lines, "cp_vs_0_110", "RRR0RRRRRRRR01000110011RR0100111")
+    emit_raw_words(lines, "cp_vs_0_111", "RRR0RRRRRRRR01000111011RR0100111")
+    # mew=1, reserved width values — rs1=x8, vs3=011RR
+    emit_raw_words(lines, "cp_vs_1_000", "RRR1RRRRRRRR01000000011RR0100111")
+    emit_raw_words(lines, "cp_vs_1_101", "RRR1RRRRRRRR01000101011RR0100111")
+    emit_raw_words(lines, "cp_vs_1_110", "RRR1RRRRRRRR01000110011RR0100111")
+    emit_raw_words(lines, "cp_vs_1_111", "RRR1RRRRRRRR01000111011RR0100111")
+    # sumop sweep — mop=00, vm=1, rs1=x8, vs3=011RR
+    emit_raw_words(lines, "cp_vs_lumop_8", "RRR0001EEEEE01000000011RR0100111")
+    emit_raw_words(lines, "cp_vs_lumop_16", "RRR0001EEEEE01000101011RR0100111")
+    emit_raw_words(lines, "cp_vs_lumop_32", "RRR0001EEEEE01000110011RR0100111")
+    emit_raw_words(lines, "cp_vs_lumop_64", "RRR0001EEEEE01000111011RR0100111")
 
     # ── Vector arithmetic per-SEW sweeps ──────────────────────────────
     for sew in ["8", "16", "32", "64"]:
@@ -573,27 +571,25 @@ def generate_vector_illegal_instr(
 
         _emit_vector_init(lines)
 
-        emit_raw_words(lines, f"cp_IVV_f6_e{sew}", "EEEEEEERRRRRRRRRR000RRRRR1010111", exclusion=X2_RD_EXCLUSION)
-        emit_raw_words(lines, f"cp_FVV_f6_e{sew}", "EEEEEEERRRRRRRRRR001RRRRR1010111", exclusion=X2_RD_EXCLUSION)
-        emit_raw_words(lines, f"cp_MVV_f6_e{sew}", "EEEEEEERRRRRRRRRR010RRRRR1010111", exclusion=X2_RD_EXCLUSION)
-        emit_raw_words(lines, f"cp_IVI_f6_e{sew}", "EEEEEEERRRRRRRRRR011RRRRR1010111", exclusion=X2_RD_EXCLUSION)
-        emit_raw_words(lines, f"cp_IVX_f6_e{sew}", "EEEEEEERRRRRRRRRR100RRRRR1010111", exclusion=X2_RD_EXCLUSION)
-        emit_raw_words(lines, f"cp_FVF_f6_e{sew}", "EEEEEEERRRRRRRRRR101RRRRR1010111", exclusion=X2_RD_EXCLUSION)
-        emit_raw_words(lines, f"cp_MVX_f6_e{sew}", "EEEEEEERRRRRRRRRR110RRRRR1010111", exclusion=X2_RD_EXCLUSION)
+        emit_raw_words(lines, f"cp_IVV_f6_e{sew}", "EEEEEEERRRRRRRRRR000RRRRR1010111")
+        emit_raw_words(lines, f"cp_FVV_f6_e{sew}", "EEEEEEERRRRRRRRRR001RRRRR1010111")
+        emit_raw_words(lines, f"cp_MVV_f6_e{sew}", "EEEEEEERRRRRRRRRR010RRRRR1010111")
+        emit_raw_words(lines, f"cp_IVI_f6_e{sew}", "EEEEEEERRRRRRRRRR011RRRRR1010111")
+        emit_raw_words(lines, f"cp_IVX_f6_e{sew}", "EEEEEEERRRRRRRRRR100RRRRR1010111")
+        emit_raw_words(lines, f"cp_FVF_f6_e{sew}", "EEEEEEERRRRRRRRRR101RRRRR1010111")
+        emit_raw_words(lines, f"cp_MVX_f6_e{sew}", "EEEEEEERRRRRRRRRR110RRRRR1010111")
 
-        emit_raw_words(
-            lines, f"cp_MVV_VWRXUNARY0_e{sew}", "010000ERRRRREEEEE010RRRRR1010111", exclusion=X2_RD_EXCLUSION
-        )
-        emit_raw_words(lines, f"cp_MVX_VRXUNARY0_e{sew}", "010000EEEEEERRRRR110RRRRR1010111", exclusion=X2_RD_EXCLUSION)
-        emit_raw_words(lines, f"cp_MVV_VXUNARY0_e{sew}", "010010ERRRRREEEEE010RRRRR1010111", exclusion=X2_RD_EXCLUSION)
-        emit_raw_words(lines, f"cp_MVV_VMUNARY0_e{sew}", "010100ERRRRREEEEE010RRRRR1010111", exclusion=X2_RD_EXCLUSION)
-        emit_raw_words(lines, f"cp_FVV_VWFUNARY0_e{sew}", "010000ERRRRREEEEE001RRRRR1010111", exclusion=X2_RD_EXCLUSION)
-        emit_raw_words(lines, f"cp_FVF_VRFUNARY0_e{sew}", "010000EEEEEERRRRR101RRRRR1010111", exclusion=X2_RD_EXCLUSION)
-        emit_raw_words(lines, f"cp_FVV_VFUNARY0_e{sew}", "010010ERRRRREEEEE001RRRRR1010111", exclusion=X2_RD_EXCLUSION)
-        emit_raw_words(lines, f"cp_FVV_VFUNARY1_e{sew}", "010011ERRRRREEEEE001RRRRR1010111", exclusion=X2_RD_EXCLUSION)
+        emit_raw_words(lines, f"cp_MVV_VWRXUNARY0_e{sew}", "010000ERRRRREEEEE010RRRRR1010111")
+        emit_raw_words(lines, f"cp_MVX_VRXUNARY0_e{sew}", "010000EEEEEERRRRR110RRRRR1010111")
+        emit_raw_words(lines, f"cp_MVV_VXUNARY0_e{sew}", "010010ERRRRREEEEE010RRRRR1010111")
+        emit_raw_words(lines, f"cp_MVV_VMUNARY0_e{sew}", "010100ERRRRREEEEE010RRRRR1010111")
+        emit_raw_words(lines, f"cp_FVV_VWFUNARY0_e{sew}", "010000ERRRRREEEEE001RRRRR1010111")
+        emit_raw_words(lines, f"cp_FVF_VRFUNARY0_e{sew}", "010000EEEEEERRRRR101RRRRR1010111")
+        emit_raw_words(lines, f"cp_FVV_VFUNARY0_e{sew}", "010010ERRRRREEEEE001RRRRR1010111")
+        emit_raw_words(lines, f"cp_FVV_VFUNARY1_e{sew}", "010011ERRRRREEEEE001RRRRR1010111")
 
-        emit_raw_words(lines, f"cp_MVV_vaesvv_e{sew}", "101000ERRRRREEEEE010RRRRR1010111", exclusion=X2_RD_EXCLUSION)
-        emit_raw_words(lines, f"cp_MVV_vaesvs_e{sew}", "101001ERRRRREEEEE010RRRRR1010111", exclusion=X2_RD_EXCLUSION)
+        emit_raw_words(lines, f"cp_MVV_vaesvv_e{sew}", "101000ERRRRREEEEE010RRRRR1010111")
+        emit_raw_words(lines, f"cp_MVV_vaesvs_e{sew}", "101001ERRRRREEEEE010RRRRR1010111")
 
     lines.append("")
     return lines
@@ -629,7 +625,7 @@ def generate_compressed_instr(
     emit_raw_words(
         lines,
         "compressed00",
-        "EEEEEEEEE00000000",  # rd'=EEE, rs1'=EEE, rs2'=EEE, offset=0, opcode=00
+        "EEEEEEEEEEEEEE00",
         length=16,
         exclusion=[
             "XXXXXXXXXXX000XX",  # rd' = x8 — clobbers scratch base pointer
@@ -654,12 +650,12 @@ def generate_compressed_instr(
         reinit_interval=50,
     )
 
-    # Quadrant 10: upper half swept (bit[15]=1 fixed)
+    # Quadrant 10: fully exhaustive except for c.jr/c.jalr/c.ebreak (random jump/trap)
     # reinit_interval keeps registers fresh as valid loads/stores clobber them.
     emit_raw_words(
         lines,
         "compressed10",
-        "1EEEEEEEEEEEEE10",
+        "EEEEEEEEEEEEEE10",
         length=16,
         exclusion=[
             "1000XXXXX0000010",  # c.jr rs1!=0 — random jump

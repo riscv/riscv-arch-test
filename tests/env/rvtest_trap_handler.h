@@ -917,14 +917,14 @@ init_\__MODE__\()tvec:
         csrr    T3, CSR_XTVEC                     // T3 = current xTVEC value (address + mode bits)
         SREG    T3, xtvec_sav_off(T1)              // save original xTVEC in save area
         andi    T2, T3, WDBYTMSK                   // T2 = mode bits from original xTVEC (bits 1:0)
-#if !defined(UDB_MTVEC_MODES_0) && defined(UDB_MTVEC_MODES_1)
-        ori     T2, x0, 1                          // T2 = 1 (vectored), vectored-only core can't round-trip MODE=0
-#elif defined(UDB_MTVEC_MODES_0) && !defined(UDB_MTVEC_MODES_1)
-        andi    T2, T2, ~WDBYTMSK                  // T2 = mode bits cleared (direct), direct-only core can't round-trip MODE=1
+#if defined(UDB_MTVEC_MODES_0)
+        andi    T2, T2, ~WDBYTMSK                  // direct supported -> force MODE=0 (deterministic; matches reference reset)
+#elif defined(UDB_MTVEC_MODES_1)
+        ori     T2, x0, 1                          // no direct -> force vectored MODE=1
 #endif
         LREG    T4, tentry_addr_off(T1)            // T4 = common entry point (end of trampoline)
         addi    T4, T4, -actual_tramp_sz           // T4 = start of trampoline (entry point - tramp size)
-        or      T2, T4, T2                         // T2 = trampoline start + original mode bits
+        or      T2, T4, T2                         // T2 = trampoline start + selected mode bits
         SREG    T2, xtvec_new_off(T1)              // save new xTVEC value in save area
         csrw    CSR_XTVEC, T2                      // attempt to write trampoline address to xTVEC
 

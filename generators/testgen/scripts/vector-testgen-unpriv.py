@@ -40,6 +40,7 @@ import vector_testgen_common as common
 from vector_testgen_common import (
   ARCH_VERIF,
   bf16_instructions,
+  eew64_ins,
   getSigReg,
   getFlen,
   fedges,
@@ -1399,7 +1400,9 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
     fname = pathname + "/" + basename + ".S"
     tempfname = pathname + "/" + basename + "_temp.S"
 
-    vdsew = sew * (2 if (test in vd_widen_ins) else 1)
+    vdsew = sew
+    if test in vd_widen_ins: vdsew *= 2
+    elif test in eew64_ins: vdsew = 64
 
     f = open(tempfname, "w")
 

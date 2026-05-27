@@ -63,8 +63,8 @@
   #error "RVMODEL_TIMER_INT_SOON_DELAY not defined. Make sure to define it in rvmodel_macros.h."
 #endif
 
-#ifndef RVMODEL_MAX_CYCLES_PER_TIMER
-  #define RVMODEL_MAX_CYCLES_PER_TIMER 1
+#ifndef RVMODEL_MAX_CYCLES_PER_TIMER_TICK
+  #define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
 #endif
 
 ##### Machine Interrupts #####

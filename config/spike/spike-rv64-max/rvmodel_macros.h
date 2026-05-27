@@ -109,11 +109,9 @@
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
 // Spike ticks the CLINT timer every 100 instructions (default --insns-per-tick).
-// The default RVTEST_IDLE_FOR_TIMER_INTERRUPT spins RVMODEL_TIMER_INT_SOON_DELAY iterations
-// (200 instructions), which only advances mtime by ~2 ticks — far less than the 100-tick
-// stimecmp offset. Define a 100x multiplier so the spin outlasts the timer delayfor the RVTEST_IDLE_FOR_TIMER_INTERRUPT.
+// Define a 100x multiplier to convert between timer tick and processor cycle count.
 
-#define RVMODEL_MAX_CYCLES_PER_TIMER 100
+#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 100
 
 #define CLINT_BASE_ADDRESS 0x02000000
 #define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)

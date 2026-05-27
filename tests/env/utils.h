@@ -430,7 +430,7 @@
         bnez _R1, 99b;
 
 // For the models that have timer running slower than the core clock, converts from timer ticks to cycles
-#define RVTEST_TIMER_INT_SOON_DELAY_CYCLES (RVMODEL_TIMER_INT_SOON_DELAY * RVMODEL_MAX_CYCLES_PER_TIMER)
+#define RVTEST_TIMER_INT_SOON_DELAY_CYCLES (RVMODEL_TIMER_INT_SOON_DELAY * RVMODEL_MAX_CYCLES_PER_TIMER_TICK)
 
 #define RVTEST_IDLE_FOR_TIMER_INTERRUPT(_R1) \
     LI(_R1, RVTEST_TIMER_INT_SOON_DELAY_CYCLES); \

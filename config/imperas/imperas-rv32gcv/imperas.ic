@@ -32,6 +32,8 @@
 # Vector
 --override cpu*/Zvfbfmin=T
 --override cpu*/Zvfbfwma=T
+--override cpu*/Zvfh=T
+--override cpu*/Zvfhmin=T
 --override cpu*/unalignedV=F # Disallow misaligned accesses on one imperas sim to test both cases
 
 # Miscellaneous extensions

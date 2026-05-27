@@ -61,8 +61,8 @@
 --override cpu*/Zvfbfwma=T #(Boolean) (default=T) (default) Specify that Zvfbfwma is implemented
 --override cpu*/Zvfh=T #(Boolean) (default=T) (default) Specify that Zvfh is implemented
 --override cpu*/Zvfhmin=T #(Boolean) (default=T) (default) Specify that Zvfhfmin is implemented
+# This is needed to support segmented load/store from the V extension
 --override cpu*/Zvlsseg=T #(Boolean) (default=F) (default) Specify that Zvlsseg is implemented
---override cpu*/Zvqmac=T #(Boolean) (default=F) (default) Specify that Zvqmac is implemented
 --override cpu*/agnostic_mask=F #(Boolean) (default=F) (default) Specify that artifact mask registers holding agnostic bits are present
 --override cpu*/agnostic_ones=F #(Boolean) (default=F) (default) Specify that vector agnostic elements are set to 1
 --override cpu*/align_whole=F #(Boolean) (default=F) (default) Whether whole-register load addresses must be aligned using the encoded EEW

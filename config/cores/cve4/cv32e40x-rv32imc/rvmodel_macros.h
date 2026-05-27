@@ -71,6 +71,7 @@
 #define RVMODEL_MTVEC_ALIGN 7
 
 ##### Machine Timer #####
+#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
 
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 /*

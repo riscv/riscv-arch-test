@@ -18,8 +18,12 @@ import sys
 import textwrap
 from random import getrandbits, randint
 
-# change these to suite your tests
-ARCH_VERIF = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), "..", "..", ".."))
+# Resolve the repo root from this file's own location so the generator works
+# whether it is invoked as a standalone script (legacy `make vector-testgen`)
+# or imported as a module by the unified `testgen` CLI. The previous
+# sys.argv[0]-based path broke when the entry point became the `testgen`
+# console script instead of vector-testgen-{unpriv,priv}.py.
+ARCH_VERIF = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".."))
 
 ##################################
 # Global Constants

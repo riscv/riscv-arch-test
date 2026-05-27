@@ -490,7 +490,15 @@ def writePrivTestLine(instruction, instruction_data, cp="cp_vill", vl=1, lmul=1,
 
 #####################################                main                 #####################################
 
-if __name__ == '__main__':
+def main():
+    """Entry point for priv vector test generation.
+
+    Exposed as a callable so the unified ``testgen`` CLI (see
+    ``testgen.cli``) can drive priv vector generation alongside scalar
+    test generation in a single process / progress display, rather than
+    requiring a separate make target.
+    """
+    global signatureWords, f
     common.writeLine        = writeLine
     common.mtrap_sig_count  = 2000  # TODO: check if hard code
     signatureWords          = 10000  # TODO: check if hard code
@@ -647,3 +655,7 @@ if __name__ == '__main__':
                     print("Updated " + fname)
             else:
                 os.system(f"mv {tempfname} {fname}")
+
+
+if __name__ == '__main__':
+    main()

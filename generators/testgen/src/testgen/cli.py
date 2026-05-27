@@ -12,6 +12,7 @@
 
 from __future__ import annotations
 
+import fnmatch
 import os
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
@@ -31,7 +32,14 @@ from rich.progress import (
 )
 
 from testgen.constants import E_EXTENSION_TESTS
-from testgen.generate import generate_priv_test, generate_unpriv_extension_tests
+from testgen.generate import (
+    generate_all_priv_vector_tests,
+    generate_priv_test,
+    generate_unpriv_extension_tests,
+    generate_unpriv_vector_extension,
+    list_priv_vector_extensions,
+    list_unpriv_vector_extensions,
+)
 from testgen.io.testplans import get_extensions
 from testgen.priv import get_priv_test_extensions
 
@@ -56,6 +64,19 @@ class PrivTask:
 
     testsuite: str
     output_test_dir: Path
+
+
+@dataclass
+class UnprivVectorTask:
+    """Task for generating one (xlen, extension) pair of unpriv vector tests."""
+
+    xlen: int
+    extension: str
+
+
+@dataclass
+class PrivVectorTask:
+    """Coarse task that runs the priv vector generator for all priv vector extensions."""
 
 
 @testgen_app.command()
@@ -89,35 +110,68 @@ def generate_all_tests(
     # Get available extensions
     available_unpriv_extensions = get_extensions(testplan_dir)
     available_priv_extensions = get_priv_test_extensions()
+    available_unpriv_vector_extensions = list_unpriv_vector_extensions()
+    available_priv_vector_extensions = list_priv_vector_extensions()
     unpriv_ext_list: list[str] = []
     priv_ext_list: list[str] = []
+    unpriv_vec_ext_list: list[str] = []
+    priv_vec_ext_list: list[str] = []
 
     if extensions == "all":
         unpriv_ext_list = available_unpriv_extensions
         priv_ext_list = available_priv_extensions
+        unpriv_vec_ext_list = list(available_unpriv_vector_extensions)
+        priv_vec_ext_list = list(available_priv_vector_extensions)
     else:
-        for ext in extensions.split(","):
-            ext = ext.strip()
-            if ext in available_unpriv_extensions:
-                unpriv_ext_list.append(ext)
-            elif ext in available_priv_extensions:
-                priv_ext_list.append(ext)
-            else:
-                print(
-                    f"Extension {ext} not found in unpriv testplans at {testplan_dir} or priv test generators. This is normal for handwritten tests."
-                )
+        # Support glob-style patterns (e.g. ``Vx*``) so the Makefile
+        # ``EXTENSIONS=Vx*,Vls*,Vf*,ExceptionsV*`` invocation matches every
+        # per-SEW variant exposed by the vector generators.
+        requested = [e.strip() for e in extensions.split(",") if e.strip()]
 
-    # Handle extension exclusions
+        def _match(patterns: list[str], available: list[str]) -> list[str]:
+            seen: set[str] = set()
+            picked: list[str] = []
+            for pat in patterns:
+                for name in available:
+                    if name in seen:
+                        continue
+                    if fnmatch.fnmatchcase(name, pat) or name == pat:
+                        picked.append(name)
+                        seen.add(name)
+            return picked
+
+        unpriv_ext_list = _match(requested, available_unpriv_extensions)
+        priv_ext_list = _match(requested, available_priv_extensions)
+        unpriv_vec_ext_list = _match(requested, available_unpriv_vector_extensions)
+        priv_vec_ext_list = _match(requested, available_priv_vector_extensions)
+
+        # Anything that matched nothing at all gets the historical warning so
+        # handwritten-only extensions still surface in build logs.
+        matched_any = (
+            set(unpriv_ext_list) | set(priv_ext_list)
+            | set(unpriv_vec_ext_list) | set(priv_vec_ext_list)
+        )
+        for pat in requested:
+            if any(fnmatch.fnmatchcase(n, pat) or n == pat for n in matched_any):
+                continue
+            print(
+                f"Extension {pat} not found in unpriv testplans at {testplan_dir} or priv test generators. This is normal for handwritten tests."
+            )
+
+    # Handle extension exclusions (also glob-aware)
     if exclude:
-        for ext in exclude.split(","):
-            ext = ext.strip()
-            if ext in unpriv_ext_list:
-                unpriv_ext_list.remove(ext)
-            if ext in priv_ext_list:
-                priv_ext_list.remove(ext)
+        excl_pats = [e.strip() for e in exclude.split(",") if e.strip()]
+
+        def _drop(lst: list[str]) -> list[str]:
+            return [n for n in lst if not any(fnmatch.fnmatchcase(n, p) or n == p for p in excl_pats)]
+
+        unpriv_ext_list = _drop(unpriv_ext_list)
+        priv_ext_list = _drop(priv_ext_list)
+        unpriv_vec_ext_list = _drop(unpriv_vec_ext_list)
+        priv_vec_ext_list = _drop(priv_vec_ext_list)
 
     # Build list of test generation tasks
-    tasks: list[UnprivTask | PrivTask] = []
+    tasks: list[UnprivTask | PrivTask | UnprivVectorTask | PrivVectorTask] = []
 
     for xlen in [32, 64]:
         for E_ext in [False, True]:
@@ -127,6 +181,21 @@ def generate_all_tests(
                 tasks.append(UnprivTask(xlen, E_ext, testsuite, testplan_dir, output_test_dir))
 
     tasks.extend(PrivTask(testsuite, output_test_dir) for testsuite in sorted(priv_ext_list))
+
+    # Vector dispatch. Each (xlen, ext) pair is its own unpriv worker; the priv
+    # generator drives every priv vector extension end-to-end internally so it
+    # is dispatched as a single coarse task only when at least one priv vector
+    # extension was requested. Keeping it coarse-grained matches the legacy
+    # `make vector-testgen-priv` behaviour exactly (same seed reset / file
+    # ordering) so byte-for-byte diffs against the prior generator hold.
+    for xlen in [32, 64]:
+        for extension in sorted(unpriv_vec_ext_list):
+            tasks.append(UnprivVectorTask(xlen, extension))
+    if priv_vec_ext_list:
+        # The priv generator currently iterates its own xlens/extensions list
+        # internally rather than accepting a filter. Until that's refactored,
+        # any request for a priv vector extension triggers the full sweep.
+        tasks.append(PrivVectorTask())
 
     # Generate all tests in parallel
     with ProcessPoolExecutor(max_workers=jobs) as executor:
@@ -155,7 +224,7 @@ def _progress(description: str) -> Progress:
     )
 
 
-def _dispatch_test_gen(task: UnprivTask | PrivTask) -> None:
+def _dispatch_test_gen(task: UnprivTask | PrivTask | UnprivVectorTask | PrivVectorTask) -> None:
     """Dispatch test generation based on task type."""
     if isinstance(task, UnprivTask):
         generate_unpriv_extension_tests(
@@ -170,6 +239,10 @@ def _dispatch_test_gen(task: UnprivTask | PrivTask) -> None:
             testsuite=task.testsuite,
             output_test_dir=task.output_test_dir,
         )
+    elif isinstance(task, UnprivVectorTask):
+        generate_unpriv_vector_extension(xlen=task.xlen, extension=task.extension)
+    elif isinstance(task, PrivVectorTask):
+        generate_all_priv_vector_tests()
     else:
         raise TypeError("Invalid task type.")
 

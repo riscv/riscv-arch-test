@@ -9,8 +9,18 @@ This module provides the main entry points for generating tests:
 
 from testgen.generate.priv import generate_priv_test
 from testgen.generate.unpriv import generate_unpriv_extension_tests
+from testgen.generate.vector import (
+    generate_all_priv_vector_tests,
+    generate_unpriv_vector_extension,
+    list_priv_vector_extensions,
+    list_unpriv_vector_extensions,
+)
 
 __all__ = [
+    "generate_all_priv_vector_tests",
     "generate_priv_test",
     "generate_unpriv_extension_tests",
+    "generate_unpriv_vector_extension",
+    "list_priv_vector_extensions",
+    "list_unpriv_vector_extensions",
 ]

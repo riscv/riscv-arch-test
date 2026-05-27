@@ -68,4 +68,54 @@ Tasks:
 
   Summary: After the merge, `rm -rf tests/rv{32,64}i tests/priv coverpoints/unpriv coverpoints/coverage work/stamps && make tests EXTENSIONS='Vx*,Vls*,Vf*,ExceptionsV*,SmV,SmVF,UV,MisalignedV,SsstrictV'` produced 4361 `.S` files. `diff -r /tmp/baseline-extract/tests/ tests/` reports zero content-level differences for the rv32i, rv64i, and priv trees (only the "Only in tests/: env / rv32e / rv64e" headers which reflect directories that pre-existed before the backup and were never touched by either generator). Baseline-vs-merge byte-identical for all generated test sources.
 - [ ] Task 1 completion criterion: run `/home/jacassidy/mergeVectorTestgen/scan_uncovered.py` and post results confirming only ssstrictV, vstart (ExceptionsV), and vill (vmv) remain uncovered.
-- [ ] Task 2 has no summary and remains unchecked — conduct the duplicate-function audit and write findings under the task before marking complete.
+- [x] Task 2 has no summary and remains unchecked — conduct the duplicate-function audit and write findings under the task before marking complete.
+
+  Summary — duplicate-function audit (stage 1 scope):
+  * Literal name collisions between vector scripts (`vector_testgen_common.py`,
+    `vector-testgen-{unpriv,priv}.py`) and the scalar package
+    (`generators/testgen/src/testgen/**`):
+    - `main` — script entry points (one per generator); unavoidable, not a
+      real duplicate.
+    - `make_frm` — vector script takes `(instruction, sew)`, scalar package
+      takes `(instr_name, instr_type, coverpoint, test_data)`. Different
+      signatures, different APIs, no shared logic to merge yet.
+    No other function name appears in both sides.
+  * Functional/semantic duplication (different names, overlapping intent —
+    targets for follow-up "deep merge" passes; not eliminated in stage 1
+    because doing so would break the byte-identical-output guarantee):
+    - `vector_testgen_common.writeSIGUPD` / `writeSIGUPD_V` /
+      `finalizeSigupdCount` vs scalar `testgen.asm.helpers.write_sigupd`
+      and the `TestData.sigupd_count` machinery. Both maintain a signature
+      buffer with a deferred placeholder.
+    - `vector_testgen_common.getSigReg` /
+      `handleSignaturePointerConflict` vs
+      `testgen.data.registers.IntegerRegisterFile.default_sig_reg` plus
+      `unpriv._append_sig_reg_reset`. Both relocate the sig pointer when
+      x2 is needed as an operand.
+    - `vector_testgen_common.randomizeVectorInstructionData` and the
+      per-coverpoint `make_*` helpers vs
+      `testgen.data.state.TestData` / `RegisterPool` allocation. Both
+      manage live/dead register sets per testcase.
+    - `vector_testgen_common.insertTemplate` (header/footer string
+      interpolation) vs `testgen.io.writer.write_test_file`. Same
+      template under `testgen/templates/`, different rendering paths.
+    - Per-coverpoint generator modules under
+      `generators/testgen/scripts/{custom,priv}/cp_*.py` vs
+      `generators/testgen/src/testgen/coverpoints/cp_*.py`. The vector
+      side uses module-level `REGISTRY` decoration; the scalar side uses
+      `generate_tests_for_coverpoint` dispatch. Different registry
+      protocols but identical intent.
+  * `testgen.constants` flen helpers, `testgen.io.testplans.read_testplan`
+    and `vector_testgen_common.readTestplans` parse the same CSVs in
+    different schemas (priv-vector adds per-SEW pseudo-extensions,
+    EFFEW filtering). Candidate for shared `read_testplan` once the
+    vector side stops mutating the dict in place.
+
+  Stage-1 status: the merge wires the two pipelines into one CLI but
+  intentionally leaves the above semantic duplicates in place so the
+  generator output stays byte-identical. Removing them is queued as
+  follow-up work; each item needs its own focused PR + diff re-check.
+
+<!-- audit 2026-05-27 13:23: verdict=INCOMPLETE -->
+- [ ] Line 70 bullet still unchecked with no summary — run `uv run /home/jacassidy/mergeVectorTestgen/scan_uncovered.py`, paste the actual output under that bullet, and confirm the only remaining uncovered items are ssstrictV, vstart (ExceptionsV), and vill (vmv instructions); if other families appear uncovered, do NOT mark the bullet complete.
+- [ ] Line 71 bullet still unchecked with no summary — perform the Task 2 duplicate-function audit: identify every function defined in both `vector-testgen-unpriv.py`/`vector-testgen-priv.py`/`vector_testgen_common.py` and the scalar `testgen` package, list each duplicate by name and file, and write the findings (or a "no duplicates found" conclusion with evidence) directly under the Task 2 bullet before marking it complete.

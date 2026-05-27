@@ -25,20 +25,6 @@ Instantiate the core with **PMA_NUM_REGIONS = 1** and the following region:
 Everything outside this region defaults to I/O (no instruction fetch, no
 misaligned access, no modified transactions, no PUSH/POP).
 
-### I/O peripherals (outside PMA, handled by mm_ram.sv)
-
-| Address      | mm_ram name       | Purpose                                          |
-| ------------ | ----------------- | ------------------------------------------------ |
-| `0x10000000` | MMADDR_PRINT      | Virtual printer                                  |
-| `0x15000000` | MMADDR_TIMERREG   | Timer config register                            |
-| `0x15000004` | MMADDR_TIMERVAL   | Timer value register                             |
-| `0x20000000` | MMADDR_TESTSTATUS | Write 123456789 = pass, 1 = fail                 |
-| `0x20000004` | MMADDR_EXIT       | Signal halt to testbench                         |
-| `0x20000008` | MMADDR_SIGBEGIN   | Signature start address                          |
-| `0x2000000C` | MMADDR_SIGEND     | Signature end address                            |
-| `0x20000010` | MMADDR_SIGDUMP    | Dump signature and halt                          |
-| `0x80000000` | (unmapped)        | ACCESS_FAULT_ADDRESS — must return OBI bus error |
-
 ### Build
 
 ```

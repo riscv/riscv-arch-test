@@ -16,7 +16,7 @@ from testgen.priv.registry import add_priv_test_generator
 # ---------------------------------------------------------------------------
 
 MSTATEEN_CSRS_64 = ["mstateen0", "mstateen1", "mstateen2", "mstateen3"]
-MSTATEEN_CSRS_H  = ["mstateen0h", "mstateen1h", "mstateen2h", "mstateen3h"]
+MSTATEEN_CSRS_H = ["mstateen0h", "mstateen1h", "mstateen2h", "mstateen3h"]
 
 CSR_OPS = ["CSRRW", "CSRRS", "CSRRC", "CSRR"]
 
@@ -43,7 +43,6 @@ def _csr_insn(op: str, rd: int, csr: str, rs1: int) -> str:
     return f"\t{op}(x{rd}, {csr}, x{rs1})"
 
 
-
 def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
     coverpoint = "cp_csr_illegal_accesses"
     covergroup = "Smstateen_cg"
@@ -55,30 +54,32 @@ def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
         )
     ]
 
-    temp_reg, = test_data.int_regs.get_registers(1, exclude_regs=[0])
+    (temp_reg,) = test_data.int_regs.get_registers(1, exclude_regs=[0])
 
     lines.extend(_enter_umode(test_data, temp_reg))
 
-    # Base 4 CSRs — unconditional so symbols are defined exactly once.
     for csr in MSTATEEN_CSRS_64:
         for op in CSR_OPS:
-            lines.extend([
-                "",
-                test_data.add_testcase(f"{csr}_{op.lower()}_umode", coverpoint, covergroup),
-                _csr_insn(op, temp_reg, csr, temp_reg),
-                "\tnop",
-            ])
+            lines.extend(
+                [
+                    "",
+                    test_data.add_testcase(f"{csr}_{op.lower()}_umode", coverpoint, covergroup),
+                    _csr_insn(op, temp_reg, csr, temp_reg),
+                    "\tnop",
+                ]
+            )
 
-    # High-half CSRs only on RV32 — single guard block, no if/else.
     lines.append("#if __riscv_xlen == 32")
     for csr in ["mstateen0h", "mstateen1h", "mstateen2h", "mstateen3h"]:
         for op in CSR_OPS:
-            lines.extend([
-                "",
-                test_data.add_testcase(f"{csr}_{op.lower()}_umode", coverpoint, covergroup),
-                _csr_insn(op, temp_reg, csr, temp_reg),
-                "\tnop",
-            ])
+            lines.extend(
+                [
+                    "",
+                    test_data.add_testcase(f"{csr}_{op.lower()}_umode", coverpoint, covergroup),
+                    _csr_insn(op, temp_reg, csr, temp_reg),
+                    "\tnop",
+                ]
+            )
     lines.append("#endif  // __riscv_xlen == 32")
 
     lines.extend(_return_mmode(test_data, temp_reg))
@@ -98,24 +99,28 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
         )
     ]
 
-
     for csr in MSTATEEN_CSRS_64:
-        lines.extend([
-            "",
-            test_data.add_testcase(f"{csr}_walk", coverpoint, covergroup),
-        ])
+        lines.extend(
+            [
+                "",
+                test_data.add_testcase(f"{csr}_walk", coverpoint, covergroup),
+            ]
+        )
         lines.extend(csr_walk_test(test_data, (csr, None), covergroup, coverpoint))
 
     lines.append("#if __riscv_xlen == 32")
     for csr in ["mstateen0h", "mstateen1h", "mstateen2h", "mstateen3h"]:
-        lines.extend([
-            "",
-            test_data.add_testcase(f"{csr}_walk", coverpoint, covergroup),
-        ])
+        lines.extend(
+            [
+                "",
+                test_data.add_testcase(f"{csr}_walk", coverpoint, covergroup),
+            ]
+        )
         lines.extend(csr_walk_test(test_data, (csr, None), covergroup, coverpoint))
     lines.append("#endif  // __riscv_xlen == 32")
 
     return lines
+
 
 def _generate_envcfg(test_data: TestData) -> list[str]:
     coverpoint = "cp_envcfg"
@@ -130,33 +135,35 @@ def _generate_envcfg(test_data: TestData) -> list[str]:
 
     temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
     ENVCFG_BIT_MASK_64 = "0x4000000000000000"  # bit 62 of mstateen0
-    ENVCFG_BIT_MASK_32 = "0x40000000"          # bit 30 of mstateen0h (logical bit 62)
+    ENVCFG_BIT_MASK_32 = "0x40000000"  # bit 30 of mstateen0h (logical bit 62)
 
     lines.extend([f"\tLI(x{ones_reg}, -1)"])
 
-    # Test enabled (state=1) first, then disabled (state=0) so the tool sees
-    # senvcfg accessed under both envcfg_state values.
     for state in [1, 0]:
         bit_action = "CSRS" if state == 1 else "CSRC"
-        lines.extend([
-            "",
-            f"\t# Set mstateen0.envcfg = {state} from M-mode, then drop to S-mode",
-            "#if __riscv_xlen == 64",
-            f"\tLI(x{temp_reg}, {ENVCFG_BIT_MASK_64})",
-            f"\t{bit_action}(mstateen0, x{temp_reg})",
-            "#else",
-            f"\tLI(x{temp_reg}, {ENVCFG_BIT_MASK_32})",
-            f"\t{bit_action}(mstateen0h, x{temp_reg})",
-            "#endif",
-        ])
+        lines.extend(
+            [
+                "",
+                f"\t# Set mstateen0.envcfg = {state} from M-mode, then drop to S-mode",
+                "#if __riscv_xlen == 64",
+                f"\tLI(x{temp_reg}, {ENVCFG_BIT_MASK_64})",
+                f"\t{bit_action}(mstateen0, x{temp_reg})",
+                "#else",
+                f"\tLI(x{temp_reg}, {ENVCFG_BIT_MASK_32})",
+                f"\t{bit_action}(mstateen0h, x{temp_reg})",
+                "#endif",
+            ]
+        )
         lines.extend(_enter_smode(test_data, temp_reg))
         for op in CSR_OPS:
-            lines.extend([
-                "",
-                test_data.add_testcase(f"senvcfg_{op.lower()}_envcfg{state}", coverpoint, covergroup),
-                _csr_insn(op, temp_reg, "senvcfg", ones_reg),
-                "\tnop",
-            ])
+            lines.extend(
+                [
+                    "",
+                    test_data.add_testcase(f"senvcfg_{op.lower()}_envcfg{state}", coverpoint, covergroup),
+                    _csr_insn(op, temp_reg, "senvcfg", ones_reg),
+                    "\tnop",
+                ]
+            )
         lines.extend(_return_mmode(test_data, temp_reg))
 
     test_data.int_regs.return_registers([temp_reg, ones_reg])
@@ -175,8 +182,8 @@ def _generate_imsic(test_data: TestData) -> list[str]:
     ]
 
     temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
-    IMSIC_BIT_MASK_64 = "0x0400000000000000"   # bit 58
-    IMSIC_BIT_MASK_32 = "0x04000000"           # bit 26 of mstateen0h
+    IMSIC_BIT_MASK_64 = "0x0400000000000000"  # bit 58
+    IMSIC_BIT_MASK_32 = "0x04000000"  # bit 26 of mstateen0h
 
     imsic_csrs = ["stopei", "vstopei"]
 
@@ -184,25 +191,29 @@ def _generate_imsic(test_data: TestData) -> list[str]:
 
     for state in [0, 1]:
         bit_action = "CSRC" if state == 0 else "CSRS"
-        lines.extend([
-            "",
-            f"\t# mstateen0.imsic = {state}",
-            "#if __riscv_xlen == 64",
-            f"\tLI(x{temp_reg}, {IMSIC_BIT_MASK_64})",
-            f"\t{bit_action}(mstateen0, x{temp_reg})",
-            "#else",
-            f"\tLI(x{temp_reg}, {IMSIC_BIT_MASK_32})",
-            f"\t{bit_action}(mstateen0h, x{temp_reg})",
-            "#endif",
-        ])
+        lines.extend(
+            [
+                "",
+                f"\t# mstateen0.imsic = {state}",
+                "#if __riscv_xlen == 64",
+                f"\tLI(x{temp_reg}, {IMSIC_BIT_MASK_64})",
+                f"\t{bit_action}(mstateen0, x{temp_reg})",
+                "#else",
+                f"\tLI(x{temp_reg}, {IMSIC_BIT_MASK_32})",
+                f"\t{bit_action}(mstateen0h, x{temp_reg})",
+                "#endif",
+            ]
+        )
         for csr in imsic_csrs:
             for op in CSR_OPS:
-                lines.extend([
-                    "",
-                    test_data.add_testcase(f"{csr}_{op.lower()}_imsic{state}", coverpoint, covergroup),
-                    _csr_insn(op, temp_reg, csr, ones_reg),
-                    "\tnop",
-                ])
+                lines.extend(
+                    [
+                        "",
+                        test_data.add_testcase(f"{csr}_{op.lower()}_imsic{state}", coverpoint, covergroup),
+                        _csr_insn(op, temp_reg, csr, ones_reg),
+                        "\tnop",
+                    ]
+                )
 
     test_data.int_regs.return_registers([temp_reg, ones_reg])
     return lines
@@ -220,43 +231,49 @@ def _generate_aia(test_data: TestData) -> list[str]:
     ]
 
     temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
-    AIA_BIT_MASK_64 = "0x0800000000000000"   # bit 59
-    AIA_BIT_MASK_32 = "0x08000000"           # bit 27 of mstateen0h
+    AIA_BIT_MASK_64 = "0x0800000000000000"  # bit 59
+    AIA_BIT_MASK_32 = "0x08000000"  # bit 27 of mstateen0h
 
     lines.extend([f"\tLI(x{ones_reg}, -1)"])
 
     for state in [0, 1]:
         bit_action = "CSRC" if state == 0 else "CSRS"
-        lines.extend([
-            "",
-            f"\t# mstateen0.aia = {state}",
-            "#if __riscv_xlen == 64",
-            f"\tLI(x{temp_reg}, {AIA_BIT_MASK_64})",
-            f"\t{bit_action}(mstateen0, x{temp_reg})",
-            "#else",
-            f"\tLI(x{temp_reg}, {AIA_BIT_MASK_32})",
-            f"\t{bit_action}(mstateen0h, x{temp_reg})",
-            "#endif",
-        ])
+        lines.extend(
+            [
+                "",
+                f"\t# mstateen0.aia = {state}",
+                "#if __riscv_xlen == 64",
+                f"\tLI(x{temp_reg}, {AIA_BIT_MASK_64})",
+                f"\t{bit_action}(mstateen0, x{temp_reg})",
+                "#else",
+                f"\tLI(x{temp_reg}, {AIA_BIT_MASK_32})",
+                f"\t{bit_action}(mstateen0h, x{temp_reg})",
+                "#endif",
+            ]
+        )
         # RV64 uses sie/sip; RV32 uses sieh/siph
         lines.append("#if __riscv_xlen == 64")
         for csr in ["sie", "sip"]:
             for op in CSR_OPS:
-                lines.extend([
-                    "",
-                    test_data.add_testcase(f"{csr}_{op.lower()}_aia{state}", coverpoint, covergroup),
-                    _csr_insn(op, temp_reg, csr, ones_reg),
-                    "\tnop",
-                ])
+                lines.extend(
+                    [
+                        "",
+                        test_data.add_testcase(f"{csr}_{op.lower()}_aia{state}", coverpoint, covergroup),
+                        _csr_insn(op, temp_reg, csr, ones_reg),
+                        "\tnop",
+                    ]
+                )
         lines.append("#else  // RV32")
         for csr in ["sieh", "siph"]:
             for op in CSR_OPS:
-                lines.extend([
-                    "",
-                    test_data.add_testcase(f"{csr}_{op.lower()}_aia{state}", coverpoint, covergroup),
-                    _csr_insn(op, temp_reg, csr, ones_reg),
-                    "\tnop",
-                ])
+                lines.extend(
+                    [
+                        "",
+                        test_data.add_testcase(f"{csr}_{op.lower()}_aia{state}", coverpoint, covergroup),
+                        _csr_insn(op, temp_reg, csr, ones_reg),
+                        "\tnop",
+                    ]
+                )
         lines.append("#endif")
 
     test_data.int_regs.return_registers([temp_reg, ones_reg])
@@ -281,19 +298,23 @@ def _generate_jvt_access(test_data: TestData) -> list[str]:
 
     for state in [0, 1]:
         bit_action = "CSRC" if state == 0 else "CSRS"
-        lines.extend([
-            "",
-            f"\t# mstateen0.jvt = {state}",
-            f"\tLI(x{temp_reg}, {JVT_BIT_MASK})",
-            f"\t{bit_action}(mstateen0, x{temp_reg})",
-        ])
-        for op in CSR_OPS:
-            lines.extend([
+        lines.extend(
+            [
                 "",
-                test_data.add_testcase(f"jvt_{op.lower()}_jvt{state}", coverpoint, covergroup),
-                _csr_insn(op, temp_reg, "jvt", ones_reg),
-                "\tnop",
-            ])
+                f"\t# mstateen0.jvt = {state}",
+                f"\tLI(x{temp_reg}, {JVT_BIT_MASK})",
+                f"\t{bit_action}(mstateen0, x{temp_reg})",
+            ]
+        )
+        for op in CSR_OPS:
+            lines.extend(
+                [
+                    "",
+                    test_data.add_testcase(f"jvt_{op.lower()}_jvt{state}", coverpoint, covergroup),
+                    _csr_insn(op, temp_reg, "jvt", ones_reg),
+                    "\tnop",
+                ]
+            )
 
     test_data.int_regs.return_registers([temp_reg, ones_reg])
     return lines
@@ -322,22 +343,24 @@ def _generate_jvt_lower_mode(test_data: TestData) -> list[str]:
             lines.append("#ifdef S_SUPPORTED")
         for state in [0, 1]:
             bit_action = "CSRC" if state == 0 else "CSRS"
-            lines.extend([
-                "",
-                f"\t# mstateen0.jvt = {state}, {mode_label}",
-                f"\tLI(x{temp_reg}, {JVT_BIT_MASK})",
-                f"\t{bit_action}(mstateen0, x{temp_reg})",
-            ])
+            lines.extend(
+                [
+                    "",
+                    f"\t# mstateen0.jvt = {state}, {mode_label}",
+                    f"\tLI(x{temp_reg}, {JVT_BIT_MASK})",
+                    f"\t{bit_action}(mstateen0, x{temp_reg})",
+                ]
+            )
             lines.extend(enter_fn(test_data, temp_reg))
             for op in CSR_OPS:
-                lines.extend([
-                    "",
-                    test_data.add_testcase(
-                        f"jvt_{op.lower()}_jvt{state}_{mode_label}", coverpoint, covergroup
-                    ),
-                    _csr_insn(op, temp_reg, "jvt", ones_reg),
-                    "\tnop",
-                ])
+                lines.extend(
+                    [
+                        "",
+                        test_data.add_testcase(f"jvt_{op.lower()}_jvt{state}_{mode_label}", coverpoint, covergroup),
+                        _csr_insn(op, temp_reg, "jvt", ones_reg),
+                        "\tnop",
+                    ]
+                )
             lines.extend(_return_mmode(test_data, temp_reg))
         if mode_label == "smode":
             lines.append("#endif  // S_SUPPORTED")
@@ -359,34 +382,37 @@ def _generate_context(test_data: TestData) -> list[str]:
 
     temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
     CONTEXT_BIT_MASK_64 = "0x0200000000000000"  # bit 57
-    CONTEXT_BIT_MASK_32 = "0x02000000"          # bit 25 of mstateen0h
+    CONTEXT_BIT_MASK_32 = "0x02000000"  # bit 25 of mstateen0h
 
     lines.extend([f"\tLI(x{ones_reg}, -1)"])
 
     for state in [0, 1]:
         bit_action = "CSRC" if state == 0 else "CSRS"
-        lines.extend([
-            "",
-            f"\t# mstateen0.context = {state}",
-            "#if __riscv_xlen == 64",
-            f"\tLI(x{temp_reg}, {CONTEXT_BIT_MASK_64})",
-            f"\t{bit_action}(mstateen0, x{temp_reg})",
-            "#else",
-            f"\tLI(x{temp_reg}, {CONTEXT_BIT_MASK_32})",
-            f"\t{bit_action}(mstateen0h, x{temp_reg})",
-            "#endif",
-        ])
-        for op in CSR_OPS:
-            lines.extend([
+        lines.extend(
+            [
                 "",
-                test_data.add_testcase(f"scontext_{op.lower()}_context{state}", coverpoint, covergroup),
-                _csr_insn(op, temp_reg, "scontext", ones_reg),
-                "\tnop",
-            ])
+                f"\t# mstateen0.context = {state}",
+                "#if __riscv_xlen == 64",
+                f"\tLI(x{temp_reg}, {CONTEXT_BIT_MASK_64})",
+                f"\t{bit_action}(mstateen0, x{temp_reg})",
+                "#else",
+                f"\tLI(x{temp_reg}, {CONTEXT_BIT_MASK_32})",
+                f"\t{bit_action}(mstateen0h, x{temp_reg})",
+                "#endif",
+            ]
+        )
+        for op in CSR_OPS:
+            lines.extend(
+                [
+                    "",
+                    test_data.add_testcase(f"scontext_{op.lower()}_context{state}", coverpoint, covergroup),
+                    _csr_insn(op, temp_reg, "scontext", ones_reg),
+                    "\tnop",
+                ]
+            )
 
     test_data.int_regs.return_registers([temp_reg, ones_reg])
     return lines
-
 
 
 def _generate_p1p13(test_data: TestData) -> list[str]:
@@ -402,34 +428,37 @@ def _generate_p1p13(test_data: TestData) -> list[str]:
 
     temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
     P1P13_BIT_MASK_64 = "0x0100000000000000"  # bit 56
-    P1P13_BIT_MASK_32 = "0x01000000"          # bit 24 of mstateen0h
+    P1P13_BIT_MASK_32 = "0x01000000"  # bit 24 of mstateen0h
 
     lines.extend([f"\tLI(x{ones_reg}, -1)"])
 
     for state in [0, 1]:
         bit_action = "CSRC" if state == 0 else "CSRS"
-        lines.extend([
-            "",
-            f"\t# mstateen0.p1p13 = {state}",
-            "#if __riscv_xlen == 64",
-            f"\tLI(x{temp_reg}, {P1P13_BIT_MASK_64})",
-            f"\t{bit_action}(mstateen0, x{temp_reg})",
-            "#else",
-            f"\tLI(x{temp_reg}, {P1P13_BIT_MASK_32})",
-            f"\t{bit_action}(mstateen0h, x{temp_reg})",
-            "#endif",
-        ])
-        for op in CSR_OPS:
-            lines.extend([
+        lines.extend(
+            [
                 "",
-                test_data.add_testcase(f"hedelegh_{op.lower()}_p1p13_{state}", coverpoint, covergroup),
-                _csr_insn(op, temp_reg, "hedelegh", ones_reg),
-                "\tnop",
-            ])
+                f"\t# mstateen0.p1p13 = {state}",
+                "#if __riscv_xlen == 64",
+                f"\tLI(x{temp_reg}, {P1P13_BIT_MASK_64})",
+                f"\t{bit_action}(mstateen0, x{temp_reg})",
+                "#else",
+                f"\tLI(x{temp_reg}, {P1P13_BIT_MASK_32})",
+                f"\t{bit_action}(mstateen0h, x{temp_reg})",
+                "#endif",
+            ]
+        )
+        for op in CSR_OPS:
+            lines.extend(
+                [
+                    "",
+                    test_data.add_testcase(f"hedelegh_{op.lower()}_p1p13_{state}", coverpoint, covergroup),
+                    _csr_insn(op, temp_reg, "hedelegh", ones_reg),
+                    "\tnop",
+                ]
+            )
 
     test_data.int_regs.return_registers([temp_reg, ones_reg])
     return lines
-
 
 
 def _generate_srmcfg(test_data: TestData) -> list[str]:
@@ -445,34 +474,37 @@ def _generate_srmcfg(test_data: TestData) -> list[str]:
 
     temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
     SRMCFG_BIT_MASK_64 = "0x0080000000000000"  # bit 55
-    SRMCFG_BIT_MASK_32 = "0x00800000"          # bit 23 of mstateen0h
+    SRMCFG_BIT_MASK_32 = "0x00800000"  # bit 23 of mstateen0h
 
     lines.extend([f"\tLI(x{ones_reg}, -1)"])
 
     for state in [0, 1]:
         bit_action = "CSRC" if state == 0 else "CSRS"
-        lines.extend([
-            "",
-            f"\t# mstateen0.srmcfg = {state}",
-            "#if __riscv_xlen == 64",
-            f"\tLI(x{temp_reg}, {SRMCFG_BIT_MASK_64})",
-            f"\t{bit_action}(mstateen0, x{temp_reg})",
-            "#else",
-            f"\tLI(x{temp_reg}, {SRMCFG_BIT_MASK_32})",
-            f"\t{bit_action}(mstateen0h, x{temp_reg})",
-            "#endif",
-        ])
-        for op in CSR_OPS:
-            lines.extend([
+        lines.extend(
+            [
                 "",
-                test_data.add_testcase(f"srmcfg_{op.lower()}_srmcfg{state}", coverpoint, covergroup),
-                _csr_insn(op, temp_reg, "srmcfg", ones_reg),
-                "\tnop",
-            ])
+                f"\t# mstateen0.srmcfg = {state}",
+                "#if __riscv_xlen == 64",
+                f"\tLI(x{temp_reg}, {SRMCFG_BIT_MASK_64})",
+                f"\t{bit_action}(mstateen0, x{temp_reg})",
+                "#else",
+                f"\tLI(x{temp_reg}, {SRMCFG_BIT_MASK_32})",
+                f"\t{bit_action}(mstateen0h, x{temp_reg})",
+                "#endif",
+            ]
+        )
+        for op in CSR_OPS:
+            lines.extend(
+                [
+                    "",
+                    test_data.add_testcase(f"srmcfg_{op.lower()}_srmcfg{state}", coverpoint, covergroup),
+                    _csr_insn(op, temp_reg, "srmcfg", ones_reg),
+                    "\tnop",
+                ]
+            )
 
     test_data.int_regs.return_registers([temp_reg, ones_reg])
     return lines
-
 
 
 def _generate_ctr(test_data: TestData) -> list[str]:
@@ -488,7 +520,7 @@ def _generate_ctr(test_data: TestData) -> list[str]:
 
     temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
     CTR_BIT_MASK_64 = "0x0040000000000000"  # bit 54
-    CTR_BIT_MASK_32 = "0x00400000"          # bit 22 of mstateen0h
+    CTR_BIT_MASK_32 = "0x00400000"  # bit 22 of mstateen0h
 
     ctr_csrs = ["sctrdepth", "sctrstatus"]
 
@@ -496,25 +528,29 @@ def _generate_ctr(test_data: TestData) -> list[str]:
 
     for state in [0, 1]:
         bit_action = "CSRC" if state == 0 else "CSRS"
-        lines.extend([
-            "",
-            f"\t# mstateen0.ctr = {state}",
-            "#if __riscv_xlen == 64",
-            f"\tLI(x{temp_reg}, {CTR_BIT_MASK_64})",
-            f"\t{bit_action}(mstateen0, x{temp_reg})",
-            "#else",
-            f"\tLI(x{temp_reg}, {CTR_BIT_MASK_32})",
-            f"\t{bit_action}(mstateen0h, x{temp_reg})",
-            "#endif",
-        ])
+        lines.extend(
+            [
+                "",
+                f"\t# mstateen0.ctr = {state}",
+                "#if __riscv_xlen == 64",
+                f"\tLI(x{temp_reg}, {CTR_BIT_MASK_64})",
+                f"\t{bit_action}(mstateen0, x{temp_reg})",
+                "#else",
+                f"\tLI(x{temp_reg}, {CTR_BIT_MASK_32})",
+                f"\t{bit_action}(mstateen0h, x{temp_reg})",
+                "#endif",
+            ]
+        )
         for csr in ctr_csrs:
             for op in CSR_OPS:
-                lines.extend([
-                    "",
-                    test_data.add_testcase(f"{csr}_{op.lower()}_ctr{state}", coverpoint, covergroup),
-                    _csr_insn(op, temp_reg, csr, ones_reg),
-                    "\tnop",
-                ])
+                lines.extend(
+                    [
+                        "",
+                        test_data.add_testcase(f"{csr}_{op.lower()}_ctr{state}", coverpoint, covergroup),
+                        _csr_insn(op, temp_reg, csr, ones_reg),
+                        "\tnop",
+                    ]
+                )
 
     test_data.int_regs.return_registers([temp_reg, ones_reg])
     return lines
@@ -539,33 +575,41 @@ def _generate_fcsr(test_data: TestData) -> list[str]:
 
     # ignore_bins in the SV covergroup exclude fcsr_zero+F_set AND fcsr_zero+F_clear
     # so only fcsr_one + F_set is a valid bin; test that state.
-    lines.extend([
-        "",
-        "\t# mstateen0.fcsr = 1 (only meaningful state per ignore_bins)",
-        f"\tLI(x{temp_reg}, {FCSR_BIT_MASK})",
-        "\tCSRS(mstateen0, x{temp_reg})",
-    ])
-    for op in CSR_OPS:
-        lines.extend([
+    lines.extend(
+        [
             "",
-            test_data.add_testcase(f"fcsr_{op.lower()}_fcsr1", coverpoint, covergroup),
-            _csr_insn(op, temp_reg, "fcsr", ones_reg),
-            "\tnop",
-        ])
+            "\t# mstateen0.fcsr = 1 (only meaningful state per ignore_bins)",
+            f"\tLI(x{temp_reg}, {FCSR_BIT_MASK})",
+            "\tCSRS(mstateen0, x{temp_reg})",
+        ]
+    )
+    for op in CSR_OPS:
+        lines.extend(
+            [
+                "",
+                test_data.add_testcase(f"fcsr_{op.lower()}_fcsr1", coverpoint, covergroup),
+                _csr_insn(op, temp_reg, "fcsr", ones_reg),
+                "\tnop",
+            ]
+        )
     # Also test fcsr_zero to hit the ignore_bins side (coverage will mark them ignored)
-    lines.extend([
-        "",
-        "\t# mstateen0.fcsr = 0",
-        f"\tLI(x{temp_reg}, {FCSR_BIT_MASK})",
-        "\tCSRC(mstateen0, x{temp_reg})",
-    ])
-    for op in CSR_OPS:
-        lines.extend([
+    lines.extend(
+        [
             "",
-            test_data.add_testcase(f"fcsr_{op.lower()}_fcsr0", coverpoint, covergroup),
-            _csr_insn(op, temp_reg, "fcsr", ones_reg),
-            "\tnop",
-        ])
+            "\t# mstateen0.fcsr = 0",
+            f"\tLI(x{temp_reg}, {FCSR_BIT_MASK})",
+            "\tCSRC(mstateen0, x{temp_reg})",
+        ]
+    )
+    for op in CSR_OPS:
+        lines.extend(
+            [
+                "",
+                test_data.add_testcase(f"fcsr_{op.lower()}_fcsr0", coverpoint, covergroup),
+                _csr_insn(op, temp_reg, "fcsr", ones_reg),
+                "\tnop",
+            ]
+        )
 
     test_data.int_regs.return_registers([temp_reg, ones_reg])
     return lines
@@ -596,24 +640,29 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
             lines.append("#ifdef S_SUPPORTED")
         for state in [0, 1]:
             bit_action = "CSRC" if state == 0 else "CSRS"
-            lines.extend([
-                "",
-                f"\t# mstateen0.fcsr = {state}, {mode_label}",
-                f"\tLI(x{temp_reg}, {FCSR_BIT_MASK})",
-                f"\t{bit_action}(mstateen0, x{temp_reg})",
-            ])
+            lines.extend(
+                [
+                    "",
+                    f"\t# mstateen0.fcsr = {state}, {mode_label}",
+                    f"\tLI(x{temp_reg}, {FCSR_BIT_MASK})",
+                    f"\t{bit_action}(mstateen0, x{temp_reg})",
+                ]
+            )
             lines.extend(enter_fn(test_data, temp_reg))
             for csr in fp_csrs:
                 for op in CSR_OPS:
-                    lines.extend([
-                        "",
-                        test_data.add_testcase(
-                            f"{csr}_{op.lower()}_fcsr{state}_{mode_label}",
-                            coverpoint, covergroup,
-                        ),
-                        _csr_insn(op, temp_reg, csr, ones_reg),
-                        "\tnop",
-                    ])
+                    lines.extend(
+                        [
+                            "",
+                            test_data.add_testcase(
+                                f"{csr}_{op.lower()}_fcsr{state}_{mode_label}",
+                                coverpoint,
+                                covergroup,
+                            ),
+                            _csr_insn(op, temp_reg, csr, ones_reg),
+                            "\tnop",
+                        ]
+                    )
             lines.extend(_return_mmode(test_data, temp_reg))
         if mode_label == "smode":
             lines.append("#endif  // S_SUPPORTED")
@@ -640,36 +689,38 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
     # Each entry: (asm_template, label_prefix)
     # {temp} and {scratch} are substituted with register numbers.
     fp_instrs = [
-        ("fadd.s f0, f1, f2",               "fadd_s"),
-        ("flw f0, 0(x{scratch})",            "flw"),
-        ("fcvt.w.s x{temp}, f0",             "fcvt_w_s"),
-        ("fcvt.s.w f0, x0",                  "fcvt_s_w"),
-        ("fmv.x.w x{temp}, f0",              "fmv_x_w"),
-        ("fmv.w.x f0, x{temp}",              "fmv_w_x"),
-        ("fclass.s x{temp}, f0",             "fclass_s"),
+        ("fadd.s f0, f1, f2", "fadd_s"),
+        ("flw f0, 0(x{scratch})", "flw"),
+        ("fcvt.w.s x{temp}, f0", "fcvt_w_s"),
+        ("fcvt.s.w f0, x0", "fcvt_s_w"),
+        ("fmv.x.w x{temp}, f0", "fmv_x_w"),
+        ("fmv.w.x f0, x{temp}", "fmv_w_x"),
+        ("fclass.s x{temp}, f0", "fclass_s"),
     ]
 
     lines.extend([f"\tLA(x{scratch_reg}, scratch)  # scratch memory for flw"])
 
     for state in [0, 1]:
         bit_action = "CSRC" if state == 0 else "CSRS"
-        lines.extend([
-            "",
-            f"\t# mstateen0.fcsr = {state}, umode",
-            f"\tLI(x{temp_reg}, {FCSR_BIT_MASK})",
-            f"\t{bit_action}(mstateen0, x{temp_reg})",
-        ])
+        lines.extend(
+            [
+                "",
+                f"\t# mstateen0.fcsr = {state}, umode",
+                f"\tLI(x{temp_reg}, {FCSR_BIT_MASK})",
+                f"\t{bit_action}(mstateen0, x{temp_reg})",
+            ]
+        )
         lines.extend(_enter_umode(test_data, temp_reg))
         for insn_template, label in fp_instrs:
-            insn = (insn_template
-                    .replace("{temp}", str(temp_reg))
-                    .replace("{scratch}", str(scratch_reg)))
-            lines.extend([
-                "",
-                test_data.add_testcase(f"{label}_fcsr{state}_umode", coverpoint, covergroup),
-                f"\t{insn}",
-                "\tnop",
-            ])
+            insn = insn_template.replace("{temp}", str(temp_reg)).replace("{scratch}", str(scratch_reg))
+            lines.extend(
+                [
+                    "",
+                    test_data.add_testcase(f"{label}_fcsr{state}_umode", coverpoint, covergroup),
+                    f"\t{insn}",
+                    "\tnop",
+                ]
+            )
         lines.extend(_return_mmode(test_data, temp_reg))
 
     test_data.int_regs.return_registers([temp_reg, scratch_reg])
@@ -679,6 +730,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
 # ---------------------------------------------------------------------------
 # Main entry point
 # ---------------------------------------------------------------------------
+
 
 @add_priv_test_generator(
     "Smstateen",

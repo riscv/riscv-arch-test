@@ -1,5 +1,5 @@
 # Ssstateen.py
-#
+# Written by : Ayesha Anwar ayesha.anwaar2005@gmail.com
 # Ssstateen state-enable extension test generator.
 # SPDX-License-Identifier: Apache-2.0
 ##################################
@@ -152,9 +152,7 @@ def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "",
-                    test_data.add_testcase(
-                        f"{csr}_{op.lower()}_umode_se0_1", coverpoint, covergroup
-                    ),
+                    test_data.add_testcase(f"{csr}_{op.lower()}_umode_se0_1", coverpoint, covergroup),
                     insn,
                     "\tnop",
                 ]
@@ -234,13 +232,6 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
     return lines
 
 
-# ---------------------------------------------------------------------------
-# cp_jvt  (cross csrrw, jvt_csr, jvt_state, se0_state)  [ifdef ZCMT_SUPPORTED]
-#   → CSRRW to jvt with sstateen0.JVT bit=0 and =1, under both SE0 states.
-#   jvt_state coverpoint reads sstateen0.jvt; se0_state reads mstateen0.SE0.
-# ---------------------------------------------------------------------------
-
-
 def _generate_jvt(test_data: TestData) -> list[str]:
     coverpoint = "cp_jvt"
     covergroup = "Ssstateen_cg"
@@ -253,9 +244,7 @@ def _generate_jvt(test_data: TestData) -> list[str]:
         )
     )
 
-    temp_reg, save_mstateen, save_sstateen, save_jvt, ones_reg = test_data.int_regs.get_registers(
-        5, exclude_regs=[0]
-    )
+    temp_reg, save_mstateen, save_sstateen, save_jvt, ones_reg = test_data.int_regs.get_registers(5, exclude_regs=[0])
 
     JVT_BIT = 2
 
@@ -350,9 +339,7 @@ def _generate_jvt_lower_mode(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 "",
-                test_data.add_testcase(
-                    f"csrrw_jvt_se0_1_jvt_{jvt_state}_umode", coverpoint, covergroup
-                ),
+                test_data.add_testcase(f"csrrw_jvt_se0_1_jvt_{jvt_state}_umode", coverpoint, covergroup),
                 f"\tCSRRW(x{temp_reg}, jvt, x{temp_reg})  # write jvt from U-mode",
                 "\tnop",
             ]
@@ -577,4 +564,3 @@ def make_ssstateen(test_data: TestData) -> list[str]:
     lines.append("#endif  // ZCMT_SUPPORTED")
 
     return lines
-    

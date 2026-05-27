@@ -2279,7 +2279,7 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
           writeLine(line, "# zero reload register for deterministic mask LS comparison")
       writeLine(load_testline, "# load value stored in memory to check against signature")
       if reset_vl_post_load is not None:
-        writeLine(reset_vl_post_load, "# zero reload register for deterministic mask LS comparison")
+        writeLine(reset_vl_post_load, "# reset vl to the previous value")
 
     if (test in vfloattypes) and (test not in fvtype) and not vlmax_mask_prod:
       fcsrsaveReg = pickScalarScratch(scalar_registers_used)
@@ -2358,13 +2358,13 @@ def getELENIfdef(instruction):
 def getSEWMINIfdef(instruction):
   ifdef = ""
   if   instruction in eew64_ins:
-    ifdef = "UDB_SEWMIN <= 64 & "
+    ifdef = "UDB_SEW_MIN <= 64 & "
   elif instruction in eew32_ins:
-    ifdef = "UDB_SEWMIN <= 32 & "
+    ifdef = "UDB_SEW_MIN <= 32 & "
   elif instruction in eew16_ins:
-    ifdef = "UDB_SEWMIN <= 16 & "
+    ifdef = "UDB_SEW_MIN <= 16 & "
   elif instruction in eew8_ins:
-    ifdef = "UDB_SEWMIN <= 8 & "
+    ifdef = "UDB_SEW_MIN <= 8 & "
   return ifdef
 
 def getMaxIndexEEWIfdef(instruction):

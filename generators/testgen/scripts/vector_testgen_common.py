@@ -651,7 +651,8 @@ vmlogicalins = ["vmsbf.m", "vmsif.m", "vmsof.m"]
 viotains = ["viota.m"]
 vfredins = ["vfredosum.vs", "vfwredosum.vs", "vfredusum.vs", "vfwredusum.vs", "vfredmax.vs", "vfredmin.vs"]
 vredins  = ["vredsum.vs", "vwredsumu.vs", "vwredsum.vs", "vredmaxu.vs", "vredmax.vs", "vredminu.vs", "vredmin.vs", "vredand.vs", "vredor.vs", "vredxor.vs"] + vfredins
-maskprodins = mmins + vmlogicalins + maskins + ["vlm.v", "vsm.v"]
+mask_ls_ins = ["vlm.v", "vsm.v"]
+maskprodins = mmins + vmlogicalins + maskins + mask_ls_ins
 maskopins = mmins + vmlogicalins + viotains  # instructions that take mask operands
 
 ls_not_maskable = [
@@ -1393,13 +1394,20 @@ def genVtestdata(test, sew):
 
   if test in vector_loads:
     test_data += genVsedges(test, 64, "8") # max size edges to ave all zeros available
-    test_data += genRandomVector(test, sew, vs="vd")
+    if test in mask_ls_ins:
+      test_data += genRandomVector(test, 64, vs="vd") # For proper alignment
+    else:
+      test_data += genRandomVector(test, sew, vs="vd")
     if test in indexed_loads:
       test_data += genRandomVector(test, getInstructionEEW(test), vs="vs2")
     test_data += genRandomVectorLS()
   if test in vector_stores:
     test_data += genVsedges(test, 64, "8") # max size edges to ave all zeros available
-    test_data += genRandomVector(test, sew, vs="vs3")
+    # These ensure that we use the correct alignment for loads and stores
+    instruction_eew = getInstructionEEW(test)
+    if instruction_eew is None: instruction_eew = 64 if test in mask_ls_ins else sew
+    instruction_eew = max(instruction_eew, sew)
+    test_data += genRandomVector(test, instruction_eew, vs="vs3") # This may have different alignment constraints than sew
     test_data += genRandomVector(test, sew, vs="vd") # vd data needed for length-suite preload
     if test in indexed_stores:
       test_data += genRandomVector(test, getInstructionEEW(test), vs="vs2")
@@ -2771,7 +2779,6 @@ def writeTest(description, instruction, cp, instruction_data=None,
       writeLine(f"li x{villReg}, {1 << (xlen - 1)}",                               "# Load vtype value with vill bit set")
       writeLine(f"vsetvl x0, x0, x{villReg}",                                       "# Set vtype with vill=1 via vsetvl")
 
-    mask_ls_ins = ["vsm.v", "vlm.v"]
     if vector_register_data['vd']['reg_type'] == "mask" or vector_register_data['vd']['reg_type'] == "scalar" \
                                     or instruction in mask_ls_ins \
                                     or (instruction in whole_register_ls and (lmul != getInstructionSegments(instruction) or sew != getInstructionEEW(instruction))):

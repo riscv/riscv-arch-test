@@ -74,7 +74,7 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
                 bins fcsr_zero = {1'b0};
                 bins fcsr_one  = {1'b1};
         }
-        fcsr_lower_mode_csrs: coverpoint ins.current.csr[31:20] {
+        fcsr_lower_mode_csrs: coverpoint ins.current.insn[31:20] {
                 wildcard bins frm    = {CSR_FRM};
                 wildcard bins fflags = {CSR_FFLAGS};
                 wildcard bins fcsr   = {CSR_FCSR};
@@ -94,7 +94,7 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
                 bins jvt_disabled = {1'b0};
                 bins jvt_enabled  = {1'b1};
         }
-        jvt_csr: coverpoint ins.current.csr[31:20] {
+        jvt_csr: coverpoint ins.current.insn[31:20] {
                 wildcard bins jvt = {CSR_JVT};
         }
     `endif

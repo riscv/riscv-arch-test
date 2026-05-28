@@ -37,16 +37,6 @@ def _return_mmode(test_data: TestData, temp_reg: int) -> list[str]:
     ]
 
 
-# ---------------------------------------------------------------------------
-# cp_mstateen0_se0_controls_sstateen0
-#   (cross csrrw, se0_state, sstateen_csrs — sstateen0 only per ignore_bins)
-#   → CSRRW to sstateen0 from M-mode with mstateen0.SE0=0 and =1.
-#   When SE0=0, writes to sstateen0 from lower modes should have no effect;
-#   when SE0=1 they are permitted.  We test the write itself and capture
-#   both mstateen0 and sstateen0 in the signature so the checker can verify.
-# ---------------------------------------------------------------------------
-
-
 def _set_se0(temp_reg: int) -> list[str]:
     """Emit instructions to set SE0=1 in mstateen0/mstateen0h."""
     return [
@@ -60,8 +50,94 @@ def _set_se0(temp_reg: int) -> list[str]:
     ]
 
 
-def _generate_se0_controls_sstateen0(test_data: TestData) -> list[str]:
-    coverpoint = "cp_mstateen0_se0_controls_sstateen0"
+def _clear_se0(temp_reg: int) -> list[str]:
+    """Emit instructions to clear SE0=0 in mstateen0/mstateen0h."""
+    return [
+        "#if __riscv_xlen == 64",
+        f"\tLI(x{temp_reg}, 0x8000000000000000)  # SE0 = bit 63 of mstateen0",
+        f"\tCSRC(mstateen0, x{temp_reg})          # clear SE0=0",
+        "#else",
+        f"\tLI(x{temp_reg}, 0x80000000)           # SE0 = bit 31 of mstateen0h",
+        f"\tCSRC(mstateen0h, x{temp_reg})          # clear SE0=0",
+        "#endif",
+    ]
+
+
+def _save_mstateen(save_reg: int, save_regh: int) -> list[str]:
+    """Save mstateen0 (and mstateen0h on RV32) into separate registers."""
+    return [
+        f"\tCSRR(x{save_reg}, mstateen0)          # save mstateen0",
+        "#if __riscv_xlen == 32",
+        f"\tCSRR(x{save_regh}, mstateen0h)         # save mstateen0h on RV32",
+        "#endif",
+    ]
+
+
+def _restore_mstateen(save_reg: int, save_regh: int) -> list[str]:
+    """Restore mstateen0 (and mstateen0h on RV32) from separate registers."""
+    return [
+        f"\tCSRW(mstateen0, x{save_reg})           # restore mstateen0",
+        "#if __riscv_xlen == 32",
+        f"\tCSRW(mstateen0h, x{save_regh})          # restore mstateen0h on RV32",
+        "#endif",
+    ]
+
+
+# ---------------------------------------------------------------------------
+# cp_mstateen0_se0_zero_controls_sstateen0
+# ---------------------------------------------------------------------------
+
+
+def _generate_se0_zero_controls_sstateen0(test_data: TestData) -> list[str]:
+    coverpoint = "cp_mstateen0_se0_zero_controls_sstateen0"
+    covergroup = "Ssstateen_cg"
+
+    lines = []
+    lines.append(
+        comment_banner(
+            coverpoint,
+            "CSR ops to sstateen0 with mstateen0.SE0=0 (access from lower modes should trap/have no effect)",
+        )
+    )
+
+    temp_reg, save_mstateen, save_mstatenh, save_sstateen, ones_reg = test_data.int_regs.get_registers(
+        5, exclude_regs=[0]
+    )
+
+    lines.extend(
+        [
+            f"\tCSRR(x{save_sstateen}, sstateen0)   # save sstateen0",
+            f"\tLI(x{ones_reg}, -1)",
+        ]
+    )
+    lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
+    lines.extend(_clear_se0(temp_reg))
+
+    for op in ["CSRRW", "CSRRS", "CSRRC", "CSRR"]:
+        insn = f"\t{op}(x{temp_reg}, sstateen0)" if op == "CSRR" else f"\t{op}(x{temp_reg}, sstateen0, x{ones_reg})"
+        lines.extend(
+            [
+                "",
+                test_data.add_testcase(f"sstateen0_{op.lower()}_se0_0", coverpoint, covergroup),
+                insn,
+                "\tnop",
+            ]
+        )
+
+    lines.extend(["", f"\tCSRW(sstateen0, x{save_sstateen})   # restore sstateen0"])
+    lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
+
+    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, save_sstateen, ones_reg])
+    return lines
+
+
+# ---------------------------------------------------------------------------
+# cp_mstateen0_se0_one_controls_sstateen0
+# ---------------------------------------------------------------------------
+
+
+def _generate_se0_one_controls_sstateen0(test_data: TestData) -> list[str]:
+    coverpoint = "cp_mstateen0_se0_one_controls_sstateen0"
     covergroup = "Ssstateen_cg"
 
     lines = []
@@ -72,20 +148,17 @@ def _generate_se0_controls_sstateen0(test_data: TestData) -> list[str]:
         )
     )
 
-    temp_reg, save_mstateen, save_sstateen, ones_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
+    temp_reg, save_mstateen, save_mstatenh, save_sstateen, ones_reg = test_data.int_regs.get_registers(
+        5, exclude_regs=[0]
+    )
 
     lines.extend(
         [
-            f"\tCSRR(x{save_mstateen}, mstateen0)   # save mstateen0",
             f"\tCSRR(x{save_sstateen}, sstateen0)   # save sstateen0",
             f"\tLI(x{ones_reg}, -1)",
-            "#if __riscv_xlen == 32",
-            f"\tCSRR(x{save_mstateen}, mstateen0h)  # save mstateen0h on RV32",
-            "#endif",
         ]
     )
-
-    # SE0 must be 1 to access sstateen0 — only test SE0=1
+    lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
     lines.extend(_set_se0(temp_reg))
     lines.extend(
         [
@@ -94,23 +167,17 @@ def _generate_se0_controls_sstateen0(test_data: TestData) -> list[str]:
             f"\tCSRRW(x{temp_reg}, sstateen0, x{ones_reg})  # write all-ones to sstateen0",
             "\tnop",
             "",
-            f"\tCSRW(mstateen0, x{save_mstateen})   # restore mstateen0",
             f"\tCSRW(sstateen0, x{save_sstateen})   # restore sstateen0",
-            "#if __riscv_xlen == 32",
-            f"\tCSRW(mstateen0h, x{save_mstateen})  # restore mstateen0h on RV32",
-            "#endif",
         ]
     )
+    lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
 
-    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_sstateen, ones_reg])
+    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, save_sstateen, ones_reg])
     return lines
 
 
 # ---------------------------------------------------------------------------
-# cp_csr_illegal_accesses  (cross priv_mode_u, csr, csrops, se0_state)
-#   → From U-mode, attempt CSRRW/CSRRS/CSRRC/CSRR to each sstateenN CSR;
-#   these should trap regardless of SE0.  We test with both SE0 states so
-#   the cross bins are fully populated.
+# cp_csr_illegal_accesses
 # ---------------------------------------------------------------------------
 
 
@@ -126,25 +193,17 @@ def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
         )
     )
 
-    temp_reg, save_mstateen = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    temp_reg, save_mstateen, save_mstatenh = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
     sstateen_csrs = ["sstateen0", "sstateen1", "sstateen2", "sstateen3"]
     csr_ops = ["CSRRW", "CSRRS", "CSRRC", "CSRR"]
 
-    lines.extend(
-        [
-            f"\tCSRR(x{save_mstateen}, mstateen0)  # save mstateen0",
-            "#if __riscv_xlen == 32",
-            f"\tCSRR(x{save_mstateen}, mstateen0h)  # save mstateen0h on RV32",
-            "#endif",
-        ]
-    )
+    lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
     lines.extend(_set_se0(temp_reg))
     lines.extend(_enter_umode(test_data, temp_reg))
 
     for csr in sstateen_csrs:
         for op in csr_ops:
-            # CSRR takes only (rd, csr); CSRRW/CSRRS/CSRRC take (rd, csr, rs1)
             if op == "CSRR":
                 insn = f"\t{op}(x{temp_reg}, {csr})  # illegal from U-mode"
             else:
@@ -159,22 +218,14 @@ def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
             )
 
     lines.extend(_return_mmode(test_data, temp_reg))
-    lines.extend(
-        [
-            f"\tCSRW(mstateen0, x{save_mstateen})  # restore mstateen0",
-            "#if __riscv_xlen == 32",
-            f"\tCSRW(mstateen0h, x{save_mstateen})  # restore mstateen0h on RV32",
-            "#endif",
-        ]
-    )
+    lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
 
-    test_data.int_regs.return_registers([temp_reg, save_mstateen])
+    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh])
     return lines
 
 
 # ---------------------------------------------------------------------------
-# cp_walking_ones  (cross csr, csrops, csr_walk, se0_state)
-#   → Walking-1 and walking-0 patterns on sstateen0..3 with both SE0 states.
+# cp_walking_ones
 # ---------------------------------------------------------------------------
 
 
@@ -192,21 +243,13 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
 
     sstateen_csrs = ["sstateen0", "sstateen1", "sstateen2", "sstateen3"]
 
-    # Set SE0=1 then release registers before csr_walk_test allocates its own
-    save_mstateen, temp_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    # Allocate save registers, set SE0=1, then release so csr_walk_test can allocate freely
+    save_mstateen, save_mstatenh, temp_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
-    lines.extend(
-        [
-            f"\tCSRR(x{save_mstateen}, mstateen0)  # save mstateen0",
-            "#if __riscv_xlen == 32",
-            f"\tCSRR(x{save_mstateen}, mstateen0h)  # save mstateen0h on RV32",
-            "#endif",
-        ]
-    )
+    lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
     lines.extend(_set_se0(temp_reg))
-    test_data.int_regs.return_registers([save_mstateen, temp_reg])
+    test_data.int_regs.return_registers([save_mstateen, save_mstatenh, temp_reg])
 
-    # Full walk for each sstateen CSR — csr_walk_test allocates its own registers
     for csr in sstateen_csrs:
         lines.extend(
             [
@@ -216,20 +259,18 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
         )
         lines.extend(csr_walk_test(test_data, (csr, 0x7), covergroup, coverpoint))
 
-    # Restore mstateen0/0h
-    save_mstateen, temp_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
-    lines.extend(
-        [
-            "",
-            f"\tCSRW(mstateen0, x{save_mstateen})  # restore mstateen0",
-            "#if __riscv_xlen == 32",
-            f"\tCSRW(mstateen0h, x{save_mstateen})  # restore mstateen0h on RV32",
-            "#endif",
-        ]
-    )
-    test_data.int_regs.return_registers([save_mstateen, temp_reg])
+    # Re-allocate the same registers to restore — same pool so same numbers come back
+    save_mstateen, save_mstatenh, temp_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
+    lines.extend([""])
+    lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
+    test_data.int_regs.return_registers([save_mstateen, save_mstatenh, temp_reg])
 
     return lines
+
+
+# ---------------------------------------------------------------------------
+# cp_jvt
+# ---------------------------------------------------------------------------
 
 
 def _generate_jvt(test_data: TestData) -> list[str]:
@@ -244,21 +285,20 @@ def _generate_jvt(test_data: TestData) -> list[str]:
         )
     )
 
-    temp_reg, save_mstateen, save_sstateen, save_jvt, ones_reg = test_data.int_regs.get_registers(5, exclude_regs=[0])
+    temp_reg, save_mstateen, save_mstatenh, save_sstateen, save_jvt, ones_reg = test_data.int_regs.get_registers(
+        6, exclude_regs=[0]
+    )
 
     JVT_BIT = 2
 
     lines.extend(
         [
-            f"\tCSRR(x{save_mstateen}, mstateen0)   # save mstateen0",
             f"\tCSRR(x{save_sstateen}, sstateen0)   # save sstateen0",
             f"\tCSRR(x{save_jvt}, jvt)              # save jvt",
             f"\tLI(x{ones_reg}, -1)",
-            "#if __riscv_xlen == 32",
-            f"\tCSRR(x{save_mstateen}, mstateen0h)  # save mstateen0h on RV32",
-            "#endif",
         ]
     )
+    lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
     lines.extend(_set_se0(temp_reg))
 
     for jvt_state in [0, 1]:
@@ -279,23 +319,18 @@ def _generate_jvt(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "",
-            f"\tCSRW(mstateen0, x{save_mstateen})   # restore mstateen0",
             f"\tCSRW(sstateen0, x{save_sstateen})   # restore sstateen0",
             f"\tCSRW(jvt, x{save_jvt})              # restore jvt",
-            "#if __riscv_xlen == 32",
-            f"\tCSRW(mstateen0h, x{save_mstateen})  # restore mstateen0h on RV32",
-            "#endif",
         ]
     )
+    lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
 
-    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_sstateen, save_jvt, ones_reg])
+    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, save_sstateen, save_jvt, ones_reg])
     return lines
 
 
 # ---------------------------------------------------------------------------
-# cp_jvt_lower_mode  (cross priv_mode_u, csrops, jvt_csr, jvt_state, se0_state)
-#   [ifdef ZCMT_SUPPORTED]
-#   → From U-mode, CSRRW to jvt with all combinations of SE0 and JVT states.
+# cp_jvt_lower_mode
 # ---------------------------------------------------------------------------
 
 
@@ -311,7 +346,9 @@ def _generate_jvt_lower_mode(test_data: TestData) -> list[str]:
         )
     )
 
-    temp_reg, save_mstateen, save_sstateen, save_jvt = test_data.int_regs.get_registers(4, exclude_regs=[0])
+    temp_reg, save_mstateen, save_mstatenh, save_sstateen, save_jvt = test_data.int_regs.get_registers(
+        5, exclude_regs=[0]
+    )
     JVT_BIT = 2
 
     for jvt_state in [0, 1]:
@@ -320,14 +357,11 @@ def _generate_jvt_lower_mode(test_data: TestData) -> list[str]:
             [
                 "",
                 f"\t# SE0=1, sstateen0.JVT={jvt_state}",
-                f"\tCSRR(x{save_mstateen}, mstateen0)",
                 f"\tCSRR(x{save_sstateen}, sstateen0)",
                 f"\tCSRR(x{save_jvt}, jvt)",
-                "#if __riscv_xlen == 32",
-                f"\tCSRR(x{save_mstateen}, mstateen0h)  # save mstateen0h on RV32",
-                "#endif",
             ]
         )
+        lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
         lines.extend(_set_se0(temp_reg))
         lines.extend(
             [
@@ -347,28 +381,18 @@ def _generate_jvt_lower_mode(test_data: TestData) -> list[str]:
         lines.extend(_return_mmode(test_data, temp_reg))
         lines.extend(
             [
-                f"\tCSRW(mstateen0, x{save_mstateen})  # restore mstateen0",
                 f"\tCSRW(sstateen0, x{save_sstateen})  # restore sstateen0",
                 f"\tCSRW(jvt, x{save_jvt})             # restore jvt",
-                "#if __riscv_xlen == 32",
-                f"\tCSRW(mstateen0h, x{save_mstateen})  # restore mstateen0h on RV32",
-                "#endif",
             ]
         )
+        lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
 
-    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_sstateen, save_jvt])
+    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, save_sstateen, save_jvt])
     return lines
 
 
 # ---------------------------------------------------------------------------
 # cp_fcsr_lower
-#   (cross priv_mode_s_u, misa_F, se0_state, sstateen0_fcsr_bit, csrops, fcsr_lower_mode_csrs)
-#   [ifdef ZFINX_SUPPORTED]
-#   → From S/U-mode, CSR ops on frm/fflags/fcsr under all combinations of
-#   SE0 and sstateen0.FCSR states.
-#   ignore_bins in the covergroup exclude the cases where sstateen0.FCSR=0 AND
-#   misa_F is set or clear (those are covered separately); we still exercise
-#   both states so the enabled bins are hit.
 # ---------------------------------------------------------------------------
 
 
@@ -384,7 +408,9 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
         )
     )
 
-    temp_reg, save_mstateen, save_sstateen, save_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
+    temp_reg, save_mstateen, save_mstatenh, save_sstateen, save_reg = test_data.int_regs.get_registers(
+        5, exclude_regs=[0]
+    )
     fp_csrs = ["frm", "fflags", "fcsr"]
     FCSR_BIT = 1  # sstateen0 bit 1 = FCSR per spec Figure 37
 
@@ -395,13 +421,10 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
                 [
                     "",
                     f"\t# SE0=1, sstateen0.FCSR={fcsr_bit}, {mode_label}",
-                    f"\tCSRR(x{save_mstateen}, mstateen0)",
                     f"\tCSRR(x{save_sstateen}, sstateen0)",
-                    "#if __riscv_xlen == 32",
-                    f"\tCSRR(x{save_mstateen}, mstateen0h)  # save mstateen0h on RV32",
-                    "#endif",
                 ]
             )
+            lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
             lines.extend(_set_se0(temp_reg))
             lines.extend(
                 [
@@ -425,26 +448,15 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
                     ]
                 )
             lines.extend(_return_mmode(test_data, temp_reg))
-            lines.extend(
-                [
-                    f"\tCSRW(mstateen0, x{save_mstateen})  # restore mstateen0",
-                    f"\tCSRW(sstateen0, x{save_sstateen})  # restore sstateen0",
-                    "#if __riscv_xlen == 32",
-                    f"\tCSRW(mstateen0h, x{save_mstateen})  # restore mstateen0h on RV32",
-                    "#endif",
-                ]
-            )
+            lines.extend([f"\tCSRW(sstateen0, x{save_sstateen})  # restore sstateen0"])
+            lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
 
-    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_sstateen, save_reg])
+    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, save_sstateen, save_reg])
     return lines
 
 
 # ---------------------------------------------------------------------------
 # cp_fcsr_lower_fp_instrs
-#   (cross priv_mode_u, misa_F, se0_state, sstateen0_fcsr_bit, fp_instrs)
-#   [ifdef ZFINX_SUPPORTED]
-#   → From U-mode, execute each FP instruction under all combinations of
-#   SE0 and sstateen0.FCSR.
 # ---------------------------------------------------------------------------
 
 
@@ -460,7 +472,9 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
         )
     )
 
-    temp_reg, save_mstateen, save_sstateen, scratch_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
+    temp_reg, save_mstateen, save_mstatenh, save_sstateen, scratch_reg = test_data.int_regs.get_registers(
+        5, exclude_regs=[0]
+    )
 
     FCSR_BIT = 1  # sstateen0 bit 1 = FCSR per spec Figure 37
 
@@ -474,11 +488,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
         "fclass.s x{temp}, f0",
     ]
 
-    lines.extend(
-        [
-            f"\tLA(x{scratch_reg}, scratch)  # scratch memory pointer",
-        ]
-    )
+    lines.extend([f"\tLA(x{scratch_reg}, scratch)  # scratch memory pointer"])
 
     for fcsr_bit in [0, 1]:
         fcsr_action = "CSRC" if fcsr_bit == 0 else "CSRS"
@@ -486,13 +496,10 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
             [
                 "",
                 f"\t# SE0=1, sstateen0.FCSR={fcsr_bit}, umode",
-                f"\tCSRR(x{save_mstateen}, mstateen0)",
                 f"\tCSRR(x{save_sstateen}, sstateen0)",
-                "#if __riscv_xlen == 32",
-                f"\tCSRR(x{save_mstateen}, mstateen0h)  # save mstateen0h on RV32",
-                "#endif",
             ]
         )
+        lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
         lines.extend(_set_se0(temp_reg))
         lines.extend(
             [
@@ -516,18 +523,16 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
                 ]
             )
         lines.extend(_return_mmode(test_data, temp_reg))
-        lines.extend(
-            [
-                f"\tCSRW(mstateen0, x{save_mstateen})  # restore mstateen0",
-                f"\tCSRW(sstateen0, x{save_sstateen})  # restore sstateen0",
-                "#if __riscv_xlen == 32",
-                f"\tCSRW(mstateen0h, x{save_mstateen})  # restore mstateen0h on RV32",
-                "#endif",
-            ]
-        )
+        lines.extend([f"\tCSRW(sstateen0, x{save_sstateen})  # restore sstateen0"])
+        lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
 
-    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_sstateen, scratch_reg])
+    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, save_sstateen, scratch_reg])
     return lines
+
+
+# ---------------------------------------------------------------------------
+# cp_envcfg
+# ---------------------------------------------------------------------------
 
 
 def _generate_envcfg(test_data: TestData) -> list[str]:
@@ -541,15 +546,15 @@ def _generate_envcfg(test_data: TestData) -> list[str]:
         )
     ]
 
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    temp_reg, save_mstateen, save_mstatenh, ones_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
     ENVCFG_BIT_MASK_64 = "0x4000000000000000"  # bit 62 of mstateen0
     ENVCFG_BIT_MASK_32 = "0x40000000"  # bit 30 of mstateen0h
 
     lines.extend([f"\tLI(x{ones_reg}, -1)"])
+    lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
 
     for state in [1, 0]:
         bit_action = "CSRS" if state == 1 else "CSRC"
-        # SE0 must be set first so senvcfg access from S-mode doesn't trap
         lines.extend(_set_se0(temp_reg))
         lines.extend(
             [
@@ -577,8 +582,14 @@ def _generate_envcfg(test_data: TestData) -> list[str]:
             )
         lines.extend(_return_mmode(test_data, temp_reg))
 
-    test_data.int_regs.return_registers([temp_reg, ones_reg])
+    lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
+    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, ones_reg])
     return lines
+
+
+# ---------------------------------------------------------------------------
+# cp_context
+# ---------------------------------------------------------------------------
 
 
 def _generate_context(test_data: TestData) -> list[str]:
@@ -592,11 +603,12 @@ def _generate_context(test_data: TestData) -> list[str]:
         )
     ]
 
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    temp_reg, save_mstateen, save_mstatenh, ones_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
     CONTEXT_BIT_MASK_64 = "0x0200000000000000"  # bit 57
     CONTEXT_BIT_MASK_32 = "0x02000000"  # bit 25 of mstateen0h
 
     lines.extend([f"\tLI(x{ones_reg}, -1)"])
+    lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
 
     for state in [0, 1]:
         bit_action = "CSRC" if state == 0 else "CSRS"
@@ -627,8 +639,14 @@ def _generate_context(test_data: TestData) -> list[str]:
             )
         lines.extend(_return_mmode(test_data, temp_reg))
 
-    test_data.int_regs.return_registers([temp_reg, ones_reg])
+    lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
+    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, ones_reg])
     return lines
+
+
+# ---------------------------------------------------------------------------
+# cp_ctr
+# ---------------------------------------------------------------------------
 
 
 def _generate_ctr(test_data: TestData) -> list[str]:
@@ -642,12 +660,13 @@ def _generate_ctr(test_data: TestData) -> list[str]:
         )
     ]
 
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    temp_reg, save_mstateen, save_mstatenh, ones_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
     CTR_BIT_MASK_64 = "0x0040000000000000"  # bit 54
     CTR_BIT_MASK_32 = "0x00400000"  # bit 22 of mstateen0h
     ctr_csrs = ["sctrdepth", "sctrstatus"]
 
     lines.extend([f"\tLI(x{ones_reg}, -1)"])
+    lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
 
     for state in [0, 1]:
         bit_action = "CSRC" if state == 0 else "CSRS"
@@ -679,8 +698,14 @@ def _generate_ctr(test_data: TestData) -> list[str]:
                 )
         lines.extend(_return_mmode(test_data, temp_reg))
 
-    test_data.int_regs.return_registers([temp_reg, ones_reg])
+    lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
+    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, ones_reg])
     return lines
+
+
+# ---------------------------------------------------------------------------
+# cp_imsic
+# ---------------------------------------------------------------------------
 
 
 def _generate_imsic(test_data: TestData) -> list[str]:
@@ -694,12 +719,13 @@ def _generate_imsic(test_data: TestData) -> list[str]:
         )
     ]
 
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    temp_reg, save_mstateen, save_mstatenh, ones_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
     IMSIC_BIT_MASK_64 = "0x0400000000000000"  # bit 58
     IMSIC_BIT_MASK_32 = "0x04000000"  # bit 26 of mstateen0h
     imsic_csrs = ["stopei", "vstopei"]
 
     lines.extend([f"\tLI(x{ones_reg}, -1)"])
+    lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
 
     for state in [0, 1]:
         bit_action = "CSRC" if state == 0 else "CSRS"
@@ -731,8 +757,14 @@ def _generate_imsic(test_data: TestData) -> list[str]:
                 )
         lines.extend(_return_mmode(test_data, temp_reg))
 
-    test_data.int_regs.return_registers([temp_reg, ones_reg])
+    lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
+    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, ones_reg])
     return lines
+
+
+# ---------------------------------------------------------------------------
+# cp_aia
+# ---------------------------------------------------------------------------
 
 
 def _generate_aia(test_data: TestData) -> list[str]:
@@ -746,11 +778,12 @@ def _generate_aia(test_data: TestData) -> list[str]:
         )
     ]
 
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    temp_reg, save_mstateen, save_mstatenh, ones_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
     AIA_BIT_MASK_64 = "0x0800000000000000"  # bit 59
     AIA_BIT_MASK_32 = "0x08000000"  # bit 27 of mstateen0h
 
     lines.extend([f"\tLI(x{ones_reg}, -1)"])
+    lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
 
     for state in [0, 1]:
         bit_action = "CSRC" if state == 0 else "CSRS"
@@ -796,13 +829,19 @@ def _generate_aia(test_data: TestData) -> list[str]:
         lines.append("#endif")
         lines.extend(_return_mmode(test_data, temp_reg))
 
-    test_data.int_regs.return_registers([temp_reg, ones_reg])
+    lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
+    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, ones_reg])
     return lines
+
+
+# ---------------------------------------------------------------------------
+# cp_p1p13
+# ---------------------------------------------------------------------------
 
 
 def _generate_p1p13(test_data: TestData) -> list[str]:
     coverpoint = "cp_p1p13"
-    covergroup = "Ssstateen_cg"  # was Smstateen_cg — wrong
+    covergroup = "Ssstateen_cg"
 
     lines = [
         comment_banner(
@@ -811,11 +850,12 @@ def _generate_p1p13(test_data: TestData) -> list[str]:
         )
     ]
 
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    temp_reg, save_mstateen, save_mstatenh, ones_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
     P1P13_BIT_MASK_64 = "0x0100000000000000"  # bit 56
     P1P13_BIT_MASK_32 = "0x01000000"  # bit 24 of mstateen0h
 
     lines.extend([f"\tLI(x{ones_reg}, -1)"])
+    lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
 
     for state in [0, 1]:
         bit_action = "CSRC" if state == 0 else "CSRS"
@@ -846,7 +886,8 @@ def _generate_p1p13(test_data: TestData) -> list[str]:
             )
         lines.extend(_return_mmode(test_data, temp_reg))
 
-    test_data.int_regs.return_registers([temp_reg, ones_reg])
+    lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
+    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, ones_reg])
     return lines
 
 
@@ -865,7 +906,8 @@ def make_ssstateen(test_data: TestData) -> list[str]:
     lines: list[str] = []
 
     # Unconditional coverpoints — required by all Ssstateen targets
-    lines.extend(_generate_se0_controls_sstateen0(test_data))
+    lines.extend(_generate_se0_zero_controls_sstateen0(test_data))
+    lines.extend(_generate_se0_one_controls_sstateen0(test_data))
     lines.extend(_generate_csr_illegal_accesses(test_data))
     lines.extend(_generate_walking_ones(test_data))
     lines.extend(_generate_envcfg(test_data))

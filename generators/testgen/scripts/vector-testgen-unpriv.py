@@ -40,6 +40,7 @@ import vector_testgen_common as common
 from vector_testgen_common import (
   ARCH_VERIF,
   bf16_instructions,
+  eew64_ins,
   getSigReg,
   getFlen,
   fedges,
@@ -1006,6 +1007,11 @@ def makeTest(coverpoints, test, sew=None):
       eew = getInstructionEEW(test)
       if eew is None or eew == sew:
         make_vs3_vs2(test, sew, range(vreg_count), getBaseLmul(test, sew))
+    elif coverpoint.startswith("cmp_vs3_vs2_eew_eq_sew_lte"):
+      max_vs3 = int(coverpoint.rsplit("_lte", 1)[-1])
+      eew = getInstructionEEW(test)
+      if eew is None or eew == sew:
+        make_vs3_vs2(test, sew, range(max_vs3 + 1), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vs3_vs2_lte30"            : make_vs3_vs2(test, sew, range(vreg_count-1), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vs3_vs2_lte29"            : make_vs3_vs2(test, sew, range(vreg_count-2), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vs3_vs2_lte28"            : make_vs3_vs2(test, sew, range(vreg_count-3), getBaseLmul(test, sew))
@@ -1399,7 +1405,9 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
     fname = pathname + "/" + basename + ".S"
     tempfname = pathname + "/" + basename + "_temp.S"
 
-    vdsew = sew * (2 if (test in vd_widen_ins) else 1)
+    vdsew = sew
+    if test in vd_widen_ins: vdsew *= 2
+    elif test in eew64_ins: vdsew = 64
 
     f = open(tempfname, "w")
 

@@ -136,9 +136,9 @@ def set_stimer_int(r_mtime: int, r_temp: int, r_temp2: int, r_scratch: int, r_st
                 f"{INDENT}# Check if Sstc is enabled",
                 f"CSRR x{r_scratch}, menvcfg",
                 "#if __riscv_xlen == 64",
-                f"SRLI x{r_scratch}, x{r_scratch}, 63",  # STCE is bit 63
+                f"SRLI x{r_scratch}, x{r_scratch}, 63 # STCE is bit 63",
                 "#else",
-                f"SRLI x{r_scratch}, x{r_scratch}, 31",  # STCE is bit 31
+                f"SRLI x{r_scratch}, x{r_scratch}, 31 # STCE is bit 31",
                 "#endif",
                 f"ANDI x{r_scratch}, x{r_scratch}, 0x1",
             ]
@@ -154,7 +154,7 @@ def set_stimer_int(r_mtime: int, r_temp: int, r_temp2: int, r_scratch: int, r_st
             f"{INDENT}# Sstc method: Write stimecmp (works in S-mode)",
             f"LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS)",
             f"LREG x{r_temp}, 0(x{r_mtime})",
-            f"addi x{r_temp}, x{r_temp}, 100",  # Add 100 cycle delay
+            f"addi x{r_temp}, x{r_temp}, 100 # Add 100 cycle delay",
             f"csrw stimecmp, x{r_temp}",
             "nop",
             "#if __riscv_xlen == 32",
@@ -162,9 +162,9 @@ def set_stimer_int(r_mtime: int, r_temp: int, r_temp2: int, r_scratch: int, r_st
             f"csrw stimecmp, x{r_temp}",
             f"lw x{r_temp2}, 4(x{r_mtime})",
             f"lw x{r_temp}, 0(x{r_mtime})",
-            f"addi x{r_temp}, x{r_temp}, 100",  # Add 100 cycle delay to low word
-            f"sltu x{r_scratch}, x{r_temp}, x{r_temp}",  # Check for overflow
-            f"add x{r_temp2}, x{r_temp2}, x{r_scratch}",  # Add carry to high word
+            f"addi x{r_temp}, x{r_temp}, 100 # Add 100 cycle delay to low word",
+            f"sltu x{r_scratch}, x{r_temp}, x{r_temp} # Check for overflow",
+            f"add x{r_temp2}, x{r_temp2}, x{r_scratch} # Add carry to high word",
             f"csrw stimecmph, x{r_temp2}",
             f"csrw stimecmp, x{r_temp}",
             "nop",
@@ -173,12 +173,11 @@ def set_stimer_int(r_mtime: int, r_temp: int, r_temp2: int, r_scratch: int, r_st
             "",
             "1: # Legacy method: Set mip.STIP (requires M-mode)",
             "RVTEST_GOTO_MMODE",
-            f"LI(x{r_temp}, 0x20)",  # STIP bit
+            f"LI(x{r_temp}, 0x20) # STIP bit",
             f"csrrs x{r_temp}, mip, x{r_temp}",
             "# Clear MPIE to prevent MIE=1 after mret back to S-mode",
-            f"LI(x{r_temp}, 0x80)",  # MPIE bit (bit 7)
+            f"LI(x{r_temp}, 0x80) # MPIE bit (bit 7)",
             f"csrc mstatus, x{r_temp}",
-            "RVTEST_GOTO_LOWER_MODE Smode",
             "",
             "2: # Continue",
         ]

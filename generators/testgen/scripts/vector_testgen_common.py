@@ -541,6 +541,8 @@ fvtype       = ["vfmv.f.s"]
 
 vfloattypes = vvvm_f_type + vvfmtype + vvvmr_f_type + vfvmtype + vvm_f_type + vftype + fvtype + vvfvtype
 
+bf16_instructions = ["vfwmaccbf16.vv", "vfwmaccbf16.vf", "vfncvtbf16.f.f.w", "vfwcvtbf16.f.f.v"]
+
 ##################################    vector integer instruction     ##################################
 
 vvvmtype  = ["vadd.vv", "vwadd.vv", "vwaddu.vv", "vsub.vv", "vwsub.vv", "vwsubu.vv", "vwadd.wv", "vwsub.wv", "vwaddu.wv", "vwsubu.wv",
@@ -579,8 +581,17 @@ vmtype    = ["vid.v"]
 vvivtype  = ["vadc.vim", "vmerge.vim", "vmadc.vim"]
 vvvvtype  = ["vadc.vvm", "vsbc.vvm", "vmerge.vvm", "vmadc.vvm", "vmsbc.vvm"]
 vvxvtype  = ["vadc.vxm", "vsbc.vxm", "vmerge.vxm", "vmadc.vxm", "vmsbc.vxm"]
-vvvtype   = ["vmadc.vv", "vmsbc.vv", "vmand.mm", "vmnand.mm", "vmandn.mm", "vmxor.mm", "vmor.mm", "vmnor.mm", "vmorn.mm", "vmxnor.mm", "vcompress.vm", "vgmul.vv", "vghsh.vv"]
+vvvtype   = ["vmadc.vv", "vmsbc.vv", "vmand.mm", "vmnand.mm", "vmandn.mm", "vmxor.mm", "vmor.mm", "vmnor.mm", "vmorn.mm", "vmxnor.mm", "vcompress.vm"]
 imm_31 = ["vnclip.wi", "vnclipu.wi", "vnsra.wi","vnsrl.wi", "vrgather.vi", "vslidedown.vi", "vslideup.vi", "vsll.vi", "vsra.vi", "vsrl.vi","vssra.vi", "vssrl.vi"] + bimm_31
+
+##################################    vector crypto instructions     ##################################
+crypto_vv = ["vgmul.vv"]
+crypto_vvv = ["vghsh.vv"]
+
+vvvtype += crypto_vvv
+vvtype = crypto_vv
+
+crypto_ins = crypto_vv + crypto_vvv
 
 vs1ins = vvvmtype + vvrtype + vvvvtype + vvvtype + vvvmrtype
 
@@ -730,9 +741,6 @@ strided_stores = [
     "vssseg7e8.v", "vssseg7e16.v", "vssseg7e32.v", "vssseg7e64.v",
     "vssseg8e8.v", "vssseg8e16.v", "vssseg8e32.v", "vssseg8e64.v"
 ]
-
-bf16_instructions = ["vfwmaccbf16.vv", "vfwmaccbf16.vf", "vfncvtbf16.f.f.w", "vfwcvtbf16.f.f.v"]
-
 
 # ─── Segment length 2 ──────────────────────────────────────────────
 
@@ -1435,6 +1443,12 @@ def genVtestdata(test, sew):
       else:
         test_data += genVsedges(test, sew, "1")
         test_data += genVsedges(test, sew, "2")
+    elif (test in crypto_ins):
+      test_data += genRandomVector(test, sew, vs="vs2")
+      test_data += genRandomVector(test, sew, vs="vs1")
+      test_data += genVsedges(test, sew, "4")
+      test_data += genVsedges(test, sew, "2")
+      test_data += genVsedges(test, sew, "1")
     else:
       test_data += genRandomVector(test, sew, vs="vs2")
       if (test in vs1ins):
@@ -1683,7 +1697,7 @@ def writeSIGUPD_F(fd):
 #         writeLine(f"RVTEST_SIGUPD_V(x{sigReg}, x{tempReg}, {sew}, {offset}, v{vd})", f"# stores v{vd} (sew = {sew}, AVL = {avl}) in signature with base (x{sigReg}) and helper (x{tempReg}) register")
 
 
-def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, vs1=0, load_testline = None, sig_whole_register_store = False, vd_mask = False, testtype = "base", masked = False, lmul=1, scalar_dst=False, vlmax_mask_prod=False):
+def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, vs1=0, load_testline = None, sig_whole_register_store = False, vd_mask = False, testtype = "base", masked = False, lmul=1, scalar_dst=False, vlmax_mask_prod=False, is_crypto=False, egs=1):
 
     global sigupd_count
 
@@ -1705,7 +1719,7 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, vs1=0, load_testlin
       # Base suite: vl = 1 element of vd's EEW. `sew` here already reflects
       # the destination EEW (writeVecTest passes 2*SEW for any vd_widen_ins,
       # including vwred), so no per-instruction special case is needed.
-      worst_bytes = sew // 8
+      worst_bytes = sew * egs // 8
     sig_stride = max(xlen, flen) // 8 if flen > 0 else xlen // 8
     offset_bytes = (worst_bytes + 4 + 7) & ~7
     sigupd_count += max(1, (offset_bytes + sig_stride - 1) // sig_stride)
@@ -1831,6 +1845,12 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, vs1=0, load_testlin
         writeLine(
           f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, 0, {masked_flag}, 0, {sew}, {emul}, {scalar_dst_flag}, {inst_ptr}, {str_ptr})")
         writeLine(f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
+    elif is_crypto:
+      writeLine(f"vsetivli x0, {egs}, e{sew}, m{sig_lmul}, tu, mu", f"# set SEW={sew}, LMUL={sig_lmul}, VL={egs} before signature check")
+      writeLine(
+      f"RVTEST_SIGUPD_V(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, {sew}, v{vd}, {inst_ptr}, {str_ptr})")
+      writeLine(
+      f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
     else:
       writeLine(f"vsetivli x0, 1, e{sew}, m1, tu, mu", f"# set SEW={sew}, LMUL=1, VL=1 before signature check")
       writeLine(f"# RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _VREG, _INST_PTR, _STR_PTR)")
@@ -2218,7 +2238,7 @@ def finalizeSigupdCount(filename, xlen, flen):
   with open(filename, "w") as fh:
     fh.write(content)
 
-def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, test=None, rd=None, fd=None, vs1=0, vl=1, sig_lmul = None, sig_whole_register_store = False, load_testline = None, reload_pre_init: list[str] | None = None, reset_vl_post_load: str | None = None, priv = False, testtype="base", masked=False, lmul=1, force_vill=False, pre_instruction_lines=None, post_instruction_lines=None, skip_sigupd=False, vlmax_mask_prod=False):
+def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, test=None, rd=None, fd=None, vs1=0, vl=1, sig_lmul = None, sig_whole_register_store = False, load_testline = None, reload_pre_init: list[str] | None = None, reset_vl_post_load: str | None = None, priv = False, testtype="base", masked=False, lmul=1, force_vill=False, pre_instruction_lines=None, post_instruction_lines=None, skip_sigupd=False, vlmax_mask_prod=False, egs=1):
     scalar_registers_used = list(scalar_registers_used)
 
     # record testcase string (_INST_PTR)
@@ -2300,6 +2320,8 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
       writeSIGUPD(inst_ptr, rd)
     elif (test in fvtype):
       writeSIGUPD_F(fd)
+    elif (test in crypto_ins):
+      writeSIGUPD_V(inst_ptr, vd, sew, avl=vl, sig_lmul=sig_lmul, vs1=vs1, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked, lmul=lmul, is_crypto=True, egs=egs)
     else:
       writeSIGUPD_V(inst_ptr, vd, sew, avl=vl, sig_lmul=sig_lmul, vs1=vs1, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked, lmul=lmul, scalar_dst=(test in vredins or test == "vmv.s.x" or test == "vfmv.s.f"))
 
@@ -2527,6 +2549,7 @@ def getInstructionArguments(instruction):
   elif instruction in type_vxm    : instruction_arguments = ['vd', 'rs1',        'vm']
   elif instruction in type_vxvm   : instruction_arguments = ['vd' ,'rs1', 'vs2', 'vm']
   elif instruction in type_vxxm   : instruction_arguments = ['vd' ,'rs1', 'rs2', 'vm']
+  elif instruction in vvtype      : instruction_arguments = ['vd', 'vs2'             ]
   else:
     print(f"Error: {instruction} type not implemented yet")
 
@@ -2538,7 +2561,8 @@ def writeTest(description, instruction, cp, instruction_data=None,
               clear_fflags: bool = True, force_vill: bool = False,
               pre_test_lines: list[str] | None = None,
               pre_instruction_lines: list[str] | None = None,
-              pre_test_scratch_regs: int = 0, vlmax_mask_prod: bool = False):
+              pre_test_scratch_regs: int = 0, vlmax_mask_prod: bool = False,
+              egs: int = 1, egs_if_def: str = ""):
     # Support old 3-arg calling convention: writeTest(desc, inst, data, ...)
     # where data (a list) was passed as cp. Detect and shift args.
     if instruction_data is None and isinstance(cp, list):
@@ -2564,6 +2588,10 @@ def writeTest(description, instruction, cp, instruction_data=None,
         emul = (eew * lmul // sew) if eew is not None else lmul
         if nf * emul > 8:
           return
+
+    # Stop Illegal EGS and VL Combinations
+    if isinstance(vl, int) and vl % egs != 0:
+      raise ValueError(f"vl must be a multiple of egs, instead vl={vl}, egs={egs}")
 
     writeLine("\n")
 
@@ -2632,6 +2660,8 @@ def writeTest(description, instruction, cp, instruction_data=None,
     ifdef_string += getELENIfdef        (instruction)
     ifdef_string += getMaxIndexEEWIfdef (instruction)
     ifdef_string += getSEWMINIfdef      (instruction)
+    if egs_if_def:
+      ifdef_string += egs_if_def + " & "
 
     if (ifdef_string != "#if "):
       writeLine(ifdef_string[:-3])
@@ -2723,7 +2753,7 @@ def writeTest(description, instruction, cp, instruction_data=None,
     # and vs2 be deterministically loaded in length suite tests is thrown out
     vs1_preloaded = (vd_preloaded and vs1 == vd) or (vs2_preloaded and vs1 == vs2)
 
-    scalar_registers_used = prepBaseV(sew, lmul, vl, vstart, vta, vma, force_vill, vector_registers_used, *scalar_registers_used)
+    scalar_registers_used = prepBaseV(sew, lmul, vl, vstart, vta, vma, force_vill, vector_registers_used, egs, *scalar_registers_used)
 
     # These bare vmv.v.i cases must be after prepBaseV which sets vsetvli (otherwise
     # vtype is invalid after reset and the vector instruction hangs in sail)
@@ -2857,9 +2887,9 @@ def writeTest(description, instruction, cp, instruction_data=None,
         writeLine(line)
 
     if (maskval is not None) or (vl is not None):
-      writeVecTest(instruction, cp, signature_target_vd, signature_target_sew, testline, *scalar_registers_used, test=instruction, rd=rd, fd=fd, vs1=vs1, vl=vl, sig_lmul=sig_lmul, load_testline = load_testline, reload_pre_init=reload_pre_init if reload_pre_init else None, reset_vl_post_load=reset_vl_post_load, sig_whole_register_store=sig_whole_register_store, testtype=suite, masked=(maskval is not None), lmul=lmul, force_vill=force_vill, pre_instruction_lines=pre_instruction_lines, vlmax_mask_prod=vlmax_mask_prod)
+      writeVecTest(instruction, cp, signature_target_vd, signature_target_sew, testline, *scalar_registers_used, test=instruction, rd=rd, fd=fd, vs1=vs1, vl=vl, sig_lmul=sig_lmul, load_testline = load_testline, reload_pre_init=reload_pre_init if reload_pre_init else None, reset_vl_post_load=reset_vl_post_load, sig_whole_register_store=sig_whole_register_store, testtype=suite, masked=(maskval is not None), lmul=lmul, force_vill=force_vill, pre_instruction_lines=pre_instruction_lines, vlmax_mask_prod=vlmax_mask_prod, egs=egs)
     else:
-      writeVecTest(instruction, cp, signature_target_vd, signature_target_sew, testline, *scalar_registers_used, test=instruction, rd=rd, fd=fd, vs1=vs1, sig_lmul=sig_lmul, load_testline = load_testline, reload_pre_init=reload_pre_init if reload_pre_init else None, reset_vl_post_load=reset_vl_post_load, sig_whole_register_store=sig_whole_register_store, testtype=suite, masked=(maskval is not None), lmul=lmul, force_vill=force_vill, pre_instruction_lines=pre_instruction_lines, vlmax_mask_prod=vlmax_mask_prod)
+      writeVecTest(instruction, cp, signature_target_vd, signature_target_sew, testline, *scalar_registers_used, test=instruction, rd=rd, fd=fd, vs1=vs1, sig_lmul=sig_lmul, load_testline = load_testline, reload_pre_init=reload_pre_init if reload_pre_init else None, reset_vl_post_load=reset_vl_post_load, sig_whole_register_store=sig_whole_register_store, testtype=suite, masked=(maskval is not None), lmul=lmul, force_vill=force_vill, pre_instruction_lines=pre_instruction_lines, vlmax_mask_prod=vlmax_mask_prod, egs=egs)
 
     if (ifdef_string != "#if "):
       tab_count -= 1
@@ -2897,7 +2927,7 @@ def getLmulFlag(lmul):
 
   return lmulflag
 
-def prepBaseV(sew, lmul, vl=1, vstart=0, ta=0, ma=0, force_vill=False, vector_registers_used=None, *scalar_registers_used):
+def prepBaseV(sew, lmul, vl=1, vstart=0, ta=0, ma=0, force_vill=False, vector_registers_used=None, egs=1, *scalar_registers_used):
   scalar_registers_used = list(scalar_registers_used)
 
   lmulflag = getLmulFlag(lmul)
@@ -2927,13 +2957,17 @@ def prepBaseV(sew, lmul, vl=1, vstart=0, ta=0, ma=0, force_vill=False, vector_re
     writeLine(f"li x{tempReg2}, {randomVl}",                                      "# Load value for random vl preparation")
     writeLine(f"vsetvli x{vlmaxReg}, x0, e{sew}, m{lmulflag}{taflag}{maflag}",    f"# x{vlmaxReg} = VLMAX")
     writeLine(f"remu x{tempReg2}, x{tempReg2}, x{vlmaxReg}",                      "# ensure that vl < VLMAX")
-    writeLine(f"ori x{tempReg2}, x{tempReg2}, 0x2",                               "# set bit 1 to 1, ensuring 2 <= vl < VLMAX")
+    if egs != 1:
+      writeLine(f"andi x{tempReg2}, x{tempReg2}, -{egs}",                         f"# ensure that vl is divisible by egs")
+      writeLine(f"ori x{tempReg2}, x{tempReg2}, {egs}",                           f"# ensure that egs <= vl < VLMAX")
+    else:
+      writeLine(f"ori x{tempReg2}, x{tempReg2}, 0x2",                             f"# set bit 1 to 1, ensuring 2 <= vl < VLMAX")
     writeLine(f"vsetvli x0, x{tempReg2}, e{sew}, m{lmulflag}{taflag}{maflag}")
   elif vl == "vlmax":
     writeLine(f"vsetvli x{tempReg2}, x0, e{sew}, m{lmulflag}{taflag}{maflag}",    f"# Set vl = VLMAX, where x{tempReg2} = VLMAX")
   else:
     # reset all source and destination registers to 13 (0xD)
-    writeLine(f"vsetvli x{tempReg2}, x0, e{sew}, m1, tu, mu",    f"# Set vl = VLMAX, where x{tempReg2} = VLMAX")
+    writeLine(f"vsetvli x{tempReg2}, x0, e{sew}, m{lmulflag}, tu, mu",    f"# Set vl = VLMAX, where x{tempReg2} = VLMAX")
     for vreg in vector_registers_used:
       if vreg is not None:
         writeLine(f"vmv.v.i v{vreg}, 13",                       f"# Initialize v{vreg} to 0xD for deterministic undisturbed/tail elements in base suite")

@@ -2751,8 +2751,26 @@ def writeTest(description, instruction, cp, instruction_data=None,
     # The previous operations may have preloaded vs1 if it appears as vd or vs2.
     # Allowing it to load later without vl = vlmax means that the work done to have vd
     # and vs2 be deterministically loaded in length suite tests is thrown out
-    vs1_preloaded = (vd_preloaded and vs1 == vd) or (vs2_preloaded and vs1 == vs2)
+    vs1_preloaded = False
+    if ((vd_preloaded and vs1 == vd) or (vs2_preloaded and vs1 == vs2)) and ('vs1' in instruction_arguments):
+      # pick temporary regs avoiding conflicts
+      tempVlmax = pickScalarScratch(scalar_registers_used)
+      scalar_registers_used.append(tempVlmax)
 
+      tempReg2 = pickScalarScratch(scalar_registers_used)
+      scalar_registers_used.append(tempReg2)
+
+      # set vtype to VLMAX for vd load
+      lmulflag = getLmulFlag(lmul)
+      writeLine(f"vsetvli x{tempVlmax}, x0, e{sew}, m{lmulflag}, tu, mu", "# set vtype to VLMAX for vs1 load")
+      # actually perform load for vd (pass through loadVecReg)
+      scalar_registers_used = loadVecReg(instruction, 'vs1', vector_register_data, sew, lmul, *scalar_registers_used, vl=vl)
+      vs1_preloaded = True
+
+    # Modify vector_registers_used before prepBaseV clobbers data in every vector register
+    if vd_preloaded and vd in vector_registers_used: vector_registers_used.remove(vd)
+    if vs2_preloaded and vs2 in vector_registers_used: vector_registers_used.remove(vs2)
+    if vs1_preloaded and vs1 in vector_registers_used: vector_registers_used.remove(vs1)
     scalar_registers_used = prepBaseV(sew, lmul, vl, vstart, vta, vma, force_vill, vector_registers_used, egs, *scalar_registers_used)
 
     # These bare vmv.v.i cases must be after prepBaseV which sets vsetvli (otherwise

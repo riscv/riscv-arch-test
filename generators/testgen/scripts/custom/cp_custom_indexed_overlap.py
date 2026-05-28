@@ -17,7 +17,6 @@ indexed SEGMENT loads, so those are excluded here.
 
 import math
 from functools import partial
-from random import randint
 
 from coverpoint_registry import register
 from vector_testgen_common import (
@@ -34,12 +33,12 @@ from vector_testgen_common import (
 )
 
 
-def _aligned_random_base(align: int, footprint: int) -> int:
-    """Random multiple of *align* such that base..base+footprint-1 fits in vreg_count."""
+def _aligned_bases(align: int, footprint: int):
+    """All multiples of *align* such that base..base+footprint-1 fits in vreg_count."""
     max_start = vreg_count - footprint
     if max_start < 0:
         raise ValueError("footprint exceeds register file")
-    return randint(0, max_start // align) * align
+    return range(0, max_start + 1, align)
 
 
 def _emit(test: str, sew: int, lmul: int, label: str, **reg_overrides) -> None:
@@ -79,13 +78,13 @@ def _make(test: str, sew: int, expected_eew: int) -> None:
 
         if K == N:
             # Rule (a): full overlap legal.
-            base = _aligned_random_base(lmul, lmul)
-            if is_store:
-                _emit(test, sew, lmul, "cp_custom_indexed_overlap_ruleA",
-                      vs3=base, vs2=base)
-            else:
-                _emit(test, sew, lmul, "cp_custom_indexed_overlap_ruleA",
-                      vd=base, vs2=base)
+            for base in _aligned_bases(lmul, lmul):
+                if is_store:
+                    _emit(test, sew, lmul, "cp_custom_indexed_overlap_ruleA",
+                          vs3=base, vs2=base)
+                else:
+                    _emit(test, sew, lmul, "cp_custom_indexed_overlap_ruleA",
+                          vd=base, vs2=base)
 
         elif K > N:
             # Rule (b): dest at LOWEST of source group -> vd == vs2.
@@ -95,11 +94,12 @@ def _make(test: str, sew: int, expected_eew: int) -> None:
             src_emul = (K * lmul) // N
             align = math.lcm(src_emul, data_emul)
             try:
-                base = _aligned_random_base(align, src_emul)
+                bases = _aligned_bases(align, src_emul)
             except ValueError:
                 continue
-            _emit(test, sew, lmul, "cp_custom_indexed_overlap_ruleB",
-                  vd=base, vs2=base)
+            for base in bases:
+                _emit(test, sew, lmul, "cp_custom_indexed_overlap_ruleB",
+                      vd=base, vs2=base)
 
         else:  # K < N
             # Rule (c): src at HIGHEST of dest group. EMUL_src must be >= 1.
@@ -112,11 +112,12 @@ def _make(test: str, sew: int, expected_eew: int) -> None:
             if vs2_offset <= 0 or vs2_offset % src_emul != 0:
                 continue
             try:
-                base = _aligned_random_base(data_emul, data_emul)
+                bases = _aligned_bases(data_emul, data_emul)
             except ValueError:
                 continue
-            _emit(test, sew, lmul, "cp_custom_indexed_overlap_ruleC",
-                  vd=base, vs2=base + vs2_offset)
+            for base in bases:
+                _emit(test, sew, lmul, "cp_custom_indexed_overlap_ruleC",
+                      vd=base, vs2=base + vs2_offset)
 
 
 for _K in (8, 16, 32, 64):

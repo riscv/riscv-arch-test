@@ -200,6 +200,25 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
     `ifdef AIA_SUPPORTED
         cp_aia: cross csrops, aia_csrs, aia_state, priv_mode_s;
     `endif
+    `ifdef SSQOSID_SUPPORTED
+        `ifdef UDB_MXLEN_64
+            srmcfg_state: coverpoint ins.current.csr[CSR_MSTATEEN0][55] {
+                    bins srmcfg_disabled = {1'b0};
+                    bins srmcfg_enabled  = {1'b1};
+            }
+            srmcfg_csr: coverpoint ins.current.insn[31:20] {
+                    wildcard bins srmcfg = {CSR_SRMCFG};
+            }
+        `else
+            srmcfg_state: coverpoint ins.current.csr[CSR_MSTATEEN0H][23] {
+                    bins srmcfg_disabled = {1'b0};
+                    bins srmcfg_enabled  = {1'b1};
+            }
+            srmcfg_csr: coverpoint ins.current.insn[31:20] {
+                    wildcard bins srmcfg = {CSR_SRMCFG};
+            }
+        `endif
+    `endif
 
 endgroup
 function void ssstateen_sample(int hart, int issue, ins_t ins);

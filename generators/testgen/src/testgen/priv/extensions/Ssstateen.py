@@ -891,6 +891,56 @@ def _generate_p1p13(test_data: TestData) -> list[str]:
     return lines
 
 
+def _generate_srmcfg(test_data: TestData) -> list[str]:
+    coverpoint = "cp_srmcfg"
+    covergroup = "Ssstateen_cg"  # was Smstateen_cg
+
+    lines = [
+        comment_banner(
+            coverpoint,
+            "CSR ops on srmcfg from S-mode with SE0=1 and mstateen0.srmcfg (bit 55) both states",
+        )
+    ]
+
+    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    SRMCFG_BIT_MASK_64 = "0x0080000000000000"  # bit 55
+    SRMCFG_BIT_MASK_32 = "0x00800000"  # bit 23 of mstateen0h
+
+    lines.extend([f"\tLI(x{ones_reg}, -1)"])
+
+    for state in [0, 1]:
+        bit_action = "CSRC" if state == 0 else "CSRS"
+        lines.extend(_set_se0(temp_reg))
+        lines.extend(
+            [
+                "",
+                f"\t# mstateen0.srmcfg = {state}, SE0=1",
+                "#if __riscv_xlen == 64",
+                f"\tLI(x{temp_reg}, {SRMCFG_BIT_MASK_64})",
+                f"\t{bit_action}(mstateen0, x{temp_reg})",
+                "#else",
+                f"\tLI(x{temp_reg}, {SRMCFG_BIT_MASK_32})",
+                f"\t{bit_action}(mstateen0h, x{temp_reg})",
+                "#endif",
+            ]
+        )
+        lines.extend(_enter_smode(test_data, temp_reg))
+        for op in ["CSRRW", "CSRRS", "CSRRC", "CSRR"]:
+            insn = f"\t{op}(x{temp_reg}, srmcfg)" if op == "CSRR" else f"\t{op}(x{temp_reg}, srmcfg, x{ones_reg})"
+            lines.extend(
+                [
+                    "",
+                    test_data.add_testcase(f"srmcfg_{op.lower()}_srmcfg{state}_smode", coverpoint, covergroup),
+                    insn,
+                    "\tnop",
+                ]
+            )
+        lines.extend(_return_mmode(test_data, temp_reg))
+
+    test_data.int_regs.return_registers([temp_reg, ones_reg])
+    return lines
+
+
 # ---------------------------------------------------------------------------
 # Main entry point
 # ---------------------------------------------------------------------------
@@ -932,6 +982,9 @@ def make_ssstateen(test_data: TestData) -> list[str]:
     lines.extend(_generate_aia(test_data))
     lines.append("#endif  // AIA_SUPPORTED")
 
+    lines.append("#ifdef SSQOSID_SUPPORTED")
+    lines.extend(_generate_srmcfg(test_data))
+    lines.append("#endif  // SSQOSID_SUPPORTED")
     # cp_fcsr_lower, cp_fcsr_lower_fp_instrs
     # Only when F (Zfinx) is supported — sstateen0.FCSR bit is relevant
     lines.append("#ifdef ZFINX_SUPPORTED")

@@ -50,35 +50,35 @@
             wildcard bins amomax_d  = {AMOMAX_D};
             wildcard bins amominu_d = {AMOMINU_D};
             wildcard bins amomaxu_d = {AMOMAXU_D};
+            // Zacas compare-and-swap
+            `ifdef ZACAS_SUPPORTED
+                wildcard bins amocas_w = {AMOCAS_W};
+                wildcard bins amocas_d = {AMOCAS_D};
+                wildcard bins amocas_q = {AMOCAS_Q};
+            `endif // ZACAS_SUPPORTED
+            // Zabha byte atomics
+            `ifdef ZABHA_SUPPORTED
+                wildcard bins amoswap_b = {AMOSWAP_B};
+                wildcard bins amoadd_b  = {AMOADD_B};
+                wildcard bins amoxor_b  = {AMOXOR_B};
+                wildcard bins amoand_b  = {AMOAND_B};
+                wildcard bins amoor_b   = {AMOOR_B};
+                wildcard bins amomin_b  = {AMOMIN_B};
+                wildcard bins amomax_b  = {AMOMAX_B};
+                wildcard bins amominu_b = {AMOMINU_B};
+                wildcard bins amomaxu_b = {AMOMAXU_B};
+                // Zabha halfword atomics
+                wildcard bins amoswap_h = {AMOSWAP_H};
+                wildcard bins amoadd_h  = {AMOADD_H};
+                wildcard bins amoxor_h  = {AMOXOR_H};
+                wildcard bins amoand_h  = {AMOAND_H};
+                wildcard bins amoor_h   = {AMOOR_H};
+                wildcard bins amomin_h  = {AMOMIN_H};
+                wildcard bins amomax_h  = {AMOMAX_H};
+                wildcard bins amominu_h = {AMOMINU_H};
+                wildcard bins amomaxu_h = {AMOMAXU_H};
+            `endif // ZABHA_SUPPORTED
         `endif // ZAAMO_SUPPORTED
-        // Zacas compare-and-swap
-        `ifdef ZACAS_SUPPORTED
-            wildcard bins amocas_w = {AMOCAS_W};
-            wildcard bins amocas_d = {AMOCAS_D};
-            wildcard bins amocas_q = {AMOCAS_Q};
-        `endif // ZACAS_SUPPORTED
-        // Zabha byte atomics
-        `ifdef ZABHA_SUPPORTED
-            wildcard bins amoswap_b = {AMOSWAP_B};
-            wildcard bins amoadd_b  = {AMOADD_B};
-            wildcard bins amoxor_b  = {AMOXOR_B};
-            wildcard bins amoand_b  = {AMOAND_B};
-            wildcard bins amoor_b   = {AMOOR_B};
-            wildcard bins amomin_b  = {AMOMIN_B};
-            wildcard bins amomax_b  = {AMOMAX_B};
-            wildcard bins amominu_b = {AMOMINU_B};
-            wildcard bins amomaxu_b = {AMOMAXU_B};
-            // Zabha halfword atomics
-            wildcard bins amoswap_h = {AMOSWAP_H};
-            wildcard bins amoadd_h  = {AMOADD_H};
-            wildcard bins amoxor_h  = {AMOXOR_H};
-            wildcard bins amoand_h  = {AMOAND_H};
-            wildcard bins amoor_h   = {AMOOR_H};
-            wildcard bins amomin_h  = {AMOMIN_H};
-            wildcard bins amomax_h  = {AMOMAX_H};
-            wildcard bins amominu_h = {AMOMINU_H};
-            wildcard bins amomaxu_h = {AMOMAXU_H};
-        `endif // ZABHA_SUPPORTED
         // Floating-point stores
         `ifdef F_SUPPORTED
             wildcard bins fsw = {FSW};

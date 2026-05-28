@@ -374,9 +374,7 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
         // LMUL=8/4/2: always valid since VLEN=64 (minimum) satisfies LMUL*VLEN >= 128 bits
         bins eight  = {3};
         bins four   = {2};
-        `ifdef ZVL128B_SUPPORTED
-            bins two    = {1};
-        `endif
+        bins two    = {1};
         // Smaller LMULs require larger VLEN so that >=2 element groups are possible
         `ifdef ZVL256B_SUPPORTED
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
@@ -395,7 +393,7 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
 
     cp_csr_vl_edges_egs4 : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
         // Edge values of VL (vector length)
-        bins vlfour     = {vl_four      };
+        bins one        = {vl_one       };
         bins vlmax      = {vl_vlmax     };
         bins legal      = {vl_legal     };
     }
@@ -641,9 +639,7 @@ covergroup Zvkg_vgmul_vv_cg with function sample(ins_t ins);
         // LMUL=8/4/2: always valid since VLEN=64 (minimum) satisfies LMUL*VLEN >= 128 bits
         bins eight  = {3};
         bins four   = {2};
-        `ifdef ZVL128B_SUPPORTED
-            bins two    = {1};
-        `endif
+        bins two    = {1};
         // Smaller LMULs require larger VLEN so that >=2 element groups are possible
         `ifdef ZVL256B_SUPPORTED
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
@@ -662,7 +658,7 @@ covergroup Zvkg_vgmul_vv_cg with function sample(ins_t ins);
 
     cp_csr_vl_edges_egs4 : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
         // Edge values of VL (vector length)
-        bins vlfour     = {vl_four      };
+        bins one        = {vl_one       };
         bins vlmax      = {vl_vlmax     };
         bins legal      = {vl_legal     };
     }

@@ -176,7 +176,10 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
             "Cross of mstatus.MIE = {0/1}, mtvec.MODE = 00, 3 walking 1s in mip.MTIP/MSIP/MEIP,\n"
             "3 walking 1s in mie.MTIE/MSIE/MEIE (2 x 3 x 3 bins)",
         ),
+        # Direct mode (MODE=00) only where supported; vectored-only cores run this cross in vectored mode.
+        "#ifdef UDB_MTVEC_MODES_0",
         "csrci mtvec, 3     # Clear MODE bits (set to 00=direct)",
+        "#endif",
         "",
     ]
 
@@ -257,8 +260,10 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
         )
     ]
 
-    # Test both mtvec modes
+    # Test both mtvec modes; gate each mode on its own MTVEC_MODES parameter so single-mode
+    # cores (direct-only or vectored-only) only exercise the mode they implement.
     for mode, mode_name in [(0, "direct"), (1, "vectored")]:
+        lines.append(f"#ifdef UDB_MTVEC_MODES_{mode}")
         lines.extend(
             [
                 f"# Set mtvec.MODE = {mode:02b} ({mode_name})",
@@ -307,7 +312,12 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
 
             lines.append("")
 
+        lines.append("#endif")
+
+    # Restore direct mode only where supported; vectored-only cores stay vectored.
+    lines.append("#ifdef UDB_MTVEC_MODES_0")
     lines.append("CSRCI mtvec, 1     # restore mtvec.MODE = 00 (direct)")
+    lines.append("#endif")
 
     test_data.int_regs.return_registers([r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_all, r_mie_save])
     return lines

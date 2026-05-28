@@ -14,6 +14,8 @@
         _semihost_exit_fail: .dword 0x20023; .dword 1;                  \
         .popsection
 
+#define STANDARD_SM_SUPPORTED
+
 ##### STARTUP #####
 
 # Perform boot operations. Can be empty or left undefined unless needed for
@@ -172,12 +174,8 @@
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
 // QEMU virt CLINT runs at 10 MHz; with -icount shift=1 (2 ns/insn) that is ~50 insns/tick.
-// The default spin (DELAY iterations = 200 insns) only advances mtime ~4 ticks vs the
-// 100-tick stimecmp offset. Override with a 200x multiplier to reliably outlast the delay.
-#define RVTEST_IDLE_FOR_TIMER_INTERRUPT(_R1) \
-    LI(_R1, RVMODEL_TIMER_INT_SOON_DELAY * 200); \
-    99: addi _R1, _R1, -1; \
-        bnez _R1, 99b;
+// Define a 50x multiplier to convert between timer tick and processor cycle count.
+#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 50
 
 #define CLINT_BASE_ADDRESS 0x02000000
 #define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)

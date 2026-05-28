@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zimop']
 # params:
 #   MXLEN: 64
-# MARCH: rv64i_zicsr_zimop
+# MARCH: rv64i_zicsr_zifencei_zimop
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region

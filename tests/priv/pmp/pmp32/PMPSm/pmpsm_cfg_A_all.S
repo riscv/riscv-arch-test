@@ -26,7 +26,7 @@
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv32i_zicsr
+# MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -45,7 +45,7 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/4
+    .rept UDB_NUM_PMP_ENTRIES/4
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+1
     .endr
@@ -84,7 +84,7 @@ main:
     # Write x4 to pmpcfg3, read back and check against expected.
     RVTEST_SIGUPD_CSR_WRITE(pmpcfg3, x4, test_4, test_4_str)
 
-.if RVMODEL_NUM_PMPS == 64
+.if UDB_NUM_PMP_ENTRIES == 64
    test_5:
        # Write x4 to pmpcfg4, read back and check against expected.
        RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x4, test_5, test_5_str)
@@ -151,7 +151,7 @@ main:
     # Write x4 to pmpcfg3, read back and check against expected.
     RVTEST_SIGUPD_CSR_WRITE(pmpcfg3, x4, test_20, test_20_str)
 
-.if RVMODEL_NUM_PMPS == 64
+.if UDB_NUM_PMP_ENTRIES == 64
     test_21:
         # Write x4 to pmpcfg4, read back and check against expected.
         RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x4, test_21, test_21_str)
@@ -218,7 +218,7 @@ main:
         # Write x4 to pmpcfg3, read back and check against expected.
         RVTEST_SIGUPD_CSR_WRITE(pmpcfg3, x4, test_36, test_36_str)
 
-.if RVMODEL_NUM_PMPS == 64
+.if UDB_NUM_PMP_ENTRIES == 64
     test_37:
         # Write x4 to pmpcfg4, read back and check against expected.
         RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x4, test_37, test_37_str)
@@ -284,7 +284,7 @@ main:
         # Write zero to pmpcfg3, read back and check against expected.
         RVTEST_SIGUPD_CSR_WRITE(pmpcfg3, zero, test_52, test_52_str)
 
-.if RVMODEL_NUM_PMPS == 64
+.if UDB_NUM_PMP_ENTRIES == 64
     test_53:
         # Write zero to pmpcfg4, read back and check against expected.
         RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, zero, test_53, test_53_str)
@@ -412,7 +412,7 @@ TEST_FOR_EXECUTION_0:
     jr ra
 
 TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept (1<<(UDB_PMP_GRANULARITY))
     nop
     .endr
 

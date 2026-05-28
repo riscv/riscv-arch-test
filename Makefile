@@ -12,10 +12,10 @@ COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/
 # EXTENSIONS is a comma-separated list of extensions to generate tests for. Leave blank to generate for all tests.
 # EXCLUDE_EXTENSIONS overrides EXTENSIONS to exclude particular extensions from test generation. Applies as a negative filter after EXTENSIONS.
 # Default exclusion reasons:
-#  - Sm, S: Insufficient WARL configuration options.
-#  - InterruptsSm,InterruptsS,InterruptsU,PMPSm,PMPZca,SvaduPMP,SvPMP,SvPMPZicbo: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
+#  - Sm: Insufficient WARL configuration options.
+#  - PMPSm: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
 EXTENSIONS  ?=
-EXCLUDE_EXTENSIONS ?= Sm,Sv,SvaduPMP,SvPMP,SvPMPZicbo,Svade,Svadu,Svinval,SvZicbo,Svnapot,Svpbmt,ExceptionsSvZalrsc,ExceptionsSvZaamo,PMPS,PMPU,PMPSm
+EXCLUDE_EXTENSIONS ?= Sm,PMPSm
 
 # DEBUG, FAST, and VERBOSE are runtime options for controlling build output. DEBUG and FAST are mutually exclusive.
 # Set to True to enable, or leave blank to disable.
@@ -126,7 +126,7 @@ help:
 	  'vector-tests'        'Generate vector test sources' \
 	  'coverage'            'Build with coverage instrumentation for $$(COVERAGE_CONFIG_FILES)' \
 	  'regression'          'Clean, run coverage, then every config with a run_cmd.txt' \
-	  'clean'               'Remove build artifacts (preserves extensions.txt)' \
+	  'clean'               'Remove build artifacts (preserves extensions.txt and .validated)' \
 	  'clean-tests'         'Remove generated test sources'
 	@printf '\n\033[1mGenerators:\033[0m\n'
 	@printf '  \033[36m%-20s\033[0m %s\n' \
@@ -180,7 +180,7 @@ elfs: tests
 .PHONY: clean
 clean:
 	@if [ -d $(WORKDIR) ]; then \
-		find $(WORKDIR) \( -type f -o -type l \) ! -name 'extensions.txt' -delete; \
+		find $(WORKDIR) \( -type f -o -type l \) ! -name 'extensions.txt' ! -name '.validated' -delete; \
 		find $(WORKDIR) -type d -empty -delete; \
 	fi
 

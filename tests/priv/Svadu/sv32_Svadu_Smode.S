@@ -21,7 +21,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv32, Svadu]
-# MARCH: rv32i_zicsr
+# MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv32_Svadu_Smode.S"

@@ -9,7 +9,7 @@ set -euo pipefail
 
 INSTALL_DIR="${1:?Usage: install-cve2.sh <install-dir>}"
 CVE2_DV_REPO="https://github.com/karabambus/cv32e20-dv.git"
-CVE2_DV_COMMIT="212abf96c0b12e4d3e4db1bad8e87296c51639f9"
+CVE2_DV_COMMIT="c113622e23241711072c32739741bfbe5cf3de13"
 VERILATOR_VERSION="v5.042"
 
 mkdir -p "$INSTALL_DIR/bin"

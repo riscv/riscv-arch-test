@@ -26,7 +26,7 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cmp_vd_vs1_egs4 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.current.vd == ins.current.vs1 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers; with VLEN=64 only even registers are valid (LMUL=2)
+        // Compare assignments of all 32 registers; with VLEN=64 only even registers are valid (LMUL=2), and VLEN=32 only multiple of 4 are valid (LMUL=4)
         `ifndef ZVL128B_SUPPORTED
             ignore_bins v1  = {v1};
             ignore_bins v3  = {v3};
@@ -44,6 +44,17 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
             ignore_bins v27 = {v27};
             ignore_bins v29 = {v29};
             ignore_bins v31 = {v31};
+        `endif
+
+        `ifndef ZVL64B_SUPPORTED
+            ignore_bins v2  = {v2};
+            ignore_bins v6  = {v6};
+            ignore_bins v10  = {v10};
+            ignore_bins v14  = {v14};
+            ignore_bins v18  = {v18};
+            ignore_bins v22 = {v22};
+            ignore_bins v26 = {v26};
+            ignore_bins v30 = {v30};
         `endif
     }
 
@@ -54,7 +65,7 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cmp_vd_vs1_vs2_egs4 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.current.vd == ins.current.vs1 & ins.current.vd == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers; with VLEN=64 only even registers are valid (LMUL=2)
+        // Compare assignments of all 32 registers; with VLEN=64 only even registers are valid (LMUL=2), and VLEN=32 only multiple of 4 are valid (LMUL=4)
         `ifndef ZVL128B_SUPPORTED
             ignore_bins v1  = {v1};
             ignore_bins v3  = {v3};
@@ -72,6 +83,17 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
             ignore_bins v27 = {v27};
             ignore_bins v29 = {v29};
             ignore_bins v31 = {v31};
+        `endif
+
+        `ifndef ZVL64B_SUPPORTED
+            ignore_bins v2  = {v2};
+            ignore_bins v6  = {v6};
+            ignore_bins v10  = {v10};
+            ignore_bins v14  = {v14};
+            ignore_bins v18  = {v18};
+            ignore_bins v22 = {v22};
+            ignore_bins v26 = {v26};
+            ignore_bins v30 = {v30};
         `endif
     }
 
@@ -82,7 +104,7 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cmp_vd_vs2_egs4 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.current.vd == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers; with VLEN=64 only even registers are valid (LMUL=2)
+        // Compare assignments of all 32 registers; with VLEN=64 only even registers are valid (LMUL=2), and VLEN=32 only multiple of 4 are valid (LMUL=4)
         `ifndef ZVL128B_SUPPORTED
             ignore_bins v1  = {v1};
             ignore_bins v3  = {v3};
@@ -101,6 +123,17 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
             ignore_bins v29 = {v29};
             ignore_bins v31 = {v31};
         `endif
+
+        `ifndef ZVL64B_SUPPORTED
+            ignore_bins v2  = {v2};
+            ignore_bins v6  = {v6};
+            ignore_bins v10  = {v10};
+            ignore_bins v14  = {v14};
+            ignore_bins v18  = {v18};
+            ignore_bins v22 = {v22};
+            ignore_bins v26 = {v26};
+            ignore_bins v30 = {v30};
+        `endif
     }
 
     //// end cmp_vd_vs2_egs4////////////////////////////////////////////////
@@ -110,7 +143,7 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cmp_vs1_vs2_egs4 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.current.vs1 == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers; with VLEN=64 only even registers are valid (LMUL=2)
+        // Compare assignments of all 32 registers; with VLEN=64 only even registers are valid (LMUL=2), and VLEN=32 only multiple of 4 are valid (LMUL=4)
         `ifndef ZVL128B_SUPPORTED
             ignore_bins v1  = {v1};
             ignore_bins v3  = {v3};
@@ -128,6 +161,17 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
             ignore_bins v27 = {v27};
             ignore_bins v29 = {v29};
             ignore_bins v31 = {v31};
+        `endif
+
+        `ifndef ZVL64B_SUPPORTED
+            ignore_bins v2  = {v2};
+            ignore_bins v6  = {v6};
+            ignore_bins v10  = {v10};
+            ignore_bins v14  = {v14};
+            ignore_bins v18  = {v18};
+            ignore_bins v22 = {v22};
+            ignore_bins v26 = {v26};
+            ignore_bins v30 = {v30};
         `endif
     }
 
@@ -165,7 +209,7 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vd_egs4 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
-        // VD register assignment (EGS=4, SEW=32: with VLEN=64 LMUL=2 is required, so odd registers are illegal)
+        // VD register assignment (EGS=4, SEW=32: with VLEN=64 LMUL=2 is required, so odd registers are illegal, with VLEN=32, LMUL=4 is required so all registers must be a multiple of 4)
         `ifndef ZVL128B_SUPPORTED
             ignore_bins v1  = {v1};
             ignore_bins v3  = {v3};
@@ -184,6 +228,17 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
             ignore_bins v29 = {v29};
             ignore_bins v31 = {v31};
         `endif
+
+        `ifndef ZVL64B_SUPPORTED
+            ignore_bins v2  = {v2};
+            ignore_bins v6  = {v6};
+            ignore_bins v10  = {v10};
+            ignore_bins v14  = {v14};
+            ignore_bins v18  = {v18};
+            ignore_bins v22 = {v22};
+            ignore_bins v26 = {v26};
+            ignore_bins v30 = {v30};
+        `endif
     }
 
     //// end cp_vd_egs4////////////////////////////////////////////////
@@ -192,8 +247,8 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
     // cp_vs1_edges_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs1_edges_egs4 : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs1_val, "2")  iff (ins.trap == 0 )  {
-        // Edge values of vs1 (EGS=4, LMUL=2), assuming vl = 1
+    cp_vs1_edges_egs4 : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs1_val, "4")  iff (ins.trap == 0 )  {
+        // Edge values of vs1 (EGS=4), assuming vl = 4
         bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
         bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
         bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
@@ -215,7 +270,7 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vs1_egs4 : coverpoint ins.get_vr_reg(ins.current.vs1)  iff (ins.trap == 0 )  {
-        // VS1 register assignment (EGS=4, SEW=32: with VLEN=64 LMUL=2 is required, so odd registers are illegal)
+        // VS1 register assignment (EGS=4, SEW=32: with VLEN=64 LMUL=2 is required, so odd registers are illegal, with VLEN=32, LMUL=4 is required so all registers must be a multiple of 4)
         `ifndef ZVL128B_SUPPORTED
             ignore_bins v1  = {v1};
             ignore_bins v3  = {v3};
@@ -234,6 +289,17 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
             ignore_bins v29 = {v29};
             ignore_bins v31 = {v31};
         `endif
+
+        `ifndef ZVL64B_SUPPORTED
+            ignore_bins v2  = {v2};
+            ignore_bins v6  = {v6};
+            ignore_bins v10  = {v10};
+            ignore_bins v14  = {v14};
+            ignore_bins v18  = {v18};
+            ignore_bins v22 = {v22};
+            ignore_bins v26 = {v26};
+            ignore_bins v30 = {v30};
+        `endif
     }
 
     //// end cp_vs1_egs4////////////////////////////////////////////////
@@ -242,8 +308,8 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
     // cp_vs2_edges_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_egs4 : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "2")  iff (ins.trap == 0 )  {
-        // Edge values of vs2 (EGS=4, LMUL=2), assuming vl = 1
+    cp_vs2_edges_egs4 : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "4")  iff (ins.trap == 0 )  {
+        // Edge values of vs2 (EGS=4), assuming vl = 4
         bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
         bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
         bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
@@ -265,7 +331,7 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vs2_egs4 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
-        // VS2 register assignment (EGS=4, SEW=32: with VLEN=64 LMUL=2 is required, so odd registers are illegal)
+        // VS2 register assignment (EGS=4, SEW=32: with VLEN=64 LMUL=2 is required, so odd registers are illegal, with VLEN=32, LMUL=4 is required so all registers must be a multiple of 4)
         `ifndef ZVL128B_SUPPORTED
             ignore_bins v1  = {v1};
             ignore_bins v3  = {v3};
@@ -284,6 +350,17 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
             ignore_bins v29 = {v29};
             ignore_bins v31 = {v31};
         `endif
+
+        `ifndef ZVL64B_SUPPORTED
+            ignore_bins v2  = {v2};
+            ignore_bins v6  = {v6};
+            ignore_bins v10  = {v10};
+            ignore_bins v14  = {v14};
+            ignore_bins v18  = {v18};
+            ignore_bins v22 = {v22};
+            ignore_bins v26 = {v26};
+            ignore_bins v30 = {v30};
+        `endif
     }
 
     //// end cp_vs2_egs4////////////////////////////////////////////////
@@ -297,7 +374,9 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
         // LMUL=8/4/2: always valid since VLEN=64 (minimum) satisfies LMUL*VLEN >= 128 bits
         bins eight  = {3};
         bins four   = {2};
-        bins two    = {1};
+        `ifdef ZVL128B_SUPPORTED
+            bins two    = {1};
+        `endif
         // Smaller LMULs require larger VLEN so that >=2 element groups are possible
         `ifdef ZVL256B_SUPPORTED
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
@@ -316,7 +395,7 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
 
     cp_csr_vl_edges_egs4 : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
         // Edge values of VL (vector length)
-        bins one        = {vl_one       };
+        bins vlfour     = {vl_four      };
         bins vlmax      = {vl_vlmax     };
         bins legal      = {vl_legal     };
     }
@@ -340,21 +419,21 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
     //// end cr_vs1_vd_edges_egs4////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cr_vs2_vs1_edges_egs4
+    // cr_vs2_vd_edges_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
     cr_vs2_vd_edges_egs4 : cross cp_vs2_edges_egs4, cp_vd_edges_egs4  iff (ins.trap == 0 )  {
         // Cross coverage of VS2 edges and VD edges (EGS=4)
     }
 
-    //// end cr_vs2_vs1_edges_egs4////////////////////////////////////////////////
+    //// end cr_vs2_vd_edges_egs4////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vs2_vs1_edges_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
     cr_vs2_vs1_edges_egs4 : cross cp_vs2_edges_egs4, cp_vs1_edges_egs4  iff (ins.trap == 0 )  {
-        // Cross coverage of VS2 edges and VS1 edges (EGS=4, LMUL=2)
+        // Cross coverage of VS2 edges and VS1 edges (EGS=4)
     }
 
     //// end cr_vs2_vs1_edges_egs4////////////////////////////////////////////////
@@ -392,7 +471,7 @@ covergroup Zvkg_vgmul_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cmp_vd_vs2_egs4 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.current.vd == ins.current.vs2 & ins.trap == 0 )  {
-        // Compare assignments of all 32 registers; with VLEN=64 only even registers are valid (LMUL=2)
+        // Compare assignments of all 32 registers; with VLEN=64 only even registers are valid (LMUL=2), and VLEN=32 only multiple of 4 are valid (LMUL=4)
         `ifndef ZVL128B_SUPPORTED
             ignore_bins v1  = {v1};
             ignore_bins v3  = {v3};
@@ -410,6 +489,17 @@ covergroup Zvkg_vgmul_vv_cg with function sample(ins_t ins);
             ignore_bins v27 = {v27};
             ignore_bins v29 = {v29};
             ignore_bins v31 = {v31};
+        `endif
+
+        `ifndef ZVL64B_SUPPORTED
+            ignore_bins v2  = {v2};
+            ignore_bins v6  = {v6};
+            ignore_bins v10  = {v10};
+            ignore_bins v14  = {v14};
+            ignore_bins v18  = {v18};
+            ignore_bins v22 = {v22};
+            ignore_bins v26 = {v26};
+            ignore_bins v30 = {v30};
         `endif
     }
 
@@ -447,7 +537,7 @@ covergroup Zvkg_vgmul_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vd_egs4 : coverpoint ins.get_vr_reg(ins.current.vd)  iff (ins.trap == 0 )  {
-        // VD register assignment (EGS=4, SEW=32: with VLEN=64 LMUL=2 is required, so odd registers are illegal)
+        // VD register assignment (EGS=4, SEW=32: with VLEN=64 LMUL=2 is required, so odd registers are illegal, with VLEN=32, LMUL=4 is required so all registers must be a multiple of 4)
         `ifndef ZVL128B_SUPPORTED
             ignore_bins v1  = {v1};
             ignore_bins v3  = {v3};
@@ -466,6 +556,17 @@ covergroup Zvkg_vgmul_vv_cg with function sample(ins_t ins);
             ignore_bins v29 = {v29};
             ignore_bins v31 = {v31};
         `endif
+
+        `ifndef ZVL64B_SUPPORTED
+            ignore_bins v2  = {v2};
+            ignore_bins v6  = {v6};
+            ignore_bins v10  = {v10};
+            ignore_bins v14  = {v14};
+            ignore_bins v18  = {v18};
+            ignore_bins v22 = {v22};
+            ignore_bins v26 = {v26};
+            ignore_bins v30 = {v30};
+        `endif
     }
 
     //// end cp_vd_egs4////////////////////////////////////////////////
@@ -474,8 +575,8 @@ covergroup Zvkg_vgmul_vv_cg with function sample(ins_t ins);
     // cp_vs2_edges_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_egs4 : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "2")  iff (ins.trap == 0 )  {
-        // Edge values of vs2 (EGS=4, LMUL=2), assuming vl = 1
+    cp_vs2_edges_egs4 : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "4")  iff (ins.trap == 0 )  {
+        // Edge values of vs2 (EGS=4), assuming vl = 4
         bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
         bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
         bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
@@ -497,7 +598,7 @@ covergroup Zvkg_vgmul_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_vs2_egs4 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
-        // VS2 register assignment (EGS=4, SEW=32: with VLEN=64 LMUL=2 is required, so odd registers are illegal)
+        // VS2 register assignment (EGS=4, SEW=32: with VLEN=64 LMUL=2 is required, so odd registers are illegal, with VLEN=32, LMUL=4 is required so all registers must be a multiple of 4)
         `ifndef ZVL128B_SUPPORTED
             ignore_bins v1  = {v1};
             ignore_bins v3  = {v3};
@@ -516,6 +617,17 @@ covergroup Zvkg_vgmul_vv_cg with function sample(ins_t ins);
             ignore_bins v29 = {v29};
             ignore_bins v31 = {v31};
         `endif
+
+        `ifndef ZVL64B_SUPPORTED
+            ignore_bins v2  = {v2};
+            ignore_bins v6  = {v6};
+            ignore_bins v10  = {v10};
+            ignore_bins v14  = {v14};
+            ignore_bins v18  = {v18};
+            ignore_bins v22 = {v22};
+            ignore_bins v26 = {v26};
+            ignore_bins v30 = {v30};
+        `endif
     }
 
     //// end cp_vs2_egs4////////////////////////////////////////////////
@@ -529,7 +641,9 @@ covergroup Zvkg_vgmul_vv_cg with function sample(ins_t ins);
         // LMUL=8/4/2: always valid since VLEN=64 (minimum) satisfies LMUL*VLEN >= 128 bits
         bins eight  = {3};
         bins four   = {2};
-        bins two    = {1};
+        `ifdef ZVL128B_SUPPORTED
+            bins two    = {1};
+        `endif
         // Smaller LMULs require larger VLEN so that >=2 element groups are possible
         `ifdef ZVL256B_SUPPORTED
             bins one    = {0};   // LMUL=1: needs VLEN>=256 for >=2 element groups
@@ -548,7 +662,7 @@ covergroup Zvkg_vgmul_vv_cg with function sample(ins_t ins);
 
     cp_csr_vl_edges_egs4 : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
         // Edge values of VL (vector length)
-        bins one        = {vl_one       };
+        bins vlfour     = {vl_four      };
         bins vlmax      = {vl_vlmax     };
         bins legal      = {vl_legal     };
     }
@@ -562,14 +676,14 @@ covergroup Zvkg_vgmul_vv_cg with function sample(ins_t ins);
     //// end cr_vl_lmul_egs4_sew32////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cr_vs2_vs1_edges_egs4
+    // cr_vs2_vd_edges_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
     cr_vs2_vd_edges_egs4 : cross cp_vs2_edges_egs4, cp_vd_edges_egs4  iff (ins.trap == 0 )  {
         // Cross coverage of VS2 edges and VD edges (EGS=4)
     }
 
-    //// end cr_vs2_vs1_edges_egs4////////////////////////////////////////////////
+    //// end cr_vs2_vd_edges_egs4////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vtype_agnostic_egs4

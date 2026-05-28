@@ -2,8 +2,8 @@
     // cp_vs1_edges_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs1_edges_egs4 : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs1_val, "2")  iff (ins.trap == 0 )  {
-        // Edge values of vs1 (EGS=4, LMUL=2), assuming vl = 1
+    cp_vs1_edges_egs4 : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs1_val, "4")  iff (ins.trap == 0 )  {
+        // Edge values of vs1 (EGS=4), assuming vl = 4
         bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
         bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
         bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},

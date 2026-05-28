@@ -13,10 +13,10 @@
 
 `define COVER_ZVKG
 `define COVER_ZVKGCUSTOM32
-`ifdef ELEN32
+`ifdef UDB_ELEN_32
     `define SEW_32_EQ_ELEN
 `endif
-`ifdef ELEN64
+`ifdef UDB_ELEN_64
     `define SEW_32_EQ_ELEN_DIV_2
 `endif
 covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
@@ -139,11 +139,11 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_rd_edges_egs4
+    // cp_vs1_edges_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_rd_edges_egs4 : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vd_val, "2")  iff (ins.trap == 0 )  {
-        // Edge values of vd initial content (EGS=4, LMUL=2); vd is a source operand for vghsh.vv and vgmul.vv
+    cp_vd_edges_egs4 : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vd_val, "4")  iff (ins.trap == 0 )  {
+        // Edge values of vd (EGS=4), assuming vl = 1
         bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
         bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
         bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
@@ -158,7 +158,7 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
         bins random     = {vs_random    };   //  = {(SEW){random}}
     }
 
-    //// end cp_rd_edges_egs4////////////////////////////////////////////////
+    //// end cp_vs1_edges_egs4////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vd_egs4
@@ -330,6 +330,26 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
     //// end cr_vl_lmul_egs4_sew32////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cr_vs1_vd_edges_egs4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cr_vs1_vd_edges_egs4 : cross cp_vs1_edges_egs4, cp_vd_edges_egs4  iff (ins.trap == 0 )  {
+        // Cross coverage of VS2 edges and VD edges (EGS=4)
+    }
+
+    //// end cr_vs1_vd_edges_egs4////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vs2_vs1_edges_egs4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cr_vs2_vd_edges_egs4 : cross cp_vs2_edges_egs4, cp_vd_edges_egs4  iff (ins.trap == 0 )  {
+        // Cross coverage of VS2 edges and VD edges (EGS=4)
+    }
+
+    //// end cr_vs2_vs1_edges_egs4////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cr_vs2_vs1_edges_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -401,11 +421,11 @@ covergroup Zvkg_vgmul_vv_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_rd_edges_egs4
+    // cp_vs1_edges_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_rd_edges_egs4 : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vd_val, "2")  iff (ins.trap == 0 )  {
-        // Edge values of vd initial content (EGS=4, LMUL=2); vd is a source operand for vghsh.vv and vgmul.vv
+    cp_vd_edges_egs4 : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vd_val, "4")  iff (ins.trap == 0 )  {
+        // Edge values of vd (EGS=4), assuming vl = 1
         bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
         bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
         bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
@@ -420,7 +440,7 @@ covergroup Zvkg_vgmul_vv_cg with function sample(ins_t ins);
         bins random     = {vs_random    };   //  = {(SEW){random}}
     }
 
-    //// end cp_rd_edges_egs4////////////////////////////////////////////////
+    //// end cp_vs1_edges_egs4////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vd_egs4
@@ -540,6 +560,16 @@ covergroup Zvkg_vgmul_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     //// end cr_vl_lmul_egs4_sew32////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vs2_vs1_edges_egs4
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cr_vs2_vd_edges_egs4 : cross cp_vs2_edges_egs4, cp_vd_edges_egs4  iff (ins.trap == 0 )  {
+        // Cross coverage of VS2 edges and VD edges (EGS=4)
+    }
+
+    //// end cr_vs2_vs1_edges_egs4////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vtype_agnostic_egs4

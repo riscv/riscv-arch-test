@@ -29,13 +29,18 @@ covergroup Smstateen_cg with function sample(ins_t ins);
     // ── CSR address coverpoint — all mstateen CSRs ────────────────────────
     mstateen_csrs: coverpoint ins.current.insn[31:20] {
         bins mstateen0 = {CSR_MSTATEEN0};
+        bins mstateen1 = {CSR_MSTATEEN1};
+        bins mstateen2 = {CSR_MSTATEEN2};
+        bins mstateen3 = {CSR_MSTATEEN3};
+        `ifdef UDB_MXLEN_32
+            bins mstateen0h = {CSR_MSTATEEN0H};
+            bins mstateen1h = {CSR_MSTATEEN1H};
+            bins mstateen2h = {CSR_MSTATEEN2H};
+            bins mstateen3h = {CSR_MSTATEEN3H};
+        `endif
     }
 
-    `ifdef UDB_MXLEN_32
-        mstateen_high_half_csrs: coverpoint ins.current.insn[31:20] {
-            bins mstateen0h = {CSR_MSTATEEN0H};
-    }
-    `endif
+
     `ifdef IMSIC_SUPPORTED
         imsic_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "imsic") {
             bins imsic_disabled = {1'b0};
@@ -307,7 +312,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 `endif
 
     // Row 13: Sm1p13 + Hypervisor only
-`ifdef SM1P13_AND_H_SUPPORTED
+`ifdef SM1P13_SUPPORTED
     cp_p1p13: cross csrops, p1p13_state, hedelegh_csr;
 `endif
 

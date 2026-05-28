@@ -96,7 +96,7 @@ def _generate_se0_zero_controls_sstateen0(test_data: TestData) -> list[str]:
     lines.append(
         comment_banner(
             coverpoint,
-            "CSR ops to sstateen0 with mstateen0.SE0=0 (access from lower modes should trap/have no effect)",
+            "CSR ops to sstateen0 with mstateen0.SE0=0 (S/U-mode access should trap)",
         )
     )
 
@@ -144,7 +144,7 @@ def _generate_se0_one_controls_sstateen0(test_data: TestData) -> list[str]:
     lines.append(
         comment_banner(
             coverpoint,
-            "CSRRW to sstateen0 with mstateen0.SE0=1 (required for sstateen0 access)",
+            "CSR ops to sstateen0 with mstateen0.SE0=1 (SE0 enabled, access permitted)",
         )
     )
 

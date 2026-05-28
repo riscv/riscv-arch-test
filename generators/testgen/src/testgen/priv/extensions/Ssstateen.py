@@ -530,6 +530,326 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
     return lines
 
 
+def _generate_envcfg(test_data: TestData) -> list[str]:
+    coverpoint = "cp_envcfg"
+    covergroup = "Ssstateen_cg"
+
+    lines = [
+        comment_banner(
+            coverpoint,
+            "CSR ops on senvcfg from S-mode with SE0=1 and mstateen0.envcfg (bit 62) both states",
+        )
+    ]
+
+    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    ENVCFG_BIT_MASK_64 = "0x4000000000000000"  # bit 62 of mstateen0
+    ENVCFG_BIT_MASK_32 = "0x40000000"  # bit 30 of mstateen0h
+
+    lines.extend([f"\tLI(x{ones_reg}, -1)"])
+
+    for state in [1, 0]:
+        bit_action = "CSRS" if state == 1 else "CSRC"
+        # SE0 must be set first so senvcfg access from S-mode doesn't trap
+        lines.extend(_set_se0(temp_reg))
+        lines.extend(
+            [
+                "",
+                f"\t# mstateen0.envcfg = {state}, SE0=1, drop to S-mode",
+                "#if __riscv_xlen == 64",
+                f"\tLI(x{temp_reg}, {ENVCFG_BIT_MASK_64})",
+                f"\t{bit_action}(mstateen0, x{temp_reg})",
+                "#else",
+                f"\tLI(x{temp_reg}, {ENVCFG_BIT_MASK_32})",
+                f"\t{bit_action}(mstateen0h, x{temp_reg})",
+                "#endif",
+            ]
+        )
+        lines.extend(_enter_smode(test_data, temp_reg))
+        for op in ["CSRRW", "CSRRS", "CSRRC", "CSRR"]:
+            insn = f"\t{op}(x{temp_reg}, senvcfg)" if op == "CSRR" else f"\t{op}(x{temp_reg}, senvcfg, x{ones_reg})"
+            lines.extend(
+                [
+                    "",
+                    test_data.add_testcase(f"senvcfg_{op.lower()}_envcfg{state}_smode", coverpoint, covergroup),
+                    insn,
+                    "\tnop",
+                ]
+            )
+        lines.extend(_return_mmode(test_data, temp_reg))
+
+    test_data.int_regs.return_registers([temp_reg, ones_reg])
+    return lines
+
+
+def _generate_context(test_data: TestData) -> list[str]:
+    coverpoint = "cp_context"
+    covergroup = "Ssstateen_cg"
+
+    lines = [
+        comment_banner(
+            coverpoint,
+            "CSR ops on scontext from S-mode with SE0=1 and mstateen0.context (bit 57) both states",
+        )
+    ]
+
+    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    CONTEXT_BIT_MASK_64 = "0x0200000000000000"  # bit 57
+    CONTEXT_BIT_MASK_32 = "0x02000000"  # bit 25 of mstateen0h
+
+    lines.extend([f"\tLI(x{ones_reg}, -1)"])
+
+    for state in [0, 1]:
+        bit_action = "CSRC" if state == 0 else "CSRS"
+        lines.extend(_set_se0(temp_reg))
+        lines.extend(
+            [
+                "",
+                f"\t# mstateen0.context = {state}, SE0=1",
+                "#if __riscv_xlen == 64",
+                f"\tLI(x{temp_reg}, {CONTEXT_BIT_MASK_64})",
+                f"\t{bit_action}(mstateen0, x{temp_reg})",
+                "#else",
+                f"\tLI(x{temp_reg}, {CONTEXT_BIT_MASK_32})",
+                f"\t{bit_action}(mstateen0h, x{temp_reg})",
+                "#endif",
+            ]
+        )
+        lines.extend(_enter_smode(test_data, temp_reg))
+        for op in ["CSRRW", "CSRRS", "CSRRC", "CSRR"]:
+            insn = f"\t{op}(x{temp_reg}, scontext)" if op == "CSRR" else f"\t{op}(x{temp_reg}, scontext, x{ones_reg})"
+            lines.extend(
+                [
+                    "",
+                    test_data.add_testcase(f"scontext_{op.lower()}_context{state}_smode", coverpoint, covergroup),
+                    insn,
+                    "\tnop",
+                ]
+            )
+        lines.extend(_return_mmode(test_data, temp_reg))
+
+    test_data.int_regs.return_registers([temp_reg, ones_reg])
+    return lines
+
+
+def _generate_ctr(test_data: TestData) -> list[str]:
+    coverpoint = "cp_ctr"
+    covergroup = "Ssstateen_cg"
+
+    lines = [
+        comment_banner(
+            coverpoint,
+            "CSR ops on sctrdepth/sctrstatus from S-mode with SE0=1 and mstateen0.ctr (bit 54) both states",
+        )
+    ]
+
+    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    CTR_BIT_MASK_64 = "0x0040000000000000"  # bit 54
+    CTR_BIT_MASK_32 = "0x00400000"  # bit 22 of mstateen0h
+    ctr_csrs = ["sctrdepth", "sctrstatus"]
+
+    lines.extend([f"\tLI(x{ones_reg}, -1)"])
+
+    for state in [0, 1]:
+        bit_action = "CSRC" if state == 0 else "CSRS"
+        lines.extend(_set_se0(temp_reg))
+        lines.extend(
+            [
+                "",
+                f"\t# mstateen0.ctr = {state}, SE0=1",
+                "#if __riscv_xlen == 64",
+                f"\tLI(x{temp_reg}, {CTR_BIT_MASK_64})",
+                f"\t{bit_action}(mstateen0, x{temp_reg})",
+                "#else",
+                f"\tLI(x{temp_reg}, {CTR_BIT_MASK_32})",
+                f"\t{bit_action}(mstateen0h, x{temp_reg})",
+                "#endif",
+            ]
+        )
+        lines.extend(_enter_smode(test_data, temp_reg))
+        for csr in ctr_csrs:
+            for op in ["CSRRW", "CSRRS", "CSRRC", "CSRR"]:
+                insn = f"\t{op}(x{temp_reg}, {csr})" if op == "CSRR" else f"\t{op}(x{temp_reg}, {csr}, x{ones_reg})"
+                lines.extend(
+                    [
+                        "",
+                        test_data.add_testcase(f"{csr}_{op.lower()}_ctr{state}_smode", coverpoint, covergroup),
+                        insn,
+                        "\tnop",
+                    ]
+                )
+        lines.extend(_return_mmode(test_data, temp_reg))
+
+    test_data.int_regs.return_registers([temp_reg, ones_reg])
+    return lines
+
+
+def _generate_imsic(test_data: TestData) -> list[str]:
+    coverpoint = "cp_imsic"
+    covergroup = "Ssstateen_cg"
+
+    lines = [
+        comment_banner(
+            coverpoint,
+            "CSR ops on stopei/vstopei from S-mode with SE0=1 and mstateen0.imsic (bit 58) both states",
+        )
+    ]
+
+    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    IMSIC_BIT_MASK_64 = "0x0400000000000000"  # bit 58
+    IMSIC_BIT_MASK_32 = "0x04000000"  # bit 26 of mstateen0h
+    imsic_csrs = ["stopei", "vstopei"]
+
+    lines.extend([f"\tLI(x{ones_reg}, -1)"])
+
+    for state in [0, 1]:
+        bit_action = "CSRC" if state == 0 else "CSRS"
+        lines.extend(_set_se0(temp_reg))
+        lines.extend(
+            [
+                "",
+                f"\t# mstateen0.imsic = {state}, SE0=1",
+                "#if __riscv_xlen == 64",
+                f"\tLI(x{temp_reg}, {IMSIC_BIT_MASK_64})",
+                f"\t{bit_action}(mstateen0, x{temp_reg})",
+                "#else",
+                f"\tLI(x{temp_reg}, {IMSIC_BIT_MASK_32})",
+                f"\t{bit_action}(mstateen0h, x{temp_reg})",
+                "#endif",
+            ]
+        )
+        lines.extend(_enter_smode(test_data, temp_reg))
+        for csr in imsic_csrs:
+            for op in ["CSRRW", "CSRRS", "CSRRC", "CSRR"]:
+                insn = f"\t{op}(x{temp_reg}, {csr})" if op == "CSRR" else f"\t{op}(x{temp_reg}, {csr}, x{ones_reg})"
+                lines.extend(
+                    [
+                        "",
+                        test_data.add_testcase(f"{csr}_{op.lower()}_imsic{state}_smode", coverpoint, covergroup),
+                        insn,
+                        "\tnop",
+                    ]
+                )
+        lines.extend(_return_mmode(test_data, temp_reg))
+
+    test_data.int_regs.return_registers([temp_reg, ones_reg])
+    return lines
+
+
+def _generate_aia(test_data: TestData) -> list[str]:
+    coverpoint = "cp_aia"
+    covergroup = "Ssstateen_cg"
+
+    lines = [
+        comment_banner(
+            coverpoint,
+            "CSR ops on AIA CSRs from S-mode with SE0=1 and mstateen0.aia (bit 59) both states",
+        )
+    ]
+
+    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    AIA_BIT_MASK_64 = "0x0800000000000000"  # bit 59
+    AIA_BIT_MASK_32 = "0x08000000"  # bit 27 of mstateen0h
+
+    lines.extend([f"\tLI(x{ones_reg}, -1)"])
+
+    for state in [0, 1]:
+        bit_action = "CSRC" if state == 0 else "CSRS"
+        lines.extend(_set_se0(temp_reg))
+        lines.extend(
+            [
+                "",
+                f"\t# mstateen0.aia = {state}, SE0=1",
+                "#if __riscv_xlen == 64",
+                f"\tLI(x{temp_reg}, {AIA_BIT_MASK_64})",
+                f"\t{bit_action}(mstateen0, x{temp_reg})",
+                "#else",
+                f"\tLI(x{temp_reg}, {AIA_BIT_MASK_32})",
+                f"\t{bit_action}(mstateen0h, x{temp_reg})",
+                "#endif",
+            ]
+        )
+        lines.extend(_enter_smode(test_data, temp_reg))
+        lines.append("#if __riscv_xlen == 64")
+        for csr in ["sie", "sip"]:
+            for op in ["CSRRW", "CSRRS", "CSRRC", "CSRR"]:
+                insn = f"\t{op}(x{temp_reg}, {csr})" if op == "CSRR" else f"\t{op}(x{temp_reg}, {csr}, x{ones_reg})"
+                lines.extend(
+                    [
+                        "",
+                        test_data.add_testcase(f"{csr}_{op.lower()}_aia{state}_smode", coverpoint, covergroup),
+                        insn,
+                        "\tnop",
+                    ]
+                )
+        lines.append("#else  // RV32")
+        for csr in ["sieh", "siph"]:
+            for op in ["CSRRW", "CSRRS", "CSRRC", "CSRR"]:
+                insn = f"\t{op}(x{temp_reg}, {csr})" if op == "CSRR" else f"\t{op}(x{temp_reg}, {csr}, x{ones_reg})"
+                lines.extend(
+                    [
+                        "",
+                        test_data.add_testcase(f"{csr}_{op.lower()}_aia{state}_smode", coverpoint, covergroup),
+                        insn,
+                        "\tnop",
+                    ]
+                )
+        lines.append("#endif")
+        lines.extend(_return_mmode(test_data, temp_reg))
+
+    test_data.int_regs.return_registers([temp_reg, ones_reg])
+    return lines
+
+
+def _generate_p1p13(test_data: TestData) -> list[str]:
+    coverpoint = "cp_p1p13"
+    covergroup = "Ssstateen_cg"  # was Smstateen_cg — wrong
+
+    lines = [
+        comment_banner(
+            coverpoint,
+            "CSR ops on hedelegh from S-mode with SE0=1 and mstateen0.p1p13 (bit 56) both states",
+        )
+    ]
+
+    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    P1P13_BIT_MASK_64 = "0x0100000000000000"  # bit 56
+    P1P13_BIT_MASK_32 = "0x01000000"  # bit 24 of mstateen0h
+
+    lines.extend([f"\tLI(x{ones_reg}, -1)"])
+
+    for state in [0, 1]:
+        bit_action = "CSRC" if state == 0 else "CSRS"
+        lines.extend(_set_se0(temp_reg))
+        lines.extend(
+            [
+                "",
+                f"\t# mstateen0.p1p13 = {state}, SE0=1",
+                "#if __riscv_xlen == 64",
+                f"\tLI(x{temp_reg}, {P1P13_BIT_MASK_64})",
+                f"\t{bit_action}(mstateen0, x{temp_reg})",
+                "#else",
+                f"\tLI(x{temp_reg}, {P1P13_BIT_MASK_32})",
+                f"\t{bit_action}(mstateen0h, x{temp_reg})",
+                "#endif",
+            ]
+        )
+        lines.extend(_enter_smode(test_data, temp_reg))
+        for op in ["CSRRW", "CSRRS", "CSRRC", "CSRR"]:
+            insn = f"\t{op}(x{temp_reg}, hedelegh)" if op == "CSRR" else f"\t{op}(x{temp_reg}, hedelegh, x{ones_reg})"
+            lines.extend(
+                [
+                    "",
+                    test_data.add_testcase(f"hedelegh_{op.lower()}_p1p13_{state}_smode", coverpoint, covergroup),
+                    insn,
+                    "\tnop",
+                ]
+            )
+        lines.extend(_return_mmode(test_data, temp_reg))
+
+    test_data.int_regs.return_registers([temp_reg, ones_reg])
+    return lines
+
+
 # ---------------------------------------------------------------------------
 # Main entry point
 # ---------------------------------------------------------------------------
@@ -548,6 +868,27 @@ def make_ssstateen(test_data: TestData) -> list[str]:
     lines.extend(_generate_se0_controls_sstateen0(test_data))
     lines.extend(_generate_csr_illegal_accesses(test_data))
     lines.extend(_generate_walking_ones(test_data))
+    lines.extend(_generate_envcfg(test_data))
+    # scontext tests only when SSDTRIG is supported — sstateen0.context bit is relevant
+    lines.append("#ifdef SSDTRIG_SUPPORTED")
+    lines.extend(_generate_context(test_data))
+    lines.append("#endif  // SSDTRIG_SUPPORTED")
+
+    lines.append("#ifdef SM1P13_SUPPORTED")
+    lines.extend(_generate_p1p13(test_data))
+    lines.append("#endif  // SM1P13_SUPPORTED")
+
+    lines.append("#ifdef SCTR_SUPPORTED")
+    lines.extend(_generate_ctr(test_data))
+    lines.append("#endif  // SCTR_SUPPORTED")
+
+    lines.append("#ifdef IMSIC_SUPPORTED")
+    lines.extend(_generate_imsic(test_data))
+    lines.append("#endif  // IMSIC_SUPPORTED")
+
+    lines.append("#ifdef AIA_SUPPORTED")
+    lines.extend(_generate_aia(test_data))
+    lines.append("#endif  // AIA_SUPPORTED")
 
     # cp_fcsr_lower, cp_fcsr_lower_fp_instrs
     # Only when F (Zfinx) is supported — sstateen0.FCSR bit is relevant

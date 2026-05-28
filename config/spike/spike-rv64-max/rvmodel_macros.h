@@ -155,8 +155,10 @@
   li _R2, NS16550_BASE_ADDRESS;                  \
   sb zero, 1(_R2);                               \
   li _R2, PLIC_CLAIM_ADDRESS;                    \
-  lw _R1, 0(_R2);                               \
-  sw _R1, 0(_R2);
+  lw _R1, 0(_R2);                                 \
+  sw _R1, 0(_R2);                               \
+  li _R2, PLIC_ENABLE_ADDRESS;  \
+  sw zero, 0(_R2);
 
 #define RVMODEL_SET_MSW_INT(_R1, _R2) \
   li _R1, 1; \
@@ -168,8 +170,6 @@
   sw zero, 0(_R2);
 
 ##### Supervisor Interrupts #####
-
-#define SPIKE_SSIP_ADDRESS (CLINT_BASE_ADDRESS + 0xC000)
 
 #define RVMODEL_SET_SEXT_INT(_R1, _R2)          \
   li _R1, 7;                                     \
@@ -189,15 +189,16 @@
   sb zero, 1(_R2);                               \
   li _R2, PLIC_SCLAIM_ADDRESS;                    \
   lw _R1, 0(_R2);                               \
-  sw _R1, 0(_R2);
+  sw _R1, 0(_R2);                               \
+  li _R2, PLIC_SENABLE_ADDRESS;                 \
+  sw zero, 0(_R2);
 
 #define RVMODEL_SET_SSW_INT(_R1, _R2) \
-  li _R1, 1; \
-  li _R2, SPIKE_SSIP_ADDRESS; \
-  sw _R1, 0(_R2);
+  li   _R1, (1 << 1);\
+  csrs mip, _R1;
 
 #define RVMODEL_CLR_SSW_INT(_R1, _R2) \
-  li _R2, SPIKE_SSIP_ADDRESS; \
-  sw zero, 0(_R2);
+  li   _R1, (1 << 1);\
+  csrc sip, _R1;
 
 #endif // _RVMODEL_MACROS_H

@@ -139,12 +139,12 @@ def register_to_lmul_egs_ifdef(register: int, lmul: None | int, sew: int, egs: i
         break
     else:
       lmul = 1 # This shouldn't run but we want to make the type checker happy
-    
+
     min_required_vlen = math.ceil(sew * egs / lmul)
     egs_if_def = f"UDB_VLEN >= {min_required_vlen}"
   elif lmul is None:
     lmul = 1
-  
+
   return lmul, egs_if_def
 
 
@@ -717,7 +717,7 @@ def make_vtype_agnostic(instruction, sew, maxemul=8, eew = None, preset_emul = N
   if egs != 1:
     # The minlmul for a crypto instruction must assume SEW=32, so lmul >= egs
     # We have to do this because it is chosen at random
-    minlmul = max(minlmul, math.ceil(math.log2(egs))) 
+    minlmul = max(minlmul, math.ceil(math.log2(egs)))
 
   for t in [0,1]:
     for m in [0,1]:

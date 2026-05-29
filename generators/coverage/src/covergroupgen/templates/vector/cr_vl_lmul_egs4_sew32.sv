@@ -54,7 +54,7 @@
             `ifndef ZVL128B_SUPPORTED
                 // In this case, there is exactly one valid vl, vl_legal is covered by the next ifndef
                 ignore_bins vlfour_eq_vlmax_lmul2 = binsof(cp_csr_vtype_lmul_egs4_sew32.two) && binsof(cp_csr_vl_edges_egs4.vlmax);
-            `endif 
+            `endif
             `ifndef ZVL256B_SUPPORTED
                 // In this case, there are two valid vls, so vl_legal is not possible to hit
                 ignore_bins impossible_vl_legal_lmul2 = binsof(cp_csr_vtype_lmul_egs4_sew32.two) && binsof(cp_csr_vl_edges_egs4.vl_legal);

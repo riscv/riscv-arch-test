@@ -194,11 +194,7 @@
   sw zero, 0(_R2);
 
 #define RVMODEL_SET_SSW_INT(_R1, _R2) \
-  li   _R1, (1 << 1);\
-  csrs mip, _R1;
 
 #define RVMODEL_CLR_SSW_INT(_R1, _R2) \
-  li   _R1, (1 << 1);\
-  csrc sip, _R1;
 
 #endif // _RVMODEL_MACROS_H

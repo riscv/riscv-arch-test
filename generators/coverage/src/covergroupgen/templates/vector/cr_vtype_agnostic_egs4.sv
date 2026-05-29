@@ -13,7 +13,7 @@
     }
 
     mask_enabled_agnostic_egs4: coverpoint ins.current.insn[25] {
-        bins enabled = {1'b0};
+        bins enabled = {1'b1};
     }
 
     cr_vtype_agnostic_egs4 : cross cp_csr_vtype_vta_egs4, cp_csr_vtype_vma_egs4, mask_enabled_agnostic_egs4  iff (ins.trap == 0)  {

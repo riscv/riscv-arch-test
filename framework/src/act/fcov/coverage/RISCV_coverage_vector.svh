@@ -232,6 +232,37 @@ function edge_vs_values_t vs_edges_check_eew_64(`VLEN_BITS val);
 endfunction
 `endif
 
+function edge_vs_values_t vs_edges_check_sew32_egs4(int hart, int issue, bit [`UDB_VLEN*4-1:0] val); // string vector_reg, riscvTraceData prev);
+  `XLEN_BITS vsew = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew");
+  `XLEN_BITS lmul = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vlmul");
+  int sew = 2 ** (3 + unsigned'(vsew[2:0]));
+
+  `ifndef SEW32_SUPPORTED
+    $error("ERROR: SystemVerilog Functional Coverage: SEW 32 Support Required for EGS 4 Edge Check");
+    $fatal(1);
+  `endif
+
+  if (sew != 32) begin
+    $error("ERROR: SystemVerilog Functional Coverage: SEW 32 EGS4 edge check requires SEW=32, but was given %d", sew);
+    $fatal(1);
+  end
+
+  casez (val)
+    {{(`UDB_VLEN*4-128){1'b?}},         {(128){1'b0}}}:            return vs_zero;
+    {{(`UDB_VLEN*4-128){1'b?}},         {(128-1){1'b0}}, {1'b1}}:  return vs_one;
+    {{(`UDB_VLEN*4-128){1'b?}},         {(128-2){1'b0}}, {2'b10}}: return vs_two;
+    {{(`UDB_VLEN*4-128){1'b?}}, {1'b1}, {(128-1){1'b0}}}:          return vs_min;
+    {{(`UDB_VLEN*4-128){1'b?}}, {1'b1}, {(128-2){1'b0}}, {1'b1}}:  return vs_minp1;
+    {{(`UDB_VLEN*4-128){1'b?}}, {1'b0}, {(128-1){1'b1}}}        :  return vs_max;
+    {{(`UDB_VLEN*4-128){1'b?}}, {1'b0}, {(128-2){1'b1}}, {1'b0}}:  return vs_maxm1;
+    {{(`UDB_VLEN*4-128){1'b?}},         {(128){1'b1}}}:            return vs_ones;
+    {{(`UDB_VLEN*4-128){1'b?}},         {(128-1){1'b1}}, {1'b0}}:  return vs_onesm1;
+    {{(`UDB_VLEN*4-128){1'b?}},         {(128/2){2'b10}}}:         return vs_walkodd;
+    {{(`UDB_VLEN*4-128){1'b?}},         {(128/2){2'b01}}}:         return vs_walkeven;
+    default:                                                       return vs_random;
+  endcase
+endfunction
+
 
 // todo: CHECK TO MAKE SURE BOOLEAN STATEMENTS WORK
 // todo: ESPECIALLY REGARDING SIGNS
@@ -410,7 +441,7 @@ typedef enum {
   vl_illegal
 } vl_t;
 
-function vl_t vl_check(int hart, int issue);
+function vl_t vl_check(int hart, int issue, int egs = 1);
   `XLEN_BITS vl = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vl", "vl");
   `XLEN_BITS vstart = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vstart", "vstart");
   int vlmax = get_vtype_vlmax(hart, issue, `SAMPLE_BEFORE);
@@ -420,7 +451,7 @@ function vl_t vl_check(int hart, int issue);
 
   case(vl)
     0:         return vl_zero;
-    1:         return vl_one;
+    egs:    return vl_one; // EGS constrains what the edges of vl are
     vlmax:     return vl_vlmax;
     default: begin
       if (legal) return vl_legal;

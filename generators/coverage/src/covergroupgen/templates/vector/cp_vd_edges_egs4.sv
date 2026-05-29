@@ -1,8 +1,9 @@
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs1_edges_egs4
+    // cp_vd_edges_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vd_edges_egs4 : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vd_val, "4")  iff (ins.trap == 0 )  {
+    cp_vd_edges_egs4 : coverpoint vs_edges_check_sew32_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vd))
+        iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
         // Edge values of vd (EGS=4), assuming vl = 1
         bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
         bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
@@ -18,4 +19,4 @@
         bins random     = {vs_random    };   //  = {(SEW){random}}
     }
 
-    //// end cp_vs1_edges_egs4////////////////////////////////////////////////
+    //// end cp_vd_edges_egs4////////////////////////////////////////////////

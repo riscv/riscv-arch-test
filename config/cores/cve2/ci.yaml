@@ -3,9 +3,9 @@
 # CI configuration for the cve2 family: CV32E20
 
 ci_enabled: true
-# priv tests excluded: UDB_MTVEC_BASE_ALIGNMENT_DIRECT missing in rvtest_config.h (ACT4 bug)
-# interrupts excluded: IRQ pins tied to 0 in DV bench
-exclude_extensions: "Sm,PMPSm,SsstrictSm,SsstrictU,InterruptsSm,InterruptsU,ExceptionsSm,ExceptionsU,ExceptionsZc,ExceptionsZicboU,U"
+# Sm excluded: UDB_MTVEC_BASE_ALIGNMENT_DIRECT missing in rvtest_config.h (ACT4 bug)
+# Ssstrict excluded: not supported by this DUT
+exclude_extensions: "Sm,SsstrictSm,SsstrictU"
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cve2.sh"
 setup_script: ".github/scripts/setup-cve2.sh"

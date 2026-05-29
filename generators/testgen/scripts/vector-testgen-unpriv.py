@@ -437,7 +437,7 @@ def make_vs2_vd_edges(instruction, sew, vs2edges, vdedges, vl=1, lmul=1):
     for v2 in vs2edges:
       description = "cr_vs2_vd_edges"
       cp = f"cp_vs2_vd_edges_b{v1}_{v2}"
-      instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vd_val_pointer = v1, vs2_val_pointer = v2, additional_no_overlap=[['vd', 'vs2']], lmul=lmul)
+      instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vd_val_pointer = v1, vs2_val_pointer = v2, additional_no_overlap=[['vd', 'vs1', 'vs2']], lmul=lmul)
 
       writeTest(description, instruction, cp, instruction_data, sew=sew, vl=vl, lmul=lmul)
 
@@ -446,7 +446,7 @@ def make_vs1_vd_edges(instruction, sew, vs1edges, vdedges, vl=1, lmul=1):
     for v2 in vs1edges:
       description = "cr_vs1_vd_edges"
       cp = f"cp_vs1_vd_edges_b{v1}_{v2}"
-      instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vd_val_pointer = v1, vs1_val_pointer = v2, additional_no_overlap=[['vd', 'vs2']], lmul=lmul)
+      instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vd_val_pointer = v1, vs1_val_pointer = v2, additional_no_overlap=[['vd', 'vs1', 'vs2']], lmul=lmul)
 
       writeTest(description, instruction, cp, instruction_data, sew=sew, vl=vl, lmul=lmul)
 
@@ -744,7 +744,9 @@ def make_vtype_agnostic(instruction, sew, maxemul=8, eew = None, preset_emul = N
   vlmulmax = int(math.log2(getMaxlmul(sew, eew, maxemul)))
   minlmul = min(legalvlmuls)
   if egs != 1:
-    minlmul = max(minlmul, math.ceil(math.log2(egs))) # The minlmul for a crypto instruction must assume SEW=32, so lmul >= egs
+    # The minlmul for a crypto instruction must assume SEW=32, so lmul >= egs
+    # We have to do this because it is chosen at random
+    minlmul = max(minlmul, math.ceil(math.log2(egs))) 
 
   for t in [0,1]:
     for m in [0,1]:

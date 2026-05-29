@@ -1,12 +1,12 @@
 # rvmodel_macros.h
-# DUT-specific macro definitions for Sail reference model
-# Jordan Carlin jcarlin@hmc.edu October 2025, Sadhvi Narayana sanarayanan@hmc.edu February 2026
-# SPDX-License-Identifier: BSD-3-Clause
+# RVMODEL macro definitions for OpenHW CVA6 (cv64a60ax) core
+# SPDX-License-Identifier: Apache-2.0
 
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
 
 #define CLINT_BASE_ADDRESS 0x02000000
+#define PLIC_BASE_ADDRESS  0x0C000000
 
 #define RVMODEL_DATA_SECTION \
         .pushsection .tohost,"aw",@progbits;                \
@@ -33,7 +33,7 @@
 
 ##### TERMINATION #####
 
-// SAIL uses HTIF (Host-Target Interface) to terminate simulation.
+// CVA6 uses HTIF (Host-Target Interface) to terminate simulation.
 // Writing to 'tohost' with value 1 indicates success, 3 indicates failure.
 
 # Terminate test with a pass indication.
@@ -102,17 +102,26 @@
 
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
-#define SIG_ADDRESS  (0xC000000 + 0x4)  /* Address of memory mapped simple interrupt generator */
-#define RVMODEL_SET_MEXT_INT(_R1, _R2)        \
-  li _R1, (1 << 31) | (1 << 11);               \
-  li _R2, SIG_ADDRESS;    \
-  sw _R1, 0(_R2)            ; /* Set MEXT interrupt */ \
+/* CVA6 PLIC Context 0 M-Mode Registers mapping */
+#define PLIC_PRIORITY_1         (PLIC_BASE_ADDRESS + 0x000004)
+#define PLIC_ENABLE_CTX0        (PLIC_BASE_ADDRESS + 0x002000)
+#define PLIC_THRESHOLD_CTX0     (PLIC_BASE_ADDRESS + 0x200000)
+#define PLIC_CLAIM_CTX0         (PLIC_BASE_ADDRESS + 0x200004)
 
+#define RVMODEL_SET_MEXT_INT(_R1, _R2)        \
+  li _R1, 7;                                  \
+  li _R2, PLIC_PRIORITY_1;                    \
+  sw _R1, 0(_R2);                             \
+  li _R1, 1;                                  \
+  li _R2, PLIC_ENABLE_CTX0;                   \
+  sw _R1, 0(_R2);                             \
+  li _R2, PLIC_THRESHOLD_CTX0;                \
+  sw zero, 0(_R2);
 
 #define RVMODEL_CLR_MEXT_INT(_R1, _R2)        \
-  li _R1, (1 << 11);               \
-  li _R2, SIG_ADDRESS;    \
-  sw _R1, 0(_R2)            ; /* Clear MEXT interrupt */ \
+  li _R2, PLIC_CLAIM_CTX0;                    \
+  lw _R1, 0(_R2);                             \
+  sw _R1, 0(_R2);
 
 #define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 #define RVMODEL_SET_MSW_INT(_R1, _R2)        \
@@ -120,34 +129,43 @@
   li _R2, RVMODEL_MSIP_ADDRESS;              \
   sw _R1, 0(_R2);
 
-
 #define RVMODEL_CLR_MSW_INT(_R1, _R2)        \
   li _R2, RVMODEL_MSIP_ADDRESS;              \
   sw zero, 0(_R2);
 
 
-
 ##### Supervisor Interrupts #####
 
+/* CVA6 PLIC Context 1 S-Mode Registers mapping */
+#define PLIC_ENABLE_CTX1        (PLIC_BASE_ADDRESS + 0x002080)
+#define PLIC_THRESHOLD_CTX1     (PLIC_BASE_ADDRESS + 0x201000)
+#define PLIC_CLAIM_CTX1         (PLIC_BASE_ADDRESS + 0x201004)
+
+/* CVA6 CLINT Supervisor Software Interrupt (ssip) mapped via ssip bit */
+#define RVMODEL_SSIP_ADDRESS    (CLINT_BASE_ADDRESS + 0x4000)
+
 #define RVMODEL_SET_SEXT_INT(_R1, _R2)        \
-  li _R1, (1 << 31) | (1 << 9);               \
-  li _R2, SIG_ADDRESS;    \
-  sw _R1, 0(_R2)            ; /* Set SEXT interrupt */ \
+  li _R1, 7;                                  \
+  li _R2, PLIC_PRIORITY_1;                    \
+  sw _R1, 0(_R2);                             \
+  li _R1, 1;                                  \
+  li _R2, PLIC_ENABLE_CTX1;                   \
+  sw _R1, 0(_R2);                             \
+  li _R2, PLIC_THRESHOLD_CTX1;                \
+  sw zero, 0(_R2);
 
 #define RVMODEL_CLR_SEXT_INT(_R1, _R2)        \
-  li _R1, (1 << 9);               \
-  li _R2, SIG_ADDRESS;    \
-  sw _R1, 0(_R2)            ; /* Clear SEXT interrupt */ \
-
+  li _R2, PLIC_CLAIM_CTX1;                    \
+  lw _R1, 0(_R2);                             \
+  sw _R1, 0(_R2);
 
 #define RVMODEL_SET_SSW_INT(_R1, _R2)        \
-  li _R1, (1 << 31) | (1 << 1);               \
-  li _R2, SIG_ADDRESS;    \
-  sw _R1, 0(_R2)            ; /* Set SSW interrupt */ \
+  li _R1, 1;                                  \
+  li _R2, RVMODEL_SSIP_ADDRESS;               \
+  sw _R1, 0(_R2);
 
 #define RVMODEL_CLR_SSW_INT(_R1, _R2)        \
-  li _R1, (1 << 1);               \
-  li _R2, SIG_ADDRESS;    \
-  sw _R1, 0(_R2)            ; /* Clear SSW interrupt */ \
+  li _R2, RVMODEL_SSIP_ADDRESS;               \
+  sw zero, 0(_R2);
 
 #endif // _RVMODEL_MACROS_H

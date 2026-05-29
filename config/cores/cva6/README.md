@@ -16,19 +16,13 @@ The following configurations are provided for the CVA6 core in its 64-bit applic
 | Config                 | Notes                                                       |
 | ---------------------- | ----------------------------------------------------------- |
 | `cv64a60ax`            | RVB23S64 baseline config for the CVA6 64-bit core           |
-| `cv64a60ax_hypervisor` | RVB23S64 + Hypervisor target (H planned, RVH=0 in RTL)     |
 
 **ISA (`cv64a60ax`):** RV64IMAFDCB_Zicsr_Zicntr_Zicond_Zifencei_Zihpm_Zaamo_Zalrsc_Zca_Zcd_Zcb_Zba_Zbb_Zbs_Sscounterenw_Sstvala_Sstvecd_Ssu64xl_Sv39_Svbare
 
 The `cv64a60ax` configuration implements a 6-stage in-order, single-issue pipeline compliant with the RISC-V Privileged Architecture v1.13. The supported extensions and parameter values are derived from the RTL configuration in [cv64a60ax_config_pkg.sv](https://github.com/openhwgroup/cva6/blob/master/core/include/cv64a60ax_config_pkg.sv) and cross-referenced with the [CVA6 User Manual](https://docs.openhwgroup.org/projects/cva6-user-manual/01_cva6_user/index.html) and the CVA6 Profile Analysis. Some parameters remain pending confirmation from the CVA6 team.
 
-The `cv64a60ax_hypervisor` configuration extends the baseline with the H (Hypervisor) extension targeting RVB23S64 compliance. Note that `RVH=0` in the current RTL — this config represents the target state once H extension support is added.
-
 To build the UDB configuration, coverage files and ELFs for the baseline config:
 ```
 $ make CONFIG_FILES=config/cores/cva6/cv64a60ax/test_config.yaml
 ```
-To build for the hypervisor config:
-```
-$ make CONFIG_FILES=config/cores/cva6/cv64a60ax_hypervisor/test_config.yaml
-```
+

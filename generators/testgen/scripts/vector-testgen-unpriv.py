@@ -450,35 +450,6 @@ def make_vs1_vd_edges(instruction, sew, vs1edges, vdedges, vl=1, lmul=1):
 
       writeTest(description, instruction, cp, instruction_data, sew=sew, vl=vl, lmul=lmul)
 
-def make_vs2_vs1_edges_egs(instruction, sew, vs2edges_lmul_dict, vs1edges_lmul_dict, egs):
-  if len(vs2edges_lmul_dict) == 0:
-    return
-  
-  first_key = list(vs2edges_lmul_dict.keys())[0]
-  vedges_length = len(vs2edges_lmul_dict[first_key])
-  assert(all(len(val) == vedges_length for val in vs2edges_lmul_dict.values()))
-  assert(all(len(val) == vedges_length for val in vs1edges_lmul_dict.values()))
-
-  for i1 in range(vedges_length):
-    for i2 in range(vedges_length):
-      instruction_data = {}
-      for vlen in [32, 64, 128, 256]:
-        lmul = math.ceil(sew * egs / vlen)
-
-        v1 = vs1edges_lmul_dict[lmul][i1]
-        v2 = vs1edges_lmul_dict[lmul][i2]
-        instruction_data |= randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vs1_val_pointer = v1, vs2_val_pointer = v2, additional_no_overlap=[['vs1', 'vs2']], egs=egs, lmul=lmul)
-
-      canonical_v1 = vs1edges_lmul_dict[first_key][i1]
-      canonical_v1 = re.sub(r'_emul\d$', '', canonical_v1)
-      canonical_v2 = vs2edges_lmul_dict[first_key][i2]
-      canonical_v2 = re.sub(r'_emul\d$', '', canonical_v2)
-
-      description = "cr_vs2_vs1_edges"
-      cp = f"cp_vs2_vs1_edges_b{canonical_v1}_{canonical_v2}"
-
-      writeTest(description, instruction, cp, instruction_data, sew=sew, egs=egs)
-
 def make_vs2_rs1_edges(instruction, sew, vs2edges):
   for r1 in redgesv:
     for v2 in vs2edges:

@@ -35,9 +35,9 @@ the profile.  It may implement ratified extensions that are not part of the prof
 unratified extensions outside the custom encoding spaces if the optional Ssstrict extension is implemented. Extensions outside the profile are not tested during
 certification.
 
-NOTE: The profiles already explain what is required and what is optional. Retstaing the requirements here can lead to confusion.
+NOTE: The profiles already explain what is required and what is optional. Restating the requirements here can lead to confusion.
 
-NOTE: While it is permitted for an implementation to also support RV32I instructions, this is neither a mandated requirement or explicitly specified option. Therefore, there are no RV32I tests included in RVA23 certification. We encourage those who have implemented RV32I instructions in their processor to test these with the appropriate RISC-V ACTs.
+NOTE: While it is permitted for an implementation to also support RV32I instructions, this is neither a mandated requirement nor explicitly specified option. Therefore, there are no RV32I tests included in RVA23 certification. We encourage those who have implemented RV32I instructions in their processor to test these with the appropriate RISC-V ACTs.
 
 === Related Specifications
 
@@ -58,7 +58,7 @@ Custom M-mode is a supervisor execution environment that deviates from the M-mod
 
 RVA23 does not place any specific requirements on M-mode implementations as it is not required that M-mode code is portable for compliant designs. Instead, in order to be able to run portable code for modes below M-mode, the processor must interface with a Supervisor Execution Environment (SEE).  The RISC-V SBI specification provides an example of a SEE.  Certification tests do not exercise the RISC-V SBI, but provide a simpler Test Supervisor Binary Interface (T-SBI) to access the execution environment.
 
-NOTE: The abstraction is not just for custom M-mode ISAs. It allows for hiding differences in implementations as well allowing lower privileges to make requests to M-mode. Furthermore, it is common for implementations to comply with the RISC-V M-Mode ISA while adding implementation-defined features.
+NOTE: The abstraction is not just for custom M-mode ISAs. It allows for hiding differences in implementations as well as allowing lower privileges to make requests to M-mode. Furthermore, it is common for implementations to comply with the RISC-V M-Mode ISA while adding implementation-defined features.
 
 === Execution Environment and Test Supervisor Binary Interface (T-SBI)
 
@@ -66,9 +66,9 @@ Nevertheless, RVA23S64 runs within a supervisor execution environment.  For exam
 
 RVA23 requires that the execution environment boot to a deterministic state that allows software to run in S-mode, and to handle traps to the execution environment that implements a test SBI (described below). If a custom M-mode execution environment does not directly implement a feature of standard M-mode in hardware, it must be able to emulate that feature in a way that is transparent to software running in lower privilege modes.  For example, if it does not support delegating interrupts to S-mode in hardware, it must accomplish the same purpose in software by trapping to the execution environment, which delivers the interrupt to S-mode.
 
-As defined in the Unprivileged ISA, the SEE, which will typically include M-mode hardware, must be able to provide certain capabilities to the underlying lower privileged implementation. For example, an SBI can be used to request that some or all traps be delegated to be directly handled in S-Mode. Which traps can be delegated is up to the SEE.
+As defined in the Unprivileged ISA, the SEE, which will typically include M-mode hardware, must be able to provide certain capabilities to the underlying lower privileged implementation. For example, an SBI can be used to request that some or all traps be delegated to be directly handled in S-mode. Which traps can be delegated is up to the SEE.
 
-NOTE: There is no requirement that any traps can be delegated. But if they can be, the SEE must provide a means to request that they are and a means to to determine which requested traps have been delegated.
+NOTE: There is no requirement that any traps can be delegated. But if they can be, the SEE must provide a means to request that they are and a means to determine which requested traps have been delegated.
 
 The execution environment must provide a Test Supervisor Binary Interface (T-SBI) that allows S-mode software to make requests of the execution environment.  These requests are made by placing commands in registers and performing an `ECALL`.
 
@@ -79,7 +79,7 @@ Most traps default to being delegated to S-mode, with the following exceptions:
 * `ecall` from S-mode must not be delegated because the T-SBI must trap to M-mode to handle these calls.
 * Machine interrupts MEI, MSI, MTI are not delegated because they normally go to M-mode.
 * Any trap cause that should be handled invisibly by the firmware must not be delegated.
-* Traps causes that hardware cannot delegate (e.g., bits of `m*deleg` that are read-only zero.)
+* Trap causes that hardware cannot delegate (e.g., bits of `m*deleg` that are read-only zero.)
 * Intentionally testing traps to M-mode.
 
 Invisible traps are traps to emulate a function in firmware that is not implemented in hardware.  An example of an invisible trap is to fix a `fdiv` instruction that malfunctions for certain input values.
@@ -153,7 +153,7 @@ All interrupts taken from S and U-mode are IN-SCOPE for testing.  MTI, MEI, and 
 
 The user must provide:
 
-* DUT configuration information described in the CTP, including UDB description, linker file describing memory map, sail.json configured to match DUT, RVMODEL macros specific to DUT
+* DUT configuration information described in the CTP, including UDB description, linker file describing memory map, sail.json configured to match DUT, RVMODEL macros specific to DUT.
 * Custom firmware, if any, to handle invisible traps.
 * Custom boot code, if standard M-mode boot code does not run on the DUT or if additional configuration is necessary.
 

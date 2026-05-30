@@ -1007,6 +1007,11 @@ def makeTest(coverpoints, test, sew=None):
       eew = getInstructionEEW(test)
       if eew is None or eew == sew:
         make_vs3_vs2(test, sew, range(vreg_count), getBaseLmul(test, sew))
+    elif coverpoint.startswith("cmp_vs3_vs2_eew_eq_sew_lte"):
+      max_vs3 = int(coverpoint.rsplit("_lte", 1)[-1])
+      eew = getInstructionEEW(test)
+      if eew is None or eew == sew:
+        make_vs3_vs2(test, sew, range(max_vs3 + 1), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vs3_vs2_lte30"            : make_vs3_vs2(test, sew, range(vreg_count-1), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vs3_vs2_lte29"            : make_vs3_vs2(test, sew, range(vreg_count-2), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vs3_vs2_lte28"            : make_vs3_vs2(test, sew, range(vreg_count-3), getBaseLmul(test, sew))

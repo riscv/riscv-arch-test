@@ -76,7 +76,7 @@ The execution environment must provide a Test Supervisor Binary Interface (T-SBI
 
 Most traps default to being delegated to S-mode, with the following exceptions:
 
-* `ecall` from S/M-mode must not be delegated because the T-SBI must trap to M-mode to handle these calls.
+* `ecall` from S-mode must not be delegated because the T-SBI must trap to M-mode to handle these calls.
 * Machine interrupts MEI, MSI, MTI are not delegated because they normally go to M-mode.
 * Any trap cause that should be handled invisibly by the firmware must not be delegated.
 * Traps causes that hardware cannot delegate (e.g., bits of `m*deleg` that are read-only zero.)

@@ -14,12 +14,12 @@
 //   extension covergroups.
 // Note: RV64-only instructions (SD, AMO*_D, AMOCAS_Q, C_SD, C_SDSP, C_FSDSP, SSAMOSWAP_D,
 //       VSE64_V, VSSE64_V, VSUXEI64_V, VSOXEI64_V) are not individually gated here because
-//       pointer masking (Ssnpm/Smmpm/SmnpmS/smnpmU) is itself an RV64-only feature. Each extension's
-//       coverage file is already guarded with `ifdef XLEN64, so these instructions will only
+//       pointer masking (Ssnpm/Smmpm/SmnpmS/smnpmU) is itself an RV64-only feature. so these instructions will only
 //       be compiled and exercised in a 64-bit configuration where they are legal.
 //
 ///////////////////////////////////////////
     pm_insn: coverpoint ins.current.insn {
+        type_option.weight = 0;
         // Base integer stores
         wildcard bins sb  = {SB};
         wildcard bins sh  = {SH};
@@ -170,11 +170,13 @@
         `endif // ZVL32B_SUPPORTED
     }
     sw_lw_insn:  coverpoint ins.current.insn {
+        type_option.weight = 0;
          wildcard bins sw  = {SW};
          wildcard bins lw  = {LW};
     }
     // ---- satp mode  ----
     satp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "mode") {
+        type_option.weight = 0;
         bins bare = {4'b0000};
         `ifdef SV39_SUPPORTED
             bins sv39 = {4'b1000};
@@ -187,36 +189,38 @@
         `endif
     }
     a_upper_bits: coverpoint (ins.current.rs1_val + ins.current.imm)[63:48] {
-        bins upper_0000 = {16'h0000};
-        bins upper_0001 = {16'h0001};
-        bins upper_0100 = {16'h0100};
-        bins upper_0200 = {16'h0200};
-        bins upper_8000 = {16'h8000};
-        bins upper_FFFF = {16'hFFFF};
-        bins upper_FE00 = {16'hFE00};
-        bins upper_FF00 = {16'hFF00};
+        type_option.weight = 0;
+        bins upper_0000 = {16'h0000};   // Unaffected by pointer masking
+        bins upper_0001 = {16'h0001};   // Bit 48 masked if PMLEN=16 but not 7
+        bins upper_0100 = {16'h0100};   // Bit 56 masked if PMLEN=16 but not 7
+        bins upper_0200 = {16'h0200};   // Bit 57 masked if PMLEN=16 or 7
+        bins upper_8000 = {16'h8000};   // Bit 63 masked if PMLEN=16 or 7
+        bins upper_FFFF = {16'hFFFF};   // Bits 63:48 masked if PMLEN=16, only partially if PMLEN=7
+        bins upper_FE00 = {16'hFE00};   // Bits 63:57 masked if PMLEN=16 or 7
+        bins upper_FF00 = {16'hFF00};   // Bits 63:56 masked if PMLEN=16, only partially if PMLEN=7
     }
     // ---- Misaligned instruction ----
     // Misaligned address (e.g. scratch+1); upper 7 bits = 0x01 or 0x00
-    misaligned_addr: coverpoint (ins.current.rs1_val + ins.current.imm)[1:0]
-        iff (ins.current.insn inside {LW, SW}) {
+    misaligned_addr: coverpoint (ins.current.rs1_val + ins.current.imm)[1:0] {
+        type_option.weight = 0;
         bins misaligned = {[2'b01:2'b11]};
-    }
-    misaligned_a_upper7: coverpoint (ins.current.rs1_val + ins.current.imm)[63:57] {
-        bins upper_zero = {7'b0000001}; // upper_0200 = {16'h0200};
-        bins upper_one  = {7'b1000000}; // upper_8000 = {16'h8000};
     }
     // ---- JALR instruction ----
     jalr_insn: coverpoint ins.current.insn {
+        type_option.weight = 0;
         wildcard bins jalr = {JALR};
+    }
+    // ---- CSR write/read instructions ----
+    csr_rw_insn: coverpoint ins.current.insn {
+        type_option.weight = 0;
+        wildcard bins csrrw = {CSRW};
     }
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         // For hardware csr writes, we raise an exception.
         illegal_addr: coverpoint (ins.current.rs1_val + ins.current.imm)[47:0] {
+            type_option.weight = 0;
             bins is_illegal_base = {`RVMODEL_ACCESS_FAULT_ADDRESS[47:0]};
         }
-        pm_fault : cross pmm_bit, illegal_addr, a_upper_bits, sw_lw_insn ;
+        pm_fault : cross pmm, a_upper_bits, sw_lw_insn, illegal_addr;
     `endif
-    iff (pmm_bit == 2'b10) {
-        pm_misalign : cross  pmm_bit, misaligned_a_upper7, sw_lw_insn, misaligned_addr;
-    }
+    pm_misalign : cross pmm, a_upper_bits, sw_lw_insn, satp_mode, misaligned_addr;

@@ -20,76 +20,73 @@
 //       PMM = 11 → PMLEN = 16  (upper 16 bits masked, bits [63:48])
 ///////////////////////////////////////////
 
-`ifdef XLEN64
-    `define COVER_SMMPM
 
-        covergroup Smmpm_cg with function sample(ins_t ins);
-        option.per_instance = 0;
-        `include "general/RISCV_coverage_standard_coverpoints.svh"
+`define COVER_SMMPM
+
+    covergroup Smmpm_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "pmm") {
+        bins pmm_00_disabled = {2'b00};  // PMLEN = 0, no masking
+        bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
+        bins pmm_11_pmlen16 = {2'b11};   // PMLEN = 16, upper 16 bits masked
+    }
+
+    //Declare pmm before including the shared PMM coverpoint file so the include can reference it.
         `include "general/RISCV_coverage_pmm_coverpoints.svh"
 
-        pmm_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "pmm") {
-            bins pmm_00_disabled = {2'b00};  // PMLEN = 0, no masking
-            bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
-            bins pmm_11_pmlen16 = {2'b11};   // PMLEN = 16, upper 16 bits masked
+    `ifdef S_SUPPORTED  //As MXR is read-only zero if S mode is not supported
+    // ---- MXR bit from mstatus ----
+        mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr") {
+            bins mxr_1 = {1'b1};   // MXR=1: execute-only pages readable
+            bins mxr_0 = {1'b0};   // MXR=0: normal permission checks
         }
-        `ifdef S_SUPPORTED  //As MXR is read-only zero if S mode is not supported
-        // ---- MXR bit from sstatus ----
-            mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr") {
-                bins mxr_1 = {1'b1};   // MXR=1: execute-only pages readable
-                bins mxr_0 = {1'b0};   // MXR=0: normal permission checks
-            }
+    `endif
+    // ---- MPRV bit from mstatus ----
+    mprv_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
+        bins mprv_1 = {1'b1};   // MPRV=1: memory access uses MPP privilege
+    }
+    // ---- MPP field from mstatus ----
+    mpp_field: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
+        `ifdef U_SUPPORTED
+            bins mpp_u = {2'b00};   // effective privilege = U-mode
         `endif
-        // ---- MPRV bit from mstatus ----
-        mprv_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
-            bins mprv_1 = {1'b1};   // MPRV=1: memory access uses MPP privilege
-        }
-        // ---- MPP field from mstatus ----
-        mpp_field: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
-            `ifdef U_SUPPORTED
-                bins mpp_u = {2'b00};   // effective privilege = U-mode
-            `endif
-            `ifdef S_SUPPORTED
-                bins mpp_s = {2'b01};   // effective privilege = S-mode
-            `endif
-        }
-        // ---- CSR write/read instructions ----
-        csr_rw_insn: coverpoint ins.current.insn {
-            wildcard bins csrrw = {CSRRW};
-            wildcard bins csrr = {CSRR};
-        }
-        // ---- Target CSR address (mepc, mtvec, mscratch) ----
-        csr_target: coverpoint ins.current.insn[31:20] { //excluding read-only csrs
-            bins mepc     = {CSR_MEPC};
-            //bins mtvec    = {CSR_MTVEC}; //// warl field has complex write restrictions and is not easy to test
-            bins mscratch = {CSR_MSCRATCH};
-        }
-        // cp_pmlen_masking
-        cp_pmlen_masking : cross priv_mode_m, pmm_bit, a_upper_bits, pm_insn ;
-        // cp_pmlen_misaligned_word
-        // One misaligned store and one misaligned load, PMLEN=7 only, upper 7 bits = 7'b1000000 or 7'b0000001
-        cp_pm_misaligned_word: cross priv_mode_m, pm_misalign;
-        `ifdef S_SUPPORTED  //As MXR is read-only zero if S mode is not supported
-            // cp_pmm_mxr
-            cp_pmm_mxr: cross priv_mode_m, pmm_bit,   mxr_bit, a_upper_bits, sw_lw_insn;
+        `ifdef S_SUPPORTED
+            bins mpp_s = {2'b01};   // effective privilege = S-mode
         `endif
-        // cp_pmm_jalr
-        cp_pmm_jalr: cross priv_mode_m, pmm_bit, a_upper_bits, jalr_insn ;
-        // cp_hardware_csr_writes_fault
-        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-            // Fault crosses confirm lw/sw executed in M-mode at the illegal address.
-            cp_hardware_csr_writes_fault:   cross priv_mode_m,pm_fault;
-        `endif
-        // cp_pm_mprv
-        // MPRV=1 causes M-mode memory accesses to use MPP's pointer masking
-        cp_pm_mprv: cross priv_mode_m, pmm_bit, mprv_bit, mpp_field, satp_mode, a_upper_bits, sw_lw_insn;
-        // cp_pm_csr_software_access
-        cp_pm_csr_software_access: cross priv_mode_m, pmm_bit, csr_target, csr_rw_insn;
+    }
+    // ---- Target CSR address (mepc, mtvec, mscratch) ----
+    csr_target: coverpoint ins.current.insn[31:20] { //excluding read-only csrs
+        bins mepc     = {CSR_MEPC};
+        //bins mtvec    = {CSR_MTVEC}; //// warl field has complex write restrictions and is not easy to test
+        bins mscratch = {CSR_MSCRATCH};
+    }
+    // cp_pmlen_masking
+    cp_pmlen_masking : cross priv_mode_m, pmm, a_upper_bits, pm_insn;
+    // cp_pmlen_misaligned_word
+    cp_pmlen_misaligned_word: cross priv_mode_m, pm_misalign;
+    `ifdef S_SUPPORTED  //As MXR is read-only zero if S mode is not supported
+        // cp_pmm_mxr
+        cp_pmm_mxr: cross priv_mode_m, pmm, mxr_bit, a_upper_bits, sw_lw_insn;
+    `endif
+    // cp_pmm_jalr
+    // cp_pmm_addr_mode_jalr — not guarded by S_SUPPORTED; implicit fetch is
+    // never pointer-masked regardless of PMM or MXR availability.
+    cp_pmm_jalr: cross priv_mode_m, pmm, a_upper_bits, jalr_insn;
+    // cp_hardware_csr_writes_fault
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        // Fault crosses confirm lw/sw executed in M-mode at the illegal address.
+        cp_hardware_csr_writes_fault: cross priv_mode_m, pm_fault;
+    `endif
+    // cp_pm_mprv
+    // MPRV=1 causes M-mode memory accesses to use MPP's pointer masking
+    cp_pm_mprv: cross priv_mode_m, pmm, mprv_bit, mpp_field, satp_mode, a_upper_bits, sw_lw_insn;
+    // cp_pm_csr_software_access
+    cp_pm_csr_software_access: cross priv_mode_m, pmm, csr_target, csr_rw_insn;
 
-    endgroup
+endgroup
 
-    function void smmpm_sample(int hart, int issue, ins_t ins);
-        Smmpm_cg.sample(ins);
-    endfunction
-
-`endif  // XLEN64
+function void smmpm_sample(int hart, int issue, ins_t ins);
+    Smmpm_cg.sample(ins);
+endfunction

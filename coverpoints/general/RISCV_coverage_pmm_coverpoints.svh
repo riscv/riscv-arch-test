@@ -169,6 +169,7 @@
             wildcard bins vlseg2e32_v = {VLSEG2E32_V};
         `endif // ZVL32B_SUPPORTED
     }
+    //---- read word /write word  ----
     sw_lw_insn:  coverpoint ins.current.insn {
         type_option.weight = 0;
          wildcard bins sw  = {SW};
@@ -215,12 +216,14 @@
         type_option.weight = 0;
         wildcard bins csrrw = {CSRW};
     }
+    // ---- Misalign common cross dimensions ----
+    pm_misalign : cross pmm, a_upper_bits, sw_lw_insn, satp_mode, misaligned_addr;
+
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-        // For hardware csr writes, we raise an exception.
+        // Exception should write xtval with masked version of pointer.
         illegal_addr: coverpoint (ins.current.rs1_val + ins.current.imm)[47:0] {
             type_option.weight = 0;
             bins is_illegal_base = {`RVMODEL_ACCESS_FAULT_ADDRESS[47:0]};
         }
         pm_fault : cross pmm, a_upper_bits, sw_lw_insn, illegal_addr;
     `endif
-    pm_misalign : cross pmm, a_upper_bits, sw_lw_insn, satp_mode, misaligned_addr;

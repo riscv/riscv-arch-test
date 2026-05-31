@@ -40,6 +40,7 @@
         bins mxr_1 = {1'b1};   // MXR=1: execute-only pages readable
         bins mxr_0 = {1'b0};   // MXR=0: normal permission checks
     }
+    // ---- SXL bit from mstatus ----
     sxl_rv32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sxl") {
         bins sxl_01 = {2'b01};
     }
@@ -50,6 +51,7 @@
         bins sscratch = {CSR_SSCRATCH};
     }
 
+    // Main Crosses
     // cp_pmlen_masking
     cp_pmlen_masking : cross priv_mode_s, pmm, satp_mode, a_upper_bits, pm_insn;
     // cp_pmlen_misaligned_word
@@ -60,13 +62,14 @@
     cp_pmm_jalr: cross priv_mode_s, pmm, mxr_bit, satp_mode, a_upper_bits, jalr_insn;
     // cp_pmm_sxl_clear
     cp_pmm_sxl_clear: cross pmm, sxl_rv32;
+    // cp_pm_csr_software_access
+    cp_pm_csr_software_access: cross priv_mode_s, pmm, csr_target, csrw_insn;
+
     // cp_hardware_csr_writes
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         // Fault crosses confirm lw/sw executed in S-mode at the illegal address.
         cp_hardware_csr_writes_fault: cross priv_mode_s, satp_mode, pm_fault;
     `endif
-    // cp_pm_csr_software_access
-    cp_pm_csr_software_access: cross priv_mode_s, pmm, csr_target, csrw_insn;
 
 endgroup
 

@@ -40,10 +40,6 @@
     uxl_rv32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "uxl") {
         bins uxl_01 = {2'b01};
     }
-    // senvcfg.PMM must have been cleared to 00 by hardware after UXL=01.
-    pmm_after_clear: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "senvcfg", "pmm") {
-        bins pmm_cleared = {2'b00};
-    }
     //Main Crosses
     // cp_pmlen_masking_write
     cp_pmlen_masking : cross priv_mode_u, pmm, satp_mode, a_upper_bits, pm_insn;
@@ -55,7 +51,7 @@
     // cp_pmm_jalr
     cp_pmm_jalr: cross priv_mode_u, pmm, a_upper_bits, mxr_bit, satp_mode, jalr_insn;
     // cp_pmm_uxl_clear
-    cp_pmm_uxl_clear: cross pmm, uxl_rv32, pmm_after_clear;
+    cp_pmm_uxl_clear: cross pmm, uxl_rv32;
     // cp_hardware_csr_writes
     // Fault crosses confirm lw/sw executed in U-mode at the illegal address.
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS

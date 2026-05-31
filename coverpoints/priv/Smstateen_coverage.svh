@@ -19,11 +19,12 @@ covergroup Smstateen_cg with function sample(ins_t ins);
         wildcard bins csrs = {CSRRS};
         wildcard bins csrc = {CSRRC};
     }
-    priv_mode_maybes_u: coverpoint ins.current.mode {
-        bins U_mode = {2'b00};
-    `ifdef S_SUPPORTED
-        bins S_mode = {2'b01};
-    `endif
+    priv_mode_m_maybes_u: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
+            bins M_mode = {3'b011};
+            bins U_mode = {3'b000};
+        `ifdef S_SUPPORTED
+            bins S_mode = {3'b001};
+        `endif
     }
 
     // ── CSR address coverpoint — all mstateen CSRs ────────────────────────
@@ -39,7 +40,12 @@ covergroup Smstateen_cg with function sample(ins_t ins);
             bins mstateen3h = {CSR_MSTATEEN3H};
         `endif
     }
-
+    mstateen_walk_csrs: coverpoint ins.current.insn[31:20] {
+            bins mstateen0 = {CSR_MSTATEEN0};
+            `ifdef UDB_MXLEN_32
+                    bins mstateen0h = {CSR_MSTATEEN0H};
+            `endif
+    }
 
     `ifdef IMSIC_SUPPORTED
         imsic_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "imsic") {
@@ -278,8 +284,8 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 `endif
 
 
-    cp_csr_illegal_accesses: cross priv_mode_u, mstateen_csrs, csrops;
-    cp_walking_ones: cross mstateen_csrs, csrops, csr_walk;
+    cp_csr_illegal_accesses: cross priv_mode_s_u, mstateen_csrs, csrops;
+    cp_walking_ones: cross mstateen_walk_csrs, csrops, csr_walk;
 
 `ifdef ZFINX_SUPPORTED
     cp_fcsr: cross misa_F, mstateen0_fcsr_bit, csrops, fscr_csr {
@@ -287,49 +293,49 @@ covergroup Smstateen_cg with function sample(ins_t ins);
         ignore_bins ig2 = binsof(misa_F.F_set)  && binsof(fscr_csr.fcsr);
         ignore_bins ig3 = binsof(misa_F.F_clear) && binsof(mstateen0_fcsr_bit.fcsr_zero);
     }
-    cp_fcsr_lower: cross priv_mode_maybes_u, misa_F, mstateen0_fcsr_bit, csrops, fcsr_lower_mode_csrs {
+    cp_fcsr_lower: cross priv_mode_s_u, misa_F, mstateen0_fcsr_bit, csrops, fcsr_lower_mode_csrs {
         ignore_bins ig1 = binsof(misa_F.F_set)  && binsof(mstateen0_fcsr_bit.fcsr_zero);
         ignore_bins ig2 = binsof(misa_F.F_clear) && binsof(mstateen0_fcsr_bit.fcsr_zero);
     }
-    cp_fcsr_lower_fp_instrs: cross priv_mode_maybes_u, misa_F, mstateen0_fcsr_bit, fp_instrs {
+    cp_fcsr_lower_fp_instrs: cross priv_mode_s_u, misa_F, mstateen0_fcsr_bit, fp_instrs {
         ignore_bins ig1 = binsof(misa_F.F_set)  && binsof(mstateen0_fcsr_bit.fcsr_zero);
         ignore_bins ig2 = binsof(misa_F.F_clear) && binsof(mstateen0_fcsr_bit.fcsr_zero);
     }
 `endif
 
     // Row 8: Always present (envcfg always in mstateen0)
-    cp_envcfg: cross csrops, senvcfg_csr, envcfg_state;
+    cp_envcfg: cross csrops, priv_mode_m_maybes_u, senvcfg_csr, envcfg_state;
 
     // Row 7: Zcmt only
 `ifdef ZCMT_SUPPORTED
     cp_jvt_access:     cross csrops, jvt_csr, jvt_state;
-    cp_jvt_lower_mode: cross priv_mode_maybes_u, csrop, jvt_csr, jvt_state;
+    cp_jvt_lower_mode: cross priv_mode_s_u, csrops, jvt_csr, jvt_state;
 `endif
 
     // Row 12: Ssdtrig only
 `ifdef SSDTRIG_SUPPORTED
-    cp_context: cross csrops, scontext_csr, context_state;
+    cp_context: cross csrops, scontext_csr, context_state, priv_mode_m_maybes_u;
 `endif
 
     // Row 13: Sm1p13 + Hypervisor only
 `ifdef SM1P13_SUPPORTED
-    cp_p1p13: cross csrops, p1p13_state, hedelegh_csr;
+    cp_p1p13: cross csrops, p1p13_state, hedelegh_csr, priv_mode_m_maybes_u;
 `endif
 
     // Row 14: Ssqosid only
 `ifdef SSQOSID_SUPPORTED
-    cp_srmcfg: cross csrops, srmcfg_csr, srmcfg_state;
+    cp_srmcfg: cross csrops, srmcfg_csr, srmcfg_state, priv_mode_m_maybes_u;
 `endif
 
     // Row 15: Sctr only
 `ifdef SCTR_SUPPORTED
-    cp_ctr: cross csrops, ctr_csrs, ctr_state;
+    cp_ctr: cross csrops, ctr_csrs, ctr_state, priv_mode_m_maybes_u;
 `endif
 `ifdef IMSIC_SUPPORTED
-  cp_imsic: cross csrops, imsic_csrs, imsic_state;
+  cp_imsic: cross csrops, imsic_csrs, imsic_state, priv_mode_m_maybes_u;
 `endif
 `ifdef AIA_SUPPORTED
-  cp_aia: cross csrops, aia_csrs, aia_state;
+  cp_aia: cross csrops, aia_csrs, aia_state, priv_mode_m_maybes_u;
 `endif
 
 endgroup

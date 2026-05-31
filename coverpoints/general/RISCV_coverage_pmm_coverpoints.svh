@@ -169,13 +169,12 @@
             wildcard bins vlseg2e32_v = {VLSEG2E32_V};
         `endif // ZVL32B_SUPPORTED
     }
-    //---- read word /write word  ----
+
     sw_lw_insn:  coverpoint ins.current.insn {
         type_option.weight = 0;
          wildcard bins sw  = {SW};
          wildcard bins lw  = {LW};
     }
-    // ---- satp mode  ----
     satp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "mode") {
         type_option.weight = 0;
         bins bare = {4'b0000};
@@ -200,21 +199,19 @@
         bins upper_FE00 = {16'hFE00};   // Bits 63:57 masked if PMLEN=16 or 7
         bins upper_FF00 = {16'hFF00};   // Bits 63:56 masked if PMLEN=16, only partially if PMLEN=7
     }
-    // ---- Misaligned instruction ----
-    // Misaligned address (e.g. scratch+1); upper 7 bits = 0x01 or 0x00
-    misaligned_addr: coverpoint (ins.current.rs1_val + ins.current.imm)[1:0] {
-        type_option.weight = 0;
-        bins misaligned = {[2'b01:2'b11]};
-    }
-    // ---- JALR instruction ----
     jalr_insn: coverpoint ins.current.insn {
         type_option.weight = 0;
         wildcard bins jalr = {JALR};
     }
-    // ---- CSR write instruction ----
     csrw_insn: coverpoint ins.current.insn {
         type_option.weight = 0;
         wildcard bins csrrw = {CSRW};
+    }
+
+    // Misaligned address (e.g. scratch+1); upper 7 bits = 0x01 or 0x00
+    misaligned_addr: coverpoint (ins.current.rs1_val + ins.current.imm)[1:0] {
+        type_option.weight = 0;
+        bins misaligned = {[2'b01:2'b11]};
     }
     // ---- Misalign common cross dimensions ----
     pm_misalign : cross pmm, a_upper_bits, sw_lw_insn, satp_mode, misaligned_addr;

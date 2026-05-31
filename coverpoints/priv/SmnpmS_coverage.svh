@@ -19,7 +19,6 @@
 //
 ///////////////////////////////////////////
 
-
 `define COVER_SMNPMS
 
     covergroup SmnpmS_cg with function sample(ins_t ins);
@@ -35,16 +34,13 @@
     //Declare pmm before including the shared PMM coverpoint file so the include can reference it.
     `include "general/RISCV_coverage_pmm_coverpoints.svh"
 
-    // ---- MXR bit from mstatus ----
     mxr_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mxr") {
         bins mxr_1 = {1'b1};   // MXR=1: execute-only pages readable
         bins mxr_0 = {1'b0};   // MXR=0: normal permission checks
     }
-    // ---- SXL bit from mstatus ----
     sxl_rv32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sxl") {
         bins sxl_01 = {2'b01};
     }
-    // ---- Target CSR address (sepc, stvec, sscratch) ----
     csr_target: coverpoint ins.current.insn[31:20] { //excluding read-only csrs
         bins sepc     = {CSR_SEPC};
         //bins stvec    = {CSR_STVEC}; //// warl field has complex write restrictions and is not easy to test
@@ -52,20 +48,13 @@
     }
 
     // Main Crosses
-    // cp_pmlen_masking
     cp_pmlen_masking : cross priv_mode_s, pmm, satp_mode, a_upper_bits, pm_insn;
-    // cp_pmlen_misaligned_word
     cp_pmlen_misaligned_word: cross priv_mode_s, pm_misalign;
-    // cp_pmm_mxr
     cp_pmm_mxr: cross priv_mode_s, pmm, mxr_bit, satp_mode, a_upper_bits, sw_lw_insn;
-    // cp_pmm_jalr
     cp_pmm_jalr: cross priv_mode_s, pmm, mxr_bit, satp_mode, a_upper_bits, jalr_insn;
-    // cp_pmm_sxl_clear
     cp_pmm_sxl_clear: cross pmm, sxl_rv32;
-    // cp_pm_csr_software_access
     cp_pm_csr_software_access: cross priv_mode_s, pmm, csr_target, csrw_insn;
 
-    // cp_hardware_csr_writes
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         // Fault crosses confirm lw/sw executed in S-mode at the illegal address.
         cp_hardware_csr_writes_fault: cross priv_mode_s, satp_mode, pm_fault;

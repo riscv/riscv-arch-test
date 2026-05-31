@@ -12,7 +12,6 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     csrops: coverpoint ins.current.insn {
             wildcard bins csrw = {CSRRW};
-            wildcard bins csrr = {CSRR};
             wildcard bins csrs = {CSRRS};
             wildcard bins csrc = {CSRRC};
     }

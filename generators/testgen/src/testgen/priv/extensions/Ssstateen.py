@@ -233,35 +233,28 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
     coverpoint = "cp_walking_ones"
     covergroup = "Ssstateen_cg"
 
-    lines = []
-    lines.append(
+    lines = [
         comment_banner(
             coverpoint,
-            "Walking-1 and walking-0 patterns written to each sstateenN CSR via CSRRW with SE0=1",
+            "Walking-1 and walking-0 patterns written to sstateen0 via CSRRW with SE0=1",
         )
-    )
+    ]
 
-    sstateen_csrs = ["sstateen0"]
-
-    # Allocate save registers, set SE0=1, then release so csr_walk_test can allocate freely
     save_mstateen, save_mstatenh, temp_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
     lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
     lines.extend(_set_se0(temp_reg))
     test_data.int_regs.return_registers([save_mstateen, save_mstatenh, temp_reg])
 
-    for csr in sstateen_csrs:
-        lines.extend(
-            [
-                "",
-                test_data.add_testcase(f"{csr}_walk_se0_1", coverpoint, covergroup),
-            ]
-        )
-        lines.extend(csr_walk_test(test_data, (csr, 0x7), covergroup, coverpoint))
+    lines.extend(
+        [
+            "",
+            test_data.add_testcase("sstateen0_walk_se0_1", coverpoint, covergroup),
+        ]
+    )
+    lines.extend(csr_walk_test(test_data, ("sstateen0", 0x7), covergroup, coverpoint))
 
-    # Re-allocate the same registers to restore — same pool so same numbers come back
     save_mstateen, save_mstatenh, temp_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
-    lines.extend([""])
     lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
     test_data.int_regs.return_registers([save_mstateen, save_mstatenh, temp_reg])
 

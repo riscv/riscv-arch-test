@@ -3,9 +3,9 @@
 # CI configuration for the cve2 family: CV32E20
 
 ci_enabled: true
-# Sm excluded: UDB_MTVEC_BASE_ALIGNMENT_DIRECT missing in rvtest_config.h (ACT4 bug)
-# Ssstrict excluded: not supported by this DUT
-exclude_extensions: "Sm,SsstrictSm,SsstrictU"
+# Sm excluded: Insufficient WARL configuration options.
+# Ssstrict excluded: blocked by https://github.com/riscv/riscv-arch-test/issues/1601
+exclude_extensions: "Sm,SsstrictSm"
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cve2.sh"
 setup_script: ".github/scripts/setup-cve2.sh"

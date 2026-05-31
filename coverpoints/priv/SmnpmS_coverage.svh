@@ -66,7 +66,7 @@
         cp_hardware_csr_writes_fault: cross priv_mode_s, satp_mode, pm_fault;
     `endif
     // cp_pm_csr_software_access
-    cp_pm_csr_software_access: cross priv_mode_s, pmm, csr_target, csr_rw_insn;
+    cp_pm_csr_software_access: cross priv_mode_s, pmm, csr_target, csrw_insn;
 
 endgroup
 

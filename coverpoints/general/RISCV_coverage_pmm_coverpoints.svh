@@ -210,8 +210,8 @@
         type_option.weight = 0;
         wildcard bins jalr = {JALR};
     }
-    // ---- CSR write/read instructions ----
-    csr_rw_insn: coverpoint ins.current.insn {
+    // ---- CSR write instruction ----
+    csrw_insn: coverpoint ins.current.insn {
         type_option.weight = 0;
         wildcard bins csrrw = {CSRW};
     }

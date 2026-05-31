@@ -83,7 +83,7 @@
     // MPRV=1 causes M-mode memory accesses to use MPP's pointer masking
     cp_pm_mprv: cross priv_mode_m, pmm, mprv_bit, mpp_field, satp_mode, a_upper_bits, sw_lw_insn;
     // cp_pm_csr_software_access
-    cp_pm_csr_software_access: cross priv_mode_m, pmm, csr_target, csr_rw_insn;
+    cp_pm_csr_software_access: cross priv_mode_m, pmm, csr_target, csrw_insn;
 
 endgroup
 

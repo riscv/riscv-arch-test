@@ -44,6 +44,7 @@ typedef enum {
   mcounteren,
   mcountinhibit,
   medeleg,
+  menvcfg,
   mideleg,
   mie,
   mip,
@@ -60,6 +61,7 @@ typedef enum {
   scause,
   scounteren,
   seed,
+  senvcfg,
   sie,
   sip,
   sstatus,
@@ -385,6 +387,25 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       default: val = 0; // Todo: error
     endcase
   end
+  if (name == "menvcfg") begin
+    case(field)
+      "fiom" : val = val & 'h1;
+      "lpe" : val = (val >> 2) & 'h1;
+      "sse" : val = (val >> 3) & 'h1;
+      "cbie" : val = (val >> 4) & 'h3;
+      "cbcfe" : val = (val >> 6) & 'h1;
+      "cbze" : val = (val >> 7) & 'h1;
+`ifdef UDB_MXLEN_64
+      "pmm" : val = (val >> 32) & 64'h3;
+      "dte" : val = (val >> 59) & 64'h1;
+      "cde" : val = (val >> 60) & 64'h1;
+      "adue" : val = (val >> 61) & 64'h1;
+      "pbmte" : val = (val >> 62) & 64'h1;
+      "stce" : val = (val >> 63) & 64'h1;
+`endif
+      default: val = 0;
+    endcase
+  end
   if (name == "mideleg") begin
     case(field)
       "meip" : val = (val >> 11) & 'h1;
@@ -449,6 +470,10 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "rlb" : val = (val >> 2) & 'h1;
       "useed" : val = (val >> 8) & 'h1;
       "sseed" : val = (val >> 9) & 'h1;
+      "mlpe" : val = (val >> 10) & 'h1;
+`ifdef UDB_MXLEN_64
+      "pmm" : val = (val >> 32) & 64'h3;
+`endif
       default: val = 0; // Todo: error
     endcase
   end
@@ -748,6 +773,20 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "entropy" : val = val & 32'hffff;
 `endif
       default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "senvcfg") begin
+    case(field)
+      "fiom" : val = val & 'h1;
+      "lpe" : val = (val >> 2) & 'h1;
+      "sse" : val = (val >> 3) & 'h1;
+      "cbie" : val = (val >> 4) & 'h3;
+      "cbcfe" : val = (val >> 6) & 'h1;
+      "cbze" : val = (val >> 7) & 'h1;
+`ifdef UDB_MXLEN_64
+      "pmm" : val = (val >> 32) & 64'h3;
+`endif
+      default: val = 0;
     endcase
   end
   if (name == "sie") begin

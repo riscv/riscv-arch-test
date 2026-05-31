@@ -470,6 +470,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "rlb" : val = (val >> 2) & 'h1;
       "useed" : val = (val >> 8) & 'h1;
       "sseed" : val = (val >> 9) & 'h1;
+      "mlpe" : val = (val >> 10) & 'h1;
 `ifdef UDB_MXLEN_64
       "pmm" : val = (val >> 32) & 64'h3;
 `endif

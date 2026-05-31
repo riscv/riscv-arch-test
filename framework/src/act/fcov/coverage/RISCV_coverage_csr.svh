@@ -44,6 +44,7 @@ typedef enum {
   mcounteren,
   mcountinhibit,
   medeleg,
+  menvcfg,
   mideleg,
   mie,
   mip,
@@ -60,6 +61,7 @@ typedef enum {
   scause,
   scounteren,
   seed,
+  senvcfg,
   sie,
   sip,
   sstatus,
@@ -385,6 +387,14 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       default: val = 0; // Todo: error
     endcase
   end
+  if (name == "menvcfg") begin
+    case(field)
+`ifdef UDB_MXLEN_64
+      "pmm" : val = (val >> 32) & 64'h3;
+`endif
+      default: val = 0;
+    endcase
+  end
   if (name == "mideleg") begin
     case(field)
       "meip" : val = (val >> 11) & 'h1;
@@ -449,6 +459,9 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "rlb" : val = (val >> 2) & 'h1;
       "useed" : val = (val >> 8) & 'h1;
       "sseed" : val = (val >> 9) & 'h1;
+`ifdef UDB_MXLEN_64
+      "pmm" : val = (val >> 32) & 64'h3;
+`endif
       default: val = 0; // Todo: error
     endcase
   end
@@ -748,6 +761,14 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "entropy" : val = val & 32'hffff;
 `endif
       default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "senvcfg") begin
+    case(field)
+`ifdef UDB_MXLEN_64
+      "pmm" : val = (val >> 32) & 64'h3;
+`endif
+      default: val = 0;
     endcase
   end
   if (name == "sie") begin

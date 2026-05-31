@@ -74,7 +74,7 @@ git init "$INSTALL_DIR/cv32e40x-dv"
 
 # 6. Verilate both cv32e40x configs (reuses Verilator built above; RTL pinned).
 for cfg in rv32imc rv32imcab; do
-  make -C "$INSTALL_DIR/cv32e40x-dv/cv32e40x/sim/core" \
+  make -C "$INSTALL_DIR/cv32e40x-dv/sim/core" \
       verilate \
       CV_CORE_CONFIG="$cfg" \
       CV_CORE_HASH="$CVE40X_CORE_HASH" \

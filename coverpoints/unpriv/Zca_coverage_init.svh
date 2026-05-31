@@ -35,10 +35,10 @@
     Zca_c_sw_cg = new(); Zca_c_sw_cg.set_inst_name("obj_Zca_c_sw");
     Zca_c_swsp_cg = new(); Zca_c_swsp_cg.set_inst_name("obj_Zca_c_swsp");
     Zca_c_xor_cg = new(); Zca_c_xor_cg.set_inst_name("obj_Zca_c_xor");
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
     Zca_c_jal_cg = new(); Zca_c_jal_cg.set_inst_name("obj_Zca_c_jal");
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     Zca_c_addiw_cg = new(); Zca_c_addiw_cg.set_inst_name("obj_Zca_c_addiw");
     Zca_c_addw_cg = new(); Zca_c_addw_cg.set_inst_name("obj_Zca_c_addw");
     Zca_c_ld_cg = new(); Zca_c_ld_cg.set_inst_name("obj_Zca_c_ld");

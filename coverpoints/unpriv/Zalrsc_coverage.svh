@@ -29,11 +29,11 @@ covergroup Zalrsc_lr_w_cg with function sample(ins_t ins);
     ignore_bins rl_noaq = {2'b01};
     }
     cp_custom_rd_edges : coverpoint ins.current.rd_val iff (ins.trap == 0) {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero = {0};
             bins one  = {32'b00000000000000000000000000000001};
             bins max  = {32'b11111111111111111111111111111111};
-        `else // XLEN64
+        `else // UDB_MXLEN_64
             bins zero = {0};
             bins one  = {64'b0000000000000000000000000000000000000000000000000000000000000001};
             bins max  = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -79,14 +79,12 @@ covergroup Zalrsc_sc_w_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Store Conditional
 
-    cp_prev_lr : coverpoint ({ins.prev.inst_name == "lr.w", ins.prev.inst_name == "lr.d"}) {
-        bins lr_w = {2'b10};  // previous instruction was load reserved
-        `ifdef XLEN64
-            bins lr_d = {2'b01};
-        `endif
+
+    cp_prev_lr : coverpoint ((ins.prev.inst_name == "lr.w" & ins.current.inst_name == "sc.w") | (ins.prev.inst_name == "lr.d" & ins.current.inst_name == "sc.d")) {
+        bins lr_sc_size_match = {1};
     }
 
-    cp_sc_fail : coverpoint (ins.current.rd_val) {
+    cp_sc_pass_fail : coverpoint (ins.current.rd_val) {
         bins pass = {0};
         bins fail = {[1:$]};
     }
@@ -100,30 +98,7 @@ covergroup Zalrsc_sc_w_cg with function sample(ins_t ins);
     cp_custom_sc_after_sc : coverpoint (ins.prev.inst_name == "sc.w" | ins.prev.inst_name == "sc.d") {
         // previous instruction was store conditional
     }
-    cp_custom_sc_after_store : coverpoint (ins.prev.insn[14:12]) iff (ins.prev.insn[6:0] == 7'b0100011) {
-        // previous instruction was a store
-        bins sb = {3'b000};
-        bins sh = {3'b001};
-        bins sw = {3'b010};
-        `ifdef XLEN64
-            bins sd = {3'b011};
-        `else
-            ignore_bins b3 = {3'b011};
-        `endif
-        wildcard ignore_bins badbin = {3'b1??};
-    }
-    cp_custom_sc_after_load : coverpoint (ins.prev.insn[14:12]) iff (ins.prev.insn[6:0] == 7'b0000011) {
-        // previous instruction was a store
-        bins lb  = {3'b000};
-        bins lh  = {3'b001};
-        bins lhu = {3'b101};
-        bins lw  = {3'b010};
-        `ifdef XLEN64
-            bins lwu = {3'b110};
-            bins ld  = {3'b011};
-        `endif
-    }
-    cp_custom_sc_lrsc : cross cp_prev_lr, cp_sc_fail;
+    cp_custom_sc_lr : cross cp_prev_lr, cp_sc_pass_fail;
     cp_custom_sc_addresses : cross cp_prev_lr, cp_address_difference;
 
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
@@ -140,7 +115,7 @@ covergroup Zalrsc_sc_w_cg with function sample(ins_t ins);
     }
 
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -175,7 +150,7 @@ covergroup Zalrsc_sc_w_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
 covergroup Zalrsc_lr_d_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cmp_rd_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
@@ -193,11 +168,11 @@ covergroup Zalrsc_lr_d_cg with function sample(ins_t ins);
     ignore_bins rl_noaq = {2'b01};
     }
     cp_custom_rd_edges : coverpoint ins.current.rd_val iff (ins.trap == 0) {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero = {0};
             bins one  = {32'b00000000000000000000000000000001};
             bins max  = {32'b11111111111111111111111111111111};
-        `else // XLEN64
+        `else // UDB_MXLEN_64
             bins zero = {0};
             bins one  = {64'b0000000000000000000000000000000000000000000000000000000000000001};
             bins max  = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -243,14 +218,12 @@ covergroup Zalrsc_sc_d_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Store Conditional
 
-    cp_prev_lr : coverpoint ({ins.prev.inst_name == "lr.w", ins.prev.inst_name == "lr.d"}) {
-        bins lr_w = {2'b10};  // previous instruction was load reserved
-        `ifdef XLEN64
-            bins lr_d = {2'b01};
-        `endif
+
+    cp_prev_lr : coverpoint ((ins.prev.inst_name == "lr.w" & ins.current.inst_name == "sc.w") | (ins.prev.inst_name == "lr.d" & ins.current.inst_name == "sc.d")) {
+        bins lr_sc_size_match = {1};
     }
 
-    cp_sc_fail : coverpoint (ins.current.rd_val) {
+    cp_sc_pass_fail : coverpoint (ins.current.rd_val) {
         bins pass = {0};
         bins fail = {[1:$]};
     }
@@ -264,30 +237,7 @@ covergroup Zalrsc_sc_d_cg with function sample(ins_t ins);
     cp_custom_sc_after_sc : coverpoint (ins.prev.inst_name == "sc.w" | ins.prev.inst_name == "sc.d") {
         // previous instruction was store conditional
     }
-    cp_custom_sc_after_store : coverpoint (ins.prev.insn[14:12]) iff (ins.prev.insn[6:0] == 7'b0100011) {
-        // previous instruction was a store
-        bins sb = {3'b000};
-        bins sh = {3'b001};
-        bins sw = {3'b010};
-        `ifdef XLEN64
-            bins sd = {3'b011};
-        `else
-            ignore_bins b3 = {3'b011};
-        `endif
-        wildcard ignore_bins badbin = {3'b1??};
-    }
-    cp_custom_sc_after_load : coverpoint (ins.prev.insn[14:12]) iff (ins.prev.insn[6:0] == 7'b0000011) {
-        // previous instruction was a store
-        bins lb  = {3'b000};
-        bins lh  = {3'b001};
-        bins lhu = {3'b101};
-        bins lw  = {3'b010};
-        `ifdef XLEN64
-            bins lwu = {3'b110};
-            bins ld  = {3'b011};
-        `endif
-    }
-    cp_custom_sc_lrsc : cross cp_prev_lr, cp_sc_fail;
+    cp_custom_sc_lr : cross cp_prev_lr, cp_sc_pass_fail;
     cp_custom_sc_addresses : cross cp_prev_lr, cp_address_difference;
 
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
@@ -304,7 +254,7 @@ covergroup Zalrsc_sc_d_cg with function sample(ins_t ins);
     }
 
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -349,7 +299,7 @@ function void zalrsc_sample(int hart, int issue, ins_t ins);
         "sc.w"     : begin
             Zalrsc_sc_w_cg.sample(ins);
         end
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
         "lr.d"     : begin
             Zalrsc_lr_d_cg.sample(ins);
         end

@@ -79,8 +79,32 @@
         `include "ExceptionsU_coverage_init.svh"
     `endif
     `ifdef COVER_EXCEPTIONSVF
-        `cover_info("//      ExceptionsVF - Enabled");
-        `include "ExceptionsVF_coverage_init.svh"
+        `cover_info("//      ExceptionsVf - Enabled");
+        `include "ExceptionsVf_coverage_init.svh"
+    `endif
+    `ifdef COVER_EXCEPTIONSVF16
+        `cover_info("//      ExceptionsVf16 - Enabled");
+        `include "ExceptionsVf16_coverage_init.svh"
+    `endif
+    `ifdef COVER_EXCEPTIONSVF32
+        `cover_info("//      ExceptionsVf32 - Enabled");
+        `include "ExceptionsVf32_coverage_init.svh"
+    `endif
+    `ifdef COVER_EXCEPTIONSVF64
+        `cover_info("//      ExceptionsVf64 - Enabled");
+        `include "ExceptionsVf64_coverage_init.svh"
+    `endif
+    `ifdef COVER_EXCEPTIONSVFMIN
+        `cover_info("//      ExceptionsVfmin - Enabled");
+        `include "ExceptionsVfmin_coverage_init.svh"
+    `endif
+    `ifdef COVER_EXCEPTIONSVLS
+        `cover_info("//      ExceptionsVls - Enabled");
+        `include "ExceptionsVls_coverage_init.svh"
+    `endif
+    `ifdef COVER_EXCEPTIONSVX
+        `cover_info("//      ExceptionsVx - Enabled");
+        `include "ExceptionsVx_coverage_init.svh"
     `endif
     `ifdef COVER_EXCEPTIONSZAAMO
         `cover_info("//      ExceptionsZaamo - Enabled");
@@ -150,6 +174,10 @@
         `cover_info("//      MisalignZca - Enabled");
         `include "MisalignZca_coverage_init.svh"
     `endif
+    `ifdef COVER_MISALIGNEDV
+        `cover_info("//      MisalignedV - Enabled");
+        `include "MisalignedV_coverage_init.svh"
+    `endif
     `ifdef COVER_PMPF
         `cover_info("//      PMPF - Enabled");
         `include "PMPF_coverage_init.svh"
@@ -198,9 +226,41 @@
         `cover_info("//      SmV - Enabled");
         `include "SmV_coverage_init.svh"
     `endif
+    `ifdef COVER_SMVF
+        `cover_info("//      SmVF - Enabled");
+        `include "SmVF_coverage_init.svh"
+    `endif
+    `ifdef COVER_SMMPM
+        `cover_info("//      Smmpm - Enabled");
+        `include "Smmpm_coverage_init.svh"
+    `endif
+    `ifdef COVER_SMNPMS
+        `cover_info("//      SmnpmS - Enabled");
+        `include "SmnpmS_coverage_init.svh"
+    `endif
+    `ifdef COVER_SMNPMU
+        `cover_info("//      SmnpmU - Enabled");
+        `include "SmnpmU_coverage_init.svh"
+    `endif
+    `ifdef COVER_SMSTATEEN
+        `cover_info("//      Smstateen - Enabled");
+        `include "Smstateen_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSCCPTR
+        `cover_info("//      Ssccptr - Enabled");
+        `include "Ssccptr_coverage_init.svh"
+    `endif
     `ifdef COVER_SSCOUNTERENW
         `cover_info("//      Sscounterenw - Enabled");
         `include "Sscounterenw_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSNPM
+        `cover_info("//      Ssnpm - Enabled");
+        `include "Ssnpm_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSSTATEEN
+        `cover_info("//      Ssstateen - Enabled");
+        `include "Ssstateen_coverage_init.svh"
     `endif
     `ifdef COVER_SSSTRICTS
         `cover_info("//      SsstrictS - Enabled");
@@ -293,10 +353,6 @@
     `ifdef COVER_UV
         `cover_info("//      UV - Enabled");
         `include "UV_coverage_init.svh"
-    `endif
-    `ifdef COVER_VF
-        `cover_info("//      VF - Enabled");
-        `include "VF_coverage_init.svh"
     `endif
     `ifdef COVER_VF16
         `cover_info("//      Vf16 - Enabled");

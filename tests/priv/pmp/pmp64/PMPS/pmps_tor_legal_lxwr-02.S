@@ -25,7 +25,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "pmps_tor_legal_lxwr.S"
@@ -39,7 +39,7 @@
 
 RVTEST_BEGIN
 
-#define g    (1<<(RVMODEL_PMP_GRAIN+2))
+#define g    (1<<(UDB_PMP_GRANULARITY))
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
@@ -56,6 +56,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_11, test_11_str)
 
+    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     LA (a4, \ADDRESS)
     addi a4, a4, -4                     // REGIONSTART - 4
     LA(x1, 2f)                          // Store the return Address in x1
@@ -68,6 +69,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_12, test_12_str)
 
+    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     LA (a4, \ADDRESS)
     addi a4, a4, 8                      // REGIONSTART + 4
     LA(x1, 3f)                          // Store the return Address in x1
@@ -81,7 +83,8 @@ RVTEST_BEGIN
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_13, test_13_str)
 
     LA (a4, \ADDRESS)
-    addi a4, a4, (g-8)                  // REGIONSTART + g - 4
+    li t0, (g-8)
+    add a4, a4, t0                  // REGIONSTART + g - 4
     LA(x1, 4f)                          // Store the return Address in x1
     \TEST_CASE\()_14:
     jalr ra, 0(a4)
@@ -133,7 +136,8 @@ RVTEST_BEGIN
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
 
     LA(a5, \ADDRESS)                                        // Address to be verified
-    addi a5, a5, (g-8)                                      // REGIONSTART + g - 4
+    li t0, (g-8)
+    add a5, a5, t0                                      // REGIONSTART + g - 4
 
     \TEST_CASE\()_4:
     sw a4, 0(a5)
@@ -174,7 +178,8 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)                                   // Signature update
 
-    addi a5, a5, (g-8)                                      // REGIONSTART + g - 4
+    li t0, (g-8)
+    add a5, a5, t0                                     // REGIONSTART + g - 4
 
     \TEST_CASE\()_9:
     lw a4, 0(a5)
@@ -195,14 +200,14 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -232,7 +237,8 @@ main:
 // Test Case: 4 : L -> 0 and X Permissions given to the PMP Region 5
 
     LA(x6, REGIONSTART)
-    addi x6, x6, g
+    li t0, g
+    add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr5, x6
     LA(x5, REGIONSTART)
@@ -248,7 +254,8 @@ main:
 // Test Case: 5 : L -> 0 and RX Permissions given to the PMP Region 3
 
     LA(x6, REGIONSTART)
-    addi x6, x6, g
+    li t0, g
+    add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr3, x6
     LA(x5, REGIONSTART)
@@ -264,7 +271,8 @@ main:
 // Test Case: 6 : L -> 0 and XWR Permissions given to the PMP Region 1
 
     LA(x6, REGIONSTART)
-    addi x6, x6, g
+    li t0, g
+    add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr1, x6
     LA(x5, REGIONSTART)
@@ -306,14 +314,12 @@ test_14_str: .string "\"test: 14; cp: cp_cfg_A_tor_jalr_address+g-4\""
 test_15_str: .string "\"test: 15; cp: cp_cfg_A_tor_jalr_address+g\""
 
 .align 12
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
-    .rept 1024
-    nop
-    .endr
+    jr ra
 
 TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept (1<<(UDB_PMP_GRANULARITY))
     nop
     .endr
 

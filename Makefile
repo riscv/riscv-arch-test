@@ -12,10 +12,10 @@ COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/
 # EXTENSIONS is a comma-separated list of extensions to generate tests for. Leave blank to generate for all tests.
 # EXCLUDE_EXTENSIONS overrides EXTENSIONS to exclude particular extensions from test generation. Applies as a negative filter after EXTENSIONS.
 # Default exclusion reasons:
-#  - Sm, S: Insufficient WARL configuration options.
-#  - InterruptsSm,InterruptsS,InterruptsU,InterruptsSstc,PMPSm,PMPZca,SvaduPMP,SvPMP,SvPMPZicbo: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
+#  - Sm: Insufficient WARL configuration options.
+#  - PMPSm: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
 EXTENSIONS  ?=
-EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,InterruptsS,InterruptsU,InterruptsSstc,Sv,SvaduPMP,SvPMP,SvPMPZicbo,Svade,Svadu,Svinval,SvZicbo,Svnapot,Svpbmt,ExceptionsSvZalrsc,ExceptionsSvZaamo,ExceptionsZalrsc,ExceptionsZaamo,PMPS,PMPU,PMPSm
+EXCLUDE_EXTENSIONS ?= Sm,PMPSm
 
 # DEBUG, FAST, and VERBOSE are runtime options for controlling build output. DEBUG and FAST are mutually exclusive.
 # Set to True to enable, or leave blank to disable.
@@ -126,7 +126,7 @@ help:
 	  'vector-tests'        'Generate vector test sources' \
 	  'coverage'            'Build with coverage instrumentation for $$(COVERAGE_CONFIG_FILES)' \
 	  'regression'          'Clean, run coverage, then every config with a run_cmd.txt' \
-	  'clean'               'Remove build artifacts (preserves extensions.txt)' \
+	  'clean'               'Remove build artifacts (preserves extensions.txt and .validated)' \
 	  'clean-tests'         'Remove generated test sources'
 	@printf '\n\033[1mGenerators:\033[0m\n'
 	@printf '  \033[36m%-20s\033[0m %s\n' \
@@ -180,7 +180,7 @@ elfs: tests
 .PHONY: clean
 clean:
 	@if [ -d $(WORKDIR) ]; then \
-		find $(WORKDIR) \( -type f -o -type l \) ! -name 'extensions.txt' -delete; \
+		find $(WORKDIR) \( -type f -o -type l \) ! -name 'extensions.txt' ! -name '.validated' -delete; \
 		find $(WORKDIR) -type d -empty -delete; \
 	fi
 
@@ -200,9 +200,16 @@ $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
 	@touch $@
 
 .PHONY: vector-testgen
-vector-testgen: $(STAMP_DIR)/vector-testgen-unpriv.stamp
+vector-testgen: $(STAMP_DIR)/vector-testgen-unpriv.stamp $(STAMP_DIR)/vector-testgen-priv.stamp
+
 $(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/testgen/scripts/vector-testgen-unpriv.py generators/testgen/scripts/vector_testgen_common.py Makefile | $(STAMP_DIR)
 	@$(UV_RUN) generators/testgen/scripts/vector-testgen-unpriv.py $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
+	@touch $@
+# Note: EXTENSIONS / EXCLUDE_EXTENSIONS only filter unpriv generation and
+# run-time test selection. The priv vector generator does not accept these
+# flags; priv vector tests are always generated.
+$(STAMP_DIR)/vector-testgen-priv.stamp: generators/testgen/scripts/vector-testgen-priv.py generators/testgen/scripts/vector_testgen_common.py Makefile | $(STAMP_DIR)
+	@$(UV_RUN) generators/testgen/scripts/vector-testgen-priv.py
 	@touch $@
 
 .PHONY: tests

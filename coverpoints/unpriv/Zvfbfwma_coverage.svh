@@ -12,11 +12,11 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZVFBFWMA
-`define COVER_VFCUSTOM16
-`ifdef ELEN16
+`define COVER_ZVFBFWMACUSTOM16
+`ifdef UDB_ELEN_16
     `define SEW_16_EQ_ELEN
 `endif
-`ifdef ELEN32
+`ifdef UDB_ELEN_32
     `define SEW_16_EQ_ELEN_DIV_2
 `endif
 covergroup Zvfbfwma_vfwmaccbf16_vf_cg with function sample(ins_t ins);
@@ -26,10 +26,12 @@ covergroup Zvfbfwma_vfwmaccbf16_vf_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_vun : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_voun : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
+        wildcard bins OF   = (5'b??0?? => 5'b??1??);
+        wildcard bins OF1  = (5'b??1?? => 5'b??1??);
         wildcard bins UF   = (5'b???0? => 5'b???1?);
         wildcard bins UF1  = (5'b???1? => 5'b???1?);
         wildcard bins NX   = (5'b????0 => 5'b????1);
@@ -54,28 +56,28 @@ covergroup Zvfbfwma_vfwmaccbf16_vf_cg with function sample(ins_t ins);
     // cp_fs1_edges_v_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_fs1_edges_v_sew16 : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
-        // FS1 edges (Half Precision)
+    cp_fs1_edges_v_bf16_sew16 : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
+        // (BF16 Precision)
         bins pos0                   = {16'h0000};
         bins neg0                   = {16'h8000};
-        bins pos1                   = {16'h3C00};
-        bins neg1                   = {16'hBC00};
-        bins posminnorm             = {16'h0400};
-        bins negmaxnorm             = {16'hFBFF};
-        bins posinfinity            = {16'h7C00};
-        bins neginfinity            = {16'hFC00};
-        bins pos0p5                 = {16'h3800};
-        bins pos1p5                 = {16'h3E00};
+        bins pos1                   = {16'h3F80};
+        bins neg1                   = {16'hBF80};
+        bins posminnorm             = {16'h0080};
+        bins negmaxnorm             = {16'hFF7F};
+        bins posinfinity            = {16'h7F80};
+        bins neginfinity            = {16'hFF80};
+        bins pos0p5                 = {16'h3f00};
+        bins pos1p5                 = {16'h3FC0};
         bins neg2                   = {16'hC000};
-        bins pi                     = {16'h4248};
-        bins twoToEmax              = {16'h7800};
-        bins onePulp                = {16'h3c01};
-        bins largestsubnorm         = {16'h03FF};
-        bins negSubnormLeadingOne   = {16'h8200};
+        bins pi                     = {16'h4049};
+        bins twoToEmax              = {16'h7f00};
+        bins onePulp                = {16'h3f81};
+        bins largestsubnorm         = {16'h007F};
+        bins negSubnormLeadingOne   = {16'h8040};
         bins min_subnorm            = {16'h0001};
-        bins canonicalQNaN          = {16'h7E00};                // Quiet NaN with only MSB of fraction set
-        bins negNoncanonicalQNaN    = {[16'hFE01:16'hFFFF]};     // Quiet NaNs excluding canonical
-        bins sNaN_payload1          = {16'h7D01};                // Signaling NaN with payload 1
+        bins canonicalQNaN          = {16'h7FC0};                // Quiet NaN with only MSB of fraction set
+        bins negNoncanonicalQNaN    = {[16'hFFC1:16'hFFFF]};     // Quiet NaNs excluding canonical
+        bins sNaN_payload1          = {16'h7F81};                // Signaling NaN with payload 1
     }
 
     //// end cp_fs1_edges_v_sew16////////////////////////////////////////////////
@@ -130,34 +132,34 @@ covergroup Zvfbfwma_vfwmaccbf16_vf_cg with function sample(ins_t ins);
     //// end cp_vs2////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_edges_f_sew16
+    // cp_vs2_edges_f_bf16_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_f_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[15:0]  iff (ins.trap == 0 )  {
-        // (Half Precision)
+    cp_vs2_edges_f_bf16_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[15:0]  iff (ins.trap == 0 )  {
+        // (BF16 Precision)
         bins pos0                   = {16'h0000};
         bins neg0                   = {16'h8000};
-        bins pos1                   = {16'h3C00};
-        bins neg1                   = {16'hBC00};
-        bins posminnorm             = {16'h0400};
-        bins negmaxnorm             = {16'hFBFF};
-        bins posinfinity            = {16'h7C00};
-        bins neginfinity            = {16'hFC00};
-        bins pos0p5                 = {16'h3800};
-        bins pos1p5                 = {16'h3E00};
+        bins pos1                   = {16'h3F80};
+        bins neg1                   = {16'hBF80};
+        bins posminnorm             = {16'h0080};
+        bins negmaxnorm             = {16'hFF7F};
+        bins posinfinity            = {16'h7F80};
+        bins neginfinity            = {16'hFF80};
+        bins pos0p5                 = {16'h3f00};
+        bins pos1p5                 = {16'h3FC0};
         bins neg2                   = {16'hC000};
-        bins pi                     = {16'h4248};
-        bins twoToEmax              = {16'h7800};
-        bins onePulp                = {16'h3c01};
-        bins largestsubnorm         = {16'h03FF};
-        bins negSubnormLeadingOne   = {16'h8200};
+        bins pi                     = {16'h4049};
+        bins twoToEmax              = {16'h7f00};
+        bins onePulp                = {16'h3f81};
+        bins largestsubnorm         = {16'h007F};
+        bins negSubnormLeadingOne   = {16'h8040};
         bins min_subnorm            = {16'h0001};
-        bins canonicalQNaN          = {16'h7E00};                // Quiet NaN with only MSB of fraction set
-        bins negNoncanonicalQNaN    = {[16'hFE01:16'hFFFF]};     // Quiet NaNs excluding canonical
-        bins sNaN_payload1          = {16'h7D01};                // Signaling NaN with payload 1
+        bins canonicalQNaN          = {16'h7FC0};                // Quiet NaN with only MSB of fraction set
+        bins negNoncanonicalQNaN    = {[16'hFFC1:16'hFFFF]};     // Quiet NaNs excluding canonical
+        bins sNaN_payload1          = {16'h7F81};                // Signaling NaN with payload 1
     }
 
-    //// end cp_vs2_edges_f_sew16////////////////////////////////////////////////
+    //// end cp_vs2_edges_f_bf16_sew16////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
@@ -195,7 +197,7 @@ covergroup Zvfbfwma_vfwmaccbf16_vf_cg with function sample(ins_t ins);
     // cr_vs2_fs1_edges_f_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cr_vs2_fs1_edges_f_sew16 : cross cp_vs2_edges_f_sew16,cp_fs1_edges_v_sew16  iff (ins.trap == 0 )  {
+    cr_vs2_fs1_edges_f_bf16_sew16 : cross cp_vs2_edges_f_bf16_sew16,cp_fs1_edges_v_bf16_sew16  iff (ins.trap == 0 )  {
         // Cross coverage of VS2 edges and FS1 edges
     }
 
@@ -246,10 +248,12 @@ covergroup Zvfbfwma_vfwmaccbf16_vv_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_vun : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_voun : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);
+        wildcard bins OF   = (5'b??0?? => 5'b??1??);
+        wildcard bins OF1  = (5'b??1?? => 5'b??1??);
         wildcard bins UF   = (5'b???0? => 5'b???1?);
         wildcard bins UF1  = (5'b???1? => 5'b???1?);
         wildcard bins NX   = (5'b????0 => 5'b????1);
@@ -319,28 +323,28 @@ covergroup Zvfbfwma_vfwmaccbf16_vv_cg with function sample(ins_t ins);
     // cp_vs1_edges_f_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs1_edges_f_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)[15:0]  iff (ins.trap == 0 )  {
-        // (Half Precision)
+    cp_vs1_edges_f_bf16_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)[15:0]  iff (ins.trap == 0 )  {
+        // (BF16 Precision)
         bins pos0                   = {16'h0000};
         bins neg0                   = {16'h8000};
-        bins pos1                   = {16'h3C00};
-        bins neg1                   = {16'hBC00};
-        bins posminnorm             = {16'h0400};
-        bins negmaxnorm             = {16'hFBFF};
-        bins posinfinity            = {16'h7C00};
-        bins neginfinity            = {16'hFC00};
-        bins pos0p5                 = {16'h3800};
-        bins pos1p5                 = {16'h3E00};
+        bins pos1                   = {16'h3F80};
+        bins neg1                   = {16'hBF80};
+        bins posminnorm             = {16'h0080};
+        bins negmaxnorm             = {16'hFF7F};
+        bins posinfinity            = {16'h7F80};
+        bins neginfinity            = {16'hFF80};
+        bins pos0p5                 = {16'h3f00};
+        bins pos1p5                 = {16'h3FC0};
         bins neg2                   = {16'hC000};
-        bins pi                     = {16'h4248};
-        bins twoToEmax              = {16'h7800};
-        bins onePulp                = {16'h3c01};
-        bins largestsubnorm         = {16'h03FF};
-        bins negSubnormLeadingOne   = {16'h8200};
+        bins pi                     = {16'h4049};
+        bins twoToEmax              = {16'h7f00};
+        bins onePulp                = {16'h3f81};
+        bins largestsubnorm         = {16'h007F};
+        bins negSubnormLeadingOne   = {16'h8040};
         bins min_subnorm            = {16'h0001};
-        bins canonicalQNaN          = {16'h7E00};                // Quiet NaN with only MSB of fraction set
-        bins negNoncanonicalQNaN    = {[16'hFE01:16'hFFFF]};     // Quiet NaNs excluding canonical
-        bins sNaN_payload1          = {16'h7D01};                // Signaling NaN with payload 1
+        bins canonicalQNaN          = {16'h7FC0};                // Quiet NaN with only MSB of fraction set
+        bins negNoncanonicalQNaN    = {[16'hFFC1:16'hFFFF]};     // Quiet NaNs excluding canonical
+        bins sNaN_payload1          = {16'h7F81};                // Signaling NaN with payload 1
     }
 
     //// end cp_vs1_edges_f_sew16////////////////////////////////////////////////
@@ -356,34 +360,34 @@ covergroup Zvfbfwma_vfwmaccbf16_vv_cg with function sample(ins_t ins);
     //// end cp_vs2////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_edges_f_sew16
+    // cp_vs2_edges_f_bf16_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_f_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[15:0]  iff (ins.trap == 0 )  {
-        // (Half Precision)
+    cp_vs2_edges_f_bf16_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[15:0]  iff (ins.trap == 0 )  {
+        // (BF16 Precision)
         bins pos0                   = {16'h0000};
         bins neg0                   = {16'h8000};
-        bins pos1                   = {16'h3C00};
-        bins neg1                   = {16'hBC00};
-        bins posminnorm             = {16'h0400};
-        bins negmaxnorm             = {16'hFBFF};
-        bins posinfinity            = {16'h7C00};
-        bins neginfinity            = {16'hFC00};
-        bins pos0p5                 = {16'h3800};
-        bins pos1p5                 = {16'h3E00};
+        bins pos1                   = {16'h3F80};
+        bins neg1                   = {16'hBF80};
+        bins posminnorm             = {16'h0080};
+        bins negmaxnorm             = {16'hFF7F};
+        bins posinfinity            = {16'h7F80};
+        bins neginfinity            = {16'hFF80};
+        bins pos0p5                 = {16'h3f00};
+        bins pos1p5                 = {16'h3FC0};
         bins neg2                   = {16'hC000};
-        bins pi                     = {16'h4248};
-        bins twoToEmax              = {16'h7800};
-        bins onePulp                = {16'h3c01};
-        bins largestsubnorm         = {16'h03FF};
-        bins negSubnormLeadingOne   = {16'h8200};
+        bins pi                     = {16'h4049};
+        bins twoToEmax              = {16'h7f00};
+        bins onePulp                = {16'h3f81};
+        bins largestsubnorm         = {16'h007F};
+        bins negSubnormLeadingOne   = {16'h8040};
         bins min_subnorm            = {16'h0001};
-        bins canonicalQNaN          = {16'h7E00};                // Quiet NaN with only MSB of fraction set
-        bins negNoncanonicalQNaN    = {[16'hFE01:16'hFFFF]};     // Quiet NaNs excluding canonical
-        bins sNaN_payload1          = {16'h7D01};                // Signaling NaN with payload 1
+        bins canonicalQNaN          = {16'h7FC0};                // Quiet NaN with only MSB of fraction set
+        bins negNoncanonicalQNaN    = {[16'hFFC1:16'hFFFF]};     // Quiet NaNs excluding canonical
+        bins sNaN_payload1          = {16'h7F81};                // Signaling NaN with payload 1
     }
 
-    //// end cp_vs2_edges_f_sew16////////////////////////////////////////////////
+    //// end cp_vs2_edges_f_bf16_sew16////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew16_lmul4max
@@ -421,7 +425,7 @@ covergroup Zvfbfwma_vfwmaccbf16_vv_cg with function sample(ins_t ins);
     // cr_vs2_vs1_edges_f_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cr_vs2_vs1_edges_f_sew16 : cross cp_vs2_edges_f_sew16,cp_vs1_edges_f_sew16  iff (ins.trap == 0 )  {
+    cr_vs2_vs1_edges_f_bf16_sew16 : cross cp_vs2_edges_f_bf16_sew16,cp_vs1_edges_f_bf16_sew16  iff (ins.trap == 0 )  {
         // Cross coverage of VS2 edges and VS1 edges
     }
 
@@ -462,12 +466,12 @@ function void zvfbfwma_sample(int hart, int issue, ins_t ins);
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
-        "vfwmaccbf16.vf"     : begin
-            Zvfbfwma_vfwmaccbf16_vf_cg.sample(ins);
-        end
-        "vfwmaccbf16.vv"     : begin
-            Zvfbfwma_vfwmaccbf16_vv_cg.sample(ins);
-        end
+            "vfwmaccbf16.vf"     : begin
+                Zvfbfwma_vfwmaccbf16_vf_cg.sample(ins);
+            end
+            "vfwmaccbf16.vv"     : begin
+                Zvfbfwma_vfwmaccbf16_vv_cg.sample(ins);
+            end
         endcase
     end
 endfunction

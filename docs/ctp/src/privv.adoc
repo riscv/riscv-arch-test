@@ -1,0 +1,107 @@
+
+=== Vector Privileged Test Suites
+
+All of the vector privileged suites are collected in this section.
+
+==== MisalignV Vector Misalignment
+
+MisalignV tests misaligned vector loads and stores.  Unlike scalar misaligned suites, they are privileged tests that run whether or not misaligned accesses are supported, so they may trap or not depending on TODO UDBParameter.
+
+[[t-MisalignV-coverpoints]]
+
+TODO: coverpoints are part of SsstrictV.  Pull them out.
+
+include::norm/MisalignV_norm_rules.adoc[]
+
+==== SsstrictV Vector Strict Decoding
+
+SsstrictV tests that reserved vector encodings trap when Ssstrict is implemented.  It includes a comprehensive set of reserved overlapping register constraints.  It also tests miscellaneous reserved conditions such as widening to unsupported SEWs, register groups not aligned to a multiple of LMUL, reserved mask overlaps, and constraints on `vsetvl*` operands.
+
+[[t-SsstrictV-coverpoints]]
+.SsstrictV Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=743730639#gid=743730639[Google Sheet Testplan]
+,===
+
+include::norm/SsstrictV_norm_rules.adoc[]
+
+==== ExceptionsVx Vector Integer Exceptions
+
+The vector exception tests exercise everything else that might cause exceptions aside from misalignment and reserved instructions.
+
+These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on `mstatus.VS`) related to vector integer instructions. Some tests always trap, such as access faults. Other tests may either succeed or trap depending on a parameter.  For example, an implementation may trap on nonzero `vstart` values, or may execute them in hardware.
+
+[[t-ExceptionsVx-coverpoints]]
+.ExceptionsVx Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=1139310135#gid=1139310135[Google Sheet Testplan]
+,===
+
+include::norm/ExceptionsVx_norm_rules.adoc[]
+
+==== ExceptionsVf Vector Floating-Point Exceptions
+
+These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on mstatus.VS) related to vector floating-point instructions. They test operations that may either succeed or trap depending on a parameter.
+
+[[t-ExceptionsVf-coverpoints]]
+.ExceptionsVf Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=1839120623#gid=1839120623[Google Sheet Testplan]
+,===
+
+include::norm/ExceptionsVf_norm_rules.adoc[]
+
+==== ExceptionsVls Vector Load/Store Exceptions
+
+These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on mstatus.VS) related to vector load/store instructions. They test operations that may either succeed or trap depending on a parameter.
+
+[[t-ExceptionsVls-coverpoints]]
+.ExceptionsVls Coverpoints
+
+,===
+https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=1814229778#gid=1814229778[Google Sheet Testplan]
+
+,===
+
+include::norm/ExceptionsVls_norm_rules.adoc[]
+
+
+==== SmV
+
+Machine-mode access to vector CSRs.
+
+[[t-SmV-coverpoints]]
+.SmV Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=416753800#gid=416753800[Google Sheet Testplan]
+,===
+
+include::norm/SmV_norm_rules.adoc[]
+
+TODO: Many of these tests should be replicated in UV.
+
+==== SmVF
+
+Machine-mode access to vector floating-point CSRs.
+
+[[t-SmVF-coverpoints]]
+.SmVF Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=1892166886#gid=1892166886[Google Sheet Testplan]
+,===
+
+include::norm/SmVF_norm_rules.adoc[]
+
+TODO: Many of these tests should be replicated in UV.
+
+==== UV
+
+User-mode access to vector CSRs.
+
+[[t-UV-coverpoints]]
+.UV Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1488477674#gid=1488477674[Google Sheet Testplan]
+,===
+
+include::norm/UV_norm_rules.adoc[]

@@ -19,7 +19,7 @@ def _generate_ufcsr_tests(test_data: TestData) -> list[str]:
     covergroup = "UF_ufcsr_cg"
 
     # fp CSRs
-    csrs = ["fcsr", "frm", "fflags"]
+    csrf = [("fcsr", None), ("frm", None), ("fflags", None)]
     lines = []
 
     lines.extend(["RVTEST_GOTO_LOWER_MODE Umode  # Run tests in user mode\n"])
@@ -34,7 +34,7 @@ def _generate_ufcsr_tests(test_data: TestData) -> list[str]:
         )
     )
 
-    for csr in csrs:
+    for csr in csrf:
         lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
 
     ######################################
@@ -47,7 +47,7 @@ def _generate_ufcsr_tests(test_data: TestData) -> list[str]:
         ),
     )
 
-    for csr in csrs:
+    for csr in csrf:
         lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
 
     return lines

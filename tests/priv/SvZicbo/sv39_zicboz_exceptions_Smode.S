@@ -87,7 +87,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv39, Zicboz]
-# MARCH: rv64i_zicsr_zicboz
+# MARCH: rv64i_zicsr_zifencei_zicboz
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv39_zicboz_exceptions_Smode.S"

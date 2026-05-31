@@ -30,25 +30,37 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
         bins legal_frm = {3'b000, 3'b001, 3'b010, 3'b011, 3'b100};
     }
     instrs: coverpoint ins.current.insn {
-        wildcard bins fsw          = {32'b????????????_?????_010_?????_0100111};
-        wildcard bins flw          = {32'b????????????_?????_010_?????_0000111};
-        wildcard bins fadd         = {32'b00000_??_?????_?????_???_?????_1010011};
-        wildcard bins fsub         = {32'b00001_??_?????_?????_???_?????_1010011};
-        wildcard bins fmul         = {32'b00010_??_?????_?????_???_?????_1010011};
-        wildcard bins fdiv         = {32'b00011_??_?????_?????_???_?????_1010011};
-        wildcard bins fcvt_x_f     = {32'b11000_??_?????_?????_???_?????_1010011};
-        wildcard bins fcvt_f_x     = {32'b11010_??_?????_?????_???_?????_1010011};
-        wildcard bins fcvt_f_f     = {32'b01000_??_?????_?????_???_?????_1010011};
-        wildcard bins fmadd        = {32'b?????_??_?????_?????_???_?????_1000011};
-        wildcard bins fsqrt        = {32'b01011_??_00000_?????_???_?????_1010011};
-        wildcard bins fsgnj        = {32'b00100_??_?????_?????_000_?????_1010011};
-        wildcard bins feq          = {32'b10100_??_?????_?????_010_?????_1010011};
-        wildcard bins fmv_x_f      = {32'b11100_??_00000_?????_000_?????_1010011};
-        wildcard bins fmv_f_x      = {32'b11110_??_00000_?????_000_?????_1010011};
-        wildcard bins fclass       = {32'b11100_??_00000_?????_001_?????_1010011};
-        wildcard bins fmin         = {32'b00101_??_?????_?????_000_?????_1010011};
-        wildcard bins fli          = {32'b11110_??_00001_?????_000_?????_1010011};
-        wildcard bins fround       = {32'b01000_??_00100_?????_???_?????_1010011};
+        wildcard bins fsw          = {FSW};
+        wildcard bins flw          = {FLW};
+        wildcard bins fadd         = {FADD_S};
+        wildcard bins fsub         = {FSUB_S};
+        wildcard bins fmul         = {FMUL_S};
+        wildcard bins fdiv         = {FDIV_S};
+        wildcard bins fcvt_x_f     = {FCVT_W_S};
+        wildcard bins fcvt_f_x     = {FCVT_S_W};
+        `ifdef D_SUPPORTED
+            wildcard bins fcvt_f_f     = {FCVT_S_D};
+        `endif
+        wildcard bins fmadd        = {FMADD_S};
+        wildcard bins fsqrt        = {FSQRT_S};
+        wildcard bins fsgnj        = {FSGNJ_S};
+        wildcard bins feq          = {FEQ_S};
+        wildcard bins fmv_x_f      = {FMV_X_S};
+        wildcard bins fmv_f_x      = {FMV_S_X};
+        wildcard bins fclass       = {FCLASS_S};
+        wildcard bins fmin         = {FMIN_S};
+        `ifdef ZFA_SUPPORTED
+            wildcard bins fli          = {FLI_S};
+            wildcard bins fround       = {FROUND_S};
+            `ifdef UDB_MXLEN_32
+                `ifdef D_SUPPORTED
+                    wildcard bins fmvh         = {FMVH_X_D};
+                    wildcard bins fmvp         = {FMVP_D_X};
+                `endif
+            `endif
+        `endif
+    }
+    csr_instrs: coverpoint ins.current.insn {
         wildcard bins csrrw_fcsr   = {32'b000000000011_?????_001_?????_1110011};
         wildcard bins csrrw_frm    = {32'b000000000010_?????_001_?????_1110011};
         wildcard bins csrrw_fflags = {32'b000000000001_?????_001_?????_1110011};
@@ -58,14 +70,10 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
         wildcard bins csrrc_fcsr   = {32'b000000000011_?????_011_?????_1110011};
         wildcard bins csrrc_frm    = {32'b000000000010_?????_011_?????_1110011};
         wildcard bins csrrc_fflags = {32'b000000000001_?????_011_?????_1110011};
-        `ifdef XLEN32
-            wildcard bins fmvh         = {32'b1110001_00001_?????_000_?????_1010011};
-            wildcard bins fmvp         = {32'b1011001_?????_?????_000_?????_1010011};
-        `endif
     }
     loadops: coverpoint ins.current.insn {
         wildcard bins flw = {FLW};
-        `ifdef ZFH_SUPPORTED
+        `ifdef ZFHMIN_SUPPORTED
             wildcard bins flh = {FLH};
         `endif
         `ifdef D_SUPPORTED
@@ -77,7 +85,7 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
     }
     storeops: coverpoint ins.current.insn {
         wildcard bins fsw = {FSW};
-        `ifdef ZFH_SUPPORTED
+        `ifdef ZFHMIN_SUPPORTED
             wildcard bins fsh = {FSH};
         `endif
         `ifdef D_SUPPORTED
@@ -94,7 +102,7 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
 
     // main coverpoints
     cp_mstatus_fs_illegal_instr: cross instrs, mstatus_FS_zero;
-    cp_badfrm:                   cross instrs_dynrm, mstatus_FS_nonzero, frm_illegal;
+    cp_mstatus_fs_csr_write:     cross csr_instrs, mstatus_FS_zero;
     cp_mstatus_fs_legal:         cross instrs, mstatus_FS_status, frm_legal;
     cp_load_address_misaligned:  cross loadops, adr_LSBs;
     cp_store_address_misaligned: cross storeops, adr_LSBs;

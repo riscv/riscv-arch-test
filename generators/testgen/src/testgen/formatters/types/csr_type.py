@@ -18,6 +18,17 @@ def zicsr_acccess(instr_name: str, rd: int, rs1: int) -> str:
     # Use writable unprivileged extension CSRs if any exist,
     # else use mepc if U is not supported
     # else use instret (which is not writable, but at least can be accessed)
+
+    # instret requires special treatment because it is not writable, and the value is not initialized
+    if instr_name in ["csrrw", "csrrwi"] or rs1 == 0 or rd == 0:
+        instret_access = f"li x{rd}, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0"
+    else:
+        instret_access = (
+            f"{instr_name} x{rs1}, instret, x0\n"
+            f"{instr_name} x{rd}, instret, x0\n"
+            f"sub x{rd}, x{rd}, x{rs1}  # check that instret value has incremented\n"
+        )
+
     return (
         "#if defined(F_SUPPORTED)\n"
         f"{instr_name} x{rd}, fflags, x{rs1}\n"
@@ -26,9 +37,9 @@ def zicsr_acccess(instr_name: str, rd: int, rs1: int) -> str:
         "#elif !defined(U_SUPPORTED)\n"
         f"{instr_name} x{rd}, mepc, x{rs1}\n"
         "#elif defined(ZICNTR_SUPPORTED)\n"
-        f"{instr_name} x{rd}, instret, x{rs1}\n"
+        f"{instret_access}\n"
         "#else\n"
-        f"  Error: no CSR known for testing\n"
+        f"  #error no CSR known for testing\n"
         "#endif\n"
     )
 

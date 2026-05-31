@@ -41,21 +41,19 @@ params:
   TRAP_ON_ECALL_FROM_M: true # VERIFIED — exceptions_interrupts.rst:122 "cannot be disabled"
   TRAP_ON_EBREAK: true # VERIFIED — exceptions_interrupts.rst Exception part has table with excepropm code breakpoint
   TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true # VERIFIED — exceptions_interrupts.rst:122–125 "cannot be disabled"
-  TRAP_ON_RESERVED_INSTRUCTION: true # VERIFIED — exceptions_interrupts.rst does mention this implicitly with FPU disabled, rtl shows that it also traps on PULP extensions, undefined opcodes, and any instruction not explicitly decoded
-  TRAP_ON_UNIMPLEMENTED_CSR: true # VERIFIED - rtl code from decoder.sv shows case statement for illegal instructions (if we configure it without FPU for example), there is default case (this is our situation!)
-  TRAP_ON_ILLEGAL_WLRL:
-    false # VERIFIED - checked decoder.sv it only traps illegal csrs, cs_registers.sv does only masking
+  TRAP_ON_RESERVED_INSTRUCTION: true # VERIFIED — exceptions_interrupts.rst § "Exceptions": undefined encodings raise illegal instruction exception
+  TRAP_ON_UNIMPLEMENTED_CSR: true # VERIFIED — exceptions_interrupts.rst § "Exceptions": FPU=0 causes illegal trap on F CSR access; undefined CSRs raise illegal instruction exception
+  TRAP_ON_ILLEGAL_WLRL: false # VERIFIED — control_status_registers.rst § "Machine Trap-Vector Base Address (mtvec)": WARL masking ensures only valid modes stored; no illegal-value trap
 
-
-    # MTVAL reporting (Section 6 — mtval CSR)
-  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false # VERIFIED — registers.sv: mtval is hardwired to 0
-  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false # VERIFIED — registers.sv: mtval is hardwired to 0
-  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false # VERIFIED — registers.sv: mtval is hardwired to 0
-  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false # VERIFIED — registers.sv: mtval is hardwired to 0
-  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false # VERIFIED — registers.sv: mtval is hardwired to 0
-  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false # VERIFIED — registers.sv: mtval is hardwired to 0
-  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false # VERIFIED — registers.sv: mtval is hardwired to 0
-  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false # VERIFIED — registers.sv: mtval is hardwired to 0
+  # MTVAL reporting (Section 6 — mtval CSR)
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false # VERIFIED — control_status_registers.rst § "Machine Trap Value (mtval)": reads return 0 (RO hardwired)
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false # VERIFIED — control_status_registers.rst § "Machine Trap Value (mtval)": reads return 0 (RO hardwired)
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false # VERIFIED — control_status_registers.rst § "Machine Trap Value (mtval)": reads return 0 (RO hardwired)
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false # VERIFIED — control_status_registers.rst § "Machine Trap Value (mtval)": reads return 0 (RO hardwired)
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false # VERIFIED — control_status_registers.rst § "Machine Trap Value (mtval)": reads return 0 (RO hardwired)
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false # VERIFIED — control_status_registers.rst § "Machine Trap Value (mtval)": reads return 0 (RO hardwired)
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false # VERIFIED — control_status_registers.rst § "Machine Trap Value (mtval)": reads return 0 (RO hardwired)
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false # VERIFIED — control_status_registers.rst § "Machine Trap Value (mtval)": reads return 0 (RO hardwired)
   MTVAL_WIDTH: 32 # 32-bit field, RO hardwired to 0 — all REPORT_* flags are false
 
   #   # Misaligned load/store support (Section 7 — Misaligned Load/Store)
@@ -65,38 +63,38 @@ params:
   MISALIGNED_SPLIT_STRATEGY: custom # FROM MANUAL — load_store_unit.rst; lowest address is performed first from manual, UDB only has two options costume and sequential bytes
 
   #   # CSR / implementation IDs (Section 3 — Implementation IDs) ## these are all verified by checking the manual for the relevant CSRs
-  ARCH_ID_VALUE: 0x00000004 # VERIFIED — control_status_registers.rst marchid=0x4
-  IMP_ID_VALUE: 0x1 # VERIFIED — cs_registers.sv:511-513: (FPU==1||COREV_PULP==1||COREV_CLUSTER==1)?32'h1:'b0; FPU=1 → mimpid=0x1; core_versions.rst:150-174 confirms
-  VENDOR_ID_BANK: 0xC # VERIFIED — mvendorid 0x602 decoded bits[31:7]=0xC (JEDEC bank 13)
-  VENDOR_ID_OFFSET: 0x2 # VERIFIED — mvendorid 0x602 decoded bits[6:0]=0x2 (manufacturer byte)
+  ARCH_ID_VALUE: 0x00000004 # VERIFIED — control_status_registers.rst § "Machine Architecture ID (marchid)": Reset Value 0x0000_0004
+  IMP_ID_VALUE: 0x1 # VERIFIED — control_status_registers.rst § "Machine Implementation ID (mimpid)": bit[0]=1 when FPU=1; core_versions.rst § "Core Versions and RTL Freeze Rules": mimpid=1 when any parameter differs from v1.0.0 certified set
+  VENDOR_ID_BANK: 0xC # VERIFIED — control_status_registers.rst § "Machine Vendor ID (mvendorid)": bits[31:7]=0xC (JEDEC continuation codes)
+  VENDOR_ID_OFFSET: 0x2 # VERIFIED — control_status_registers.rst § "Machine Vendor ID (mvendorid)": bits[6:0]=0x2 (final byte of JEDEC manufacturer ID)
 
   # MTVEC (Section 4 — mtvec WARL)
-  MTVEC_MODES: [0, 1] # VERIFIED — control_status_registers.rst:589 "both direct and vectored supported"
-  MTVEC_ACCESS: rw # VERIFIED — control_status_registers.rst:577 MODE[0] is RW, rtl confirms writible
-  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom # VERIFIED —  cok v32e40p_cs_registers.sv line 667 mtvec_mode_n = {1'b0, csr_wdata_int[0]};  // Only direct and vectored mode are supported, though because masking always produces a valid mode (0 or 1), no truly illegal state can ever be stored. The "illegal write" scenario is effectively unreachable.
-  MTVEC_BASE_ALIGNMENT_VECTORED: 256 # VERIFIED — control_status_registers.rst:567 "256-byte aligned" also rtl  CSR_MTVEC: csr_rdata_int = {mtvec_q, 6'h0, mtvec_mode_q}; first 8 bits zero = 256 bytes
-  MTVEC_BASE_ALIGNMENT_DIRECT: 256 # VERIFIED — control_status_registers.rst:567 same reason as above
+  MTVEC_MODES: [0, 1] # VERIFIED — control_status_registers.rst § "Machine Trap-Vector Base Address (mtvec)": MODE 0=direct, 1=vectored; both modes supported
+  MTVEC_ACCESS: rw # VERIFIED — control_status_registers.rst § "Machine Trap-Vector Base Address (mtvec)": MODE[0] is RW
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom # VERIFIED — control_status_registers.rst § "Machine Trap-Vector Base Address (mtvec)": WARL masking constrains MODE to 0 or 1; illegal state unreachable
+  MTVEC_BASE_ALIGNMENT_VECTORED: 256 # VERIFIED — control_status_registers.rst § "Machine Trap-Vector Base Address (mtvec)": "always aligned to 256 bytes"; bits[7:2] hardwired 0
+  MTVEC_BASE_ALIGNMENT_DIRECT: 256 # VERIFIED — control_status_registers.rst § "Machine Trap-Vector Base Address (mtvec)": same alignment for both modes; bits[7:2] hardwired 0
 
   #   # Sm params (Section 9 — Sm Parameters)
-  PRECISE_SYNCHRONOUS_EXCEPTIONS: true # ASSUMED —exceptions_interrupts.rst:26: "core sets mepc to the current program counter" — implies precision
-  MARCHID_IMPLEMENTED: true # VERIFIED — control_status_registers.rst: marchid (0xF12) is implemented
-  MIMPID_IMPLEMENTED: true # VERIFIED — core_versions.rst:117 mimpid=0 is a deliberate version encoding for baseline config; RTL non-FPU path groups it with mtval as "unimplemented" (misleading comment) but FPU path cs_registers.sv:511-512 confirms it is implemented with conditional value
-  PMA_GRANULARITY: 2 # QUESTIONABLE — no PMA hardware exists in RTL (no PMA checker, no PMA table, zero occurrences of "PMA" in RTL or docs); schema minimum is 2 (=4 bytes); OBI bus is 32-bit with byte enables (load_store_unit.sv:41 data_be_o[3:0]) making 4 bytes the natural minimum transaction granule
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true # ASSUMED — exceptions_interrupts.rst § "Exceptions and Interrupts": "core sets mepc to the current program counter" implies synchronous precision
+  MARCHID_IMPLEMENTED: true # VERIFIED — control_status_registers.rst § "Machine Architecture ID (marchid)": CSR (0xF12) implemented
+  MIMPID_IMPLEMENTED: true # VERIFIED — control_status_registers.rst § "Machine Implementation ID (mimpid)": CSR (0xF13) implemented with conditional value; core_versions.rst § "Core Versions and RTL Freeze Rules": mimpid=1 for FPU=1 config
+  PMA_GRANULARITY: 2 # QUESTIONABLE — load_store_unit.rst § "Misaligned Accesses": 32-bit OBI bus with byte-enable granularity => 4-byte (2^2) natural minimum; no PMA hardware or explicit granularity documented in manual
   # Zicntr params
   TIME_CSR_IMPLEMENTED: false # VERIFIED — perf_counters.rst:130-133: "user mode time(h) registers are not implemented, any access will cause an illegal instruction trap"
 
   # F extension params (defined by F + Sm)
-  HW_MSTATUS_FS_DIRTY_UPDATE: imprecise # VERIFIED — cs_registers.sv:1034: marks FS=DIRTY on fregs_we_i OR fflags_we_i; fflags_we_i fires for ops like FCVT.W.S (writes INT reg, not FP reg) → not strictly precise; control_status_registers.rst:483: "to simplify... any F instructions except FSW"
-  MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3] # VERIFIED — cs_registers.sv:964: mstatus_fs_n = FS_t'(csr_wdata_int[...]) with no masking; cv32e40p_pkg.sv:580-583: FS_OFF=0, FS_INITIAL=1, FS_CLEAN=2, FS_DIRTY=3; control_status_registers.rst:448-456: all 4 states documented as RW
+  HW_MSTATUS_FS_DIRTY_UPDATE: imprecise # VERIFIED — control_status_registers.rst § "Machine Status (mstatus)": "to simplify MSTATUS.FS update... Dirty when executing any F instructions except for all FSW ones" (imprecise: FCVT.W.S sets DIRTY even without writing FP regs)
+  MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3] # VERIFIED — control_status_registers.rst § "Machine Status (mstatus)": all 4 FS states (OFF=0, INITIAL=1, CLEAN=2, DIRTY=3) documented as RW with no masking
 
   # HPM Counters (Section 8 — HPM Counters)
-  HPM_EVENTS: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] # VERIFIED — cs_registers.sv:1327-1342: 16 events defined (hpm_events[0..15]); for baseline config (no COREV_CLUSTER, no APU/FPU) events 0-10 are active, events 11-15 are hardwired 0
-  HPM_COUNTER_EN: # VERIFIED — cs_registers.sv:41 NUM_MHPMCOUNTERS=1 default; line 1432: only index 3 active when NUM_MHPMCOUNTERS=1; UDB requires first 3 entries false
+  HPM_EVENTS: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] # VERIFIED — perf_counters.rst § "Event Selector": events 0-10 (CYCLES..COMP_INSTR)
+  HPM_COUNTER_EN: # VERIFIED — integration.rst § "Parameters": NUM_MHPMCOUNTERS default=1; perf_counters.rst § "Performance Counters": only mhpmcounter3 active; UDB requires indices 0-2 false
     [
       false, # index 0 (CY — must be false per UDB schema)
       false, # index 1 (TM — must be false per UDB schema)
       false, # index 2 (IR — must be false per UDB schema)
-      true, # index 3 (MHPMCOUNTER3 — only active counter, cs_registers.sv:1432)
+      true, # index 3 (MHPMCOUNTER3 — only active counter with NUM_MHPMCOUNTERS=1)
       false, # 4
       false,
       false,
@@ -126,12 +124,13 @@ params:
       false,
       false, # 24..31 (unimplemented)
     ]
-  COUNTINHIBIT_EN: # VERIFIED — cs_registers.sv:1421-1437; indices 0,2,3 inhibitable via mcountinhibit_q; index 1 always false per UDB; unimplemented counters hardwired 0
+  MCOUNTINHIBIT_IMPLEMENTED: true
+  COUNTINHIBIT_EN: # VERIFIED — perf_counters.rst § "Controlling the counters from software": bit 0=mcycle, bit 2=minstret, bit X=mhpmcounterX; control_status_registers.rst § "Machine Counter-Inhibit register (mcountinhibit)": non-implemented counters read 0
     [
-      true, # index 0 (MCYCLE inhibit — cs_registers.sv:1423-1425: !mcountinhibit_q[0])
+      true, # index 0 (MCYCLE inhibit)
       false, # index 1 (TM — always false, mcountinhibit.TM is read-only-0 per UDB)
-      true, # index 2 (MINSTRET inhibit — cs_registers.sv:1428-1431: !mcountinhibit_q[2])
-      true, # index 3 (MHPMCOUNTER3 inhibit — cs_registers.sv:1434-1437: !mcountinhibit_q[3])
+      true, # index 2 (MINSTRET inhibit)
+      true, # index 3 (MHPMCOUNTER3 inhibit)
       false, # 4
       false,
       false,

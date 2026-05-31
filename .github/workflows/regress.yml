@@ -14,7 +14,7 @@ concurrency:
 
 env:
   SAIL_VERSION: "0.11"
-  RISCV_TOOLCHAIN_VERSION: "2026.04.30"
+  RISCV_TOOLCHAIN_VERSION: "2026.05.06"
   LLVM_VERSION: "22"
 
 jobs:
@@ -30,7 +30,7 @@ jobs:
         uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4
 
       - name: Run prek
-        uses: j178/prek-action@6ad80277337ad479fe43bd70701c3f7f8aa74db3 # v2.0.3
+        uses: j178/prek-action@bdca6f102f98e2b4c7029491a53dfd366469e33d # v2.0.4
 
   # Data-driven regression.
   # Configs are auto-discovered from the config directory.

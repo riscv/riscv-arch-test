@@ -14,6 +14,7 @@ import subprocess
 from enum import Enum
 from pathlib import Path
 
+import rich
 from pydantic import BaseModel, DirectoryPath, FilePath, ValidationInfo, field_validator, model_validator
 from ruamel.yaml import YAML
 
@@ -21,17 +22,54 @@ from ruamel.yaml import YAML
 class RefModelType(str, Enum):
     """Reference model types with their associated flags."""
 
-    # TODO: Add support for additional reference models (Spike, Whisper, etc.)
     SAIL = "sail"
-    # SPIKE = "spike"
+    SPIKE = "spike"
 
     def signature_flags(self, sig_file: Path | str, granularity: int) -> list[str]:
         """Get the flags for this reference model."""
         flags_map: dict[RefModelType, list[str]] = {
             RefModelType.SAIL: [f"--test-signature={sig_file}", "--signature-granularity", str(granularity)],
-            # RefModelType.SPIKE: [f"+signature={sig_file}", f"+signature-granularity={granularity}"],
+            RefModelType.SPIKE: [f"+signature={sig_file}", f"+signature-granularity={granularity}"],
         }
         return flags_map[self]
+
+
+# Hardcoded spike ``--isa=`` strings — one per XLEN — covering every extension spike
+# supports for that XLEN. Derived from the curated lists in
+# ``config/spike/spike-rv{32,64}-max/run_cmd.txt``.
+_SPIKE_ISA: dict[int, str] = {
+    32: (
+        "rv32imafdcbv"
+        "_zicbom_zicboz_zicbop_zicfilp_zicfiss_zicond_zicsr_zicntr_zicclsm_ziccif"
+        "_zifencei_zihintntl_zihintpause_zihpm_zimop"
+        "_zabha_zacas_zaamo_zalrsc_zawrs"
+        "_zfa_zfbfmin_zfh"
+        "_zca_zcb_zcd_zcf_zcmop"
+        "_zbc_zkn_zkr_zks"
+        "_zvfbfmin_zvfbfwma_zvfh"
+        "_zvbb_zvbc_zvkg_zvkned_zvknha_zvknhb_zvksed_zvksh_zvkt"
+        "_sscofpmf_smcntrpmf_sstc"
+        "_svinval_svade_svadu"
+    ),
+    64: (
+        "rv64imafdcbvh"
+        "_zicbom_zicboz_zicbop_zicfilp_zicfiss_zicond_zicsr_zicntr_zicclsm_ziccif"
+        "_zifencei_zihintntl_zihintpause_zihpm_zimop"
+        "_zabha_zacas_zaamo_zalrsc_zawrs"
+        "_zfa_zfbfmin_zfh"
+        "_zca_zcb_zcd_zcmop"
+        "_zbc_zkn_zkr_zks"
+        "_zvfbfmin_zvfbfwma_zvfh"
+        "_zvbb_zvbc_zvkg_zvkned_zvknha_zvknhb_zvksed_zvksh_zvkt"
+        "_sscofpmf_smcntrpmf_sstc"
+        "_svinval_svade_svadu_svnapot_svpbmt"
+    ),
+}
+
+
+def spike_isa_string(xlen: int) -> str:
+    """Return spike's ``--isa=`` string for the given XLEN."""
+    return _SPIKE_ISA[xlen]
 
 
 class CompilerType(str, Enum):
@@ -58,8 +96,8 @@ class Config(BaseModel):
     compiler_exe: Path
     objdump_exe: Path | None = None
     compiler_type: CompilerType  # Inferred from compiler_exe by model validator
-    ref_model_type: RefModelType = RefModelType.SAIL
     ref_model_exe: Path
+    ref_model_type: RefModelType  # Inferred from ref_model_exe by model validator
     include_priv_tests: bool = True
 
     model_config = {"frozen": True}
@@ -89,6 +127,24 @@ class Config(BaseModel):
                 data["compiler_type"] = CompilerType.CLANG
             else:
                 data["compiler_type"] = CompilerType.GCC
+        return data
+
+    @model_validator(mode="before")
+    @classmethod
+    def infer_ref_model_type(cls, data: dict[str, object]) -> dict[str, object]:
+        """Infer reference model type from ref_model_exe if not explicitly set."""
+        if data.get("ref_model_type") is None:
+            ref_model_exe = data.get("ref_model_exe")
+            ref_model_str = str(ref_model_exe) if isinstance(ref_model_exe, (str, Path)) else None
+            if ref_model_str is None:
+                raise ValueError("Unable to infer reference model type from ref_model_exe.")
+            executable_name = Path(ref_model_str).name.lower()
+            if "spike" in executable_name:
+                data["ref_model_type"] = RefModelType.SPIKE
+            elif "sail" in executable_name:
+                data["ref_model_type"] = RefModelType.SAIL
+            else:
+                raise ValueError(f"Unable to infer reference model type from ref_model_exe: {ref_model_exe}")
         return data
 
     @field_validator("udb_config", "linker_script", "dut_include_dir", mode="before")
@@ -141,6 +197,32 @@ def check_ref_model_version(config: Config) -> None:
             raise RuntimeError(f"Failed to check Sail version: {e}") from e
         except subprocess.TimeoutExpired as e:
             raise RuntimeError(f"Timeout while checking Sail version: {e}") from e
+    elif config.ref_model_type == RefModelType.SPIKE:
+        # Spike has no stable --version flag; perform a lightweight startup check instead.
+        try:
+            result = subprocess.run(
+                [str(config.ref_model_exe), "--help"],
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=5,
+            )
+            if result.returncode != 0:
+                error_output = result.stderr.strip() or result.stdout.strip()
+                details = f": {error_output}" if error_output else ""
+                raise RuntimeError(
+                    f"Spike reference model exited with status {result.returncode} during startup check{details}",
+                )
+        except OSError as e:
+            raise RuntimeError(f"Failed to start Spike reference model: {e}") from e
+        except subprocess.TimeoutExpired as e:
+            raise RuntimeError(f"Timeout while starting Spike reference model: {e}") from e
+
+        rich.print(
+            f"[yellow][bold]WARNING:[/bold] Using Spike as the reference model ([cyan]{config.ref_model_exe}[/cyan]). "
+            "The reference model will not be configured to match your DUT and many privileged tests will likely mismatch. "
+            "Coverage generation is not supported with Spike.[/yellow]"
+        )
 
 
 def check_compiler_version(config: Config) -> None:

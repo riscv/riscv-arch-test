@@ -3,7 +3,7 @@
 // --------------------------------------------------------------------------------------------------------------------------------
 // Test cases are as follows:
 // --------------------------------------------------------------------------------------------------------------------------------
-// .if (RVMODEL_PMP_GRAIN < 10)
+// .if (UDB_PMP_GRANULARITY < 12)
 // Configure level 4 PTE as NAPOT with X permission (pmp0cfg0)
 // 1. Setup a PTE at Level 4 with RWX permissions
 //      → Then, in U-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
@@ -25,7 +25,7 @@
 // 5. Setup a PTE at Level 0 with RWX permissions
 //      → Then, in U-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
 //
-// .if (RVMODEL_PMP_GRAIN < 10)
+// .if (UDB_PMP_GRANULARITY < 12)
 //         Total Expected Faults :: 15
 // .else
 //         Total Expected Faults :: 12
@@ -36,12 +36,13 @@
 # REQUIRED_EXTENSIONS: [I, Sv57, Sm]
 # params:
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv57_pmp_on_pte_Umode.S"
 #define SIGUPD_COUNT 25
 #define TRAP_SIGUPD_COUNT 70
+#define BOOT_TO_MMODE
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"
@@ -134,9 +135,6 @@ main:
   SATP_SETUP_RV64(sv57)                                                  // Set SATP for virtualization
   sfence.vma                                                             // Flush TLB
 
-// This test case for root page table is skipped if G >= 10, because with PMP granularity ≥ 4KB,
-// the entire root page table will lose its read/write permissions, preventing entry into U-Mode.
-.if (RVMODEL_PMP_GRAIN < 10)
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                 Configure level 4 PTE as NAPOT region with X permission
@@ -145,7 +143,7 @@ main:
 
   LA (t2, rvtest_Sroot_pg_tbl)
   srl t2, t2, PMP_SHIFT
-  LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
+  LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
   CSRW(pmpaddr0, t2)
 
@@ -153,6 +151,9 @@ main:
   write_pmpcfg0:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, write_pmpcfg0, write_pmpcfg0_str)
 
+  // This test case for root page table is skipped if G >= 10, because with PMP granularity ≥ 4KB,
+  // the entire root page table will lose its read/write permissions, preventing entry into S-Mode.
+  .if (UDB_PMP_GRANULARITY < 12)
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                                    TESTS AT LEVEL 4
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -166,7 +167,7 @@ main:
   TEST_CASES_RUNNER Umode, va_data, LEVEL4, test1
 
 
-.endif
+  .endif
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                 Configure level 3 PTE as NAPOT region with X permission
@@ -175,7 +176,7 @@ main:
 
   LA (t2, rvtest_slvl3_pg_tbl)
   srl t2, t2, PMP_SHIFT
-  LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
+  LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
   CSRW(pmpaddr0, t2)
 
@@ -201,7 +202,7 @@ main:
 
   LA (t2, rvtest_slvl2_pg_tbl)
   srl t2, t2, PMP_SHIFT
-  LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
+  LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
   CSRW(pmpaddr0, t2)
 
@@ -228,7 +229,7 @@ main:
 
   LA (t2, rvtest_slvl1_pg_tbl)
   srl t2, t2, PMP_SHIFT
-  LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
+  LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
   CSRW(pmpaddr0, t2)
 
@@ -256,7 +257,7 @@ main:
 
   LA (t2, rvtest_slvl0_pg_tbl)
   srl t2, t2, PMP_SHIFT
-  LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
+  LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)    // Minimum range is 8 Bytes (1 PTE). Increases as G increases
   or t2, t2, t1
   CSRW(pmpaddr0, t2)
 
@@ -300,19 +301,19 @@ rvtest_data_1:
 
 // Page Tables
 .align 12
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 rvtest_slvl0_pg_tbl:
     .skip(4096)
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 rvtest_slvl1_pg_tbl:
     .skip(4096)
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 rvtest_slvl2_pg_tbl:
     .skip(4096)
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 rvtest_slvl3_pg_tbl:
     .skip(4096)
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 
 write_pmpcfg0_str:   .string "\"Mismatch in pmpcfg0!\""
 test1_store_str:     .string "\"Mismatch during sw in Test Case 1!\""

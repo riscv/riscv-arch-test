@@ -77,7 +77,7 @@
   },
   "memory": {
     "pmp": {
-      "grain": 8,
+      "grain": 10,
       // This specifies the number of PMP entries present.
       // The value must be one of 0, 16, or 64.
       "count": 64,
@@ -269,7 +269,7 @@
     // Note: it is also legal for these instructions to spuriously
     // retire successfully at any point, but there is currently no
     // configuration option for this behaviour.
-    "max_time_to_wait": 10
+    "max_time_to_wait": 200
   },
   "extensions": {
     "M": {

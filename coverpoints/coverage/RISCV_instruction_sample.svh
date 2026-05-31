@@ -2101,6 +2101,12 @@
             ins.add_vm(2);
             ins.add_v0();
         end
+        "vfncvtbf16.f.f.w"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vm(2);
+            ins.add_v0();
+        end
         "vfnmacc.vf"     : begin
             ins.add_vd(0);
             ins.add_fs1(1);
@@ -5915,7 +5921,7 @@
             ins.add_rd(0);
             ins.add_rs1(1);
         end
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
         "aes32dsi"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
@@ -6021,7 +6027,7 @@
             ins.add_rs1(1);
         end
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
         "add.uw"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
@@ -6383,4 +6389,13 @@
             ins.add_rs2(2);
         end
 `endif
+        "vsetvl"    : begin
+            ins.add_rd(0);
+            ins.add_rs1(1);
+            ins.add_rs2(2);
+        end
+        "vsetvli"   : begin
+            ins.add_rd(0);
+            ins.add_rs1(1);
+        end
     endcase

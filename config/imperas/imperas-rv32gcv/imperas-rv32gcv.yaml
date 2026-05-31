@@ -52,7 +52,7 @@ implemented_extensions:
   - { name: Sstvecv, version: "= 1.0.0" }
   - { name: Ssu32xl, version: "= 1.0.0" }
   - { name: Ssube, version: "= 1.0.0" }
-  - { name: Sv32, version: "= 1.13.0" }
+  - { name: Sv32, version: "= 1.0.0" }
   - { name: Svade, version: "= 1.0.0" }
   - { name: Svadu, version: "= 1.0.0" }
   - { name: Svbare, version: "= 1.0.0" }
@@ -68,7 +68,7 @@ implemented_extensions:
   - { name: Zalasr, version: "= 1.0.0" }
   - { name: Zalrsc, version: "= 1.0.0" }
   - { name: Zama16b, version: "= 1.0.0" }
-  - { name: Zawrs, version: "= 1.0.1" }
+  - { name: Zawrs, version: "= 1.0.0" }
   - { name: Zba, version: "= 1.0.0" }
   - { name: Zbb, version: "= 1.0.0" }
   - { name: Zbc, version: "= 1.0.0" }
@@ -103,8 +103,6 @@ implemented_extensions:
   - { name: Zilsd, version: "= 1.0.0" }
   - { name: Zimop, version: "= 1.0.0" }
   - { name: Zmmul, version: "= 1.0.0" }
-  - { name: Zvbb, version: "= 1.0.0" }
-  - { name: Zvbc, version: "= 1.0.0" }
   - { name: Zve32f, version: "= 1.0.0" }
   - { name: Zve32x, version: "= 1.0.0" }
   - { name: Zve64d, version: "= 1.0.0" }
@@ -114,26 +112,11 @@ implemented_extensions:
   - { name: Zvfbfwma, version: "= 1.0.0" }
   - { name: Zvfh, version: "= 1.0.0" }
   - { name: Zvfhmin, version: "= 1.0.0" }
-  - { name: Zvkb, version: "= 1.0.0" }
-  - { name: Zvkg, version: "= 1.0.0" }
-  - { name: Zvkn, version: "= 1.0.0" }
-  - { name: Zvknc, version: "= 1.0.0" }
-  - { name: Zvkned, version: "= 1.0.0" }
-  - { name: Zvkng, version: "= 1.0.0" }
-  - { name: Zvknha, version: "= 1.0.0" }
-  - { name: Zvknhb, version: "= 1.0.0" }
-  - { name: Zvks, version: "= 1.0.0" }
-  - { name: Zvksc, version: "= 1.0.0" }
-  - { name: Zvksed, version: "= 1.0.0" }
-  - { name: Zvksg, version: "= 1.0.0" }
-  - { name: Zvksh, version: "= 1.0.0" }
-  - { name: Zvkt, version: "= 1.0.0" }
   - { name: Zvl32b, version: "= 1.0.0" }
   - { name: Zvl64b, version: "= 1.0.0" }
   - { name: Zvl128b, version: "= 1.0.0" }
   - { name: Zvl256b, version: "= 1.0.0" }
   - { name: Zvl512b, version: "= 1.0.0" }
-  - { name: Zvl1024b, version: "= 1.0.0" }
 
 params:
   # A params
@@ -307,6 +290,7 @@ params:
       true,
     ]
   HPM_EVENTS: [0]
+  MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
     [
       true,
@@ -379,7 +363,7 @@ params:
     ]
   # Vector params
   MUTABLE_MISA_V: false
-  VLEN: 1024
+  VLEN: 512
   ELEN: 64
   FOLLOW_VTYPE_RESET_RECOMMENDATION: true
   HW_MSTATUS_VS_DIRTY_UPDATE: precise

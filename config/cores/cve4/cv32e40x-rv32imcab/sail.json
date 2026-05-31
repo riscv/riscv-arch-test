@@ -1,0 +1,472 @@
+// Copyright (c) 2026 Eclipse Foundation
+// SPDX-License-Identifier: Apache-2.0
+{
+  "$schema": "/opt/riscv/share/sail-riscv/sail_riscv_config_schema.json",
+  "base": {
+    "xlen": 32,
+    "E": false,
+    "writable_misa": false,
+    // cv32e40x has no menvcfg register (M-mode only, no S/U-mode).
+    // SCHEMA-REQUIRED: no RTL counterpart; value has no effect on DUT comparison.
+    "writable_fiom": true,
+    "writable_hpm_counters": {
+      "len": 32,
+      // NUM_MHPMCOUNTERS=1 by default. Only mhpmcounter3 is active.
+      "value": "0x00000008"
+    },
+    // cv32e40x has no S-mode so scounteren does not exist.
+    // SCHEMA-REQUIRED: no RTL counterpart.
+    "scounteren_writable_bits": {
+      "len": 32,
+      "value": "0x0"
+    },
+    "xtval_nonzero": {
+      // mtval is hardwired to 0 in cv32e40x.
+      "illegal_instruction": false,
+      "software_breakpoint": false,
+      "hardware_breakpoint": false,
+      "load_address_misaligned": false,
+      "load_access_fault": false,
+      "load_page_fault": false,
+      "samo_address_misaligned": false,
+      "samo_access_fault": false,
+      "samo_page_fault": false,
+      "fetch_address_misaligned": false,
+      "fetch_access_fault": false,
+      "fetch_page_fault": false,
+      "software_check": false,
+      "reserved_exceptions": false
+    },
+    "reserved_behavior": {
+      // SCHEMA-REQUIRED: cv32e40x has no Zacas extension.
+      // Value has no effect on DUT comparison.
+      "amocas_odd_register": "AMOCAS_Illegal",
+      // SCHEMA-REQUIRED: F not implemented internally.
+      "fcsr_rm": "Fcsr_RM_Illegal",
+      // SCHEMA-REQUIRED: cv32e40x has no PMP.
+      "pmpcfg_write_only": "PMP_ClearPermissions",
+      // SCHEMA-REQUIRED: cv32e40x has no Zicbom.
+      "xenvcfg_cbie": "Xenvcfg_ClearPermissions",
+      // mtvec MODE supports 0 (direct) and 1 (vectored); writes of mode >= 2 are ignored.
+      "xtvec_mode": "Xtvec_Ignore",
+      // SCHEMA-REQUIRED: cv32e40x has no Zdinx.
+      "rv32zdinx_odd_register": "Zdinx_Illegal"
+    }
+  },
+  "memory": {
+    // cv32e40x has no PMP
+    "pmp": {
+      "grain": 0,
+      "count": 0,
+      "usable_count": 0,
+      "tor_supported": true,
+      "na4_supported": true,
+      "napot_supported": true
+    },
+    "misaligned": {
+      "exceptions": {
+        // Regular loads/stores: handled in hardware for main memory; access fault in I/O.
+        "load_store": { "None": null },
+        // SCHEMA-REQUIRED: no V extension.
+        "vector": { "None": null },
+        // LR.W/SC.W with non-naturally aligned address raises address misaligned exception
+        // (User Manual, Exceptions and Interrupts: exception codes 4/6).
+        // Access fault takes priority if the region has no atomic support (PMA).
+        "lrsc": "AlignmentException",
+        // Misaligned AMO raises store/AMO address misaligned (code 6).
+        "amo": "AlignmentException"
+      },
+      "allowed_within_exp": 0,
+      "byte_by_byte": false,
+      "order_decreasing": false
+    },
+    "translation": {
+      "dirty_update": false
+    },
+    "dtb_address": {
+      "len": 64,
+      "value": "0x1000"
+    },
+    "regions": [
+      // Main memory: code and data. Tests link from 0x80 (see link.ld).
+      // Atomics supported here (A_EXT=A; external adapter handles read-modify-write).
+      {
+        "base": {
+          "len": 64,
+          "value": "0x0"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x2000000"
+        },
+        "attributes": {
+          "mem_type": "MainMemory",
+          "cacheable": true,
+          "coherent": true,
+          "executable": true,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": true,
+          "write_idempotent": true,
+          "misaligned_exceptions": {
+            // Regular loads/stores handled in hardware in main memory.
+            "load_store": { "None": null },
+            "vector": { "None": null },
+            // Misaligned AMO in main memory raises address misaligned (before PMA check).
+            "amo": "AlignmentException"
+          },
+          // A_EXT=A: full AMO (amoswap/amoadd/amoand/amoor/amoxor/amomax/amomin)
+          "atomic_support": "AMOArithmetic",
+          // LR/SC reservation sets managed externally; non-eventual (conservative).
+          "reservability": "RsrvNonEventual",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": true
+      },
+      // IO memory: covers CLINT at 0x2000000, Sail interrupt generator at 0xC000000.
+      // Atomics NOT supported in I/O regions (PMA access fault for LR/SC/AMO).
+      {
+        "base": {
+          "len": 64,
+          "value": "0x2000000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0xFE000000"
+        },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": false,
+          "coherent": true,
+          "executable": false,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": false,
+          "write_idempotent": false,
+          "misaligned_exceptions": {
+            // Misaligned regular load/store in I/O raises access fault (codes 5/7).
+            "load_store": { "AccessFault": null },
+            "vector": { "None": null },
+            // LR/SC or AMO in I/O region raises access fault (PMA atomic attribute not set).
+            "amo": "AccessFault"
+          },
+          // No atomic support in I/O regions.
+          "atomic_support": "AMONone",
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": false
+      }
+    ]
+  },
+  "platform": {
+    // OpenHW Group JEDEC: bank=0xC, offset=0x2, mvendorid=0x602=1538
+    "vendorid": 1538,
+    // marchid=0x14 (decimal 20)
+    "archid": 20,
+    "impid": 0,
+    "hartid": 0,
+    "cache_block_size_exp": 6,
+    "reservation": {
+      // A_EXT=A; reservation set managed externally by memory subsystem.
+      "reservation_set_size_exp": 3,
+      "require_exact_reservation_addr": false
+    },
+    "clint": {
+      "base": 33554432,
+      "size": 786432
+    },
+    "simple_interrupt_generator": {
+      "base": 201326592
+    },
+    "clock_frequency": 1000000000,
+    "instructions_per_tick": 2,
+    "wfi_is_nop": false,
+    "max_time_to_wait": 10
+  },
+  "extensions": {
+    "M": {
+      "supported": true
+    },
+    "A": {
+      // VERIFIED — A_EXT=A; full A extension (LR/SC + AMO) per User Manual, Introduction
+      "supported": true
+    },
+    "F": {
+      "supported": false
+    },
+    "D": {
+      "supported": false
+    },
+    "V": {
+      "support_level": "Disabled",
+      "vlen_exp": 7,
+      "elen_exp": 6,
+      "vl_use_ceil": false
+    },
+    "B": {
+      // VERIFIED — B_EXT=ZBA_ZBB_ZBC_ZBS per User Manual, Introduction
+      "supported": true
+    },
+    "S": {
+      "supported": false
+    },
+    "U": {
+      "supported": false
+    },
+    "Zibi": {
+      "supported": false
+    },
+    "Zicbom": {
+      "supported": false
+    },
+    "Zicbop": {
+      "supported": false
+    },
+    "Zicboz": {
+      "supported": false
+    },
+    "Zic64b": {
+      "supported": false
+    },
+    "Ziccamoa": {
+      "supported": false
+    },
+    "Ziccamoc": {
+      "supported": false
+    },
+    "Ziccif": {
+      "supported": false
+    },
+    "Zicclsm": {
+      "supported": false
+    },
+    "Ziccrse": {
+      "supported": false
+    },
+    "Zicfilp": {
+      "supported": false
+    },
+    "Zicfiss": {
+      "supported": false
+    },
+    "Zicond": {
+      "supported": false
+    },
+    "Zicntr": {
+      "supported": true
+    },
+    "Zicsr": {
+      "supported": true
+    },
+    "Zifencei": {
+      "supported": true
+    },
+    "Zihintntl": {
+      "supported": false
+    },
+    "Zihintpause": {
+      "supported": false
+    },
+    "Zihpm": {
+      "supported": true
+    },
+    "Zimop": {
+      "supported": false
+    },
+    "Zmmul": {
+      "supported": false
+    },
+    "Zaamo": {
+      // VERIFIED — A_EXT=A includes AMO instructions
+      "supported": true
+    },
+    "Zabha": {
+      "supported": false
+    },
+    "Zacas": {
+      "supported": false
+    },
+    "Zalrsc": {
+      // VERIFIED — A_EXT=A includes LR.W/SC.W
+      "supported": true
+    },
+    "Zawrs": {
+      "supported": false,
+      "nto": { "is_nop": false },
+      "sto": { "is_nop": false }
+    },
+    "Zfa": {
+      "supported": false
+    },
+    "Zfbfmin": {
+      "supported": false
+    },
+    "Zfh": {
+      "supported": false
+    },
+    "Zfhmin": {
+      "supported": false
+    },
+    "Zfinx": {
+      "supported": false
+    },
+    "Zdinx": {
+      "supported": false
+    },
+    "Zca": {
+      "supported": true
+    },
+    "Zcf": {
+      "supported": false
+    },
+    "Zcd": {
+      "supported": false
+    },
+    "Zcb": {
+      "supported": true
+    },
+    "Zcmop": {
+      "supported": false
+    },
+    "Zba": {
+      // VERIFIED — B_EXT=ZBA_ZBB_ZBC_ZBS
+      "supported": true
+    },
+    "Zbb": {
+      "supported": true
+    },
+    "Zbs": {
+      "supported": true
+    },
+    "Zbc": {
+      "supported": true
+    },
+    "Zbkb": {
+      "supported": false
+    },
+    "Zbkc": {
+      // VERIFIED — enabled when B_EXT includes Zbc
+      "supported": true
+    },
+    "Zbkx": {
+      "supported": false
+    },
+    "Zknd": {
+      "supported": false
+    },
+    "Zkne": {
+      "supported": false
+    },
+    "Zknh": {
+      "supported": false
+    },
+    "Zkr": {
+      "supported": false,
+      "sseed_reset_value": false,
+      "useed_reset_value": false,
+      "sseed_read_only_zero": false,
+      "useed_read_only_zero": false
+    },
+    "Zksed": {
+      "supported": false
+    },
+    "Zksh": {
+      "supported": false
+    },
+    "Zkt": {
+      "supported": true
+    },
+    "Zhinx": {
+      "supported": false
+    },
+    "Zhinxmin": {
+      "supported": false
+    },
+    "Zvabd": { "supported": false },
+    "Zvbb": { "supported": false },
+    "Zvbc": { "supported": false },
+    "Zvfbfmin": { "supported": false },
+    "Zvfbfwma": { "supported": false },
+    "Zvfh": { "supported": false },
+    "Zvfhmin": { "supported": false },
+    "Zvkb": { "supported": false },
+    "Zvkg": { "supported": false },
+    "Zvkned": { "supported": false },
+    "Zvknha": { "supported": false },
+    "Zvknhb": { "supported": false },
+    "Zvksed": { "supported": false },
+    "Zvksh": { "supported": false },
+    "Zvkt": { "supported": false },
+    "Ssccptr": {
+      "supported": false
+    },
+    "Sscofpmf": {
+      "supported": false
+    },
+    "Sscounterenw": {
+      "supported": false
+    },
+    "Sstc": {
+      "supported": false
+    },
+    "Sstvala": {
+      "supported": false
+    },
+    "Svade": {
+      "supported": false
+    },
+    "Svadu": {
+      "supported": false
+    },
+    "Svinval": {
+      "supported": false
+    },
+    "Svnapot": {
+      "supported": false
+    },
+    "Svrsw60t59b": {
+      "supported": false
+    },
+    "Smcntrpmf": {
+      "supported": false
+    },
+    "Svbare": {
+      "supported": false,
+      "sfence_vma_illegal_if_svbare_only": true
+    },
+    "Sv32": {
+      "supported": false
+    },
+    "Sv39": {
+      "supported": false
+    },
+    "Sv48": {
+      "supported": false
+    },
+    "Sv57": {
+      "supported": false
+    },
+    "Stateen": {
+      "Smstateen": { "supported": false },
+      "Ssstateen": { "supported": false },
+      "C_readonly_zero": true,
+      "SE0_readonly_zero": false
+    },
+    "Ssqosid": {
+      "supported": false,
+      "rcid_length": 12,
+      "mcid_length": 12
+    },
+    "Svpbmt": {
+      "supported": false
+    },
+    "Svvptc": {
+      "supported": false
+    }
+  }
+}

@@ -13,7 +13,7 @@
 
     cp_custom_vfp_flags_nv : cross std_vec, cp_csr_fflags_vdoun_nv;
 `else
-    `ifdef FLEN64
+    `ifdef D_SUPPORTED
     cp_csr_fflags_vdoun_nv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
         wildcard bins NV   = (5'b0???? => 5'b1????);
         wildcard bins NV1  = (5'b1???? => 5'b1????);

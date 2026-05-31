@@ -42,7 +42,7 @@ covergroup SvH_cg with function sample(ins_t ins);
     vs_pte_rsw: coverpoint ins.current.vs_pte_d[9:8];
     g_pte_rsw: coverpoint ins.current.g_pte_d[9:8];
 
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         mode_field_values: coverpoint ins.current.rs1_val[63:60] {
             bins values_to_write[] = {[0:15]};
         }
@@ -132,14 +132,14 @@ covergroup SvH_cg with function sample(ins_t ins);
     `endif
 
     vsatp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "vsatp", "mode") {
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             bins sv39 = {4'b1000};
         `else
             bins sv32 = {1'b1};
         `endif
     }
     hgatp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "hgatp", "mode") {
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             bins sv39x4 = {4'b1000};
         `else
             bins sv32x4 = {1'b1};
@@ -148,7 +148,7 @@ covergroup SvH_cg with function sample(ins_t ins);
 
     ppn_field_values: coverpoint ins.current.rs1_val {
         bins all_zeros = {0};
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins all_ones        = {22'b1111111111111111111111};
             bins walking_ones_0  = {22'b0000000000000000000001};
             bins walking_ones_1  = {22'b0000000000000000000010};
@@ -222,14 +222,14 @@ covergroup SvH_cg with function sample(ins_t ins);
     }
 
     asid_field_value: coverpoint ins.current.rs1_val {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             wildcard bins all_ones = {32'b?_111111111_??????????????????????};
         `else
             wildcard bins all_ones = {64'b????_1111111111111111_????????????????????????????????????????????};
         `endif
     }
     vmid_field_value: coverpoint ins.current.rs1_val {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             wildcard bins all_ones = {32'b???_1111111_??????????????????????};
         `else
             wildcard bins all_ones = {64'b??????_11111111111111_????????????????????????????????????????????};
@@ -422,7 +422,7 @@ covergroup SvH_cg with function sample(ins_t ins);
         wildcard bins g_bit_set = {8'b1???1111};
     }
 
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         cp_vsatp_mode_field: cross priv_mode_hs, mode_vsatp, csrrw, vsatp, mode_field_values;
         cp_satp_mode_field:  cross priv_mode_vs, mode_satp, csrrw, satp, mode_field_values;
         cp_hgatp_mode_field: cross priv_mode_hs, mode_hgatp, csrrw, hgatp, mode_field_values;

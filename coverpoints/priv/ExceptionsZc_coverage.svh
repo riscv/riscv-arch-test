@@ -28,12 +28,12 @@ covergroup ExceptionsZc_cg with function sample(ins_t ins);
             wildcard bins c_fld   = {16'b001_???_???_??_???_00};
             wildcard bins c_fldsp = {16'b001_?_?????_?????_10};
         `endif
-        `ifdef ZCF_SUPPORTED // XLEN32
+        `ifdef ZCF_SUPPORTED // UDB_MXLEN_32
             wildcard bins c_flw   = {16'b011_???_???_??_???_00};
             wildcard bins c_flwsp = {16'b011_?_?????_?????_10};
         `endif
 
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             wildcard bins c_ld   = {16'b011_???_???_??_???_00};
             wildcard bins c_ldsp = {16'b011_?_?????_?????_10};
         `endif
@@ -51,12 +51,12 @@ covergroup ExceptionsZc_cg with function sample(ins_t ins);
             wildcard bins c_fsd   = {16'b101_???_???_??_???_00};
             wildcard bins c_fsdsp = {16'b101_??????_?????_10};
         `endif
-        `ifdef ZCF_SUPPORTED //only supported in XLEN32
+        `ifdef ZCF_SUPPORTED // only supported in UDB_MXLEN_32
             wildcard bins c_fsw   = {16'b111_???_???_??_???_00};
             wildcard bins c_fswsp = {16'b111_??????_?????_10};
         `endif
 
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             wildcard bins c_sd   = {16'b111_???_???_??_???_00};
             wildcard bins c_sdsp = {16'b111_??????_?????_10};
         `endif

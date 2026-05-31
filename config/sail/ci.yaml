@@ -2,5 +2,6 @@
 # Jordan Carlin jcarlin@hmc.edu April 2026
 # CI configuration for Sail reference model
 
+# SsstrictS & SsstrictU excluded as they are not supported by the old trap handler
 ci_enabled: true
-exclude_extensions: "PMPS,PMPU,Sv,SvaduPMP,SvPMP,SvPMPZicbo,Svade,Svinval,SvZicbo,Svnapot,Svpbmt"
+exclude_extensions: "SsstrictS,SsstrictU"

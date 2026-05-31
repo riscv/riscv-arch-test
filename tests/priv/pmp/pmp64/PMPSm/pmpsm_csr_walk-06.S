@@ -29,7 +29,7 @@
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -65,7 +65,7 @@ main:
     // --- pmpaddr walking ones, bit 35 ---
 
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
 1:  li t2, (1 << 35)
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_36_str)
     .set pmpaddri, pmpaddri+1
@@ -74,7 +74,7 @@ main:
     // --- pmpaddr walking ones, bit 36 ---
 
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
 1:  li t2, (1 << 36)
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_37_str)
     .set pmpaddri, pmpaddri+1
@@ -83,7 +83,7 @@ main:
     // --- pmpaddr walking ones, bit 37 ---
 
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
 1:  li t2, (1 << 37)
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_38_str)
     .set pmpaddri, pmpaddri+1
@@ -92,7 +92,7 @@ main:
     // --- pmpaddr walking ones, bit 38 ---
 
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
 1:  li t2, (1 << 38)
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_39_str)
     .set pmpaddri, pmpaddri+1
@@ -101,7 +101,7 @@ main:
     // --- pmpaddr walking ones, bit 39 ---
 
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
 1:  li t2, (1 << 39)
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_40_str)
     .set pmpaddri, pmpaddri+1
@@ -110,7 +110,7 @@ main:
     // --- pmpaddr walking ones, bit 40 ---
 
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
 1:  li t2, (1 << 40)
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_41_str)
     .set pmpaddri, pmpaddri+1
@@ -119,7 +119,7 @@ main:
     // --- pmpaddr walking ones, bit 41 ---
 
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
 1:  li t2, (1 << 41)
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_42_str)
     .set pmpaddri, pmpaddri+1
@@ -140,12 +140,12 @@ test_41_str: .string "\"test: 41; cp: cp_csr_walk_test_41\""
 test_42_str: .string "\"test: 42; cp: cp_csr_walk_test_42\""
 
 .align 12
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jr ra
 
 TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept (1<<(UDB_PMP_GRANULARITY))
     nop
     .endr
 

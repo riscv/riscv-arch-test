@@ -75,16 +75,16 @@
 
   // Switch to M-mode
   // The following epilog and checks are needed if there is any trap handler.  Right now, it is not
-  // invoked unless there is CONFORMING_SM_SUPPORTED.  A user with nonconforming M-mode will need
+  // invoked unless there is STANDARD_SM_SUPPORTED.  A user with custom M-mode will need
   // to reimplement many parts of this macro.
   rvtest_code_end:
-    #ifdef CONFORMING_SM_SUPPORTED
+    #ifdef STANDARD_SM_SUPPORTED
       RVTEST_GOTO_MMODE
     #endif
 
   // Restore xTVEC, trampoline, regs for each mode in opposite order that they were saved
   cleanup_epilogs:
-    #ifdef CONFORMING_SM_SUPPORTED
+    #ifdef STANDARD_SM_SUPPORTED
       #ifdef S_SUPPORTED
         #ifdef H_SUPPORTED
           RVTEST_TRAP_EPILOG V        // actual v-mode prolog/epilog/handler code
@@ -95,7 +95,7 @@
       RVTEST_TRAP_EPILOG M            // actual m-mode prolog/epilog/handler code
     #endif
 
-  #ifdef CONFORMING_SM_SUPPORTED
+  #ifdef STANDARD_SM_SUPPORTED
     LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
     bne     T4, T5, check_trap_sig_offset
     jal     T2, failedtest_trap_x7_x9
@@ -127,7 +127,7 @@
   // Guard matches the RVTEST_TRAP_EPILOG guard above: rvtest_Mend (and sibling
   // labels) are defined by RVTEST_TRAP_EPILOG, so the handler that references
   // them must only be emitted when the epilog is also emitted.
-  #ifdef CONFORMING_SM_SUPPORTED
+  #ifdef STANDARD_SM_SUPPORTED
   INSTANTIATE_MODE_MACRO RVTEST_TRAP_HANDLER
   #endif
 
@@ -166,6 +166,37 @@
       #endif
     #endif
 
+    #ifdef S_SUPPORTED
+      rvtest_identity_map:
+        // Identity maps rvtest_data_begin, forming an aligned Sv32 megapage,
+        // Sv39 gigapage, Sv48 terapage and Sv57 petapage.
+        // This allows the S-mode trap handler and save area to be accessed
+        // without requiring prior page table entries setup.
+        LA(T1, rvtest_Sroot_pg_tbl)
+        LA(T2, rvtest_data_begin)
+        #if __riscv_xlen == 32
+          srli T3, T2, 22
+          andi T3, T3, 0x3FF
+          slli T4, T3, 20
+          ori  T4, T4, 0xCF
+          slli T3, T3, 2
+          add  T3, T1, T3
+          sw   T4, 0(T3)
+        #else
+          .set VPN_SHIFT, 21
+          .rept (3)
+            .set VPN_SHIFT, VPN_SHIFT+9
+            srli T3, T2, VPN_SHIFT
+            andi T3, T3, 0x1FF
+            slli T4, T3, VPN_SHIFT-2
+            ori  T4, T4, 0xCF
+            slli T3, T3, 3
+            add  T3, T1, T3
+            sd   T4, 0(T3)
+          .endr
+        #endif
+    #endif
+
     RVTEST_INIT_REGS // Put deterministic values in each register
 
     LA (T1, rvtest_code_begin)
@@ -185,7 +216,7 @@
     j . // Explicit non-returning tail if the macro returns (it should not)
 
   // ***DH 4/8/26 check this is proper gating
-  #ifdef CONFORMING_SM_SUPPORTED
+  #ifdef STANDARD_SM_SUPPORTED
     rvtest_set_msw_int:
       RVMODEL_SET_MSW_INT(T2, T5)
       ret
@@ -275,7 +306,7 @@
   // Guard matches RVTEST_TRAP_HANDLER guard: RVTEST_TRAP_SAVEAREA references
   // Mtrampoline (and sibling labels) which are only defined when RVTEST_TRAP_HANDLER
   // is instantiated.
-  #ifdef CONFORMING_SM_SUPPORTED
+  #ifdef STANDARD_SM_SUPPORTED
   INSTANTIATE_MODE_MACRO RVTEST_TRAP_SAVEAREA
   #endif
 
@@ -374,7 +405,7 @@
 
 /************************************ RVTEST_BOOT_TO_M_MODE ********************************/
 /**** Set up M-mode trap handler and initialize M-mode CSRs                             ****/
-/**** Can be overridden by DUT-specific RVMODEL_BOOT_TO_MMODE if no conforming M-mode   ****/
+/**** Can be overridden by DUT-specific RVMODEL_BOOT_TO_MMODE for custom M-mode         ****/
 /*******************************************************************************************/
 .macro RVTEST_BOOT_TO_MMODE
   #ifdef RVMODEL_BOOT_TO_MMODE
@@ -382,11 +413,11 @@
     RVMODEL_BOOT_TO_MMODE
   #else
     rvtest_boot_to_mmode:
-    // Default implementation assumes conforming M-mode or no M-mode registers
+    // Default implementation assumes standard M-mode or no M-mode registers
     // We are in M-mode now at initial boot time
 
-    // Do setup that requires a conforming M-mode
-    #ifdef CONFORMING_SM_SUPPORTED
+    // Do setup that requires a standard M-mode
+    #ifdef STANDARD_SM_SUPPORTED
 
       // Disable interrupts
       csrw mie, zero
@@ -451,7 +482,9 @@
       #else    // RV32
         li t0, MSTATUS_MPP
         csrw mstatus, t0
-        csrw mstatush, zero // Clear all these fields
+        #ifndef SM1P11P0_SUPPORTED
+          csrw mstatush, zero // Clear all these fields
+        #endif
       #endif
 
       // Disable all privileged environment configuration, and enable unprivileged configuration
@@ -592,7 +625,7 @@
         csrw mnstatus, zero // Clear all fields in mnstatus as well if it exists
       #endif
 
-      #if (RVMODEL_NUM_PMPS > 0) && defined(U_SUPPORTED)
+      #if (UDB_NUM_PMP_ENTRIES > 0) && defined(U_SUPPORTED)
         // set up PMP so user and supervisor mode can access full address space
         CSRW(pmpcfg0, 0xF)   // configure PMP0 to TOR RWX
         LI(t0, -1)
@@ -606,7 +639,7 @@
           sfence.vma
         #endif // SV32 or SV39
       #endif // PMP
-    #endif // CONFORMING_M_MODE
+    #endif // STANDARD_SM_SUPPORTED
 
   #endif // !RVMODEL_BOOT_TO_MMODE
 
@@ -619,7 +652,7 @@
 /**** Switch into S-mode                                                                ****/
 /*******************************************************************************************/
 .macro RVTEST_BOOT_TO_SMODE
-  // We start in M-mode after initial boot but cannot assume it is conforming
+  // We start in M-mode after initial boot but cannot assume it is standard
   // so access to M-mode features must be through a SBI
 
   // Run custom RVMODEL flavor if the DUT provides it to override this default boot
@@ -627,7 +660,7 @@
     RVMODEL_BOOT_TO_SMODE
   #else
     rvtest_boot_to_smode:
-    // Default implementation assumes conforming M-mode
+    // Default implementation assumes standard M-mode
     // We are in M-mode now at initial boot time
     // The M-mode boot already set up S, HS, VS trap handlers if applicable.
 
@@ -685,15 +718,15 @@
 
     #ifdef SMSTATEEN_SUPPORTED
       #if __riscv_xlen == 64
-        li t0, MSTATEEN_HSTATEEN | MSTATEEN0_HENVCFG
+        li t0, MSTATEEN_HSTATEEN | MSTATEEN0_HENVCFG  # alternate names for SE0 and ENVCFG in encoding.h
         csrs mstateen0, t0  // Set these fields
       #else    // RV32
-        li t0, MSTATEENH_HSTATEEN | MSTATEEN0H_HENVCFG
+        li t0, MSTATEENH_HSTATEEN | MSTATEEN0H_HENVCFG   # alternate names for SE0 and ENVCFG in encoding.h
         csrs mstateen0h, t0 // Set these fields
       #endif
     #endif
     #ifdef SSSTATEEN_SUPPORTED
-      li t0, SMSTATEEN0_JVT | SMSTATEEN0_FCSR
+      li t0, SSTATEEN0_JVT | SSTATEEN0_FCSR
       csrs sstateen0, t0 // enable access from lower privilege mode
     #endif
 
@@ -748,7 +781,7 @@
 /*******************************************************************************************/
 .macro INIT_FLOAT_VECTOR_STATE
 
-    // Additional setup that applies even without conforming M-mode
+    // Additional setup that applies even without standard M-mode
     // mstatus.FS = 11: Set floating-point state to dirty if supported (F or Zfinx)
     // mstatus.VS = 11: Set vector state to dirty if supported (V)
     // If mstatus is not writable at boot time, use a custom RVMODEL_BOOT_TO_MMODE to set up the necessary state
@@ -769,9 +802,9 @@
 /**** helper macro to initialize regs, just to make sure you catch any errors ****/
 /*****************************************************************/
 
-.macro DBLSHIFTR dstreg,     oldreg,    tmpreg, shamt       //this is just a rotate  using xtmp as a tmp
-        slli    \tmpreg\(), \oldreg\(),   XLEN-\shamt
-        srli    \dstreg\(), \oldreg\(),        \shamt
+.macro DBLSHIFTR dstreg,     oldreg,       tmpreg, shamt       //this is just a rotate  using xtmp as a tmp
+        slli    \tmpreg\(), \oldreg\(), UDB_MXLEN-\shamt
+        srli    \dstreg\(), \oldreg\(),           \shamt
         or      \dstreg\(), \dstreg\(), \tmpreg\()
 .endm
 
@@ -782,7 +815,7 @@
   /* init regs, to ensure you catch any errors */
   rvtest_init_regs:
 
-  #ifndef RVTEST_E
+  #ifndef E_SUPPORTED
     LI (x16, (0x7D5BFDDB7D5BFDDB & MASK))
     DBLSHIFTR x17, x16, x15, 7
     DBLSHIFTR x18, x17, x15, 7

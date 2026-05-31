@@ -21,7 +21,7 @@ covergroup SvPMPZicbo_cg with function sample(ins_t ins);
         wildcard bins leaflvl_u = {8'b11?11111};
     }
 
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         PageType_d: coverpoint ins.current.page_type_d {
             `ifdef SV48_SUPPORTED
                 bins sv48_tera = {2'b11} iff (ins.current.csr[CSR_SATP][63:60] == 4'b1001);

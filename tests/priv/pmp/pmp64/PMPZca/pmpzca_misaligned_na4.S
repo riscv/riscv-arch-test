@@ -30,7 +30,7 @@
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
 #   PMP_GRANULARITY: 2
-# MARCH: rv64i_zca_zicsr
+# MARCH: rv64i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -59,14 +59,14 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -98,7 +98,8 @@ main:
     csrw pmpcfg0, x4
 
     LA(x5, REGIONSTART)
-    addi x5, x5, REGION_SIZE
+    LI(x4, REGION_SIZE)
+    add x5, x5, x4
     srl x5, x5 ,PMP_SHIFT  // This will create dynamic PMP_ADDRESS_1
     csrw pmpaddr1, x5
 

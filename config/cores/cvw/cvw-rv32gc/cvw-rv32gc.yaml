@@ -55,7 +55,7 @@ implemented_extensions:
   - { name: Sstc, version: "= 1.0.0" }
   - { name: Sstvala, version: "= 1.0.0" }
   - { name: Sstvecd, version: "= 1.0.0" }
-  - { name: Sv32, version: "= 1.12.0" }
+  - { name: Sv32, version: "= 1.0.0" }
   - { name: Svade, version: "= 1.0.0" }
   - { name: Svadu, version: "= 1.0.0" }
   - { name: Svbare, version: "= 1.0.0" }
@@ -187,7 +187,7 @@ params:
   MTVEC_ACCESS: rw
   MTVEC_MODES: [0, 1]
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
-  MTVEC_BASE_ALIGNMENT_VECTORED: 4
+  MTVEC_BASE_ALIGNMENT_VECTORED: 64
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   NUM_PMP_ENTRIES: 16
   PMP_GRANULARITY: 4
@@ -227,6 +227,7 @@ params:
       true,
     ]
   HPM_EVENTS: [0]
+  MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
     [
       true,

@@ -1,0 +1,12 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+# If S-mode is implemented, the set of legal values that the UXL field may assume
+# excludes those that would cause UXLEN to be greater than SXLEN.
+- name: MSTATUS_UXL_LEGAL_VALS_SMODE
+  coverpoint: [
+      "S_sstatus_cg/cp_sxlen_ge_uxlen,
+      Sm_mcsr_cg/cp_misa_v,
+      Sm_mcsr_cg/cp_misa_b,
+      Sm_mcsr_cg/cp_msip",
+    ]

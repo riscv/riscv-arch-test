@@ -1,0 +1,19 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # The Zama16b extension requires MAG16 support to main memory regions. If the
+  # ext:zama16b[] extension is implemented, then the
+  # &lt;&lt;sec:misaligned-atomicity-granule,misaligned atomicity granule&gt;&gt; in
+  # main memory regions with both the coherence and cacheability PMAs is 16 bytes.
+  - name: zama16b_pma_mag_req
+    coverpoint: [""]
+
+  # Misaligned loads, stores and AMOs to those regions that do not cross a naturally
+  # aligned 16-byte boundary are atomic.
+  - name: zama16b_atomic_ops
+    coverpoint: [
+        "Zama16b_cg/cp_zama16b_load,
+        Zama16b_cg/cp_zama16b_store,
+        Zama16b_cg/cp_zama16b_amo",
+      ]

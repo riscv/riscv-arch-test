@@ -26,6 +26,12 @@ covergroup Smstateen_cg with function sample(ins_t ins);
             bins S_mode = {3'b001};
         `endif
     }
+    priv_mode_maybes_u: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
+            bins U_mode = {3'b000};
+            `ifdef S_SUPPORTED
+                    bins S_mode = {3'b001};
+            `endif
+    }
 
     // ── CSR address coverpoint — all mstateen CSRs ────────────────────────
     mstateen_csrs: coverpoint ins.current.insn[31:20] {
@@ -251,6 +257,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 `endif
 
     // ── Ssqosid-dependent coverpoints (cp_srmcfg) ────────────────────────
+
 `ifdef SSQOSID_SUPPORTED
     `ifdef UDB_MXLEN_64
         srmcfg_state: coverpoint ins.current.csr[CSR_MSTATEEN0][55] {
@@ -284,20 +291,20 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 `endif
 
 
-    cp_csr_illegal_accesses: cross priv_mode_s_u, mstateen_csrs, csrops;
-    cp_walking_ones: cross mstateen_walk_csrs, csrops, csr_walk;
+    cp_csr_illegal_accesses: cross priv_mode_maybes_u, mstateen_csrs, csrops;
+    cp_walking_ones: cross priv_mode_m, mstateen_walk_csrs, csrops, csr_walk;
 
 `ifdef ZFINX_SUPPORTED
-    cp_fcsr: cross misa_F, mstateen0_fcsr_bit, csrops, fscr_csr {
+    cp_fcsr: cross misa_F, priv_mode_m, mstateen0_fcsr_bit, csrops, fscr_csr {
         ignore_bins ig1 = binsof(misa_F.F_set)  && binsof(mstateen0_fcsr_bit.fcsr_zero);
         ignore_bins ig2 = binsof(misa_F.F_set)  && binsof(fscr_csr.fcsr);
         ignore_bins ig3 = binsof(misa_F.F_clear) && binsof(mstateen0_fcsr_bit.fcsr_zero);
     }
-    cp_fcsr_lower: cross priv_mode_s_u, misa_F, mstateen0_fcsr_bit, csrops, fcsr_lower_mode_csrs {
+    cp_fcsr_lower: cross priv_mode_maybes_u, misa_F, mstateen0_fcsr_bit, csrops, fcsr_lower_mode_csrs {
         ignore_bins ig1 = binsof(misa_F.F_set)  && binsof(mstateen0_fcsr_bit.fcsr_zero);
         ignore_bins ig2 = binsof(misa_F.F_clear) && binsof(mstateen0_fcsr_bit.fcsr_zero);
     }
-    cp_fcsr_lower_fp_instrs: cross priv_mode_s_u, misa_F, mstateen0_fcsr_bit, fp_instrs {
+    cp_fcsr_fp_instrs: cross priv_mode_maybes_u, misa_F, mstateen0_fcsr_bit, fp_instrs {
         ignore_bins ig1 = binsof(misa_F.F_set)  && binsof(mstateen0_fcsr_bit.fcsr_zero);
         ignore_bins ig2 = binsof(misa_F.F_clear) && binsof(mstateen0_fcsr_bit.fcsr_zero);
     }
@@ -308,8 +315,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 
     // Row 7: Zcmt only
 `ifdef ZCMT_SUPPORTED
-    cp_jvt_access:     cross csrops, jvt_csr, jvt_state;
-    cp_jvt_lower_mode: cross priv_mode_s_u, csrops, jvt_csr, jvt_state;
+    cp_jvt_access:     cross priv_mode_maybes_u, csrops, jvt_csr, jvt_state;
 `endif
 
     // Row 12: Ssdtrig only

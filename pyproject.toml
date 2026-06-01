@@ -56,3 +56,5 @@ exclude = [
 ]
 typeCheckingMode = "standard"
 pythonVersion = "3.10"
+# Resolve the `act` package for code outside framework/src (e.g. framework/tests).
+extraPaths = ["framework/src"]

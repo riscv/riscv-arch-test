@@ -15,7 +15,6 @@ normative_rule_definitions:
         Sstvala_cg/cp_load_address_misaligned,
         Sstvala_cg/cp_store_address_misaligned,
         Sstvala_cg/cp_instr_adr_misaligned_jalr,
-        Sstvala_cg/cp_illegal_instruction,
         Sstvala_cg/cp_stval_load_page_fault,
         Sstvala_cg/cp_stval_store_page_fault,
         Sstvala_cg/cp_stval_instr_page_fault",

@@ -78,10 +78,6 @@ SCRATCH_BASE_REG: int = 8  # x8 / s0
 
 # ── Global exclusion lists ────────────────────────────────────────────────
 
-AMO_EXCLUSIONS: list[str] = [
-    "01001XXXXXXXXXXXXXXXXXXXX0101111",  # ssamoswap (Ssamoswap)
-]
-
 # Privileged/SYSTEM instruction exclusions shared by all modes.
 PRIVILEGED_000_EXCLUSIONS: list[str] = [
     "1XXX11XXXXXX00000000000001110011",  # custom system
@@ -376,9 +372,9 @@ def generate_illegal_instr(
     # ── Atomics — rs1=x8, rd=011RR (x12-x15) ────────────────────────
     # AMO: funct5 | aq | rl | rs2 | rs1=01000 | funct3 | rd=011RR (x12-x15) | opcode
     _emit_reg_init(lines)
-    emit_raw_words(lines, "cp_atomic_funct3", "RRRRRRRRRRRR01000EEE011RR0101111", exclusion=AMO_EXCLUSIONS)
-    emit_raw_words(lines, "cp_atomic_funct7", "EEEEERRRRRRR0100001E011RR0101111", exclusion=AMO_EXCLUSIONS)
-    emit_raw_words(lines, "cp_lrsc", "00010RREEEEE0100001E011RR0101111", exclusion=AMO_EXCLUSIONS)
+    emit_raw_words(lines, "cp_atomic_funct3", "RRRRRRRRRRRR01000EEE011RR0101111")
+    emit_raw_words(lines, "cp_atomic_funct7", "EEEEERRRRRRR0100001E011RR0101111")
+    emit_raw_words(lines, "cp_lrsc", "00010RREEEEE0100001E011RR0101111")
 
     # ── amocas odd-register sweep — rs1=x8, rs2=RRRRe (even+odd), rd=011RE={x12-x15} ──
     _emit_reg_init(lines)

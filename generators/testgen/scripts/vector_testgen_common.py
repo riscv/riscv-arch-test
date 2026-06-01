@@ -540,7 +540,7 @@ vftype       = ["vfmv.v.f", "vfmv.s.f"]
 fvtype       = ["vfmv.f.s"]
 
 vfloattypes = vvvm_f_type + vvfmtype + vvvmr_f_type + vfvmtype + vvm_f_type + vftype + fvtype + vvfvtype
-vf_permutation_ins = ["vfmv.f.s", "vfmw.s.f", "vfslide1up.vf", "vfslide1down.vf"]
+vf_permutation_ins = ["vfmv.f.s", "vfmv.s.f", "vfslide1up.vf", "vfslide1down.vf"]
 
 ##################################    vector integer instruction     ##################################
 
@@ -1532,35 +1532,30 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
       derived_exts = []
       for alias, mapped in vector_map.items():
         if extension.startswith(alias):
-          # All Zve* extensions support all vector load and store instructions (31.1.7. Vector Loads and Stores),
-          # except Zve64* extensions do not support EEW=64 for index values when XLEN=32.
-          if "Zve64x" in mapped and test in indexed_ls_ins and test in eew64_ins and xlen == 32:
-            mapped.remove("Zve64x")
-          if "Zve64f" in mapped and test in indexed_ls_ins and test in eew64_ins and xlen == 32:
-            mapped.remove("Zve64f")
+          for zve_ext in ["Zve64x", "Zve64f", "Zve64d"]:
+            # All Zve* extensions support all vector load and store instructions (31.1.7. Vector Loads and Stores),
+            # except Zve64* extensions do not support EEW=64 for index values when XLEN=32.
+            if zve_ext in mapped and test in indexed_ls_ins and test in eew64_ins and xlen == 32:
+              mapped.remove(zve_ext)
 
-          # All Zve* extensions support all vector integer instructions (31.1.11. Vector Integer Arithmetic
-          # Instructions), except that the vmulh integer multiply variants that return the high word of the
-          # product (vmulh.vv, vmulh.vx, vmulhu.vv, vmulhu.vx, vmulhsu.vv, vmulhsu.vx) are not included for
-          # EEW=64 in Zve64*.
-          if "Zve64x" in mapped and test.startswith("vmulh") and sew == 64:
-            mapped.remove("Zve64x")
-          if "Zve64f" in mapped and test.startswith("vmulh") and sew == 64:
-            mapped.remove("Zve64f")
+            # All Zve* extensions support all vector integer instructions (31.1.11. Vector Integer Arithmetic
+            # Instructions), except that the vmulh integer multiply variants that return the high word of the
+            # product (vmulh.vv, vmulh.vx, vmulhu.vv, vmulhu.vx, vmulhsu.vv, vmulhsu.vx) are not included for
+            # EEW=64 in Zve64*.
+            if zve_ext in mapped and test.startswith("vmulh") and sew == 64:
+              mapped.remove(zve_ext)
 
-          # All Zve* extensions support all vector fixed-point arithmetic instructions (31.1.12. Vector Fixed-Point
-          # Arithmetic Instructions), except that vsmul.vv and vsmul.vx are not included in EEW=64 in Zve64*.
-          if "Zve64x" in mapped and test.startswith("vsmul") and sew == 64:
-            mapped.remove("Zve64x")
-          if "Zve64f" in mapped and test.startswith("vsmul") and sew == 64:
-            mapped.remove("Zve64f")
+            # All Zve* extensions support all vector fixed-point arithmetic instructions (31.1.12. Vector Fixed-Point
+            # Arithmetic Instructions), except that vsmul.vv and vsmul.vx are not included in EEW=64 in Zve64*.
+            if zve_ext in mapped and test.startswith("vsmul") and sew == 64:
+              mapped.remove(zve_ext)
 
-          # All Zve* extensions support all vector permutation instructions (31.1.16. Vector Permutation Instructions),
-          # except that Zve32x and Zve64x do not include those with floating-point operands, and Zve64f does not include
-          # those with EEW=64 floating-point operands.
-          # The first part of this requirement is handled by placing those operands into Vf.
-          if "Zve64f" in mapped and test in vf_permutation_ins and sew == 64:
-            mapped.remove("Zve64f")
+            # All Zve* extensions support all vector permutation instructions (31.1.16. Vector Permutation Instructions),
+            # except that Zve32x and Zve64x do not include those with floating-point operands, and Zve64f does not include
+            # those with EEW=64 floating-point operands.
+            # The first part of this requirement is handled by placing those operands into Vf.
+            if zve_ext in mapped and test in vf_permutation_ins and sew == 64:
+              mapped.remove(zve_ext)
 
           if mapped == []:
             continue

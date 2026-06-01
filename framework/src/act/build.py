@@ -133,6 +133,20 @@ def is_stale(task: BuildTask) -> bool:
     return any(inp.exists() and inp.stat().st_mtime > oldest_output_mtime for inp in all_inputs)
 
 
+def _discard_outputs(task: BuildTask) -> None:
+    """Delete a failed task's outputs so a partial write can't pose as up-to-date.
+
+    Staleness is judged by mtime, so a half-written output left behind by a
+    crashing action looks newer than its inputs on the next run and is silently
+    skipped. In the signature pipeline that means a truncated reference signature
+    could be baked into the self-check ELF and let a broken DUT pass. Mirror
+    GNU Make's .DELETE_ON_ERROR. The task's log file is not an output and is kept.
+    """
+    for out in task.outputs:
+        with contextlib.suppress(OSError):
+            out.unlink(missing_ok=True)
+
+
 def execute_task(
     task: BuildTask,
     *,
@@ -141,7 +155,28 @@ def execute_task(
     pgids_lock: threading.Lock,
     shutdown_event: threading.Event,
 ) -> BuildError | None:
-    """Execute a single build task. Returns None on success, BuildError on failure."""
+    """Run a build task, discarding its outputs if it fails. None on success."""
+    error = _run_action(
+        task,
+        verbose=verbose,
+        active_pgids=active_pgids,
+        pgids_lock=pgids_lock,
+        shutdown_event=shutdown_event,
+    )
+    if error is not None:
+        _discard_outputs(task)
+    return error
+
+
+def _run_action(
+    task: BuildTask,
+    *,
+    verbose: bool = False,
+    active_pgids: set[int],
+    pgids_lock: threading.Lock,
+    shutdown_event: threading.Event,
+) -> BuildError | None:
+    """Execute a single build task's action. Returns None on success, BuildError on failure."""
     if verbose:
         print(f"  {_task_str(task)}")
     action = task.action

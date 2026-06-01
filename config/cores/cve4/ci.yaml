@@ -1,0 +1,9 @@
+# Marin Radic mradic07@gmail.com
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for CV32E40P (cve4)
+
+ci_enabled: true
+exclude_extensions: "Sm,SmF,InterruptsSm,ExceptionsF,SsstrictSm" # ExceptionsF: cv32e40p-rv32imcf DUT bug; SsstrictSm: ACT4 bug
+apt_packages: "autoconf flex bison help2man libfl-dev ccache"
+install_script: ".github/scripts/install-cve4.sh"
+setup_script: ".github/scripts/setup-cve4.sh"

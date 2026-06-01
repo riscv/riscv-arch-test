@@ -116,6 +116,7 @@
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
 ##### Machine Timer #####
+#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
 
 #define RVMODEL_MTIMECMP_ADDRESS  0x02004000  /* Address of mtimecmp CSR */
 

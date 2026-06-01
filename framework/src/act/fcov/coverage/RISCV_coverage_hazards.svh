@@ -33,57 +33,42 @@ typedef enum {
   WAR_HAZARD
 } hazards_t;
 
-function hazards_t check_gpr_hazards(int hart, int issue);
-  if (traceDataQ[hart][issue][`SAMPLE_PREV].has_rd) begin
-    if ((traceDataQ[hart][issue][`SAMPLE_CURRENT].has_rs1 && (traceDataQ[hart][issue][`SAMPLE_CURRENT].rs1 == traceDataQ[hart][issue][`SAMPLE_PREV].rd))
-     || (traceDataQ[hart][issue][`SAMPLE_CURRENT].has_rs2 && (traceDataQ[hart][issue][`SAMPLE_CURRENT].rs2 == traceDataQ[hart][issue][`SAMPLE_PREV].rd))
-     || (traceDataQ[hart][issue][`SAMPLE_CURRENT].has_rs3 && (traceDataQ[hart][issue][`SAMPLE_CURRENT].rs3 == traceDataQ[hart][issue][`SAMPLE_PREV].rd))) begin
+function hazards_t check_fpr_hazards(int hart, int issue, int depth = 0);
+  int producer_idx;
+  producer_idx = depth + 1;
+  if (traceDataQ[hart][issue][producer_idx].has_fd) begin
+    if ((traceDataQ[hart][issue][`SAMPLE_CURRENT].has_fs1 && (traceDataQ[hart][issue][`SAMPLE_CURRENT].fs1 == traceDataQ[hart][issue][producer_idx].fd))
+     || (traceDataQ[hart][issue][`SAMPLE_CURRENT].has_fs2 && (traceDataQ[hart][issue][`SAMPLE_CURRENT].fs2 == traceDataQ[hart][issue][producer_idx].fd))
+     || (traceDataQ[hart][issue][`SAMPLE_CURRENT].has_fs3 && (traceDataQ[hart][issue][`SAMPLE_CURRENT].fs3 == traceDataQ[hart][issue][producer_idx].fd))) begin
       return RAW_HAZARD;
-    end else if (traceDataQ[hart][issue][`SAMPLE_CURRENT].has_rd && (traceDataQ[hart][issue][`SAMPLE_CURRENT].rd == traceDataQ[hart][issue][`SAMPLE_PREV].rd)) begin
+    end else if (traceDataQ[hart][issue][`SAMPLE_CURRENT].has_fd && (traceDataQ[hart][issue][`SAMPLE_CURRENT].fd == traceDataQ[hart][issue][producer_idx].fd)) begin
       return WAW_HAZARD;
-    end else if (traceDataQ[hart][issue][`SAMPLE_CURRENT].has_rd && ((traceDataQ[hart][issue][`SAMPLE_PREV].has_rs1 && (traceDataQ[hart][issue][`SAMPLE_PREV].rs1 == traceDataQ[hart][issue][`SAMPLE_CURRENT].rd))
-                                                                  || (traceDataQ[hart][issue][`SAMPLE_PREV].has_rs2 && (traceDataQ[hart][issue][`SAMPLE_PREV].rs2 == traceDataQ[hart][issue][`SAMPLE_CURRENT].rd))
-                                                                  || (traceDataQ[hart][issue][`SAMPLE_PREV].has_rs3 && (traceDataQ[hart][issue][`SAMPLE_PREV].rs3 == traceDataQ[hart][issue][`SAMPLE_CURRENT].rd)))) begin
+    end else if (traceDataQ[hart][issue][`SAMPLE_CURRENT].has_fd && ((traceDataQ[hart][issue][producer_idx].has_fs1 && (traceDataQ[hart][issue][producer_idx].fs1 == traceDataQ[hart][issue][`SAMPLE_CURRENT].fd))
+                                                                  || (traceDataQ[hart][issue][producer_idx].has_fs2 && (traceDataQ[hart][issue][producer_idx].fs2 == traceDataQ[hart][issue][`SAMPLE_CURRENT].fd))
+                                                                  || (traceDataQ[hart][issue][producer_idx].has_fs3 && (traceDataQ[hart][issue][producer_idx].fs3 == traceDataQ[hart][issue][`SAMPLE_CURRENT].fd)))) begin
       return WAR_HAZARD;
     end
   end
   return NO_HAZARD;
 endfunction
 
-function hazards_t check_fpr_hazards(int hart, int issue);
-  if (traceDataQ[hart][issue][`SAMPLE_PREV].has_fd) begin
-    if ((traceDataQ[hart][issue][`SAMPLE_CURRENT].has_fs1 && (traceDataQ[hart][issue][`SAMPLE_CURRENT].fs1 == traceDataQ[hart][issue][`SAMPLE_PREV].fd))
-     || (traceDataQ[hart][issue][`SAMPLE_CURRENT].has_fs2 && (traceDataQ[hart][issue][`SAMPLE_CURRENT].fs2 == traceDataQ[hart][issue][`SAMPLE_PREV].fd))
-     || (traceDataQ[hart][issue][`SAMPLE_CURRENT].has_fs3 && (traceDataQ[hart][issue][`SAMPLE_CURRENT].fs3 == traceDataQ[hart][issue][`SAMPLE_PREV].fd))) begin
+function hazards_t check_gpr_hazards(int hart, int issue, int depth = 0);
+  int producer_idx;
+  producer_idx = depth + 1;
+  if (traceDataQ[hart][issue][producer_idx].has_rd) begin
+    if ((traceDataQ[hart][issue][`SAMPLE_CURRENT].has_rs1 && (traceDataQ[hart][issue][`SAMPLE_CURRENT].rs1 == traceDataQ[hart][issue][producer_idx].rd))
+     || (traceDataQ[hart][issue][`SAMPLE_CURRENT].has_rs2 && (traceDataQ[hart][issue][`SAMPLE_CURRENT].rs2 == traceDataQ[hart][issue][producer_idx].rd))
+     || (traceDataQ[hart][issue][`SAMPLE_CURRENT].has_rs3 && (traceDataQ[hart][issue][`SAMPLE_CURRENT].rs3 == traceDataQ[hart][issue][producer_idx].rd))) begin
       return RAW_HAZARD;
-    end else if (traceDataQ[hart][issue][`SAMPLE_CURRENT].has_fd && (traceDataQ[hart][issue][`SAMPLE_CURRENT].fd == traceDataQ[hart][issue][`SAMPLE_PREV].fd)) begin
+    end else if (traceDataQ[hart][issue][`SAMPLE_CURRENT].has_rd && (traceDataQ[hart][issue][`SAMPLE_CURRENT].rd == traceDataQ[hart][issue][producer_idx].rd)) begin
       return WAW_HAZARD;
-    end else if (traceDataQ[hart][issue][`SAMPLE_CURRENT].has_fd && ((traceDataQ[hart][issue][`SAMPLE_PREV].has_fs1 && (traceDataQ[hart][issue][`SAMPLE_PREV].fs1 == traceDataQ[hart][issue][`SAMPLE_CURRENT].fd))
-                                                                  || (traceDataQ[hart][issue][`SAMPLE_PREV].has_fs2 && (traceDataQ[hart][issue][`SAMPLE_PREV].fs2 == traceDataQ[hart][issue][`SAMPLE_CURRENT].fd))
-                                                                  || (traceDataQ[hart][issue][`SAMPLE_PREV].has_fs3 && (traceDataQ[hart][issue][`SAMPLE_PREV].fs3 == traceDataQ[hart][issue][`SAMPLE_CURRENT].fd)))) begin
+    end else if (traceDataQ[hart][issue][`SAMPLE_CURRENT].has_rd && ((traceDataQ[hart][issue][producer_idx].has_rs1 && (traceDataQ[hart][issue][producer_idx].rs1 == traceDataQ[hart][issue][`SAMPLE_CURRENT].rd))
+                                                                  || (traceDataQ[hart][issue][producer_idx].has_rs2 && (traceDataQ[hart][issue][producer_idx].rs2 == traceDataQ[hart][issue][`SAMPLE_CURRENT].rd))
+                                                                  || (traceDataQ[hart][issue][producer_idx].has_rs3 && (traceDataQ[hart][issue][producer_idx].rs3 == traceDataQ[hart][issue][`SAMPLE_CURRENT].rd)))) begin
       return WAR_HAZARD;
     end
   end
   return NO_HAZARD;
-endfunction
-
-function hazards_t check_mem_hazards(int hart, int issue);
-  if (traceDataQ[hart][issue][`SAMPLE_CURRENT].inst_category == INST_CAT_LOAD) begin
-    if ((traceDataQ[hart][issue][`SAMPLE_PREV].inst_category == INST_CAT_STORE) && (traceDataQ[hart][issue][`SAMPLE_PREV].mem_addr == traceDataQ[hart][issue][`SAMPLE_CURRENT].mem_addr)) begin
-      return RAW_HAZARD;
-    end else begin
-      return NO_HAZARD;
-    end
-  end
-  if (traceDataQ[hart][issue][`SAMPLE_CURRENT].inst_category == INST_CAT_STORE) begin
-    if ((traceDataQ[hart][issue][`SAMPLE_PREV].inst_category == INST_CAT_STORE) && (traceDataQ[hart][issue][`SAMPLE_PREV].mem_addr == traceDataQ[hart][issue][`SAMPLE_CURRENT].mem_addr)) begin
-      return WAW_HAZARD;
-    end else if ((traceDataQ[hart][issue][`SAMPLE_PREV].inst_category == INST_CAT_LOAD) && (traceDataQ[hart][issue][`SAMPLE_PREV].mem_addr == traceDataQ[hart][issue][`SAMPLE_CURRENT].mem_addr)) begin
-      return WAR_HAZARD;
-    end else begin
-      return NO_HAZARD;
-    end
-  end
 endfunction
 
 function bit is_unaligned_mem_access(int hart, int issue);

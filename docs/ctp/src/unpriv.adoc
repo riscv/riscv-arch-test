@@ -2,7 +2,7 @@
 [appendix]
 == Unprivileged Test Plan
 
-Unprivileged tests exercise every instruction using every applicable source and destination register, and reasonable architectural edge values of sources.  They are intended for certification, not verification. For example, they do not stress pipeline hazards.
+Unprivileged tests exercise every instruction using every applicable source and destination register, and reasonable architectural edge values of sources.  They are intended for certification, not verification. The cp_gpr_hazard coverpoints are included to test basic pipeline forwarding correctness.
 
 The unprivileged test plan is written to be easily reviewed by a human, and to be automatically converted to machine-readable coverpoints and tests.
 It is defined with spreadsheets in comma-separated value (CSV) format.
@@ -42,6 +42,7 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 |cmp_rd_rs1|32|The rd register has the same register number as the rs1 register.
 |cmp_rd_rs2|32|The rd register has the same register number as the rs2 register.
 |cmp_rd_rs1_rs2|32|The rd register has the same register number as both the rs1 and rs2 registers.
+|cp_gpr_hazard|4|Integer register hazard detection.
 |cp_offset|2|A branch or jalr instruction has a positive and negative offset.
 |cp_uimm|`XLEN`|Exercise all XLEN unsigned immediate values, such as shift amounts.
 |cp_align|≤ 8|Alignment of naturally-aligned sub-doubleword load/store operand within doubleword
@@ -93,11 +94,27 @@ Notes:
 
 * The cmp_* and cp_*_hazard coverpoints occupy the fuzzy land at the edge of certification and verification.  They are included because they are easy.
 
-* It would be possible to add more floating-point coverpoints such as cmp_fd_fs1_fs2_fs3 but the value is considered low.
+[[cp-gpr-hazard]]
+==== Integer Register Hazard Coverpoint
 
-* The riscvISACOV test plan had cmp_rd_{rs1/rs2}_eqval coverpoints that compare if rd and one of the sources have the same value.  These are generally hit by the cr_rs1_rs2_edges tests, so they don't add interesting additional coverage and were dropped.  riscvISACOV also had cp_{rs1/rs2/rd}_toggle tests that checked if each bit changed from 1 to 0 and vice versa.  This is trivially exercised by providing all 0s followed by all 1s followed by all 0s again, so they were dropped.
+Depth=_n_ means there are _n_ instructions between the producer and consumer.
+Depth=0 means the consumer immediately follows the producer.
+Depth=1 means exactly one filler instruction separates them.
 
+The `cp_gpr_hazard` coverpoint checks integer register data dependencies
+between a producer and a consumer instruction using a Category x Category
+approach. The generating producer instruction is always `add`. Consumer
+instructions vary by category.
 
+RAW hazard tests are generated at Depth=0 and Depth=1. Depth=1 tests use two filler classes:
+
+* Class A: NOP filler (`addi x0, x0, 0`).
+* Class B: Structural stressor filler — independent integer work on the same
+  functional unit, without touching the producer destination register.
+
+WAW (Write-After-Write) hazard tests are generated at Depth=0, where both
+producer and consumer write the same destination register.
+The consumer result must win.
 
 [[t-integer-edge-definitions]]
 .Integer Edge Case Definitions

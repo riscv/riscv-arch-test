@@ -1390,6 +1390,39 @@
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
 
+        # Print CSR context to aid debugging (mepc, mcause, mtval, mstatus)
+        LA(a0, mepcstr)
+        call rvmodel_io_write_str
+        csrr a0, mepc
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        LA(a0, mcausestr)
+        call rvmodel_io_write_str
+        csrr a0, mcause
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        LA(a0, mtvalstr)
+        call rvmodel_io_write_str
+        csrr a0, mtval
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        LA(a0, mstatusstr)
+        call rvmodel_io_write_str
+        csrr a0, mstatus
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
         j failedtest_report_end
 
     //==========================================================================
@@ -1486,6 +1519,40 @@
 
         LA(a0, trap_diag_extra_hint_str)
         call rvmodel_io_write_str
+
+        // Print CSR context for offset mismatch
+        LA(a0, mepcstr)
+        call rvmodel_io_write_str
+        csrr a0, mepc
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        LA(a0, mcausestr)
+        call rvmodel_io_write_str
+        csrr a0, mcause
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        LA(a0, mtvalstr)
+        call rvmodel_io_write_str
+        csrr a0, mtval
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        LA(a0, mstatusstr)
+        call rvmodel_io_write_str
+        csrr a0, mstatus
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
         j failedtest_report_end
 
     trap_report_missing_traps:
@@ -1505,6 +1572,40 @@
 
         LA(a0, trap_diag_missing_hint_str)
         call rvmodel_io_write_str
+
+        // Print CSR context for offset mismatch
+        LA(a0, mepcstr)
+        call rvmodel_io_write_str
+        csrr a0, mepc
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        LA(a0, mcausestr)
+        call rvmodel_io_write_str
+        csrr a0, mcause
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        LA(a0, mtvalstr)
+        call rvmodel_io_write_str
+        csrr a0, mtval
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        LA(a0, mstatusstr)
+        call rvmodel_io_write_str
+        csrr a0, mstatus
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
         j failedtest_report_end
 
     //--------------------------------------------------------------
@@ -1642,6 +1743,39 @@
 
     trap_field_not_epc:
 
+        // Print current CSR state for all trap field mismatches
+        LA(a0, mepcstr)
+        call rvmodel_io_write_str
+        csrr a0, mepc
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        LA(a0, mcausestr)
+        call rvmodel_io_write_str
+        csrr a0, mcause
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        LA(a0, mtvalstr)
+        call rvmodel_io_write_str
+        csrr a0, mtval
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        LA(a0, mstatusstr)
+        call rvmodel_io_write_str
+        csrr a0, mstatus
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
         // Print diagnostic hints based on the mismatch type
         lw a0, trap_diag_subtype
         li a1, 1
@@ -1711,6 +1845,31 @@
         or a0, a0, x8
         li a1, 32
     1:
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        // Print mcause, mtval, mstatus for additional context
+        LA(a0, mcausestr)
+        call rvmodel_io_write_str
+        csrr a0, mcause
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        LA(a0, mtvalstr)
+        call rvmodel_io_write_str
+        csrr a0, mtval
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        LA(a0, mstatusstr)
+        call rvmodel_io_write_str
+        csrr a0, mstatus
+        li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
@@ -2138,6 +2297,14 @@
         .string "RVCP: Address of instruction that trapped (XEPC): "
     xepcinstrstr:
         .string "RVCP: Instruction that trapped: "
+    mepcstr:
+        .string "RVCP: MEPC:    "
+    mcausestr:
+        .string "RVCP: MCAUSE:  "
+    mtvalstr:
+        .string "RVCP: MTVAL:   "
+    mstatusstr:
+        .string "RVCP: MSTATUS: "
     trap_sig_offset_mismatch:
         .string "\"Mismatch in trap signature pointer offset! The test likely observed an incorrect number of traps.\"";
     sv_Mvect_str:

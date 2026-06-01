@@ -133,6 +133,47 @@ covergroup SsstrictU_instr_cg with function sample(ins_t ins);
     cp_amocas_odd :       cross priv_mode_u, amocas_odd;
     cp_reserved_rm :      cross priv_mode_u, reserved_rm;
 
+    // ── Vector coverpoints crossed with priv_mode_u ──────────────────
+    // Definitions are in RISCV_coverage_vect_instr.svh; only the cross
+    // with privilege mode belongs here.
+
+    // vset* reserved encodings
+    cp_v_vsetvl:          cross priv_mode_u, v_vsetvl;
+    cp_v_vsetvli_sew:     cross priv_mode_u, v_vsetvli_sew;
+    cp_v_vsetvli_res:     cross priv_mode_u, v_vsetvli_res;
+    cp_v_vsetivli_sew:    cross priv_mode_u, v_vsetivli_sew;
+    cp_v_vsetivli_res:    cross priv_mode_u, v_vsetivli_res;
+
+    // Vector load/store reserved encodings
+    cp_vl_width:          cross priv_mode_u, vl_width;
+    cp_vl_lumop:          cross priv_mode_u, vl_lumop;
+    cp_vs_width:          cross priv_mode_u, vs_width;
+    cp_vs_sumop:          cross priv_mode_u, vs_sumop;
+
+    // Vector arithmetic funct6 × SEW
+    cp_v_IVV_f6:          cross priv_mode_u, v_IVV_f6, current_vsew;
+    cp_v_FVV_f6:          cross priv_mode_u, v_FVV_f6, current_vsew;
+    cp_v_MVV_f6:          cross priv_mode_u, v_MVV_f6, current_vsew;
+    cp_v_IVI_f6:          cross priv_mode_u, v_IVI_f6, current_vsew;
+    cp_v_IVX_f6:          cross priv_mode_u, v_IVX_f6, current_vsew;
+    cp_v_FVF_f6:          cross priv_mode_u, v_FVF_f6, current_vsew;
+    cp_v_MVX_f6:          cross priv_mode_u, v_MVX_f6, current_vsew;
+
+    // Vector unary instructions
+    cp_v_VWRXUNARY0:      cross priv_mode_u, v_VWRXUNARY0, current_vsew;
+    cp_v_VRXUNARY0:       cross priv_mode_u, v_VRXUNARY0, current_vsew;
+    cp_v_VXUNARY0:        cross priv_mode_u, v_VXUNARY0, current_vsew;
+    cp_v_VMUNARY0:        cross priv_mode_u, v_VMUNARY0, current_vsew;
+    cp_v_VWFUNARY0:       cross priv_mode_u, v_VWFUNARY0, current_vsew;
+    cp_v_VRFUNARY0:       cross priv_mode_u, v_VRFUNARY0, current_vsew;
+    cp_v_VFUNARY0:        cross priv_mode_u, v_VFUNARY0, current_vsew;
+    cp_v_VFUNARY1:        cross priv_mode_u, v_VFUNARY1, current_vsew;
+
+    // Vector crypto
+    cp_vopve:             cross priv_mode_u, v_vopve, current_vsew;
+    cp_v_vaesvv:          cross priv_mode_u, v_vaesvv, current_vsew;
+    cp_v_vaesvs:          cross priv_mode_u, v_vaesvs, current_vsew;
+
 endgroup
 
 covergroup SsstrictU_comp_instr_cg with function sample(ins_t ins);

@@ -53,6 +53,8 @@ of the scratch region before each encoding block.  This means:
   - All register fields are fully randomized for maximum test robustness.
 """
 
+from __future__ import annotations
+
 from random import choice, randint, sample
 
 from testgen.asm.helpers import comment_banner
@@ -569,7 +571,7 @@ def generate_vector_illegal_instr(
         lines.append(f"\tvsetivli x0, 1, e{sew}, m1, ta, ma")
         lines.append("")
 
-        _emit_vector_init(lines)
+        #        _emit_vector_init(lines)
 
         emit_raw_words(lines, f"cp_IVV_f6_e{sew}", "EEEEEEERRRRRRRRRR000RRRRR1010111")
         emit_raw_words(lines, f"cp_FVV_f6_e{sew}", "EEEEEEERRRRRRRRRR001RRRRR1010111")
@@ -588,8 +590,9 @@ def generate_vector_illegal_instr(
         emit_raw_words(lines, f"cp_FVV_VFUNARY0_e{sew}", "010010ERRRRREEEEE001RRRRR1010111")
         emit_raw_words(lines, f"cp_FVV_VFUNARY1_e{sew}", "010011ERRRRREEEEE001RRRRR1010111")
 
-        emit_raw_words(lines, f"cp_MVV_vaesvv_e{sew}", "101000ERRRRREEEEE010RRRRR1010111")
-        emit_raw_words(lines, f"cp_MVV_vaesvs_e{sew}", "101001ERRRRREEEEE010RRRRR1010111")
+        emit_raw_words(lines, f"cp_vopve_e{sew}", "EEEEEEERRRRRRRRRREEERRRRR1110111")
+        emit_raw_words(lines, f"cp_MVV_vaesvv_e{sew}", "101000ERRRRREEEEE010RRRRR1110111")
+        emit_raw_words(lines, f"cp_MVV_vaesvs_e{sew}", "101001ERRRRREEEEE010RRRRR1110111")
 
     lines.append("")
     return lines

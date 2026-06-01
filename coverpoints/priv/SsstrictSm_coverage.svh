@@ -176,6 +176,7 @@ covergroup SsstrictSm_instr_cg with function sample(ins_t ins);
     cp_v_VFUNARY1:        cross priv_mode_m, v_VFUNARY1, current_vsew;
 
     // Vector crypto
+    cp_vopve:             cross priv_mode_m, v_vopve,  current_vsew;
     cp_v_vaesvv:          cross priv_mode_m, v_vaesvv, current_vsew;
     cp_v_vaesvs:          cross priv_mode_m, v_vaesvs, current_vsew;
 

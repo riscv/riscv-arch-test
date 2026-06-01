@@ -255,23 +255,31 @@
     // Vector crypto coverpoints
     // ══════════════════════════════════════════════════════════════════
 
+    // OPVE (general vector crypto op6 and op3)
+    // Generator: "EEEEEEERRRRRRRRRREEERRRRR1110111"
+    v_vopve : coverpoint {ins.current.insn[31:25], ins.current.insn[14:12]}
+        iff (ins.current.insn[6:0] == 7'b1110111) {
+        // 2^7 * 2^3 = 1024 bins
+    }
+
     // vaes.vv: funct6=101000, funct3=010 (OPMVV), type in {vm,vs1}
-    // Generator: "101000ERRRRREEEEE010RRRRR1010111"
+    // Generator: "101000ERRRRREEEEE010RRRRR1110111"
     v_vaesvv : coverpoint {ins.current.insn[25], ins.current.insn[19:15]}
-        iff (ins.current.insn[6:0] == 7'b1010111
+        iff (ins.current.insn[6:0] == 7'b1110111
            & ins.current.insn[14:12] == 3'b010
            & ins.current.insn[31:26] == 6'b101000) {
-        // 2^6 = 64 bins
+        // 2^7 =128 bins
     }
 
     // vaes.vs: funct6=101001, funct3=010 (OPMVV), type in {vm,vs1}
-    // Generator: "101001ERRRRREEEEE010RRRRR1010111"
+    // Generator: "101001ERRRRREEEEE010RRRRR1110111"
     v_vaesvs : coverpoint {ins.current.insn[25], ins.current.insn[19:15]}
-        iff (ins.current.insn[6:0] == 7'b1010111
+        iff (ins.current.insn[6:0] == 7'b1110111
            & ins.current.insn[14:12] == 3'b010
            & ins.current.insn[31:26] == 6'b101001) {
-        // 2^6 = 64 bins
+        // 2^7 = 128 bins
     }
+
 
     // ══════════════════════════════════════════════════════════════════
     // SEW coverpoint for per-SEW crosses

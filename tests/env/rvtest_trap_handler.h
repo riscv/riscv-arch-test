@@ -2135,6 +2135,17 @@ excpt_\__MODE__\()hndlr_tbl:
         j       resto_\__MODE__\()rtn
 
 \__MODE__\()clr_Sext_int:                            // S-mode external interrupt: clear + save intID
+        .ifc \__MODE__ , M
+            li T2, 0x200
+            csrc mip, T2                             // Clear mip.SEIP
+        .else
+                .ifc \__MODE__ , S
+                        RVTEST_GOTO_MMODE
+                        li T2, 0x200
+                        csrc mip, T2
+                        RVTEST_GOTO_LOWER_MODE Smode
+                .endif
+        .endif
         RVMODEL_CLR_SEXT_INT(T2, T5)
         j       resto_\__MODE__\()rtn
 

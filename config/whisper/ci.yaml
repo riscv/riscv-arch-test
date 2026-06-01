@@ -9,9 +9,8 @@
 # 3. Add configuration parameter for vsetvli/vsetvl behavior on reserved vtype values Link: https://github.com/riscv/sail-riscv/issues/1699
 # InterruptsSm excluded due to Whisper bug
 # 1. setting mtimecmp equal to mtime using sd does not trigger machine timer interrupt: https://github.com/tenstorrent/whisper/issues/26
-# Smstateen excluded not exact reason determined yet but only one coverpoint realed to srmcfg is causing the problem Trap goes to S-mode  while expected in M-mode
 ci_enabled: true
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
-exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,InterruptsSm,InterruptsS,InterruptsU,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,Svadu,SvaduPMP,Zalrsc,ExceptionsSvZaamo,ExceptionsSvZalrsc,SsstrictV,Smstateen"
+exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,InterruptsSm,InterruptsS,InterruptsU,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,Svadu,SvaduPMP,Zalrsc,ExceptionsSvZaamo,ExceptionsSvZalrsc,SsstrictV"
 install_script: ".github/scripts/install-whisper.sh"
 apt_packages: "libboost-program-options-dev"

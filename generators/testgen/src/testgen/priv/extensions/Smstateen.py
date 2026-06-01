@@ -156,7 +156,7 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
             test_data.add_testcase("mstateen0_walk", coverpoint, covergroup),
         ]
     )
-    lines.extend(csr_walk_test(test_data, ("mstateen0", 0x7), covergroup, coverpoint))
+    lines.extend(csr_walk_test(test_data, ("mstateen0", 0xC00000000000000E), covergroup, coverpoint))
 
     # mstateen0h — RV32 only
     lines.append("#if __riscv_xlen == 32")
@@ -166,7 +166,7 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
             test_data.add_testcase("mstateen0h_walk", coverpoint, covergroup),
         ]
     )
-    lines.extend(csr_walk_test(test_data, ("mstateen0h", 0x7), covergroup, coverpoint))
+    lines.extend(csr_walk_test(test_data, ("mstateen0h", 0xC000000E), covergroup, coverpoint))
     lines.append("#endif  // __riscv_xlen == 32")
 
     return lines
@@ -1007,8 +1007,8 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "Smstateen",
-    required_extensions=["Zicsr", "Smstateen"],
-    march_extensions=["Smstateen", "Zicsr", "Zcmt"],
+    required_extensions=["S", "Zicsr", "Smstateen"],
+    march_extensions=["S", "Smstateen", "Zicsr", "Zcmt"],
 )
 def make_smstateen(test_data: TestData) -> list[str]:
     """Generate tests for Smstateen state-enable extension testsuite."""

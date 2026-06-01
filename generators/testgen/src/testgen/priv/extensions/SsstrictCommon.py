@@ -233,7 +233,7 @@ def emit_raw_words(
     lines.append("")
     if length == 32:
         lines.append("\t.balign 4")
-    lines.append(f"# {comment}  ({len(encodings)} encodings)")
+    lines.append(f"# {comment}  ({len(encodings)} encodings) template {template}")
     for idx, enc in enumerate(encodings):
         if reinit_interval > 0 and idx > 0 and idx % reinit_interval == 0:
             _emit_reg_init(lines)
@@ -428,11 +428,11 @@ def generate_illegal_instr(
     emit_raw_words(
         lines,
         "cp_privileged_rd",
-        "00000000000000000000EEEEE1110011",
+        "RRRRRRRRRRRR00000000EEEEE1110011",
         exclusion=[
-            "00000000000000000000000001110011",  # exclude ecall
-            "XXXXXXXXXXXXXXXXXXXX00010XXXXXXX",  # exclude rd=x2 (sp)
-            "XXXXXXXXXXXXXXXXXXXX01000XXXXXXX",  # exclude rd=x8 (scratch base)
+            # "00000000000000000000000001110011",  # exclude ecall
+            # "XXXXXXXXXXXXXXXXXXXX00010XXXXXXX",  # exclude rd=x2 (sp)
+            # "XXXXXXXXXXXXXXXXXXXX01000XXXXXXX",  # exclude rd=x8 (scratch base)
         ],
     )
     emit_raw_words(

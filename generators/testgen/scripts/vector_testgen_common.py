@@ -1547,14 +1547,14 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
             mapped.remove("Zve64x")
           if "Zve64f" in mapped and test.startswith("vmulh") and sew == 64:
             mapped.remove("Zve64f")
-          
+
           # All Zve* extensions support all vector fixed-point arithmetic instructions (31.1.12. Vector Fixed-Point
           # Arithmetic Instructions), except that vsmul.vv and vsmul.vx are not included in EEW=64 in Zve64*.
           if "Zve64x" in mapped and test.startswith("vsmul") and sew == 64:
             mapped.remove("Zve64x")
           if "Zve64f" in mapped and test.startswith("vsmul") and sew == 64:
             mapped.remove("Zve64f")
-          
+
           # All Zve* extensions support all vector permutation instructions (31.1.16. Vector Permutation Instructions),
           # except that Zve32x and Zve64x do not include those with floating-point operands, and Zve64f does not include
           # those with EEW=64 floating-point operands.
@@ -1564,7 +1564,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
 
           if mapped == []:
             continue
-          
+
           matched_alias = alias
           derived_exts.extend(mapped)
           break

@@ -88,6 +88,8 @@ from vector_testgen_common import (
   vedgesemulf2,
   vedgesemulf4,
   vedgesemulf8,
+  v_crypto_edges_emul4,
+  v_crypto_edges_emul8,
   vd_widen_ins,
   vector_loads,
   vector_ls_ins,
@@ -1101,15 +1103,15 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cp_vs2_edges_f"             : make_vs2_edges(test, sew, vfedgesemul1)
     elif coverpoint == "cp_vs2_edges_f_bf16"        : make_vs2_edges(test, sew, vfedgesemul1)
     elif coverpoint == "cp_vs2_edges_f_emul2"       : make_vs2_edges(test, sew, vfedgesemul2)
-    elif coverpoint == "cp_vs2_edges_egs4"          : make_vs2_edges(test, sew, vedgesemul4, vl=4, lmul=4, egs=4)
+    elif coverpoint == "cp_vs2_edges_egs4"          : make_vs2_edges(test, sew, v_crypto_edges_emul4, vl=4, lmul=4, egs=4)
     elif coverpoint == "cp_vs1_edges"               : make_vs1_edges(test, sew, vedgesemul1)
     elif coverpoint == "cp_vs1_edges_emul2"         : make_vs1_edges(test, sew, vedgesemul2)
     elif coverpoint == "cp_vs1_edges_eew1"          : make_vs1_edges(test, sew, vedgeseew1, vl=8)  # assume vl = 8 for mask logical instr
     elif coverpoint == "cp_vs1_edges_f"             : make_vs1_edges(test, sew, vfedgesemul1)
     elif coverpoint == "cp_vs1_edges_f_bf16"        : make_vs1_edges(test, sew, vfedgesemul1)
     elif coverpoint == "cp_vs1_edges_f_emul2"       : make_vs1_edges(test, sew, vfedgesemul2)
-    elif coverpoint == "cp_vs1_edges_egs4"          : make_vs1_edges(test, sew, vedgesemul4, vl=4, lmul=4, egs=4)
-    elif coverpoint == "cp_vd_edges_egs4"           : make_vd_edges(test, sew, vedgesemul4, vl=4, lmul=4, egs=4)
+    elif coverpoint == "cp_vs1_edges_egs4"          : make_vs1_edges(test, sew, v_crypto_edges_emul4, vl=4, lmul=4, egs=4)
+    elif coverpoint == "cp_vd_edges_egs4"           : make_vd_edges(test, sew, v_crypto_edges_emul4, vl=4, lmul=4, egs=4)
     elif coverpoint == "cr_vs2_vs1_edges"           : make_vs2_vs1_edges(test, sew, vedgesemul1, vedgesemul1)
     elif coverpoint == "cr_vs2_vs1_edges_wv"        : make_vs2_vs1_edges(test, sew, vedgesemul2, vedgesemul1)
     elif coverpoint == "cr_vs2_vs1_edges_wred"      : make_vs2_vs1_edges(test, sew, vedgesemul1, vedgesemul2)
@@ -1118,9 +1120,9 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cr_vs2_vs1_edges_f_bf16"    : make_vs2_vs1_edges(test, sew, vfedgesemul1, vfedgesemul1)
     elif coverpoint == "cr_vs2_vs1_edges_fwv"       : make_vs2_vs1_edges(test, sew, vfedgesemul2, vfedgesemul1)
     elif coverpoint == "cr_vs2_vs1_edges_fwred"     : make_vs2_vs1_edges(test, sew, vfedgesemul1, vfedgesemul2)
-    elif coverpoint == "cr_vs2_vs1_edges_egs4"      : make_vs2_vs1_edges(test, sew, vedgesemul4, vedgesemul4, vl=4, lmul=4)
-    elif coverpoint == "cr_vs2_vd_edges_egs4"       : make_vs2_vd_edges(test, sew, vedgesemul4, vedgesemul4, vl=4, lmul=4)
-    elif coverpoint == "cr_vs1_vd_edges_egs4"       : make_vs1_vd_edges(test, sew, vedgesemul4, vedgesemul4, vl=4, lmul=4)
+    elif coverpoint == "cr_vs2_vs1_edges_egs4"      : make_vs2_vs1_edges(test, sew, v_crypto_edges_emul4, v_crypto_edges_emul4, vl=4, lmul=4)
+    elif coverpoint == "cr_vs2_vd_edges_egs4"       : make_vs2_vd_edges(test, sew, v_crypto_edges_emul4, v_crypto_edges_emul4, vl=4, lmul=4)
+    elif coverpoint == "cr_vs1_vd_edges_egs4"       : make_vs1_vd_edges(test, sew, v_crypto_edges_emul4, v_crypto_edges_emul4, vl=4, lmul=4)
     elif coverpoint == "cr_vs2_rs1_edges"           : make_vs2_rs1_edges(test, sew, vedgesemul1)
     elif coverpoint == "cr_vs2_rs1_edges_wx"        : make_vs2_rs1_edges(test, sew, vedgesemul2)
     elif coverpoint == "cr_vs2_fs1_edges"           : make_vs2_fs1_edges(test, sew, vfedgesemul1)

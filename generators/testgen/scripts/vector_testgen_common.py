@@ -187,6 +187,10 @@ vectorfpedges = ["vs_corner_f_pos0", "vs_corner_f_neg0", "vs_corner_f_pos1", "vs
 vfedgesemul1  = [(vcorner + "_emul1" ) for vcorner in vectorfpedges]
 vfedgesemul2  = [(vcorner + "_emul2" ) for vcorner in vectorfpedges]
 
+vector_crypto_edges = ["vs_corner_zero", "vs_corner_ones", "vs_corner_walkeven", "vs_corner_walkodd", "vs_corner_random"]
+v_crypto_edges_emul4  = [(vcorner + "_emul4" ) for vcorner in vector_crypto_edges]
+v_crypto_edges_emul8  = [(vcorner + "_emul8" ) for vcorner in vector_crypto_edges]
+
 ##################################
 # Functions to be implemented by importer
 ##################################
@@ -1246,7 +1250,7 @@ def genVMaskedges():
   vectordata += writeData("")
   return vectordata
 
-def genVsedges(test, sew, emul):
+def genVsedges(test, sew, emul, crypto=False):
   def convert(val, bitwidth):
     if eew == 128:
       return [f"0x{(val >> (eew * i)) & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF:032x}"
@@ -1269,19 +1273,27 @@ def genVsedges(test, sew, emul):
     eew = sew * int(emul)
     ending = "emul" + emul
 
-  v_register_edges = {
-    "zero":   0,
-    "one":    1,
-    "two":    2,
-    "ones":   -1,
-    "onesm1": -2,
-    "min":    2**(eew - 1),
-    "minm1":  2**(eew - 1) + 1,
-    "max":    2**(eew - 1) - 1,
-    "maxm1":  2**(eew - 1) - 2,
-    "walkeven": sum(1 << i for i in range(eew) if i % 2 == 0),
-    "walkodd":  sum(1 << i for i in range(eew) if i % 2 == 1),
-  }
+  if crypto:
+    v_register_edges = {
+      "zero":   0,
+      "ones":   -1,
+      "walkeven": sum(1 << i for i in range(eew) if i % 2 == 0),
+      "walkodd":  sum(1 << i for i in range(eew) if i % 2 == 1),
+    }
+  else:
+    v_register_edges = {
+      "zero":   0,
+      "one":    1,
+      "two":    2,
+      "ones":   -1,
+      "onesm1": -2,
+      "min":    2**(eew - 1),
+      "minm1":  2**(eew - 1) + 1,
+      "max":    2**(eew - 1) - 1,
+      "maxm1":  2**(eew - 1) - 2,
+      "walkeven": sum(1 << i for i in range(eew) if i % 2 == 0),
+      "walkodd":  sum(1 << i for i in range(eew) if i % 2 == 1),
+    }
 
   while (r := randint(3, 2**(eew - 1) - 3)) in set(v_register_edges.values()): pass
   v_register_edges["random_within_2vlmax"] = r
@@ -1451,9 +1463,7 @@ def genVtestdata(test, sew):
     elif (test in crypto_ins):
       test_data += genRandomVector(test, sew, vs="vs2")
       test_data += genRandomVector(test, sew, vs="vs1")
-      test_data += genVsedges(test, sew, "4")
-      test_data += genVsedges(test, sew, "2")
-      test_data += genVsedges(test, sew, "1")
+      test_data += genVsedges(test, sew, "4", crypto=True)
     else:
       test_data += genRandomVector(test, sew, vs="vs2")
       if (test in vs1ins):
@@ -2982,7 +2992,7 @@ def prepBaseV(sew, lmul, vl=1, vstart=0, ta=0, ma=0, force_vill=False, vector_re
     writeLine(f"remu x{tempReg2}, x{tempReg2}, x{vlmaxReg}",                      "# ensure that vl < VLMAX")
     if egs != 1:
       # With an egs, sometimes the values of vl can be very limited, to the point that it is possible
-      # egs and vlmax are the only valid values. In such a case, the caluculation of a random vl could
+      # egs and vlmax are the only valid values. In such a case, the calculation of a random vl could
       # lead to vlmax < avl < 2*vlmax, where the spec is very permissive with the values vl can take on
       # This means at certain values, vl = random could be undeterministic due to the ori potentially
       # exceeding vlmax.

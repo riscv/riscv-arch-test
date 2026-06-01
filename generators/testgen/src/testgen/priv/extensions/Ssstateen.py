@@ -85,6 +85,8 @@ def _restore_mstateen(save_reg: int, save_regh: int) -> list[str]:
 
 # ---------------------------------------------------------------------------
 # cp_mstateen0_se0_zero_controls_sstateen0
+#   Cross: csrops × priv_mode_s × se0_zero × sstateen_csrs
+#   Must run from S-mode (priv_mode_s), not M-mode.
 # ---------------------------------------------------------------------------
 
 
@@ -96,7 +98,7 @@ def _generate_se0_zero_controls_sstateen0(test_data: TestData) -> list[str]:
     lines.append(
         comment_banner(
             coverpoint,
-            "CSR ops to sstateen0 with mstateen0.SE0=0 (S/U-mode access should trap)",
+            "CSR ops to sstateen0 from S-mode with mstateen0.SE0=0 (should trap)",
         )
     )
 
@@ -113,17 +115,21 @@ def _generate_se0_zero_controls_sstateen0(test_data: TestData) -> list[str]:
     lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
     lines.extend(_clear_se0(temp_reg))
 
+    # Must sample from S-mode to hit priv_mode_s bin
+    lines.extend(_enter_smode(test_data, temp_reg))
+
     for op in ["CSRRW", "CSRRS", "CSRRC", "CSRR"]:
         insn = f"\t{op}(x{temp_reg}, sstateen0)" if op == "CSRR" else f"\t{op}(x{temp_reg}, sstateen0, x{ones_reg})"
         lines.extend(
             [
                 "",
-                test_data.add_testcase(f"sstateen0_{op.lower()}_se0_0", coverpoint, covergroup),
+                test_data.add_testcase(f"sstateen0_{op.lower()}_se0_0_smode", coverpoint, covergroup),
                 insn,
                 "\tnop",
             ]
         )
 
+    lines.extend(_return_mmode(test_data, temp_reg))
     lines.extend(["", f"\tCSRW(sstateen0, x{save_sstateen})   # restore sstateen0"])
     lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
 
@@ -133,6 +139,8 @@ def _generate_se0_zero_controls_sstateen0(test_data: TestData) -> list[str]:
 
 # ---------------------------------------------------------------------------
 # cp_mstateen0_se0_one_controls_sstateen0
+#   Cross: csrops × priv_mode_s × se0_one × sstateen_csrs
+#   Must run from S-mode (priv_mode_s).
 # ---------------------------------------------------------------------------
 
 
@@ -144,7 +152,7 @@ def _generate_se0_one_controls_sstateen0(test_data: TestData) -> list[str]:
     lines.append(
         comment_banner(
             coverpoint,
-            "CSR ops to sstateen0 with mstateen0.SE0=1 (SE0 enabled, access permitted)",
+            "CSR ops to sstateen0 from S-mode with mstateen0.SE0=1 (access permitted)",
         )
     )
 
@@ -160,16 +168,23 @@ def _generate_se0_one_controls_sstateen0(test_data: TestData) -> list[str]:
     )
     lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
     lines.extend(_set_se0(temp_reg))
-    lines.extend(
-        [
-            "",
-            test_data.add_testcase("csrrw_sstateen0_se0_1", coverpoint, covergroup),
-            f"\tCSRRW(x{temp_reg}, sstateen0, x{ones_reg})  # write all-ones to sstateen0",
-            "\tnop",
-            "",
-            f"\tCSRW(sstateen0, x{save_sstateen})   # restore sstateen0",
-        ]
-    )
+
+    # Must sample from S-mode to hit priv_mode_s bin
+    lines.extend(_enter_smode(test_data, temp_reg))
+
+    for op in ["CSRRW", "CSRRS", "CSRRC", "CSRR"]:
+        insn = f"\t{op}(x{temp_reg}, sstateen0)" if op == "CSRR" else f"\t{op}(x{temp_reg}, sstateen0, x{ones_reg})"
+        lines.extend(
+            [
+                "",
+                test_data.add_testcase(f"sstateen0_{op.lower()}_se0_1_smode", coverpoint, covergroup),
+                insn,
+                "\tnop",
+            ]
+        )
+
+    lines.extend(_return_mmode(test_data, temp_reg))
+    lines.extend(["", f"\tCSRW(sstateen0, x{save_sstateen})   # restore sstateen0"])
     lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
 
     test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, save_sstateen, ones_reg])
@@ -178,6 +193,8 @@ def _generate_se0_one_controls_sstateen0(test_data: TestData) -> list[str]:
 
 # ---------------------------------------------------------------------------
 # cp_csr_illegal_accesses
+#   Cross: priv_mode_u × sstateen_csrs × csrops × se0_one
+#   U-mode only (unchanged).
 # ---------------------------------------------------------------------------
 
 
@@ -226,6 +243,9 @@ def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
 
 # ---------------------------------------------------------------------------
 # cp_walking_ones
+#   Cross: priv_mode_s × sstateen_walk_csr × csrops × csr_walk × se0_one
+#   Must run from S-mode with SE0=1. csr_walk_test covers csrw+csrs+csrc
+#   internally (walking-1s uses CSRW+CSRS, walking-0s uses CSRW+CSRC).
 # ---------------------------------------------------------------------------
 
 
@@ -236,7 +256,7 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
     lines = [
         comment_banner(
             coverpoint,
-            "Walking-1 and walking-0 patterns written to sstateen0 via CSRRW with SE0=1",
+            "Walking-1 and walking-0 patterns on sstateen0 from S-mode with SE0=1",
         )
     ]
 
@@ -246,15 +266,26 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
     lines.extend(_set_se0(temp_reg))
     test_data.int_regs.return_registers([save_mstateen, save_mstatenh, temp_reg])
 
+    # The walk itself must be sampled in S-mode so priv_mode_s bin is hit
+    # We enter S-mode, perform the walk, then return to M-mode.
+    # csr_walk_test emits CSRW+CSRS (walking-1s) and CSRW+CSRC (walking-0s),
+    # satisfying the csrops cross (csrw, csrs, csrc all hit).
     lines.extend(
         [
             "",
-            test_data.add_testcase("sstateen0_walk_se0_1", coverpoint, covergroup),
+            test_data.add_testcase("sstateen0_walk_se0_1_smode", coverpoint, covergroup),
         ]
     )
+
+    # Enter S-mode before the walk
+    save_mstateen, save_mstatenh, temp_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
+    lines.extend(_enter_smode(test_data, temp_reg))
+    test_data.int_regs.return_registers([save_mstateen, save_mstatenh, temp_reg])
+
     lines.extend(csr_walk_test(test_data, ("sstateen0", 0x7), covergroup, coverpoint))
 
     save_mstateen, save_mstatenh, temp_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
+    lines.extend(_return_mmode(test_data, temp_reg))
     lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
     test_data.int_regs.return_registers([save_mstateen, save_mstatenh, temp_reg])
 
@@ -263,6 +294,11 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
 
 # ---------------------------------------------------------------------------
 # cp_jvt
+#   Cross: priv_mode_maybes_u × csrops × jvt_csr × jvt_state × se0_one
+#   priv_mode_maybes_u = S-mode + U-mode.
+#   The old generator split this across _generate_jvt (M-mode) and
+#   _generate_jvt_lower_mode (U-mode). Both are wrong/incomplete.
+#   This single function covers S-mode and U-mode.
 # ---------------------------------------------------------------------------
 
 
@@ -274,7 +310,7 @@ def _generate_jvt(test_data: TestData) -> list[str]:
     lines.append(
         comment_banner(
             coverpoint,
-            "CSRRW to jvt CSR with sstateen0.JVT enabled/disabled under SE0=1",
+            "CSR ops on jvt from S/U-mode with sstateen0.JVT enabled/disabled under SE0=1",
         )
     )
 
@@ -283,109 +319,70 @@ def _generate_jvt(test_data: TestData) -> list[str]:
     )
 
     JVT_BIT = 2
+    csr_ops = ["CSRRW", "CSRRS", "CSRRC", "CSRR"]
 
-    lines.extend(
-        [
-            f"\tCSRR(x{save_sstateen}, sstateen0)   # save sstateen0",
-            f"\tCSRR(x{save_jvt}, jvt)              # save jvt",
-            f"\tLI(x{ones_reg}, -1)",
-        ]
-    )
-    lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
-    lines.extend(_set_se0(temp_reg))
+    # priv_mode_maybes_u = S-mode + U-mode
+    modes = [
+        ("smode", _enter_smode),
+        ("umode", _enter_umode),
+    ]
 
-    for jvt_state in [0, 1]:
-        jvt_action = "CSRC" if jvt_state == 0 else "CSRS"
-        lines.extend(
-            [
-                "",
-                f"\t# SE0=1, sstateen0.JVT={jvt_state}",
-                f"\tLI(x{temp_reg}, {1 << JVT_BIT})",
-                f"\t{jvt_action}(sstateen0, x{temp_reg})",
-                "",
-                test_data.add_testcase(f"csrrw_jvt_se0_1_jvt_{jvt_state}", coverpoint, covergroup),
-                f"\tCSRRW(x{temp_reg}, jvt, x{ones_reg})  # write to jvt",
-                "\tnop",
-            ]
-        )
-
-    lines.extend(
-        [
-            "",
-            f"\tCSRW(sstateen0, x{save_sstateen})   # restore sstateen0",
-            f"\tCSRW(jvt, x{save_jvt})              # restore jvt",
-        ]
-    )
-    lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
+    for mode_label, enter_fn in modes:
+        if mode_label == "smode":
+            lines.append("#ifdef S_SUPPORTED")
+        for jvt_state in [0, 1]:
+            jvt_action = "CSRC" if jvt_state == 0 else "CSRS"
+            lines.extend(
+                [
+                    "",
+                    f"\t# SE0=1, sstateen0.JVT={jvt_state}, {mode_label}",
+                    f"\tCSRR(x{save_sstateen}, sstateen0)  # save sstateen0",
+                    f"\tCSRR(x{save_jvt}, jvt)             # save jvt",
+                    f"\tLI(x{ones_reg}, -1)",
+                ]
+            )
+            lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
+            lines.extend(_set_se0(temp_reg))
+            lines.extend(
+                [
+                    f"\tLI(x{temp_reg}, {1 << JVT_BIT})",
+                    f"\t{jvt_action}(sstateen0, x{temp_reg})  # sstateen0.JVT = {jvt_state}",
+                ]
+            )
+            lines.extend(enter_fn(test_data, temp_reg))
+            for op in csr_ops:
+                insn = f"\t{op}(x{temp_reg}, jvt)" if op == "CSRR" else f"\t{op}(x{temp_reg}, jvt, x{ones_reg})"
+                lines.extend(
+                    [
+                        "",
+                        test_data.add_testcase(
+                            f"{op.lower()}_jvt_se0_1_jvt_{jvt_state}_{mode_label}",
+                            coverpoint,
+                            covergroup,
+                        ),
+                        insn,
+                        "\tnop",
+                    ]
+                )
+            lines.extend(_return_mmode(test_data, temp_reg))
+            lines.extend(
+                [
+                    f"\tCSRW(sstateen0, x{save_sstateen})  # restore sstateen0",
+                    f"\tCSRW(jvt, x{save_jvt})             # restore jvt",
+                ]
+            )
+            lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
+        if mode_label == "smode":
+            lines.append("#endif  // S_SUPPORTED")
 
     test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, save_sstateen, save_jvt, ones_reg])
     return lines
 
 
 # ---------------------------------------------------------------------------
-# cp_jvt_lower_mode
-# ---------------------------------------------------------------------------
-
-
-def _generate_jvt_lower_mode(test_data: TestData) -> list[str]:
-    coverpoint = "cp_jvt_lower_mode"
-    covergroup = "Ssstateen_cg"
-
-    lines = []
-    lines.append(
-        comment_banner(
-            coverpoint,
-            "CSRRW to jvt from U-mode with sstateen0.JVT enabled/disabled under SE0=1",
-        )
-    )
-
-    temp_reg, save_mstateen, save_mstatenh, save_sstateen, save_jvt = test_data.int_regs.get_registers(
-        5, exclude_regs=[0]
-    )
-    JVT_BIT = 2
-
-    for jvt_state in [0, 1]:
-        jvt_action = "CSRC" if jvt_state == 0 else "CSRS"
-        lines.extend(
-            [
-                "",
-                f"\t# SE0=1, sstateen0.JVT={jvt_state}",
-                f"\tCSRR(x{save_sstateen}, sstateen0)",
-                f"\tCSRR(x{save_jvt}, jvt)",
-            ]
-        )
-        lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
-        lines.extend(_set_se0(temp_reg))
-        lines.extend(
-            [
-                f"\tLI(x{temp_reg}, {1 << JVT_BIT})",
-                f"\t{jvt_action}(sstateen0, x{temp_reg})",
-            ]
-        )
-        lines.extend(_enter_umode(test_data, temp_reg))
-        lines.extend(
-            [
-                "",
-                test_data.add_testcase(f"csrrw_jvt_se0_1_jvt_{jvt_state}_umode", coverpoint, covergroup),
-                f"\tCSRRW(x{temp_reg}, jvt, x{temp_reg})  # write jvt from U-mode",
-                "\tnop",
-            ]
-        )
-        lines.extend(_return_mmode(test_data, temp_reg))
-        lines.extend(
-            [
-                f"\tCSRW(sstateen0, x{save_sstateen})  # restore sstateen0",
-                f"\tCSRW(jvt, x{save_jvt})             # restore jvt",
-            ]
-        )
-        lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
-
-    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, save_sstateen, save_jvt])
-    return lines
-
-
-# ---------------------------------------------------------------------------
 # cp_fcsr_lower
+#   Cross: priv_mode_maybes_u × misa_F × se0_one × sstateen0_fcsr_bit × csrops × fcsr_lower_mode_csrs
+#   priv_mode_maybes_u = S-mode + U-mode (unchanged from original).
 # ---------------------------------------------------------------------------
 
 
@@ -405,11 +402,13 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
         5, exclude_regs=[0]
     )
     fp_csrs = ["frm", "fflags", "fcsr"]
-    FCSR_BIT = 1  # sstateen0 bit 1 = FCSR per spec Figure 37
+    FCSR_BIT = 1  # sstateen0 bit 1 = FCSR
 
     for fcsr_bit in [0, 1]:
         fcsr_action = "CSRC" if fcsr_bit == 0 else "CSRS"
         for mode_label, enter_fn in [("smode", _enter_smode), ("umode", _enter_umode)]:
+            if mode_label == "smode":
+                lines.append("#ifdef S_SUPPORTED")
             lines.extend(
                 [
                     "",
@@ -443,25 +442,29 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
             lines.extend(_return_mmode(test_data, temp_reg))
             lines.extend([f"\tCSRW(sstateen0, x{save_sstateen})  # restore sstateen0"])
             lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
+            if mode_label == "smode":
+                lines.append("#endif  // S_SUPPORTED")
 
     test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, save_sstateen, save_reg])
     return lines
 
 
 # ---------------------------------------------------------------------------
-# cp_fcsr_lower_fp_instrs
+# cp_fcsr_fp_instrs
+#   Cross: priv_mode_maybes_u × misa_F × se0_one × sstateen0_fcsr_bit × fp_instrs
+#   priv_mode_maybes_u = S-mode + U-mode.
 # ---------------------------------------------------------------------------
 
 
 def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
-    coverpoint = "cp_fcsr_lower_fp_instrs"
+    coverpoint = "cp_fcsr_fp_instrs"
     covergroup = "Ssstateen_cg"
 
     lines = []
     lines.append(
         comment_banner(
             coverpoint,
-            "FP instructions from U-mode with SE0=1 and sstateen0.FCSR states",
+            "FP instructions from S/U-mode with SE0=1 and sstateen0.FCSR states",
         )
     )
 
@@ -469,55 +472,60 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
         5, exclude_regs=[0]
     )
 
-    FCSR_BIT = 1  # sstateen0 bit 1 = FCSR per spec Figure 37
+    FCSR_BIT = 1  # sstateen0 bit 1 = FCSR
 
     fp_instrs = [
-        "fadd.s f0, f1, f2",
-        "flw f0, 0(x{scratch})",
-        "fcvt.w.s x{temp}, f0",
-        "fcvt.s.w f0, x0",
-        "fmv.x.w x{temp}, f0",
-        "fmv.w.x f0, x{temp}",
-        "fclass.s x{temp}, f0",
+        ("fadd.s f0, f1, f2", "fadd_s"),
+        ("flw f0, 0(x{scratch})", "flw"),
+        ("fcvt.w.s x{temp}, f0", "fcvt_w_s"),
+        ("fcvt.s.w f0, x0", "fcvt_s_w"),
+        ("fmv.x.w x{temp}, f0", "fmv_x_w"),
+        ("fmv.w.x f0, x{temp}", "fmv_w_x"),
+        ("fclass.s x{temp}, f0", "fclass_s"),
     ]
 
     lines.extend([f"\tLA(x{scratch_reg}, scratch)  # scratch memory pointer"])
 
     for fcsr_bit in [0, 1]:
         fcsr_action = "CSRC" if fcsr_bit == 0 else "CSRS"
-        lines.extend(
-            [
-                "",
-                f"\t# SE0=1, sstateen0.FCSR={fcsr_bit}, umode",
-                f"\tCSRR(x{save_sstateen}, sstateen0)",
-            ]
-        )
-        lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
-        lines.extend(_set_se0(temp_reg))
-        lines.extend(
-            [
-                f"\tLI(x{temp_reg}, {1 << FCSR_BIT})",
-                f"\t{fcsr_action}(sstateen0, x{temp_reg})  # sstateen0.FCSR = {fcsr_bit}",
-            ]
-        )
-        lines.extend(_enter_umode(test_data, temp_reg))
-        for insn_template in fp_instrs:
-            insn = insn_template.replace("{temp}", str(temp_reg)).replace("{scratch}", str(scratch_reg))
+        for mode_label, enter_fn in [("smode", _enter_smode), ("umode", _enter_umode)]:
+            if mode_label == "smode":
+                lines.append("#ifdef S_SUPPORTED")
             lines.extend(
                 [
                     "",
-                    test_data.add_testcase(
-                        f"{insn_template.split()[0]}_se0_1_fcsr{fcsr_bit}_umode",
-                        coverpoint,
-                        covergroup,
-                    ),
-                    f"\t{insn}  # fp instr from umode fcsr={fcsr_bit}",
-                    "\tnop",
+                    f"\t# SE0=1, sstateen0.FCSR={fcsr_bit}, {mode_label}",
+                    f"\tCSRR(x{save_sstateen}, sstateen0)",
                 ]
             )
-        lines.extend(_return_mmode(test_data, temp_reg))
-        lines.extend([f"\tCSRW(sstateen0, x{save_sstateen})  # restore sstateen0"])
-        lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
+            lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
+            lines.extend(_set_se0(temp_reg))
+            lines.extend(
+                [
+                    f"\tLI(x{temp_reg}, {1 << FCSR_BIT})",
+                    f"\t{fcsr_action}(sstateen0, x{temp_reg})  # sstateen0.FCSR = {fcsr_bit}",
+                ]
+            )
+            lines.extend(enter_fn(test_data, temp_reg))
+            for insn_template, label in fp_instrs:
+                insn = insn_template.replace("{temp}", str(temp_reg)).replace("{scratch}", str(scratch_reg))
+                lines.extend(
+                    [
+                        "",
+                        test_data.add_testcase(
+                            f"{label}_se0_1_fcsr{fcsr_bit}_{mode_label}",
+                            coverpoint,
+                            covergroup,
+                        ),
+                        f"\t{insn}  # fp instr from {mode_label} fcsr={fcsr_bit}",
+                        "\tnop",
+                    ]
+                )
+            lines.extend(_return_mmode(test_data, temp_reg))
+            lines.extend([f"\tCSRW(sstateen0, x{save_sstateen})  # restore sstateen0"])
+            lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
+            if mode_label == "smode":
+                lines.append("#endif  // S_SUPPORTED")
 
     test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, save_sstateen, scratch_reg])
     return lines
@@ -542,18 +550,16 @@ def make_ssstateen(test_data: TestData) -> list[str]:
     lines.extend(_generate_se0_one_controls_sstateen0(test_data))
     lines.extend(_generate_csr_illegal_accesses(test_data))
     lines.extend(_generate_walking_ones(test_data))
-    # cp_fcsr_lower, cp_fcsr_lower_fp_instrs
-    # Only when F (Zfinx) is supported — sstateen0.FCSR bit is relevant
+
+    # cp_fcsr_lower, cp_fcsr_fp_instrs — only when F (Zfinx) is supported
     lines.append("#ifdef ZFINX_SUPPORTED")
     lines.extend(_generate_fcsr_lower(test_data))
     lines.extend(_generate_fcsr_lower_fp_instrs(test_data))
     lines.append("#endif  // ZFINX_SUPPORTED")
 
-    # cp_jvt, cp_jvt_lower_mode
-    # Only when Zcmt is supported — sstateen0.JVT bit is relevant
+    # cp_jvt — only when Zcmt is supported (covers both S-mode and U-mode)
     lines.append("#ifdef ZCMT_SUPPORTED")
     lines.extend(_generate_jvt(test_data))
-    lines.extend(_generate_jvt_lower_mode(test_data))
     lines.append("#endif  // ZCMT_SUPPORTED")
 
     return lines

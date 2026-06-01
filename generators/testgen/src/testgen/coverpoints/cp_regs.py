@@ -16,6 +16,28 @@ from testgen.formatters import format_single_testcase
 from testgen.formatters.params import generate_random_params
 
 
+def get_zacas_mask(instr_name: str, instr_type: str, test_data: TestData) -> int:
+    """Helper function to calculate the correct all_ones bitmask for Zacas and standard instructions."""
+    if instr_name.lower().startswith("amocas"):
+        instr_lower = instr_name.lower()
+        if instr_lower.endswith(".b"):
+            bits = 8
+        elif instr_lower.endswith(".h"):
+            bits = 16
+        elif instr_lower.endswith(".w"):
+            bits = 32
+        elif instr_lower.endswith(".d"):
+            bits = 64
+        elif instr_lower.endswith(".q"):
+            bits = 128
+        else:
+            bits = test_data.xlen
+        return (1 << bits) - 1
+    else:
+        val_is_pair = instr_type == "AP"
+        return (1 << (2 * test_data.xlen)) - 1 if val_is_pair else (1 << test_data.xlen) - 1
+
+
 @add_coverpoint_generator("cp_rd")
 def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for destination register coverpoints covering both matching and non-matching states."""
@@ -34,13 +56,9 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
 
     test_chunks: list[TestChunk] = []
 
-    # For Zacas instructions only (amocas)
     is_zacas = instr_name.lower().startswith("amocas")
     equal_cases = [True, False] if is_zacas else [None]
-
-    # Value is double-width if instruction type is AP
-    val_is_pair = instr_type == "AP"
-    all_ones = (1 << (2 * test_data.xlen)) - 1 if val_is_pair else (1 << test_data.xlen) - 1
+    all_ones = get_zacas_mask(instr_name, instr_type, test_data)
 
     # Generate both matching and non-matching tests for every register
     for rd in rd_regs:
@@ -51,7 +69,6 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
                 asm_setup = test_data.int_regs.consume_registers([rd])
 
             if is_zacas:
-                # For amocas instructions, we want to specifically test the case where the loaded value matches the original rd value
                 rd_val = random_range(0, all_ones)
                 rs2_val = random_range(0, all_ones)
 
@@ -76,7 +93,6 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
                 desc = f"{coverpoint} (Test destination rd = x{rd}, {case_desc})"
                 bin_name = f"b{rd}_{bin_suffix}"
             else:
-                # standard case for non-Zacas instructions where we just want to test different rd values without specific matching requirements
                 params = generate_random_params(test_data, instr_type, rd=rd)
                 desc = f"{coverpoint} (Test destination rd = x{rd})"
                 bin_name = f"b{rd}"
@@ -114,10 +130,7 @@ def make_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
 
     is_zacas = instr_name.lower().startswith("amocas")
     equal_cases = [True, False] if is_zacas else [None]
-
-    # Value is double-width if instruction type is AP
-    val_is_pair = instr_type == "AP"
-    all_ones = (1 << (2 * test_data.xlen)) - 1 if val_is_pair else (1 << test_data.xlen) - 1
+    all_ones = get_zacas_mask(instr_name, instr_type, test_data)
 
     for rs1 in rs1_regs:
         for equal_case in equal_cases:
@@ -127,7 +140,6 @@ def make_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
                 asm_setup = test_data.int_regs.consume_registers([rs1])
 
             if is_zacas:
-                # For amocas instructions, we want to specifically test the case where the loaded value matches the original rd value
                 rd_val = random_range(0, all_ones)
                 rs2_val = random_range(0, all_ones)
 
@@ -152,7 +164,6 @@ def make_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
                 desc = f"{coverpoint} (Test source rs1 = x{rs1}, {case_desc})"
                 bin_name = f"b{rs1}_{bin_suffix}"
             else:
-                # standard case for non-Zacas instructions where we just want to test different rs1 values without specific matching requirements
                 params = generate_random_params(test_data, instr_type, rs1=rs1)
                 desc = f"{coverpoint} (Test source rs1 = x{rs1})"
                 bin_name = f"b{rs1}"
@@ -186,10 +197,7 @@ def make_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
 
     is_zacas = instr_name.lower().startswith("amocas")
     equal_cases = [True, False] if is_zacas else [None]
-
-    # Value is double-width if instruction type is AP
-    val_is_pair = instr_type == "AP"
-    all_ones = (1 << (2 * test_data.xlen)) - 1 if val_is_pair else (1 << test_data.xlen) - 1
+    all_ones = get_zacas_mask(instr_name, instr_type, test_data)
 
     for rs2 in rs2_regs:
         for equal_case in equal_cases:
@@ -199,7 +207,6 @@ def make_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
                 asm_setup = test_data.int_regs.consume_registers([rs2])
 
             if is_zacas:
-                # For amocas instructions, we want to specifically test the case where the loaded value matches the original rd value
                 rd_val = random_range(0, all_ones)
                 rs2_val = random_range(0, all_ones)
 
@@ -224,7 +231,6 @@ def make_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
                 desc = f"{coverpoint} (Test source rs2 = x{rs2}, {case_desc})"
                 bin_name = f"b{rs2}_{bin_suffix}"
             else:
-                # standard case for non-Zacas instructions where we just want to test different rs2 values without specific matching requirements
                 params = generate_random_params(test_data, instr_type, rs2=rs2)
                 desc = f"{coverpoint} (Test source rs2 = x{rs2})"
                 bin_name = f"b{rs2}"

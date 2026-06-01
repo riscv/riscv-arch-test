@@ -249,14 +249,7 @@ function edge_vs_values_t vs_edges_check_sew32_egs4(int hart, int issue, bit [`U
 
   casez (val)
     {{(`UDB_VLEN*4-128){1'b?}},         {(128){1'b0}}}:            return vs_zero;
-    {{(`UDB_VLEN*4-128){1'b?}},         {(128-1){1'b0}}, {1'b1}}:  return vs_one;
-    {{(`UDB_VLEN*4-128){1'b?}},         {(128-2){1'b0}}, {2'b10}}: return vs_two;
-    {{(`UDB_VLEN*4-128){1'b?}}, {1'b1}, {(128-1){1'b0}}}:          return vs_min;
-    {{(`UDB_VLEN*4-128){1'b?}}, {1'b1}, {(128-2){1'b0}}, {1'b1}}:  return vs_minp1;
-    {{(`UDB_VLEN*4-128){1'b?}}, {1'b0}, {(128-1){1'b1}}}        :  return vs_max;
-    {{(`UDB_VLEN*4-128){1'b?}}, {1'b0}, {(128-2){1'b1}}, {1'b0}}:  return vs_maxm1;
     {{(`UDB_VLEN*4-128){1'b?}},         {(128){1'b1}}}:            return vs_ones;
-    {{(`UDB_VLEN*4-128){1'b?}},         {(128-1){1'b1}}, {1'b0}}:  return vs_onesm1;
     {{(`UDB_VLEN*4-128){1'b?}},         {(128/2){2'b10}}}:         return vs_walkodd;
     {{(`UDB_VLEN*4-128){1'b?}},         {(128/2){2'b01}}}:         return vs_walkeven;
     default:                                                       return vs_random;

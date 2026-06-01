@@ -194,7 +194,7 @@ def make_vs2(instruction, sew, rng, lmul = None, egs = 1):
     incrementBasetestCount()
     vsAddressCount()
 
-def make_vs1(instruction, sew, rng, egs=4):
+def make_vs1(instruction, sew, rng, egs=1):
 
   for v in rng:
     description       = "cp_vs1 (Test source vs1 = v" + str(v) + ")"
@@ -685,7 +685,7 @@ def make_vl_lmul(instruction, sew, maxemul=8, eew = None, preset_emul = None, eg
         min_required_vlen = math.ceil(sew * egs / lmul)
         egs_if_def = f"UDB_VLEN >= {min_required_vlen}"
 
-      maskval = randomizeMask(test)
+      maskval = randomizeMask(instruction)
       no_overlap = [['vs1', 'v0'], ['vs2', 'v0'], ['vd', 'v0'], ['vs3', 'v0']] if maskval is not None else None
 
       description = f"cr_vl_lmul (Test lmul = {lmul}, vl = {vl})"

@@ -3015,7 +3015,7 @@ def prepBaseV(sew, lmul, vl=1, vstart=0, ta=0, ma=0, force_vill=False, vector_re
     writeLine(f"vsetvli x{tempReg2}, x0, e{sew}, m{lmulflag}{taflag}{maflag}",    f"# Set vl = VLMAX, where x{tempReg2} = VLMAX")
   else:
     # reset all source and destination registers to 13 (0xD)
-    writeLine(f"vsetvli x{tempReg2}, x0, e{sew}, m{lmulflag}, tu, mu",    f"# Set vl = VLMAX, where x{tempReg2} = VLMAX")
+    writeLine(f"vsetvli x{tempReg2}, x0, e{sew}, m1, tu, mu",    f"# Set vl = VLMAX, where x{tempReg2} = VLMAX")
     for vreg in vector_registers_used:
       if vreg is not None:
         writeLine(f"vmv.v.i v{vreg}, 13",                       f"# Initialize v{vreg} to 0xD for deterministic undisturbed/tail elements in base suite")

@@ -55,9 +55,9 @@ of the scratch region before each encoding block.  This means:
 
 from __future__ import annotations
 
-from random import choice, randint, sample
+from random import choice, randint, sample, seed
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, reproducible_hash
 from testgen.data.state import TestData
 
 # ── Constants ─────────────────────────────────────────────────────────────
@@ -228,6 +228,7 @@ def emit_raw_words(
     If reinit_interval > 0, emit _emit_reg_init every reinit_interval
     encodings to prevent register clobbering during compressed sweeps.
     """
+    seed(reproducible_hash(template))  # reproducibly randomize register assignments per template
     directive = ".word" if length == 32 else ".hword"
     encodings = _gen_encodings(template, length, exclusion)
     lines.append("")
@@ -373,7 +374,14 @@ def generate_illegal_instr(
     # AMO: funct5 | aq | rl | rs2 | rs1=01000 | funct3 | rd=011RR (x12-x15) | opcode
     _emit_reg_init(lines)
     emit_raw_words(lines, "cp_atomic_funct3", "RRRRRRRRRRRR01000EEE011RR0101111")
-    emit_raw_words(lines, "cp_atomic_funct7", "EEEEERRRRRRR0100001E011RR0101111")
+    emit_raw_words(
+        lines,
+        "cp_atomic_funct7",
+        "EEEEERRRRRRR0100001E011RR0101111",
+        exclusion=[
+            "01001XXXXXXXXXXXX01XXXXXX0101111"  # exclude ssamoswap because it causes access fault exception from machine mode and other cases
+        ],
+    )
     emit_raw_words(lines, "cp_lrsc", "00010RREEEEE0100001E011RR0101111")
 
     # ── amocas odd-register sweep — rs1=x8, rs2=RRRRe (even+odd), rd=011RE={x12-x15} ──
@@ -478,6 +486,12 @@ def generate_illegal_instr(
         ("cp_upperreg_fmv_w_x_rd", "111100000000000010001EEEE1010011"),
     ]:
         emit_raw_words(lines, cmt, tmpl)
+
+    # -- reserved_rm: fadd with dynamic rounding mode
+    lines.append(comment_banner("cp_reserved_rm", "fadd with dynamic rounding mode (frm=5,6,7) is reserved"))
+    for frm in range(8):
+        lines.append(f"csrw frm, {frm}  # set dynamic rounding mode to {frm}")
+        lines.append("fadd.s f1, f2, f3  # reserved when frm=5,6,7")
 
     return lines
 

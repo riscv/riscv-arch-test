@@ -80,6 +80,8 @@
     }
     atomic_funct7 : coverpoint {ins.current.insn[12], ins.current.insn[31:27]} iff (ins.current.insn[6:0] == 7'b0101111 & ins.current.insn[14:13] == 3'b01) {
         // Check all 2 flavors (w/d) * 32 flavors of atomics
+        wildcard ignore_bins ssamoswap_w = {SSAMOSWAP_W}; // ssamoswap can cause amo access-fault exception
+        wildcard ignore_bins ssamoswap_d = {SSAMOSWAP_D}; // ssamoswap can cause amo access-fault exception
     }
     lrsc : coverpoint {ins.current.insn[12], ins.current.insn[24:20]} iff (ins.current.insn[6:0] == 7'b0101111 & ins.current.insn[14:13] == 2'b01 & ins.current.insn[31:27] == 5'b00010) {
         // Check all 2 flavors (w/d) * 2^5 rd values; only rs2 = 0 should be legal
@@ -250,6 +252,7 @@
     }
 
     // fadd with dynamic rounding mode is reserved for frm = 5, 6, 7
+    // Question about whether this is truly belongs in Ssstrict.
     reserved_rm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "frm", "frm")[2:0]
                     iff (ins.current.insn[6:0] == 7'b1010011 & ins.current.insn[31:27] == 5'b00000 & ins.current.insn[14:12] == 3'b111) {
         // check all bins

@@ -286,9 +286,10 @@ jobs:
       ]
     if: "${{ always() }}"
     steps:
-      - name: exit failure
-        if: "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}"
-        run: exit 1
-      - name: exit success
-        if: "${{ !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}"
-        run: exit 0
+      - name: Job status check
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          for result in $RESULTS; do
+            [[ "$result" == "success" ]] || exit 1
+          done

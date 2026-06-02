@@ -670,3 +670,7 @@
         `cover_info("//      Zvkb8 - Enabled");
         `include "Zvkb8_coverage_init.svh"
     `endif
+    `ifdef COVER_ZVKG
+        `cover_info("//      Zvkg - Enabled");
+        `include "Zvkg_coverage_init.svh"
+    `endif

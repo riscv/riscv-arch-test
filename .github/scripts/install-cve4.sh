@@ -9,7 +9,7 @@ set -euo pipefail
 
 INSTALL_DIR="${1:?Usage: install-cve4.sh <install-dir>}"
 CVE4_DV_REPO="https://github.com/openhwgroup/cv32e40p-dv-review.git"
-CVE4_DV_COMMIT="a1c4ec501e82f23987d1d74625b70a6cd1dfc2e1"
+CVE4_DV_COMMIT="1726d14796601884d54d9b0f699128800e2dcf55"
 CVE40X_DV_REPO="https://github.com/karabambus/cv32e40x-dv.git"
 CVE40X_DV_COMMIT="f6b3d6ebc825473458f9fc2714cfc0dce80e02a8"  # openhwgroup/cv32e40x-dv#86
 CVE40X_CORE_HASH="18c88fd78a37f270c8301c552f5fd0f564d0ab20"  # pin cv32e40x RTL

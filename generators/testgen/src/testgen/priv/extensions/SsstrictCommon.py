@@ -487,12 +487,6 @@ def generate_illegal_instr(
     ]:
         emit_raw_words(lines, cmt, tmpl)
 
-    # -- reserved_rm: fadd with dynamic rounding mode
-    lines.append(comment_banner("cp_reserved_rm", "fadd with dynamic rounding mode (frm=5,6,7) is reserved"))
-    for frm in range(8):
-        lines.append(f"csrw frm, {frm}  # set dynamic rounding mode to {frm}")
-        lines.append("fadd.s f1, f2, f3  # reserved when frm=5,6,7")
-
     return lines
 
 
@@ -558,21 +552,6 @@ def generate_vector_illegal_instr(
     emit_raw_words(lines, "cp_vl_lumop_16", "RRR000REEEEE01000101011RR0100111")
     emit_raw_words(lines, "cp_vl_lumop_32", "RRR000REEEEE01000110011RR0100111")
     emit_raw_words(lines, "cp_vl_lumop_64", "RRR000REEEEE01000111011RR0100111")
-    # # mew=0, reserved width values — rs1=x8, vs3=011RR
-    # emit_raw_words(lines, "cp_vs_0_000", "RRR0RRRRRRRR01000000011RR0100111")
-    # emit_raw_words(lines, "cp_vs_0_101", "RRR0RRRRRRRR01000101011RR0100111")
-    # emit_raw_words(lines, "cp_vs_0_110", "RRR0RRRRRRRR01000110011RR0100111")
-    # emit_raw_words(lines, "cp_vs_0_111", "RRR0RRRRRRRR01000111011RR0100111")
-    # # mew=1, reserved width values — rs1=x8, vs3=011RR
-    # emit_raw_words(lines, "cp_vs_1_000", "RRR1RRRRRRRR01000000011RR0100111")
-    # emit_raw_words(lines, "cp_vs_1_101", "RRR1RRRRRRRR01000101011RR0100111")
-    # emit_raw_words(lines, "cp_vs_1_110", "RRR1RRRRRRRR01000110011RR0100111")
-    # emit_raw_words(lines, "cp_vs_1_111", "RRR1RRRRRRRR01000111011RR0100111")
-    # sumop sweep — mop=00, vm=1, rs1=x8, vs3=011RR
-    # emit_raw_words(lines, "cp_vs_lumop_8",  "RRR0001EEEEE01000000011RR0100111")
-    # emit_raw_words(lines, "cp_vs_lumop_16", "RRR0001EEEEE01000101011RR0100111")
-    # emit_raw_words(lines, "cp_vs_lumop_32", "RRR0001EEEEE01000110011RR0100111")
-    # emit_raw_words(lines, "cp_vs_lumop_64", "RRR0001EEEEE01000111011RR0100111")
 
     # ── Vector arithmetic per-SEW sweeps ──────────────────────────────
     for sew in ["8", "16", "32", "64"]:

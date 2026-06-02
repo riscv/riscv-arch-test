@@ -251,9 +251,4 @@
         wildcard bins amocas_q_odd_rs2 = {32'b00101??????1?????_100_?????_0101111};
     }
 
-    // fadd with dynamic rounding mode is reserved for frm = 5, 6, 7
-    // Question about whether this truly belongs in Ssstrict.
-    reserved_rm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "frm", "frm")[2:0]
-                    iff (ins.current.insn[6:0] == 7'b1010011 & ins.current.insn[31:27] == 5'b00000 & ins.current.insn[14:12] == 3'b111) {
-        // check all bins
     }

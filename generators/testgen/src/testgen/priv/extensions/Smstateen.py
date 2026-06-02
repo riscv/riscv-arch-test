@@ -948,7 +948,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
         )
     ]
 
-    temp_reg, scratch_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    temp_reg, scratch_reg = test_data.int_regs.get_registers(2, exclude_regs=[0, 6, 7, 29])
     FCSR_BIT_MASK = 1 << 1
 
     fp_instrs = [

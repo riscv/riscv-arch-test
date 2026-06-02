@@ -1486,6 +1486,7 @@
 
         LA(a0, trap_diag_extra_hint_str)
         call rvmodel_io_write_str
+        call failedtest_print_csr_context
         j failedtest_report_end
 
     trap_report_missing_traps:
@@ -1505,6 +1506,7 @@
 
         LA(a0, trap_diag_missing_hint_str)
         call rvmodel_io_write_str
+        call failedtest_print_csr_context
         j failedtest_report_end
 
     //--------------------------------------------------------------
@@ -1625,22 +1627,8 @@
 
     trap_field_not_cause:
 
-        // For xepc mismatches, also print the instruction at the actual xepc
-        lw a0, trap_diag_subtype
-        li a1, 3
-        bne a0, a1, trap_field_not_epc
-
-        // Print current xepc CSR and instruction at that address
-        // (if we're in M-mode, we can read mepc directly)
-        LA(a0, trap_diag_curr_xepc_str)
-        call rvmodel_io_write_str
-        csrr a0, mepc
-        li a1, UDB_MXLEN
-        jal failedtest_hex_to_str
-        LA(a0, ascii_buffer)
-        call rvmodel_io_write_str
-
     trap_field_not_epc:
+        call failedtest_print_csr_context
 
         // Print diagnostic hints based on the mismatch type
         lw a0, trap_diag_subtype
@@ -1688,15 +1676,6 @@
         LA(a0, trap_diag_generic_str)
         call rvmodel_io_write_str
 
-        // Still print xepc for context
-        LA(a0, xepcstr)
-        call rvmodel_io_write_str
-        csrr a0, mepc
-        li a1, UDB_MXLEN
-        jal failedtest_hex_to_str
-        LA(a0, ascii_buffer)
-        call rvmodel_io_write_str
-
         // Print instruction at mepc
         csrr a2, mepc
         LA(a0, xepcinstrstr)
@@ -1715,6 +1694,7 @@
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
 
+        call failedtest_print_csr_context
         j failedtest_report_end
 
 
@@ -1775,6 +1755,49 @@
 
     failedtest_terminate:
         call rvmodel_halt_fail
+
+
+    # Print mepc, mcause, mtval, mstatus for trap failure diagnostics.
+    # Saves and restores ra via csr_context_ret_addr so callers can use 'call'.
+    failedtest_print_csr_context:
+        la a2, csr_context_ret_addr
+        SREG ra, 0(a2)
+
+        LA(a0, mepcstr)
+        call rvmodel_io_write_str
+        csrr a0, mepc
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        LA(a0, mcausestr)
+        call rvmodel_io_write_str
+        csrr a0, mcause
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        LA(a0, mtvalstr)
+        call rvmodel_io_write_str
+        csrr a0, mtval
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        LA(a0, mstatusstr)
+        call rvmodel_io_write_str
+        csrr a0, mstatus
+        li a1, UDB_MXLEN
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+
+        la a2, csr_context_ret_addr
+        LREG ra, 0(a2)
+        ret
 
 
     # Convert hex number to ASCII string and store result in ascii_buffer
@@ -1952,6 +1975,8 @@
     trap_diag_expected_offset:                   # expected trap sig pointer offset
         .fill 2, 4, 0
     trap_diag_fail_str_ptr:                      # saved failure string pointer for dispatch
+        .fill 2, 4, 0
+    csr_context_ret_addr:                        # return address save slot for failedtest_print_csr_context
         .fill 2, 4, 0
 
     ascii_buffer:
@@ -2138,6 +2163,14 @@
         .string "RVCP: Address of instruction that trapped (XEPC): "
     xepcinstrstr:
         .string "RVCP: Instruction that trapped: "
+    mepcstr:
+        .string "RVCP: MEPC:    "
+    mcausestr:
+        .string "RVCP: MCAUSE:  "
+    mtvalstr:
+        .string "RVCP: MTVAL:   "
+    mstatusstr:
+        .string "RVCP: MSTATUS: "
     trap_sig_offset_mismatch:
         .string "\"Mismatch in trap signature pointer offset! The test likely observed an incorrect number of traps.\"";
     sv_Mvect_str:

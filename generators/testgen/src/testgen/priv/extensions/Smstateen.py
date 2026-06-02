@@ -156,7 +156,7 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
             test_data.add_testcase("mstateen0_walk", coverpoint, covergroup),
         ]
     )
-    lines.extend(csr_walk_test(test_data, ("mstateen0", 0xC00000000000000E), covergroup, coverpoint))
+    lines.extend(csr_walk_test(test_data, ("mstateen0", 0xDF80000000000006), covergroup, coverpoint))
 
     # mstateen0h — RV32 only
     lines.append("#if __riscv_xlen == 32")
@@ -166,7 +166,7 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
             test_data.add_testcase("mstateen0h_walk", coverpoint, covergroup),
         ]
     )
-    lines.extend(csr_walk_test(test_data, ("mstateen0h", 0xC000000E), covergroup, coverpoint))
+    lines.extend(csr_walk_test(test_data, ("mstateen0h", 0xDF800000), covergroup, coverpoint))
     lines.append("#endif  // __riscv_xlen == 32")
 
     return lines

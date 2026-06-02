@@ -102,12 +102,11 @@
     // ── Vector load lumop ────────────────────────────────────────────
     // Unit-stride vector loads: insn[26]=nf[0]=1 selects the lumop field.
     // Generator template: "RRR0RR1EEEEERRRRR<width>RRRRR0000111"
-    //   insn[28]=0 (mew=0), insn[26]=1 (unit-stride), E sweeps insn[24:20].
+    //   insn[28]=0 (mew=0), insn[27:26]=00 (unit-stride), E sweeps insn[24:20].
     // Coverpoint: sample insn[24:20] (lumop/rs2 field).
     vl_lumop : coverpoint ins.current.insn[24:20]
         iff (ins.current.insn[6:0] == 7'b0000111
-           & ins.current.insn[28] == 1'b0
-           & ins.current.insn[26] == 1'b1) {
+           & ins.current.insn[28:26] == 3'b000) {
         // 2^5 = 32 bins; only 00000(unit), 01000(whole), 01011(mask), 10000(ff) legal
     }
 
@@ -120,8 +119,7 @@
     // ── Vector store sumop ───────────────────────────────────────────
     vs_sumop : coverpoint ins.current.insn[24:20]
         iff (ins.current.insn[6:0] == 7'b0100111
-           & ins.current.insn[28] == 1'b0
-           & ins.current.insn[26] == 1'b1) {
+           & ins.current.insn[28:26] == 3'b000) {
         // 2^5 = 32 bins; only 00000(unit), 01000(whole) legal for stores
     }
 

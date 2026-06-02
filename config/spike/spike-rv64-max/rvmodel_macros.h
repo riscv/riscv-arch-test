@@ -191,6 +191,10 @@
   lw _R1, 0(_R2);                               \
   sw _R1, 0(_R2);                               \
   li _R2, PLIC_SENABLE_ADDRESS;                 \
-  sw zero, 0(_R2);
+  sw zero, 0(_R2);\
+
+#define RVMODEL_SET_SSW_INT(_R1, _R2)
+
+#define RVMODEL_CLR_SSW_INT(_R1, _R2)
 
 #endif // _RVMODEL_MACROS_H

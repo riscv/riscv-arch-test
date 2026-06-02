@@ -3,7 +3,7 @@
 # CI configuration for the cve4 family: CV32E40P and CV32E40X
 
 ci_enabled: true
-exclude_extensions: "Sm,SmF,InterruptsSm,ExceptionsF,SsstrictSm" # ExceptionsF: cv32e40p-rv32imcf DUT bug; SsstrictSm: ACT4 bug
+exclude_extensions: "Sm,SmF,ExceptionsF,SsstrictSm" # ExceptionsF: cv32e40p-rv32imcf DUT bug; SsstrictSm: ACT4 bug
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cve4.sh"
 setup_script: ".github/scripts/setup-cve4.sh"

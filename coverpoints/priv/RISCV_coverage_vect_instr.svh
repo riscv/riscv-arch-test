@@ -268,7 +268,7 @@
         iff (ins.current.insn[6:0] == 7'b1110111
            & ins.current.insn[14:12] == 3'b010
            & ins.current.insn[31:26] == 6'b101000) {
-        // 2^7 =128 bins
+        // 2^6 = 64 bins
     }
 
     // vaes.vs: funct6=101001, funct3=010 (OPMVV), type in {vm,vs1}
@@ -277,7 +277,7 @@
         iff (ins.current.insn[6:0] == 7'b1110111
            & ins.current.insn[14:12] == 3'b010
            & ins.current.insn[31:26] == 6'b101001) {
-        // 2^7 = 128 bins
+        // 2^6 = 64 bins
     }
 
 

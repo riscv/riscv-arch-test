@@ -87,7 +87,7 @@ covergroup SsstrictS_scsr_cg with function sample(ins_t ins);
     }
     cp_csrcs:      cross csrop, csr,   priv_mode_s, rs1_ones {
     }
-    cp_shadow_m:   cross csrrw, mcsrs, priv_mode_s, rs1_edges;  // write 1s/0s to mstatus, mie, mip in m mode
+    cp_shadow_m:   cross csrrw, mcsrs, priv_mode_m, rs1_edges;  // write 1s/0s to mstatus, mie, mip in m mode
     cp_shadow_s:   cross csrrw, scsrs, priv_mode_s, rs1_edges;  // write 1s/0s to sstatus, sie, sip in s mode
 endgroup
 
@@ -95,6 +95,7 @@ covergroup SsstrictS_instr_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "RISCV_coverage_instr.svh"
+    `include "priv/RISCV_coverage_vect_instr.svh"
 
     // main coverpoints
     cp_illegal:           cross priv_mode_s, illegal;

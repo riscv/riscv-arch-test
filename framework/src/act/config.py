@@ -9,6 +9,7 @@
 
 from __future__ import annotations
 
+import re
 import shutil
 import subprocess
 from enum import Enum
@@ -187,10 +188,15 @@ def check_ref_model_version(config: Config) -> None:
                 check=True,
                 timeout=5,
             )
-            version = result.stdout.strip()
+            version_output = result.stdout.strip()
+            # Sail may surround the version with extra text or trailing patch/build
+            # segments (e.g. "0.11", "0.11.0", "Sail 0.11-dirty"); compare on the
+            # leading major.minor so cosmetic differences don't trip a false mismatch.
+            match = re.search(r"\d+\.\d+", version_output)
+            version = match.group(0) if match else version_output
             if version != REQUIRED_SAIL_VERSION:
                 raise ValueError(
-                    f"Sail reference model version mismatch. ACT4 requires version {REQUIRED_SAIL_VERSION}, but {version} was found. "
+                    f"Sail reference model version mismatch. ACT4 requires version {REQUIRED_SAIL_VERSION}, but {version_output} was found. "
                     "Refer to the ACT4 README for installation instructions: https://github.com/riscv/riscv-arch-test/tree/act4?tab=readme-ov-file#4-risc-v-sail-reference-model",
                 )
         except subprocess.CalledProcessError as e:

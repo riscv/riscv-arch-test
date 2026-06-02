@@ -210,13 +210,13 @@ def _run_action(
                 with pgids_lock:
                     active_pgids.discard(pgid)
             if action.stdout_file is not None:
-                action.stdout_file.write_text(stderr + stdout)
+                action.stdout_file.write_text(stdout + stderr)
             if proc.returncode != 0:
                 return BuildError(
                     task_name=task.name,
                     command=_task_str(task),
                     returncode=proc.returncode,
-                    output=stderr + stdout,
+                    output=stdout + stderr,
                     log_file=action.stdout_file,
                 )
         except OSError as e:

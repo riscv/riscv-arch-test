@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import importlib.resources
 import os
-import shutil
 import subprocess
 import sys
 import time
@@ -82,9 +81,6 @@ def _ensure_udb_installed() -> None:
             backoff = attempt * 10
             print(f"'bundle install' attempt {attempt} failed. Retrying in {backoff}s...")
             time.sleep(backoff)
-
-    if shutil.which("bundle") is None:
-        raise RuntimeError("'bundle' command still not found after install.")
 
 
 def validate_udb_config(udb_config_file: Path, marker: Path) -> None:

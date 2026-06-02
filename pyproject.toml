@@ -56,5 +56,8 @@ exclude = [
 ]
 typeCheckingMode = "standard"
 pythonVersion = "3.10"
+# The framework targets POSIX; build.py uses os.killpg/signal.SIGKILL, which
+# pyright only recognizes when analyzing for a non-Windows platform.
+pythonPlatform = "Linux"
 # Resolve the `act` package for code outside framework/src (e.g. framework/tests).
 extraPaths = ["framework/src"]

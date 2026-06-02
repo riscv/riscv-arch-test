@@ -193,7 +193,10 @@ def gen_compile_tasks(
         # Derive nm executable from objdump executable (e.g. riscv64-unknown-elf-objdump -> riscv64-unknown-elf-nm)
         nm_exe: Path | None = None
         if config.objdump_exe is not None:
-            candidate = Path(str(config.objdump_exe).replace("objdump", "nm"))
+            # Swap only the executable's basename so a parent directory that happens
+            # to contain "objdump" (e.g. /opt/objdump-tools/) is left untouched.
+            objdump_exe = config.objdump_exe
+            candidate = objdump_exe.with_name(objdump_exe.name.replace("objdump", "nm"))
             if candidate.exists():
                 nm_exe = candidate
         tasks.append(
@@ -288,7 +291,7 @@ def gen_rvvi_tasks(
         tasks.append(
             BuildTask(
                 outputs=(objdump_link,),
-                deps=(elf,),
+                deps=(objdump_orig_file,),  # wait on the objdump we link to, not just the elf
                 action=SymlinkAction(src=objdump_orig_file, dst=objdump_link),
             )
         )
@@ -333,6 +336,7 @@ def gen_coverage_tasks(
     env_header_dir: Path,
     coverage_simulator: CoverageSimulator,
     verbose: bool = False,
+    dry_run: bool = False,
 ) -> list[BuildTask]:
     """Generate BuildTasks for coverage UCDB generation, reports, and summary merging."""
     tasks: list[BuildTask] = []
@@ -371,15 +375,17 @@ def gen_coverage_tasks(
 
         # Write tracelist file, but only when its contents actually change so its mtime
         # reflects real changes. This lets us include it in extra_inputs below without
-        # forcing a coverage rebuild on every run.
-        tracelist_file.parent.mkdir(parents=True, exist_ok=True)
-        tracelist_contents = (
-            f"# Tests for coverage group: {coverage_group}\n"
-            "# Generated automatically by riscv-arch-test act framework\n"
-            + "\n".join(str(trace) for trace in sorted(traces))
-        )
-        if not tracelist_file.exists() or tracelist_file.read_text() != tracelist_contents:
-            tracelist_file.write_text(tracelist_contents)
+        # forcing a coverage rebuild on every run. Skipped on a dry run, which never
+        # executes the coverage task and must leave the filesystem untouched.
+        if not dry_run:
+            tracelist_file.parent.mkdir(parents=True, exist_ok=True)
+            tracelist_contents = (
+                f"# Tests for coverage group: {coverage_group}\n"
+                "# Generated automatically by riscv-arch-test act framework\n"
+                + "\n".join(str(trace) for trace in sorted(traces))
+            )
+            if not tracelist_file.exists() or tracelist_file.read_text() != tracelist_contents:
+                tracelist_file.write_text(tracelist_contents)
 
         # Coverage collection task
         coverage_tag = f"{coverage_group.stem.upper()}_COVERAGE"
@@ -468,6 +474,7 @@ def generate_build_plan(
     debug: bool = False,
     fast: bool = False,
     verbose: bool = False,
+    dry_run: bool = False,
 ) -> list[BuildTask]:
     """Build the full DAG of tasks for a single config."""
     if coverage_enabled and config.ref_model_type != RefModelType.SAIL:
@@ -548,6 +555,7 @@ def generate_build_plan(
                 tests_dir / "env",
                 coverage_simulator,
                 verbose,
+                dry_run,
             )
         )
 

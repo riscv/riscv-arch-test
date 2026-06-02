@@ -25,5 +25,10 @@ else
   gem "idlc",        "0.1.5"
 end
 
+# erb was removed from Ruby's stdlib in 3.4, but is required by udb_helpers.
+# On Ruby < 3.4, erb is a default gem provided by the Ruby installation
+# and this declaration is a no-op.
+gem "erb", "6.0.4"
+
 # Mirrors udb's own required_ruby_version (~> 3.2).
 ruby "~> 3.2"

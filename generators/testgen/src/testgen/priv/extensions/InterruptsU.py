@@ -325,10 +325,10 @@ def make_interruptsu(test_data: TestData) -> list[str]:
     test_data.int_regs.return_registers([r_temp, r_mtimecmp])
 
     # Generate all test sections
-    # lines.extend(_generate_user_mti_tests(test_data))
-    # lines.extend(_generate_user_msi_tests(test_data))
-    # lines.extend(_generate_user_mei_tests(test_data))
+    lines.extend(_generate_user_mti_tests(test_data))
+    lines.extend(_generate_user_msi_tests(test_data))
+    lines.extend(_generate_user_mei_tests(test_data))
     lines.extend(_generate_user_wfi_tests(test_data))
-    # lines.extend(_generate_user_wfi_timeout_tests(test_data))
+    lines.extend(_generate_user_wfi_timeout_tests(test_data))
 
     return lines

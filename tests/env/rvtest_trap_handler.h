@@ -253,7 +253,8 @@
 #define MPP_SMODE (1<<MPP_LSB)                   // MPP value for S-mode (01 << 11 = 0x800)
 #define MPP_HMODE (2<<MPP_LSB)                   // MPP value for reserved/HS (10 << 11 = 0x1000)
 #define MPP_MMODE (3<<MPP_LSB)                   // MPP value for M-mode (11 << 11 = 0x1800)
-
+#define SUM_LSB    18                             // mstatus.SUM bit position (permit supervisor/user memory access)
+#define MXR_LSB    19                             // mstatus.MXR bit position (make executable readable)
 //==============================================================================
 // SECTION 6: TRAMPOLINE AND SAVE AREA SIZE CALCULATIONS
 //
@@ -1890,28 +1891,41 @@ sv_\__MODE__\()epc:
 #endif
 
 adj_\__MODE__\()epc_rtn:
-        // Advance xEPC to the next instruction regardless of width.
-        // xEPC is always 2-byte aligned, so lhu cannot misalign-fault.
-        // Branchless: bits[1:0]==0b11 -> 32-bit instruction (advance 4), else 16-bit (advance 2).
+        // Advance xEPC past the trapping instruction by its true width.
+        // Read the low halfword of the instruction at xEPC (T3), in the
+        // addressing/permission context of the code that trapped, then
+        // advance 4 (bits[1:0]==0b11) or 2 (compressed).
+        // xEPC is >=2-byte aligned, so lhu cannot misalign-fault.
   .ifc \__MODE__ , M
-        csrr    T6, CSR_MSTATUS                      // save mstatus
-        li      T2, 1
-        slli    T2, T2, MPRV_LSB                     // T2 = (1<<MPRV)
-        or      T2, T6, T2                           // set MPRV=1 so the load uses MPP/MPV translation
+        // M-mode has no translation of its own. Use MPRV so the load is
+        // performed with MPP's privilege + translation (resolves a virtual
+        // xEPC). SUM lets an effective-S load reach U pages; MXR lets the
+        // load read execute-only (R=0,X=1) pages. Relies on mstatus.MPP
+        // still holding the trapped privilege (don't write MPP before here).
+        csrr    T6, CSR_MSTATUS                      // save full mstatus
+        li      T2, (1 << MPRV_LSB) | (1 << SUM_LSB) | (1 << MXR_LSB)
+        or      T2, T6, T2
         csrw    CSR_MSTATUS, T2
+        lhu     T2, 0(T3)                            // fetch via trapped context
+        csrw    CSR_MSTATUS, T6                      // restore mstatus verbatim
+  .else
+        // Below M: the load already runs in the trapped privilege with the
+        // active satp, so no MPRV. Still need SUM (read U pages) and MXR
+        // (read execute-only pages).
+        csrr    T6, CSR_SSTATUS                      // save full sstatus
+        li      T2, (1 << SUM_LSB) | (1 << MXR_LSB)
+        or      T2, T6, T2
+        csrw    CSR_SSTATUS, T2
+        lhu     T2, 0(T3)
+        csrw    CSR_SSTATUS, T6                      // restore sstatus verbatim
   .endif
-        lhu     T2, 0(T3)                            // load lower halfword of instruction at xEPC
-  .ifc \__MODE__ , M
-        csrw    CSR_MSTATUS, T6                      // restore mstatus
-  .endif
-        andi    T2, T2, 3                             // extract bits[1:0]
-        addi    T2, T2, 1                             // ==4 only when bits[1:0] were 0b11
-        srli    T2, T2, 2                             // 1 if 32-bit, 0 if compressed
-        addi    T2, T2, 1                             // 2 (32-bit) or 1 (compressed)
-        slli    T2, T2, 1                             // advance = 4 (32-bit) or 2 (compressed)
-        add     T3, T3, T2                            // T3 = xEPC + advance (next instruction)
-        csrw    CSR_XEPC, T3                          // write adjusted EPC (will resume at next instruction)
-
+        andi    T2, T2, 3                            // bits[1:0]
+        addi    T2, T2, 1                            // ==4 iff bits were 0b11
+        srli    T2, T2, 2                            // 1 if 32-bit, 0 if compressed
+        addi    T2, T2, 1                            // 2 (32-bit) or 1 (compressed)
+        slli    T2, T2, 1                            // advance = 4 or 2
+        add     T3, T3, T2                           // next instruction (raw xEPC + width)
+        csrw    CSR_XEPC, T3
 skp_adj_\__MODE__\()epc:
         csrr    T3, CSR_XTVAL                         // T3 = xtval (trap value: faulting addr or instruction)
 

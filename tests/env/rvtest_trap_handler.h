@@ -1893,7 +1893,17 @@ adj_\__MODE__\()epc_rtn:
         // Advance xEPC to the next instruction regardless of width.
         // xEPC is always 2-byte aligned, so lhu cannot misalign-fault.
         // Branchless: bits[1:0]==0b11 -> 32-bit instruction (advance 4), else 16-bit (advance 2).
+  .ifc \__MODE__ , M
+        csrr    T6, CSR_MSTATUS                      // save mstatus
+        li      T2, 1
+        slli    T2, T2, MPRV_LSB                     // T2 = (1<<MPRV)
+        or      T2, T6, T2                           // set MPRV=1 so the load uses MPP/MPV translation
+        csrw    CSR_MSTATUS, T2
+  .endif
         lhu     T2, 0(T3)                            // load lower halfword of instruction at xEPC
+  .ifc \__MODE__ , M
+        csrw    CSR_MSTATUS, T6                      // restore mstatus
+  .endif
         andi    T2, T2, 3                             // extract bits[1:0]
         addi    T2, T2, 1                             // ==4 only when bits[1:0] were 0b11
         srli    T2, T2, 2                             // 1 if 32-bit, 0 if compressed

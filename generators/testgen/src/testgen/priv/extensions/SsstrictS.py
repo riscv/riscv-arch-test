@@ -47,11 +47,6 @@ _S_CSR_SKIP: frozenset[int] = frozenset(
     + [0x140]  # sscratch — skip: avoid corrupting framework save area
     + [0x144]  # sip    — skip: all-ones write asserts SSIP software interrupt; covered in shadow test
     + [0x5A8]  # scontext — skip: Sail traps (unimplemented Sdtrig), Spike does not; diverges signature
-    # H-mode CSRs (bits[9:8]=10): skip — higher privilege than S-mode; always trap, architecturally known
-    + list(range(0x200, 0x300))  # H-mode std0
-    + list(range(0x600, 0x700))  # H-mode std1
-    + list(range(0xA00, 0xB00))  # H-mode std2
-    + list(range(0xE00, 0xF00))  # H-mode std3
     # M-mode CSRs (bits[9:8]=11): skip — higher privilege than S-mode; already covered by S_coverage.svh
     + list(range(0x300, 0x400))  # M-mode standard (mstatus, misa, medeleg, mtvec, ...)
     + list(range(0x700, 0x800))  # M-mode debug/custom (dcsr, dpc, tselect, ...)
@@ -59,10 +54,13 @@ _S_CSR_SKIP: frozenset[int] = frozenset(
     + list(range(0xF00, 0x1000))  # M-mode info (mvendorid, marchid, mimpid, mhartid, ...)
     # Custom / reserved ranges: skip — undefined / implementation-specific behaviour
     + list(range(0x5C0, 0x600))  # S-mode custom1
+    + list(range(0x6C0, 0x700))  # Hypervisor custom1
     + list(range(0x800, 0x900))  # user custom2
     + list(range(0x9C0, 0xA00))  # S-mode custom2
+    + list(range(0xAC0, 0xB00))  # Hypervisor custom2
     + list(range(0xCC0, 0xD00))  # user custom3
     + list(range(0xDC0, 0xE00))  # S-mode custom3
+    + list(range(0xEC0, 0xF00))  # Hypervisor custom3
 )
 
 

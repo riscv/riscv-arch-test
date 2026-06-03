@@ -26,38 +26,43 @@ covergroup SsstrictS_scsr_cg with function sample(ins_t ins);
     csrrw: coverpoint ins.current.insn {
         wildcard bins csrrw = {CSRRW};
     }
-    // csr is similar to in Sm, but also exercises custom/debug machine mode CSRs, which should trap from supervisor level
+    // csr is similar to in Sm, but only exercise supervisor/hyper and user CSRs.  Insufficient permission CSRs tested in S_coverage.
     csr: coverpoint ins.current.insn[31:20]  {
         bins user_std0[] = {[12'h000:12'h0FF]};
         bins super_std0[] = {[12'h100:12'h17F]};
         ignore_bins satp = {CSR_SATP}; // satp accesses may cause complex side effects
+        // ignore_bins sie = {CSR_SIE}; // sie
+        // ignore_bins stvec = {CSR_STVEC}; // stvec accesses may cause complex side effects
+        // ignore_bins sscratch = {CSR_SSCRATCH}; // sscratch accesses may cause complex side effects
+        // ignore_bins sip = {CSR_SIP}; // sip accesses may cause complex side effects
+        // ignore_bins context = {CSR_CONTEXT}; // context accesses may cause complex side effects
         bins super_std02[] = {[12'h181:12'h1FF]};
         bins hyper_std0[] = {[12'h200:12'h2FF]};
-        bins mach_std0[] = {[12'h300:12'h3FF]};
+        ignore_bins mach_std0[] = {[12'h300:12'h3FF]};
         bins user_std1[] = {[12'h400:12'h4FF]};
         bins super_std1[] = {[12'h500:12'h5BF]};
         ignore_bins super_custom1 = {[12'h5C0:12'h5FF]};
         bins hyper_std1[] = {[12'h600:12'h6BF]};
         ignore_bins hyper_custom1 = {[12'h6C0:12'h6FF]};
-        bins mach_std1[] = {[12'h700:12'h7AF]};
-        bins mach_debug[] = {[12'h7A0:12'h7AF]};
-        bins debug_only[] = {[12'h7B0:12'h7BF]};
-        bins mach_custom1[] = {[12'h7C0:12'h7FF]};
+        ignore_bins mach_std1[] = {[12'h700:12'h7AF]};
+        ignore_bins mach_debug[] = {[12'h7A0:12'h7AF]};
+        ignore_bins debug_only[] = {[12'h7B0:12'h7BF]};
+        ignore_bins mach_custom1[] = {[12'h7C0:12'h7FF]};
         ignore_bins user_custom2 = {[12'h800:12'h8FF]};
         bins super_std2[] = {[12'h900:12'h9BF]};
         ignore_bins super_custom22 = {[12'h9C0:12'h9FF]};
         bins hyper_std2[] = {[12'hA00:12'hABF]};
         ignore_bins hyper_custom22 = {[12'hAC0:12'hAFF]};
-        bins mach_std2[] = {[12'hB00:12'hBBF]};
-        bins mach_custom2[] = {[12'hBC0:12'hBFF]};
+        ignore_bins mach_std2[] = {[12'hB00:12'hBBF]};
+        ignore_bins mach_custom2[] = {[12'hBC0:12'hBFF]};
         bins user_std3[] = {[12'hC00:12'hCBF]};
         ignore_bins user_custom3 = {[12'hCC0:12'hCFF]};
         bins super_std3[] = {[12'hD00:12'hDBF]};
         ignore_bins super_custom3 = {[12'hDC0:12'hDFF]};
         bins hyper_std3[] = {[12'hE00:12'hEBF]};
         ignore_bins hyper_custom3 = {[12'hEC0:12'hEFF]};
-        bins mach_std3[] = {[12'hF00:12'hFBF]};
-        bins mach_custom3[] = {[12'hFC0:12'hFFF]};
+        ignore_bins mach_std3[] = {[12'hF00:12'hFBF]};
+        ignore_bins mach_custom3[] = {[12'hFC0:12'hFFF]};
     }
     rs1_ones: coverpoint ins.current.rs1_val {
         bins ones = {'1};

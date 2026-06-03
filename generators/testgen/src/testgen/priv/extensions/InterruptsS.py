@@ -1717,7 +1717,7 @@ def _generate_wfi_s_tests(test_data: TestData) -> list[str]:
                 if mie_val:
                     lines.extend(
                         [
-                            f"LI(x{r_scratch}, 0x8) # MIE bit",
+                            f"LI(x{r_scratch}, 0x80) # MPIE bit",
                             f"CSRS(mstatus, x{r_scratch})",
                         ]
                     )
@@ -3850,14 +3850,16 @@ def _generate_user_sei_tests(test_data: TestData) -> list[str]:
                     if mie_val:
                         lines.extend(
                             [
-                                f"# Set MIE+MPIE so MIE=1 persists through MRET into U-modeLI(x{r_scratch}, 0x88)",
+                                "# Set MIE+MPIE so MIE=1 persists through MRET into U-mode",
+                                f"LI(x{r_scratch}, 0x88)",
                                 f"CSRS(mstatus, x{r_scratch})",
                             ]
                         )
                     else:
                         lines.extend(
                             [
-                                f"# Clear MIE+MPIELI(x{r_scratch}, 0x88)",
+                                "# Clear MIE+MPIE",
+                                f"LI(x{r_scratch}, 0x88)",
                                 f"CSRC(mstatus, x{r_scratch})",
                             ]
                         )
@@ -4184,7 +4186,7 @@ def make_interruptss_s(test_data: TestData) -> list[str]:
             "Supervisor-mode interrupt tests\nTests S-mode interrupts (STIP, SSIP, SEIP) with M→S delegation",
         ),
         "#define SET_SSW_INT(_R1, _R2)  LI(_R1, 0x2);  CSRS(mip, _R1);",
-        "#define CLR_SSW_INT(_R1, _R2)  LI(_R1, 0x2);  CSRC(sip, _R1);",
+        "#define CLR_SSW_INT(_R1, _R2)  LI(_R1, 0x2);  CSRC(mip, _R1);",
         "#define SET_SEXT_INT(_R1, _R2)  LI(_R1, 0x200);  CSRS(mip, _R1);",
         "#define CLR_SEXT_INT(_R1, _R2)  LI(_R1, 0x200);  CSRC(mip, _R1);",
         "# Initial setup - clear mideleg (no U-mode delegation)",

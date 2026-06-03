@@ -176,6 +176,15 @@
 `ifdef SMVF_COVERAGE
   `include "SmVF_coverage.svh"
 `endif
+`ifdef SMMPM_COVERAGE
+  `include "Smmpm_coverage.svh"
+`endif
+`ifdef SMNPMS_COVERAGE
+  `include "SmnpmS_coverage.svh"
+`endif
+`ifdef SMNPMU_COVERAGE
+  `include "SmnpmU_coverage.svh"
+`endif
 `ifdef SMSTATEEN_COVERAGE
   `include "Smstateen_coverage.svh"
 `endif
@@ -184,6 +193,9 @@
 `endif
 `ifdef SSCOUNTERENW_COVERAGE
   `include "Sscounterenw_coverage.svh"
+`endif
+`ifdef SSNPM_COVERAGE
+  `include "Ssnpm_coverage.svh"
 `endif
 `ifdef SSSTATEEN_COVERAGE
   `include "Ssstateen_coverage.svh"
@@ -493,4 +505,7 @@
 `endif
 `ifdef ZVKB8_COVERAGE
   `include "Zvkb8_coverage.svh"
+`endif
+`ifdef ZVKG_COVERAGE
+  `include "Zvkg_coverage.svh"
 `endif

@@ -1,0 +1,74 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # The Zama16b extension requires MAG16 support to main memory regions. If the
+  # ext:zama16b[] extension is implemented, then the
+  # &lt;&lt;sec:misaligned-atomicity-granule,misaligned atomicity granule&gt;&gt; in
+  # main memory regions with both the coherence and cacheability PMAs is 16 bytes.
+  - name: zama16b_pma_mag_req
+    coverpoint: [""]
+
+  # Misaligned loads, stores and AMOs to those regions that do not cross a naturally
+  # aligned 16-byte boundary are atomic.
+  - name: zama16b_atomic_ops
+    coverpoint: [
+        "Zama16b_cg/cp_lb_load,
+        Zama16b_cg/cp_lbu_load,
+        Zama16b_cg/cp_lh_load,
+        Zama16b_cg/cp_lhu_load,
+        Zama16b_cg/cp_flh_load,
+        Zama16b_cg/cp_lw_load,
+        Zama16b_cg/cp_lwu_load,
+        Zama16b_cg/cp_flw_load,
+        Zama16b_cg/cp_ld_load,
+        Zama16b_cg/cp_fld_load,
+        Zama16b_cg/cp_flq_load,
+        Zama16b_cg/cp_sb_store,
+        Zama16b_cg/cp_sh_store,
+        Zama16b_cg/cp_fsh_store,
+        Zama16b_cg/cp_sw_store,
+        Zama16b_cg/cp_fsw_store,
+        Zama16b_cg/cp_sd_store,
+        Zama16b_cg/cp_fsd_store,
+        Zama16b_cg/cp_fsq_store,
+        Zama16b_cg/cp_amoswap_b_amo,
+        Zama16b_cg/cp_amoadd_b_amo,
+        Zama16b_cg/cp_amoand_b_amo,
+        Zama16b_cg/cp_amoor_b_amo,
+        Zama16b_cg/cp_amoxor_b_amo,
+        Zama16b_cg/cp_amomax_b_amo,
+        Zama16b_cg/cp_amomaxu_b_amo,
+        Zama16b_cg/cp_amomin_b_amo,
+        Zama16b_cg/cp_amominu_b_amo,
+        Zama16b_cg/cp_amoswap_h_amo,
+        Zama16b_cg/cp_amoadd_h_amo,
+        Zama16b_cg/cp_amoand_h_amo,
+        Zama16b_cg/cp_amoor_h_amo,
+        Zama16b_cg/cp_amoxor_h_amo,
+        Zama16b_cg/cp_amomax_h_amo,
+        Zama16b_cg/cp_amomaxu_h_amo,
+        Zama16b_cg/cp_amomin_h_amo,
+        Zama16b_cg/cp_amominu_h_amo,
+        Zama16b_cg/cp_amoswap_w_amo,
+        Zama16b_cg/cp_amoadd_w_amo,
+        Zama16b_cg/cp_amoand_w_amo,
+        Zama16b_cg/cp_amoor_w_amo,
+        Zama16b_cg/cp_amoxor_w_amo,
+        Zama16b_cg/cp_amomax_w_amo,
+        Zama16b_cg/cp_amomaxu_w_amo,
+        Zama16b_cg/cp_amomin_w_amo,
+        Zama16b_cg/cp_amominu_w_amo,
+        Zama16b_cg/cp_amocas_w_amo,
+        Zama16b_cg/cp_amoswap_d_amo,
+        Zama16b_cg/cp_amoadd_d_amo,
+        Zama16b_cg/cp_amoand_d_amo,
+        Zama16b_cg/cp_amoor_d_amo,
+        Zama16b_cg/cp_amoxor_d_amo,
+        Zama16b_cg/cp_amomax_d_amo,
+        Zama16b_cg/cp_amomaxu_d_amo,
+        Zama16b_cg/cp_amomin_d_amo,
+        Zama16b_cg/cp_amominu_d_amo,
+        Zama16b_cg/cp_amocas_d_amo,
+        Zama16b_cg/cp_amocas_q_amo",
+      ]

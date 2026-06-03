@@ -43,6 +43,8 @@ from .SsstrictCommon import SAFE_REGS, generate_compressed_instr, generate_csr_s
 _S_CSR_SKIP: frozenset[int] = frozenset(
     [0x180]  # satp  — skip: TLB flush / address-translation mode change
     + [0x104]  # sie   — skip: all-ones write enables S-mode interrupts; covered in shadow test
+    + [0x105]  # stvec — skip: breaks the S -> S delegated trap by causing a fetch-fault on the next trap
+    + [0x140]  # sscratch — skip: avoid corrupting framework save area
     + [0x144]  # sip   — skip: all-ones write asserts SSIP software interrupt; covered in shadow test
     + [0x105]  # stvec   — skip: stvec not to update itself
     + [0x140]  # sscratch   — skip: sscratch not to update itself

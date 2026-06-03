@@ -362,7 +362,12 @@ def generate_illegal_instr(
     # ── Atomics — rs1=x8, rd=011RR (x12-x15) ────────────────────────
     # AMO: funct5 | aq | rl | rs2 | rs1=01000 | funct3 | rd=011RR (x12-x15) | opcode
     _emit_reg_init(lines)
-    emit_raw_words(lines, "cp_atomic_funct3", "RRRRRRRRRRRR01000EEE011RR0101111")
+    emit_raw_words(
+        lines,
+        "cp_atomic_funct3",
+        "RRRRRRRRRRRR01000EEE011RR0101111",
+        exclusion=["01001XXXXXXX01000010XXXXX0101111"],  # exclude ssamoswap (can raise AMO access-fault)
+    )
     emit_raw_words(
         lines,
         "cp_atomic_funct7",
@@ -596,7 +601,7 @@ def generate_compressed_instr(
         "compressed00",
         "EEEEEEEEEEEEEE00",
         length=16,
-        exclusion=[  # exclude load ands store instructions that could cause exceptions for bad addresses
+        exclusion=[  # exclude load and store instructions that could cause exceptions for bad addresses
             "001XXXXXXXXXXX00",  # c.fld
             "010XXXXXXXXXXX00",  # c.lw
             "011XXXXXXXXXXX00",  # c.flw/c.ld

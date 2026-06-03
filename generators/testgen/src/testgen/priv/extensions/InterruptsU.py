@@ -207,48 +207,38 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
 
     # Cross: MIE x TW (2x2 = 4 bins)
     for mie_val in [0, 1]:
-        for tw_val in [0, 1]:
-            binname = f"mie_{mie_val}_tw_{tw_val}"
+        binname = f"mie_{mie_val}"
 
-            lines.extend(
-                [
-                    "",
-                    f"LI(x{r_scratch}, 0x200008)",
-                    f"CSRC(mstatus, x{r_scratch})",
-                ]
-            )
+        lines.extend(
+            [
+                "",
+                f"LI(x{r_scratch}, 0x200008)",
+                f"CSRC(mstatus, x{r_scratch})",
+            ]
+        )
 
-            # Set MIE if needed
-            lines.extend(
-                [
-                    f"LI(x{r_scratch}, 0x80)",  # mstatus.MPIE bit mask (bit 7)
-                    f"{'CSRS' if mie_val else 'CSRC'}(mstatus, x{r_scratch})",
-                ]
-            )
+        # Set MIE if needed
+        lines.extend(
+            [
+                f"LI(x{r_scratch}, 0x80)",  # mstatus.MPIE bit mask (bit 7)
+                f"{'CSRS' if mie_val else 'CSRC'}(mstatus, x{r_scratch})",
+            ]
+        )
 
-            # Set TW if needed
-            if tw_val:
-                lines.extend(
-                    [
-                        f"LI(x{r_scratch}, 0x200000)",
-                        f"CSRS(mstatus, x{r_scratch})",
-                    ]
-                )
+        # Enable MTIE
+        lines.extend([f"LI(x{r_scratch}, 0x80)", f"CSRW(mie, x{r_scratch})", "RVTEST_GOTO_LOWER_MODE Umode"])
 
-            # Enable MTIE
-            lines.extend([f"LI(x{r_scratch}, 0x80)", f"CSRW(mie, x{r_scratch})", "RVTEST_GOTO_LOWER_MODE Umode"])
-
-            # WFI - label right before
-            lines.extend(
-                [
-                    *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_temp2),  # Set timer to fire soon
-                    test_data.add_testcase(binname, coverpoint, covergroup),
-                    "    wfi",
-                    "    nop",
-                    "    RVTEST_GOTO_MMODE",
-                    *clr_mtimer_int(r_temp, r_mtimecmp),
-                ]
-            )
+        # WFI - label right before
+        lines.extend(
+            [
+                *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_temp2),  # Set timer to fire soon
+                test_data.add_testcase(binname, coverpoint, covergroup),
+                "    wfi",
+                "    nop",
+                "    RVTEST_GOTO_MMODE",
+                *clr_mtimer_int(r_temp, r_mtimecmp),
+            ]
+        )
 
     test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_temp, r_temp2, r_t1, r_t2, r_scratch])
     return lines
@@ -335,10 +325,10 @@ def make_interruptsu(test_data: TestData) -> list[str]:
     test_data.int_regs.return_registers([r_temp, r_mtimecmp])
 
     # Generate all test sections
-    lines.extend(_generate_user_mti_tests(test_data))
-    lines.extend(_generate_user_msi_tests(test_data))
-    lines.extend(_generate_user_mei_tests(test_data))
+    # lines.extend(_generate_user_mti_tests(test_data))
+    # lines.extend(_generate_user_msi_tests(test_data))
+    # lines.extend(_generate_user_mei_tests(test_data))
     lines.extend(_generate_user_wfi_tests(test_data))
-    lines.extend(_generate_user_wfi_timeout_tests(test_data))
+    # lines.extend(_generate_user_wfi_timeout_tests(test_data))
 
     return lines

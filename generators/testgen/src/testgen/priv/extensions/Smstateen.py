@@ -149,6 +149,11 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
         )
     ]
 
+    # RV64: SE0|ENVCFG|AIA|IMSIC|CONTEXT|P1P13|SRMCFG|CTR|FCSR|CSRIND writable bits.
+    # JVT (bit 2) excluded — belongs to optional Zcmt; tested separately under #ifdef ZCMT_SUPPORTED.
+    # RV32 low word (mstateen0): FCSR(1)|CSRIND(0) only → 0x6
+    # RV32 high word (mstateen0h): same high bits as RV64 → 0xDF800000
+
     # mstateen0 — always (RV32 and RV64)
     lines.extend(
         [
@@ -190,7 +195,8 @@ def _generate_envcfg(test_data: TestData) -> list[str]:
         )
     ]
 
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    # ones_reg is live across RVTEST_GOTO_LOWER_MODE which clobbers x6/x7/x29
+    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0, 6, 7, 29])
     ENVCFG_BIT_MASK_64 = "0x4000000000000000"  # bit 62 of mstateen0
     ENVCFG_BIT_MASK_32 = "0x40000000"  # bit 30 of mstateen0h (logical bit 62)
 
@@ -256,17 +262,24 @@ def _generate_imsic(test_data: TestData) -> list[str]:
     lines = [
         comment_banner(
             coverpoint,
-            "CSR ops on stopei/vstopei with mstateen0.imsic (bit 58) disabled and enabled",
+            "CSR ops on stopei/vstopei with mstateen0.imsic (bit 58) disabled and enabled — M/S/U-mode",
         )
     ]
 
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    # ones_reg is live across RVTEST_GOTO_LOWER_MODE which clobbers x6/x7/x29
+    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0, 6, 7, 29])
     IMSIC_BIT_MASK_64 = "0x0400000000000000"  # bit 58
     IMSIC_BIT_MASK_32 = "0x04000000"  # bit 26 of mstateen0h
 
     imsic_csrs = ["stopei", "vstopei"]
 
     lines.append(f"\tLI(x{ones_reg}, -1)")
+
+    modes = [
+        ("mmode", _enter_mmode, False),
+        ("smode", _enter_smode, True),
+        ("umode", _enter_umode, False),
+    ]
 
     for state in [0, 1]:
         bit_action = "CSRC" if state == 0 else "CSRS"
@@ -283,16 +296,28 @@ def _generate_imsic(test_data: TestData) -> list[str]:
                 "#endif",
             ]
         )
-        for csr in imsic_csrs:
-            for op in CSR_OPS:
-                lines.extend(
-                    [
-                        "",
-                        test_data.add_testcase(f"{csr}_{op.lower()}_imsic{state}", coverpoint, covergroup),
-                        _csr_insn(op, temp_reg, csr, ones_reg),
-                        "\tnop",
-                    ]
-                )
+
+        for mode_label, enter_fn, needs_guard in modes:
+            if needs_guard:
+                lines.append("#ifdef S_SUPPORTED")
+            lines.extend(enter_fn(test_data, temp_reg))
+            for csr in imsic_csrs:
+                for op in CSR_OPS:
+                    lines.extend(
+                        [
+                            "",
+                            test_data.add_testcase(
+                                f"{csr}_{op.lower()}_imsic{state}_{mode_label}",
+                                coverpoint,
+                                covergroup,
+                            ),
+                            _csr_insn(op, temp_reg, csr, ones_reg),
+                            "\tnop",
+                        ]
+                    )
+            lines.extend(_return_mmode(test_data, temp_reg))
+            if needs_guard:
+                lines.append("#endif  // S_SUPPORTED")
 
     test_data.int_regs.return_registers([temp_reg, ones_reg])
     return lines
@@ -310,15 +335,22 @@ def _generate_aia(test_data: TestData) -> list[str]:
     lines = [
         comment_banner(
             coverpoint,
-            "CSR ops on AIA CSRs with mstateen0.aia (bit 59) disabled and enabled",
+            "CSR ops on AIA CSRs with mstateen0.aia (bit 59) disabled and enabled — M/S/U-mode",
         )
     ]
 
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    # ones_reg is live across RVTEST_GOTO_LOWER_MODE which clobbers x6/x7/x29
+    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0, 6, 7, 29])
     AIA_BIT_MASK_64 = "0x0800000000000000"  # bit 59
     AIA_BIT_MASK_32 = "0x08000000"  # bit 27 of mstateen0h
 
     lines.append(f"\tLI(x{ones_reg}, -1)")
+
+    modes = [
+        ("mmode", _enter_mmode, False),
+        ("smode", _enter_smode, True),
+        ("umode", _enter_umode, False),
+    ]
 
     for state in [0, 1]:
         bit_action = "CSRC" if state == 0 else "CSRS"
@@ -335,29 +367,47 @@ def _generate_aia(test_data: TestData) -> list[str]:
                 "#endif",
             ]
         )
-        lines.append("#if __riscv_xlen == 64")
-        for csr in ["sie", "sip"]:
-            for op in CSR_OPS:
-                lines.extend(
-                    [
-                        "",
-                        test_data.add_testcase(f"{csr}_{op.lower()}_aia{state}", coverpoint, covergroup),
-                        _csr_insn(op, temp_reg, csr, ones_reg),
-                        "\tnop",
-                    ]
-                )
-        lines.append("#else  // RV32")
-        for csr in ["sieh", "siph"]:
-            for op in CSR_OPS:
-                lines.extend(
-                    [
-                        "",
-                        test_data.add_testcase(f"{csr}_{op.lower()}_aia{state}", coverpoint, covergroup),
-                        _csr_insn(op, temp_reg, csr, ones_reg),
-                        "\tnop",
-                    ]
-                )
-        lines.append("#endif")
+
+        for mode_label, enter_fn, needs_guard in modes:
+            if needs_guard:
+                lines.append("#ifdef S_SUPPORTED")
+            lines.extend(enter_fn(test_data, temp_reg))
+
+            lines.append("#if __riscv_xlen == 64")
+            for csr in ["sie", "sip"]:
+                for op in CSR_OPS:
+                    lines.extend(
+                        [
+                            "",
+                            test_data.add_testcase(
+                                f"{csr}_{op.lower()}_aia{state}_{mode_label}",
+                                coverpoint,
+                                covergroup,
+                            ),
+                            _csr_insn(op, temp_reg, csr, ones_reg),
+                            "\tnop",
+                        ]
+                    )
+            lines.append("#else  // RV32")
+            for csr in ["sieh", "siph"]:
+                for op in CSR_OPS:
+                    lines.extend(
+                        [
+                            "",
+                            test_data.add_testcase(
+                                f"{csr}_{op.lower()}_aia{state}_{mode_label}",
+                                coverpoint,
+                                covergroup,
+                            ),
+                            _csr_insn(op, temp_reg, csr, ones_reg),
+                            "\tnop",
+                        ]
+                    )
+            lines.append("#endif  // __riscv_xlen")
+
+            lines.extend(_return_mmode(test_data, temp_reg))
+            if needs_guard:
+                lines.append("#endif  // S_SUPPORTED")
 
     test_data.int_regs.return_registers([temp_reg, ones_reg])
     return lines
@@ -379,7 +429,8 @@ def _generate_jvt_access(test_data: TestData) -> list[str]:
         )
     ]
 
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    # ones_reg is live across RVTEST_GOTO_LOWER_MODE which clobbers x6/x7/x29
+    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0, 6, 7, 29])
     JVT_BIT_MASK = 1 << 2
 
     lines.append(f"\tLI(x{ones_reg}, -1)")
@@ -411,7 +462,7 @@ def _generate_jvt_access(test_data: TestData) -> list[str]:
 # ---------------------------------------------------------------------------
 # cp_jvt_lower_mode
 #   Cross: priv_mode_s_u × csrops × jvt_csr × jvt_state
-#   S-mode and U-mode only .
+#   S-mode and U-mode only.
 # ---------------------------------------------------------------------------
 
 
@@ -426,7 +477,8 @@ def _generate_jvt_lower_mode(test_data: TestData) -> list[str]:
         )
     ]
 
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    # ones_reg is live across RVTEST_GOTO_LOWER_MODE which clobbers x6/x7/x29
+    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0, 6, 7, 29])
     JVT_BIT_MASK = 1 << 2
 
     lines.append(f"\tLI(x{ones_reg}, -1)")
@@ -488,7 +540,8 @@ def _generate_context(test_data: TestData) -> list[str]:
         )
     ]
 
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    # ones_reg is live across RVTEST_GOTO_LOWER_MODE which clobbers x6/x7/x29
+    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0, 6, 7, 29])
     CONTEXT_BIT_MASK_64 = "0x0200000000000000"  # bit 57
     CONTEXT_BIT_MASK_32 = "0x02000000"  # bit 25 of mstateen0h
 
@@ -558,7 +611,8 @@ def _generate_p1p13(test_data: TestData) -> list[str]:
         )
     ]
 
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    # ones_reg is live across RVTEST_GOTO_LOWER_MODE which clobbers x6/x7/x29
+    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0, 6, 7, 29])
     P1P13_BIT_MASK_64 = "0x0100000000000000"  # bit 56
     P1P13_BIT_MASK_32 = "0x01000000"  # bit 24 of mstateen0h
 
@@ -628,7 +682,8 @@ def _generate_srmcfg(test_data: TestData) -> list[str]:
         )
     ]
 
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    # ones_reg is live across RVTEST_GOTO_LOWER_MODE which clobbers x6/x7/x29
+    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0, 6, 7, 29])
     SRMCFG_BIT_MASK_64 = "0x0080000000000000"  # bit 55
     SRMCFG_BIT_MASK_32 = "0x00800000"  # bit 23 of mstateen0h
 
@@ -698,7 +753,8 @@ def _generate_ctr(test_data: TestData) -> list[str]:
         )
     ]
 
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    # ones_reg is live across RVTEST_GOTO_LOWER_MODE which clobbers x6/x7/x29
+    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0, 6, 7, 29])
     CTR_BIT_MASK_64 = "0x0040000000000000"  # bit 54
     CTR_BIT_MASK_32 = "0x00400000"  # bit 22 of mstateen0h
 
@@ -755,7 +811,7 @@ def _generate_ctr(test_data: TestData) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# cp_fcsr_ro_zero  (NEW — was missing entirely)
+# cp_fcsr_ro_zero
 #   Cross: misa_F × csrops × mstateen0_fcsr_bit
 #   Exercises the ignore_bins-covered path where fcsr reads as zero
 #   when misa.F is set but mstateen0.fcsr (bit 1) is clear.
@@ -786,7 +842,7 @@ def _generate_fcsr_ro_zero(test_data: TestData) -> list[str]:
             "",
             "\t# Clear mstateen0.fcsr so fcsr reads zero",
             f"\tLI(x{temp_reg}, {FCSR_BIT_MASK})",
-            "\tCSRC(mstateen0, x{temp_reg})",
+            f"\tCSRC(mstateen0, x{temp_reg})",
         ]
     )
 
@@ -830,7 +886,7 @@ def _generate_fcsr(test_data: TestData) -> list[str]:
             "",
             "\t# mstateen0.fcsr = 1 (only meaningful state per ignore_bins)",
             f"\tLI(x{temp_reg}, {FCSR_BIT_MASK})",
-            "\tCSRS(mstateen0, x{temp_reg})",
+            f"\tCSRS(mstateen0, x{temp_reg})",
         ]
     )
     for op in CSR_OPS:
@@ -848,7 +904,7 @@ def _generate_fcsr(test_data: TestData) -> list[str]:
             "",
             "\t# mstateen0.fcsr = 0",
             f"\tLI(x{temp_reg}, {FCSR_BIT_MASK})",
-            "\tCSRC(mstateen0, x{temp_reg})",
+            f"\tCSRC(mstateen0, x{temp_reg})",
         ]
     )
     for op in CSR_OPS:
@@ -868,7 +924,7 @@ def _generate_fcsr(test_data: TestData) -> list[str]:
 # ---------------------------------------------------------------------------
 # cp_fcsr_lower
 #   Cross: priv_mode_s_u × misa_F × mstateen0_fcsr_bit × csrops × fcsr_lower_mode_csrs
-#   S-mode and U-mode only .
+#   S-mode and U-mode only.
 # ---------------------------------------------------------------------------
 
 
@@ -883,7 +939,8 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
         )
     ]
 
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    # ones_reg is live across RVTEST_GOTO_LOWER_MODE which clobbers x6/x7/x29
+    temp_reg, ones_reg = test_data.int_regs.get_registers(2, exclude_regs=[0, 6, 7, 29])
     FCSR_BIT_MASK = 1 << 1
     fp_csrs = ["frm", "fflags", "fcsr"]
 
@@ -933,7 +990,7 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
 # ---------------------------------------------------------------------------
 # cp_fcsr_lower_fp_instrs
 #   Cross: priv_mode_s_u × misa_F × mstateen0_fcsr_bit × fp_instrs
-#   S-mode and U-mode only .
+#   S-mode and U-mode only.
 # ---------------------------------------------------------------------------
 
 
@@ -948,6 +1005,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
         )
     ]
 
+    # scratch_reg used for flw address — must survive mode switch (exclude x6/x7/x29)
     temp_reg, scratch_reg = test_data.int_regs.get_registers(2, exclude_regs=[0, 6, 7, 29])
     FCSR_BIT_MASK = 1 << 1
 
@@ -1041,9 +1099,9 @@ def make_smstateen(test_data: TestData) -> list[str]:
     lines.append("#endif  // SSDTRIG_SUPPORTED")
 
     # cp_p1p13 — only when Sm1p13 + Hypervisor present
-    lines.append("#ifdef SM1P13_SUPPORTED")
+    lines.append("#if defined(SM1P13_SUPPORTED) && defined(H_SUPPORTED)")
     lines.extend(_generate_p1p13(test_data))
-    lines.append("#endif  // SM1P13_SUPPORTED")
+    lines.append("#endif  // SM1P13_SUPPORTED && H_SUPPORTED")
 
     # cp_srmcfg — only when Ssqosid is present
     lines.append("#ifdef SSQOSID_SUPPORTED")

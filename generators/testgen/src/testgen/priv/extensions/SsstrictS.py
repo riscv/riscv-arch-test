@@ -31,7 +31,12 @@ from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
 
-from .SsstrictCommon import generate_compressed_instr, generate_csr_sweep_body, generate_illegal_instr
+from .SsstrictCommon import (
+    generate_compressed_instr,
+    generate_csr_sweep_body,
+    generate_illegal_instr,
+    generate_vector_illegal_instr,
+)
 
 # ── CSR skip set (S-mode) ─────────────────────────────────────────────────
 
@@ -118,4 +123,5 @@ def make_ssstrictss(test_data: TestData) -> list[str]:
     lines.extend(_generate_csr_tests_s(test_data))
     lines.extend(generate_illegal_instr(test_data, "SsstrictS_instr_cg"))
     lines.extend(generate_compressed_instr(test_data, "SsstrictS_comp_instr_cg"))
+    lines.extend(generate_vector_illegal_instr(test_data, "SsstrictS_instr_cg"))
     return lines

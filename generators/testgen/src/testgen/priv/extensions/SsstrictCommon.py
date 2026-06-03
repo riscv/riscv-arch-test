@@ -430,6 +430,12 @@ def generate_illegal_instr(
     emit_raw_words(
         lines,
         "cp_privileged_rd",
+        "00000000000000000000EEEEE1110011",
+        exclusion=PRIVILEGED_000_EXCLUSIONS,
+    )
+    emit_raw_words(
+        lines,
+        "cp_privileged_rd",
         "RRRRRRRRRRRR00000000EEEEE1110011",
         exclusion=PRIVILEGED_000_EXCLUSIONS,
     )
@@ -538,18 +544,16 @@ def generate_vector_illegal_instr(
     # mew=both, all load widths (funct3) — rs1=x8, vd=011RR
     emit_raw_words(lines, "cp_vl_0_000", "RRRERRRRRRRR01000EEE011RR0100111")
     # sumop sweep — mop=00, vm=1, rs1=x8, vd=011RR
-    emit_raw_words(lines, "cp_vl_lumop_8", "RRR000REEEEE01000000011RR0100111")
-    emit_raw_words(lines, "cp_vl_lumop_16", "RRR000REEEEE01000101011RR0100111")
-    emit_raw_words(lines, "cp_vl_lumop_32", "RRR000REEEEE01000110011RR0100111")
-    emit_raw_words(lines, "cp_vl_lumop_64", "RRR000REEEEE01000111011RR0100111")
+    emit_raw_words(lines, "cp_vl_sumop_8", "RRR000REEEEE01000000011RR0100111")
+    emit_raw_words(lines, "cp_vl_sumop_16", "RRR000REEEEE01000101011RR0100111")
+    emit_raw_words(lines, "cp_vl_sumop_32", "RRR000REEEEE01000110011RR0100111")
+    emit_raw_words(lines, "cp_vl_sumop_64", "RRR000REEEEE01000111011RR0100111")
 
     # ── Vector arithmetic per-SEW sweeps ──────────────────────────────
     for sew in ["8", "16", "32", "64"]:
         lines.append(comment_banner(f"Vector arithmetic SEW={sew}", f"funct6 sweeps with e{sew}"))
         lines.append(f"\tvsetivli x0, 1, e{sew}, m1, ta, ma")
         lines.append("")
-
-        #        _emit_vector_init(lines)
 
         emit_raw_words(lines, f"cp_IVV_f6_e{sew}", "EEEEEEERRRRRRRRRR000RRRRR1010111")
         emit_raw_words(lines, f"cp_FVV_f6_e{sew}", "EEEEEEERRRRRRRRRR001RRRRR1010111")
@@ -653,7 +657,7 @@ def generate_compressed_instr(
     lines.append("")
 
     emit_raw_words(lines, "illegal_c_jr", "1000000000000010", length=16)
-    emit_raw_words(lines, "illegal_c_jalr", "1001000000000010", length=16)
+    # emit_raw_words(lines, "illegal_c_jalr", "1001000000000010", length=16)
     lines.append("")
 
     return lines

@@ -52,13 +52,6 @@
         mv DEFAULT_TEMP_REG, x9        # move scratch base into DEFAULT_TEMP_REG
         mv DEFAULT_LINK_REG, x7        # move return address into DEFAULT_LINK_REG
         # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
-        # Snapshot mcause/mtval/mstatus immediately: rvmodel_io_write_str calls can re-trap
-        # in PMP tests, clobbering these CSRs before failedtest_print_csr_context reads them.
-        # mepc is NOT saved here — common_excpt_handler already saved the original xEPC to
-        # saved_mepc before adj_Mepc advanced it. Saving here would overwrite with the
-        # already-adjusted value. For interrupt failures (no common_excpt_handler), saved_mepc
-        # stays 0, which is acceptable since interrupts have no faulting instruction address.
-        # x1 and x9 are safe temporaries here (both values already written to scratch above).
         csrr x1, mcause
         la x9, saved_mcause
         SREG x1, 0(x9)

@@ -621,13 +621,14 @@ def generate_compressed_instr(
         exclusion=[  # exclude load ands store instructions that could cause exceptions for bad addresses
             "001XXXXXXXXXXX00",  # c.fld
             "010XXXXXXXXXXX00",  # c.lw
-            "100000XXXXXXXX00",  # c.lb
+            "011XXXXXXXXXXX00",  # c.flw/c.ld
+            "100000XXXXXXXX00",  # c.lbu
             "100001XXXXXXXX00",  # c.lh/lhu
             "100010XXXXXXXX00",  # c.sb
             "100011XXX0XXXX00",  # c.sh
             "101XXXXXXXXXXX00",  # c.fsd
             "110XXXXXXXXXXX00",  # c.sw
-            #            "XXXXXXXXXXX000XX",  # rd' = x8 — clobbers scratch base pointer
+            "111XXXXXXXXXXX00",  # c.fsw/c.sd
         ],
         reinit_interval=50,
     )
@@ -643,8 +644,7 @@ def generate_compressed_instr(
             "101XXXXXXXXXXX01",  # c.j — random jump
             "11XXXXXXXXXXXX01",  # c.beqz/c.bnez — random branch
             "001XXXXXXXXXXX01",  # c.jal (RV32) — random jump
-            "XXXX00010XXXXX01",  # rd = x2 — clobbers signature pointer
-            "XXXXXXXXXXX000X1",  # rd' = x8 — clobbers scratch base pointer
+            "0XXX00010XXXXX01",  # rd = x2 — clobbers signature pointer
         ],
         reinit_interval=50,
     )
@@ -661,15 +661,20 @@ def generate_compressed_instr(
             "1001XXXXX0000010",  # c.jalr/c.ebreak — random jump or debug trap
             "X01XXXXXXXXXXX10",  # c.fldsp/c.fsdsp — sp-relative, corrupts signature area
             "X10XXXXXXXXXXX10",  # c.lwsp/c.swsp — sp-relative, corrupts signature area
+            "011XXXXXXXXXXX10",  # c.ldsp/c.flwsp — sp-relative store
             "1001000000000010",  # c.ebreak — legal, tested elsewhere
-            "XXXX00010XXXXX10",  # rd = x2 (sp) — clobbers signature pointer
-            "XXXX01000XXXXX10",  # rd = x8 — clobbers scratch base pointer
+            "0X0X00010XXXXX10",  # CI with rd = x2 (sp) — clobbers signature pointer
+            "100X00010XXXXX10",  # CR with rd = x2 (sp) — clobbers signature pointer
             "1100XXXXXXXXXX10",  # c.swsp with rs2=x2 — stores sp to random address
-            "1110XXXXXXXXXX10",  # c.sdsp/c.fswsp — sp-relative store
+            "111XXXXXXXXXXX10",  # c.sdsp/c.fswsp — sp-relative store
             "1010XXXXXXXXXX10",  # nop-like edge — unpredictable on some platforms
         ],
         reinit_interval=50,
     )
+    lines.append("")
+
+    emit_raw_words(lines, "illegal_c_jr", "1000000000000010", length=16)
+    emit_raw_words(lines, "illegal_c_jalr", "1001000000000010", length=16)
     lines.append("")
 
     return lines

@@ -95,7 +95,7 @@ def _generate_csr_tests_m(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "SsstrictSm",
-    required_extensions=["Sm", "Zicsr"],
+    required_extensions=["Sm", "Zicsr", "Ssstrict"],
     march_extensions=[
         "I",
         "V",

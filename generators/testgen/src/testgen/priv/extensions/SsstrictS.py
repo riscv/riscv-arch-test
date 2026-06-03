@@ -105,7 +105,7 @@ def _generate_csr_tests_s(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "SsstrictS",
-    required_extensions=["S", "Zicsr"],
+    required_extensions=["S", "Zicsr", "Ssstrict"],
     march_extensions=[
         "I",
         "V",  # V included: sets vl/vtype for vector loads and stores in the encoding sweep

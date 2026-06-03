@@ -29,6 +29,7 @@ covergroup SsstrictSm_mcsr_cg with function sample(ins_t ins);
     }
     csr: coverpoint ins.current.insn[31:20]  {
         ignore_bins mscratch = {CSR_MSCRATCH}; // mscratch accesses may corrupt the trap stack and cause unpredictable side effects
+        ignore_bins mtvec = {CSR_MTVEC}; // mtvec accesses breaks the trap handler
         ignore_bins scontext = {CSR_SCONTEXT}; // scontext not yet supported in Sail 5/31/26 dh; restore when Sail has support
         ignore_bins mseccfg = {CSR_MSECCFG}; // enables features that hang spike if not configured properly
         bins user_std0[] = {[12'h000:12'h0FF]};

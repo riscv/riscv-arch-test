@@ -193,32 +193,8 @@ covergroup SsstrictSm_comp_instr_cg with function sample(ins_t ins);
     `include "priv/RISCV_coverage_comp_instr.svh"
 
     cp_compressed00: cross priv_mode_m, compressed00;
-
-    // compressed01: generator excludes rd=x2 for CI-type instructions.
-    // CI-type has funct3 ∈ {000, 010, 011} (bits[15:13]).  For other funct3
-    // values the bits[11:7] field encodes something else, so the exclusion
-    // only applies to CI-type.
-    cp_compressed01: cross priv_mode_m, compressed01 {
-        // rd=x2 only for CI-type (funct3 = 000, 010, 011)
-        wildcard ignore_bins rd_x2_ci_000 = binsof(compressed01) intersect {[14'b00000001000000:14'b00000001011111]};
-        wildcard ignore_bins rd_x2_ci_010 = binsof(compressed01) intersect {[14'b01000001000000:14'b01000001011111]};
-        wildcard ignore_bins rd_x2_ci_011 = binsof(compressed01) intersect {[14'b01100001000000:14'b01100001011111]};
-    }
-
-    // compressed10: generator excludes rd=x2 and rd=x8.
-    cp_compressed10: cross priv_mode_m, compressed10 {
-        // Ignore lower half (bit[15]=0) - not swept by generator
-        wildcard ignore_bins lower_half = binsof(compressed10) intersect {14'b0???????????10};
-        // rd=x2(sp) for the swept portion (bit[15]=1): insn[11:7]=00010
-        wildcard ignore_bins rd_x2 = binsof(compressed10) intersect {14'b1???00010?????};
-        // rd=x8 for the swept portion
-        wildcard ignore_bins rd_x8 = binsof(compressed10) intersect {14'b1???01000?????};
-        // Ignore floating-point/stack operations that throw exceptions
-        wildcard ignore_bins c_jr    = binsof(compressed10) intersect {14'b1000000000????};
-        wildcard ignore_bins c_jalr  = binsof(compressed10) intersect {14'b1001000000????};
-        wildcard ignore_bins c_fsdsp = binsof(compressed10) intersect {14'b1101??????????};
-        wildcard ignore_bins c_swsp  = binsof(compressed10) intersect {14'b1110??????????};
-    }
+    cp_compressed01: cross priv_mode_m, compressed01;
+    cp_compressed10: cross priv_mode_m, compressed10;
 endgroup
 
 function void ssstrictsm_sample(int hart, int issue, ins_t ins);

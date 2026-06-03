@@ -216,18 +216,9 @@ def _emit_vector_init(lines: list[str]) -> None:
 
 
 def emit_raw_words(
-    lines: list[str],
-    comment: str,
-    template: str,
-    length: int = 32,
-    exclusion: list[str] | None = None,
-    reinit_interval: int = 0,
+    lines: list[str], comment: str, template: str, length: int = 32, exclusion: list[str] | None = None
 ) -> None:
-    """Emit .word/.hword directives with blank lines every BLANK_INTERVAL.
-
-    If reinit_interval > 0, emit _emit_reg_init every reinit_interval
-    encodings to prevent register clobbering during compressed sweeps.
-    """
+    """Emit .word/.hword directives with blank lines every BLANK_INTERVAL."""
     seed(reproducible_hash(template))  # reproducibly randomize register assignments per template
     directive = ".word" if length == 32 else ".hword"
     encodings = _gen_encodings(template, length, exclusion)
@@ -236,9 +227,7 @@ def emit_raw_words(
         lines.append("\t.balign 4")
     lines.append(f"# {comment}  ({len(encodings)} encodings) template {template}")
     for idx, enc in enumerate(encodings):
-        if reinit_interval > 0 and idx > 0 and idx % reinit_interval == 0:
-            _emit_reg_init(lines)
-        elif idx > 0 and idx % BLANK_INTERVAL == 0:
+        if idx > 0 and idx % BLANK_INTERVAL == 0:
             lines.append("")
         lines.append(f"\t{directive} 0b{enc}")
     lines.append("")
@@ -437,11 +426,7 @@ def generate_illegal_instr(
         lines,
         "cp_privileged_rd",
         "RRRRRRRRRRRR00000000EEEEE1110011",
-        exclusion=[
-            # "00000000000000000000000001110011",  # exclude ecall
-            # "XXXXXXXXXXXXXXXXXXXX00010XXXXXXX",  # exclude rd=x2 (sp)
-            # "XXXXXXXXXXXXXXXXXXXX01000XXXXXXX",  # exclude rd=x8 (scratch base)
-        ],
+        exclusion=PRIVILEGED_000_EXCLUSIONS,
     )
     emit_raw_words(
         lines,
@@ -605,14 +590,7 @@ def generate_compressed_instr(
     lines.append(f"\t{test_data.add_testcase('compressed_sweep', coverpoint, covergroup)}")
     lines.append("")
 
-    # Quadrant 00: covers c.addi4spn, c.lw, c.ld, c.flw, c.fld, c.sw, c.sd, c.fsw, c.fsd
-    # All register fields (rd', rs1', rs2') swept exhaustively.
-    # CRITICAL: offset bits are zeroed (bits[6:5]=00, bits[4:2]=000) to ensure
-    # all load/store offsets are 0, so rs1 points exactly to scratch.
-    # _emit_reg_init pre-loads all safe regs (x7-x31) with scratch, so
-    # x8-x15 (the rs1' range) all point to valid memory.
-    # rd' = x8 excluded to prevent clobbering the scratch pointer.
-    # reinit_interval keeps registers fresh as valid loads clobber them.
+    # Quadrant 00: Exclude loads and stores that could cause exceptions for bad addresses
     emit_raw_words(
         lines,
         "compressed00",
@@ -630,11 +608,10 @@ def generate_compressed_instr(
             "110XXXXXXXXXXX00",  # c.sw
             "111XXXXXXXXXXX00",  # c.fsw/c.sd
         ],
-        reinit_interval=50,
     )
 
-    # Quadrant 01: fully exhaustive
-    # reinit_interval keeps registers fresh as valid loads/stores clobber them.
+    # Quadrant 01: exclude jumps and branches that could go to unknown places.
+    # Avoid clobbering signature pointer in x2
     emit_raw_words(
         lines,
         "compressed01",
@@ -646,11 +623,9 @@ def generate_compressed_instr(
             "001XXXXXXXXXXX01",  # c.jal (RV32) — random jump
             "0XXX00010XXXXX01",  # rd = x2 — clobbers signature pointer
         ],
-        reinit_interval=50,
     )
 
-    # Quadrant 10: fully exhaustive except for c.jr/c.jalr/c.ebreak (random jump/trap)
-    # reinit_interval keeps registers fresh as valid loads/stores clobber them.
+    # Quadrant 10:
     emit_raw_words(
         lines,
         "compressed10",
@@ -669,7 +644,6 @@ def generate_compressed_instr(
             "111XXXXXXXXXXX10",  # c.sdsp/c.fswsp — sp-relative store
             "1010XXXXXXXXXX10",  # nop-like edge — unpredictable on some platforms
         ],
-        reinit_interval=50,
     )
     lines.append("")
 

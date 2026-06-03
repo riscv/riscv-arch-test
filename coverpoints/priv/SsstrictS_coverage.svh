@@ -83,12 +83,8 @@ covergroup SsstrictS_scsr_cg with function sample(ins_t ins);
 
     // main coverpoints
     cp_csrr:       cross csrr,  csr,   priv_mode_s, nonzerord;
-    cp_csrw_edges: cross csrrw, csr,   priv_mode_s, rs1_edges {
-    }
-    cp_csrcs:      cross csrop, csr,   priv_mode_s, rs1_ones {
-    }
-    cp_shadow_m:   cross csrrw, mcsrs, priv_mode_m, rs1_edges;  // write 1s/0s to mstatus, mie, mip in m mode
-    cp_shadow_s:   cross csrrw, scsrs, priv_mode_s, rs1_edges;  // write 1s/0s to sstatus, sie, sip in s mode
+    cp_csrw_edges: cross csrrw, csr,   priv_mode_s, rs1_edges;
+    cp_csrcs:      cross csrop, csr,   priv_mode_s, rs1_ones;
 endgroup
 
 covergroup SsstrictS_instr_cg with function sample(ins_t ins);

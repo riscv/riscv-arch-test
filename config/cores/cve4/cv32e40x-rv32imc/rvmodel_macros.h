@@ -80,25 +80,24 @@
 
 ##### Machine Interrupts #####
 
-// Drive cv32e40x core irq pins via the cv32e40x-dv mm_ram Sail-protocol
-// simple_interrupt_generator at 0x15000020 (DUT testbench peripheral).
-//   base+4 (0x15000024): platform register, bit31 set(1)/clear(0),
-//   bit3 = MSI, bit11 = MEI.
-#define RVMODEL_SET_MEXT_INT(_R1, _R2)        \
-    li _R1, 0x80000800           ;            \
-    li _R2, 0x15000024           ;            \
+#define RVMODEL_SET_MEXT_INT(_R1, _R2)                                  \
+    li _R1, 0x80000800           ; /* set | MEI (bit 11) */             \
+    li _R2, 0x15000024           ; /* simple_interrupt_generator + 4 */ \
     sw _R1, 0(_R2)
-#define RVMODEL_CLR_MEXT_INT(_R1, _R2)        \
-    li _R1, 0x00000800           ;            \
-    li _R2, 0x15000024           ;            \
+
+#define RVMODEL_CLR_MEXT_INT(_R1, _R2)                                  \
+    li _R1, 0x00000800           ; /* clear | MEI (bit 11) */           \
+    li _R2, 0x15000024           ;                                      \
     sw _R1, 0(_R2)
-#define RVMODEL_SET_MSW_INT(_R1, _R2)         \
-    li _R1, 0x80000008           ;            \
-    li _R2, 0x15000024           ;            \
+
+#define RVMODEL_SET_MSW_INT(_R1, _R2)                                   \
+    li _R1, 0x80000008           ; /* set | MSI (bit 3) */              \
+    li _R2, 0x15000024           ;                                      \
     sw _R1, 0(_R2)
-#define RVMODEL_CLR_MSW_INT(_R1, _R2)         \
-    li _R1, 0x00000008           ;            \
-    li _R2, 0x15000024           ;            \
+
+#define RVMODEL_CLR_MSW_INT(_R1, _R2)                                   \
+    li _R1, 0x00000008           ; /* clear | MSI (bit 3) */            \
+    li _R2, 0x15000024           ;                                      \
     sw _R1, 0(_R2)
 
 ##### Supervisor Interrupts #####

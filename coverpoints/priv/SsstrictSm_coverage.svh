@@ -28,6 +28,9 @@ covergroup SsstrictSm_mcsr_cg with function sample(ins_t ins);
         wildcard bins csrrw = {CSRRW};
     }
     csr: coverpoint ins.current.insn[31:20]  {
+        ignore_bins mscratch = {CSR_MSCRATCH}; // mscratch accesses may corrupt the trap stack and cause unpredictable side effects
+        ignore_bins scontext = {CSR_SCONTEXT}; // scontext not yet supported in Sail 5/31/26 dh; restore when Sail has support
+        ignore_bins mseccfg = {CSR_MSECCFG}; // enables features that hang spike if not configured properly
         bins user_std0[] = {[12'h000:12'h0FF]};
         bins super_std0[] = {[12'h100:12'h1FF]};
         bins hyper_std0[] = {[12'h200:12'h2FF]};
@@ -37,10 +40,8 @@ covergroup SsstrictSm_mcsr_cg with function sample(ins_t ins);
         bins super_std1[] = {[12'h500:12'h5BF]};
         ignore_bins super_custom1 = {[12'h5C0:12'h5FF]};
         bins hyper_std1[] = {[12'h600:12'h6BF]};
-        ignore_bins scontext = {CSR_SCONTEXT}; // scontext not yet supported in Sail 5/31/26 dh; restore when Sail has support
         ignore_bins hyper_custom1 = {[12'h6C0:12'h6FF]};
         bins mach_std1[] = {[12'h700:12'h7AF]};
-        ignore_bins mseccfg = {CSR_MSECCFG}; // enables features that hang spike if not configured properly
         ignore_bins mach_debug = {[12'h7A0:12'h7AF]};
         bins debug_only[] = {[12'h7B0:12'h7BF]};
         ignore_bins mach_custom1 = {[12'h7C0:12'h7FF]};

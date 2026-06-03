@@ -104,7 +104,6 @@ _FAST_HANDLER_PREFIX: list[str] = [
     "\tmret",
     "",
     "othertrap:",
-    "\tcsrr t1, mtval",
     "\tj    Mtrampoline                # hand off all non-illegal-instruction traps",
     "",
     "ssstrict_test_body:",
@@ -117,15 +116,12 @@ _SPLIT_FILE_GPR_INIT: list[str] = (
     [
         "",
         "# Re-initialize GPRs at the top of every split Ssstrict file.",
-        "# This ensures scratch base and safe registers are valid when a split",
-        "# file begins in the middle of a large sweep.",
-        "\t# x8 = permanent scratch base, 8-byte aligned for atomics",
-        "\tnop",
-        "\tnop",
-        "\tla x8, scratch",
+        "# x8 = scratch base (rs1 for load/store sweep); x7,x9-x31 = 0xDEADBEEF",
+        "# so accidental loads/stores from non-x8 registers fault rather than silently succeed.",
+        "\tli x7, 0xDEADBEEF",
     ]
-    + [f"\tmv x{r}, x8" for r in range(7, 32) if r != 8]
-    + ["", ""]
+    + [f"\tmv x{r}, x7" for r in range(9, 32)]
+    + ["\tla x8, scratch", "", ""]
 )
 
 # ---------------------------------------------------------------------------
@@ -146,14 +142,50 @@ _SPLIT_FILE_GPR_INIT: list[str] = (
 # ---------------------------------------------------------------------------
 _FAST_SMODE_HANDLER_PREFIX: list[str] = [
     "",
-    "// ── Fast M-mode handler (mtvec) — non-delegated traps ──────────────────",
-    "// Routes non-illegal traps (fetch faults, RVTEST_CODE_END ecall) to Mtrampoline.",
-    "// Illegal instructions are delegated to S-mode via medeleg and never reach here.",
+    "// ── Fast M-mode handler (mtvec) ──────────────────────────────────────────────",
+    "// Identical to the SsstrictSm handler: records mcause/mepc/mtval for illegal",
+    "// instructions; routes other traps to Mtrampoline.",
+    "// Installed unconditionally so that DUTs without delegation support (no medeleg)",
+    "// still record every illegal-instruction trap correctly via mtvec.",
     "\tj ssstrict_test_body",
     "",
-    "\t.align 4",
+    "\t.balign 64",
+    "#ifdef UDB_MTVEC_BASE_ALIGNMENT_VECTORED",
+    "\t.balign UDB_MTVEC_BASE_ALIGNMENT_VECTORED",
+    "#endif",
+    "#ifdef UDB_MTVEC_BASE_ALIGNMENT_DIRECT",
+    "\t.balign UDB_MTVEC_BASE_ALIGNMENT_DIRECT",
+    "#endif",
     "trap_handler_fastillegalinstr:",
-    "\tj    Mtrampoline         # non-delegated traps go directly to framework handler",
+    "\tcsrr t0, mcause                 # read trap cause",
+    "\tli   t1, 2                      # Illegal Instruction cause = 2",
+    "\tbne  t0, t1, othertrap          # not illegal instruction — use regular handler",
+    "illegalinstruction:",
+    "\tSREG t0, 0(x2)                  # store mcause (=2) to signature",
+    "\taddi x2, x2, SIG_STRIDE",
+    "\tcsrr t0, mepc",
+    "\tSREG t0, 0(x2)                  # store mepc to signature",
+    "\taddi x2, x2, SIG_STRIDE",
+    "\tcsrr t0, mtval",
+    "\tSREG t0, 0(x2)                  # store mtval to signature",
+    "\taddi x2, x2, SIG_STRIDE",
+    "    # Branchless mepc advance — reads bits[1:0] from *mepc using lhu.",
+    "    # lhu is used because mepc is only guaranteed 2-byte aligned.",
+    "    # advance = (((bits[1:0]+1) >> 2) + 1) << 1  =  4 if bits[1:0]==0b11, else 2.",
+    "\tcsrr t0, mepc",
+    "\tlhu  t0, 0(t0)                  # load lower 16 bits from *mepc (always 2-byte aligned)",
+    "\tandi t0, t0, 3                  # t0 = bits[1:0]",
+    "\taddi t0, t0, 1                  # t0 = bits[1:0]+1; equals 4 only when was 0b11",
+    "\tsrli t0, t0, 2                  # t0 = 1 iff uncompressed (0b11), else 0",
+    "\taddi t0, t0, 1                  # t0 = 2 or 1",
+    "\tslli t0, t0, 1                  # t0 = 4 (uncompressed) or 2 (compressed)",
+    "\tcsrr t1, mepc                   # t1 = mepc  (t1 first written here)",
+    "\tadd  t1, t1, t0                 # t1 = mepc + advance",
+    "\tcsrw mepc, t1",
+    "\tmret",
+    "",
+    "othertrap:",
+    "\tj    Mtrampoline                # hand off all non-illegal-instruction traps",
     "",
     "// ── Fast S-mode handler (stvec) — delegated illegal instructions ────────",
     "// scause==2 → write scause/sepc/stval to signature, advance sepc, sret.",
@@ -196,9 +228,13 @@ _FAST_SMODE_HANDLER_PREFIX: list[str] = [
     "\tj    Strampoline         # hand off non-illegal S-mode traps to framework",
     "",
     "ssstrict_test_body:",
+    "\tLA(t0, trap_handler_fastillegalinstr)",
+    "\tRVTEST_TSBI_CSR_ACCESS 0x30559073, t0  # csrrw x0, mtvec, a1 — write mtvec via SBI (M-mode CSR)",
+    "#ifdef S_SUPPORTED",
     "\tLA(t0, strap_handler_fastillegalinstr)",
-    "\tCSRW(stvec, t0)",
-    "\t.align 4",
+    "\tCSRW(stvec, t0)                         # S-mode handler: catches delegated illegal instructions",
+    "#endif",
+    "\t.align UDB_MTVEC_BASE_ALIGNMENT_DIRECT",
     "",
 ]
 
@@ -211,13 +247,11 @@ _SPLIT_FILE_SMODE_GPR_INIT: list[str] = (
         "# Switch to S-mode and re-initialize GPRs for this split file.",
         "\tRVTEST_GOTO_LOWER_MODE Smode",
         "\tcsrw    mie, x0",
-        "\t# x8 = permanent scratch base, 8-byte aligned for atomics",
-        "\tnop",
-        "\tnop",
-        "\tla x8, scratch",
+        "\t# x8 = scratch base (rs1 for load/store sweep); x7,x9-x31 = 0xDEADBEEF",
+        "\tli x7, 0xDEADBEEF",
     ]
-    + [f"\tmv x{r}, x8" for r in range(7, 32) if r != 8]
-    + ["", ""]
+    + [f"\tmv x{r}, x7" for r in range(9, 32)]
+    + ["\tla x8, scratch", "", ""]
 )
 
 # GPR init for SsstrictU split files: switch to U-mode then reload all scratch regs.
@@ -226,13 +260,11 @@ _SPLIT_FILE_UMODE_GPR_INIT: list[str] = (
         "",
         "# Switch to U-mode and re-initialize GPRs for this split file.",
         "\tRVTEST_GOTO_LOWER_MODE Umode",
-        "\t# x8 = permanent scratch base, 8-byte aligned for atomics",
-        "\tnop",
-        "\tnop",
-        "\tla x8, scratch",
+        "\t# x8 = scratch base (rs1 for load/store sweep); x7,x9-x31 = 0xDEADBEEF",
+        "\tli x7, 0xDEADBEEF",
     ]
-    + [f"\tmv x{r}, x8" for r in range(7, 32) if r != 8]
-    + ["", ""]
+    + [f"\tmv x{r}, x7" for r in range(9, 32)]
+    + ["\tla x8, scratch", "", ""]
 )
 
 
@@ -334,12 +366,9 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
         if testsuite == "SsstrictS":
             handler_prefix = _FAST_SMODE_HANDLER_PREFIX
             gpr_init = _SPLIT_FILE_SMODE_GPR_INIT
-        # TODO: Commented for now, will be uncommented once RVTEST_SETUP starts working completely
-        # Traps are not delegated to S-mode for SsstrictU, so the handler is the same as SsstrictSm's.
-        # The GPR init does not need to switch to U-mode, for now.
-        # elif testsuite == "SsstrictU":
-        #     handler_prefix = _FAST_SMODE_HANDLER_PREFIX
-        #     gpr_init = _SPLIT_FILE_UMODE_GPR_INIT
+        elif testsuite == "SsstrictU":
+            handler_prefix = _FAST_SMODE_HANDLER_PREFIX
+            gpr_init = _SPLIT_FILE_UMODE_GPR_INIT
         else:
             handler_prefix = _FAST_HANDLER_PREFIX
             gpr_init = _SPLIT_FILE_GPR_INIT

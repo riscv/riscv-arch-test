@@ -9,22 +9,19 @@
 
 """SsstrictU — user-mode strict/negative compliance tests.
 
-The fast S-mode trap handler is NOT emitted here — generate/priv.py prepends
-_FAST_SMODE_HANDLER_PREFIX (which installs strap_handler_fastillegalinstr at
-stvec and delegates illegal instructions to S-mode via medeleg) plus
-_SPLIT_FILE_UMODE_GPR_INIT (which issues RVTEST_GOTO_LOWER_MODE Umode) to
-every split file.
+The fast trap handlers are NOT emitted here — generate/priv.py prepends
+_FAST_SMODE_HANDLER_PREFIX (mtvec → full M-mode handler, stvec →
+strap_handler_fastillegalinstr) plus _SPLIT_FILE_UMODE_GPR_INIT (which
+issues RVTEST_GOTO_LOWER_MODE Umode) to every split file.
 
 Structure
 ---------
 1. Per-split-file prefix switches to U-mode; the body stays in U-mode.
-2. CSR sweep from U-mode (user-privilege CSRs only: 0x000-0x0FF,
-   0x400-0x4FF, 0xC00-0xCBF).
-   - All S/H/M CSRs raise illegal-instruction from U-mode, trapped by
-     strap_handler_fastillegalinstr which records scause/sepc/stval.
-   - Custom and reserved ranges are skipped.
-3. Illegal instruction and compressed sweeps (appended by make_ssstrictu;
-   still run under the S-mode delegation so traps are handled correctly).
+2. CSR sweep from U-mode (user-level CSRs only: bits[9:8]=00).
+   - S/H/M CSRs are higher privilege and always trap from U-mode; that is
+     an architecturally known fact covered elsewhere, so they are excluded.
+   - Custom and reserved ranges are skipped (undefined behaviour).
+3. Illegal instruction and compressed encoding sweeps.
 """
 
 from random import seed
@@ -35,23 +32,17 @@ from testgen.priv.registry import add_priv_test_generator
 
 from .SsstrictCommon import generate_compressed_instr, generate_csr_sweep_body, generate_illegal_instr
 
-# ── CSR skip set (U-mode) ─────────────────────────────────────────────────
+# ── CSR sweep set (U-mode) ────────────────────────────────────────────────
 
-# U-mode can only access CSRs with privilege bits[9:8]=00 (user-level):
-#   0x000-0x0FF: user standard (all accessible)
-#   0x400-0x4FF: user standard (performance counter shadows)
-#   0x800-0x8FF: user custom2 — skip: undefined behaviour
-#   0xC00-0xCBF: user read-only counters (cycle, time, instret, hpmcounterN)
-#   0xCC0-0xCFF: user custom3 — skip
-#
-# All S/H/M CSRs (priv bits != 00) raise illegal-instruction from U-mode.
-# Those are swept by SsstrictSm/S so we do not duplicate them here.
+# Sweep only user-level CSRs (bits[9:8]=00) from U-mode.
+# S/H/M CSRs are higher privilege and always raise illegal-instruction from
+# U-mode — that is an architecturally known fact, so testing them here adds
+# no value.  Custom and reserved ranges are skipped (undefined behaviour).
 
-# Build the accessible set positively: only CSRs with bits[9:8]=00
-_U_CSR_ACCESSIBLE: frozenset[int] = frozenset(
+_U_CSR_SWEEP: frozenset[int] = frozenset(
     a
     for a in range(4096)
-    if ((a >> 8) & 3) == 0  # user-privilege level
+    if ((a >> 8) & 3) == 0            # user-privilege level only (bits[9:8]=00)
     and a not in range(0x800, 0x900)  # skip user custom2
     and a not in range(0xCC0, 0xD00)  # skip user custom3
 )
@@ -72,8 +63,9 @@ def _generate_csr_tests_u(test_data: TestData) -> list[str]:
     lines.append(
         comment_banner(
             "cp_csrr / cp_csrw_corners / cp_csrcs (U-mode)",
-            "Read, write 0s/1s, set, clear every user-accessible CSR from U-mode.\n"
-            "S/H/M CSRs all raise illegal-instruction from U-mode.\n"
+            "Read, write 0s/1s, set, clear every user-level CSR from U-mode.\n"
+            "S/H/M CSRs are higher privilege and always trap from U-mode;\n"
+            "that is architecturally known, so they are excluded here.\n"
             "Custom and reserved CSR ranges skipped.",
         )
     )
@@ -86,7 +78,7 @@ def _generate_csr_tests_u(test_data: TestData) -> list[str]:
     # the signature and advances sepc) or execute silently.  RVTEST_CODE_END's
     # ecall from U-mode is not delegated, so it goes to Mtrampoline which restores
     # the saved M-mode sp and ends the test cleanly.
-    all_csrs = sorted(_U_CSR_ACCESSIBLE)
+    all_csrs = sorted(_U_CSR_SWEEP)
     lines.extend(generate_csr_sweep_body(test_data, covergroup, all_csrs))
     lines.append("")
 

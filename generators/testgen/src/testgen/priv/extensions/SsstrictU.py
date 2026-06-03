@@ -42,7 +42,7 @@ from .SsstrictCommon import generate_compressed_instr, generate_csr_sweep_body, 
 _U_CSR_SWEEP: frozenset[int] = frozenset(
     a
     for a in range(4096)
-    if ((a >> 8) & 3) == 0            # user-privilege level only (bits[9:8]=00)
+    if ((a >> 8) & 3) == 0  # user-privilege level only (bits[9:8]=00)
     and a not in range(0x800, 0x900)  # skip user custom2
     and a not in range(0xCC0, 0xD00)  # skip user custom3
 )

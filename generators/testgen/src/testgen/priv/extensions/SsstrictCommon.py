@@ -366,7 +366,7 @@ def generate_illegal_instr(
         lines,
         "cp_atomic_funct3",
         "RRRRRRRRRRRR01000EEE011RR0101111",
-        exclusion=["01001XXXXXXX01000010XXXXX0101111"],  # exclude ssamoswap (can raise AMO access-fault)
+        exclusion=["01001XXXXXXX0100001XXXXXX0101111"],  # exclude ssamoswap (can raise AMO access-fault)
     )
     emit_raw_words(
         lines,

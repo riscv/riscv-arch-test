@@ -15,13 +15,7 @@ after RVTEST_TRAP_PROLOG.
 
 Structure
 ---------
-1. CSR sweep from S-mode (S-mode CSRs only: bits[9:8]=01).
-   - S-mode CSRs (priv=01) are accessible and exercise S-mode CSR coverage.
-   - H-mode CSRs (priv=10) and M-mode CSRs (priv=11) are SKIPPED — they are
-     higher privilege than S-mode and always trap; that is architecturally
-     known, so testing them here adds no value.
-   - satp (0x180) is SKIPPED: reading/writing satp flushes the TLB and
-     changes address-translation mode, causing unpredictable side effects.
+1. CSR sweep from S-mode (only CSRs accessible from S/HS and below).
 2. Illegal instruction and compressed encoding sweeps.
 """
 

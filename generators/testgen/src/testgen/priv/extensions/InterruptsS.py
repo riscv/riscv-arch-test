@@ -2402,7 +2402,7 @@ def _generate_priority_mie_m_tests(test_data: TestData) -> list[str]:
                 f"LI(x{r_scratch}, 0x202)",
                 f"CSRC(mip, x{r_scratch})",
                 "RVTEST_CLR_MSW_INT",
-                "RVTEST_CLR_SEXT_INT",
+                # "RVTEST_CLR_SEXT_INT",
                 "RVTEST_CLR_MEXT_INT",
             ]
         )

@@ -2138,15 +2138,21 @@ excpt_\__MODE__\()hndlr_tbl:
         .ifc \__MODE__ , M
             li T2, 0x200
             csrc mip, T2                             // Clear mip.SEIP
+            csrr T2, mip
         .else
                 .ifc \__MODE__ , S
                         RVTEST_GOTO_MMODE
                         li T2, 0x200
                         csrc mip, T2
+                        csrr T2, mip
                         RVTEST_GOTO_LOWER_MODE Smode
                 .endif
         .endif
+        li T1, 0x800
+        and T2, T2, T1
+        beq T1, T2, 1f
         RVMODEL_CLR_SEXT_INT(T2, T5)
+    1:
         j       resto_\__MODE__\()rtn
 
 \__MODE__\()clr_Vsw_int:                             // VS-mode software interrupt

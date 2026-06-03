@@ -651,7 +651,7 @@
         /* Return to a full vector register */ \
         nop                                  ;                                                                      \
         /* Set the target to be all ones at the start */ \
-        nop                                  ;                                                                      \
+        LI(_LINK_REG, 0xff)                                  ;                                                                      \
         nop                                  ;                                                                      \
         /* Calculate the number of elements to slide _VTMP up */ \
         nop                                  ;                                                                      \
@@ -768,6 +768,8 @@
         j           21f                      ;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
     21:                                                                                                             \
         jal         _LINK_REG, failedtest_vec_tail_##_LINK_REG##_##_TEMP_REG ;                                      \
+        RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
+        RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
     12:                                                                                                             \
         /* PASS */                                                                                                  \
         RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)                                                    ;\

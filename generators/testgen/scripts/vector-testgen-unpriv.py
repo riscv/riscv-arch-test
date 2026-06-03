@@ -341,7 +341,7 @@ def make_imm_v(instruction, sew):
   lmul = egs
   vl = egs
 
-  if (test in imm_31):
+  if (instruction in imm_31):
     for uimm in range(0,32):
       description       = "cp_imm_5bit_u (Test uimm = " + str(uimm) + ")"
       cp = f"cp_imm_5bit_u_b{uimm}"
@@ -487,7 +487,7 @@ def make_vs2_edges_sm_subbytes(instruction, sew):
     assert(target == (rk1 ^ rk2 ^ rk3 ^ ck_val))
 
     edges_num = i // 4
-    vs2_val_ptr = f"vs_corner_sm_vd_subbytes_{edges_num}_vs2"
+    vs2_val_ptr = f"vs_corner_sm_vs2_subbytes_{edges_num}_vs2"
     registerCustomData(vs2_val_ptr, vs2_val, 32)
 
     description = "cp_vs2_edges_egs4_subbytes_sm (Test source targeting value = " + hex(target) + ")"
@@ -580,7 +580,7 @@ def make_vs2_vd_edges_sm(instruction, sew):
 
       instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vd_val_pointer = v1, vs2_val_pointer = v2, additional_no_overlap=[['vd', 'vs1', 'vs2']], lmul=4)
 
-      writeTest(description, instruction, cp, instruction_data, sew=sew, vl=4, lmul=4)
+      writeTest(description, instruction, cp, instruction_data, sew=sew, vl=4, lmul=4, egs=4)
 
 def make_vs1_vd_edges(instruction, sew, vs1edges, vdedges, vl=1, lmul=1):
   for v1 in vdedges:

@@ -186,7 +186,7 @@
     "clock_frequency": 1000000000,
     "instructions_per_tick": 2,
     "wfi_is_nop": false,
-    "max_time_to_wait": 10
+    "max_time_to_wait": 1000
   },
   "extensions": {
     "M": {

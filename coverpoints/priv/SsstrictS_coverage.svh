@@ -31,11 +31,9 @@ covergroup SsstrictS_scsr_cg with function sample(ins_t ins);
         bins user_std0[] = {[12'h000:12'h0FF]};
         bins super_std0[] = {[12'h100:12'h17F]};
         ignore_bins satp = {CSR_SATP}; // satp accesses may cause complex side effects
-        // ignore_bins sie = {CSR_SIE}; // sie
-        // ignore_bins stvec = {CSR_STVEC}; // stvec accesses may cause complex side effects
-        // ignore_bins sscratch = {CSR_SSCRATCH}; // sscratch accesses may cause complex side effects
-        // ignore_bins sip = {CSR_SIP}; // sip accesses may cause complex side effects
-        // ignore_bins context = {CSR_CONTEXT}; // context accesses may cause complex side effects
+        ignore_bins stvec = {CSR_STVEC}; // stvec accesses may cause complex side effects
+        ignore_bins sscratch = {CSR_SSCRATCH}; // sscratch accesses may cause complex side effects
+        ignore_bins scontext = {CSR_SCONTEXT}; // inconsistent between Sail and Spike; tested in Sdtrig if it exists
         bins super_std02[] = {[12'h181:12'h1FF]};
         bins hyper_std0[] = {[12'h200:12'h2FF]};
         ignore_bins mach_std0[] = {[12'h300:12'h3FF]};

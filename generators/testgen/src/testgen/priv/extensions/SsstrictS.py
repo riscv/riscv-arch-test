@@ -42,10 +42,8 @@ from .SsstrictCommon import (
 
 _S_CSR_SKIP: frozenset[int] = frozenset(
     [0x180]  # satp     — skip: TLB flush / address-translation mode change
-    + [0x104]  # sie    — skip: all-ones write enables S-mode interrupts; covered in shadow test
     + [0x105]  # stvec  — skip: overwriting stvec breaks the delegated-trap handler itself
     + [0x140]  # sscratch — skip: avoid corrupting framework save area
-    + [0x144]  # sip    — skip: all-ones write asserts SSIP software interrupt; covered in shadow test
     + [0x5A8]  # scontext — skip: Sail traps (unimplemented Sdtrig), Spike does not; diverges signature
     # M-mode CSRs (bits[9:8]=11): skip — higher privilege than S-mode; already covered by S_coverage.svh
     + list(range(0x300, 0x400))  # M-mode standard (mstatus, misa, medeleg, mtvec, ...)

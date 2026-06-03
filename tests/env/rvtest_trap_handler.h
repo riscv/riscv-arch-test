@@ -1890,9 +1890,17 @@ sv_\__MODE__\()epc:
 #endif
 
 adj_\__MODE__\()epc_rtn:
-        andi    T3, T3, ~WDBYTMSK                    // align EPC to 4-byte boundary
-        addi    T3, T3,  2*WDBYTSZ                   // advance past trapping instruction (with padding)
-        csrw    CSR_XEPC, T3                          // write adjusted EPC (will resume after the faulting instr)
+        // Advance xEPC to the next instruction regardless of width.
+        // xEPC is always 2-byte aligned, so lhu cannot misalign-fault.
+        // Branchless: bits[1:0]==0b11 -> 32-bit instruction (advance 4), else 16-bit (advance 2).
+        lhu     T2, 0(T3)                            // load lower halfword of instruction at xEPC
+        andi    T2, T2, 3                             // extract bits[1:0]
+        addi    T2, T2, 1                             // ==4 only when bits[1:0] were 0b11
+        srli    T2, T2, 2                             // 1 if 32-bit, 0 if compressed
+        addi    T2, T2, 1                             // 2 (32-bit) or 1 (compressed)
+        slli    T2, T2, 1                             // advance = 4 (32-bit) or 2 (compressed)
+        add     T3, T3, T2                            // T3 = xEPC + advance (next instruction)
+        csrw    CSR_XEPC, T3                          // write adjusted EPC (will resume at next instruction)
 
 skp_adj_\__MODE__\()epc:
         csrr    T3, CSR_XTVAL                         // T3 = xtval (trap value: faulting addr or instruction)

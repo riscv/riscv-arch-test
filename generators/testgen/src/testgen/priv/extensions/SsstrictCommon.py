@@ -618,8 +618,16 @@ def generate_compressed_instr(
         "compressed00",
         "EEEEEEEEEEEEEE00",
         length=16,
-        exclusion=[
-            "XXXXXXXXXXX000XX",  # rd' = x8 — clobbers scratch base pointer
+        exclusion=[  # exclude load ands store instructions that could cause exceptions for bad addresses
+            "001XXXXXXXXXXX00",  # c.fld
+            "010XXXXXXXXXXX00",  # c.lw
+            "100000XXXXXXXX00",  # c.lb
+            "100001XXXXXXXX00",  # c.lh/lhu
+            "100010XXXXXXXX00",  # c.sb
+            "100011XXX0XXXX00",  # c.sh
+            "101XXXXXXXXXXX00",  # c.fsd
+            "110XXXXXXXXXXX00",  # c.sw
+            #            "XXXXXXXXXXX000XX",  # rd' = x8 — clobbers scratch base pointer
         ],
         reinit_interval=50,
     )

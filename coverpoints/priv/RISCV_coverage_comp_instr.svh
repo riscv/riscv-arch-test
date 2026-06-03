@@ -17,8 +17,8 @@
         ignore_bins c_lw  = {[14'b01000000000000:14'b01011111111111]}; // c.lw throw exceptions for bad addresses
         bins c00b[]       = {[14'b01100000000000:14'b01111111111111]};
         ignore_bins c_lbu = {[14'b10000000000000:14'b10000011111111]}; // c.lbu throw exceptions for bad addresses
-        ignore_bins c_lh  = {[14'b10000100000000:14'b10000111111111]}; // c.lh throw exceptions for bad addresses
-        ignore_bins c_sb  = {[14'b10001000000000:14'b10001111111111]}; // c.sb throw exceptions for bad addresses
+        ignore_bins c_lh  = {[14'b10000100000000:14'b10000111111111]}; // c.lh/c.lhu throw exceptions for bad addresses
+        ignore_bins c_sb  = {[14'b10001000000000:14'b10001011111111]}; // c.sb throw exceptions for bad addresses
         ignore_bins c_sh0 = {[14'b10001100000000:14'b10001100001111]}; // c.sh throw exceptions for bad addresses
         bins c00_0[]      = {[14'b10001100010000:14'b10001100011111]};
         ignore_bins c_sh1 = {[14'b10001100100000:14'b10001100101111]}; // c.sh throw exceptions for bad addresses

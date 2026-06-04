@@ -48,13 +48,6 @@ main:
     RVTEST_GOTO_MMODE
 
     // -----------------------------------------------------------------------
-    // Walking ones through even pmpcfg registers (pmpcfg0, pmpcfg2, ...).
-    //
-    // The original test writes walking ones only to even-numbered pmpcfg
-    // registers (pmpcfg0, pmpcfg2, and — for 64-PMP systems — pmpcfg4 through
-    // pmpcfg14).  Odd registers (pmpcfg1, pmpcfg3, ...) are RV32 aliases and
-    // are intentionally left out, matching original behaviour.
-    //
     // UDB_NUM_PMP_ENTRIES/8 gives the count of even cfg registers:
     //   16 PMPs → 2 even regs (pmpcfg0, pmpcfg2)
     //   64 PMPs → 8 even regs (pmpcfg0 .. pmpcfg14, step 2)

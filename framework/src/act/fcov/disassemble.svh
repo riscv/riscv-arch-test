@@ -1415,12 +1415,19 @@ function string disassemble (logic [31:0] instrRaw);
     VAESEF_VS:   $sformat(decoded, "vaesef.vs %s, %s", vd, vs2);
 
     VAESZ_VS:     $sformat(decoded, "vaesz.vs %s, %s",                vd, vs2);
-    VAESKF1_VI:   $sformat(decoded, "vaeskf1.vi %s, %0d",              vd, uimm5);
-    VAESKF2_VI:   $sformat(decoded, "vaeskf2.vi %s, %0d",              vd, uimm5);
+    VAESKF1_VI:   $sformat(decoded, "vaeskf1.vi %s, %s, %0d",              vd, vs2, uimm5);
+    VAESKF2_VI:   $sformat(decoded, "vaeskf2.vi %s, %s, %0d",              vd, vs2, uimm5);
 
     VSHA2MS_VV:   $sformat(decoded, "vsha2ms.vv %s, %s, %s",              vd, vs2, vs1);
     VSHA2CH_VV:   $sformat(decoded, "vsha2ch.vv %s, %s, %s",              vd, vs2, vs1);
     VSHA2CL_VV:   $sformat(decoded, "vsha2cl.vv %s, %s, %s",              vd, vs2, vs1);
+
+    VSM3C_VI:     $sformat(decoded, "vsm3c.vi %s, %s, %0d",                vd, vs2, uimm5);
+    VSM3ME_VV:    $sformat(decoded, "vsm3me.vv %s, %s, %s",                vd, vs2, vs1);
+
+    VSM4K_VI:     $sformat(decoded, "vsm4k.vi %s, %s, %0d",                vd, vs2, uimm5);
+    VSM4R_VV:     $sformat(decoded, "vsm4r.vv %s, %s",                    vd, vs2);
+    VSM4R_VS:     $sformat(decoded, "vsm4r.vs %s, %s",                    vd, vs2);
 
     // Zvfbfmin Extension: BF16 Minimal Instructions
     VFWCVTBF16_F_F_V: $sformat(decoded, "vfwcvtbf16.f.f.v %s, %s%s",    vd, vs2, vm);

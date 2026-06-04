@@ -30,7 +30,12 @@ from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
 
-from .SsstrictCommon import generate_compressed_instr, generate_csr_sweep_body, generate_illegal_instr
+from .SsstrictCommon import (
+    generate_compressed_instr,
+    generate_csr_sweep_body,
+    generate_illegal_instr,
+    generate_vector_illegal_instr,
+)
 
 # ── CSR sweep set (U-mode) ────────────────────────────────────────────────
 
@@ -90,7 +95,7 @@ def _generate_csr_tests_u(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "SsstrictU",
-    required_extensions=["Sm", "U", "Zicsr"],
+    required_extensions=["Sm", "U", "Zicsr", "Ssstrict"],
     march_extensions=[
         "I",
         "V",
@@ -104,4 +109,5 @@ def make_ssstrictu(test_data: TestData) -> list[str]:
     lines.extend(_generate_csr_tests_u(test_data))
     lines.extend(generate_illegal_instr(test_data, "SsstrictU_instr_cg"))
     lines.extend(generate_compressed_instr(test_data, "SsstrictU_comp_instr_cg"))
+    lines.extend(generate_vector_illegal_instr(test_data, "SsstrictU_instr_cg"))
     return lines

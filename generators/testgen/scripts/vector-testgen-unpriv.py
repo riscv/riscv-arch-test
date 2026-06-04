@@ -40,6 +40,8 @@ import vector_testgen_common as common
 from vector_testgen_common import (
   ARCH_VERIF,
   bf16_instructions,
+  crypto_ins,
+  crypto_egs8,
   eew64_ins,
   getSigReg,
   getFlen,
@@ -74,6 +76,7 @@ from vector_testgen_common import (
   randomizeMask,
   randomizeOngroupVectorRegister,
   randomizeVectorInstructionData,
+  registerCustomData,
   readTestplans,
   setCurrentCoverpoint,
   setExtension,
@@ -88,8 +91,11 @@ from vector_testgen_common import (
   vedgesemulf2,
   vedgesemulf4,
   vedgesemulf8,
+  vector_crypto_edges,
   v_crypto_edges_emul4,
   v_crypto_edges_emul8,
+  v_crypto_aes_subbytes_edges,
+  v_crypto_sm_subbytes_edges,
   vd_widen_ins,
   vector_loads,
   vector_ls_ins,
@@ -135,7 +141,8 @@ def register_to_lmul_egs_ifdef(register: int, lmul: None | int, sew: int, egs: i
   egs_if_def = ""
   if lmul is None and egs != 1:
     # We want to use the maximum possible lmul here
-    for possible_lmul in [egs, 4, 2, 1]: # egs is either 8 or 4
+    highest_reasonable_lmul = egs
+    for possible_lmul in [highest_reasonable_lmul, 4, 2, 1]:
       if register % possible_lmul == 0:
         lmul = possible_lmul
         break
@@ -326,22 +333,29 @@ def make_fs1_v(instruction, sew, rng, lmul = 1):
     incrementBasetestCount()
 
 def make_imm_v(instruction, sew):
+  if instruction in crypto_ins:
+    egs = 8 if instruction in crypto_egs8 else 4
+  else:
+    egs = 1
 
-  if (test in imm_31):
+  lmul = egs
+  vl = egs
+
+  if (instruction in imm_31):
     for uimm in range(0,32):
       description       = "cp_imm_5bit_u (Test uimm = " + str(uimm) + ")"
       cp = f"cp_imm_5bit_u_b{uimm}"
-      instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), imm = uimm)
+      instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), imm = uimm, lmul=lmul)
 
-      writeTest(description, instruction, cp, instruction_data, sew=sew)
+      writeTest(description, instruction, cp, instruction_data, sew=sew, vl=vl, lmul=lmul, egs=egs)
       incrementBasetestCount()
   else:
     for imm in range(-16,16):
       description       = "cp_imm_5bit (Test imm = " + str(imm) + ")"
       cp = f"cp_imm_5bit_b{imm}"
-      instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), imm = imm)
+      instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), imm = imm, lmul=lmul)
 
-      writeTest(description, instruction, cp, instruction_data, sew=sew)
+      writeTest(description, instruction, cp, instruction_data, sew=sew, vl=vl, lmul=lmul, egs=egs)
       incrementBasetestCount()
 
 def make_rdv(instruction, sew, rng):
@@ -396,6 +410,93 @@ def make_vd_edges(instruction, sew, vedges, vl=1, lmul=1, egs=1):
     writeTest(description, instruction, cp, instruction_data, sew=sew, vl=vl, lmul=lmul, egs=egs)
     incrementBasetestCount()
 
+def make_vd_edges_sm_subbytes(instruction, sew):
+  for i in range(0, 256, 4):
+    # On the ith iteration, we want subbytes that are {i+3}{i+2}{i+1}{i}
+    # in the first sm4_subword call
+
+    # Sail Reference: (From the Spec)
+    # {rk3 @ rk2 @ rk1 @ rk0} : bits(128) = get_velem(vs2, EGW=128, keyelem);
+    # {x3 @ x2 @ x1 @ x0} : bits(128) = get_velem(vd, EGW=128, i);
+    # B  = x1 ^ x2 ^ x3 ^ rk0;
+    # S = sm4_subword(B);
+
+    # So we can randomly choose all of vd, and choose a specific rk0 to get the desired B
+    target = 0
+    for j in range(4):
+      target += (i + j) << (j * 8)
+
+    x1 = randint(0, (1 << 32) - 1)
+    x2 = randint(0, (1 << 32) - 1)
+    x3 = randint(0, (1 << 32) - 1)
+
+    rk0 = x1 ^ x2 ^ x3 ^ target
+    vs2_val = [rk0] + [randint(0, (1 << 32) - 1) for _ in range(3)]
+    vd_val = [randint(0, (1 << 32) - 1), x1, x2, x3]
+
+    assert(target == (x1 ^ x2 ^ x3 ^ rk0))
+
+    edges_num = i // 4
+    vs2_val_ptr = f"vs_corner_sm_vd_subbytes_{edges_num}_vs2"
+    vd_val_ptr = f"vs_corner_sm_vd_subbytes_{edges_num}_vd"
+    registerCustomData(vs2_val_ptr, vs2_val, 32)
+    registerCustomData(vd_val_ptr, vd_val, 32)
+
+    description = "cp_vd_edges_egs4_subbytes_sm (Test source targeting value = " + hex(target) + ")"
+    cp = f"cp_vd_edges_egs4_subbytes_sm_b{target:08x}"
+    instruction_data = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), suite='base', lmul=4, additional_no_overlap=[['vs2', 'vd']], vs2_val_pointer=vs2_val_ptr, vd_val_pointer=vd_val_ptr)
+
+    writeTest(description, instruction, cp, instruction_data, sew=sew, vl=4, lmul=4, egs=4)
+    incrementBasetestCount()
+
+def make_vs2_edges_sm_subbytes(instruction, sew):
+  for i in range(0, 256, 4):
+    # On the ith iteration, we want subbytes that are {i+3}{i+2}{i+1}{i}
+    # in the first sm4_subword call
+
+    # Sail Reference: (From the Spec)
+    # let (rk3 @ rk2 @ rk1 @ rk0) : bits(128) = get_velem(vs2, 128, i);
+    # B = rk1 ^ rk2 ^ rk3 ^ ck(4 * rnd);
+    # S = sm4_subword(B);
+
+    # From the spec:
+    ck = [0x00070E15, 0x1C232A31, 0x383F464D, 0x545B6269,
+          0x70777E85, 0x8C939AA1, 0xA8AFB6BD, 0xC4CBD2D9,
+          0xE0E7EEF5, 0xFC030A11, 0x181F262D, 0x343B4249,
+          0x50575E65, 0x6C737A81, 0x888F969D, 0xA4ABB2B9,
+          0xC0C7CED5, 0xDCE3EAF1, 0xF8FF060D, 0x141B2229,
+          0x30373E45, 0x4C535A61, 0x686F767D, 0x848B9299,
+          0xA0A7AEB5, 0xBCC3CAD1, 0xD8DFE6ED, 0xF4FB0209,
+          0x10171E25, 0x2C333A41, 0x484F565D, 0x646B7279]
+
+    # Randomly choose, ck, rk2, rk3, and have a desired target, to solve for rk1
+    target = 0
+    for j in range(4):
+      target += (i + j) << (j * 8)
+
+    imm_val = randint(0, 31)
+    ck_val = ck[4 * (imm_val & 0x7)]
+
+    rk2 = randint(0, (1 << 32) - 1)
+    rk3 = randint(0, (1 << 32) - 1)
+    rk0 = randint(0, (1 << 32) - 1)
+
+    rk1 = ck_val ^ rk2 ^ rk3 ^ target
+
+    vs2_val = [rk0, rk1, rk2, rk3]
+    assert(target == (rk1 ^ rk2 ^ rk3 ^ ck_val))
+
+    edges_num = i // 4
+    vs2_val_ptr = f"vs_corner_sm_vs2_subbytes_{edges_num}_vs2"
+    registerCustomData(vs2_val_ptr, vs2_val, 32)
+
+    description = "cp_vs2_edges_egs4_subbytes_sm (Test source targeting value = " + hex(target) + ")"
+    cp = f"cp_vs2_edges_egs4_subbytes_sm_b{target:08x}"
+    instruction_data = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), suite='base', lmul=4, additional_no_overlap=[['vs2', 'vd']], vs2_val_pointer=vs2_val_ptr, imm=imm_val)
+
+    writeTest(description, instruction, cp, instruction_data, sew=sew, vl=4, lmul=4, egs=4)
+    incrementBasetestCount()
+
 def make_rs1_edges_v(instruction, sew, redgesv):
 
   for rcorner in redgesv:
@@ -425,23 +526,61 @@ def make_fs1_edges_v(instruction, sew):
     writeTest(description, instruction, cp, instruction_data, sew=sew)
     incrementBasetestCount()
 
-def make_vs2_vs1_edges(instruction, sew, vs2edges, vs1edges, vl=1, lmul=1):
+def make_vs2_vs1_edges(instruction, sew, vs2edges, vs1edges, vl=1, lmul=1, egs=1):
   for v1 in vs1edges:
     for v2 in vs2edges:
       description = "cr_vs2_vs1_edges"
       cp = f"cp_vs2_vs1_edges_b{v1}_{v2}"
       instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vs1_val_pointer = v1, vs2_val_pointer = v2, additional_no_overlap=[['vs1', 'vs2']], lmul=lmul)
 
-      writeTest(description, instruction, cp, instruction_data, sew=sew, vl=vl, lmul=lmul)
+      writeTest(description, instruction, cp, instruction_data, sew=sew, vl=vl, lmul=lmul, egs=egs)
 
-def make_vs2_vd_edges(instruction, sew, vs2edges, vdedges, vl=1, lmul=1):
+def make_vs2_vd_edges(instruction, sew, vs2edges, vdedges, vl=1, lmul=1, egs=1):
   for v1 in vdedges:
     for v2 in vs2edges:
       description = "cr_vs2_vd_edges"
       cp = f"cp_vs2_vd_edges_b{v1}_{v2}"
       instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vd_val_pointer = v1, vs2_val_pointer = v2, additional_no_overlap=[['vd', 'vs1', 'vs2']], lmul=lmul)
 
-      writeTest(description, instruction, cp, instruction_data, sew=sew, vl=vl, lmul=lmul)
+      writeTest(description, instruction, cp, instruction_data, sew=sew, vl=vl, lmul=lmul, egs=egs)
+
+def make_vs2_vd_edges_sm(instruction, sew):
+  vs2_edges = {
+    "vs_corner_zero": 0,
+    "vs_corner_ones": (1 << 128) - 1,
+    "vs_corner_walkeven": sum(1 << i for i in range(128) if i % 2 == 0),
+    "vs_corner_walkodd": sum(1 << i for i in range(128) if i % 2 == 1),
+    "vs_corner_random": randint(0, (1 << 128) - 1),
+  }
+
+  # Sanity Check
+  assert all(edge in vs2_edges for edge in vector_crypto_edges)
+
+  for vs2_edge_name, vs2_val in vs2_edges.items():
+    v2 = f"{vs2_edge_name}_subbytes_sm_cross"
+    data = [(vs2_val >> (32 * i)) & (0xFFFF_FFFF) for i in range(4)]
+    registerCustomData(v2, data, 32)
+
+    for i in range(0, 256, 4):
+      target = 0
+      for j in range(4):
+        target += (i + j) << (j * 8)
+
+      x2 = randint(0, (1 << 32) - 1)
+      x3 = randint(0, (1 << 32) - 1)
+
+      rk0 = vs2_val & 0xFFFF_FFFF
+
+      x1 = x2 ^ x3 ^ target ^ rk0
+      v1 = f"vs2_vd_subbytes_sm_cross_vs2_{vs2_edge_name}_vd_{i // 4}"
+      registerCustomData(v1, [randint(0, (1 << 32) - 1), x1, x2, x3], 32)
+
+      description = "cr_vs2_vd_edges_subbytes_sm"
+      cp = f"cp_vs2_vd_edges_b{v1}_{v2}"
+
+      instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vd_val_pointer = v1, vs2_val_pointer = v2, additional_no_overlap=[['vd', 'vs1', 'vs2']], lmul=4)
+
+      writeTest(description, instruction, cp, instruction_data, sew=sew, vl=4, lmul=4, egs=4)
 
 def make_vs1_vd_edges(instruction, sew, vs1edges, vdedges, vl=1, lmul=1):
   for v1 in vdedges:
@@ -1027,6 +1166,7 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cp_vd_emul4"                  : make_vd(test, sew, range(0,vreg_count,4), getBaseLmul(test, sew))
     elif coverpoint == "cp_vd_emul8"                  : make_vd(test, sew, range(0,vreg_count,8), getBaseLmul(test, sew))
     elif coverpoint == "cp_vd_egs4"                   : make_vd(test, sew, range(0,vreg_count), egs=4)
+    elif coverpoint == "cp_vd_egs8"                   : make_vd(test, sew, range(0,vreg_count), egs=8)
     elif coverpoint == "cp_vs3"                       : make_vs3(test, sew, range(vreg_count),   getBaseLmul(test, sew))
     elif coverpoint == "cp_vs3_lte30"                 : make_vs3(test, sew, range(vreg_count-1), getBaseLmul(test, sew))
     elif coverpoint == "cp_vs3_lte29"                 : make_vs3(test, sew, range(vreg_count-2), getBaseLmul(test, sew))
@@ -1044,10 +1184,12 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cp_vs2_emul4"                 : make_vs2(test, sew, range(0,vreg_count,4), getBaseLmul(test, sew))
     elif coverpoint == "cp_vs2_emul8"                 : make_vs2(test, sew, range(0,vreg_count,8), getBaseLmul(test, sew))
     elif coverpoint == "cp_vs2_egs4"                  : make_vs2(test, sew, range(vreg_count), egs=4)
+    elif coverpoint == "cp_vs2_egs8"                  : make_vs2(test, sew, range(vreg_count), egs=8)
     elif coverpoint == "cp_vs1"                       : make_vs1(test, sew, range(vreg_count))
     elif coverpoint == "cp_vs1_nv0"                   : make_vs1(test, sew, range(1,vreg_count))
     elif coverpoint == "cp_vs1_emul2"                 : make_vs1(test, sew, range(0,vreg_count,2))
     elif coverpoint == "cp_vs1_egs4"                  : make_vs1(test, sew, range(0,vreg_count), egs=4)
+    elif coverpoint == "cp_vs1_egs8"                  : make_vs1(test, sew, range(0,vreg_count), egs=8)
     elif coverpoint == "cmp_vd_vs2"                   : make_vd_vs2(test, sew, range(vreg_count), getBaseLmul(test, sew))
     elif coverpoint.startswith("cmp_vd_vs2_sew_lte"):
       max_sew = int(coverpoint.split("_")[-1])
@@ -1066,11 +1208,13 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cmp_vd_vs1_nv0"               : make_vd_vs1(test, sew, range(1,vreg_count))
     elif coverpoint == "cmp_vd_vs1_emul2"             : make_vd_vs1(test, sew, range(0,vreg_count,2))
     elif coverpoint == "cmp_vd_vs1_egs4"              : make_vd_vs1(test, sew, range(0,vreg_count), egs=4)
+    elif coverpoint == "cmp_vd_vs1_egs8"              : make_vd_vs1(test, sew, range(0,vreg_count), egs=8)
     elif coverpoint == "cmp_vs1_vs2"                  : make_vs1_vs2(test, sew, range(vreg_count))
     elif coverpoint == "cmp_vs1_vs2_sew16":
         if sew == 16: make_vs1_vs2(test, sew, range(vreg_count))
     elif coverpoint == "cmp_vs1_vs2_nv0"              : make_vs1_vs2(test, sew, range(1,vreg_count))
     elif coverpoint == "cmp_vs1_vs2_egs4"             : make_vs1_vs2(test, sew, range(vreg_count), egs=4)
+    elif coverpoint == "cmp_vs1_vs2_egs8"             : make_vs1_vs2(test, sew, range(vreg_count), egs=8)
     elif coverpoint == "cmp_vd_vs1_vs2"               : make_vd_vs1_vs2(test, sew, range(vreg_count))
     elif coverpoint == "cmp_vd_vs1_vs2_nv0"           : make_vd_vs1_vs2(test, sew, range(1,vreg_count))
     elif coverpoint == "cmp_vd_vs1_vs2_egs4"          : make_vd_vs1_vs2(test, sew, range(vreg_count), egs=4)
@@ -1104,6 +1248,9 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cp_vs2_edges_f_bf16"        : make_vs2_edges(test, sew, vfedgesemul1)
     elif coverpoint == "cp_vs2_edges_f_emul2"       : make_vs2_edges(test, sew, vfedgesemul2)
     elif coverpoint == "cp_vs2_edges_egs4"          : make_vs2_edges(test, sew, v_crypto_edges_emul4, vl=4, lmul=4, egs=4)
+    elif coverpoint == "cp_vs2_edges_egs8"          : make_vs2_edges(test, sew, v_crypto_edges_emul8, vl=8, lmul=8, egs=8)
+    elif coverpoint == "cp_vs2_edges_egs4_subbytes" : make_vs2_edges(test, sew, v_crypto_aes_subbytes_edges, vl=4, lmul=4, egs=4)
+    elif coverpoint == "cp_vs2_edges_egs4_subbytes_sm" : make_vs2_edges_sm_subbytes(test, sew)
     elif coverpoint == "cp_vs1_edges"               : make_vs1_edges(test, sew, vedgesemul1)
     elif coverpoint == "cp_vs1_edges_emul2"         : make_vs1_edges(test, sew, vedgesemul2)
     elif coverpoint == "cp_vs1_edges_eew1"          : make_vs1_edges(test, sew, vedgeseew1, vl=8)  # assume vl = 8 for mask logical instr
@@ -1111,7 +1258,11 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cp_vs1_edges_f_bf16"        : make_vs1_edges(test, sew, vfedgesemul1)
     elif coverpoint == "cp_vs1_edges_f_emul2"       : make_vs1_edges(test, sew, vfedgesemul2)
     elif coverpoint == "cp_vs1_edges_egs4"          : make_vs1_edges(test, sew, v_crypto_edges_emul4, vl=4, lmul=4, egs=4)
+    elif coverpoint == "cp_vs1_edges_egs8"          : make_vs1_edges(test, sew, v_crypto_edges_emul8, vl=8, lmul=8, egs=8)
     elif coverpoint == "cp_vd_edges_egs4"           : make_vd_edges(test, sew, v_crypto_edges_emul4, vl=4, lmul=4, egs=4)
+    elif coverpoint == "cp_vd_edges_egs8"           : make_vd_edges(test, sew, v_crypto_edges_emul8, vl=8, lmul=8, egs=8)
+    elif coverpoint == "cp_vd_edges_egs4_subbytes"  : make_vd_edges(test, sew, v_crypto_aes_subbytes_edges, vl=4, lmul=4, egs=4)
+    elif coverpoint == "cp_vd_edges_egs4_subbytes_sm": make_vd_edges_sm_subbytes(test, sew)
     elif coverpoint == "cr_vs2_vs1_edges"           : make_vs2_vs1_edges(test, sew, vedgesemul1, vedgesemul1)
     elif coverpoint == "cr_vs2_vs1_edges_wv"        : make_vs2_vs1_edges(test, sew, vedgesemul2, vedgesemul1)
     elif coverpoint == "cr_vs2_vs1_edges_wred"      : make_vs2_vs1_edges(test, sew, vedgesemul1, vedgesemul2)
@@ -1120,8 +1271,13 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cr_vs2_vs1_edges_f_bf16"    : make_vs2_vs1_edges(test, sew, vfedgesemul1, vfedgesemul1)
     elif coverpoint == "cr_vs2_vs1_edges_fwv"       : make_vs2_vs1_edges(test, sew, vfedgesemul2, vfedgesemul1)
     elif coverpoint == "cr_vs2_vs1_edges_fwred"     : make_vs2_vs1_edges(test, sew, vfedgesemul1, vfedgesemul2)
-    elif coverpoint == "cr_vs2_vs1_edges_egs4"      : make_vs2_vs1_edges(test, sew, v_crypto_edges_emul4, v_crypto_edges_emul4, vl=4, lmul=4)
-    elif coverpoint == "cr_vs2_vd_edges_egs4"       : make_vs2_vd_edges(test, sew, v_crypto_edges_emul4, v_crypto_edges_emul4, vl=4, lmul=4)
+    elif coverpoint == "cr_vs2_vs1_edges_egs4"      : make_vs2_vs1_edges(test, sew, v_crypto_edges_emul4, v_crypto_edges_emul4, vl=4, lmul=4, egs=4)
+    elif coverpoint == "cr_vs2_vs1_edges_egs8"      : make_vs2_vs1_edges(test, sew, v_crypto_edges_emul8, v_crypto_edges_emul8, vl=8, lmul=8, egs=8)
+    elif coverpoint == "cr_vs2_vd_edges_egs4"       : make_vs2_vd_edges(test, sew, v_crypto_edges_emul4, v_crypto_edges_emul4, vl=4, lmul=4, egs=4)
+    elif coverpoint == "cr_vs2_vd_edges_egs8"       : make_vs2_vd_edges(test, sew, v_crypto_edges_emul8, v_crypto_edges_emul8, vl=8, lmul=8, egs=8)
+    elif coverpoint == "cr_vs2_vd_edges_egs4_subbytes": make_vs2_vd_edges(test, sew, v_crypto_edges_emul4, v_crypto_aes_subbytes_edges, vl=4, lmul=4, egs=4)
+    elif coverpoint == "cr_vs2_vd_edges_egs4_subbytes_sm": make_vs2_vd_edges_sm(test, sew)
+    elif coverpoint == "cr_vs2_vd_edges_egs4_subbytes_vs2": make_vs2_vd_edges(test, sew, v_crypto_aes_subbytes_edges, v_crypto_edges_emul4, vl=4, lmul=4, egs=4)
     elif coverpoint == "cr_vs1_vd_edges_egs4"       : make_vs1_vd_edges(test, sew, v_crypto_edges_emul4, v_crypto_edges_emul4, vl=4, lmul=4)
     elif coverpoint == "cr_vs2_rs1_edges"           : make_vs2_rs1_edges(test, sew, vedgesemul1)
     elif coverpoint == "cr_vs2_rs1_edges_wx"        : make_vs2_rs1_edges(test, sew, vedgesemul2)
@@ -1146,6 +1302,8 @@ def makeTest(coverpoints, test, sew=None):
     ############################ length suite ############################
     elif coverpoint == "cp_masking_edges"             : make_mask_edges(test, sew, getBaseLmul(test, sew))
     elif coverpoint == "cp_vl_0"                        : make_vl_0(test, sew, lmul = getBaseLmul(test, sew))
+    elif coverpoint == "cp_vl_0_egs4"                   : make_vl_0(test, sew, lmul=4)
+    elif coverpoint == "cp_vl_0_egs8"                   : make_vl_0(test, sew, lmul=8)
     elif "cr_vl_lmul_lmul4max"      in coverpoint       : make_vl_lmul(test, sew, maxemul=4) # includes tests for legal LMUL up to 4
     elif "cr_vl_lmul_lmul2max"      in coverpoint       : make_vl_lmul(test, sew, maxemul=2) # includes tests for legal LMUL up to 4
     elif "cr_vl_lmul_lmul1max"      in coverpoint       : make_vl_lmul(test, sew, maxemul=1) # includes tests for legal LMUL up to 4
@@ -1166,6 +1324,7 @@ def makeTest(coverpoints, test, sew=None):
     elif "cr_vl_lmul_e32"           in coverpoint       : make_vl_lmul(test, sew, eew = 32)
     elif "cr_vl_lmul_e64"           in coverpoint       : make_vl_lmul(test, sew, eew = 64)
     elif "cr_vl_lmul_egs4"          in coverpoint       : make_vl_lmul(test, sew, egs=4)
+    elif "cr_vl_lmul_egs8"          in coverpoint       : make_vl_lmul(test, sew, egs=8)
     elif "cr_vl_lmul"               in coverpoint       : make_vl_lmul(test, sew, preset_emul = getLengthLmul(test)) # includes tests for legal LMUL up to 8
     elif coverpoint in ["cr_vtype_agnostic", "cr_vtype_agnostic_nomask"]              : make_vtype_agnostic(test, sew, preset_emul=getLengthLmul(test))
     elif coverpoint == "cr_vtype_agnostic_lmul4max"     : make_vtype_agnostic(test, sew, maxemul=4)
@@ -1191,6 +1350,7 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cr_vtype_agnostic_lmul2max_nomask" : make_vtype_agnostic(test, sew, maxemul=2, preset_emul=getLengthLmul(test))
     elif coverpoint == "cr_vtype_agnostic_lmul1max_nomask" : make_vtype_agnostic(test, sew, maxemul=1, preset_emul=getLengthLmul(test))
     elif coverpoint == "cr_vtype_agnostic_egs4"         : make_vtype_agnostic(test, sew, egs=4)
+    elif coverpoint == "cr_vtype_agnostic_egs8"         : make_vtype_agnostic(test, sew, egs=8)
     ############################  cp_custom   ############################
     elif coverpoint == "cp_custom_vmask_write_lmulge1"                : make_custom_vmask_write_lmulge1(test, sew)
     elif coverpoint == "cp_custom_vmask_write_v0_masked"              : make_custom_vmask_write_v0_masked(test, sew)
@@ -1404,12 +1564,12 @@ def _setup_worker() -> None:
   import_all_modules(custom)
 
 def _detect_sew(pathname: str) -> int:
-  for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$', r'/VlsCustom(\d+)$', r'/VfCustom(\d+)$', r'/Zvbb(\d+)$', r'/Zvkb(\d+)$', r'/Zvbc(\d+)$']:
+  for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$', r'/VlsCustom(\d+)$', r'/VfCustom(\d+)$', r'/Zvbb(\d+)$', r'/Zvkb(\d+)$', r'/Zvbc(\d+)$', r'/Zvknhb(\d+)$']:
     match = re.search(pattern, pathname)
     if match:
         return int(match.group(1))
 
-  for pattern, sew in [(r'/Zvfbfmin$', 16), (r'/Zvfhmin$', 16), (r'/Zvfbfwma$', 16), (r'/Zvkg$', 32)]:
+  for pattern, sew in [(r'/Zvfbfmin$', 16), (r'/Zvfhmin$', 16), (r'/Zvfbfwma$', 16), (r'/Zvk(g|nha|ned|sed|sh)$', 32)]: # codespell:ignore ned
     match = re.search(pattern, pathname)
     if match:
       return sew

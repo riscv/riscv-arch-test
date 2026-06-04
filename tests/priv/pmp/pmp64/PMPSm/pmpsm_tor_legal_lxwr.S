@@ -76,7 +76,7 @@ RVTEST_BEGIN
     nop
     nop
 
-    li t0, (g-8)
+    LI(t0, g-8)
     add a4, a4, t0                        // REGIONSTART + g - 4
     LA(x1, 4f)                            // Store the return Address in x1
     jalr ra, 0(a4)
@@ -124,7 +124,7 @@ RVTEST_BEGIN
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
 
 
-    li t0, (g-8)
+    LI(t0, g-8)
     add a5, a5, t0                                        // REGIONSTART + g - 4
 
     \TEST_CASE\()_4:
@@ -169,7 +169,7 @@ RVTEST_BEGIN
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)
 
 
-    li t0, (g-8)
+    LI(t0, g-8)
     add a5, a5, t0
 
     \TEST_CASE\()_9:
@@ -223,7 +223,7 @@ main:
     csrw pmpcfg2, x4
 
     LA(x4, TEST_FOR_EXECUTION)
-    li t0, g
+    LI(t0, g)
     add x5, x4, t0
     srl x4, x4, PMP_SHIFT
     srl x5, x5, PMP_SHIFT
@@ -239,7 +239,7 @@ main:
 // Test Case: 1 : L -> 1 and No Permissions given to the PMP Region 11
 
     LA(x6, TEST_FOR_EXECUTION)
-    li t0, g
+    LI(t0, g)
     add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr11, x6
@@ -255,7 +255,7 @@ main:
 // Test Case: 2 : L -> 1 and R Permissions given to the PMP Region 9
 
     LA(x6, TEST_FOR_EXECUTION)
-    li t0, g
+    LI(t0, g)
     add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr9, x6
@@ -271,7 +271,7 @@ main:
 // Test Case: 3 : L -> 1 and WR Permissions given to the PMP Region 7
 
     LA(x6, TEST_FOR_EXECUTION)
-    li t0, g
+    LI(t0, g)
     add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr7, x6
@@ -287,7 +287,7 @@ main:
 // Test Case: 4 : L -> 1 and X Permissions given to the PMP Region 5
 
     LA(x6, TEST_FOR_EXECUTION)
-    li t0, g
+    LI(t0, g)
     add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr5, x6
@@ -303,7 +303,7 @@ main:
 // Test Case: 5 : L -> 1 and No Permissions given to the PMP Region 3
 
     LA(x6, TEST_FOR_EXECUTION)
-    li t0, g
+    LI(t0, g)
     add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr3, x6
@@ -319,7 +319,7 @@ main:
 // Test Case: 6 : L -> 1 and XWR Permissions given to the PMP Region 1
 
     LA(x6, TEST_FOR_EXECUTION)
-    li t0, g
+    LI(t0, g)
     add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr1, x6

@@ -13,7 +13,6 @@ COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/
 # EXCLUDE_EXTENSIONS overrides EXTENSIONS to exclude particular extensions from test generation. Applies as a negative filter after EXTENSIONS.
 # Default exclusion reasons:
 #  - Sm: Insufficient WARL configuration options.
-#  - PMPSm: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
 EXTENSIONS  ?=
 EXCLUDE_EXTENSIONS ?= Sm
 

@@ -31,7 +31,7 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmps_napot_legal_lxwr.S"
+#define TEST_FILE "pmps_napot_legal_lxwr-01.S"
 #define SIGUPD_COUNT 150
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
@@ -279,8 +279,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr5, x5
 
     LI(t1, PMPREGION_LXWR_1000)
@@ -294,8 +296,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr4, x5
 
     LI(t1, PMPREGION_LXWR_1000|PMPREGION_LXWR_1001)
@@ -309,8 +313,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr3, x5
 
     LI(t1, PMPREGION_LXWR_1011)
@@ -354,9 +360,11 @@ test_20_str: .string "\"test: 15; cp: pmps_napot_legal_lwxr_jalr_address+g-4\""
 test_21_str: .string "\"test: 16; cp: pmps_napot_legal_lwxr_jalr_address+g\""
 
 .align 12
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jr ra
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

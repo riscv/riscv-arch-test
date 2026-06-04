@@ -58,7 +58,7 @@ main:
     // label, so there are no name collisions and no branch instructions.
     //
     // The outer walking-ones loop from the original (slli / bnez) is replaced
-    // by 64 explicit li t2, (1<<N) blocks — one per bit — each containing a
+    // by 64 explicit LI(t2, 1<<N) blocks — one per bit — each containing a
     // .rept over all PMP registers.  No runtime branching is used.
     // -----------------------------------------------------------------------
 
@@ -66,7 +66,7 @@ main:
 
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
-1:  li t2, (1 << 7)
+1:  LI(t2, (1 << 7))
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_8_str)
     .set pmpaddri, pmpaddri+1
     .endr
@@ -75,7 +75,7 @@ main:
 
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
-1:  li t2, (1 << 8)
+1:  LI(t2, (1 << 8))
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_9_str)
     .set pmpaddri, pmpaddri+1
     .endr
@@ -84,7 +84,7 @@ main:
 
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
-1:  li t2, (1 << 9)
+1:  LI(t2, (1 << 9))
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_10_str)
     .set pmpaddri, pmpaddri+1
     .endr
@@ -93,7 +93,7 @@ main:
 
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
-1:  li t2, (1 << 10)
+1:  LI(t2, (1 << 10))
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_11_str)
     .set pmpaddri, pmpaddri+1
     .endr
@@ -102,7 +102,7 @@ main:
 
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
-1:  li t2, (1 << 11)
+1:  LI(t2, (1 << 11))
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_12_str)
     .set pmpaddri, pmpaddri+1
     .endr
@@ -111,7 +111,7 @@ main:
 
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
-1:  li t2, (1 << 12)
+1:  LI(t2, (1 << 12))
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_13_str)
     .set pmpaddri, pmpaddri+1
     .endr
@@ -120,7 +120,7 @@ main:
 
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
-1:  li t2, (1 << 13)
+1:  LI(t2, (1 << 13))
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_14_str)
     .set pmpaddri, pmpaddri+1
     .endr

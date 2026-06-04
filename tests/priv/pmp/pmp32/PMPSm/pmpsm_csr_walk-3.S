@@ -59,7 +59,7 @@ main:
     // -----------------------------------------------------------------------
 
     // --- pmpaddr walking ones, bit 14 ---
-    li t2, (1 << 14)
+    LI(t2, 1 << 14)
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
 1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_1_str)
@@ -67,7 +67,7 @@ main:
     .endr
 
     // --- pmpaddr walking ones, bit 15 ---
-    li t2, (1 << 15)
+    LI(t2, 1 << 15)
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
 1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_2_str)
@@ -75,7 +75,7 @@ main:
     .endr
 
     // --- pmpaddr walking ones, bit 16 ---
-    li t2, (1 << 16)
+    LI(t2, 1 << 16)
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
 1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_3_str)
@@ -83,7 +83,7 @@ main:
     .endr
 
     // --- pmpaddr walking ones, bit 17 ---
-    li t2, (1 << 17)
+    LI(t2, 1 << 17)
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
 1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_4_str)
@@ -91,7 +91,7 @@ main:
     .endr
 
     // --- pmpaddr walking ones, bit 18 ---
-    li t2, (1 << 18)
+    LI(t2, 1 << 18)
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
 1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_5_str)
@@ -99,7 +99,7 @@ main:
     .endr
 
     // --- pmpaddr walking ones, bit 19 ---
-    li t2, (1 << 19)
+    LI(t2, 1 << 19)
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
 1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_6_str)
@@ -107,7 +107,7 @@ main:
     .endr
 
     // --- pmpaddr walking ones, bit 20 ---
-    li t2, (1 << 20)
+    LI(t2, 1 << 20)
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
 1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_7_str)

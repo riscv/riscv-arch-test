@@ -147,6 +147,8 @@ main:
     LI(x4, PMP_REGION_GLOBAL)
     csrw pmpcfg2, x4
 
+// For larger UDB_PMP_GRANUMARITY, NA4 is not supported
+#if UDB_PMP_GRANULARITY == 4
 //                                            Verification Section
 // Test Case: 1 : L -> 0 and No Permissions given to the PMP Region 5
 
@@ -218,10 +220,7 @@ main:
 
     RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
-    RVTEST_GOTO_MMODE
-
-    j exit                                                        // Verification Complete, exit the test
-
+#endif
 
 exit:
 
@@ -245,6 +244,7 @@ test_9_str: .string "\"test: 9; cp: pmps_cfg_A_off_all_lw_address+4\""
 TEST_FOR_EXECUTION_0:
     jr ra
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

@@ -66,7 +66,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)                                   // Signature update
 
-    li t0, (g+4)
+    LI(t0, (g+4))
     add a5, a5, t0
     \TEST_CASE\()_3:
     lw a4, 0(a5)

@@ -66,7 +66,7 @@ main:
     // --- pmpcfg even walking ones, bit 18 ---
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 18)
+1:  LI(t2, 1 << 18)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_2_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -74,7 +74,7 @@ main:
     // --- pmpcfg even walking ones, bit 19 ---
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 19)
+1:  LI(t2, 1 << 19)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_3_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -82,7 +82,7 @@ main:
     // --- pmpcfg even walking ones, bit 21 ---
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 21)
+1:  LI(t2, 1 << 21)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_4_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -90,7 +90,7 @@ main:
     // --- pmpcfg even walking ones, bit 22 ---
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 22)
+1:  LI(t2, 1 << 22)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_5_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -98,7 +98,7 @@ main:
     // --- pmpcfg even walking ones, bit 23 ---
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 23)
+1:  LI(t2, 1 << 23)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_6_str)
     .set pmpcfgi, pmpcfgi+2
     .endr

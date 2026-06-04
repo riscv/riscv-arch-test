@@ -164,7 +164,7 @@ main:
     // x5 = x4 + g (upper bound, also g-byte aligned)
     // After >> PMP_SHIFT (>>2): bit[0] of pmpaddr will be 0
     LA(x4, TEST_FOR_EXECUTION)
-    li       t0, g
+    LI(t0, g)
     add      x5, x4, t0
     srl      x4, x4, PMP_SHIFT
     srl      x5, x5, PMP_SHIFT

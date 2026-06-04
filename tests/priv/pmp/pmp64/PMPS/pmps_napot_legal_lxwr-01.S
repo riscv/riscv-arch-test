@@ -298,8 +298,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr5, x5
     LI(t1, PMPREGION_LXWR_1000)
     csrw pmpcfg0, t1
@@ -312,8 +314,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr4, x5
     LI(t1, PMPREGION_LXWR_1000|PMPREGION_LXWR_1001)
     csrw pmpcfg0, t1
@@ -326,8 +330,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr3, x5
     LI(t1, PMPREGION_LXWR_1011)
     csrw pmpcfg0, t1
@@ -374,8 +380,11 @@ test_24_str:  .string "\"test: 24;  cp: pmpu_napot_legal_lwxr_lwu_address\""
 .align 12
 .align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept 1024
     jr ra
+    .endr
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

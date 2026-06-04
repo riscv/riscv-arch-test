@@ -94,13 +94,13 @@ main:
     csrw pmpcfg2, x4
 
     LA(x4, REGIONSTART)
-    li t0, g
+    LI(t0, g)
     add x4, x4, t0
     srl x4, x4, PMP_SHIFT
     csrw pmpaddr2, x4
 
     LA(x4, REGIONSTART)
-    li t0, 2*g
+    LI(t0, 2*g)
     add x4, x4, t0
     srl x4, x4, PMP_SHIFT
     csrw pmpaddr3, x4

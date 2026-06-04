@@ -141,9 +141,9 @@ main:
     srl x4, x4, PMP_SHIFT
 
 .if UDB_PMP_GRANULARITY != 2
-    li t0, PMP_MASK
+    LI(t0, PMP_MASK)
     and x4, x4, t0
-    li t0, PMP_REGION_SIZE
+    LI(t0, PMP_REGION_SIZE)
     or x4, x4, t0
 .endif
 

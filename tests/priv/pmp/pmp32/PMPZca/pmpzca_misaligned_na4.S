@@ -88,6 +88,8 @@ main:
     LI(x4, PMP_REGION_GLOBAL)
     csrw pmpcfg3, x4
 
+// For larger UDB_PMP_GRANUMARITY, NA4 is not supported
+#if UDB_PMP_GRANULARITY == 4
 //                                            Verification Section
 // Test Case: Three NA4 regions with L=1 and XWR = 111 for first 2 regions, and XWR = 000 for third region.
 
@@ -123,7 +125,7 @@ main:
     VERIFICATION_RWX TEST_FOR_EXECUTION_2, test_2
 
    j exit                                                        // Verification Complete, exit the test
-
+#endif
 
 exit:
 
@@ -136,15 +138,19 @@ RVTEST_DATA_BEGIN
 test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
 
 .align 12
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_X:
     jalr x0, x1, 0
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     nop
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:
     jalr x0, x1, 0                                                // Uncompressed return straddling the start of 2nd region
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_2:
     jalr x0, x1, 0                                              // Uncompressed return straddling the end of 2nd region
 

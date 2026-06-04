@@ -22,7 +22,7 @@
 # REQUIRED_EXTENSIONS:  ['F','Sm']
 # params:
 #   MXLEN: 64
-#   NUM_PMP_ENTRIES: '>0'
+#   UDB_NUM_PMP_ENTRIES: '>0'
 # MARCH: rv64ifd_zicsr_zifencei_zfhmin
 ##### END_TEST_CONFIG #####
 
@@ -78,9 +78,9 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
+    .rept UDB_NUM_PMP_ENTRIES/4
     csrw pmpcfgi , x0
-    .set pmpcfgi, pmpcfgi+2
+    .set pmpcfgi, pmpcfgi+1
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
@@ -98,9 +98,9 @@ main:
     // zero out fcsr so fflags start clean
     fscsr x0
 
-#define PMP_REGION_GLOBAL    ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
-#define PMPREGION_LXWR_1000 ((((PMP_L|                  PMP_NAPOT)&0xFF) << PMP5_CFG_SHIFT))
-#define PMPREGION_LXWR_1001 ((((PMP_L|PMP_R|            PMP_NAPOT)&0xFF) << PMP4_CFG_SHIFT))
+#define PMP_REGION_GLOBAL    ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
+#define PMPREGION_LXWR_1000 ((((PMP_L|                  PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT))
+#define PMPREGION_LXWR_1001 ((((PMP_L|PMP_R|            PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 #define PMPREGION_LXWR_1011 ((((PMP_L|PMP_R|PMP_W       |PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))
 #define PMPREGION_LXWR_1100 ((((PMP_L|              PMP_X|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT))
 #define PMPREGION_LXWR_1101 ((((PMP_L|PMP_R         |PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT))
@@ -121,19 +121,21 @@ main:
 
     //Lock the Background region.
     LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg2, x4
+    csrw pmpcfg3, x4
 
 //                                            Verification Section
 // Test Case: 1 : L -> 1 and No Permissions given to the PMP Region 5
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_SHIFT)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr5, x5
 
     LI(x4, PMPREGION_LXWR_1000)
-    csrw pmpcfg0, x4
+    csrw pmpcfg1, x4
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
@@ -141,12 +143,14 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_SHIFT)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr4, x5
 
     LI(x4, PMPREGION_LXWR_1001)
-    csrw pmpcfg0, x4
+    csrw pmpcfg1, x4
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
 
@@ -154,8 +158,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_SHIFT)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr3, x5
 
     LI(x4, PMPREGION_LXWR_1011)
@@ -167,8 +173,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_SHIFT)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr2, x5
 
     LI(x4, PMPREGION_LXWR_1100)
@@ -180,8 +188,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_SHIFT)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr1, x5
 
     LI(x4, PMPREGION_LXWR_1101)
@@ -193,8 +203,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_SHIFT)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr0, x5
 
     LI(x4, PMPREGION_LXWR_1111)

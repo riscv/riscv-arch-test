@@ -64,7 +64,7 @@ main:
     // --- pmpcfg even walking ones, bit 31 ---
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 31)
+1:  LI(t2, 1 << 31)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_1_str)
     .set pmpcfgi, pmpcfgi+2
     .endr

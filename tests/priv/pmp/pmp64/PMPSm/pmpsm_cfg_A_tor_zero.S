@@ -77,7 +77,7 @@ RVTEST_BEGIN
     RVTEST_SIGUPD(x2, x5, x4, a4,\TEST_CASE\()_2,test_2_str)               // Signature update
 
     LI(x4, 0xACCE)
-    li a5, 0
+    LI(a5, 0)
     LA(x1, 4f)                                               // Address to be verified
     sw a4, 0(a5)                                             // word-level store test
     nop
@@ -99,7 +99,7 @@ RVTEST_BEGIN
 
     LI(x4, 0xACCE)
     LA(x1, 5f)
-    li a5, 0                                                   // Address to be verified
+    LI(a5, 0)                                                   // Address to be verified
     lw a4, 0(a5)                                             // word-level store test
     nop
 
@@ -124,7 +124,7 @@ RVTEST_BEGIN
     nop
 
     LI(x4, 0xACCE)
-    li a5, 0
+    LI(a5, 0)
     LA(x1, 3f)                            // Store the return Address in x1
     jalr ra, 0(a5)
     nop

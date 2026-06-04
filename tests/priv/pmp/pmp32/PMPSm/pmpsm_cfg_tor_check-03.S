@@ -161,7 +161,7 @@ main:
 
 // Test Case:  pmpaddr0 = all1s
 
-    li x5, -1
+    LI(x5, -1)
     csrw    pmpaddr0, x5
     csrw    pmpaddr1, x4
 

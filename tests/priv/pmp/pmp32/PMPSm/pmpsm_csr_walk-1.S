@@ -50,7 +50,7 @@ main:
     // -----------------------------------------------------------------------
     // SET ALL pmpaddr REGs to ones
     // -----------------------------------------------------------------------
-    li t2, -1
+    LI(t2, -1)
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
 1:   RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_9_str)
@@ -87,7 +87,7 @@ main:
     // -----------------------------------------------------------------------
 
     // --- pmpaddr walking ones, bit 0 ---
-    li t2, (1 << 0)
+    LI(t2, 1 << 0)
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
 1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_1_str)
@@ -95,7 +95,7 @@ main:
     .endr
 
     // --- pmpaddr walking ones, bit 1 ---
-    li t2, (1 << 1)
+    LI(t2, 1 << 1)
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
 1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_2_str)
@@ -103,7 +103,7 @@ main:
     .endr
 
     // --- pmpaddr walking ones, bit 2 ---
-    li t2, (1 << 2)
+    LI(t2, 1 << 2)
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
 1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_3_str)
@@ -111,7 +111,7 @@ main:
     .endr
 
     // --- pmpaddr walking ones, bit 3 ---
-    li t2, (1 << 3)
+    LI(t2, 1 << 3)
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
 1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_4_str)
@@ -119,7 +119,7 @@ main:
     .endr
 
     // --- pmpaddr walking ones, bit 4 ---
-    li t2, (1 << 4)
+    LI(t2, 1 << 4)
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
 1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_5_str)
@@ -127,7 +127,7 @@ main:
     .endr
 
     // --- pmpaddr walking ones, bit 5 ---
-    li t2, (1 << 5)
+    LI(t2, 1 << 5)
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
 1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_6_str)
@@ -135,7 +135,7 @@ main:
     .endr
 
     // --- pmpaddr walking ones, bit 6 ---
-    li t2, (1 << 6)
+    LI(t2, 1 << 6)
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
 1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_7_str)

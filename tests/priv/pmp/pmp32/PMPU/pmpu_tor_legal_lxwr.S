@@ -356,9 +356,11 @@ test_14_str: .string "\"test: 14; cp: cp_cfg_A_tor_jalr_address+g-4\""
 test_15_str: .string "\"test: 15; cp: cp_cfg_A_tor_jalr_address+g\""
 
 .align 12
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jr ra
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

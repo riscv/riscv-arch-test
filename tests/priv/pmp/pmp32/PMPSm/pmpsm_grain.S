@@ -288,7 +288,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    LI(x6, 0)xAAAAAAAA
+    LI(x6, 0xAAAAAAAA)
     csrw pmpaddr0, x6
 
 // Read back in TOR

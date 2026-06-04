@@ -79,7 +79,9 @@ test_1_str: .string "\"test: 1; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_64\"
 
 .align 12
 TEST_FOR_EXECUTION_0:
+    .rept 1024
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

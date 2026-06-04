@@ -17,6 +17,25 @@
 //                 Dropping the background region. With pmpcfg0.L=1, pmpcfg0.A=TOR,
 //                 pmpcfg0.XWR=111, default TOR region: {lw, sw, jalr} to {0,
 //                 pmpaddr0-4, pmpaddr0}.
+//
+// Platform note (riscv-arch-test issue#721):
+//   Access to physical address 0 is platform-dependent: Spike/Sail and many
+//   SoCs leave the first page unmapped, so load/store/fetch at PA 0 may trap
+//   even when PMP permits the access. Other platforms may have memory at 0.
+//   This test intentionally probes PA 0 because PMP TOR region 0 starts
+//   there; it is verifying PMP boundaries, not generic access-fault behavior.
+//
+//   Resolution: the ACT framework handles platform differences via DUT config
+//   and the trap handler rather than removing the PA 0 probes.
+//     - Define RVMODEL_ACCESS_FAULT_ADDRESS in config/.../rvmodel_macros.h
+//       to the base of your platform's unmapped/faulting region (typically 0).
+//       Match this in sail.json memory.regions and link.ld.
+//     - SKIP_MEPC and SKIP_MTVAL (below) enable trap-handler support in
+//       rvtest_trap_handler.h for intentional faults at that address:
+//         * If xEPC equals RVMODEL_ACCESS_FAULT_ADDRESS (+2), EPC relocation
+//           is skipped so the handler does not abort on an out-of-segment PC.
+//         * Fetch probes set x4 = 0xACCE; on fetch faults the handler sets
+//           xEPC = ra so execution resumes after the jalr to PA 0.
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
@@ -167,7 +186,9 @@ test_4_str: .string "\"test: 4; cp: pmpm_cfg_A_tor_zero_load_access_at_pmpaddr0-
 .align 12
 .align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept 1024
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

@@ -557,6 +557,7 @@ test_2_str: .string "\"test: 2; cp: cp_pmpm64_sw\""
 TEST_FOR_EXECUTION_0:
     jr ra
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

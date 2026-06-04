@@ -128,7 +128,9 @@ test_6_str: .string "\"test: 6; cp: cp_csr_walk\""
 
 .align 12
 TEST_FOR_EXECUTION_0:
+    .rept 1024
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

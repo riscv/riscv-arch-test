@@ -182,7 +182,9 @@ test_6_str: .string "\"test: 6; cp: pmpm_cfg_tor_check1_load_access_at_pmpaddr+4
 .align 12
 .align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept 1024
     jr ra
+    .endr
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

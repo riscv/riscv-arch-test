@@ -50,10 +50,10 @@ main:
     // -----------------------------------------------------------------------
     // SET ALL pmpaddr REGs to ones
     // -----------------------------------------------------------------------
-    li t0, -1
+    li t2, -1
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t0, 1b, test_9_str)
+1:   RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_9_str)
     .set pmpaddri, pmpaddri+1
     .endr
 
@@ -161,7 +161,9 @@ test_10_str: .string "\"test: 7; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_10\
 
 .align 12
 TEST_FOR_EXECUTION_0:
+    .rept 1024
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

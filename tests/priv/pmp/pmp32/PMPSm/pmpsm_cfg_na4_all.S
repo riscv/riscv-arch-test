@@ -97,7 +97,8 @@ main:
     //Lock the Background region.
     LI(x4, (PMP_REGION_GLOBAL << PMP3_CFG_SHIFT))
     csrw pmpcfg3, x4
-
+// For larger UDB_PMP_GRANUMARITY, NA4 is not supported
+#if UDB_PMP_GRANULARITY == 4
 //                                          Verification Section
 // Test Case: 1 : L -> 1 and No Permissions given to the PMP Region 14
 
@@ -264,7 +265,7 @@ main:
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
 
-
+#endif
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
@@ -279,7 +280,9 @@ test_3_str: .string "\"test: 3; cp: pmpm_cfg_na4_all_address+4\""
 .align 12
 .align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept 1024
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

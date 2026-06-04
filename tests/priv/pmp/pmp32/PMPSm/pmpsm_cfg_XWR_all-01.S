@@ -278,9 +278,13 @@ test_8_str: .string "\"test: 8; cp: pmpm_cfg_XWR_all_lw\""
 test_9_str: .string "\"test: 9; cp: pmpm_cfg_XWR_all_jalr\""
 
 .align 12
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept 1024
     jr ra
+    .endr
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

@@ -108,13 +108,7 @@ main:
     .endr
 
     // --- pmpcfg even walking ones, bit 33 ---
-
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 33)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_94_str)
-    .set pmpcfgi, pmpcfgi+2
-    .endr
+    // Skipped, R=0,W=1 is reserved
 
     RVTEST_GOTO_MMODE
 

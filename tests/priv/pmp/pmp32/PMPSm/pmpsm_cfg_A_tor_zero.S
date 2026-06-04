@@ -190,6 +190,7 @@ TEST_FOR_EXECUTION_0:
     jr ra
     .endr
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

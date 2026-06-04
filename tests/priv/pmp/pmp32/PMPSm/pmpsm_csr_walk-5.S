@@ -45,17 +45,16 @@
 RVTEST_BEGIN
 
 main:
-    RVTEST_GOTO_MMODE
 
     // -----------------------------------------------------------------------
 
     // -----------------------------------------------------------------------
     // Walking ones through even pmpcfg registers (pmpcfg0, pmpcfg2, ...).
     //
-    // The original test writes walking ones only to even-numbered pmpcfg
+    // The test writes walking ones only to even-numbered pmpcfg
     // registers (pmpcfg0, pmpcfg2, and — for 64-PMP systems — pmpcfg4 through
     // pmpcfg14).  Odd registers (pmpcfg1, pmpcfg3, ...) are RV32 aliases and
-    // are intentionally left out, matching original behaviour.
+    // are intentionally left out.
     //
     // UDB_NUM_PMP_ENTRIES/8 gives the count of even cfg registers:
     //   16 PMPs → 2 even regs (pmpcfg0, pmpcfg2)
@@ -93,7 +92,6 @@ main:
 1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_4_str)
     .set pmpaddri, pmpaddri+1
     .endr
-
     // --- pmpcfg even walking ones, bit 0 ---
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
@@ -103,12 +101,7 @@ main:
     .endr
 
     // --- pmpcfg even walking ones, bit 1 ---
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 1)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_6_str)
-    .set pmpcfgi, pmpcfgi+2
-    .endr
+    // Skipped, R=0,W=1 is reserved
 
     // --- pmpcfg even walking ones, bit 2 ---
     .set pmpcfgi, CSR_PMPCFG0
@@ -117,8 +110,6 @@ main:
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_7_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
-
-    RVTEST_GOTO_MMODE
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN

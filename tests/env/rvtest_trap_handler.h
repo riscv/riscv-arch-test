@@ -1749,6 +1749,11 @@ sv_\__MODE__\()cause:
 
 common_\__MODE__\()excpt_handler:
         csrr    T3, CSR_XEPC                         // T3 = xEPC (faulting instruction address)
+        // Save original xEPC before adj_Mepc advances it past the faulting instruction.
+        // failedtest_print_csr_context reads saved_mepc; without this, any word 3+
+        // (tval/mtval2/mtinst) mismatch would show the already-adjusted EPC instead.
+        la      T2, saved_mepc
+        SREG    T3, 0(T2)
         mv      T4, sp                               // T4 = this mode's save area (for relocation lookup)
 
 // --- EPC relocation logic ---

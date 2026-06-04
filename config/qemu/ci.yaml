@@ -19,6 +19,7 @@ ci_enabled: true
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
 # ExceptionsZicboU/S fail because of https://gitlab.com/qemu-project/qemu/-/work_items/3380
 # Zicntr fails on QEMU11.0.0 due to https://gitlab.com/qemu-project/qemu/-/work_items/3498, https://gitlab.com/qemu-project/qemu/-/work_items/3504
-exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zicntr,Zacas,ZacasZabha,InterruptsS,InterruptsU,PMPSm,PMPZalrsc,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,SvaduPMP,Svpbmt,SvZicbo,Svinval,ExceptionsZaamo,ExceptionsSvZaamo,ExceptionsSvZalrsc,Zama16b,UV,SsstrictV"
+# Smstateen will be added back once sail starts supporting SM1P13 too
+exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zicntr,Zacas,ZacasZabha,InterruptsS,InterruptsU,PMPSm,PMPZalrsc,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,SvaduPMP,Svpbmt,SvZicbo,Svinval,ExceptionsZaamo,ExceptionsSvZaamo,ExceptionsSvZalrsc,Zama16b,UV,SsstrictV,Smstateen"
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"

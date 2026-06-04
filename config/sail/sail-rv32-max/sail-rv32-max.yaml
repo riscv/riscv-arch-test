@@ -11,7 +11,7 @@ implemented_extensions:
   - { name: C, version: "= 2.0" }
   - { name: D, version: "= 2.2.0" }
   - { name: F, version: "= 2.2.0" }
-  #  - { name: H, version: "= 1.0.0" } # sail does not yet support this
+  - { name: H, version: "= 1.0.0" }
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
   #  - { name: Q, version: "= 1.0.0" } # sail does not yet support this

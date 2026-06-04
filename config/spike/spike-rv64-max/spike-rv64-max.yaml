@@ -168,7 +168,7 @@ params:
   MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3]
   # D params
   MUTABLE_MISA_D: false
-  #  # Q params
+  # Q params
   MUTABLE_MISA_Q: false
   # C params
   MUTABLE_MISA_C: false

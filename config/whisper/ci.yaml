@@ -2,8 +2,7 @@
 # Jordan Carlin jcarlin@hmc.edu April 2026
 # CI configuration for Whisper simulator
 
-# SsstrictS & SsstrictU excluded as they are not supported by the old trap handler
-# SsstrictSm excluded because of Sail bugs
+# SsstrictSm, SsstrictS, SsstrictU excluded because of Sail bugs and not all instructions in whisper-max supported by Sail
 # 1. incorrect decoding of add.uw instruction) Link: https://github.com/riscv/sail-riscv/issues/1711
 # 2. vmv<nr>r.v instructions fail to trap when vill=1 Link: https://github.com/riscv/sail-riscv/issues/1709
 # 3. Add configuration parameter for vsetvli/vsetvl behavior on reserved vtype values Link: https://github.com/riscv/sail-riscv/issues/1699

@@ -44,10 +44,11 @@ _M_CSR_SKIP: frozenset[int] = frozenset(
     + list(range(0x800, 0x900))  # user custom2
     + list(range(0xCC0, 0xD00))  # user custom3
     + [
-        0x340,
-        0x747,
-        0x5A8,  # scontext ignore, sail does not support it but other sims does
-    ]  # mscratch, mseccfg — skip to avoid enabling epmp and PMP troubles in M-mode & to overwrite mscratch with random values in the sweep
+        0x340,  # mscratch: corrupts trap stack
+        0x305,  # mtvec: corrupts trap stack
+        0x747,  # mseccfg: confuses M-mode
+        0x5A8,  # scontext ignore, sail does not support it but other sims do
+    ]
 )
 
 
@@ -95,7 +96,7 @@ def _generate_csr_tests_m(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "SsstrictSm",
-    required_extensions=["Sm", "Zicsr"],
+    required_extensions=["Sm", "Zicsr", "Ssstrict"],
     march_extensions=[
         "I",
         "V",

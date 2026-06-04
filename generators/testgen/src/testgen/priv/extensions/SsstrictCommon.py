@@ -53,9 +53,11 @@ of the scratch region before each encoding block.  This means:
   - All register fields are fully randomized for maximum test robustness.
 """
 
-from random import choice, randint, sample
+from __future__ import annotations
 
-from testgen.asm.helpers import comment_banner
+from random import choice, randint, sample, seed
+
+from testgen.asm.helpers import comment_banner, reproducible_hash
 from testgen.data.state import TestData
 
 # ── Constants ─────────────────────────────────────────────────────────────
@@ -75,10 +77,6 @@ SCRATCH_BASE_REG: int = 8  # x8 / s0
 
 
 # ── Global exclusion lists ────────────────────────────────────────────────
-
-AMO_EXCLUSIONS: list[str] = [
-    "01001XXXXXXXXXXXXXXXXXXXX0101111",  # ssamoswap (Ssamoswap)
-]
 
 # Privileged/SYSTEM instruction exclusions shared by all modes.
 PRIVILEGED_000_EXCLUSIONS: list[str] = [
@@ -218,28 +216,18 @@ def _emit_vector_init(lines: list[str]) -> None:
 
 
 def emit_raw_words(
-    lines: list[str],
-    comment: str,
-    template: str,
-    length: int = 32,
-    exclusion: list[str] | None = None,
-    reinit_interval: int = 0,
+    lines: list[str], comment: str, template: str, length: int = 32, exclusion: list[str] | None = None
 ) -> None:
-    """Emit .word/.hword directives with blank lines every BLANK_INTERVAL.
-
-    If reinit_interval > 0, emit _emit_reg_init every reinit_interval
-    encodings to prevent register clobbering during compressed sweeps.
-    """
+    """Emit .word/.hword directives with blank lines every BLANK_INTERVAL."""
+    seed(reproducible_hash(template))  # reproducibly randomize register assignments per template
     directive = ".word" if length == 32 else ".hword"
     encodings = _gen_encodings(template, length, exclusion)
     lines.append("")
     if length == 32:
         lines.append("\t.balign 4")
-    lines.append(f"# {comment}  ({len(encodings)} encodings)")
+    lines.append(f"# {comment}  ({len(encodings)} encodings) template {template}")
     for idx, enc in enumerate(encodings):
-        if reinit_interval > 0 and idx > 0 and idx % reinit_interval == 0:
-            _emit_reg_init(lines)
-        elif idx > 0 and idx % BLANK_INTERVAL == 0:
+        if idx > 0 and idx % BLANK_INTERVAL == 0:
             lines.append("")
         lines.append(f"\t{directive} 0b{enc}")
     lines.append("")
@@ -374,9 +362,21 @@ def generate_illegal_instr(
     # ── Atomics — rs1=x8, rd=011RR (x12-x15) ────────────────────────
     # AMO: funct5 | aq | rl | rs2 | rs1=01000 | funct3 | rd=011RR (x12-x15) | opcode
     _emit_reg_init(lines)
-    emit_raw_words(lines, "cp_atomic_funct3", "RRRRRRRRRRRR01000EEE011RR0101111", exclusion=AMO_EXCLUSIONS)
-    emit_raw_words(lines, "cp_atomic_funct7", "EEEEERRRRRRR0100001E011RR0101111", exclusion=AMO_EXCLUSIONS)
-    emit_raw_words(lines, "cp_lrsc", "00010RREEEEE0100001E011RR0101111", exclusion=AMO_EXCLUSIONS)
+    emit_raw_words(
+        lines,
+        "cp_atomic_funct3",
+        "RRRRRRRRRRRR01000EEE011RR0101111",
+        exclusion=["01001XXXXXXX0100001XXXXXX0101111"],  # exclude ssamoswap (can raise AMO access-fault)
+    )
+    emit_raw_words(
+        lines,
+        "cp_atomic_funct7",
+        "EEEEERRRRRRR0100001E011RR0101111",
+        exclusion=[
+            "01001XXXXXXXXXXXX01XXXXXX0101111"  # exclude ssamoswap because it causes access fault exception from machine mode and other cases
+        ],
+    )
+    emit_raw_words(lines, "cp_lrsc", "00010RREEEEE0100001E011RR0101111")
 
     # ── amocas odd-register sweep — rs1=x8, rs2=RRRRe (even+odd), rd=011RE={x12-x15} ──
     _emit_reg_init(lines)
@@ -431,11 +431,13 @@ def generate_illegal_instr(
         lines,
         "cp_privileged_rd",
         "00000000000000000000EEEEE1110011",
-        exclusion=[
-            "00000000000000000000000001110011",  # exclude ecall
-            "XXXXXXXXXXXXXXXXXXXX00010XXXXXXX",  # exclude rd=x2 (sp)
-            "XXXXXXXXXXXXXXXXXXXX01000XXXXXXX",  # exclude rd=x8 (scratch base)
-        ],
+        exclusion=PRIVILEGED_000_EXCLUSIONS,
+    )
+    emit_raw_words(
+        lines,
+        "cp_privileged_rd",
+        "RRRRRRRRRRRR00000000EEEEE1110011",
+        exclusion=PRIVILEGED_000_EXCLUSIONS,
     )
     emit_raw_words(
         lines,
@@ -516,7 +518,7 @@ def generate_vector_illegal_instr(
     _emit_vector_init(lines)
     emit_raw_words(lines, "cp_v_vsetvl", "10EEEEERRRRRRRRRR111RRRRR1010111")
     emit_raw_words(lines, "cp_v_vsetvli_sew", "0000RR1EERRRRRRRR111RRRRR1010111")
-    emit_raw_words(lines, "cp_v_vsetvli_res", "EEE0RR0RRRRRRRRRR111RRRRR1010111")
+    emit_raw_words(lines, "cp_v_vsetvli_res", "0EEERR0RRRRRRRRRR111RRRRR1010111")
     emit_raw_words(lines, "cp_v_vsetivli_sew", "1100RR1EERRRRRRRR111RRRRR1010111")
     emit_raw_words(lines, "cp_v_vsetivli_res", "11EERR0RRRRRRRRRR111RRRRR1010111")
 
@@ -527,49 +529,31 @@ def generate_vector_illegal_instr(
     lines.append(comment_banner("Vector load reserved encodings", "Reserved mew/width/lumop for vector loads"))
 
     _emit_vector_init(lines)
-    # mew=0, reserved width values — rs1=x8, vd=011RR
-    emit_raw_words(lines, "cp_vl_0_000", "RRR0RRRRRRRR01000000011RR0000111")
-    emit_raw_words(lines, "cp_vl_0_101", "RRR0RRRRRRRR01000101011RR0000111")
-    emit_raw_words(lines, "cp_vl_0_110", "RRR0RRRRRRRR01000110011RR0000111")
-    emit_raw_words(lines, "cp_vl_0_111", "RRR0RRRRRRRR01000111011RR0000111")
-    # mew=1, reserved width values — rs1=x8, vd=011RR
-    emit_raw_words(lines, "cp_vl_1_000", "RRR1RRRRRRRR01000000011RR0000111")
-    emit_raw_words(lines, "cp_vl_1_101", "RRR1RRRRRRRR01000101011RR0000111")
-    emit_raw_words(lines, "cp_vl_1_110", "RRR1RRRRRRRR01000110011RR0000111")
-    emit_raw_words(lines, "cp_vl_1_111", "RRR1RRRRRRRR01000111011RR0000111")
+    # mew=both, all load widths (funct3) — rs1=x8, vd=011RR
+    emit_raw_words(lines, "cp_vl_0_000", "RRRERRRRRRRR01000EEE011RR0000111")
     # lumop sweep — mop=00, vm=1, rs1=x8, vd=011RR
-    emit_raw_words(lines, "cp_vl_lumop_8", "RRR0001EEEEE01000000011RR0000111")
-    emit_raw_words(lines, "cp_vl_lumop_16", "RRR0001EEEEE01000101011RR0000111")
-    emit_raw_words(lines, "cp_vl_lumop_32", "RRR0001EEEEE01000110011RR0000111")
-    emit_raw_words(lines, "cp_vl_lumop_64", "RRR0001EEEEE01000111011RR0000111")
+    emit_raw_words(lines, "cp_vl_lumop_8", "RRR000REEEEE01000000011RR0000111")
+    emit_raw_words(lines, "cp_vl_lumop_16", "RRR000REEEEE01000101011RR0000111")
+    emit_raw_words(lines, "cp_vl_lumop_32", "RRR000REEEEE01000110011RR0000111")
+    emit_raw_words(lines, "cp_vl_lumop_64", "RRR000REEEEE01000111011RR0000111")
 
     # ── Reserved vector stores ────────────────────────────────────────
     lines.append(comment_banner("Vector store reserved encodings", "Reserved mew/width/lumop for vector stores"))
 
     _emit_vector_init(lines)
-    # mew=0, reserved width values — rs1=x8, vs3=011RR
-    emit_raw_words(lines, "cp_vs_0_000", "RRR0RRRRRRRR01000000011RR0100111")
-    emit_raw_words(lines, "cp_vs_0_101", "RRR0RRRRRRRR01000101011RR0100111")
-    emit_raw_words(lines, "cp_vs_0_110", "RRR0RRRRRRRR01000110011RR0100111")
-    emit_raw_words(lines, "cp_vs_0_111", "RRR0RRRRRRRR01000111011RR0100111")
-    # mew=1, reserved width values — rs1=x8, vs3=011RR
-    emit_raw_words(lines, "cp_vs_1_000", "RRR1RRRRRRRR01000000011RR0100111")
-    emit_raw_words(lines, "cp_vs_1_101", "RRR1RRRRRRRR01000101011RR0100111")
-    emit_raw_words(lines, "cp_vs_1_110", "RRR1RRRRRRRR01000110011RR0100111")
-    emit_raw_words(lines, "cp_vs_1_111", "RRR1RRRRRRRR01000111011RR0100111")
-    # sumop sweep — mop=00, vm=1, rs1=x8, vs3=011RR
-    emit_raw_words(lines, "cp_vs_lumop_8", "RRR0001EEEEE01000000011RR0100111")
-    emit_raw_words(lines, "cp_vs_lumop_16", "RRR0001EEEEE01000101011RR0100111")
-    emit_raw_words(lines, "cp_vs_lumop_32", "RRR0001EEEEE01000110011RR0100111")
-    emit_raw_words(lines, "cp_vs_lumop_64", "RRR0001EEEEE01000111011RR0100111")
+    # mew=both, all load widths (funct3) — rs1=x8, vd=011RR
+    emit_raw_words(lines, "cp_vl_0_000", "RRRERRRRRRRR01000EEE011RR0100111")
+    # sumop sweep — mop=00, vm=1, rs1=x8, vd=011RR
+    emit_raw_words(lines, "cp_vl_sumop_8", "RRR000REEEEE01000000011RR0100111")
+    emit_raw_words(lines, "cp_vl_sumop_16", "RRR000REEEEE01000101011RR0100111")
+    emit_raw_words(lines, "cp_vl_sumop_32", "RRR000REEEEE01000110011RR0100111")
+    emit_raw_words(lines, "cp_vl_sumop_64", "RRR000REEEEE01000111011RR0100111")
 
     # ── Vector arithmetic per-SEW sweeps ──────────────────────────────
     for sew in ["8", "16", "32", "64"]:
         lines.append(comment_banner(f"Vector arithmetic SEW={sew}", f"funct6 sweeps with e{sew}"))
         lines.append(f"\tvsetivli x0, 1, e{sew}, m1, ta, ma")
         lines.append("")
-
-        _emit_vector_init(lines)
 
         emit_raw_words(lines, f"cp_IVV_f6_e{sew}", "EEEEEEERRRRRRRRRR000RRRRR1010111")
         emit_raw_words(lines, f"cp_FVV_f6_e{sew}", "EEEEEEERRRRRRRRRR001RRRRR1010111")
@@ -588,8 +572,9 @@ def generate_vector_illegal_instr(
         emit_raw_words(lines, f"cp_FVV_VFUNARY0_e{sew}", "010010ERRRRREEEEE001RRRRR1010111")
         emit_raw_words(lines, f"cp_FVV_VFUNARY1_e{sew}", "010011ERRRRREEEEE001RRRRR1010111")
 
-        emit_raw_words(lines, f"cp_MVV_vaesvv_e{sew}", "101000ERRRRREEEEE010RRRRR1010111")
-        emit_raw_words(lines, f"cp_MVV_vaesvs_e{sew}", "101001ERRRRREEEEE010RRRRR1010111")
+        emit_raw_words(lines, f"cp_vopve_e{sew}", "EEEEEEERRRRRRRRRREEERRRRR1110111")
+        emit_raw_words(lines, f"cp_MVV_vaesvv_e{sew}", "101000ERRRRREEEEE010RRRRR1110111")
+        emit_raw_words(lines, f"cp_MVV_vaesvs_e{sew}", "101001ERRRRREEEEE010RRRRR1110111")
 
     lines.append("")
     return lines
@@ -614,27 +599,28 @@ def generate_compressed_instr(
     lines.append(f"\t{test_data.add_testcase('compressed_sweep', coverpoint, covergroup)}")
     lines.append("")
 
-    # Quadrant 00: covers c.addi4spn, c.lw, c.ld, c.flw, c.fld, c.sw, c.sd, c.fsw, c.fsd
-    # All register fields (rd', rs1', rs2') swept exhaustively.
-    # CRITICAL: offset bits are zeroed (bits[6:5]=00, bits[4:2]=000) to ensure
-    # all load/store offsets are 0, so rs1 points exactly to scratch.
-    # _emit_reg_init pre-loads all safe regs (x7-x31) with scratch, so
-    # x8-x15 (the rs1' range) all point to valid memory.
-    # rd' = x8 excluded to prevent clobbering the scratch pointer.
-    # reinit_interval keeps registers fresh as valid loads clobber them.
+    # Quadrant 00: Exclude loads and stores that could cause exceptions for bad addresses
     emit_raw_words(
         lines,
         "compressed00",
         "EEEEEEEEEEEEEE00",
         length=16,
-        exclusion=[
-            "XXXXXXXXXXX000XX",  # rd' = x8 — clobbers scratch base pointer
+        exclusion=[  # exclude load and store instructions that could cause exceptions for bad addresses
+            "001XXXXXXXXXXX00",  # c.fld
+            "010XXXXXXXXXXX00",  # c.lw
+            "011XXXXXXXXXXX00",  # c.flw/c.ld
+            "100000XXXXXXXX00",  # c.lbu
+            "100001XXXXXXXX00",  # c.lh/lhu
+            "100010XXXXXXXX00",  # c.sb
+            "100011XXX0XXXX00",  # c.sh
+            "101XXXXXXXXXXX00",  # c.fsd
+            "110XXXXXXXXXXX00",  # c.sw
+            "111XXXXXXXXXXX00",  # c.fsw/c.sd
         ],
-        reinit_interval=50,
     )
 
-    # Quadrant 01: fully exhaustive
-    # reinit_interval keeps registers fresh as valid loads/stores clobber them.
+    # Quadrant 01: exclude jumps and branches that could go to unknown places.
+    # Avoid clobbering signature pointer in x2
     emit_raw_words(
         lines,
         "compressed01",
@@ -644,14 +630,11 @@ def generate_compressed_instr(
             "101XXXXXXXXXXX01",  # c.j — random jump
             "11XXXXXXXXXXXX01",  # c.beqz/c.bnez — random branch
             "001XXXXXXXXXXX01",  # c.jal (RV32) — random jump
-            "XXXX00010XXXXX01",  # rd = x2 — clobbers signature pointer
-            "XXXXXXXXXXX000X1",  # rd' = x8 — clobbers scratch base pointer
+            "0XXX00010XXXXX01",  # rd = x2 — clobbers signature pointer
         ],
-        reinit_interval=50,
     )
 
-    # Quadrant 10: fully exhaustive except for c.jr/c.jalr/c.ebreak (random jump/trap)
-    # reinit_interval keeps registers fresh as valid loads/stores clobber them.
+    # Quadrant 10:
     emit_raw_words(
         lines,
         "compressed10",
@@ -662,15 +645,19 @@ def generate_compressed_instr(
             "1001XXXXX0000010",  # c.jalr/c.ebreak — random jump or debug trap
             "X01XXXXXXXXXXX10",  # c.fldsp/c.fsdsp — sp-relative, corrupts signature area
             "X10XXXXXXXXXXX10",  # c.lwsp/c.swsp — sp-relative, corrupts signature area
+            "011XXXXXXXXXXX10",  # c.ldsp/c.flwsp — sp-relative store
             "1001000000000010",  # c.ebreak — legal, tested elsewhere
-            "XXXX00010XXXXX10",  # rd = x2 (sp) — clobbers signature pointer
-            "XXXX01000XXXXX10",  # rd = x8 — clobbers scratch base pointer
+            "0X0X00010XXXXX10",  # CI with rd = x2 (sp) — clobbers signature pointer
+            "100X00010XXXXX10",  # CR with rd = x2 (sp) — clobbers signature pointer
             "1100XXXXXXXXXX10",  # c.swsp with rs2=x2 — stores sp to random address
-            "1110XXXXXXXXXX10",  # c.sdsp/c.fswsp — sp-relative store
+            "111XXXXXXXXXXX10",  # c.sdsp/c.fswsp — sp-relative store
             "1010XXXXXXXXXX10",  # nop-like edge — unpredictable on some platforms
         ],
-        reinit_interval=50,
     )
+    lines.append("")
+
+    emit_raw_words(lines, "illegal_c_jr", "1000000000000010", length=16)
+    # emit_raw_words(lines, "illegal_c_jalr", "1001000000000010", length=16)
     lines.append("")
 
     return lines

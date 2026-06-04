@@ -67,7 +67,6 @@ main:
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_1_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
-
     // --- pmpcfg even walking ones, bit 5 ---
 
     .set pmpcfgi, CSR_PMPCFG0
@@ -106,7 +105,6 @@ main:
 
     // --- pmpcfg even walking ones, bit 9 ---
     // Skipped, R=0,W=1 is reserved
-
     RVTEST_GOTO_MMODE
 
 RVTEST_CODE_END

@@ -1853,6 +1853,20 @@ vmem_adj_\__MODE__\()epc:
                 beq     T3, T2, sv_\__MODE__\()epc
         #endif
 #endif
+#ifdef SKIP_MEPC
+        LI(     T6, 0xACCE)
+        bne     x4, T6, adj_\__MODE__\()epc_rtn
+        csrr    T2, CSR_XCAUSE
+        LI(     T6, CAUSE_FETCH_PAGE_FAULT)
+        beq     T2, T6, 1f
+        LI(     T6, CAUSE_FETCH_ACCESS)
+        beq     T2, T6, 1f
+        LI(     T6, CAUSE_FETCH_GUEST_PAGE_FAULT)
+        bne     T2, T6, adj_\__MODE__\()epc_rtn
+1:      csrw    CSR_XEPC, ra
+        j skp_adj_\__MODE__\()epc
+#endif
+
         LREG    T2, vmem_bgn_off(T4)                  // check if EPC is in vmem segment
         LREG    T6, vmem_seg_siz(T4)
         add     T6, T6, T2
@@ -1879,20 +1893,6 @@ adj_\__MODE__\()epc:
 sv_\__MODE__\()epc:
         TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()epc, sv_\__MODE__\()epc_str) // write word 2: xEPC
         csrr    T3, CSR_XEPC                          // re-read xEPC (T3 was modified by relocation)
-
-#ifdef SKIP_MEPC
-        LI(     T6, 0xACCE)
-        bne     x4, T6, adj_\__MODE__\()epc_rtn
-        csrr    T2, CSR_XCAUSE
-        LI(     T6, CAUSE_FETCH_PAGE_FAULT)
-        beq     T2, T6, 1f
-        LI(     T6, CAUSE_FETCH_ACCESS)
-        beq     T2, T6, 1f
-        LI(     T6, CAUSE_FETCH_GUEST_PAGE_FAULT)
-        bne     T2, T6, adj_\__MODE__\()epc_rtn
-1:      csrw    CSR_XEPC, ra
-        j skp_adj_\__MODE__\()epc
-#endif
 
 adj_\__MODE__\()epc_rtn:
         andi    T3, T3, ~WDBYTMSK                    // align EPC to 4-byte boundary

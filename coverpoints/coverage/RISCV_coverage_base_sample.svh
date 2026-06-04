@@ -508,3 +508,21 @@
     `ifdef COVER_ZVKG
         zvkg_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_ZVKNED
+        zvkned_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZVKNHA
+        zvknha_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZVKNHB32
+        zvknhb32_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZVKNHB64
+        zvknhb64_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZVKSED
+        zvksed_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZVKSH
+        zvksh_sample(hart, issue, ins);
+    `endif

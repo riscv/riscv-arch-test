@@ -509,3 +509,21 @@
 `ifdef ZVKG_COVERAGE
   `include "Zvkg_coverage.svh"
 `endif
+`ifdef ZVKNED_COVERAGE
+  `include "Zvkned_coverage.svh"
+`endif
+`ifdef ZVKNHA_COVERAGE
+  `include "Zvknha_coverage.svh"
+`endif
+`ifdef ZVKNHB32_COVERAGE
+  `include "Zvknhb32_coverage.svh"
+`endif
+`ifdef ZVKNHB64_COVERAGE
+  `include "Zvknhb64_coverage.svh"
+`endif
+`ifdef ZVKSED_COVERAGE
+  `include "Zvksed_coverage.svh"
+`endif
+`ifdef ZVKSH_COVERAGE
+  `include "Zvksh_coverage.svh"
+`endif

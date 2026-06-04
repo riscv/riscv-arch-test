@@ -678,3 +678,27 @@
         `cover_info("//      Zvkg - Enabled");
         `include "Zvkg_coverage_init.svh"
     `endif
+    `ifdef COVER_ZVKNED
+        `cover_info("//      Zvkned - Enabled");
+        `include "Zvkned_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVKNHA
+        `cover_info("//      Zvknha - Enabled");
+        `include "Zvknha_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVKNHB32
+        `cover_info("//      Zvknhb32 - Enabled");
+        `include "Zvknhb32_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVKNHB64
+        `cover_info("//      Zvknhb64 - Enabled");
+        `include "Zvknhb64_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVKSED
+        `cover_info("//      Zvksed - Enabled");
+        `include "Zvksed_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVKSH
+        `cover_info("//      Zvksh - Enabled");
+        `include "Zvksh_coverage_init.svh"
+    `endif

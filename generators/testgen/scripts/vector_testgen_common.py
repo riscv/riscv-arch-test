@@ -191,6 +191,9 @@ vector_crypto_edges = ["vs_corner_zero", "vs_corner_ones", "vs_corner_walkeven",
 v_crypto_edges_emul4  = [(vcorner + "_emul4" ) for vcorner in vector_crypto_edges]
 v_crypto_edges_emul8  = [(vcorner + "_emul8" ) for vcorner in vector_crypto_edges]
 
+v_crypto_aes_subbytes_edges = [f"vs_corner_aes_subbytes_{i}" for i in range(16)]
+v_crypto_sm_subbytes_edges = [f"vs_corner_sm_subbytes_{i}" for i in range(16)]
+
 ##################################
 # Functions to be implemented by importer
 ##################################
@@ -590,13 +593,25 @@ vvvtype   = ["vmadc.vv", "vmsbc.vv", "vmand.mm", "vmnand.mm", "vmandn.mm", "vmxo
 imm_31 = ["vnclip.wi", "vnclipu.wi", "vnsra.wi","vnsrl.wi", "vrgather.vi", "vslidedown.vi", "vslideup.vi", "vsll.vi", "vsra.vi", "vsrl.vi","vssra.vi", "vssrl.vi"] + bimm_31
 
 ##################################    vector crypto instructions     ##################################
-crypto_vv = ["vgmul.vv"]
-crypto_vvv = ["vghsh.vv"]
+crypto_vv = ["vgmul.vv", "vaesef.vv", "vaesef.vs", "vaesem.vv", "vaesem.vs", "vaesdf.vv", "vaesdf.vs", "vaesdm.vv", "vaesdm.vs",
+             "vaesz.vs", "vsm4r.vv", "vsm4r.vs"]
+crypto_vvv = ["vghsh.vv", "vsha2ms.vv", "vsha2ch.vv", "vsha2cl.vv", "vsm3me.vv"]
+crypto_vvi = ["vaeskf1.vi", "vaeskf2.vi", "vsm4k.vi", "vsm3c.vi"]
+crypto_imm_31 = ["vsm3c.vi", "vaeskf1.vi", "vaeskf2.vi", "vsm4k.vi"]
 
 vvvtype += crypto_vvv
 vvtype = crypto_vv
+vvimtype += crypto_vvi
+imm_31 += crypto_imm_31
 
-crypto_ins = crypto_vv + crypto_vvv
+crypto_ins = crypto_vv + crypto_vvv + crypto_vvi
+crypto_egs8 = ["vsm3me.vv", "vsm3c.vi"]
+
+crypto_no_vd_vs2 = ["vaesef.vs", "vaesem.vs", "vaesdf.vs", "vaesdm.vs", "vaesz.vs", "vsm4r.vs", "vsm3me.vv", "vsm3c.vi"]
+crypto_no_vd_vs2_vs1 = ["vsha2ms.vv", "vsha2ch.vv", "vsha2cl.vv"]
+
+crypto_aes_subbytes_ins = ["vaesef.vv", "vaesef.vs", "vaesem.vv", "vaesem.vs", "vaesdf.vv", "vaesdf.vs", "vaesdm.vv", "vaesdm.vs", "vaeskf1.vi", "vaeskf2.vi"]
+crypto_sm_subbytes_ins = ["vsm4k.vi", "vsm4r.vv", "vsm4r.vs"]
 
 vs1ins = vvvmtype + vvrtype + vvvvtype + vvvtype + vvvmrtype
 
@@ -695,7 +710,7 @@ widening_mac_ins = [
   "vfwmacc.vf", "vfwnmacc.vf", "vfwmsac.vf", "vfwnmsac.vf",
   "vfwmaccbf16.vv", "vfwmaccbf16.vf",
 ]
-not_maskable    = vm_nomask_ins + mmins + vmvins + ls_not_maskable
+not_maskable    = vm_nomask_ins + mmins + vmvins + ls_not_maskable + crypto_ins
 
 # "vl1re8.v", "vl1re16.v", "vl1re32.v", "vl1re64.v"
 # "vs1r.v",
@@ -1253,7 +1268,10 @@ def genVMaskedges():
 
 def genVsedges(test, sew, emul, crypto=False):
   def convert(val, bitwidth):
-    if eew == 128:
+    if eew == 256:
+      return [f"0x{(val >> (64 * i)) & 0xFFFFFFFFFFFFFFFF:016x}" for i
+              in range((bitwidth + (64-1)) // 64)]
+    elif eew == 128:
       return [f"0x{(val >> (eew * i)) & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF:032x}"
                for i in range((bitwidth + (eew - 1)) // eew)]
     elif (sew == 64) or (eew == 64):
@@ -1311,7 +1329,9 @@ def genVsedges(test, sew, emul, crypto=False):
         vectordata += writeData("    .fill 128, 1, 0")
       else:
         for w in convert(val, eew):
-          if eew == 128:
+          if eew == 256:
+            vectordata += writeData(f"    .dword {w}")
+          elif eew == 128:
             vectordata += writeData(f"    .octa {w}")
           elif (sew == 64) or (eew == 64):
             vectordata += writeData(f"    .dword {w}")
@@ -1360,6 +1380,18 @@ def genVsedgesFP(test, sew, emul):
           vectordata += writeData(f"    .word {w}")
 
   return vectordata
+
+def genAESSubbytes():
+  vector_data = ""
+  for i in range(0, 256, 16):
+    # Generate edges that enumerate all possible subbytes values
+    val = 0
+    for j in range(16):
+      val += (i + j) << (j * 8)
+    vector_data += writeData(f"vs_corner_aes_subbytes_{i // 16}:")
+    w = f"0x{val & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF:032x}"
+    vector_data += writeData(f"    .octa {w}")
+  return vector_data
 
 
 # Custom data labels registered by custom coverpoint scripts.
@@ -1464,7 +1496,12 @@ def genVtestdata(test, sew):
     elif (test in crypto_ins):
       test_data += genRandomVector(test, sew, vs="vs2")
       test_data += genRandomVector(test, sew, vs="vs1")
-      test_data += genVsedges(test, sew, "4", crypto=True)
+      if test in crypto_egs8:
+        test_data += genVsedges(test, sew, "8", crypto=True)
+      else:
+        test_data += genVsedges(test, sew, "4", crypto=True)
+      if test in crypto_aes_subbytes_ins:
+        test_data += genAESSubbytes()
     else:
       test_data += genRandomVector(test, sew, vs="vs2")
       if (test in vs1ins):
@@ -2106,7 +2143,7 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
         writeLine(f"vmv.v.x v{register + i*emul_field}, x{tempReg}", f"# Load desired value into v{register + i*emul_field}")
     else:
       writeLine(f"la x{tempReg}, {register_val_pointer}",  "# Load address of desired value")
-      if register_val_pointer == "vs_corner_zero_emul8":
+      if register_val_pointer == "vs_corner_zero_emul8" and instruction not in crypto_ins:
         writeLine(f"vl1re{getInstructionEEW(instruction)}.v v{register}, (x{tempReg})",               "# zero register")
       elif nf_prefill > 1:
         strideReg = pickScalarScratch(scalar_registers_used)
@@ -3028,7 +3065,8 @@ def prepBaseV(sew, lmul, vl=1, vstart=0, ta=0, ma=0, force_vill=False, vector_re
       min_safe_vlen = math.ceil(4 * (sew * egs / lmul))
       global tab_count
       writeLine(f"andi x{tempReg2}, x{tempReg2}, -{egs}",                           f"# ensure that vl is divisible by egs")
-      writeLine(f"#ifdef ZVL{min_safe_vlen}B_SUPPORTED",                            f"# The ori can exceed vlmax if this isn't true")
+      writeLine(f"# The ori can exceed vlmax if this isn't true")
+      writeLine(f"#ifdef ZVL{min_safe_vlen}B_SUPPORTED")
       tab_count += 1
       writeLine(f"ori x{tempReg2}, x{tempReg2}, {2*egs}",                         f"# ensure that 2*egs <= vl < VLMAX")
       tab_count -= 1
@@ -3178,6 +3216,8 @@ def getInstructionRegisterOverlapConstraints (instruction, sew, lmul, masked=Fal
   elif instruction in mv_mins         : no_overlap = [['vd','vs2'],['v0','vs2'],['vd','vs1'],['v0','vs1']]
   elif instruction in vcompressins    : no_overlap = [['vd', 'vs2', 'vs1']                      ]
   elif instruction in seg_vv_load     : no_overlap = [['vd', 'vs2']                             ]
+  elif instruction in crypto_no_vd_vs2       : no_overlap = [['vd', 'vs2']]
+  elif instruction in crypto_no_vd_vs2_vs1   : no_overlap = [['vd', 'vs1'], ['vd', 'vs2']]
 
   if instruction in vector_ls_ins   : no_overlap = addOverlap(no_overlap, [['rs1','rs2']])
 
@@ -3581,6 +3621,10 @@ def readTestplans(priv=False):
                     del testplans["ExceptionsVf"]
                 if (arch in ["Zvbb", "Zvkb"]):
                     for effew in ["8", "16", "32", "64"]:
+                        testplans[arch + effew] = tp
+                    del testplans[arch]
+                if (arch == "Zvknhb"):
+                    for effew in ["32", "64"]:
                         testplans[arch + effew] = tp
                     del testplans[arch]
     return testplans

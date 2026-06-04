@@ -183,6 +183,19 @@ class RISCV_instruction
     endcase
   endfunction
 
+  function bit[`UDB_VLEN*4-1:0] get_vr_val_lmul8(string key);
+    case (key)
+      "v0" : return prev.v_wdata[7:0];   // { v7,  v6,  v5,  v4,  v3,  v2,  v1,  v0  };
+      "v8" : return prev.v_wdata[15:8];  // { v15, v14, v13, v12, v11, v10, v9,  v8  };
+      "v16": return prev.v_wdata[23:16]; // { v23, v22, v21, v20, v19, v18, v17, v16 };
+      "v24": return prev.v_wdata[31:24]; // { v31, v30, v29, v28, v27, v26, v25, v24 };
+      default: begin
+        $error("ERROR: SystemVerilog Functional Coverage: given (%s) as a register with LMUL 8", key);
+        $fatal(1);
+      end
+    endcase
+  endfunction
+
   function `SIGNED_XLEN_BITS get_pc();
     return current.pc_rdata;
   endfunction

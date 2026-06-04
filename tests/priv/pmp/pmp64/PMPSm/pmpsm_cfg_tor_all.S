@@ -34,7 +34,7 @@
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "pmpsm_cfg_tor_all.S"
-#define SIGUPD_COUNT 50
+#define SIGUPD_COUNT 100
 
 
 // Include framework macros
@@ -88,7 +88,11 @@ main:
     //Lock the Background region.
     LI(x4, (PMP_REGION_GLOBAL))
     csrw pmpcfg2, x4
-
+// For larger UDB_PMP_GRANUMARITY, it is raising
+// relocation truncation error to fit: R_RISCV_JAL
+// Regions get so large, trap handler, RVMODEL macros,
+// and failure macros gets far apart and start raising errors
+#if UDB_PMP_GRANULARITY == 4
     LA(x4, TEST_FOR_EXECUTION_0)
     srl x4, x4, PMP_SHIFT
     csrw pmpaddr0, x4
@@ -166,13 +170,16 @@ main:
     VERIFICATION_RWX    TEST_FOR_EXECUTION_5 , test_7
     VERIFICATION_RWX    TEST_FOR_EXECUTION_6 , test_8
     VERIFICATION_RWX    TEST_FOR_EXECUTION_7 , test_9
+
     VERIFICATION_RWX    TEST_FOR_EXECUTION_8 , test_10
     VERIFICATION_RWX    TEST_FOR_EXECUTION_9 , test_11
+
     VERIFICATION_RWX    TEST_FOR_EXECUTION_10, test_12
     VERIFICATION_RWX    TEST_FOR_EXECUTION_11, test_13
     VERIFICATION_RWX    TEST_FOR_EXECUTION_12, test_14
     VERIFICATION_RWX    TEST_FOR_EXECUTION_13, test_15
 
+#endif
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 .align 4
@@ -180,6 +187,8 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 
 test_1_str: .string "\"test: 1; cp: pmpm_cfg_tor_all_lw\""
+
+#if UDB_PMP_GRANULARITY == 4
 
 .align 12
 TEST_FOR_EXECUTION_X:
@@ -264,7 +273,7 @@ RETURN_INSTRUCTION:
     nop
     nop
     jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
-
+#endif
 RVTEST_DATA_END
 
 // Signature region for self-checking

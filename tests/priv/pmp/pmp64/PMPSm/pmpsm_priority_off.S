@@ -111,7 +111,8 @@ main:
     csrw pmpcfg2, x4
 
     LA(x4, TEST_FOR_EXECUTION)
-    addi x5, x4, g
+    li t0, g
+    add x5, x4, t0
     srl x4, x4, PMP_SHIFT
     csrw pmpaddr0, x4
     csrw pmpaddr2, x4

@@ -93,7 +93,8 @@ main:
     addi x4, x4, 4
     srl x4, x4, PMP_SHIFT
     csrw pmpaddr1, x4
-
+// For larger UDB_PMP_GRANUMARITY, NA4 is not supported
+#if UDB_PMP_GRANULARITY == 4
 //                                            Verification Section
 // Test Case: 1 -- LXWR Permissions given to the na4 Region and accessing double word.
 
@@ -101,7 +102,7 @@ main:
     csrw pmpcfg0, x4
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION,test_1
-
+#endif
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 .align 4
@@ -116,6 +117,7 @@ test_2_str: .string "\"test: 2; cp: cp_na4_boundary_sd\""
 TEST_FOR_EXECUTION_0:
     jr ra
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

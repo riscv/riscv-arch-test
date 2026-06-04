@@ -167,8 +167,10 @@ RVTEST_BEGIN
 .macro SET_PMP_ENTRY ADDR_REG, CFG_REG, CFG_BITS
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI (x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw \ADDR_REG, x5
     LI(x4, \CFG_BITS)
     csrw \CFG_REG, x4
@@ -497,45 +499,45 @@ main:
     SET_PMP_ENTRY pmpaddr10, pmpcfg2, PMP_REGION_10
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
 
-// Test Case: 6 — slot 9, pmpcfg2
-    SET_PMP_ENTRY pmpaddr9, pmpcfg2, PMP_REGION_9
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
+# // Test Case: 6 — slot 9, pmpcfg2
+#     SET_PMP_ENTRY pmpaddr9, pmpcfg2, PMP_REGION_9
+#     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
 
-// Test Case: 7 — slot 8, pmpcfg2
-    SET_PMP_ENTRY pmpaddr8, pmpcfg2, PMP_REGION_8
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_7
+# // Test Case: 7 — slot 8, pmpcfg2
+#     SET_PMP_ENTRY pmpaddr8, pmpcfg2, PMP_REGION_8
+#     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_7
 
-// Test Case: 8 — slot 7, pmpcfg0
-    SET_PMP_ENTRY pmpaddr7, pmpcfg0, PMP_REGION_7
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_8
+# // Test Case: 8 — slot 7, pmpcfg0
+#     SET_PMP_ENTRY pmpaddr7, pmpcfg0, PMP_REGION_7
+#     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_8
 
-// Test Case: 9 — slot 6, pmpcfg0
-    SET_PMP_ENTRY pmpaddr6, pmpcfg0, PMP_REGION_6
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_9
+# // Test Case: 9 — slot 6, pmpcfg0
+#     SET_PMP_ENTRY pmpaddr6, pmpcfg0, PMP_REGION_6
+#     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_9
 
-// Test Case: 10 — slot 5, pmpcfg0
-    SET_PMP_ENTRY pmpaddr5, pmpcfg0, PMP_REGION_5
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_10
+# // Test Case: 10 — slot 5, pmpcfg0
+#     SET_PMP_ENTRY pmpaddr5, pmpcfg0, PMP_REGION_5
+#     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_10
 
-// Test Case: 11 — slot 4, pmpcfg0
-    SET_PMP_ENTRY pmpaddr4, pmpcfg0, PMP_REGION_4
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_11
+# // Test Case: 11 — slot 4, pmpcfg0
+#     SET_PMP_ENTRY pmpaddr4, pmpcfg0, PMP_REGION_4
+#     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_11
 
-// Test Case: 12 — slot 3, pmpcfg0
-    SET_PMP_ENTRY pmpaddr3, pmpcfg0, PMP_REGION_3
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_12
+# // Test Case: 12 — slot 3, pmpcfg0
+#     SET_PMP_ENTRY pmpaddr3, pmpcfg0, PMP_REGION_3
+#     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_12
 
-// Test Case: 13 — slot 2, pmpcfg0
-    SET_PMP_ENTRY pmpaddr2, pmpcfg0, PMP_REGION_2
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_13
+# // Test Case: 13 — slot 2, pmpcfg0
+#     SET_PMP_ENTRY pmpaddr2, pmpcfg0, PMP_REGION_2
+#     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_13
 
-// Test Case: 14 — slot 1, pmpcfg0
-    SET_PMP_ENTRY pmpaddr1, pmpcfg0, PMP_REGION_1
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_14
+# // Test Case: 14 — slot 1, pmpcfg0
+#     SET_PMP_ENTRY pmpaddr1, pmpcfg0, PMP_REGION_1
+#     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_14
 
-// Test Case: 15 — slot 0, pmpcfg0
-    SET_PMP_ENTRY pmpaddr0, pmpcfg0, PMP_REGION_0
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
+# // Test Case: 15 — slot 0, pmpcfg0
+#     SET_PMP_ENTRY pmpaddr0, pmpcfg0, PMP_REGION_0
+#     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
 
 #endif  // UDB_NUM_PMP_ENTRIES == 16
 

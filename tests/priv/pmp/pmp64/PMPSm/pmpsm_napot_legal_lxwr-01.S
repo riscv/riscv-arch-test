@@ -62,35 +62,36 @@ RVTEST_BEGIN
 1:
     nop
 
-    addi a4, a4, -4                     // REGIONSTART - 4
+    addi a4, a4, -4                       // REGIONSTART - 4
     LA(x1, 2f)                            // Store the return Address in x1
     jalr ra, 0(a4)
     nop
 2:
     nop
 
-    addi a4, a4, 8                      // REGIONSTART + 4
+    addi a4, a4, 8                        // REGIONSTART + 4
     LA(x1, 3f)                            // Store the return Address in x1
     jalr ra, 0(a4)
     nop
 3:
     nop
 
-    addi a4, a4, (g-8)                  // REGIONSTART + g - 4
+    li t0, (g-8)
+    add a4, a4, t0                        // REGIONSTART + g - 4
     LA(x1, 4f)                            // Store the return Address in x1
     jalr ra, 0(a4)
     nop
 4:
     nop
 
-    addi a4, a4, 4                      // REGIONSTART + g
+    addi a4, a4, 4                        // REGIONSTART + g
     LA(x1, 5f)                            // Store the return Address in x1
     jalr ra, 0(a4)
     nop
 5:
     nop
 
-    LI(a4, DOUBLE_NOP)                                              // Value to write (DOUBLE_NOP)
+    LI(a4, DOUBLE_NOP)                                       // Value to write (DOUBLE_NOP)
 
     // Store Access Check
     LA(a5, \ADDRESS)                                         // Address to be verified
@@ -132,7 +133,8 @@ RVTEST_BEGIN
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_6, test_6_str)
 
 
-    addi a5, a5, (g-8)                                       // REGIONSTART + g - 4
+    li t0, (g-8)
+    add a5, a5, t0                                           // REGIONSTART + g - 4
 
     \TEST_CASE\()_7:
     sw a4, 0(a5)
@@ -201,7 +203,8 @@ RVTEST_BEGIN
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_17, test_17_str)
 
 
-    addi a5, a5, (g-8)
+    li t0, (g-8)
+    add a5, a5, t0
 
     \TEST_CASE\()_18:
     lw a4, 0(a5)
@@ -263,8 +266,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr5, x5
 
     LI(x4, PMPREGION_LXWR_1000)
@@ -276,8 +281,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr4, x5
 
     LI(x4, PMPREGION_LXWR_1001)
@@ -289,8 +296,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr3, x5
 
     LI(x4, PMPREGION_LXWR_1011)

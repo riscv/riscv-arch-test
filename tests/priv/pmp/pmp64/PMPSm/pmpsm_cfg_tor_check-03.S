@@ -2,23 +2,23 @@
 // Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
 // SPDX-License-Identifier: Apache-2.0
 //
-// Title           : Comprehensive PMP (Physical Memory Protection) Verification
-// Authors         : Umer Shahid, Allen Baum, David Harris
-//                  Muhammad Abdullah, Hamza Ali, Muhammad Zain
+// Title        : Comprehensive PMP (Physical Memory Protection) Verification
+// Authors      : Umer Shahid, Allen Baum, David Harris
+//                Muhammad Abdullah, Hamza Ali, Muhammad Zain
 //
-// Description : This test verifies the functionality and enforcement of
-//               Physical Memory Protection (PMP) configurations in RISC-V
-//               systems. It specifically tests the Read, Write, and Execute
-//               permissions for a designated memory region, ensuring that
-//               the PMP settings are correctly applied and that the system
-//               behaves as expected when accessing this region.
+// Description  : This test verifies the functionality and enforcement of
+//                Physical Memory Protection (PMP) configurations in RISC-V
+//                systems. It specifically tests the Read, Write, and Execute
+//                permissions for a designated memory region, ensuring that
+//                the PMP settings are correctly applied and that the system
+//                behaves as expected when accessing this region.
 //
 // Coverpoints  : 3rd test case of cp_cfg_A_tor_non-overlap for PMPM is covered
-//                  in this test file.
+//                in this test file.
 //
 // Test case    : We check that there is no match when pmpaddr0 >= pmpaddr1 with
-//                  the following cfgs pmpcfg1.L=1, pmpcfg1.A=TOR, pmpcfg1.XWR=000,
-//                  pmpcfg0.L=0, pmpcfg0.A=OFF, pmpcfg1.XWR=000. This test exercises
+//                the following cfgs pmpcfg1.L=1, pmpcfg1.A=TOR, pmpcfg1.XWR=000,
+//                pmpcfg0.L=0, pmpcfg0.A=OFF, pmpcfg1.XWR=000. This test exercises
 //                test case 3 that is when pmpaddr0 =  all 1s
 // --------------------------------------------------------------------------------
 
@@ -47,7 +47,7 @@ RVTEST_BEGIN
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
-    LI(a4, DOUBLE_NOP)                                             // Value to write (DOUBLE_NOP)
+    LI(a4, DOUBLE_NOP)                                      // Value to write (DOUBLE_NOP)
 
     LA(a5, (\ADDRESS-4))                                    // Address to be verified
     \TEST_CASE\()_1:
@@ -75,7 +75,7 @@ RVTEST_BEGIN
     lw a4, 0(a5)                                            // Word load test
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)                               // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)                                   // Signature update
 
     LA(a5, (\ADDRESS))                                      // Address to be verified
     \TEST_CASE\()_5:
@@ -137,7 +137,7 @@ main:
     .endr
 
 #define PMP_REGION_GLOBAL           ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
-#define PMPREGION_UPPER_BOUND      ((((PMP_L                  |PMP_TOR)     &0xFF) << PMP1_CFG_SHIFT))
+#define PMPREGION_UPPER_BOUND       ((((PMP_L                  |PMP_TOR)  &0xFF) << PMP1_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
 
@@ -151,7 +151,8 @@ main:
 
     //addresses for a default TOR region
     LA(x4, TEST_FOR_EXECUTION)
-    addi    x5, x4, g
+    li t0, g
+    add x5, x4, t0
     srl x4, x4, PMP_SHIFT
     srl x5, x5, PMP_SHIFT
 

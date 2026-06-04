@@ -102,6 +102,8 @@ main:
     srl x5, x5, PMP_SHIFT
     csrw pmpaddr14, x5
 
+// For larger UDB_PMP_GRANUMARITY, NA4 is not supported
+#if UDB_PMP_GRANULARITY == 4
     LI(x4, (PMPREGION_XWR_000 << PMP6_CFG_SHIFT))
     csrw pmpcfg2, x4
 
@@ -261,7 +263,7 @@ main:
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
 
-
+#endif
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN

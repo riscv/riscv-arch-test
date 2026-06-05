@@ -1667,7 +1667,7 @@ def _generate_wfi_s_tests(test_data: TestData) -> list[str]:
         "",
     ]
 
-    lines.append("# Cross: MIE × SIE × mideleg × TW")
+    lines.append("# Cross: MIE × SIE × mideleg")
     for mie_val in [0, 1]:
         for sie_val in [0, 1]:
             for mideleg_val in [0, 1]:

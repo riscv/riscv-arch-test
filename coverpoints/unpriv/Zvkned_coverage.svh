@@ -26,6 +26,7 @@ covergroup Zvkned_vaesdf_vs_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vd_edges_egs4_subbytes
     //////////////////////////////////////////////////////////////////////////////////
@@ -379,6 +380,7 @@ covergroup Zvkned_vaesdf_vv_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vd_edges_egs4_subbytes
     //////////////////////////////////////////////////////////////////////////////////
@@ -692,6 +694,7 @@ covergroup Zvkned_vaesdm_vs_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vd_edges_egs4_subbytes
@@ -1046,6 +1049,7 @@ covergroup Zvkned_vaesdm_vv_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vd_edges_egs4_subbytes
     //////////////////////////////////////////////////////////////////////////////////
@@ -1359,6 +1363,7 @@ covergroup Zvkned_vaesef_vs_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vd_edges_egs4_subbytes
@@ -1713,6 +1718,7 @@ covergroup Zvkned_vaesef_vv_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vd_edges_egs4_subbytes
     //////////////////////////////////////////////////////////////////////////////////
@@ -2026,6 +2032,7 @@ covergroup Zvkned_vaesem_vs_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vd_edges_egs4_subbytes
@@ -2380,6 +2387,7 @@ covergroup Zvkned_vaesem_vv_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vd_edges_egs4_subbytes
     //////////////////////////////////////////////////////////////////////////////////
@@ -2733,6 +2741,7 @@ covergroup Zvkned_vaeskf1_vi_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+
     cp_imm_5bit_u : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins uimm[] = {[0:31]}; // 5 bit unsigned immediates for vector instructions
     }
@@ -3054,6 +3063,7 @@ covergroup Zvkned_vaeskf2_vi_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
 
     cp_imm_5bit_u : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins uimm[] = {[0:31]}; // 5 bit unsigned immediates for vector instructions
@@ -3377,6 +3387,7 @@ covergroup Zvkned_vaesz_vs_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vd_edges_egs4

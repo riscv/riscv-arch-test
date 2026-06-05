@@ -46,6 +46,11 @@ normative_rule_definitions:
   - name: pmlen_supported_values
     coverpoint: ["{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg}/cp_pmlen_masking"]
 
+  # A setting has been reserved to potentially support other values of PMLEN in
+  # future standards.
+  - name: pmlen_future_reserved
+    coverpoint: [""]
+
   # Pointer masking is controlled separately for different privilege modes.
   - name: pm_per_mode_control
     coverpoint: ["{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg}/cp_pmlen_masking"]

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2025 RISC-V International
+// Copyright (c) 2026 RISC-V International
 
 // FeatureExtractor.S
 // Detects whether the M extension is implemented by executing DIV.
@@ -7,8 +7,8 @@
 
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Zicsr, Sm]
-# MARCH: rv${XLEN}i_zicsr
+# REQUIRED_EXTENSIONS: [I, Zicsr, Zifencei, Sm]
+# MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "FeatureExtractor.S"

@@ -7,100 +7,150 @@ BUILD_DIR := $(REPO_ROOT)/work/UDBFeatureExtractor
 
 SAIL_CONFIG := $(REPO_ROOT)/config/sail/sail-RVA23S64
 CVW_CONFIG  := $(REPO_ROOT)/config/cores/cvw/cvw-rv64gc
+CVW_WORK_CONFIG := $(REPO_ROOT)/work/cvw-rv64gc
 
 CC      := riscv64-unknown-elf-gcc
 OBJDUMP := riscv64-unknown-elf-objdump
 SIM     := sail_riscv_sim
 
-ARCH := rv64i_zicsr
+ARCH := rv64i_zicsr_zifencei
 ABI  := lp64
 
-COMMON_CFLAGS := -march=$(ARCH) -mabi=$(ABI) \
-                 -mcmodel=medany \
-                 -nostartfiles -nostdlib -static \
-                 -DXLEN=64 \
-                 -DTEST_FLEN=32 \
-                 -DSIGNATURE \
-                 -Wl,--no-warn-rwx-segments
-
+# riscv_arch_test.h lives in tests/env; rvtest_config.h lives in the per-target config dir (e.g. config/sail/sail-RVA23S64).
+# Both must be on the include path.
 ARCH_TEST_INC := $(REPO_ROOT)/tests/env
 
-SAIL_CFLAGS := $(COMMON_CFLAGS) \
-               -I $(SAIL_CONFIG) \
-               -I $(ARCH_TEST_INC)
+COMMON_FLAGS := \
+    -march=$(ARCH) -mabi=$(ABI) \
+    -mcmodel=medany \
+    -nostartfiles -nostdlib -static \
+    -DXLEN=64 \
+    -DTEST_FLEN=32 \
+    -DSIGNATURE \
+    -Wl,--no-warn-rwx-segments
 
-CVW_CFLAGS := $(COMMON_CFLAGS) \
-              -I $(CVW_CONFIG) \
-              -I $(ARCH_TEST_INC)
+SAIL_FLAGS := $(COMMON_FLAGS) \
+	-I$(SAIL_CONFIG) \
+	-I$(CVW_WORK_CONFIG) \
+	-I$(CVW_CONFIG) \
+	-I$(ARCH_TEST_INC)
 
-UART_OUT := $(BUILD_DIR)/output.yaml
-SAIL_ELF := $(BUILD_DIR)/FeatureExtractor-sail.elf
-CVW_ELF  := $(BUILD_DIR)/FeatureExtractor-cvw.elf
-DUMP     := $(BUILD_DIR)/FeatureExtractor-sail.dump
-NO_M_CFG := $(BUILD_DIR)/no_M_config.json
+CVW_FLAGS := $(COMMON_FLAGS) \
+    -I$(CVW_CONFIG) \
+    -I$(ARCH_TEST_INC)
 
-.PHONY: all sail sail-debug sail-no-M cvw dump clean help
+# C-version extras:
+#   -std=gnu11   required for register-asm pin syntax (__asm__("a0"))
+#   -ffreestanding  no hosted-environment assumptions
+#   -O1 -g       mild optimisation + debug info
+C_EXTRA := -ffreestanding -O1 -g -std=gnu11
 
+YAML_OUT     := $(BUILD_DIR)/output.yaml
+YAML_OUT_NOM := $(BUILD_DIR)/output-no-M.yaml
+YAML_C_OUT   := $(BUILD_DIR)/output-c.yaml
+YAML_C_NOM   := $(BUILD_DIR)/output-c-no-M.yaml
+
+SAIL_ELF   := $(BUILD_DIR)/FeatureExtractor-sail.elf
+CVW_ELF    := $(BUILD_DIR)/FeatureExtractor-cvw.elf
+SAIL_C_ELF := $(BUILD_DIR)/FeatureExtractorC-sail.elf
+CVW_C_ELF  := $(BUILD_DIR)/FeatureExtractorC-cvw.elf
+NO_M_CFG   := $(BUILD_DIR)/no_M_config.json
+
+SAIL_LD := $(BUILD_DIR)/sail_c.ld
+CVW_LD  := $(BUILD_DIR)/cvw_c.ld
+
+C_SRCS := \
+    $(TEST_SRC)/FeatureExtractorC.S \
+    $(TEST_SRC)/crt.S \
+    $(TEST_SRC)/feature_extractor.c \
+    $(TEST_SRC)/syscalls.c
+
+.PHONY: all sail sail-debug sail-no-M sail-c sail-c-no-M cvw dump dump-c clean help
 all: sail
 
 $(BUILD_DIR):
 	mkdir -p $@
 
+# ── Pure-asm (task 1) ────────────────────────────────────────────────────────
 $(SAIL_ELF): $(TEST_SRC)/FeatureExtractor.S | $(BUILD_DIR)
-	@echo "=== Compiling for Sail: $(ARCH) / $(ABI) ==="
-	$(CC) $(SAIL_CFLAGS) \
+	@echo "=== [asm] Compiling for Sail ==="
+	$(CC) $(SAIL_FLAGS) \
 	      -T $(SAIL_CONFIG)/link.ld \
 	      $< -o $@
-
+		  
 sail: $(SAIL_ELF)
-	@echo "=== Running on Sail ==="
-	$(SIM) --terminal-log $(UART_OUT) $(SAIL_ELF)
-	@echo "=== Generated YAML ==="
+	@echo "=== [asm] Running on Sail ==="
+	$(SIM) --terminal-log $(YAML_OUT) $(SAIL_ELF)
 	@echo "---"
-	@cat $(UART_OUT)
+	@cat $(YAML_OUT)
 	@echo "---"
 
 sail-debug: $(SAIL_ELF)
-	$(SIM) --terminal-log $(UART_OUT) \
-	       --trace-exception \
-	       --trace-htif \
-	       $(SAIL_ELF) 2>&1
-	@echo "=== UART output ==="
-	@cat $(UART_OUT)
+	$(SIM) --terminal-log $(YAML_OUT) --trace-exception --trace-htif $(SAIL_ELF) 2>&1
+	@cat $(YAML_OUT)
 
 $(NO_M_CFG): | $(BUILD_DIR)
 	@printf '{\n  "extensions": {\n    "M": { "supported": false }\n  }\n}\n' > $@
 
 sail-no-M: $(SAIL_ELF) $(NO_M_CFG)
-	@echo "=== Running Sail with M disabled ==="
-	$(SIM) --terminal-log $(UART_OUT).noM \
-	       --config-override $(NO_M_CFG) \
-	       $(SAIL_ELF)
-	@echo "=== Generated YAML without M ==="
+	@echo "=== [asm] Running Sail with M disabled ==="
+	$(SIM) --terminal-log $(YAML_OUT_NOM) --config-override $(NO_M_CFG) $(SAIL_ELF)
 	@echo "---"
-	@cat $(UART_OUT).noM
+	@cat $(YAML_OUT_NOM)
 	@echo "---"
 
 $(CVW_ELF): $(TEST_SRC)/FeatureExtractor.S | $(BUILD_DIR)
-	@echo "=== Compiling for CVW: $(ARCH) / $(ABI) ==="
-	$(CC) $(CVW_CFLAGS) \
-	      -T $(CVW_CONFIG)/link.ld \
-	      $< -o $@
-
-cvw: $(CVW_ELF)
-	@echo "=== CVW ELF ready: $(CVW_ELF) ==="
+	$(CC) $(CVW_FLAGS) -T $(CVW_CONFIG)/link.ld $< -o $@
 
 dump: $(SAIL_ELF)
-	$(OBJDUMP) -d -s $(SAIL_ELF) > $(DUMP)
-	@echo "=== Disassembly written to $(DUMP) ==="
+	$(OBJDUMP) -d -s $(SAIL_ELF) > $(BUILD_DIR)/FeatureExtractor-sail.dump
 
+# ── Linker-script generation (task 2) ───────────────────────────────────────
+# Wraps the target's link.ld and appends a 128-KB stack region.
+$(SAIL_LD): | $(BUILD_DIR)
+	@echo "=== Generating Sail C linker script ==="
+	@printf 'INCLUDE "%s/link.ld"\nSECTIONS {\n  PROVIDE(__global_pointer$$ = . + 0x800);\n  .bss (NOLOAD) : {\n    __bss_start = .;\n    *(.bss .bss.*)\n    *(COMMON)\n    __bss_end = .;\n  }\n  .stack (NOLOAD) : {\n    . = ALIGN(16);\n    __stack_bottom = .;\n    . += 128K;\n    _stack_top = .;\n  }\n}\n' "$(SAIL_CONFIG)" > $@
+
+$(CVW_LD): | $(BUILD_DIR)
+	@echo "=== Generating CVW C linker script ==="
+	@printf 'INCLUDE "%s/link.ld"\nSECTIONS {\n  PROVIDE(__global_pointer$$ = . + 0x800);\n  .bss (NOLOAD) : {\n    __bss_start = .;\n    *(.bss .bss.*)\n    *(COMMON)\n    __bss_end = .;\n  }\n  .stack (NOLOAD) : {\n    . = ALIGN(16);\n    __stack_bottom = .;\n    . += 128K;\n    _stack_top = .;\n  }\n}\n' "$(CVW_CONFIG)" > $@
+
+# ── C version (task 2) ───────────────────────────────────────────────────────
+$(SAIL_C_ELF): $(C_SRCS) $(SAIL_LD) | $(BUILD_DIR)
+	@echo "=== [C] Compiling for Sail ==="
+	$(CC) $(SAIL_FLAGS) $(C_EXTRA) -T $(SAIL_LD) $(C_SRCS) -o $@
+
+sail-c: $(SAIL_C_ELF)
+	@echo "=== [C] Running on Sail ==="
+	$(SIM) --terminal-log $(YAML_C_OUT) $(SAIL_C_ELF)
+	@echo "---"
+	@cat $(YAML_C_OUT)
+	@echo "---"
+
+sail-c-no-M: $(SAIL_C_ELF) $(NO_M_CFG)
+	@echo "=== [C] Running Sail with M disabled ==="
+	$(SIM) --terminal-log $(YAML_C_NOM) --config-override $(NO_M_CFG) $(SAIL_C_ELF)
+	@echo "---"
+	@cat $(YAML_C_NOM)
+	@echo "---"
+
+$(CVW_C_ELF): $(C_SRCS) $(CVW_LD) | $(BUILD_DIR)
+	$(CC) $(CVW_FLAGS) $(C_EXTRA) -T $(CVW_LD) $(C_SRCS) -o $@
+
+cvw: $(CVW_ELF) $(CVW_C_ELF)
+	@echo "asm: $(CVW_ELF)"
+	@echo "C:   $(CVW_C_ELF)"
+
+dump-c: $(SAIL_C_ELF)
+	$(OBJDUMP) -d -s $(SAIL_C_ELF) > $(BUILD_DIR)/FeatureExtractorC-sail.dump
+
+# ────────────────────────────────────────────────────────────────────────────
 clean:
 	rm -rf $(BUILD_DIR)
 
 help:
-	@echo "make -f tests/priv/UDBFeatureExtractor/Makefile sail"
-	@echo "make -f tests/priv/UDBFeatureExtractor/Makefile sail-no-M"
-	@echo "make -f tests/priv/UDBFeatureExtractor/Makefile sail-debug"
-	@echo "make -f tests/priv/UDBFeatureExtractor/Makefile cvw"
-	@echo "make -f tests/priv/UDBFeatureExtractor/Makefile dump"
-	@echo "make -f tests/priv/UDBFeatureExtractor/Makefile clean"
+	@echo "make -f tests/priv/UDBFeatureExtractor/Makefile <target>"
+	@echo ""
+	@echo "asm (task 1): sail  sail-no-M  sail-debug  dump"
+	@echo "C   (task 2): sail-c  sail-c-no-M  dump-c"
+	@echo "shared:       cvw  clean"

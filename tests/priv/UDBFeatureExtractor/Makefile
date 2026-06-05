@@ -109,11 +109,11 @@ dump: $(SAIL_ELF)
 # Wraps the target's link.ld and appends a 128-KB stack region.
 $(SAIL_LD): | $(BUILD_DIR)
 	@echo "=== Generating Sail C linker script ==="
-	@printf 'INCLUDE "%s/link.ld"\nSECTIONS {\n  PROVIDE(__global_pointer$$ = . + 0x800);\n  .bss (NOLOAD) : {\n    __bss_start = .;\n    *(.bss .bss.*)\n    *(COMMON)\n    __bss_end = .;\n  }\n  .stack (NOLOAD) : {\n    . = ALIGN(16);\n    __stack_bottom = .;\n    . += 128K;\n    _stack_top = .;\n  }\n}\n' "$(SAIL_CONFIG)" > $@
+	@printf 'INCLUDE "%s/link.ld"\nPROVIDE(__global_pointer$$ = . + 0x800);\nSECTIONS {\n  .bss (NOLOAD) : {\n    __bss_start = .;\n    *(.bss .bss.*)\n    *(COMMON)\n    __bss_end = .;\n  }\n  .stack (NOLOAD) : {\n    . = ALIGN(16);\n    __stack_bottom = .;\n    . += 128K;\n    _stack_top = .;\n  }\n} INSERT AFTER .data;\n' "$(SAIL_CONFIG)" > $@
 
 $(CVW_LD): | $(BUILD_DIR)
 	@echo "=== Generating CVW C linker script ==="
-	@printf 'INCLUDE "%s/link.ld"\nSECTIONS {\n  PROVIDE(__global_pointer$$ = . + 0x800);\n  .bss (NOLOAD) : {\n    __bss_start = .;\n    *(.bss .bss.*)\n    *(COMMON)\n    __bss_end = .;\n  }\n  .stack (NOLOAD) : {\n    . = ALIGN(16);\n    __stack_bottom = .;\n    . += 128K;\n    _stack_top = .;\n  }\n}\n' "$(CVW_CONFIG)" > $@
+	@printf 'INCLUDE "%s/link.ld"\nPROVIDE(__global_pointer$$ = . + 0x800);\nSECTIONS {\n  .bss (NOLOAD) : {\n    __bss_start = .;\n    *(.bss .bss.*)\n    *(COMMON)\n    __bss_end = .;\n  }\n  .stack (NOLOAD) : {\n    . = ALIGN(16);\n    __stack_bottom = .;\n    . += 128K;\n    _stack_top = .;\n  }\n} INSERT AFTER .data;\n' "$(CVW_CONFIG)" > $@
 
 # ── C version (task 2) ───────────────────────────────────────────────────────
 $(SAIL_C_ELF): $(C_SRCS) $(SAIL_LD) | $(BUILD_DIR)

@@ -8,7 +8,7 @@
 
 extern void arch_write_str_asm(const char *s);
 
-static void put_char(char c)
+static int put_char(char c)
 {
     char buf[2];
 
@@ -16,59 +16,67 @@ static void put_char(char c)
     buf[1] = '\0';
 
     arch_write_str_asm(buf);
+    return 1;
 }
 
-static void put_str(const char *s)
+static int put_str(const char *s)
 {
+    int count = 0;
+
     if (s == 0) {
         s = "(null)";
     }
 
     while (*s != '\0') {
-        put_char(*s++);
+        count += put_char(*s++);
     }
+
+    return count;
 }
 
 int printf(const char *fmt, ...)
 {
     va_list ap;
+    int count = 0;
 
     va_start(ap, fmt);
 
     while (*fmt != '\0') {
         if (*fmt != '%') {
-            put_char(*fmt++);
+            count += put_char(*fmt++);
             continue;
         }
 
         fmt++;
 
-        if (*fmt == 's') {
-            const char *s = va_arg(ap, const char *);
-            put_str(s);
-        } else if (*fmt == 'c') {
-            char c = (char)va_arg(ap, int);
-            put_char(c);
-        } else if (*fmt == '%') {
-            put_char('%');
-        } else {
-            // Unsupported format: print it literally.
-            put_char('%');
-            put_char(*fmt);
+        if (*fmt == '\0') {
+            count += put_char('%');
+            break;
         }
 
-        if (*fmt != '\0') {
-            fmt++;
+        if (*fmt == 's') {
+            const char *s = va_arg(ap, const char *);
+            count += put_str(s);
+        } else if (*fmt == 'c') {
+            char c = (char)va_arg(ap, int);
+            count += put_char(c);
+        } else if (*fmt == '%') {
+            count += put_char('%');
+        } else {
+            count += put_char('%');
+            count += put_char(*fmt);
         }
+
+        fmt++;
     }
 
     va_end(ap);
-    return 0;
+    return count;
 }
 
 int puts(const char *s)
 {
-    put_str(s);
-    put_char('\n');
-    return 0;
+    int count = put_str(s);
+    count += put_char('\n');
+    return count;
 }

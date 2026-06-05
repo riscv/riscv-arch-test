@@ -136,3 +136,4 @@ def make(test: str, sew: int):
             instruction_data = common.randomizeVectorInstructionData(test, sew, common.getBaseSuiteTestCount(), lmul=4, additional_no_overlap=[['vd', 'vs1', 'vs2']], vd_val_ptr=vd_val_ptr, vs1_val_ptr=vs1_val_ptr, vs2_val_ptr=vs2_val_ptr)
 
             common.writeTest(description, test, cp, instruction_data, sew, lmul=4, vl=4, egs=4, )
+            common.incrementBasetestCount()

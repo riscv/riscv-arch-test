@@ -52,6 +52,15 @@
         mv DEFAULT_TEMP_REG, x9        # move scratch base into DEFAULT_TEMP_REG
         mv DEFAULT_LINK_REG, x7        # move return address into DEFAULT_LINK_REG
         # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
+        csrr x1, mcause
+        la x9, saved_mcause
+        SREG x1, 0(x9)
+        csrr x1, mtval
+        la x9, saved_mtval
+        SREG x1, 0(x9)
+        csrr x1, mstatus
+        la x9, saved_mstatus
+        SREG x1, 0(x9)
         j failedtest_saveregs
 
 #ifdef F_SUPPORTED
@@ -1676,8 +1685,8 @@
         LA(a0, trap_diag_generic_str)
         call rvmodel_io_write_str
 
-        // Print instruction at mepc
-        csrr a2, mepc
+        // Print instruction at saved mepc
+        LREG a2, saved_mepc
         LA(a0, xepcinstrstr)
         call rvmodel_io_write_str
         lhu a0, 0(a2)
@@ -1757,7 +1766,9 @@
         call rvmodel_halt_fail
 
 
-    # Print mepc, mcause, mtval, mstatus for trap failure diagnostics.
+    # Print saved mepc, mcause, mtval, mstatus for trap failure diagnostics.
+    # Values were snapshotted at failedtest_trap_x7_x9 entry, before any re-trap
+    # could corrupt the live CSRs (e.g. PMP faults from rvmodel_io_write_str).
     # Saves and restores ra via csr_context_ret_addr so callers can use 'call'.
     failedtest_print_csr_context:
         la a2, csr_context_ret_addr
@@ -1765,7 +1776,7 @@
 
         LA(a0, mepcstr)
         call rvmodel_io_write_str
-        csrr a0, mepc
+        LREG a0, saved_mepc
         li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
@@ -1773,7 +1784,7 @@
 
         LA(a0, mcausestr)
         call rvmodel_io_write_str
-        csrr a0, mcause
+        LREG a0, saved_mcause
         li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
@@ -1781,7 +1792,7 @@
 
         LA(a0, mtvalstr)
         call rvmodel_io_write_str
-        csrr a0, mtval
+        LREG a0, saved_mtval
         li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
@@ -1789,7 +1800,7 @@
 
         LA(a0, mstatusstr)
         call rvmodel_io_write_str
-        csrr a0, mstatus
+        LREG a0, saved_mstatus
         li a1, UDB_MXLEN
         jal failedtest_hex_to_str
         LA(a0, ascii_buffer)
@@ -1977,6 +1988,14 @@
     trap_diag_fail_str_ptr:                      # saved failure string pointer for dispatch
         .fill 2, 4, 0
     csr_context_ret_addr:                        # return address save slot for failedtest_print_csr_context
+        .fill 2, 4, 0
+    saved_mepc:                                  # original xEPC saved by common_excpt_handler before adj_Mepc
+        .fill 2, 4, 0
+    saved_mcause:                                # mcause snapshotted at failedtest_trap_x7_x9 entry
+        .fill 2, 4, 0
+    saved_mtval:                                 # mtval snapshotted at failedtest_trap_x7_x9 entry
+        .fill 2, 4, 0
+    saved_mstatus:                               # mstatus snapshotted at failedtest_trap_x7_x9 entry
         .fill 2, 4, 0
 
     ascii_buffer:

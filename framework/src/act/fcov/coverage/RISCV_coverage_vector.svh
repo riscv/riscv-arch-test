@@ -232,6 +232,52 @@ function edge_vs_values_t vs_edges_check_eew_64(`VLEN_BITS val);
 endfunction
 `endif
 
+function edge_vs_values_t vs_edges_check_egs4(int hart, int issue, bit [`UDB_VLEN*4-1:0] val); // string vector_reg, riscvTraceData prev);
+  `XLEN_BITS vsew = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew");
+  `XLEN_BITS lmul = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vlmul");
+  int sew = 2 ** (3 + unsigned'(vsew[2:0]));
+
+  if (sew == 32) begin
+    casez (val)
+      {{(`UDB_VLEN*4-128){1'b?}},         {(128){1'b0}}}:            return vs_zero;
+      {{(`UDB_VLEN*4-128){1'b?}},         {(128){1'b1}}}:            return vs_ones;
+      {{(`UDB_VLEN*4-128){1'b?}},         {(128/2){2'b10}}}:         return vs_walkodd;
+      {{(`UDB_VLEN*4-128){1'b?}},         {(128/2){2'b01}}}:         return vs_walkeven;
+      default:                                                       return vs_random;
+    endcase
+  end else if (sew == 64) begin
+    casez (val)
+      {{(`UDB_VLEN*4-256){1'b?}},         {(256){1'b0}}}:            return vs_zero;
+      {{(`UDB_VLEN*4-256){1'b?}},         {(256){1'b1}}}:            return vs_ones;
+      {{(`UDB_VLEN*4-256){1'b?}},         {(256/2){2'b10}}}:         return vs_walkodd;
+      {{(`UDB_VLEN*4-256){1'b?}},         {(256/2){2'b01}}}:         return vs_walkeven;
+      default:                                                       return vs_random;
+    endcase
+  end else begin
+    $error("ERROR: SystemVerilog Functional Coverage: EGS4 edge check requires SEW=32 or 64, but was given %d", sew);
+    $fatal(1);
+  end
+endfunction
+
+function edge_vs_values_t vs_edges_check_sew32_egs8(int hart, int issue, bit [`UDB_VLEN*8-1:0] val); // string vector_reg, riscvTraceData prev);
+  `XLEN_BITS vsew = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew");
+  `XLEN_BITS lmul = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vlmul");
+  int sew = 2 ** (3 + unsigned'(vsew[2:0]));
+
+  if (sew != 32) begin
+    $error("ERROR: SystemVerilog Functional Coverage: SEW 32 EGS8 edge check requires SEW=32, but was given %d", sew);
+    $fatal(1);
+  end
+
+  casez (val)
+    {{(`UDB_VLEN*8-256){1'b?}},         {(256){1'b0}}}:            return vs_zero;
+    {{(`UDB_VLEN*8-256){1'b?}},         {(256){1'b1}}}:            return vs_ones;
+    {{(`UDB_VLEN*8-256){1'b?}},         {(256/2){2'b10}}}:         return vs_walkodd;
+    {{(`UDB_VLEN*8-256){1'b?}},         {(256/2){2'b01}}}:         return vs_walkeven;
+    default:                                                       return vs_random;
+  endcase
+endfunction
+
 
 // todo: CHECK TO MAKE SURE BOOLEAN STATEMENTS WORK
 // todo: ESPECIALLY REGARDING SIGNS
@@ -410,7 +456,7 @@ typedef enum {
   vl_illegal
 } vl_t;
 
-function vl_t vl_check(int hart, int issue);
+function vl_t vl_check(int hart, int issue, int egs = 1);
   `XLEN_BITS vl = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vl", "vl");
   `XLEN_BITS vstart = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vstart", "vstart");
   int vlmax = get_vtype_vlmax(hart, issue, `SAMPLE_BEFORE);
@@ -420,7 +466,7 @@ function vl_t vl_check(int hart, int issue);
 
   case(vl)
     0:         return vl_zero;
-    1:         return vl_one;
+    egs:    return vl_one; // EGS constrains what the edges of vl are
     vlmax:     return vl_vlmax;
     default: begin
       if (legal) return vl_legal;
@@ -454,4 +500,38 @@ function vstart_t vstart_check(int hart, int issue);
       else       return vstart_illegal;
     end
   endcase
+endfunction
+
+function logic[7:0] shangmi_key_schedule_subbyte(logic[127:0] vs2, `XLEN_BITS immediate, int idx);
+  logic[2:0] round = immediate[2:0];
+  logic[31:0] _x0, x1, x2, x3;
+  logic[31:0] B;
+
+  int ck[32] = '{
+    32'h00070E15, 32'h1C232A31, 32'h383F464D, 32'h545B6269,
+    32'h70777E85, 32'h8C939AA1, 32'hA8AFB6BD, 32'hC4CBD2D9,
+    32'hE0E7EEF5, 32'hFC030A11, 32'h181F262D, 32'h343B4249,
+    32'h50575E65, 32'h6C737A81, 32'h888F969D, 32'hA4ABB2B9,
+    32'hC0C7CED5, 32'hDCE3EAF1, 32'hF8FF060D, 32'h141B2229,
+    32'h30373E45, 32'h4C535A61, 32'h686F767D, 32'h848B9299,
+    32'hA0A7AEB5, 32'hBCC3CAD1, 32'hD8DFE6ED, 32'hF4FB0209,
+    32'h10171E25, 32'h2C333A41, 32'h484F565D, 32'h646B7279
+  };
+
+  {x3, x2, x1, _x0} = vs2;
+
+  B = x1 ^ x2 ^ x3 ^ ck[4*round];
+  return B[idx*8 +: 8];
+endfunction
+
+function logic[7:0] shangmi_round_subbyte(logic[127:0] vd, logic[127:0] vs2, int idx);
+  logic[31:0] rk0, B;
+
+  logic[31:0] _x0, x1, x2, x3;
+  {x3, x2, x1, _x0} = vd;
+
+  rk0 = vs2[31:0];
+
+  B = x1 ^ x2 ^ x3 ^ rk0;
+  return B[idx*8 +: 8];
 endfunction

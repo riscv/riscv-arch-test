@@ -104,28 +104,169 @@ _FAST_HANDLER_PREFIX: list[str] = [
     "\tmret",
     "",
     "othertrap:",
-    "\tcsrr t1, mtval",
     "\tj    Mtrampoline                # hand off all non-illegal-instruction traps",
     "",
     "ssstrict_test_body:",
     "\tLA(t0, trap_handler_fastillegalinstr)",
     "\tCSRW(mtvec, t0)",
-    "\t.align 4",
+    "\t.align UDB_MTVEC_BASE_ALIGNMENT_DIRECT",
     "",
 ]
 _SPLIT_FILE_GPR_INIT: list[str] = (
     [
         "",
         "# Re-initialize GPRs at the top of every split Ssstrict file.",
-        "# This ensures scratch base and safe registers are valid when a split",
-        "# file begins in the middle of a large sweep.",
-        "\t# x8 = permanent scratch base, 8-byte aligned for atomics",
-        "\tnop",
-        "\tnop",
-        "\tla x8, scratch",
+        "# x8 = scratch base (rs1 for load/store sweep); x7,x9-x31 = 0xDEADBEEF",
+        "# so accidental loads/stores from non-x8 registers fault rather than silently succeed.",
+        "\tli x7, 0xDEADBEEF",
     ]
-    + [f"\tmv x{r}, x8" for r in range(7, 32) if r != 8]
-    + ["", ""]
+    + [f"\tmv x{r}, x7" for r in range(9, 32)]
+    + ["\tla x8, scratch", "", ""]
+)
+
+# ---------------------------------------------------------------------------
+# Fast S-mode illegal-instruction handler — used by SsstrictS and SsstrictU.
+#
+# Design:
+#   mtvec → M-mode fast handler (identical to SsstrictSm, handles non-delegated
+#            traps such as fetch faults and the RVTEST_CODE_END ecall).
+#   stvec → S-mode strap handler (handles illegal instructions delegated by
+#            medeleg, using scause/sepc/stval/sret).
+#   medeleg bit 2 is set to delegate illegal-instruction traps to S-mode so the
+#   strap handler fires for every illegal encoding during the CSR sweep and the
+#   encoding sweeps — both of which run entirely from S-mode (or U-mode for
+#   SsstrictU, in which case the delegated trap also goes to S-mode).
+#
+# t1 (x6) is deliberately never touched by either handler: with
+# rvtest_strap_routine defined, x6 is the Mtrampoline save-area pointer.
+# ---------------------------------------------------------------------------
+_FAST_SMODE_HANDLER_PREFIX: list[str] = [
+    "",
+    "// ── Fast M-mode handler (mtvec) ──────────────────────────────────────────────",
+    "// Identical to the SsstrictSm handler: records mcause/mepc/mtval for illegal",
+    "// instructions; routes other traps to Mtrampoline.",
+    "// Installed unconditionally so that DUTs without delegation support (no medeleg)",
+    "// still record every illegal-instruction trap correctly via mtvec.",
+    "\tj ssstrict_test_body",
+    "",
+    "\t.balign 64",
+    "#ifdef UDB_MTVEC_BASE_ALIGNMENT_VECTORED",
+    "\t.balign UDB_MTVEC_BASE_ALIGNMENT_VECTORED",
+    "#endif",
+    "#ifdef UDB_MTVEC_BASE_ALIGNMENT_DIRECT",
+    "\t.balign UDB_MTVEC_BASE_ALIGNMENT_DIRECT",
+    "#endif",
+    "trap_handler_fastillegalinstr:",
+    "\tcsrr t0, mcause                 # read trap cause",
+    "\tli   t1, 2                      # Illegal Instruction cause = 2",
+    "\tbne  t0, t1, othertrap          # not illegal instruction — use regular handler",
+    "illegalinstruction:",
+    "\tSREG t0, 0(x2)                  # store mcause (=2) to signature",
+    "\taddi x2, x2, SIG_STRIDE",
+    "\tcsrr t0, mepc",
+    "\tSREG t0, 0(x2)                  # store mepc to signature",
+    "\taddi x2, x2, SIG_STRIDE",
+    "\tcsrr t0, mtval",
+    "\tSREG t0, 0(x2)                  # store mtval to signature",
+    "\taddi x2, x2, SIG_STRIDE",
+    "    # Branchless mepc advance — reads bits[1:0] from *mepc using lhu.",
+    "    # lhu is used because mepc is only guaranteed 2-byte aligned.",
+    "    # advance = (((bits[1:0]+1) >> 2) + 1) << 1  =  4 if bits[1:0]==0b11, else 2.",
+    "\tcsrr t0, mepc",
+    "\tlhu  t0, 0(t0)                  # load lower 16 bits from *mepc (always 2-byte aligned)",
+    "\tandi t0, t0, 3                  # t0 = bits[1:0]",
+    "\taddi t0, t0, 1                  # t0 = bits[1:0]+1; equals 4 only when was 0b11",
+    "\tsrli t0, t0, 2                  # t0 = 1 iff uncompressed (0b11), else 0",
+    "\taddi t0, t0, 1                  # t0 = 2 or 1",
+    "\tslli t0, t0, 1                  # t0 = 4 (uncompressed) or 2 (compressed)",
+    "\tcsrr t1, mepc                   # t1 = mepc  (t1 first written here)",
+    "\tadd  t1, t1, t0                 # t1 = mepc + advance",
+    "\tcsrw mepc, t1",
+    "\tmret",
+    "",
+    "othertrap:",
+    "\tj    Mtrampoline                # hand off all non-illegal-instruction traps",
+    "",
+    "#ifdef S_SUPPORTED",
+    "// ── Fast S-mode handler (stvec) — delegated illegal instructions ────────",
+    "// scause==2 → write scause/sepc/stval to signature, advance sepc, sret.",
+    "// Any other S-mode trap → Strampoline (real framework S-mode handler).",
+    "// Neither handler touches t1 (x6) — preserved as Mtrampoline save-area pointer.",
+    "\t.align UDB_MTVEC_BASE_ALIGNMENT_DIRECT  // TODO: UDB_STVEC_BASE_ALIGNMENT_DIRECT once defined",
+    "strap_handler_fastillegalinstr:",
+    "\tcsrr t0, scause",
+    "\txori t0, t0, 2          # t0=0 iff scause==2 (illegal instruction)",
+    "\tbnez t0, sothertrap     # not illegal — use S-mode framework handler",
+    "sillegalinstruction:",
+    "\tcsrr t0, scause         # re-read (=2)",
+    "\tSREG t0, 0(x2)          # store scause to signature",
+    "\taddi x2, x2, SIG_STRIDE",
+    "\tcsrr t0, sepc",
+    "\tSREG t0, 0(x2)          # store sepc to signature",
+    "\taddi x2, x2, SIG_STRIDE",
+    "\tcsrr t0, stval",
+    "\tSREG t0, 0(x2)          # store stval to signature",
+    "\taddi x2, x2, SIG_STRIDE",
+    "    # Width detection: lhu at sepc (2-byte aligned → no misalign trap).",
+    "    # Assumptions: full PMP read permission; address translation disabled.",
+    "\tcsrr t0, sepc",
+    "\tlhu  t0, 0(t0)          # load lower 16 bits of faulting instruction",
+    "\tandi t0, t0, 3",
+    "\txori t0, t0, 3          # t0=0 iff bits[1:0]==0b11 (uncompressed)",
+    "\tbeqz t0, s_uncompressed",
+    "s_compressed:",
+    "\tcsrr t0, sepc",
+    "\taddi t0, t0, 2          # 16-bit instruction: advance sepc by 2",
+    "\tj    s_done",
+    "s_uncompressed:",
+    "\tcsrr t0, sepc",
+    "\taddi t0, t0, 4          # 32-bit instruction: advance sepc by 4",
+    "s_done:",
+    "\tcsrw sepc, t0",
+    "\tsret",
+    "",
+    "sothertrap:",
+    "\tj    Strampoline         # hand off non-illegal S-mode traps to framework",
+    "#endif",
+    "",
+    "ssstrict_test_body:",
+    "\tLA(t0, trap_handler_fastillegalinstr)",
+    "\tRVTEST_TSBI_CSR_ACCESS 0x30559073, t0  # csrrw x0, mtvec, a1 — write mtvec via SBI (M-mode CSR)",
+    "#ifdef S_SUPPORTED",
+    "\tLA(t0, strap_handler_fastillegalinstr)",
+    "\tCSRW(stvec, t0)                         # S-mode handler: catches delegated illegal instructions",
+    "#endif",
+    "\t.align UDB_MTVEC_BASE_ALIGNMENT_DIRECT",
+    "",
+]
+
+# GPR init for SsstrictS split files: switch to S-mode then reload all scratch regs.
+# RVTEST_GOTO_LOWER_MODE Smode runs from M-mode here, writing a valid M-mode sp
+# into the framework save area so RVTEST_CODE_END's epilog can restore it.
+_SPLIT_FILE_SMODE_GPR_INIT: list[str] = (
+    [
+        "",
+        "# Switch to S-mode and re-initialize GPRs for this split file.",
+        "\tRVTEST_GOTO_LOWER_MODE Smode",
+        "\tcsrw    mie, x0",
+        "\t# x8 = scratch base (rs1 for load/store sweep); x7,x9-x31 = 0xDEADBEEF",
+        "\tli x7, 0xDEADBEEF",
+    ]
+    + [f"\tmv x{r}, x7" for r in range(9, 32)]
+    + ["\tla x8, scratch", "", ""]
+)
+
+# GPR init for SsstrictU split files: switch to U-mode then reload all scratch regs.
+_SPLIT_FILE_UMODE_GPR_INIT: list[str] = (
+    [
+        "",
+        "# Switch to U-mode and re-initialize GPRs for this split file.",
+        "\tRVTEST_GOTO_LOWER_MODE Umode",
+        "\t# x8 = scratch base (rs1 for load/store sweep); x7,x9-x31 = 0xDEADBEEF",
+        "\tli x7, 0xDEADBEEF",
+    ]
+    + [f"\tmv x{r}, x7" for r in range(9, 32)]
+    + ["\tla x8, scratch", "", ""]
 )
 
 
@@ -212,34 +353,35 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     else:
         # ── Ssstrict: split into multiple files with fast handler per file ─────
         #
-        # SsstrictS/U files end in S-mode (the CSR sweep stays in S-mode until
-        # RVTEST_CODE_END).  RVTEST_CODE_END issues an ecall (cause=9, s-call)
-        # which Mtrampoline catches and routes through Mrtn2mmode → rtn_fm_mmode.
-        # rtn_fm_mmode restores sp from the framework save area (offset 0x274).
-        # That value was written when RVTEST_GOTO_LOWER_MODE Smode ran FROM M-MODE
-        # at the start of this file's code section.
+        # SsstrictSm: all code runs from M-mode.
+        #   Each file gets _FAST_HANDLER_PREFIX (M-mode mtvec handler) +
+        #   _SPLIT_FILE_GPR_INIT (scratch reload, no mode switch).
         #
-        # Invariant enforced by SsstrictS.py's batch boundary layout:
-        #   The splitter blank line is placed AFTER RVTEST_GOTO_LOWER_MODE Smode,
-        #   not before it.  This guarantees that every split file's first code
-        #   line (after the fast-handler prefix) is GOTO Smode executing from
-        #   M-mode, which writes a valid M-mode sp into the save area.  When
-        #   RVTEST_CODE_END later runs from S-mode, rtn_fm_mmode restores that
-        #   valid sp and the epilog succeeds.
+        # SsstrictS: all code runs from S-mode; illegal instructions delegated
+        #   to S-mode.
+        #   Each file gets _FAST_SMODE_HANDLER_PREFIX + _SPLIT_FILE_SMODE_GPR_INIT
+        #   (GOTO Smode from M-mode + scratch reload).
         #
-        # Do NOT append a RVTEST_GOTO_LOWER_MODE Mmode suffix here.
-        # On some configs (including RV32 sail-rv32-max) that macro is a
-        # preprocessor no-op that generates zero machine code.  Appending it
-        # does nothing useful, and the accompanying `csrw mie, x0` becomes
-        # unreachable dead code that clutters the generated files.
+        # TODO: SsstrictU: all code runs from U-mode; illegal instructions delegated (same as SsstrictS).
+        #   Each file gets _FAST_SMODE_HANDLER_PREFIX + _SPLIT_FILE_UMODE_GPR_INIT
+        #   (GOTO Umode from M-mode + scratch reload).
+        if testsuite == "SsstrictS":
+            handler_prefix = _FAST_SMODE_HANDLER_PREFIX
+            gpr_init = _SPLIT_FILE_SMODE_GPR_INIT
+        elif testsuite == "SsstrictU":
+            handler_prefix = _FAST_SMODE_HANDLER_PREFIX
+            gpr_init = _SPLIT_FILE_UMODE_GPR_INIT
+        else:
+            handler_prefix = _FAST_HANDLER_PREFIX
+            gpr_init = _SPLIT_FILE_GPR_INIT
 
         groups = _split_at_blank(body_lines, _LINES_PER_FILE)
         for file_idx, group in enumerate(groups):
             chunk = TestChunk()
-            # Prepend the fast handler + per-file register init to EVERY file
-            # so mtvec is always redirected to it and scratch registers are
+            # Prepend the appropriate handler + per-file register init to EVERY
+            # file so mtvec/stvec are always redirected and scratch registers are
             # reloaded at the start of each split body.
-            chunk.code = "\n".join(_FAST_HANDLER_PREFIX + _SPLIT_FILE_GPR_INIT + group)
+            chunk.code = "\n".join(handler_prefix + gpr_init + group)
             # Count trap-inducing instructions in this group to size the
             # signature region correctly.  There are two kinds:
             #   1. _cg_ testcase labels — each precedes a CSR instruction that

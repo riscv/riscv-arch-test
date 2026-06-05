@@ -218,7 +218,7 @@
     // cv32e40p implements WFI as a real sleep instruction (not NOP).
     "wfi_is_nop": false,
     // Maximum time before a WFI instruction expires.
-    "max_time_to_wait": 10
+    "max_time_to_wait": 1000
   },
   "extensions": {
     "M": {

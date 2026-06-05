@@ -160,8 +160,6 @@ def set_stimer_int(r_mtime: int, r_temp: int, r_temp2: int, r_scratch: int, r_st
             f"LI(x{r_temp}, -1)",
             f"csrw stimecmp, x{r_temp} # set stimecmp to max value",
             f"lw x{r_temp2}, 4(x{r_mtime}) # read from mtime",
-            f"csrw stimecmp, x{r_temp} # set stimcmp to max value",
-            f"lw x{r_temp2}, 4(x{r_mtime}) # read from mtime",
             f"lw x{r_temp}, 0(x{r_mtime})",
             f"csrw stimecmph, x{r_temp2}",
             f"csrw stimecmp, x{r_temp}",

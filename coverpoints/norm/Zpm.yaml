@@ -46,11 +46,6 @@ normative_rule_definitions:
   - name: pmlen_supported_values
     coverpoint: ["{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg}/cp_pmlen_masking"]
 
-  # A setting has been reserved to potentially support other values of PMLEN in
-  # future standards.
-  - name: pmlen_future_reserved
-    coverpoint: [""]
-
   # Pointer masking is controlled separately for different privilege modes.
   - name: pm_per_mode_control
     coverpoint: ["{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg}/cp_pmlen_masking"]
@@ -120,10 +115,7 @@ normative_rule_definitions:
   # on trap delivery (e.g., due to an exception or interrupt), pointer masking will
   # not be applied to the address of the trap handler.
   - name: pm_no_trap_vector_mask
-    coverpoint:
-      [
-        "{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg}/cp_hardware_csr_writes_fault",
-      ]
+    coverpoint: [""] #xtvec/stvec not tested here as warl field has complex write restrictions and is not easy to test
 
   # A supervisor-level extension that provides pointer masking for the next lower
   # privilege mode (U-mode), and for VS- and VU-modes if the H extension is present.

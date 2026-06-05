@@ -13,11 +13,18 @@ def get_128_bits(field: str, num: int) -> int:
 
 @register("cp_custom_nist_gcm")
 def make(test: str, _sew: int):
-    # Data From: https://csrc.nist.rip/groups/ST/toolkit/BCM/documents/proposedmodes/gcm/gcm-spec.pdf
+    common.writeLine("######################################################################################################")
+    common.writeLine("# These tests include data from the NIST GCM standard, specifically the worked examples in Appendix B")
+    common.writeLine("# They are worked examples from the standard that can be used to provide further edge values for these")
+    common.writeLine("# tests as they are light on edges otherwise, and these examples have answers that have been derived")
+    common.writeLine("# outside of any reference implementation of the algorithms, making them clear examples of the right")
+    common.writeLine("# behavior.")
+    common.writeLine("# Data From: https://csrc.nist.rip/groups/ST/toolkit/BCM/documents/proposedmodes/gcm/gcm-spec.pdf")
+    common.writeLine("######################################################################################################")
     nist_test_vectors = Path(__file__).resolve().parent / 'data' / 'gcm_test_vectors_wide.csv'
 
     with nist_test_vectors.open('r') as file:
-        reader = DictReader(file)
+        reader = DictReader(row for row in file if not row.startswith('#'))
         present_labels = {0: 'vs_corner_zero_emul4'}
         for i, row in enumerate(reader):
             data = extract_data(row)

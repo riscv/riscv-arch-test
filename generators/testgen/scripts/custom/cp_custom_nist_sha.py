@@ -47,7 +47,7 @@ K_512 = [
     0x4cc5d4becb3e42b6, 0x597f299cfc657e2a, 0x5fcb6fab3ad6faec, 0x6c44198c4a475817,
 ]
 
-hash_round_values = [
+HASH_ROUND_VALUES_256 = [
     [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19],
     [0x5D6AEBB1, 0x6A09E667, 0xBB67AE85, 0x3C6EF372, 0xFA2A4606, 0x510E527F, 0x9B05688C, 0x1F83D9AB],
     [0x2F2D5FCF, 0x5D6AEBB1, 0x6A09E667, 0xBB67AE85, 0x4EB1CFCE, 0xFA2A4606, 0x510E527F, 0x9B05688C],
@@ -61,17 +61,39 @@ hash_round_values = [
     [0x3A474B2B, 0x359F2BCE, 0xD237E6DB, 0x485835B7, 0x9037B3B8, 0xC09FFEC4, 0xA401D211, 0x39A5B2CA],
     [0xB8E2B4CB, 0x3A474B2B, 0x359F2BCE, 0xD237E6DB, 0x443ED29E, 0x9037B3B8, 0xC09FFEC4, 0xA401D211],
     [0x1762215C, 0xB8E2B4CB, 0x3A474B2B, 0x359F2BCE, 0xEE1C97A8, 0x443ED29E, 0x9037B3B8, 0xC09FFEC4],
-    [0x101A4861, 0x1762215C, 0xB8E2B4CB, 0x3A474B2B, 0x839A0FC9, 0xEE1C97A8, 0x443ED29E, 0x9037B3B8],
-    [0xD68E6457, 0x101A4861, 0x1762215C, 0xB8E2B4CB, 0x9243F8AF, 0x839A0FC9, 0xEE1C97A8, 0x443ED29E],
-    [0xDD16CBB3, 0xD68E6457, 0x101A4861, 0x1762215C, 0x9162ADED, 0x9243F8AF, 0x839A0FC9, 0xEE1C97A8],
+]
+
+HASH_ROUND_VALUES_512 = [
+    [0x6A09E667F3BCC908, 0xBB67AE8584CAA73B, 0x3C6EF372FE94F82B, 0xA54FF53A5F1D36F1, 0x510E527FADE682D1, 0x9B05688C2B3E6C1F, 0x1F83D9ABFB41BD6B, 0x5BE0CD19137E2179],
+    [0xF6AFCE9D2263455D, 0x6A09E667F3BCC908, 0xBB67AE8584CAA73B, 0x3C6EF372FE94F82B, 0x58CB0218E01B86F9, 0x510E527FADE682D1, 0x9B05688C2B3E6C1F, 0x1F83D9ABFB41BD6B],
+    [0x0B7056A534AE5F62, 0xF6AFCE9D2263455D, 0x6A09E667F3BCC908, 0xBB67AE8584CAA73B, 0xF8C7198FE39E4C8C, 0x58CB0218E01B86F9, 0x510E527FADE682D1, 0x9B05688C2B3E6C1F],
+    [0x2CA82233760C9942, 0x0B7056A534AE5F62, 0xF6AFCE9D2263455D, 0x6A09E667F3BCC908, 0x303ECCCCD65953DE, 0xF8C7198FE39E4C8C, 0x58CB0218E01B86F9, 0x510E527FADE682D1],
+    [0xA023F17CE52CDA7B, 0x2CA82233760C9942, 0x0B7056A534AE5F62, 0xF6AFCE9D2263455D, 0xFFDEE5EEDCC9CA42, 0x303ECCCCD65953DE, 0xF8C7198FE39E4C8C, 0x58CB0218E01B86F9],
+    [0x8F0A67D9D591A1A7, 0xA023F17CE52CDA7B, 0x2CA82233760C9942, 0x0B7056A534AE5F62, 0xCB4CFBB166505F2F, 0xFFDEE5EEDCC9CA42, 0x303ECCCCD65953DE, 0xF8C7198FE39E4C8C],
+    [0xB466267371ACC493, 0x8F0A67D9D591A1A7, 0xA023F17CE52CDA7B, 0x2CA82233760C9942, 0x73D6C84C54D399EE, 0xCB4CFBB166505F2F, 0xFFDEE5EEDCC9CA42, 0x303ECCCCD65953DE],
+    [0x658269F1A312FCCD, 0xB466267371ACC493, 0x8F0A67D9D591A1A7, 0xA023F17CE52CDA7B, 0xCDC40314975FB275, 0x73D6C84C54D399EE, 0xCB4CFBB166505F2F, 0xFFDEE5EEDCC9CA42],
+    [0x65E3519C5B88181B, 0x658269F1A312FCCD, 0xB466267371ACC493, 0x8F0A67D9D591A1A7, 0xA657850AB3970C5A, 0xCDC40314975FB275, 0x73D6C84C54D399EE, 0xCB4CFBB166505F2F],
+    [0x56604FBB4B6393EC, 0x65E3519C5B88181B, 0x658269F1A312FCCD, 0xB466267371ACC493, 0xE8B3BE22FBE64DF7, 0xA657850AB3970C5A, 0xCDC40314975FB275, 0x73D6C84C54D399EE],
+    [0xC4562769A37D02C0, 0x56604FBB4B6393EC, 0x65E3519C5B88181B, 0x658269F1A312FCCD, 0x0062E70A1EF705C1, 0xE8B3BE22FBE64DF7, 0xA657850AB3970C5A, 0xCDC40314975FB275],
+    [0x27C0B4C9186E1736, 0xC4562769A37D02C0, 0x56604FBB4B6393EC, 0x65E3519C5B88181B, 0xBC9740477A18AE2D, 0x0062E70A1EF705C1, 0xE8B3BE22FBE64DF7, 0xA657850AB3970C5A],
+    [0xF17F52FB02F4EB74, 0x27C0B4C9186E1736, 0xC4562769A37D02C0, 0x56604FBB4B6393EC, 0xBE58522CB9590EE1, 0xBC9740477A18AE2D, 0x0062E70A1EF705C1, 0xE8B3BE22FBE64DF7],
 ]
 
 @register("cp_custom_nist_sha")
 def make(test: str, sew: int):
-    # Data Taken From: https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/SHA256.pdf
-    # and https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/SHA512.pdf
+    common.writeLine("######################################################################################################")
+    common.writeLine("# These tests include data from the SHA examples given by NIST. They use the data from the message")
+    common.writeLine("# schedule blocks given in the second example, first block. This was chosen because of the examples")
+    common.writeLine("# it has the most non-zero entries in the message schedule which hopefully makes it more interesting.")
+    common.writeLine("# No more information than is given in these files is used for testing. The intermediate hash values")
+    common.writeLine("# are taken from the lines numbered t=1..11, and the first hash values are the standard first values")
+    common.writeLine("# for their respective hashes (with 16 schedule values given, this is the maximum we can reach).")
+    common.writeLine("# Data Taken From: https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/SHA256.pdf")
+    common.writeLine("# and https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/SHA512.pdf")
+    common.writeLine("######################################################################################################")
 
     schedule = MESSAGE_SCHEDULE_256 if sew == 32 else MESSAGE_SCHEDULE_512
+    hash_round_values = HASH_ROUND_VALUES_256 if sew == 32 else HASH_ROUND_VALUES_512
     k = K_256 if sew == 32 else K_512
 
     if test == "vsha2ms":
@@ -94,7 +116,7 @@ def make(test: str, sew: int):
 
         common.writeTest(description, test, cp, instruction_data, sew, lmul=4, vl=4, egs=4, )
     else:
-        for i, values in enumerate(hash_round_values[:len(hash_round_values)-4]):
+        for i, values in enumerate(hash_round_values):
             a, b, c, d, e, f, g, h = values
             vd = [c, d, g, h]
             vs2 = [a, b, e, f]

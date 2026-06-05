@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2025 RISC-V International
+// Copyright (c) 2026 RISC-V International
 
 // Minimal printf support for bare-metal FeatureExtractorC.
-// Only supports plain strings, %s, %c, and %% which is enough for YAML output and avoids libgcc division helpers.
+// Supports plain strings, %s, %c, and %%.
+// This is enough for YAML output and avoids libgcc division helpers.
 
 #include <stdarg.h>
 
@@ -27,10 +28,11 @@ static int put_str(const char *s)
         s = "(null)";
     }
 
-    while (*s != '\0') {
-        count += put_char(*s++);
+    while (s[count] != '\0') {
+        count++;
     }
 
+    arch_write_str_asm(s);
     return count;
 }
 
@@ -63,6 +65,7 @@ int printf(const char *fmt, ...)
         } else if (*fmt == '%') {
             count += put_char('%');
         } else {
+            // Unsupported format: print it literally.
             count += put_char('%');
             count += put_char(*fmt);
         }

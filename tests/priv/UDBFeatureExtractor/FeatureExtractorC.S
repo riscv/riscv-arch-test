@@ -66,25 +66,22 @@ read_trap_count_asm:
     ret
 .size read_trap_count_asm, . - read_trap_count_asm
 
-
-// Local trap handler for probe instructions.
+// Local trap handler for feature-probe instructions.
 // Handles only expected illegal-instruction traps from 32-bit probe opcodes.
 .align 4
 c_feature_trap_handler:
-    // Save temporaries without using the stack.
-    csrw    mscratch, t0
-
-    LA      t0, c_saved_t1
-    SREG    t1, 0(t0)
-
     // Only illegal instruction is expected for the current DIV probe.
-    csrr    t1, mcause
-    li      t0, 2
-    bne     t1, t0, unexpected_trap
+    csrr    t0, mcause
+    li      t1, 2
+    bne     t0, t1, unexpected_trap
 
     // Count the trap.
     LA      t0, c_trap_count
+#if __riscv_xlen == 64
+    lwu     t1, 0(t0)
+#else
     lw      t1, 0(t0)
+#endif
     addi    t1, t1, 1
     sw      t1, 0(t0)
 
@@ -93,14 +90,9 @@ c_feature_trap_handler:
     addi    t0, t0, 4
     csrw    mepc, t0
 
-    // Restore temporaries and resume.
-    LA      t0, c_saved_t1
-    LREG    t1, 0(t0)
-    csrr    t0, mscratch
     mret
 
 unexpected_trap:
-    // Unexpected traps should not be treated as feature-probe results.
     RVMODEL_HALT_FAIL
 
 c_done:
@@ -112,14 +104,6 @@ RVTEST_DATA_BEGIN
 .align 3
 saved_mtvec:
     .dword 0
-
-.align 3
-c_saved_t1:
-#if __riscv_xlen == 64
-    .dword 0
-#else
-    .word 0
-#endif
 
 .align 2
 c_trap_count:

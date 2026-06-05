@@ -30,7 +30,7 @@ static inline uint32_t read_trap_count(void)
  
 static int probe_m_extension(void)
 {
-    unsigned long before = read_trap_count();
+    uint32_t before = read_trap_count();
 
     __asm__ volatile (
         "li      a0, 10\n"
@@ -41,10 +41,10 @@ static int probe_m_extension(void)
         ".option pop\n"
         :
         :
-        : "memory", "a0", "a1", "a2"
+        : "memory", "a0", "a1", "a2", "t0", "t1"
     );
 
-    unsigned long after = read_trap_count();
+    uint32_t after = read_trap_count();
 
     return after != before;
 }

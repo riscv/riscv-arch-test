@@ -468,7 +468,7 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     cp_priority_both_m:          cross priv_mode_m, mret_insn, mstatus_mpp_s, mstatus_mie_zero, prev_mstatus_sie_one, mie_combinations_m, mip_mie_eq_m, mideleg_zeros;
     cp_priority_mideleg_m:       cross priv_mode_m, mret_insn, mstatus_mpp_s, mstatus_mie_zero, prev_mstatus_sie_one, mideleg_combinations_m, mip_ones_s, mie_ones;
     cp_priority_mideleg_s:       cross priv_mode_s_after, mstatus_mie_zero, prev_mstatus_sie_one, mideleg_combinations_s, mip_ones_s, mideleg_mie_eq_s;
-    cp_wfi_s:                    cross priv_mode_s, wfi, mstatus_mie, mstatus_sie, mideleg_ones_zeros_real, mstatus_tw, mie_mtie_one;
+    cp_wfi_s:                    cross priv_mode_s, wfi, mstatus_mie, mstatus_sie, mideleg_ones_zeros_real, mstatus_tw_zero, mie_mtie_one;
     cp_wfi_timeout_s:            cross priv_mode_m, mstatus_mie, mstatus_sie, mideleg_ones_zeros_real, mstatus_tw_one, mie_mtie;
 
     // M-mode tests
@@ -503,7 +503,7 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     cp_user_sei_handled_m: cross priv_mode_m_after, mstatus_mpp_u, mstatus_mie, mideleg_sei_zero, stvec_mode, mie_seie_one, mip_seip;
     // 2. S-Mode Handled: SEI IS delegated AND we were in U or S mode
     cp_user_sei_handled_s: cross priv_mode_s_after, mstatus_sie, mideleg_sei_one, stvec_mode, mie_seie_one, mip_seip;
-    cp_wfi_u: cross priv_mode_m, mstatus_mie, mstatus_sie, mideleg_ones_zeros_real, mstatus_tw, mie_mtie_one;
+    cp_wfi_u: cross priv_mode_m, mstatus_mie, mstatus_sie, mideleg_ones_zeros_real, mstatus_tw_zero, mie_mtie_one;
     cp_wfi_timeout_u: cross priv_mode_m, mstatus_mie, mstatus_sie, mideleg_ones, mstatus_tw_one, mie_mtie_one;
 
 endgroup

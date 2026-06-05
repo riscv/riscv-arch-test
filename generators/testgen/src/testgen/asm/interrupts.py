@@ -93,9 +93,9 @@ def set_mtimer_int_soon(
         "#if __riscv_xlen == 64",
         "# Read current time and add delay",
         f"LI(x{r_temp2}, {delay_val})",
-        f"LREG x{r_temp1}, 0(x{r_mtime})",  # Use LREG macro
+        f"LREG x{r_temp1}, 0(x{r_mtime}) # Use LREG macro",
         f"add x{r_temp1}, x{r_temp1}, x{r_temp2}",
-        f"SREG x{r_temp1}, 0(x{r_mtimecmp})",  # Use SREG macro
+        f"SREG x{r_temp1}, 0(x{r_mtimecmp}) # Use SREG macro",
         "#elif __riscv_xlen == 32",
         f"LI(x{r_temp4}, {delay_val})",
         "# Read current time (64-bit on RV32)",

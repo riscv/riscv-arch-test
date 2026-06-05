@@ -15,13 +15,18 @@ from pathlib import Path
 from typing import Annotated
 
 import typer
+from rich import print as rprint
 
 from act.build import BuildTask, build
 from act.build_plan import generate_build_plan
-from act.config import CoverageSimulator, load_config
+from act.config import Config, CoverageSimulator, load_config
 from act.coverreport import print_coverage_summary
-from act.parse_test_constraints import generate_test_dict
-from act.parse_udb_config import generate_udb_files, get_config_params, get_implemented_extensions
+from act.parse_test_constraints import TestYamlHeaderError, generate_test_dict
+from act.parse_udb_config import (
+    get_config_params,
+    get_implemented_extensions,
+    prepare_dut_outputs,
+)
 from act.select_tests import select_tests
 
 # CLI interface setup
@@ -92,18 +97,27 @@ def run_act(
     workdir = workdir.absolute()
 
     # Generate test list
-    full_test_dict = generate_test_dict(test_dir, extensions, exclude)
+    try:
+        full_test_dict = generate_test_dict(test_dir, extensions, exclude)
+    except TestYamlHeaderError as e:
+        e.print()
+        raise typer.Exit(1) from None
 
     config_names: list[str] = []
     tasks: list[BuildTask] = []
-    for config_file in config_files:
-        # Load configuration
-        config = load_config(config_file)
-        config_dir = workdir / config.udb_config.stem
-        config_dir.mkdir(parents=True, exist_ok=True)
 
-        # UDB integration
-        generate_udb_files(config.udb_config, config_dir)
+    # Load all configs first so a single top-level UDB call can prepare every
+    # DUT's generated files (extensions.txt, rvtest_config.{h,svh}, and
+    # rvmodel_macros.svh) in parallel under a unified progress display.
+    loaded_configs: list[tuple[Config, Path]] = []
+    for config_file in config_files:
+        config = load_config(config_file)
+        config_dir = workdir / config.name
+        loaded_configs.append((config, config_dir))
+
+    prepare_dut_outputs([cfg for cfg, _ in loaded_configs], workdir, jobs)
+
+    for config, config_dir in loaded_configs:
         implemented_extensions = get_implemented_extensions(config_dir / "extensions.txt")
         config_params = get_config_params(config.udb_config)
 
@@ -128,6 +142,7 @@ def run_act(
                 coverage_simulator,
                 debug,
                 fast,
+                verbose,
             )
         )
 
@@ -137,18 +152,21 @@ def run_act(
     # Print summary
     parts = []
     if result.succeeded:
-        parts.append(f"{result.succeeded} succeeded")
+        parts.append(f"[green]{result.succeeded} succeeded[/]")
     if result.skipped:
-        parts.append(f"{result.skipped} up-to-date")
+        parts.append(f"[dim]{result.skipped} up-to-date[/]")
     if result.failed:
-        parts.append(f"{result.failed} failed")
-    print(f"Build complete: {', '.join(parts)}")
+        parts.append(f"[bold red]{result.failed} failed[/]")
+    summary = ", ".join(parts)
 
     if result.errors:
-        print(f"\n{len(result.errors)} task(s) failed:", file=sys.stderr)
-        for error in result.errors:
-            print(f"  - {error.task_name}", file=sys.stderr)
+        rprint(f"\n[bold red]✗ Build failed:[/] {summary}", file=sys.stderr)
+        if len(result.errors) > 1:
+            rprint(f"  [red]{len(result.errors)} task(s) failed (see details above):[/]", file=sys.stderr)
+            for error in result.errors:
+                rprint(f"    - {error.task_name}", file=sys.stderr)
         sys.exit(1)
+    rprint(f"[bold green]✓ Build complete:[/] {summary}")
 
     # Always print coverage summaries when coverage is enabled, even if up-to-date
     if coverage:

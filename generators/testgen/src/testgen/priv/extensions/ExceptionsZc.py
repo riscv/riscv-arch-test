@@ -308,10 +308,11 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "ExceptionsZc_cg", "cp_load_access_fault"
 
     lines = [
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(
             coverpoint,
             "Test every type of compressed load to a faulting address and check that each one throws a load access fault.",
-        )
+        ),
     ]
 
     # Zca
@@ -346,6 +347,7 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
         lines.extend(_add_load_fault(instr, test_data, coverpoint, covergroup))
     lines.append("\n#endif")
 
+    lines.append("#endif")
     return lines
 
 
@@ -353,10 +355,11 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "ExceptionsZc_cg", "cp_store_access_fault"
 
     lines = [
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(
             coverpoint,
             "Test every type of compressed store to a faulting address and check that each one throws a store access fault.",
-        )
+        ),
     ]
 
     # Zca
@@ -391,6 +394,7 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
         lines.extend(_add_store_fault(instr, test_data, coverpoint, covergroup))
     lines.append("\n#endif")
 
+    lines.append("#endif")
     return lines
 
 
@@ -430,7 +434,7 @@ def _generate_illegal_instruction_tests(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "ExceptionsZc",
-    required_extensions=["Zicsr", "Sm", "Zca"],
+    required_extensions=["Sm", "Zca"],
     march_extensions=["Zicsr", "Zca", "Zcb", "Zcd", "C", "F", "D"],
 )
 def make_exceptionszc(test_data: TestData) -> list[str]:

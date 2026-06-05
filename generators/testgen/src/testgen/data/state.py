@@ -145,14 +145,31 @@ class TestData:
         self._test_count += 1
 
     def begin_test_chunk(self) -> TestChunk:
-        """Create and set a new active TestChunk."""
-        self.test_chunk = TestChunk()
+        """Create and set a new active TestChunk.
+
+        Snapshots the current signature/data pointer register assignments so
+        that if this chunk ends up as the first chunk of a non-initial test
+        file, the generator can emit code to re-establish those pointers (which
+        would otherwise only live in the default registers set by
+        RVTEST_BEGIN).
+        """
+        self.test_chunk = TestChunk(
+            start_sig_reg=self._int_regs.sig_reg,
+            start_data_reg=self._int_regs.data_reg,
+        )
         return self.test_chunk
 
     def end_test_chunk(self) -> TestChunk:
-        """Return the completed TestChunk and clear the active one."""
+        """Return the completed TestChunk and clear the active one.
+
+        Snapshots the current signature/data pointer register assignments so
+        that the writer can emit code to restore the default pointer registers
+        at the end of a test file (the teardown code assumes the defaults).
+        """
         assert self.test_chunk is not None, "No active test chunk to end"
         tc = self.test_chunk
+        tc.end_sig_reg = self._int_regs.sig_reg
+        tc.end_data_reg = self._int_regs.data_reg
         self.test_chunk = None
         return tc
 

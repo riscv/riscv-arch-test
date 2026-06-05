@@ -28,12 +28,12 @@ covergroup ExceptionsZc_cg with function sample(ins_t ins);
             wildcard bins c_fld   = {16'b001_???_???_??_???_00};
             wildcard bins c_fldsp = {16'b001_?_?????_?????_10};
         `endif
-        `ifdef ZCF_SUPPORTED // XLEN32
+        `ifdef ZCF_SUPPORTED // UDB_MXLEN_32
             wildcard bins c_flw   = {16'b011_???_???_??_???_00};
             wildcard bins c_flwsp = {16'b011_?_?????_?????_10};
         `endif
 
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             wildcard bins c_ld   = {16'b011_???_???_??_???_00};
             wildcard bins c_ldsp = {16'b011_?_?????_?????_10};
         `endif
@@ -51,12 +51,12 @@ covergroup ExceptionsZc_cg with function sample(ins_t ins);
             wildcard bins c_fsd   = {16'b101_???_???_??_???_00};
             wildcard bins c_fsdsp = {16'b101_??????_?????_10};
         `endif
-        `ifdef ZCF_SUPPORTED //only supported in XLEN32
+        `ifdef ZCF_SUPPORTED // only supported in UDB_MXLEN_32
             wildcard bins c_fsw   = {16'b111_???_???_??_???_00};
             wildcard bins c_fswsp = {16'b111_??????_?????_10};
         `endif
 
-        `ifdef XLEN64
+        `ifdef UDB_MXLEN_64
             wildcard bins c_sd   = {16'b111_???_???_??_???_00};
             wildcard bins c_sdsp = {16'b111_??????_?????_10};
         `endif
@@ -66,18 +66,21 @@ covergroup ExceptionsZc_cg with function sample(ins_t ins);
     adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0]  {
         // auto fills 000 through 111
     }
-    illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
-        bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
-    }
 
     // main coverpoints
     cp_breakpoint:                           coverpoint ins.current.insn[15:0] {bins c_ebreak = {16'h9002};}
     cp_load_address_misaligned:              cross loadops, adr_LSBs;
-    cp_load_access_fault:                    cross loadops, illegal_address;
     cp_store_address_misaligned:             cross storeops, adr_LSBs;
-    cp_store_access_fault:                   cross storeops, illegal_address;
     cp_illegal_instruction:                  coverpoint ins.current.insn[15:0] { bins illegal0 = {'0}; }
 
+    // access fault coverpoints
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
+        }
+        cp_load_access_fault:                    cross loadops, illegal_address;
+        cp_store_access_fault:                   cross storeops, illegal_address;
+    `endif
 endgroup
 
 function void exceptionszc_sample(int hart, int issue, ins_t ins);

@@ -22,25 +22,29 @@ covergroup SsstrictSm_mcsr_cg with function sample(ins_t ins);
         bins nonzero = { [1:$] }; // rd != 0
     }
     csrr: coverpoint ins.current.insn  {
-        wildcard bins csrr = {32'b????????????_00000_010_?????_1110011};
+        wildcard bins csrr = {CSRR};
     }
     csrrw: coverpoint ins.current.insn {
-        wildcard bins csrrw = {32'b????????????_?????_001_?????_1110011};
+        wildcard bins csrrw = {CSRRW};
     }
     csr: coverpoint ins.current.insn[31:20]  {
+        ignore_bins mscratch = {CSR_MSCRATCH}; // mscratch accesses may corrupt the trap stack and cause unpredictable side effects
+        ignore_bins mtvec = {CSR_MTVEC}; // mtvec accesses breaks the trap handler
+        ignore_bins scontext = {CSR_SCONTEXT}; // scontext not yet supported in Sail 5/31/26 dh; restore when Sail has support
+        ignore_bins mseccfg = {CSR_MSECCFG}; // enables features that hang spike if not configured properly
         bins user_std0[] = {[12'h000:12'h0FF]};
         bins super_std0[] = {[12'h100:12'h1FF]};
         bins hyper_std0[] = {[12'h200:12'h2FF]};
         bins mach_std0[] = {[12'h300:12'h3FF]};
-        ignore_bins PMP_regs = {[12'h3A0:12'h3EF]}; // Exclude PMP registers
+        ignore_bins PMP_regs = {[12'h3A0:12'h3EF]};
         bins user_std1[] = {[12'h400:12'h4FF]};
         bins super_std1[] = {[12'h500:12'h5BF]};
         ignore_bins super_custom1 = {[12'h5C0:12'h5FF]};
         bins hyper_std1[] = {[12'h600:12'h6BF]};
         ignore_bins hyper_custom1 = {[12'h6C0:12'h6FF]};
         bins mach_std1[] = {[12'h700:12'h7AF]};
-        ignore_bins mach_debug = {[12'h7A0:12'h7AF]}; // toggling debug registers could do weird stuff
-        bins debug_only[] = {[12'h7B0:12'h7BF]}; // access to debug mode registers raises illegal instruction even in machine mode
+        ignore_bins mach_debug = {[12'h7A0:12'h7AF]};
+        bins debug_only[] = {[12'h7B0:12'h7BF]};
         ignore_bins mach_custom1 = {[12'h7C0:12'h7FF]};
         ignore_bins user_custom2 = {[12'h800:12'h8FF]};
         bins super_std2[] = {[12'h900:12'h9BF]};
@@ -55,7 +59,7 @@ covergroup SsstrictSm_mcsr_cg with function sample(ins_t ins);
         ignore_bins super_custom3 = {[12'hDC0:12'hDFF]};
         bins hyper_std3[] = {[12'hE00:12'hEBF]};
         ignore_bins hyper_custom3 = {[12'hEC0:12'hEFF]};
-        bins mach_std3[] = {[12'hF00:12'hFBF]};
+        ignore_bins mach_std3_readonly = {[12'hF00:12'hFBF]}; // Read-only M-mode CSRs, not testable
         ignore_bins mach_custom3 = {[12'hFC0:12'hFFF]};
     }
     rs1_ones: coverpoint ins.current.rs1_val {
@@ -72,9 +76,9 @@ covergroup SsstrictSm_mcsr_cg with function sample(ins_t ins);
     }
 
     // main coverpoints
-    cp_csrr:         cross priv_mode_m, csrr,     csr,   nonzerord;   // CSR read of all 4096 registers
-    cp_csrw_edges:   cross priv_mode_m, csrrw,    csr,   rs1_edges;   // CSR write of all 0s / all 1s to all 4096 registers
-    cp_csrcs:        cross priv_mode_m, csrop,    csr,   rs1_ones;    // CSR clear and set of all bits of all registers
+    cp_csrr:         cross priv_mode_m, csrr,     csr,   nonzerord;
+    cp_csrw_edges:   cross priv_mode_m, csrrw,    csr,   rs1_edges;
+    cp_csrcs:        cross priv_mode_m, csrop,    csr,   rs1_ones;
 endgroup
 
 
@@ -82,8 +86,10 @@ covergroup SsstrictSm_instr_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "priv/RISCV_coverage_instr.svh"
+    `include "priv/RISCV_coverage_vect_instr.svh"
 
-    // main coverpoints
+    // ── Scalar illegal instruction coverpoints ───────────────────────
+
     cp_illegal:           cross priv_mode_m, illegal;
     cp_load:              cross priv_mode_m, load;
     cp_fload:             cross priv_mode_m, fload;
@@ -99,7 +105,7 @@ covergroup SsstrictSm_instr_cg with function sample(ins_t ins);
     cp_fstore:            cross priv_mode_m, fstore;
     cp_atomic_funct3:     cross priv_mode_m, atomic_funct3;
     cp_atomic_funct7:     cross priv_mode_m, atomic_funct7;
-    cl_lrsc:              cross priv_mode_m, lrsc;
+    cp_lrsc:              cross priv_mode_m, lrsc;
     cp_Rtype:             cross priv_mode_m, Rtype;
     cp_RWtype:            cross priv_mode_m, RWtype;
     cp_Ftype:             cross priv_mode_m, Ftype;
@@ -133,7 +139,53 @@ covergroup SsstrictSm_instr_cg with function sample(ins_t ins);
     cp_upperreg_fmv_rs1 : cross priv_mode_m, upperreg_fmv_rs1;
     cp_upperreg_fmv_rd :  cross priv_mode_m, upperreg_fmv_rd;
     cp_amocas_odd :       cross priv_mode_m, amocas_odd;
-    cp_reserved_rm :      cross priv_mode_m, reserved_rm;
+
+    // ── Vector coverpoints crossed with priv_mode_m ──────────────────
+    // Definitions are in RISCV_coverage_vect_instr.svh; only the cross
+    // with privilege mode belongs here.
+
+    // vset* reserved encodings
+    cp_v_vsetvl:          cross priv_mode_m, v_vsetvl;
+    cp_v_vsetvli_sew:     cross priv_mode_m, v_vsetvli_sew;
+    cp_v_vsetvli_res:     cross priv_mode_m, v_vsetvli_res;
+    cp_v_vsetivli_sew:    cross priv_mode_m, v_vsetivli_sew;
+    cp_v_vsetivli_res:    cross priv_mode_m, v_vsetivli_res;
+
+    // Vector load/store reserved encodings
+    cp_vl_width:          cross priv_mode_m, vl_width;
+    cp_vl_lumop:          cross priv_mode_m, vl_lumop;
+    cp_vs_width:          cross priv_mode_m, vs_width;
+    cp_vs_sumop:          cross priv_mode_m, vs_sumop;
+
+    // The following vector tests are presently checked for every SEW.
+    // However, an instruction that is legal for some SEWs does not have
+    // to trap if reserved for other SEW, per Andrew Waterman and
+    // careful reading for the Ssstrict extension definition.  Therefore,
+    // these tests may need to be relaxed.
+
+    // Vector arithmetic funct6 × SEW
+    cp_v_IVV_f6:          cross priv_mode_m, v_IVV_f6, current_vsew;
+    cp_v_FVV_f6:          cross priv_mode_m, v_FVV_f6, current_vsew;
+    cp_v_MVV_f6:          cross priv_mode_m, v_MVV_f6, current_vsew;
+    cp_v_IVI_f6:          cross priv_mode_m, v_IVI_f6, current_vsew;
+    cp_v_IVX_f6:          cross priv_mode_m, v_IVX_f6, current_vsew;
+    cp_v_FVF_f6:          cross priv_mode_m, v_FVF_f6, current_vsew;
+    cp_v_MVX_f6:          cross priv_mode_m, v_MVX_f6, current_vsew;
+
+    // Vector unary instructions
+    cp_v_VWRXUNARY0:      cross priv_mode_m, v_VWRXUNARY0, current_vsew;
+    cp_v_VRXUNARY0:       cross priv_mode_m, v_VRXUNARY0, current_vsew;
+    cp_v_VXUNARY0:        cross priv_mode_m, v_VXUNARY0, current_vsew;
+    cp_v_VMUNARY0:        cross priv_mode_m, v_VMUNARY0, current_vsew;
+    cp_v_VWFUNARY0:       cross priv_mode_m, v_VWFUNARY0, current_vsew;
+    cp_v_VRFUNARY0:       cross priv_mode_m, v_VRFUNARY0, current_vsew;
+    cp_v_VFUNARY0:        cross priv_mode_m, v_VFUNARY0, current_vsew;
+    cp_v_VFUNARY1:        cross priv_mode_m, v_VFUNARY1, current_vsew;
+
+    // Vector crypto
+    cp_vopve:             cross priv_mode_m, v_vopve,  current_vsew;
+    cp_v_vaesvv:          cross priv_mode_m, v_vaesvv, current_vsew;
+    cp_v_vaesvs:          cross priv_mode_m, v_vaesvs, current_vsew;
 
 endgroup
 
@@ -142,7 +194,6 @@ covergroup SsstrictSm_comp_instr_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "priv/RISCV_coverage_comp_instr.svh"
 
-    // main coverpoints
     cp_compressed00: cross priv_mode_m, compressed00;
     cp_compressed01: cross priv_mode_m, compressed01;
     cp_compressed10: cross priv_mode_m, compressed10;
@@ -152,12 +203,4 @@ function void ssstrictsm_sample(int hart, int issue, ins_t ins);
     SsstrictSm_instr_cg.sample(ins);
     SsstrictSm_comp_instr_cg.sample(ins);
     SsstrictSm_mcsr_cg.sample(ins);
-
-// $display("mode: %b, csr: %h, csrrs: %b, csrrc: %b, walking: %b",
-//          ins.current.mode,
-//          ins.current.insn[31:20],
-//          ((ins.current.insn[14:12] == 3'b010) && (ins.current.insn[6:0] == 7'b1110011)),
-//          ((ins.current.insn[14:12] == 3'b011) && (ins.current.insn[6:0] == 7'b1110011)),
-//          ins.prev.csr[12'h747]);
-
 endfunction

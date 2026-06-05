@@ -11,6 +11,8 @@
 
 // Load configuration parameters
 `include "rvtest_config.svh"
+`include "rvmodel_macros.svh"
+`include "derived_config.svh"
 
 // Load generated instruction/CSR decode package
 `include "coverage/RISCV_decode_pkg.svh"

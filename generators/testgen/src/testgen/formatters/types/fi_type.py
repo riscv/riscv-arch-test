@@ -29,4 +29,8 @@ def format_fi_type(
         f"{instr_name} f{params.fd}, f{params.fs1}{frm} # perform operation",
     ]
     check = [write_sigupd(params.fd, test_data, "float")]
+    if params.frm == "dyn":
+        assert params.csr_frm_val is not None
+        setup.append(f"fsrmi {params.csr_frm_val}")
+        check.append("fsrmi 0x0")
     return (setup, test, check)

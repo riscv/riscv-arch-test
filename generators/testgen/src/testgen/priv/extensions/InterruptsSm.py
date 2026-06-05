@@ -24,7 +24,7 @@ def _generate_trigger_mti_tests(test_data: TestData) -> list[str]:
 
     # Exclude: x2 (sp), x5 (t0-used by macros),
     # x7 (t2-consumed by interrupt macros), x30 (t5-consumed by interrupt macros)
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2 = test_data.int_regs.get_registers(5, exclude_regs=[2, 7, 30])
+    r1, r_mtime, r_mtimecmp, r_temp, r_temp2 = test_data.int_regs.get_registers(5, exclude_regs=[])
 
     lines = [
         comment_banner(
@@ -44,7 +44,7 @@ def _generate_trigger_mti_tests(test_data: TestData) -> list[str]:
             test_data.add_testcase("mie_0", coverpoint, covergroup),
             "CSRCI mstatus, 8    # mstatus.MIE = 0",
             *set_mtimer_int(r_mtime, r_mtimecmp, r_temp, r_temp2),
-            "RVTEST_IDLE_FOR_INTERRUPT",
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
             *clr_mtimer_int(r_temp, r_mtimecmp),
             "",
         ]
@@ -56,7 +56,7 @@ def _generate_trigger_mti_tests(test_data: TestData) -> list[str]:
             test_data.add_testcase("mie_1", coverpoint, covergroup),
             "CSRRSI zero, mstatus, 8    # mstatus.MIE = 1",
             *set_mtimer_int(r_mtime, r_mtimecmp, r_temp, r_temp2),
-            "RVTEST_IDLE_FOR_INTERRUPT",
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
         ]
     )
 
@@ -71,7 +71,7 @@ def _generate_trigger_msi_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_trigger_msi"
     ######################################
 
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_cleanup = test_data.int_regs.get_registers(6, exclude_regs=[2, 7, 30])
+    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_cleanup = test_data.int_regs.get_registers(6, exclude_regs=[])
 
     lines = [
         comment_banner(
@@ -91,7 +91,7 @@ def _generate_trigger_msi_tests(test_data: TestData) -> list[str]:
             test_data.add_testcase("mie_0", coverpoint, covergroup),
             "CSRCI mstatus, 8    # mstatus.MIE = 0",
             "RVTEST_SET_MSW_INT     # Trigger software interrupt",
-            "RVTEST_IDLE_FOR_INTERRUPT",
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
             "RVTEST_CLR_MSW_INT     # Clear interrupt",
             "",
         ]
@@ -103,7 +103,7 @@ def _generate_trigger_msi_tests(test_data: TestData) -> list[str]:
             test_data.add_testcase("mie_1", coverpoint, covergroup),
             "CSRRSI zero, mstatus, 8    # mstatus.MIE = 1",
             "RVTEST_SET_MSW_INT     # Interrupt fires",
-            "RVTEST_IDLE_FOR_INTERRUPT",
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
         ]
     )
 
@@ -118,7 +118,7 @@ def _generate_trigger_mei_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_trigger_mei"
     ######################################
 
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2 = test_data.int_regs.get_registers(5, exclude_regs=[2, 7, 30])
+    r1, r_mtime, r_mtimecmp, r_temp, r_temp2 = test_data.int_regs.get_registers(5, exclude_regs=[])
 
     lines = [
         comment_banner(
@@ -138,7 +138,7 @@ def _generate_trigger_mei_tests(test_data: TestData) -> list[str]:
             test_data.add_testcase("mie_0", coverpoint, covergroup),
             "CSRCI mstatus, 8",
             "RVTEST_SET_MEXT_INT",
-            "RVTEST_IDLE_FOR_INTERRUPT",
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
             "RVTEST_CLR_MEXT_INT",
             "",
         ]
@@ -150,7 +150,7 @@ def _generate_trigger_mei_tests(test_data: TestData) -> list[str]:
             test_data.add_testcase("mie_1", coverpoint, covergroup),
             "CSRRSI zero, mstatus, 8",
             "RVTEST_SET_MEXT_INT",
-            "RVTEST_IDLE_FOR_INTERRUPT",
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
             "",
         ]
     )
@@ -167,7 +167,7 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
     ######################################
 
     r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_val, r_mie_save = test_data.int_regs.get_registers(
-        7, exclude_regs=[2, 7, 30]
+        7, exclude_regs=[]
     )
 
     lines = [
@@ -176,7 +176,10 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
             "Cross of mstatus.MIE = {0/1}, mtvec.MODE = 00, 3 walking 1s in mip.MTIP/MSIP/MEIP,\n"
             "3 walking 1s in mie.MTIE/MSIE/MEIE (2 x 3 x 3 bins)",
         ),
+        # Direct mode (MODE=00) only where supported; vectored-only cores run this cross in vectored mode.
+        "#ifdef UDB_MTVEC_MODES_0",
         "csrci mtvec, 3     # Clear MODE bits (set to 00=direct)",
+        "#endif",
         "",
     ]
 
@@ -222,7 +225,7 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
                     lines.append("RVTEST_SET_MSW_INT")
 
                 # More settling
-                lines.extend([f"CSRW(mie, x{r_mie_val})", "RVTEST_IDLE_FOR_INTERRUPT"])
+                lines.extend([f"CSRW(mie, x{r_mie_val})", f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})"])
 
                 # Clear to prevent leakage
                 if int_pending == "meip":
@@ -246,7 +249,7 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
     ######################################
 
     r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_all, r_mie_save = test_data.int_regs.get_registers(
-        7, exclude_regs=[2, 7, 30]
+        7, exclude_regs=[]
     )
 
     lines = [
@@ -257,8 +260,10 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
         )
     ]
 
-    # Test both mtvec modes
+    # Test both mtvec modes; gate each mode on its own MTVEC_MODES parameter so single-mode
+    # cores (direct-only or vectored-only) only exercise the mode they implement.
     for mode, mode_name in [(0, "direct"), (1, "vectored")]:
+        lines.append(f"#ifdef UDB_MTVEC_MODES_{mode}")
         lines.extend(
             [
                 f"# Set mtvec.MODE = {mode:02b} ({mode_name})",
@@ -293,7 +298,7 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"CSRW mie, x{r_mie_save}",
-                    "RVTEST_IDLE_FOR_INTERRUPT",
+                    f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
                 ]
             )
 
@@ -307,7 +312,12 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
 
             lines.append("")
 
+        lines.append("#endif")
+
+    # Restore direct mode only where supported; vectored-only cores stay vectored.
+    lines.append("#ifdef UDB_MTVEC_MODES_0")
     lines.append("CSRCI mtvec, 1     # restore mtvec.MODE = 00 (direct)")
+    lines.append("#endif")
 
     test_data.int_regs.return_registers([r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_all, r_mie_save])
     return lines
@@ -321,7 +331,7 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
     ######################################
 
     r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_mask, r_scratch = test_data.int_regs.get_registers(
-        7, exclude_regs=[2, 7, 30]
+        7, exclude_regs=[]
     )
 
     lines = [
@@ -363,7 +373,7 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"CSRW mie, x{r_mie_mask}",
-                    "RVTEST_IDLE_FOR_INTERRUPT",
+                    f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
                     "# Clear and disable interrupts to reset for next testcase",
                     "RVTEST_CLR_MEXT_INT",
                     *clr_mtimer_int(r_temp, r_mtimecmp),
@@ -382,7 +392,7 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsSm_cg"
     coverpoint = "cp_wfi"
 
-    r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3, r_scratch = test_data.int_regs.get_registers(7)
+    r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3, r_scratch = test_data.int_regs.get_registers(7, exclude_regs=[])
 
     lines = [
         comment_banner(
@@ -403,9 +413,6 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
                     "# Clear TW (bit 21, 0x200000) and MIE (bit 3, 0x8)",
                     f"LI(x{r_scratch}, 0x200008)",
                     f"CSRC(mstatus, x{r_scratch})",
-                    "# Set MIE if needed",
-                    f"LI(x{r_scratch}, 0x80)",
-                    f"{'CSRS' if mie_val else 'CSRC'}(mstatus, x{r_scratch})",
                 ]
             )
 
@@ -420,11 +427,29 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
 
             lines.extend(
                 [
-                    "# Enable MTIE",
+                    "# Enable MTIE, spin with MIE=0 until timer fires (mip.MTIP=1)",
                     f"LI(x{r_scratch}, 0x80)",
                     f"CSRW(mie, x{r_scratch})",
-                    # Set timer
                     *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3),
+                    f"RVTEST_IDLE_FOR_TIMER_INTERRUPT(x{r_scratch})",
+                ]
+            )
+
+            if mie_val:
+                lines.extend(
+                    [
+                        # Clear the timer so MTIP=0, then set MIE=1 with no pending
+                        # interrupt. Re-arm the timer so WFI wakes with MTIP=1 and
+                        # ins.prev.mstatus.MIE=1 (no trap between MIE=1 and WFI).
+                        *clr_mtimer_int(r_t0, r_mtimecmp),
+                        f"LI(x{r_scratch}, 0x8)",
+                        f"CSRS(mstatus, x{r_scratch})",
+                        *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3),
+                    ]
+                )
+
+            lines.extend(
+                [
                     test_data.add_testcase(binname, coverpoint, covergroup),
                     "wfi",
                     "nop",
@@ -437,7 +462,7 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("InterruptsSm", required_extensions=["Sm", "I", "Zicsr"])
+@add_priv_test_generator("InterruptsSm", required_extensions=["Sm"])
 def make_interruptssm(test_data: TestData) -> list[str]:
     """Generate tests for InterruptsSm machine-mode interrupts."""
 

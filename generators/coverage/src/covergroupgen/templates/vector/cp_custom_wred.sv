@@ -6,16 +6,6 @@
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        ins.trap == 0
-                    }
-    {
-        bins true = {1'b1};
-    }
-
-
     vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins two = {1};
     }
@@ -91,7 +81,7 @@
     cp_custom_element0Masked : cross std_vec, vl_one, v0_element0_masked, vd_ne_vs1;
 
 
-    cp_custom_vreductionw_vd_vs1_emul_16 :      cross std_vec, vtype_lmul_8;
+    // cp_custom_vreductionw_vd_vs1_emul_16 :      cross std_vec, vtype_lmul_8;
 
 
     vd_v0: coverpoint ins.current.insn[11:7] {

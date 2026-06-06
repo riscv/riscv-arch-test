@@ -46,13 +46,9 @@ CVW_FLAGS := $(COMMON_FLAGS) \
 C_EXTRA := -ffreestanding -O1 -g -std=gnu11 \
            -fno-builtin -fno-builtin-printf -fno-builtin-puts
 
-YAML_OUT     := $(BUILD_DIR)/output.yaml
-YAML_OUT_NOM := $(BUILD_DIR)/output-no-M.yaml
 YAML_C_OUT   := $(BUILD_DIR)/output-c.yaml
 YAML_C_NOM   := $(BUILD_DIR)/output-c-no-M.yaml
 
-SAIL_ELF   := $(BUILD_DIR)/FeatureExtractor-sail.elf
-CVW_ELF    := $(BUILD_DIR)/FeatureExtractor-cvw.elf
 SAIL_C_ELF := $(BUILD_DIR)/FeatureExtractorC-sail.elf
 CVW_C_ELF  := $(BUILD_DIR)/FeatureExtractorC-cvw.elf
 NO_M_CFG   := $(BUILD_DIR)/no_M_config.json
@@ -66,47 +62,13 @@ C_SRCS := \
     $(TEST_SRC)/feature_extractor.c \
     $(TEST_SRC)/syscalls.c
 
-.PHONY: all sail sail-debug sail-no-M sail-c sail-c-no-M cvw dump dump-c clean help
-all: sail
+.PHONY: all sail-c sail-c-no-M cvw dump-c clean help
+all: sail-c
 
 $(BUILD_DIR):
 	mkdir -p $@
 
-# ── Pure-asm (task 1) ────────────────────────────────────────────────────────
-$(SAIL_ELF): $(TEST_SRC)/FeatureExtractor.S | $(BUILD_DIR)
-	@echo "=== [asm] Compiling for Sail ==="
-	$(CC) $(SAIL_FLAGS) \
-	      -T $(SAIL_CONFIG)/link.ld \
-	      $< -o $@
-		  
-sail: $(SAIL_ELF)
-	@echo "=== [asm] Running on Sail ==="
-	$(SIM) --terminal-log $(YAML_OUT) $(SAIL_ELF)
-	@echo "---"
-	@cat $(YAML_OUT)
-	@echo "---"
-
-sail-debug: $(SAIL_ELF)
-	$(SIM) --terminal-log $(YAML_OUT) --trace-exception --trace-htif $(SAIL_ELF) 2>&1
-	@cat $(YAML_OUT)
-
-$(NO_M_CFG): | $(BUILD_DIR)
-	@printf '{\n  "extensions": {\n    "M": { "supported": false }\n  }\n}\n' > $@
-
-sail-no-M: $(SAIL_ELF) $(NO_M_CFG)
-	@echo "=== [asm] Running Sail with M disabled ==="
-	$(SIM) --terminal-log $(YAML_OUT_NOM) --config-override $(NO_M_CFG) $(SAIL_ELF)
-	@echo "---"
-	@cat $(YAML_OUT_NOM)
-	@echo "---"
-
-$(CVW_ELF): $(TEST_SRC)/FeatureExtractor.S | $(BUILD_DIR)
-	$(CC) $(CVW_FLAGS) -T $(CVW_CONFIG)/link.ld $< -o $@
-
-dump: $(SAIL_ELF)
-	$(OBJDUMP) -d -s $(SAIL_ELF) > $(BUILD_DIR)/FeatureExtractor-sail.dump
-
-# ── Linker-script generation (task 2) ───────────────────────────────────────
+# ── Linker-script generation───────────────────────────────────────
 # Wraps the target's link.ld and appends a 128-KB stack region.
 $(SAIL_LD): | $(BUILD_DIR)
 	@echo "=== Generating Sail C linker script ==="
@@ -116,7 +78,6 @@ $(CVW_LD): | $(BUILD_DIR)
 	@echo "=== Generating CVW C linker script ==="
 	@printf 'INCLUDE "%s/link.ld"\nPROVIDE(__global_pointer$$ = . + 0x800);\nSECTIONS {\n  .stack (NOLOAD) : {\n    . = ALIGN(16);\n    __stack_bottom = .;\n    . += 128K;\n    _stack_top = .;\n  }\n} INSERT AFTER .data;\n' "$(CVW_CONFIG)" > $@
 
-# ── C version (task 2) ───────────────────────────────────────────────────────
 $(SAIL_C_ELF): $(C_SRCS) $(SAIL_LD) | $(BUILD_DIR)
 	@echo "=== [C] Compiling for Sail ==="
 	$(CC) $(SAIL_FLAGS) $(C_EXTRA) -T $(SAIL_LD) $(C_SRCS) -o $@
@@ -138,9 +99,8 @@ sail-c-no-M: $(SAIL_C_ELF) $(NO_M_CFG)
 $(CVW_C_ELF): $(C_SRCS) $(CVW_LD) | $(BUILD_DIR)
 	$(CC) $(CVW_FLAGS) $(C_EXTRA) -T $(CVW_LD) $(C_SRCS) -o $@
 
-cvw: $(CVW_ELF) $(CVW_C_ELF)
-	@echo "asm: $(CVW_ELF)"
-	@echo "C:   $(CVW_C_ELF)"
+cvw: $(CVW_C_ELF)
+	@echo "C: $(CVW_C_ELF)"
 
 dump-c: $(SAIL_C_ELF)
 	$(OBJDUMP) -d -s $(SAIL_C_ELF) > $(BUILD_DIR)/FeatureExtractorC-sail.dump
@@ -152,6 +112,5 @@ clean:
 help:
 	@echo "make -f tests/priv/UDBFeatureExtractor/Makefile <target>"
 	@echo ""
-	@echo "asm (task 1): sail  sail-no-M  sail-debug  dump"
-	@echo "C   (task 2): sail-c  sail-c-no-M  dump-c"
-	@echo "shared:       cvw  clean"
+	@echo "C version: sail-c  sail-c-no-M  dump-c"
+	@echo "shared:    cvw  clean"

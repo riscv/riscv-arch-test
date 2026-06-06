@@ -59,7 +59,7 @@ arch_write_str_asm:
 read_trap_count_asm:
     la      t0, c_trap_count
 #if __riscv_xlen == 64
-    lwu     a0, 0(t0)
+    lw     a0, 0(t0)
 #else
     lw      a0, 0(t0)
 #endif
@@ -67,25 +67,26 @@ read_trap_count_asm:
 .size read_trap_count_asm, . - read_trap_count_asm
 
 // Local trap handler for feature-probe instructions.
-// Handles only expected illegal-instruction traps from 32-bit probe opcodes.
+// Handles expected illegal-instruction traps from fixed-width probe opcodes.
 .align 4
 c_feature_trap_handler:
-    // Only illegal instruction is expected for the current DIV probe.
+    // Only illegal-instruction traps are expected for unsupported instruction probes.
     csrr    t0, mcause
     li      t1, 2
     bne     t0, t1, unexpected_trap
 
     // Count the trap.
-    LA      t0, c_trap_count
+    LA(t0, c_trap_count)
 #if __riscv_xlen == 64
-    lwu     t1, 0(t0)
+    lw     t1, 0(t0)
 #else
     lw      t1, 0(t0)
 #endif
     addi    t1, t1, 1
     sw      t1, 0(t0)
 
-    // Skip the faulting 4-byte probe instruction.
+    // TODO: Future compressed-instruction probes will need 2-byte mepc advance.
+    // Current probes use fixed 32-bit instructions, so mepc += 4 is correct here.
     csrr    t0, mepc
     addi    t0, t0, 4
     csrw    mepc, t0

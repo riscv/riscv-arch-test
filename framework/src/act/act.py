@@ -115,7 +115,7 @@ def run_act(
         config_dir = workdir / config.name
         loaded_configs.append((config, config_dir))
 
-    prepare_dut_outputs([cfg for cfg, _ in loaded_configs], workdir, jobs)
+    prepare_dut_outputs([cfg for cfg, _ in loaded_configs], workdir, jobs, verbose)
 
     for config, config_dir in loaded_configs:
         implemented_extensions = get_implemented_extensions(config_dir / "extensions.txt")

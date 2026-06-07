@@ -696,7 +696,7 @@
     "Ssnpm": {
       "supported": true,
       "supported_pmlen_7": true,
-      "supported_pmlen_16": true
+      "supported_pmlen_16": false
     },
     "Smnpm": {
       "supported": false,

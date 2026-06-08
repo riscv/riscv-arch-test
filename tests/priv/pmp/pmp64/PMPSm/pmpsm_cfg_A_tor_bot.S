@@ -101,6 +101,8 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)
 
+   fence.i
+
     LA (a4, (\ADDRESS-4))
     LI(x4, 0xACCE)                                            // Store a value which is to be checked in trap handler
     LA(x1, 1f)                                                // Store the return Address in x1
@@ -210,12 +212,14 @@ test_8_str: .string "\"test: 8; cp: pmpm_cfg_A_tor_bot_load_access_at_pmpaddr1+4
 .align 12
 .align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
     jr ra
+    .endr
 
 .align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
-    .rept (1<<(UDB_PMP_GRANULARITY))
-    nop
+    .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
+    jr ra
     .endr
 
 RETURN_INSTRUCTION:

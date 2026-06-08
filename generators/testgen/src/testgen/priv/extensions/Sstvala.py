@@ -63,12 +63,16 @@ def _generate_page_table_data_section() -> list[str]:
         "# Page-table labels for Sstvala page-fault tests (rvtest_Sroot_pg_tbl is",
         "# already declared by the framework). Injected into .data via .pushsection.",
         ".pushsection .data",
+        "#ifdef SV39_SUPPORTED",
         ".align 12",
         "rvtest_slvl1_pg_tbl: .zero 4096   # Sv39 L1 intermediate PT (unused on Sv32)",
+        "#endif  // SV39_SUPPORTED",
+        "#if defined(SV39_SUPPORTED) || defined(SV32_SUPPORTED)",
         ".align 12",
         "rvtest_slvl0_pg_tbl: .zero 4096   # leaf PT (Sv39/Sv32)",
         ".align 12",
         "rvtest_pf_data:      .zero 4096   # physical backing page for the fault VA",
+        "#endif  // SV39_SUPPORTED || SV32_SUPPORTED",
         ".popsection",
         "",
     ]
@@ -179,12 +183,16 @@ def _emit_pf_block(
 
     lines = [comment_banner(coverpoint, section_title), ""]
     lines.append("#if __riscv_xlen == 64")
+    lines.append("#ifdef SV39_SUPPORTED")
     lines.append("# RV64: Sv39")
     lines.extend(_xlen_block(["SATP_SETUP_RV64(sv39)"], _pf_pte_setup_sv39(_VA_PF_PAGE_RV64, pte_flags), instrs_rv64))
+    lines.append("#endif  // SV39_SUPPORTED")
     lines.append("#else")
+    lines.append("#ifdef SV32_SUPPORTED")
     lines.append("# RV32: Sv32")
     lines.extend(_xlen_block(["SATP_SETUP_SV32"], _pf_pte_setup_sv32(_VA_PF_PAGE_RV32, pte_flags), instrs_rv32))
-    lines.append("#endif")
+    lines.append("#endif  // SV32_SUPPORTED")
+    lines.append("#endif  // xlen")
     return lines
 
 

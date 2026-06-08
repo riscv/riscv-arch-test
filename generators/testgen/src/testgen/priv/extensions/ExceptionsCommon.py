@@ -111,22 +111,23 @@ def generate_instr_adr_misaligned_jalr_tests(test_data: TestData, covergroup: st
             lines.extend(
                 [
                     f"\n# rs1[1:0]={rs1_lsb:02b}, offset[1:0]={offset_lsb:02b}",
-                    ".align 4",                                        # align to 4-byte boundary
-                    f"auipc x{addr_reg}, 0",                          # PC+0  setup: addr_reg = PC
-                    f"addi x{addr_reg}, x{addr_reg}, {base_off}",     # PC+4  setup: addr_reg[1:0] = rs1_lsb
+                    ".align 4",  # align to 4-byte boundary
+                    f"auipc x{addr_reg}, 0",  # PC+0  setup: addr_reg = PC
+                    f"addi x{addr_reg}, x{addr_reg}, {base_off}",  # PC+4  setup: addr_reg[1:0] = rs1_lsb
                     test_data.add_testcase(
                         f"jalr_rs1_{rs1_lsb}_off_{offset_lsb}", coverpoint, covergroup
-                    ),                                                 # PC+8  (label)
-                    f"jalr x1, {jalr_off}(x{addr_reg})",              # PC+8  THE TEST
+                    ),  # PC+8  (label)
+                    f"jalr x1, {jalr_off}(x{addr_reg})",  # PC+8  THE TEST
                     "# branch by 6 lands in upper half of next instruction 0x0001 which is generated into a c.nop",
-                    "addi x0, x2, 0",                                 # PC+12 return for aligned jumps
-                    "nop",                                             # PC+16 safe landing pad
-                    "nop",                                             # PC+20 safe landing pad
+                    "addi x0, x2, 0",  # PC+12 return for aligned jumps
+                    "nop",  # PC+16 safe landing pad
+                    "nop",  # PC+20 safe landing pad
                 ]
             )
 
     test_data.int_regs.return_registers([addr_reg])
     return lines
+
 
 def generate_instr_access_fault_tests(test_data: TestData, covergroup: str) -> list[str]:
     coverpoint = "cp_instr_access_fault"

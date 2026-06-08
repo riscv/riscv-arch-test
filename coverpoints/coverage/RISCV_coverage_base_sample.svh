@@ -322,9 +322,6 @@
     `ifdef COVER_ZAMA16B
         zama16b_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZAWRS
-        zawrs_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_ZBA
         zba_sample(hart, issue, ins);
     `endif

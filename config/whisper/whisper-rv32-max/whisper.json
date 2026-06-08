@@ -73,13 +73,21 @@
     "emittrace"
   ],
   "aplic": {
-    "num_sources": 1,
+    "num_sources": 2, // two sources (MEXT and SEXT)
     "domains": {
       "maplic": {
         "base": "0x0c000000",
         "size": "0x00100000",
         "parent": null,
         "is_machine": true,
+        "hart_indices": [0],
+        "child_index": 0
+      },
+      "saplic": {
+        "base": "0x0d000000",
+        "size": "0x00100000",
+        "parent": "maplic",
+        "is_machine": false,
         "hart_indices": [0],
         "child_index": 0
       }

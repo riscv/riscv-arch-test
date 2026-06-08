@@ -155,8 +155,10 @@
   li _R2, NS16550_BASE_ADDRESS;                  \
   sb zero, 1(_R2);                               \
   li _R2, PLIC_CLAIM_ADDRESS;                    \
-  lw _R1, 0(_R2);                               \
-  sw _R1, 0(_R2);
+  lw _R1, 0(_R2);                                 \
+  sw _R1, 0(_R2);                               \
+  li _R2, PLIC_ENABLE_ADDRESS;  /* Since SEXT and MEXT interrupt contexts share the same source, PLIC must be disabled for MEXT context so that it can properly trigger SEXT */\
+  sw zero, 0(_R2);
 
 #define RVMODEL_SET_MSW_INT(_R1, _R2) \
   li _R1, 1; \
@@ -168,8 +170,6 @@
   sw zero, 0(_R2);
 
 ##### Supervisor Interrupts #####
-
-#define SPIKE_SSIP_ADDRESS (CLINT_BASE_ADDRESS + 0xC000)
 
 #define RVMODEL_SET_SEXT_INT(_R1, _R2)          \
   li _R1, 7;                                     \
@@ -184,6 +184,9 @@
   li _R2, NS16550_BASE_ADDRESS;                  \
   sb _R1, 1(_R2);
 
+/* PLIC does not need to be disabled when clearing SEXT INT since Spike checks the contexts in order (M -> S)
+ * Leaving PLIC enabled with S context does not affect MEXT
+*/
 #define RVMODEL_CLR_SEXT_INT(_R1, _R2)          \
   li _R2, NS16550_BASE_ADDRESS;                  \
   sb zero, 1(_R2);                               \
@@ -191,13 +194,8 @@
   lw _R1, 0(_R2);                               \
   sw _R1, 0(_R2);
 
-#define RVMODEL_SET_SSW_INT(_R1, _R2) \
-  li _R1, 1; \
-  li _R2, SPIKE_SSIP_ADDRESS; \
-  sw _R1, 0(_R2);
+#define RVMODEL_SET_SSW_INT(_R1, _R2)
 
-#define RVMODEL_CLR_SSW_INT(_R1, _R2) \
-  li _R2, SPIKE_SSIP_ADDRESS; \
-  sw zero, 0(_R2);
+#define RVMODEL_CLR_SSW_INT(_R1, _R2)
 
 #endif // _RVMODEL_MACROS_H

@@ -28,6 +28,10 @@ covergroup SsstrictSm_mcsr_cg with function sample(ins_t ins);
         wildcard bins csrrw = {CSRRW};
     }
     csr: coverpoint ins.current.insn[31:20]  {
+        ignore_bins mscratch = {CSR_MSCRATCH}; // mscratch accesses may corrupt the trap stack and cause unpredictable side effects
+        ignore_bins mtvec = {CSR_MTVEC}; // mtvec accesses breaks the trap handler
+        ignore_bins scontext = {CSR_SCONTEXT}; // scontext not yet supported in Sail 5/31/26 dh; restore when Sail has support
+        ignore_bins mseccfg = {CSR_MSECCFG}; // enables features that hang spike if not configured properly
         bins user_std0[] = {[12'h000:12'h0FF]};
         bins super_std0[] = {[12'h100:12'h1FF]};
         bins hyper_std0[] = {[12'h200:12'h2FF]};
@@ -135,7 +139,6 @@ covergroup SsstrictSm_instr_cg with function sample(ins_t ins);
     cp_upperreg_fmv_rs1 : cross priv_mode_m, upperreg_fmv_rs1;
     cp_upperreg_fmv_rd :  cross priv_mode_m, upperreg_fmv_rd;
     cp_amocas_odd :       cross priv_mode_m, amocas_odd;
-    cp_reserved_rm :      cross priv_mode_m, reserved_rm;
 
     // ── Vector coverpoints crossed with priv_mode_m ──────────────────
     // Definitions are in RISCV_coverage_vect_instr.svh; only the cross
@@ -153,6 +156,12 @@ covergroup SsstrictSm_instr_cg with function sample(ins_t ins);
     cp_vl_lumop:          cross priv_mode_m, vl_lumop;
     cp_vs_width:          cross priv_mode_m, vs_width;
     cp_vs_sumop:          cross priv_mode_m, vs_sumop;
+
+    // The following vector tests are presently checked for every SEW.
+    // However, an instruction that is legal for some SEWs does not have
+    // to trap if reserved for other SEW, per Andrew Waterman and
+    // careful reading for the Ssstrict extension definition.  Therefore,
+    // these tests may need to be relaxed.
 
     // Vector arithmetic funct6 × SEW
     cp_v_IVV_f6:          cross priv_mode_m, v_IVV_f6, current_vsew;
@@ -174,6 +183,7 @@ covergroup SsstrictSm_instr_cg with function sample(ins_t ins);
     cp_v_VFUNARY1:        cross priv_mode_m, v_VFUNARY1, current_vsew;
 
     // Vector crypto
+    cp_vopve:             cross priv_mode_m, v_vopve,  current_vsew;
     cp_v_vaesvv:          cross priv_mode_m, v_vaesvv, current_vsew;
     cp_v_vaesvs:          cross priv_mode_m, v_vaesvs, current_vsew;
 
@@ -184,54 +194,9 @@ covergroup SsstrictSm_comp_instr_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "priv/RISCV_coverage_comp_instr.svh"
 
-    // compressed00: generator excludes rd' = x8 (insn[4:2]=000, i.e. bits[2:0]
-    // of insn[15:2] = 000) to protect the scratch base pointer.
-    cp_compressed00: cross priv_mode_m, compressed00 {
-        wildcard ignore_bins rd_p_x8 = binsof(compressed00) intersect {14'b???????????000};
-        // Ignore memory operations that throw exceptions for bad addresses
-        wildcard ignore_bins c_fld = binsof(compressed00) intersect {14'b001??????000};
-        wildcard ignore_bins c_lw  = binsof(compressed00) intersect {14'b010??????000};
-        wildcard ignore_bins c_lbu = binsof(compressed00) intersect {14'b10000?????000};
-        wildcard ignore_bins c_lh  = binsof(compressed00) intersect {14'b100001????000};
-        wildcard ignore_bins c_sb  = binsof(compressed00) intersect {14'b10001?????000};
-        wildcard ignore_bins c_sh  = binsof(compressed00) intersect {14'b1000110???000};
-        wildcard ignore_bins c_fsd = binsof(compressed00) intersect {14'b101??????000};
-        wildcard ignore_bins c_sw  = binsof(compressed00) intersect {14'b110??????000};
-    }
-
-    // compressed01: generator excludes rd=x2 for CI-type instructions.
-    // CI-type has funct3 ∈ {000, 010, 011} (bits[15:13]).  For other funct3
-    // values the bits[11:7] field encodes something else, so the exclusion
-    // only applies to CI-type.
-    cp_compressed01: cross priv_mode_m, compressed01 {
-        // rd=x2 only for CI-type (funct3 = 000, 010, 011)
-        wildcard ignore_bins rd_x2_ci_000 = binsof(compressed01) intersect {[14'b00000001000000:14'b00000001011111]};
-        wildcard ignore_bins rd_x2_ci_010 = binsof(compressed01) intersect {[14'b01000001000000:14'b01000001011111]};
-        wildcard ignore_bins rd_x2_ci_011 = binsof(compressed01) intersect {[14'b01100001000000:14'b01100001011111]};
-        // Ignore control flow instructions that would break test execution
-        wildcard ignore_bins c_jal = binsof(compressed01) intersect {14'b001????01};
-        wildcard ignore_bins c_j   = binsof(compressed01) intersect {14'b101????01};
-        wildcard ignore_bins c_beqz_bnez = binsof(compressed01) intersect {14'b11??????01};
-    }
-
-    // compressed10: generator excludes rd=x2 and rd=x8.
-    // In quadrant 10, bit[15]=1 is fixed in the template "1EEEEEEEEEEEEE10",
-    // so only the upper half of the encoding space is swept.
-    cp_compressed10: cross priv_mode_m, compressed10 {
-        // Ignore lower half (bit[15]=0) - not swept by generator
-        wildcard ignore_bins lower_half = binsof(compressed10) intersect {14'b0???????????10};
-        // rd=x2(sp) for the swept portion (bit[15]=1): insn[11:7]=00010
-        wildcard ignore_bins rd_x2 = binsof(compressed10) intersect {14'b1???00010?????};
-        // rd=x8 for the swept portion
-        wildcard ignore_bins rd_x8 = binsof(compressed10) intersect {14'b1???01000?????};
-        // Ignore floating-point/stack operations that throw exceptions
-        wildcard ignore_bins c_fldsp = binsof(compressed10) intersect {14'b1001??????????};
-        wildcard ignore_bins c_lwsp  = binsof(compressed10) intersect {14'b10010?????????};
-        wildcard ignore_bins c_jr    = binsof(compressed10) intersect {14'b1000000000????};
-        wildcard ignore_bins c_jalr  = binsof(compressed10) intersect {14'b1001000000????};
-        wildcard ignore_bins c_fsdsp = binsof(compressed10) intersect {14'b1101??????????};
-        wildcard ignore_bins c_swsp  = binsof(compressed10) intersect {14'b1110??????????};
-    }
+    cp_compressed00: cross priv_mode_m, compressed00;
+    cp_compressed01: cross priv_mode_m, compressed01;
+    cp_compressed10: cross priv_mode_m, compressed10;
 endgroup
 
 function void ssstrictsm_sample(int hart, int issue, ins_t ins);

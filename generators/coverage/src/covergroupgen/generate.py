@@ -278,6 +278,8 @@ def read_testplans(testplan_dir: Path) -> dict[str, dict[tuple[str, str], list[s
             sew_variants = ["8", "16", "32", "64"]
         elif "Vf" in arch:
             sew_variants = ["16", "32", "64"]  # SEW of 8 is not supported for vector floating point
+        elif "Zvknhb" in arch:
+            sew_variants = ["32", "64"]
         if sew_variants is not None:
             for sew in sew_variants:
                 testplans[f"{arch}{sew}"] = tp
@@ -372,7 +374,7 @@ def _get_effew(arch: str) -> str:
         return match.group(1)
     if arch in ("Zvfhmin", "Zvfbfmin", "Zvfbfwma"):
         return "16"
-    if arch.startswith("Zvk") and arch != "Zvkb":
+    if arch.startswith("Zvk"):
         return "32"
     raise ValueError(f"Arch does not contain an expected integer: '{arch}'")
 

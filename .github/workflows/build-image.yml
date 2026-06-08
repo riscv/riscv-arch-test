@@ -10,7 +10,7 @@ on:
 
 jobs:
   act4-build-image:
-    uses: docker/github-builder/.github/workflows/build.yml@073833262a23a17675c95c4541ab063b7646756b # v1.9.0
+    uses: docker/github-builder/.github/workflows/build.yml@17bd7d64200cae4ba58ffc099934e8012ae320f2 # v1.10.0
     permissions:
       contents: read
       id-token: write
@@ -37,7 +37,7 @@ jobs:
 
   act4-image:
     needs: act4-build-image
-    uses: docker/github-builder/.github/workflows/build.yml@073833262a23a17675c95c4541ab063b7646756b # v1.9.0
+    uses: docker/github-builder/.github/workflows/build.yml@17bd7d64200cae4ba58ffc099934e8012ae320f2 # v1.10.0
     permissions:
       contents: read
       id-token: write

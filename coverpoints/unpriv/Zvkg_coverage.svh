@@ -182,11 +182,12 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vd_edges_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vd_edges_egs4 : coverpoint vs_edges_check_sew32_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vd))
+    cp_vd_edges_egs4 : coverpoint vs_edges_check_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vd))
         iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
         // Edge values of vd (EGS=4), assuming vl = 1
         bins zero       = {vs_zero      };   //  = {(`EGS*SEW){1'b0}},
@@ -241,7 +242,7 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
     // cp_vs1_edges_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs1_edges_egs4 : coverpoint vs_edges_check_sew32_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vs1))
+    cp_vs1_edges_egs4 : coverpoint vs_edges_check_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vs1))
         iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
         // Edge values of vs1 (EGS=4), assuming vl = 4
         bins zero       = {vs_zero      };   //  = {(`EGS*SEW){1'b0}},
@@ -296,7 +297,7 @@ covergroup Zvkg_vghsh_vv_cg with function sample(ins_t ins);
     // cp_vs2_edges_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_egs4 : coverpoint vs_edges_check_sew32_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vs2))
+    cp_vs2_edges_egs4 : coverpoint vs_edges_check_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vs2))
         iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
         // Edge values of vs2 (EGS=4), assuming vl = 4
         bins zero       = {vs_zero      };   //  = {(`EGS*SEW){1'b0}},
@@ -527,11 +528,12 @@ covergroup Zvkg_vgmul_vv_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vd_edges_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vd_edges_egs4 : coverpoint vs_edges_check_sew32_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vd))
+    cp_vd_edges_egs4 : coverpoint vs_edges_check_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vd))
         iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
         // Edge values of vd (EGS=4), assuming vl = 1
         bins zero       = {vs_zero      };   //  = {(`EGS*SEW){1'b0}},
@@ -586,7 +588,7 @@ covergroup Zvkg_vgmul_vv_cg with function sample(ins_t ins);
     // cp_vs2_edges_egs4
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_egs4 : coverpoint vs_edges_check_sew32_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vs2))
+    cp_vs2_edges_egs4 : coverpoint vs_edges_check_egs4(ins.hart, ins.issue, ins.get_vr_val_lmul4(ins.current.vs2))
         iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2)  {
         // Edge values of vs2 (EGS=4), assuming vl = 4
         bins zero       = {vs_zero      };   //  = {(`EGS*SEW){1'b0}},

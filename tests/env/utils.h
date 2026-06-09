@@ -3,15 +3,12 @@
 # Jordan Carlin jcarlin@hmc.edu November 2025
 # SPDX-License-Identifier: BSD-3-Clause
 
-// Zicsr test CSR selection. Set before rvtest_setup.h's boot cascade so BOOT_TO_*MODE
-// pins the test to a mode where the chosen CSR is writable. A DUT may override the
-// choice via RVMODEL_TEST_CSR. RVTEST_READ_ONLY_TEST_CSR marks a non-writable choice.
-// Gated on ZICSR_SUPPORTED: a DUT that implements Zicsr runs the Zicsr tests and so must
-// have a valid CSR to pick.
+// Zicsr test CSR selection. Gated on ZICSR_SUPPORTED: a DUT that implements Zicsr runs the
+// Zicsr tests and so must have a valid CSR to pick. RVTEST_READ_ONLY_TEST_CSR marks a
+// non-writable choice; a privileged choice records the mode it must run in for the boot
+// group below.
 #if !defined(ZICSR_SUPPORTED)
   // DUT does not implement Zicsr; no CSR selection needed
-#elif defined(RVMODEL_TEST_CSR)
-  #define RVTEST_TEST_CSR RVMODEL_TEST_CSR
 #elif defined(F_SUPPORTED)
   #define RVTEST_TEST_CSR fflags
 #elif defined(ZVE32X_SUPPORTED)
@@ -23,12 +20,21 @@
   #define RVTEST_READ_ONLY_TEST_CSR
 #elif defined(S_SUPPORTED)
   #define RVTEST_TEST_CSR sepc
-  #define BOOT_TO_SMODE
+  #define RVTEST_TEST_CSR_NEEDS_SMODE
 #elif defined(STANDARD_SM_SUPPORTED)
   #define RVTEST_TEST_CSR mepc
-  #define BOOT_TO_MMODE
+  #define RVTEST_TEST_CSR_NEEDS_MMODE
 #else
-  #error no CSR known for testing. Zicsr testing requires F, V, Zicntr, S, or STANDARD_SM_SUPPORTED. If you only have custom CSRs, define RVMODEL_TEST_CSR.
+  #error no CSR known for testing. Zicsr testing requires F, V, Zicntr, S, or STANDARD_SM_SUPPORTED. A DUT with no standard CSR should not declare ZICSR_SUPPORTED.
+#endif
+
+// Pin the boot privilege when the chosen CSR is only writable above the default run mode.
+// Set before rvtest_setup.h's boot cascade. The other choices are reachable in the default
+// mode, so they need no pinning.
+#if defined(RVTEST_TEST_CSR_NEEDS_SMODE)
+  #define BOOT_TO_SMODE
+#elif defined(RVTEST_TEST_CSR_NEEDS_MMODE)
+  #define BOOT_TO_MMODE
 #endif
 
 // General utility macros

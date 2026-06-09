@@ -8,8 +8,8 @@
 #include "derived_config.h"
 #include "encoding.h"
 #include "rvmodel_macros.h"
-// utils.h after rvmodel_macros.h: its Zicsr CSR selection reads STANDARD_SM_SUPPORTED
-// and the optional RVMODEL_TEST_CSR override, which a DUT may define in rvmodel_macros.h.
+// utils.h after rvmodel_macros.h: its Zicsr CSR selection reads STANDARD_SM_SUPPORTED,
+// which a DUT defines in rvmodel_macros.h.
 #include "utils.h"
 #ifndef RVTEST_SELFCHECK
   #include "sail_macros.h"

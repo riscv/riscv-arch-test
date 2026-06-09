@@ -8,12 +8,15 @@
 
 from testgen.asm.csr import csr_walk_test
 from testgen.asm.helpers import comment_banner
+from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+CSR_OPS = ["CSRRW", "CSRRS", "CSRRC", "CSRR"]
 
 
 def _enter_umode(test_data: TestData, temp_reg: int) -> list[str]:

@@ -57,6 +57,10 @@ def insert_header_template(
     if extra_defines is None:
         extra_defines = []
     extra_defines.extend(generate_defines_from_extensions(all_extensions))
+    # Only Zicsr tests need the RVTEST_TEST_CSR selection (and its BOOT_TO_*MODE side
+    # effects) in utils.h; gate it so other suites are unaffected.
+    if testsuite == "Zicsr":
+        extra_defines.append("#define RVTEST_SELECT_TEST_CSR")
     # Replace placeholders
     template = (
         template.replace("@TEST_PATH@", f"{test_file}")

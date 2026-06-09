@@ -278,6 +278,8 @@ def read_testplans(testplan_dir: Path) -> dict[str, dict[tuple[str, str], list[s
             sew_variants = ["8", "16", "32", "64"]
         elif "Vf" in arch:
             sew_variants = ["16", "32", "64"]  # SEW of 8 is not supported for vector floating point
+        elif "Zvknhb" in arch:
+            sew_variants = ["32", "64"]
         if sew_variants is not None:
             for sew in sew_variants:
                 testplans[f"{arch}{sew}"] = tp
@@ -372,6 +374,8 @@ def _get_effew(arch: str) -> str:
         return match.group(1)
     if arch in ("Zvfhmin", "Zvfbfmin", "Zvfbfwma"):
         return "16"
+    if arch.startswith("Zvk"):
+        return "32"
     raise ValueError(f"Arch does not contain an expected integer: '{arch}'")
 
 
@@ -569,14 +573,16 @@ def _gen_instrs(
             if any(sew_cp in cp for sew_cp in SEW_DEPENDENT_CPS):
                 cp = cp + "_sew" + _get_effew(arch)
 
-            # Handle eew_eq_sew variants: only emit when indexed-LS EEW == arch SEW
-            if cp.endswith("_eew_eq_sew"):
+            # Handle eew_eq_sew variants: only emit when indexed-LS EEW == arch SEW.
+            # Accepts plain `_eew_eq_sew` and `_eew_eq_sew_lte<N>` (vs3<=N variant).
+            if re.search(r"_eew_eq_sew(?:_lte\d+)?$", cp):
                 eew = _indexed_ls_eew(instr)
                 if eew is not None and _is_vector(arch) and int(_get_effew(arch)) != eew:
                     continue
 
-            # Handle conditional SEW inclusion
-            if "sew_lte" in cp:
+            # Handle conditional SEW inclusion (canonical token `_sew_lte_<N>`).
+            # Exclude `_eew_eq_sew_lte<N>` which is a vs3-range variant, not a SEW gate.
+            if re.search(r"_sew_lte_?\d+$", cp) and not re.search(r"_eew_eq_sew_lte\d+$", cp):
                 effew = _get_effew(arch)
                 match = re.search(r"(\d+)$", cp)
                 if match:

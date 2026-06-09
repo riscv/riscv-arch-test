@@ -450,9 +450,11 @@
         .endif; \
         /* Build active element mask (i < vl && v0[i] == 1). This approach will not work if  */ \
         /* vl > SEW_MAX because the rs1 input to vmsltu.vx will get truncated, so its possible we have */ \
-        /* to calculate the hard way */                  \
-        LI          (_LINK_REG, (1 << _VD_EEW))         ; \
-        bge         _TEMP_REG, _LINK_REG, 4f ; \
+        /* to calculate the hard way. vl cannot exceed SEW_MAX for SEW > 16 */                  \
+        .if (_VD_EEW <= 16); \
+            LI          (_LINK_REG, (1 << _VD_EEW))         ; \
+            bge         _TEMP_REG, _LINK_REG, 4f ; \
+        .endif; \
         vid.v       _VTMP                    ;   /* VTMP[i] = i (element index) */                                  \
         vmsltu.vx   _MTMP3, _VTMP, _TEMP_REG ;   /* MTMP2[i] = (i < original vl) */                                 \
         j 5f ; \
@@ -627,8 +629,10 @@
             nop                                  ;                                                                      \
         .endif; \
         /* Build active element mask */                                                      \
-        LI          (_LINK_REG, (1 << _VD_EEW))         ; \
-        bge         _TEMP_REG, _LINK_REG, 4f ; \
+        .if (_VD_EEW <= 16); \
+            LI          (_LINK_REG, (1 << _VD_EEW))         ; \
+            bge         _TEMP_REG, _LINK_REG, 4f ; \
+        .endif; \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
@@ -647,7 +651,7 @@
         /* Return to a full vector register */ \
         nop                                  ;                                                                      \
         /* Set the target to be all ones at the start */ \
-        nop                                  ;                                                                      \
+        LI(_LINK_REG, 0xff)                                  ;                                                                      \
         nop                                  ;                                                                      \
         /* Calculate the number of elements to slide _VTMP up */ \
         nop                                  ;                                                                      \
@@ -764,6 +768,8 @@
         j           21f                      ;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
     21:                                                                                                             \
         jal         _LINK_REG, failedtest_vec_tail_##_LINK_REG##_##_TEMP_REG ;                                      \
+        RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
+        RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
     12:                                                                                                             \
         /* PASS */                                                                                                  \
         RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)                                                    ;\

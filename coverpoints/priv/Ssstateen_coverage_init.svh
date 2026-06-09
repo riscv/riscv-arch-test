@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Ssstateen_cg = new();         Ssstateen.set_inst_name("obj_Ssstateen");
+    Ssstateen_cg = new();         Ssstateen_cg.set_inst_name("obj_Ssstateen");

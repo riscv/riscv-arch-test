@@ -1700,6 +1700,52 @@
             ins.add_vm(3);
             ins.add_v0();
         end
+        "vaesdf.vs"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+        end
+        "vaesdf.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+        end
+        "vaesdm.vs"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+        end
+        "vaesdm.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+        end
+        "vaesef.vs"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+        end
+        "vaesef.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+        end
+        "vaesem.vs"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+        end
+        "vaesem.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+        end
+        "vaeskf1.vi"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_imm(2);
+        end
+        "vaeskf2.vi"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_imm(2);
+        end
+        "vaesz.vs"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+        end
         "vand.vi"     : begin
             ins.add_vd(0);
             ins.add_vs2(1);
@@ -2494,6 +2540,15 @@
             ins.add_vs1(2);
             ins.add_vm(3);
             ins.add_v0();
+        end
+        "vghsh.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vs1(2);
+        end
+        "vgmul.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
         end
         "vid.v"     : begin
             ins.add_vd(0);
@@ -4568,6 +4623,21 @@
             ins.add_vm(2);
             ins.add_v0();
         end
+        "vsha2ch.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vs1(2);
+        end
+        "vsha2cl.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vs1(2);
+        end
+        "vsha2ms.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vs1(2);
+        end
         "vslide1down.vx"     : begin
             ins.add_vd(0);
             ins.add_vs2(1);
@@ -4634,6 +4704,29 @@
         "vsm.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
+        end
+        "vsm3c.vi"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_imm(2);
+        end
+        "vsm3me.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vs1(2);
+        end
+        "vsm4k.vi"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_imm(2);
+        end
+        "vsm4r.vs"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+        end
+        "vsm4r.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
         end
         "vsmul.vv"     : begin
             ins.add_vd(0);
@@ -5943,7 +6036,7 @@
             ins.add_rs2(2);
         end
         "amocas.d"     : begin
-            ins.add_rd(0);
+            ins.add_rd_pair(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
         end
@@ -6092,7 +6185,7 @@
             ins.add_rs1(2);
         end
         "amocas.q"     : begin
-            ins.add_rd(0);
+            ins.add_rd_pair(0);
             ins.add_rs2(1);
             ins.add_rs1(2);
         end

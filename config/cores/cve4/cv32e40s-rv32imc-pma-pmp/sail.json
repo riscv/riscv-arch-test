@@ -225,7 +225,7 @@
     },
     // 0x20C0000 = CLINT base + CLINT size
     "simple_interrupt_generator": {
-      "supported": false,
+      "supported": true,
       "base": 34340864
     },
     "clock_frequency": 1000000000,

@@ -249,7 +249,7 @@
       "size": 786432
     },
     "simple_interrupt_generator": {
-      "supported": false,
+      "supported": true,
       "base": 201326592
     },
     "clock_frequency": 1000000000,

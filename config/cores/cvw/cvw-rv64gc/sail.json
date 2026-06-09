@@ -346,7 +346,7 @@
     // Very simple MMIO device to generate interrupts for testing
     // purposes. See docs/SimpleInterruptGenerator.md for details.
     "simple_interrupt_generator": {
-      "supported": false,
+      "supported": true,
       // This must be in a suitable IO memory region (see `memory.regions`)
       // and 4-byte aligned. The size is always 0x20.
       "base": 201326592

@@ -28447,6 +28447,18 @@ covergroup Vx8_vsadd_vi_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {0};
+        bins one  = {1};
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
+
     cp_imm_5bit : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins imm[] = {[-16:15]}; // 5 bit signed immediates for vector instructions
     }
@@ -28639,6 +28651,18 @@ covergroup Vx8_vsadd_vv_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {0};
+        bins one  = {1};
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -28816,6 +28840,18 @@ covergroup Vx8_vsadd_vx_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {0};
+        bins one  = {1};
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -29000,6 +29036,18 @@ covergroup Vx8_vsaddu_vi_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {0};
+        bins one  = {1};
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
 
     cp_imm_5bit : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins imm[] = {[-16:15]}; // 5 bit signed immediates for vector instructions
@@ -29193,6 +29241,18 @@ covergroup Vx8_vsaddu_vv_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {0};
+        bins one  = {1};
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -29370,6 +29430,18 @@ covergroup Vx8_vsaddu_vx_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {0};
+        bins one  = {1};
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -34635,6 +34707,18 @@ covergroup Vx8_vssub_vv_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {0};
+        bins one  = {1};
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -34812,6 +34896,18 @@ covergroup Vx8_vssub_vx_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {0};
+        bins one  = {1};
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -35027,6 +35123,18 @@ covergroup Vx8_vssubu_vv_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {0};
+        bins one  = {1};
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -35204,6 +35312,18 @@ covergroup Vx8_vssubu_vx_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {0};
+        bins one  = {1};
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)

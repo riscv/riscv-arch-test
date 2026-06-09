@@ -1299,6 +1299,7 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cp_imm_edges_5bit"          : pass # already tested in cp_imm_5bit but needed for cr_vs2_imm_edges
     elif coverpoint == "cp_imm_edges_5bit_u"        : pass # already tested in cp_imm_5bit but needed for cr_vs2_imm_edges
     elif coverpoint == "cp_csr_vxrm"                  : pass # already tested in cross coverpoints with vs2 and vs1/rs1/imm
+    elif coverpoint == "cp_csr_vxsat"                 : pass # already tested in natural execution
     ############################ length suite ############################
     elif coverpoint == "cp_masking_edges"             : make_mask_edges(test, sew, getBaseLmul(test, sew))
     elif coverpoint == "cp_vl_0"                        : make_vl_0(test, sew, lmul = getBaseLmul(test, sew))

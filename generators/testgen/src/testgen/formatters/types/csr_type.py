@@ -15,23 +15,23 @@ csr_config = InstructionTypeConfig(required_params={"rd", "rs1", "rs1val", "rs2"
 
 def zicsr_acccess(instr_name: str, rd: int, rs1: int) -> str:
     """Helper function to determine which CSR to use for testing based on supported extensions."""
-    # The CSR is selected once via RVTEST_TEST_CSR (see rvtest_setup.h), which also pins
-    # the test to a privilege mode where the CSR is writable. instret is read-only and
-    # needs special handling, so guard the one selection where instret is chosen.
+    # The CSR is selected once via RVTEST_TEST_CSR (see utils.h), which also pins the test
+    # to a privilege mode where the CSR is writable. A read-only choice (instret) sets
+    # RVTEST_READ_ONLY_TEST_CSR and needs special handling since it cannot be written.
 
     # instret requires special treatment because it is not writable, and the value is not initialized
     if instr_name in ["csrrw", "csrrwi"] or rs1 == 0 or rd == 0:
-        instret_access = f"li x{rd}, 0 # avoid write to read-only instret, or inconsistent result with rs1 or rd = 0"
+        read_only_access = f"li x{rd}, 0 # avoid write to read-only CSR, or inconsistent result with rs1 or rd = 0"
     else:
-        instret_access = (
-            f"{instr_name} x{rs1}, instret, x0\n"
-            f"{instr_name} x{rd}, instret, x0\n"
-            f"sub x{rd}, x{rd}, x{rs1}  # check that instret value has incremented\n"
+        read_only_access = (
+            f"{instr_name} x{rs1}, RVTEST_TEST_CSR, x0\n"
+            f"{instr_name} x{rd}, RVTEST_TEST_CSR, x0\n"
+            f"sub x{rd}, x{rd}, x{rs1}  # check that the read-only CSR value has incremented\n"
         )
 
     return (
-        "#if defined(ZICNTR_SUPPORTED) && defined(U_SUPPORTED) && !defined(F_SUPPORTED) && !defined(V_SUPPORTED)\n"
-        f"{instret_access}\n"
+        "#ifdef RVTEST_READ_ONLY_TEST_CSR\n"
+        f"{read_only_access}\n"
         "#else\n"
         f"{instr_name} x{rd}, RVTEST_TEST_CSR, x{rs1}\n"
         "#endif\n"

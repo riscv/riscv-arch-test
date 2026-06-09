@@ -7,8 +7,10 @@
 #undef H_SUPPORTED // TODO: Remove this once Sail supports Hypervisor
 #include "derived_config.h"
 #include "encoding.h"
-#include "utils.h"
 #include "rvmodel_macros.h"
+// utils.h after rvmodel_macros.h: its Zicsr CSR selection reads STANDARD_SM_SUPPORTED
+// and RVMODEL_TEST_CSR, which the DUT defines in rvmodel_macros.h.
+#include "utils.h"
 #ifndef RVTEST_SELFCHECK
   #include "sail_macros.h"
 #endif

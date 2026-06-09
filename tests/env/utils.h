@@ -3,6 +3,30 @@
 # Jordan Carlin jcarlin@hmc.edu November 2025
 # SPDX-License-Identifier: BSD-3-Clause
 
+// Zicsr test CSR selection. Set before rvtest_setup.h's boot cascade so BOOT_TO_*MODE
+// pins the test to a mode where the chosen CSR is writable. A DUT may override the
+// choice via RVMODEL_TEST_CSR. RVTEST_READ_ONLY_TEST_CSR marks a non-writable choice.
+#ifdef RVMODEL_TEST_CSR
+  #define RVTEST_TEST_CSR RVMODEL_TEST_CSR
+#elif defined(F_SUPPORTED)
+  #define RVTEST_TEST_CSR fflags
+#elif defined(ZVE32X_SUPPORTED)
+  #define RVTEST_TEST_CSR vxsat
+#elif !defined(U_SUPPORTED)
+  #define RVTEST_TEST_CSR mepc
+#elif defined(ZICNTR_SUPPORTED)
+  #define RVTEST_TEST_CSR instret
+  #define RVTEST_READ_ONLY_TEST_CSR
+#elif defined(S_SUPPORTED)
+  #define RVTEST_TEST_CSR sepc
+  #define BOOT_TO_SMODE
+#elif defined(STANDARD_SM_SUPPORTED)
+  #define RVTEST_TEST_CSR mepc
+  #define BOOT_TO_MMODE
+#else
+  #error no CSR known for testing. Zicsr testing requires F, V, Zicntr, S, or STANDARD_SM_SUPPORTED. If you only have custom CSRs, define RVMODEL_TEST_CSR.
+#endif
+
 // General utility macros
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))

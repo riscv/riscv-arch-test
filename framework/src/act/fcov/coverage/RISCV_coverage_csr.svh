@@ -44,6 +44,7 @@ typedef enum {
   mcounteren,
   mcountinhibit,
   medeleg,
+  menvcfg,
   mideleg,
   mie,
   mip,
@@ -60,6 +61,7 @@ typedef enum {
   scause,
   scounteren,
   seed,
+  senvcfg,
   sie,
   sip,
   sstatus,
@@ -114,25 +116,25 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "etrigger") begin
     case(field)
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "dmode" : val = (val >> 27) & 32'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "dmode" : val = (val >> 59) & 64'h1;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "hit" : val = (val >> 26) & 32'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "hit" : val = (val >> 58) & 64'h1;
 `endif
       "m" : val = (val >> 9) & 'h1;
       "nmi" : val = (val >> 10) & 'h1;
       "s" : val = (val >> 7) & 'h1;
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "type" : val = (val >> 28) & 32'hf;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "type" : val = (val >> 60) & 64'hf;
 `endif
       "u" : val = (val >> 6) & 'h1;
@@ -175,10 +177,10 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "hgatp") begin
     case(field)
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "mode" : val = (val >> 31) & 32'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "mode" : val = (val >> 60) & 64'hf;
 `endif
       default: val = 0; // Todo: error
@@ -236,7 +238,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "spv" : val = (val >> 7) & 'h1;
       "spvp" : val = (val >> 8) & 'h1;
       "vsbe" : val = (val >> 5) & 'h1;
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "vsxl" : val = (val >> 32) & 64'h3;
 `endif
       "vtsr" : val = (val >> 22) & 'h1;
@@ -255,19 +257,19 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "icount") begin
     case(field)
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "dmode" : val = (val >> 27) & 32'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "dmode" : val = (val >> 59) & 64'h1;
 `endif
       "hit" : val = (val >> 24) & 'h1;
       "m" : val = (val >> 9) & 'h1;
       "s" : val = (val >> 7) & 'h1;
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "type" : val = (val >> 28) & 32'hf;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "type" : val = (val >> 60) & 64'hf;
 `endif
       "u" : val = (val >> 6) & 'h1;
@@ -276,24 +278,24 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "itrigger") begin
     case(field)
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "dmode" : val = (val >> 27) & 32'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "dmode" : val = (val >> 59) & 64'h1;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "hit" : val = (val >> 26) & 32'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "hit" : val = (val >> 58) & 64'h1;
 `endif
       "m" : val = (val >> 9) & 'h1;
       "s" : val = (val >> 7) & 'h1;
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "type" : val = (val >> 28) & 32'hf;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "type" : val = (val >> 60) & 64'hf;
 `endif
       "u" : val = (val >> 6) & 'h1;
@@ -302,10 +304,10 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "jvt") begin
     case(field)
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "base" : val = (val >> 6) & 32'h3ffffff;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "base" : val = (val >> 6) & 64'h3ffffffffffffff;
 `endif
       "mode" : val = val & 'h3f;
@@ -314,10 +316,10 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "mcause") begin
     case(field)
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "int" : val = val & 32'hffffffff;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "int" : val = val & 64'hffffffffffffffff;
 `endif
       default: val = 0; // Todo: error
@@ -327,35 +329,35 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
     case(field)
       "action" : val = (val >> 12) & 'hf;
       "chain" : val = (val >> 11) & 'h1;
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "dmode" : val = (val >> 27) & 32'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "dmode" : val = (val >> 59) & 64'h1;
 `endif
       "execute" : val = (val >> 2) & 'h1;
       "hit" : val = (val >> 20) & 'h1;
       "load" : val = val & 'h1;
       "m" : val = (val >> 6) & 'h1;
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "maskmax" : val = (val >> 21) & 32'h3f;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "maskmax" : val = (val >> 53) & 64'h3f;
 `endif
       "match" : val = (val >> 7) & 'hf;
       "s" : val = (val >> 4) & 'h1;
       "select" : val = (val >> 19) & 'h1;
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "sizehi" : val = (val >> 21) & 64'h3;
 `endif
       "sizelo" : val = (val >> 16) & 'h3;
       "store" : val = (val >> 1) & 'h1;
       "timing" : val = (val >> 18) & 'h1;
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "type" : val = (val >> 28) & 32'hf;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "type" : val = (val >> 60) & 64'hf;
 `endif
       "u" : val = (val >> 3) & 'h1;
@@ -383,6 +385,25 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
     case(field)
       "deleg" : val = val & 'hffffffff;
       default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "menvcfg") begin
+    case(field)
+      "fiom" : val = val & 'h1;
+      "lpe" : val = (val >> 2) & 'h1;
+      "sse" : val = (val >> 3) & 'h1;
+      "cbie" : val = (val >> 4) & 'h3;
+      "cbcfe" : val = (val >> 6) & 'h1;
+      "cbze" : val = (val >> 7) & 'h1;
+`ifdef UDB_MXLEN_64
+      "pmm" : val = (val >> 32) & 64'h3;
+      "dte" : val = (val >> 59) & 64'h1;
+      "cde" : val = (val >> 60) & 64'h1;
+      "adue" : val = (val >> 61) & 64'h1;
+      "pbmte" : val = (val >> 62) & 64'h1;
+      "stce" : val = (val >> 63) & 64'h1;
+`endif
+      default: val = 0;
     endcase
   end
   if (name == "mideleg") begin
@@ -433,10 +454,10 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   if (name == "misa") begin
     case(field)
       "exts" : val = val & 'h3ffffff;
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "mxl" : val = (val >> 30) & 32'h3;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "mxl" : val = (val >> 62) & 64'h3;
 `endif
       default: val = 0; // Todo: error
@@ -447,47 +468,53 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "mml" : val = val & 'h1;
       "mmwp" : val = (val >> 1) & 'h1;
       "rlb" : val = (val >> 2) & 'h1;
+      "useed" : val = (val >> 8) & 'h1;
+      "sseed" : val = (val >> 9) & 'h1;
+      "mlpe" : val = (val >> 10) & 'h1;
+`ifdef UDB_MXLEN_64
+      "pmm" : val = (val >> 32) & 64'h3;
+`endif
       default: val = 0; // Todo: error
     endcase
   end
   if (name == "mstatus") begin
     case(field)
       "fs" : val = (val >> 13) & 'h3;
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "gva" : val = (val >> 38) & 64'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "mbe" : val = (val >> 37) & 64'h1;
 `endif
       "mie" : val = (val >> 3) & 'h1;
       "mpie" : val = (val >> 7) & 'h1;
       "mpp" : val = (val >> 11) & 'h3;
       "mprv" : val = (val >> 17) & 'h1;
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "mpv" : val = (val >> 39) & 64'h1;
 `endif
       "mxr" : val = (val >> 19) & 'h1;
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "sbe" : val = (val >> 36) & 64'h1;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "sd" : val = (val >> 31) & 32'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "sd" : val = (val >> 63) & 64'h1;
 `endif
       "sie" : val = (val >> 1) & 'h1;
       "spie" : val = (val >> 5) & 'h1;
       "spp" : val = (val >> 8) & 'h1;
       "sum" : val = (val >> 18) & 'h1;
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "sxl" : val = (val >> 34) & 64'h3;
 `endif
       "tsr" : val = (val >> 22) & 'h1;
       "tvm" : val = (val >> 20) & 'h1;
       "tw" : val = (val >> 21) & 'h1;
       "ube" : val = (val >> 6) & 'h1;
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "uxl" : val = (val >> 32) & 64'h3;
 `endif
       "vs" : val = (val >> 9) & 'h3;
@@ -497,16 +524,16 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "mstatush") begin
     case(field)
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "gva" : val = (val >> 6) & 32'h1;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "mbe" : val = (val >> 5) & 32'h1;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "mpv" : val = (val >> 7) & 32'h1;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "sbe" : val = (val >> 4) & 32'h1;
 `endif
       default: val = 0; // Todo: error
@@ -532,40 +559,40 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "pmp3cfg_a" : val = (val >> 27) & 'h3;
       "pmp3cfg_l" : val = (val >> 31) & 'h1;
       "pmp3cfg_xwr" : val = (val >> 24) & 'h7;
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp4cfg_a" : val = (val >> 35) & 64'h3;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp4cfg_l" : val = (val >> 39) & 64'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp4cfg_xwr" : val = (val >> 32) & 64'h7;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp5cfg_a" : val = (val >> 43) & 64'h3;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp5cfg_l" : val = (val >> 47) & 64'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp5cfg_xwr" : val = (val >> 40) & 64'h7;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp6cfg_a" : val = (val >> 51) & 64'h3;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp6cfg_l" : val = (val >> 55) & 64'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp6cfg_xwr" : val = (val >> 48) & 64'h7;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp7cfg_a" : val = (val >> 59) & 64'h3;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp7cfg_l" : val = (val >> 63) & 64'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp7cfg_xwr" : val = (val >> 56) & 64'h7;
 `endif
       default: val = 0; // Todo: error
@@ -573,40 +600,40 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "pmpcfg1") begin
     case(field)
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp4cfg_a" : val = (val >> 3) & 32'h3;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp4cfg_l" : val = (val >> 7) & 32'h1;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp4cfg_xwr" : val = val & 32'h7;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp5cfg_a" : val = (val >> 11) & 32'h3;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp5cfg_l" : val = (val >> 15) & 32'h1;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp5cfg_xwr" : val = (val >> 8) & 32'h7;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp6cfg_a" : val = (val >> 19) & 32'h3;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp6cfg_l" : val = (val >> 23) & 32'h1;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp6cfg_xwr" : val = (val >> 16) & 32'h7;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp7cfg_a" : val = (val >> 27) & 32'h3;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp7cfg_l" : val = (val >> 31) & 32'h1;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp7cfg_xwr" : val = (val >> 24) & 32'h7;
 `endif
       default: val = 0; // Todo: error
@@ -620,40 +647,40 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "pmp11cfg_a" : val = (val >> 27) & 'h3;
       "pmp11cfg_l" : val = (val >> 31) & 'h1;
       "pmp11cfg_xwr" : val = (val >> 24) & 'h7;
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp12cfg_a" : val = (val >> 35) & 64'h3;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp12cfg_l" : val = (val >> 39) & 64'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp12cfg_xwr" : val = (val >> 32) & 64'h7;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp13cfg_a" : val = (val >> 43) & 64'h3;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp13cfg_l" : val = (val >> 47) & 64'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp13cfg_xwr" : val = (val >> 40) & 64'h7;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp14cfg_a" : val = (val >> 51) & 64'h3;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp14cfg_l" : val = (val >> 55) & 64'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp14cfg_xwr" : val = (val >> 48) & 64'h7;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp15cfg_a" : val = (val >> 59) & 64'h3;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp15cfg_l" : val = (val >> 63) & 64'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "pmp15cfg_xwr" : val = (val >> 56) & 64'h7;
 `endif
       "pmp8cfg_a" : val = (val >> 3) & 'h3;
@@ -667,40 +694,40 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "pmpcfg3") begin
     case(field)
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp12cfg_a" : val = (val >> 3) & 32'h3;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp12cfg_l" : val = (val >> 7) & 32'h1;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp12cfg_xwr" : val = val & 32'h7;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp13cfg_a" : val = (val >> 11) & 32'h3;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp13cfg_l" : val = (val >> 15) & 32'h1;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp13cfg_xwr" : val = (val >> 8) & 32'h7;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp14cfg_a" : val = (val >> 19) & 32'h3;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp14cfg_l" : val = (val >> 23) & 32'h1;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp14cfg_xwr" : val = (val >> 16) & 32'h7;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp15cfg_a" : val = (val >> 27) & 32'h3;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp15cfg_l" : val = (val >> 31) & 32'h1;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "pmp15cfg_xwr" : val = (val >> 24) & 32'h7;
 `endif
       default: val = 0; // Todo: error
@@ -708,10 +735,10 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "satp") begin
     case(field)
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "mode" : val = (val >> 31) & 32'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "mode" : val = (val >> 60) & 64'hf;
 `endif
       default: val = 0; // Todo: error
@@ -719,10 +746,10 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "scause") begin
     case(field)
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "int" : val = val & 32'hffffffff;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "int" : val = val & 64'hffffffffffffffff;
 `endif
       default: val = 0; // Todo: error
@@ -739,13 +766,27 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "seed") begin
     case(field)
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "OPST" : val = (val >> 30) & 32'h3;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "entropy" : val = val & 32'hffff;
 `endif
       default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "senvcfg") begin
+    case(field)
+      "fiom" : val = val & 'h1;
+      "lpe" : val = (val >> 2) & 'h1;
+      "sse" : val = (val >> 3) & 'h1;
+      "cbie" : val = (val >> 4) & 'h3;
+      "cbcfe" : val = (val >> 6) & 'h1;
+      "cbze" : val = (val >> 7) & 'h1;
+`ifdef UDB_MXLEN_64
+      "pmm" : val = (val >> 32) & 64'h3;
+`endif
+      default: val = 0;
     endcase
   end
   if (name == "sie") begin
@@ -768,10 +809,10 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
     case(field)
       "fs" : val = (val >> 13) & 'h3;
       "mxr" : val = (val >> 19) & 'h1;
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "sd" : val = (val >> 31) & 32'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "sd" : val = (val >> 63) & 64'h1;
 `endif
       "sie" : val = (val >> 1) & 'h1;
@@ -779,7 +820,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "spp" : val = (val >> 8) & 'h1;
       "sum" : val = (val >> 18) & 'h1;
       "ube" : val = (val >> 6) & 'h1;
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "uxl" : val = (val >> 32) & 64'h3;
 `endif
       "vs" : val = (val >> 23) & 'h3;
@@ -802,16 +843,16 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "tdata1") begin
     case(field)
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "dmode" : val = (val >> 27) & 32'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "dmode" : val = (val >> 59) & 64'h1;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "type" : val = (val >> 28) & 32'hf;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "type" : val = (val >> 60) & 64'hf;
 `endif
       default: val = 0; // Todo: error
@@ -819,10 +860,10 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "textra32") begin
     case(field)
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "mselect" : val = (val >> 25) & 32'h1;
 `endif
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "sselect" : val = val & 32'h3;
 `endif
       default: val = 0; // Todo: error
@@ -830,10 +871,10 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "textra64") begin
     case(field)
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "mselect" : val = (val >> 50) & 64'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "sselect" : val = val & 64'h3;
 `endif
       default: val = 0; // Todo: error
@@ -866,10 +907,10 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "vsatp") begin
     case(field)
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "mode" : val = (val >> 31) & 32'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "mode" : val = (val >> 60) & 64'hf;
 `endif
       default: val = 0; // Todo: error
@@ -877,10 +918,10 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "vscause") begin
     case(field)
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "int" : val = val & 32'hffffffff;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "int" : val = val & 64'hffffffffffffffff;
 `endif
       default: val = 0; // Todo: error
@@ -906,10 +947,10 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
     case(field)
       "fs" : val = (val >> 13) & 'h3;
       "mxr" : val = (val >> 19) & 'h1;
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "sd" : val = (val >> 31) & 32'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "sd" : val = (val >> 63) & 64'h1;
 `endif
       "sie" : val = (val >> 1) & 'h1;
@@ -917,7 +958,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "spp" : val = (val >> 8) & 'h1;
       "sum" : val = (val >> 18) & 'h1;
       "ube" : val = (val >> 6) & 'h1;
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "uxl" : val = (val >> 32) & 64'h3;
 `endif
       "vs" : val = (val >> 9) & 'h3;
@@ -939,10 +980,10 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "vtype") begin
     case(field)
-`ifdef XLEN32
+`ifdef UDB_MXLEN_32
       "vill" : val = (val >> 31) & 32'h1;
 `endif
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
       "vill" : val = (val >> 63) & 64'h1;
 `endif
       "vlmul" : val = val & 'h7;
@@ -962,6 +1003,13 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
     case(field)
       "vxsat" : val = val & 'h1;
       default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "sstateen0") begin
+    case(field)
+        "fcsr"   : val = (val >> 1) & 'h1;
+        "jvt"    : val = (val >> 2) & 'h1;
+        default: val = 0;
     endcase
   end
   return val;

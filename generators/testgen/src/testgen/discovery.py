@@ -8,6 +8,8 @@
 
 """Shared module auto-discovery for decorator-based registries."""
 
+from __future__ import annotations
+
 from importlib import import_module
 from pathlib import Path
 

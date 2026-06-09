@@ -3,14 +3,14 @@
 # Jordan Carlin jcarlin@hmc.edu November 2025
 # SPDX-License-Identifier: BSD-3-Clause
 
-# General utility macros
+// General utility macros
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 #define BIT(addr, bit) (((addr)>>(bit))&1)
-#define MASK (((1<<(XLEN-1))-1) + (1<<(XLEN-1))) // XLEN bits of 1s
-#define MASK_XLEN(val)  val&MASK // shortens 64b values to XLEN when XLEN==32
+#define MASK (((1<<(UDB_MXLEN-1))-1) + (1<<(UDB_MXLEN-1))) // UDB_MXLEN bits of 1s
+#define MASK_XLEN(val)  val&MASK // shortens 64b values to UDB_MXLEN when UDB_MXLEN==32
 
-# Constants and sign extension macros (TODO: Check which of these are actually needed for ACT 4.0)
+// Constants and sign extension macros (TODO: Check which of these are actually needed for ACT 4.0)
 #define WDSZ 32
 #define WDSGN (WDSZ -1)
 #define WDMSK ((1 << WDSZ) -1)
@@ -28,14 +28,14 @@
 #define WDBYTSZ (WDSZ >> 3)  // in units of #bytes
 #define WDBYTMSK (WDBYTSZ-1)
 
-# XLEN specific macros
-#define REGWIDTH (XLEN>>3)      // in units of #bytes
-#define ALIGNSZ ((XLEN>>5)+2)   // log2(XLEN): 2,3,4 for XLEN 32,64,128
+// XLEN specific macros
+#define REGWIDTH (UDB_MXLEN>>3)      // in units of #bytes
+#define ALIGNSZ ((UDB_MXLEN>>5)+2)   // log2(UDB_MXLEN): 2,3,4 for UDB_MXLEN 32,64,128
 
-#if   XLEN==32
+#if   UDB_MXLEN==32
     #define SREG sw
     #define LREG lw
-#elif XLEN==64
+#elif UDB_MXLEN==64
     #define SREG sd
     #define LREG ld
 #else
@@ -43,23 +43,106 @@
     #define LREG lq
 #endif
 
-# FLEN specific macros
-#define FREGWIDTH (FLEN>>3)      // in units of #bytes
+// FLEN specific macros
+// ============================================================================
+// Tests are written assuming a certain FLEN. For most tests, the test will only
+// run if the DUT supports at least that FLEN. For example, the D tests (FLEN = 64)
+// will only run on a DUT that supports the D extension. Some tests are written
+// with testcases for multiple floating point extensions. For example, the ZicsrF
+// test only requires F (FLEN = 32), but conditionally includes extra testcases
+// for D (FLEN = 64) and Q (FLEN = 128) when the DUT supports those extensions.
+// The test data values are preloaded in memory assuming the longest FLEN that
+// the test *might* use is supported so that values can be loaded using whole
+// fp register loads (flq if supported else fld if supported else flw). This
+// maximum FLEN must always be used when incrementing the data pointer to ensure
+// the correct values are loaded. Separately, when loading whole fp registers,
+// the largest fp load that is actually supported by the DUT must be used. For
+// tests that have conditional floating point instructions based on the extension,
+// this may differ from the FLEN assumed when generating values for the test.
+// For example, the ZicsrF test on an rv32f core results in a test that was
+// generated to support FLEN of up to 64 (so the data is spaced accordingly)
+// but a DUT that only supports FLEN = 32. This gives rise to the following
+// two distinct FLEN values:
+// ----------------------------------------------------------------------------
+// TEST_FLEN  — the max FLEN this test file was written for. Supplied by the
+//              build via -DTEST_FLEN and based on the march string. It fixes
+//              the width of the .data section entries and of every signature
+//              slot (SIG_STRIDE). It must notvary between configs: the
+//              generated assembly has literal byte offsets and the Sail-produced
+//              signature layout baked in.
+//
+// CONFIG_FLEN — the effective FP width for store/load instruction selection.
+//               It is the minimum of what the DUT actually supports (derived
+//               from D_SUPPORTED / Q_SUPPORTED / F_SUPPORTED) and what the test's
+//               march allows the assembler to emit (TEST_FLEN). It decides which
+//               FP store instruction (fsw/fsd/fsq) are used in the signature macros
+//               and whether a single FP value needs to be sliced into two integer
+//               loads (the "CONFIG_FLEN > UDB_MXLEN" path in signature.h).
+//
+//               CONFIG_FLEN must not exceed TEST_FLEN because the assembler
+//               only knows instructions up to that width (e.g. an F-only test
+//               with march=rv64if cannot assemble fsd). It must not exceed
+//               the DUT's capability either (e.g. a priv test generated with
+//               D in its march but run on an F-only DUT must not emit fsd).
+//               See issue #1223.
+// ============================================================================
 
-#ifdef ZFINX
+#ifndef TEST_FLEN
+  #error "TEST_FLEN not defined. The build should pass -DTEST_FLEN=<32|64|128>."
+#endif
+
+#define FREGWIDTH (TEST_FLEN>>3)     // data/signature slot width, in bytes
+
+// Derive the DUT's raw FP capability from its rvtest_config.h defines.
+#if defined(Q_SUPPORTED)
+  #define _DUT_FLEN 128
+#elif defined(D_SUPPORTED)
+  #define _DUT_FLEN 64
+#elif defined(F_SUPPORTED)
+  #define _DUT_FLEN 32
+#else
+  #define _DUT_FLEN 0
+#endif
+
+// CONFIG_FLEN = min(TEST_FLEN, _DUT_FLEN).
+// Capping at TEST_FLEN ensures we never emit an instruction the assembler
+// cannot encode (e.g. fsd when march has only F). Capping at _DUT_FLEN
+// ensures we never emit an instruction the DUT does not support.
+#if _DUT_FLEN < TEST_FLEN
+  #define CONFIG_FLEN _DUT_FLEN
+#else
+  #define CONFIG_FLEN TEST_FLEN
+#endif
+
+#ifdef ZFINX_SUPPORTED
+  // Zfinx: FP values live in integer registers; use plain integer store/load.
   #define FLREG LREG
   #define FSREG SREG
 #else
-  #if FLEN==32
-    #define FLREG flw
-    #define FSREG fsw
-  #elif FLEN==64
-    #define FLREG fld
-    #define FSREG fsd
-  #elif FLEN==128
+  // Pick the FP store/load based on CONFIG_FLEN — the effective FP width that
+  // both the assembler and DUT can handle.
+  #if CONFIG_FLEN == 128
     #define FLREG flq
     #define FSREG fsq
+  #elif CONFIG_FLEN == 64
+    #define FLREG fld
+    #define FSREG fsd
+  #else   // CONFIG_FLEN == 32 (or 0 — no FP; macros are unused)
+    #define FLREG flw
+    #define FSREG fsw
   #endif
+#endif
+
+// Integer-width load matching FSREG's store width, zero-extended to UDB_MXLEN.
+// Used to read back an FP value from scratch memory after FSREG stored it.
+// When CONFIG_FLEN < UDB_MXLEN (e.g. F-only on RV64: fsw writes 4 bytes but ld
+// would read 8), using LREG would pull in whatever bytes happened to sit
+// above the stored value. FP_LREG loads exactly the bytes FSREG wrote so
+// the loaded value is deterministic regardless of prior scratch contents.
+#if UDB_MXLEN == 64 && CONFIG_FLEN == 32
+  #define FP_LREG lwu
+#else
+  #define FP_LREG LREG
 #endif
 
 // Default VDSEW to 0 for non-vector tests
@@ -68,9 +151,17 @@
 #endif
 #define VDSEWWIDTH (VDSEW>>3)  // in units of #bytes
 
-// Max data size alignment for signature and data region
-// Max of XLEN, FLEN, and SEW
-#if XLEN>FLEN
+#ifndef UDB_VLEN
+  #define UDB_VLEN 0
+#endif
+#define VLEN_BYTES (UDB_VLEN>>3)   // in units of #bytes
+#define VLEN_WORDS (VLEN_BYTES>>2) // in units of words
+#define VECREG_REGION_WORDS (VLEN_WORDS * 32) // number of words occupied by all 32 vector registers
+
+// Max data size alignment for signature and data region.
+// Keyed on TEST_FLEN because the generated .data section and the signature
+// reservation were laid out at testgen time with that width.
+#if UDB_MXLEN>TEST_FLEN
   #define _SIG_STRIDE_1 REGWIDTH
 #else
   #define _SIG_STRIDE_1 FREGWIDTH
@@ -82,8 +173,8 @@
   #define SIG_STRIDE _SIG_STRIDE_1
 #endif
 
-// Define XLEN-sized pointer directive
-#if XLEN == 64
+// Define UDB_MXLEN-sized pointer directive
+#if UDB_MXLEN == 64
   #define RVTEST_WORD_PTR .dword
 #else
   #define RVTEST_WORD_PTR .word
@@ -115,7 +206,8 @@
 // This macro is used to load floating point test values from the .data section.
 //  _DATA_PTR - Pointer register to current position in test data section (will be incremented)
 //  _DEST_REG - Floating point destination register to load the value into
-// The default version loads the full FLEN width. Variants for smaller widths use an _SIZE suffix.
+// The default version loads the full CONFIG_FLEN (the actual size of the floating-point registers on the DUT).
+// Variants for fixed widths use an _SIZE suffix.
 #define RVTEST_TESTDATA_LOAD_FLOAT(_DATA_PTR, _DEST_REG)  \
   FLREG _DEST_REG, 0(_DATA_PTR)                          ;\
   addi _DATA_PTR, _DATA_PTR, SIG_STRIDE
@@ -136,25 +228,6 @@
   flq _DEST_REG, 0(_DATA_PTR)                          ;\
   addi _DATA_PTR, _DATA_PTR, SIG_STRIDE
 
-
-// RVTEST_FP_ENABLE enables the floating-point unit
-// - Sets mstatus.fs to INITIAL
-// - Clears fcsr
-#define RVTEST_FP_ENABLE(HELPER_GPR)                 \
-  LI(HELPER_GPR, (MSTATUS_FS & (MSTATUS_FS >> 1)))  ;\
-  csrs mstatus, HELPER_GPR                          ;\
-  csrwi fcsr, 0
-
-// RVTEST_V_ENABLE enables the vector unit
-// Perform the following steps:
-// - Set mstatus.vs to INITIAL
-// - Read out vlenb and store in VLENB_CACHE
-#define RVTEST_V_ENABLE(VLENB_CACHE, HELPER_GPR)       \
-    LI(HELPER_GPR, (MSTATUS_VS & (MSTATUS_VS >> 1)))  ;\
-    csrs mstatus, HELPER_GPR                          ;\
-    csrr VLENB_CACHE, vlenb
-
-
 //-----------------------------------------------------------------------
 //Fixed length la, li macros; # of ops is ADDR_SZ dependent, not data dependent
 //-----------------------------------------------------------------------
@@ -163,13 +236,13 @@
 // this generates a constants using the standard addi or lui/addi sequences
 // but also handles cases that are contiguous bit masks in any position,
 // and also constants handled with the addi/lui/addi but are shifted left
-#if (XLEN<64)
+#if (UDB_MXLEN<64)
   #define LI(reg, imm)                                                            ;\
     .option push                                                                  ;\
     .option norelax                                                               ;\
     .option norvc                                                                 ;\
-    .set immx,    (imm & MASK)    /* trim to XLEN (noeffect on RV64)        */    ;\
-    .set absimm,  ((immx^(-BIT(immx,XLEN-1)))&MASK) /* cvt to posnum to simplify code */  ;\
+    .set immx,    (imm & MASK)    /* trim to UDB_MXLEN (noeffect on RV64)        */    ;\
+    .set absimm,  ((immx^(-BIT(immx,UDB_MXLEN-1)))&MASK) /* cvt to posnum to simplify code */  ;\
     .set cry,     (BIT(imm, IMMSGN))                                              ;\
     .set imm12,   (SEXT_IMM(immx))                                                ;\
     .if     ((absimm>>IMMSGN)==0) /* fits 12b signed imm (properly sgnext)? */    ;\
@@ -186,7 +259,7 @@
     .option push                                                                  ;\
     .option norelax                                                               ;\
     .option norvc                                                                 ;\
-    .set immx,    (imm & MASK)    /* trim to XLEN (noeffect on RV64)      */      ;\
+    .set immx,    (imm & MASK)    /* trim to UDB_MXLEN (noeffect on RV64)      */      ;\
   /***************** used in loop that detects bitmasks                   */      ;\
     .set edge1,   1               /* 1st "1" bit pos scanning r to l      */      ;\
     .set edge2,   0               /* 1st "0" bit pos scanning r to l      */      ;\
@@ -195,14 +268,14 @@
     .set imme,    ((immx^(-BIT(immx,0     )))&MASK) /* cvt to even, cvt back at end */    ;\
     .set pos,      0                                                              ;\
   /***************** used in code that checks for 32b immediates          */      ;\
-    .set absimm,  ((immx^(-BIT(immx,XLEN-1)))&MASK) /* cvt to posnum to simplify code */  ;\
+    .set absimm,  ((immx^(-BIT(immx,UDB_MXLEN-1)))&MASK) /* cvt to posnum to simplify code */  ;\
     .set cry,     (BIT(immx, IMMSGN))                                             ;\
     .set imm12,   (SEXT_IMM(immx))                                                ;\
   /***************** used in code that generates bitmasks                 */      ;\
     .set even,    (1-BIT(imm, 0)) /* imm has at least 1 trailing zero     */      ;\
     .set cryh,    (BIT(immx, IMMSGN+32))                                          ;\
   /******** loop finding rising/falling edge fm LSB-MSB given even operand ****/  ;\
-    .rept XLEN                                                                    ;\
+    .rept UDB_MXLEN                                                                    ;\
       .if   (fnd1<0)              /* looking for first edge?              */      ;\
         .if (BIT(imme,pos)==1)    /* look for falling edge[pos]           */      ;\
           .set  edge1,pos         /* fnd falling edge, don't chk for more */      ;\
@@ -235,7 +308,7 @@
       slli    reg, reg, edge1             /* make 111s --> 000s mask        */    ;\
     .elseif (!even && (fnd2<0))           /* only falling edge, so 000111   */    ;\
       li      reg, -1                                                             ;\
-      srli    reg, reg, XLEN-edge1        /* make 000s --> 111s mask        */    ;\
+      srli    reg, reg, UDB_MXLEN-edge1        /* make 000s --> 111s mask        */    ;\
     .elseif (imme == (1<<edge1))          /* check for single bit case      */    ;\
       li      reg, 1                                                              ;\
       slli    reg, reg, edge1             /* make 0001000 sgl bit mask      */    ;\
@@ -244,7 +317,7 @@
       .endif                                                                      ;\
     .elseif (imme == ((1<<edge2) - (1<<edge1))) /* chk for multibit case    */    ;\
       li      reg, -1                                                             ;\
-      srli    reg, reg, XLEN-(edge2-edge1)     /* make multibit 1s mask     */    ;\
+      srli    reg, reg, UDB_MXLEN-(edge2-edge1)     /* make multibit 1s mask     */    ;\
       slli    reg, reg, edge1             /* and put it into position       */    ;\
       .if   (!even)                                                               ;\
         xori    reg, reg, -1              /* orig odd, cvt to 1110111 mask  */    ;\
@@ -261,7 +334,7 @@
       slli    reg, reg, edge1             /* add trailing zeros             */    ;\
     .else                                 /* give up, use fixed 8op sequence*/    ;\
     /******* TBD add sp case of zero short imms, rmv add/merge shifts  ******/    ;\
-      lui     reg, ((immx>>(XLEN-LIMMSZ))+cryh)&LIMMMSK     /* 1st 20b (63:44) */ ;\
+      lui     reg, ((immx>>(UDB_MXLEN-LIMMSZ))+cryh)&LIMMMSK     /* 1st 20b (63:44) */ ;\
       addi    reg, reg, SEXT_IMM(immx>>32)                /* nxt 12b (43:32) */   ;\
       slli    reg, reg, 11        /* following are <12b, don't need SEXT     */   ;\
       addi    reg, reg, (immx>>21) & (IMMMSK>>1)          /* nxt 11b (31:21) */   ;\
@@ -271,16 +344,16 @@
       .if   ((imm&(IMMMSK>>2))!=0) /* but skip this if lower bits are zero   */   ;\
         addi    reg, reg, (immx)     & (IMMMSK>>2)        /* lst 10b (09:00) */   ;\
       .endif                                                                      ;\
-      .if (XLEN==32)                                                              ;\
+      .if (UDB_MXLEN==32)                                                              ;\
         .warning "Should never get here for RV32"                                 ;\
       .endif                                                                      ;\
     .endif                                                                        ;\
   .option pop
 #endif
 
-# Alignment size for LA macro. Must be larger than the longest instruction
-# sequence that the la pseudo-instruction can expand into (to account for the jump hack).
-# On some rv64 targets, this may need to be increased to 6.
+// Alignment size for LA macro. Must be larger than the longest instruction
+// sequence that the la pseudo-instruction can expand into (to account for the jump hack).
+// On some rv64 targets, this may need to be increased to 6.
 #ifndef UNROLLSZ
   #define UNROLLSZ 5
 #endif
@@ -340,21 +413,29 @@
 // Utility Macros
 
 // Place 1 in msb
-#if XLEN == 64
+#if UDB_MXLEN == 64
 #define SET_MSB(_R) \
     LI(_R, 0x8000000000000000)
-#else  /* XLEN == 32 */
+#else  /* UDB_MXLEN == 32 */
 #define SET_MSB(_R) \
     LI(_R, 0x80000000)
 #endif
 
 // Interrupt Macros
 // Idle for interrupt latency
-#define RVTEST_IDLE_FOR_INTERRUPT \
-  .rept RVMODEL_INTERRUPT_LATENCY; \
-      nop; \
-  .endr
+// using LA to ensure that the tests have consistent code length across different simulators
+#define RVTEST_IDLE_FOR_INTERRUPT(_R1) \
+    LA(_R1, RVMODEL_INTERRUPT_LATENCY); \
+    99: addi _R1, _R1, -1; \
+        bnez _R1, 99b;
 
+// For the models that have timer running slower than the core clock, converts from timer ticks to cycles
+#define RVTEST_TIMER_INT_SOON_DELAY_CYCLES (RVMODEL_TIMER_INT_SOON_DELAY * RVMODEL_MAX_CYCLES_PER_TIMER_TICK)
+
+#define RVTEST_IDLE_FOR_TIMER_INTERRUPT(_R1) \
+    LI(_R1, RVTEST_TIMER_INT_SOON_DELAY_CYCLES); \
+    99: addi _R1, _R1, -1; \
+        bnez _R1, 99b;
 
 // Using generic RVTEST macros that can be invoked by tests, which then jump to the appropriate RVMODEL macros that implement the interrupt setup for the specific target platform.
 // This allows tests to be portable across different platforms with different interrupt implementations.

@@ -1,6 +1,9 @@
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_masking_vd_eq_v0
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    vd_eq_v0 : coverpoint ins.current.insn[11:7] {
-      bins v0 = { 5'b00000 };
-    }
+    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
+    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
+    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
 
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_eq_v0, vd_ne_vs1, vd_ne_vs2, vs2_ne_vs1, mask_enabled;
+//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////

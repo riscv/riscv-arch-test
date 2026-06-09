@@ -50,7 +50,7 @@ covergroup SmF_cg with function sample(ins_t ins);
         `ifdef ZFA_SUPPORTED
             wildcard bins fli          = {FLI_S};
             wildcard bins fround       = {FROUND_S};
-            `ifdef XLEN32
+            `ifdef UDB_MXLEN_32
                 `ifdef D_SUPPORTED
                     wildcard bins fmvh         = {FMVH_X_D};
                     wildcard bins fmvp         = {FMVP_D_X};
@@ -71,7 +71,7 @@ covergroup SmF_cg with function sample(ins_t ins);
         wildcard bins csrrc_frm    = {32'b000000000010_?????_011_?????_1110011};
         wildcard bins csrrc_fflags = {32'b000000000001_?????_011_?????_1110011};
     }
-    mstatus_FS: coverpoint ins.prev.csr[12'h300][14:13] {
+    mstatus_FS: coverpoint ins.prev.csr[CSR_MSTATUS][14:13] {
     }
 
     // main coverpoints

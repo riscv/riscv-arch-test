@@ -23,20 +23,17 @@
 
 #define SKIP_MEPC
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I']
+# REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "pmpsm_mislaigned_off.S"
 #define SIGUPD_COUNT 50
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -44,7 +41,7 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define g       (1<<(RVMODEL_PMP_GRAIN+2))
+#define g       (1<<(UDB_PMP_GRANULARITY))
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
@@ -156,14 +153,14 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -203,25 +200,9 @@ main:
 
     RVTEST_GOTO_MMODE
 
-    j exit                                                        // Verification Complete, exit the test
-
-.align 13
-TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
-    nop
-    .endr
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
-
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
 
 // Test case strings for reporting
 test_1_str:  .string "\"test: 1;  cp: pmpm_misaligned_napot_sh_address-1\""
@@ -241,6 +222,21 @@ test_13_str: .string "\"test: 13; cp: pmpm_misaligned_napot_lw_address+g-1\""
 test_14_str: .string "\"test: 14; cp: pmpm_misaligned_napot_lwu_address+g-1\""
 test_15_str: .string "\"test: 15; cp: pmpm_misaligned_napot_sd_address+g-1\""
 test_16_str: .string "\"test: 16; cp: pmpm_misaligned_napot_ld_address+g-1\""
+
+.align 12
+.align (UDB_PMP_GRANULARITY)
+TEST_FOR_EXECUTION_0:
+    jr ra
+
+TEST_FOR_EXECUTION:
+    .rept (1<<(UDB_PMP_GRANULARITY))
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

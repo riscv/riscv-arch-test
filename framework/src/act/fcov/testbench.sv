@@ -15,21 +15,17 @@ module testbench;
   `include "rvtest_config.svh"
 
   // Set up variable lengths
-  `ifdef XLEN32
-    localparam XLEN = 32;
-  `else
-    localparam XLEN = 64;
-  `endif
+  localparam XLEN = `UDB_MXLEN;
 
-  `ifdef FLEN128
+  `ifdef Q_SUPPORTED
     localparam FLEN = 128;
-  `elsif FLEN64
+  `elsif D_SUPPORTED
     localparam FLEN = 64;
   `else
     localparam FLEN = 32;
   `endif
 
-  localparam VLEN = 512; // TODO: Make configurable (maybe just use the macro directly)
+  localparam VLEN = `UDB_VLEN;
 
   localparam PA_BITS = (XLEN==32 ? 32'd34 : 32'd56);
   localparam PPN_BITS = (XLEN==32 ? 32'd22 : 32'd44);

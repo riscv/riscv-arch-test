@@ -25,7 +25,11 @@ covergroup ExceptionsZaamo_cg with function sample(ins_t ins);
         wildcard bins amomaxu_w = {AMOMAXU_W};
         wildcard bins amomin_w  = {AMOMIN_W};
         wildcard bins amominu_w = {AMOMINU_W};
-        `ifdef XLEN64
+        `ifdef ZACAS_SUPPORTED
+          wildcard bins amocas_w  = {AMOCAS_W};
+          wildcard bins amocas_d  = {AMOCAS_D};
+        `endif
+        `ifdef UDB_MXLEN_64
             wildcard bins amoswap_d = {AMOSWAP_D};
             wildcard bins amoadd_d  = {AMOADD_D};
             wildcard bins amoand_d  = {AMOAND_D};
@@ -35,6 +39,9 @@ covergroup ExceptionsZaamo_cg with function sample(ins_t ins);
             wildcard bins amomaxu_d = {AMOMAXU_D};
             wildcard bins amomin_d  = {AMOMIN_D};
             wildcard bins amominu_d = {AMOMINU_D};
+            `ifdef ZACAS_SUPPORTED
+              wildcard bins amocas_q  = {AMOCAS_Q};
+            `endif
         `endif
         `ifdef ZABHA_SUPPORTED
             wildcard bins amoswap_h = {AMOSWAP_H};
@@ -57,16 +64,20 @@ covergroup ExceptionsZaamo_cg with function sample(ins_t ins);
             wildcard bins amominu_b = {AMOMINU_B};
         `endif
     }
-    illegal_address: coverpoint ins.current.rs1_val {
-        bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
-    }
     // TODO: adjust number of lsbs based on MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE
     adr_LSBs: coverpoint ins.current.rs1_val[4:0]  {
         // auto fills 00000 through 11111
     }
     // main coverpoints
     cp_amo_address_misaligned:  cross amo_instrs, adr_LSBs;
-    cp_amo_access_fault:        cross amo_instrs, illegal_address;
+
+    // access fault coverpoints
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        illegal_address: coverpoint ins.current.rs1_val {
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
+        }
+        cp_amo_access_fault:        cross amo_instrs, illegal_address;
+    `endif
 
 endgroup
 

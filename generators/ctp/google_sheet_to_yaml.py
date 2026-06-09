@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # /// script
-# requires-python = ">=3.12"
+# requires-python = ">=3.10"
 # dependencies = [
 #     "ruamel-yaml>=0.18.16",
 # ]
@@ -42,6 +42,8 @@ The script extracts columns:
 Names in column I can be a comma-separated list, pipe-separated, or bracketed
 list (e.g. "[add_op, sub_op]"). Blank rows are ignored.
 """
+
+from __future__ import annotations
 
 import argparse
 import csv

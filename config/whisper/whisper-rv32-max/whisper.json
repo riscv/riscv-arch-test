@@ -3,7 +3,8 @@
 
   "address_translation_pmms": ["off"],
 
-  "isa": "rv32imafdcvhus_zicbom_zicbop_zicboz_zicntr_zicond_zicsr_zihintpause_zihpm_zimop_zawrs_zfa_zfbfmin_zfh_zkr_zcb_zcmop_zba_zbb_zbs_zvbb_zvbc_zvfbfmin_zvfbfwma_zvfh_zvkg_zvkned_zvknhb_zvqdot_sdtrig_smaia_smstateen_ssaia_sscofpmf_ssqosid_sstc_svadu_svinval_svvptc_zifencei_zabha_zbc_zkne_zknd_zknh_zbkb_zbkc_zbkx_zksed_zksh",
+  // restore smmpm_smnpm_ssnpm when supported by Sail; affects mseccfg.PMM
+  "isa": "rv32imafdcvhus_zicbom_zicbop_zicboz_zicntr_zicond_zicsr_zihintpause_zihpm_zimop_zawrs_zfa_zfbfmin_zfh_zkr_zcb_zcmop_zba_zbb_zbs_zvbb_zvbc_zvfbfmin_zvfbfwma_zvfh_zvkg_zvkned_zvknhb_zvksed_zvksh_zvqdot_sdtrig_smaia_smstateen_ssaia_sscofpmf_sstc_svadu_svinval_svvptc_zifencei_zabha_zbc_zkne_zknd_zknh_zbkb_zbkc_zbkx_zksed_zksh_zacas_zicfilp_zicfiss",
 
   "all_inst_addr_trigger": "false",
   "cancel_lr_on_trap": false,
@@ -35,6 +36,21 @@
       "mask": "0xff",
       "poke_mask": "0xff"
     },
+    "mstatus": {
+      "mask": "0x00fe7faa",
+      "poke_mask": "0x80fe7faa"
+    },
+    "mie": {
+      "mask": "0x2aaa", // ensuring that all non writable bits remain as read only 0
+      "poke_mask": "0x2aaa"
+    },
+    "mip": {
+      "mask": "0x2222", // determines what bits of mip can be set by M-mode software [SEIP, STIP, SSIP]
+      "poke_mask": "0x2aaa" //determines what bits of mip can be set by simulator injecting external events
+    },
+    "stvec": {
+      "mask": "0xFFFFFFFD" // don't allow setting MODE field to 2 (reserved)
+    },
     "mcounteren": {
       "mask": "0x00000007"
     },
@@ -56,9 +72,28 @@
     "stoptrace",
     "emittrace"
   ],
-
+  "aplic": {
+    "num_sources": 2, // two sources (MEXT and SEXT)
+    "domains": {
+      "maplic": {
+        "base": "0x0c000000",
+        "size": "0x00100000",
+        "parent": null,
+        "is_machine": true,
+        "hart_indices": [0],
+        "child_index": 0
+      },
+      "saplic": {
+        "base": "0x0d000000",
+        "size": "0x00100000",
+        "parent": "maplic",
+        "is_machine": false,
+        "hart_indices": [0],
+        "child_index": 0
+      }
+    }
+  },
   "vector": {
-    "Comment": "Hardware supports 32-bit ELEN plus some widening operations from 32 to 64-bit",
     "always_mark_dirty": true,
     "bytes_per_vec": 32,
     "fp_usum_nan_canonicalize": ["e16", "e32", "e64"],
@@ -79,8 +114,8 @@
     "trap_non_zero_vstart": true,
     "tt_clear_tval_vl_egs": true,
     "tt_fp_usum_tree_reduction": ["e16", "e32", "e64"],
-    "update_whole_mask": true
+    "update_whole_mask": false
   },
 
-  "wfi_timeout": 0
+  "wfi_timeout": 200
 }

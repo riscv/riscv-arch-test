@@ -32,6 +32,8 @@ The InstructionTypeConfig supports:
   - imm_nonzero: Whether immediate must be nonzero
 """
 
+from __future__ import annotations
+
 from typing import Any
 
 from testgen.data.params import InstructionParams
@@ -66,6 +68,10 @@ def generate_random_params(
         >>> # rd=5 and rs1val=0x100 are fixed, others are random
     """
     params = InstructionParams(**fixed_params)
+
+    # Assign a random fcsr.frm value for dynamic rounding mode tests if not already set
+    if params.frm == "dyn" and params.csr_frm_val is None:
+        params.csr_frm_val = random_range(0, 4)
 
     # Get the required parameters for this instruction type (extracted from formatters)
     instr_type_config = get_instr_type_config(instr_type)

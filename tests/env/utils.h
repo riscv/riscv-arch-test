@@ -6,9 +6,10 @@
 // Zicsr test CSR selection. Set before rvtest_setup.h's boot cascade so BOOT_TO_*MODE
 // pins the test to a mode where the chosen CSR is writable. A DUT may override the
 // choice via RVMODEL_TEST_CSR. RVTEST_READ_ONLY_TEST_CSR marks a non-writable choice.
-// Only Zicsr tests define RVTEST_SELECT_TEST_CSR, so other suites are unaffected.
-#if !defined(RVTEST_SELECT_TEST_CSR)
-  // not a Zicsr test; no CSR selection needed
+// Gated on ZICSR_SUPPORTED: a DUT that implements Zicsr runs the Zicsr tests and so must
+// have a valid CSR to pick.
+#if !defined(ZICSR_SUPPORTED)
+  // DUT does not implement Zicsr; no CSR selection needed
 #elif defined(RVMODEL_TEST_CSR)
   #define RVTEST_TEST_CSR RVMODEL_TEST_CSR
 #elif defined(F_SUPPORTED)

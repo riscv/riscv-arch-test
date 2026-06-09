@@ -168,6 +168,8 @@ Each DUT needs a linker script tailored to its memory map. The linker script in 
 
 The `.text.rvmodel` section contains DUT-specific (`RVMODEL`) code and **must** be placed after the `.data` section.  This ensures that variable-size model-specific macro expansions (which may differ between the DUT build and the reference-model build) do not affect the addresses of test data symbols such as `scratch` and `begin_signature`, preventing signature mismatches.
 
+The virtual memory tests rely on an identity mapping between physical and virtual addresses in the code and data.  Therefore, the starting address in the linker file should be a valid physical and virtual address.  For systems supporting Sv39, this means that the starting address should be below 2^38 (typically a maximum of 0x20_0000_0000).  For some systems, this may involve configuring a non-default physical address and size for main memory.
+
 === File Organization
 
 Standard macros are defined in `tests/env`.  DUT-specific macros are defined in `rvmodel_macros.h`, which is in a DUT-specific config directory (e.g. `config/<dut>/<version>/rvmodel_macros.h` for predefined simulators, or out-of-tree for custom DUTs).
@@ -256,3 +258,5 @@ Test generator:
     TODO: provide a routine to goto UMODE from SMODE
         provide a SBI way to get back to M-mode from U-mode when ecall from U is delegated
         needed  for cleanup after tests.  See UF as an example.
+
+        Is trap handler considered part of T-SBI?  How to handle invisible traps with user-invokable file?

@@ -3,6 +3,29 @@
 # Jordan Carlin jcarlin@hmc.edu October 2025, Sadhvi Narayanan sanarayanan@hmc.edu February 2026
 # SPDX-License-Identifier: BSD-3-Clause
 
+/****************************** Zicsr test CSR selection *********************************/
+// Pick a CSR for Zicsr tests. Set here, before the boot cascade, so BOOT_TO_*MODE pins
+// the test to a mode where the CSR is writable. DUT may override via RVMODEL_TEST_CSR.
+#ifndef RVTEST_TEST_CSR
+  #ifdef RVMODEL_TEST_CSR
+    #define RVTEST_TEST_CSR RVMODEL_TEST_CSR
+  #elif defined(F_SUPPORTED)
+    #define RVTEST_TEST_CSR fflags
+  #elif defined(V_SUPPORTED)
+    #define RVTEST_TEST_CSR vxsat
+  #elif !defined(U_SUPPORTED)
+    #define RVTEST_TEST_CSR mepc
+  #elif defined(ZICNTR_SUPPORTED)
+    #define RVTEST_TEST_CSR instret
+  #elif defined(S_SUPPORTED)
+    #define RVTEST_TEST_CSR sepc
+    #define BOOT_TO_SMODE
+  #elif defined(STANDARD_SM_SUPPORTED)
+    #define RVTEST_TEST_CSR mepc
+    #define BOOT_TO_MMODE
+  #endif
+#endif
+
 /*************************************** RVTEST_BEGIN **************************************/
 /**** RVTEST_BEGIN sets up the test environment and is run before the actual test code. ****/
 /**** - sets up main entry point labels                                                 ****/

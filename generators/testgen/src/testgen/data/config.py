@@ -32,10 +32,6 @@ class TestConfig:
         march_extensions: Optional list of extensions to use for building the march string.
                           If None, march is built from required_extensions.
         extra_params: Optional list of extra parameter requirements for the test.
-        required_extensions_any_of: Optional list of extensions where at least one must
-                          hold for the test to run. An entry prefixed with '~' means the
-                          extension must be absent (e.g. '~U'). Emitted as
-                          REQUIRED_EXTENSIONS_ANY_OF in the test header.
     """
 
     xlen: int
@@ -45,7 +41,6 @@ class TestConfig:
     required_extensions: list[str] | None = None
     march_extensions: list[str] | None = None
     extra_params: list[str] | None = None
-    required_extensions_any_of: list[str] | None = None
 
     @property
     def xlen_format_str(self) -> str:

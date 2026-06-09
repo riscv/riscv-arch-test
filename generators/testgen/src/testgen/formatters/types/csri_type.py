@@ -16,10 +16,9 @@ csri_config = InstructionTypeConfig(required_params={"rd", "rs2", "rs2val", "imm
 
 def zicsr_acccessi(instr_name: str, rd: int, rs2: int, immval: int) -> str:
     """Helper function to determine which CSR to use for testing based on supported extensions."""
-    # Use writable unprivileged extension CSRs if any exist,
-    # else use mepc if U is not supported
-    # else use instret (which is not writable, but at least can be accessed)
-    # The suite is gated by REQUIRED_EXTENSIONS_ANY_OF so cores with none of these are skipped.
+    # The CSR is selected once via RVTEST_TEST_CSR (see rvtest_setup.h), which also pins
+    # the test to a privilege mode where the CSR is writable. instret is read-only and
+    # needs special handling, so guard the one selection where instret is chosen.
 
     # instret requires special treatment because it is not writable, and the value is not initialized
     if instr_name in ["csrrw", "csrrwi"] or rs2 == 0 or rd == 0:
@@ -32,16 +31,10 @@ def zicsr_acccessi(instr_name: str, rd: int, rs2: int, immval: int) -> str:
         )
 
     return (
-        "#if defined(F_SUPPORTED)\n"
-        f"{instr_name} x{rd}, fflags, {immval}\n"
-        "#elif defined(V_SUPPORTED)\n"
-        f"{instr_name} x{rd}, vxsat, {immval}\n"
-        "#elif !defined(U_SUPPORTED)\n"
-        f"{instr_name} x{rd}, mepc, {immval}\n"
-        "#elif defined(ZICNTR_SUPPORTED)\n"
+        "#if defined(ZICNTR_SUPPORTED) && defined(U_SUPPORTED) && !defined(F_SUPPORTED) && !defined(V_SUPPORTED)\n"
         f"{instret_access}\n"
         "#else\n"
-        f"  #error no CSR known for testing\n"
+        f"{instr_name} x{rd}, RVTEST_TEST_CSR, {immval}\n"
         "#endif\n"
     )
 

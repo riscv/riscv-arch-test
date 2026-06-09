@@ -61,21 +61,6 @@ def check_test_params(test_params: dict[str, int | bool | str], config_params: d
     return True
 
 
-def check_any_of_extensions(any_of: list[str], implemented_extensions: set[str]) -> bool:
-    """Check that at least one of the listed extensions is satisfied.
-
-    An entry prefixed with '~' is satisfied when that extension is absent, so
-    '~U' matches a core that does not implement U mode. An empty list imposes no
-    constraint and always passes.
-    """
-    if not any_of:
-        return True
-    return any(
-        ext[1:] not in implemented_extensions if ext.startswith("~") else ext in implemented_extensions
-        for ext in any_of
-    )
-
-
 def select_tests(
     test_dict: dict[str, TestMetadata],
     implemented_extensions: set[str],
@@ -91,9 +76,6 @@ def select_tests(
             continue
         # Check if all required extensions are implemented
         if test_metadata.required_extensions.issubset(implemented_extensions):
-            # Check that at least one of the any-of extensions is satisfied (if specified)
-            if not check_any_of_extensions(test_metadata.required_extensions_any_of, implemented_extensions):
-                continue
             # Check if all parameters match
             test_params = test_metadata.params
             if check_test_params(test_params, config_params):

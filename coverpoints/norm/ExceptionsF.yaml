@@ -1,7 +1,4 @@
 normative_rule_definitions:
-  # TODO Put illegal instruction and fs = 0
-  # TODO Reference normative rules to cp_mstatus_fs_illegal_instr, cp_mstatus_fs_csr_write, cp_mstatus_fs_csr_legal
-
   # The Exception Code field contains a code identifying the last exception or
   # interrupt.
   - name: mcause_exccode_op
@@ -26,4 +23,12 @@ normative_rule_definitions:
     coverpoint:
       [
         "TODO: currently have no cp in ExceptionsF that tests for load with rd = x0",
+      ]
+
+  # When an extension’s status is set to Off, any instruction that attempts to
+  # read or write the corresponding state will cause an illegal-instruction exception
+  - name: mstatus_fs_vs_xs_off_op
+    coverpoint:
+      [
+        "ExceptionsF_cg/cp_{mstatus_fs_illegal_instr,mstatus_fs_csr_write,mstatus_fs_legal}",
       ]

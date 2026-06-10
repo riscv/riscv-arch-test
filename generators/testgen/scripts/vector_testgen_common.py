@@ -1783,10 +1783,15 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, vs1=0, load_testlin
     global sigupd_count
 
     # The _LEN macro is only used for length-suite tests and for whole-register
-    # vmv*r_v moves (mirroring the original routing).  For base-suite calls
-    # with avl=="vlmax"/"random" the simple SIGUPD_V macro is still used,
-    # which only compares a single element (preserving prior behavior).
-    length_macro = (testtype == "length" or (("vmv" in inst_ptr) and ("r_v" in inst_ptr)))
+    # vmv*r_v moves (mirroring the original routing), whole-register load/stores
+    # like vl*re*.v/vs*r.v.  For base-suite calls with avl=="vlmax"/"random" the
+    # simple SIGUPD_V macro is still used, which only compares a single element
+    # (preserving prior behavior).
+    length_macro = (testtype == "length"
+        or (("vmv" in inst_ptr) and ("r_v" in inst_ptr))
+        or (re.search(r'vl\dre\d+_v', inst_ptr)) # matches vl*re*.v instructions
+        or (re.search(r'vs\dr_v', inst_ptr)) # matches vs*r.v instructions
+    )
 
     # Count signature bytes this call will consume.  The macro itself computes
     # the same formula at runtime (bytes = vl << vsew, +4 pad, round up to 8)

@@ -476,7 +476,7 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
                     f"{bit_action}(mstateen0, x{temp_reg})",
                 ]
             )
-            lines.extend(enter_fn(test_data, temp_reg))
+            lines.append(enter_line)
             for csr in fp_csrs:
                 for op in CSR_OPS:
                     lines.extend(
@@ -546,7 +546,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
                     f"{bit_action}(mstateen0, x{temp_reg})",
                 ]
             )
-            lines.extend(enter_fn(test_data, temp_reg))
+            lines.append(enter_line)
             for insn_template, label in fp_instrs:
                 insn = insn_template.replace("{temp}", str(temp_reg)).replace("{scratch}", str(scratch_reg))
                 lines.extend(

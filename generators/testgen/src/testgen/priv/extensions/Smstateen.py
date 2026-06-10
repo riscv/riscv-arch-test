@@ -63,7 +63,7 @@ def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
         )
     ]
 
-    (temp_reg,) = test_data.int_regs.get_registers(1)
+    temp_reg = test_data.int_regs.get_register()
 
     # ── U-mode ──────────────────────────────────────────────────────────────
     lines.append(GOTO_UMODE)

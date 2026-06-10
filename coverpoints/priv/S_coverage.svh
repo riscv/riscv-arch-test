@@ -287,7 +287,9 @@ covergroup S_scsr_cg with function sample(ins_t ins);
     }
 
     cp_scsr_access:           cross priv_mode_s, csrname, csraccesses;
-    cp_scsrwalk:              cross priv_mode_s, csrname, csrop, walking_ones;
+    cp_scsrwalk:              cross priv_mode_s, csrname, csrop, walking_ones {
+        ignore_bins senvcfg_clear_bit33 = binsof(csrname.senvcfg) && binsof(walking_ones.b_1[33]) && binsof(csrop.csrrc);
+    }
     cp_scsr_from_m:           cross priv_mode_m, csrname, csraccesses;
     cp_ucsr_from_s:           cross priv_mode_s, csruname, csraccesses;
     cp_shadow :               cross priv_mode_m, shadow, csrw_prev, rs1_prev, csrr;

@@ -143,7 +143,14 @@ def csr_access_test(test_data: TestData, csr: tuple, covergroup: str, coverpoint
 
 
 def csr_walk_test(
-    test_data: TestData, csr: tuple, covergroup: str, coverpoint: str, *, start_bit: int = 0, walk_zeros: bool = True
+    test_data: TestData,
+    csr: tuple,
+    covergroup: str,
+    coverpoint: str,
+    *,
+    start_bit: int = 0,
+    walk_zeros: bool = True,
+    unspecified_clears: list[int] | None = None,
 ) -> list[str]:
     """
     Generate a CSR walking-ones test: set and (optionally) clear each bit individually.
@@ -176,6 +183,8 @@ def csr_walk_test(
         lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
     if walk_zeros:
         lines.append(f"LI(x{temp_reg}, -1)             # x{temp_reg} = all 1s")
+    if unspecified_clears is None:
+        unspecified_clears = []
 
     need_endif = False
 
@@ -205,16 +214,21 @@ def csr_walk_test(
             if i == 32:
                 lines.append("\n#if __riscv_xlen == 64")
                 need_endif = True
-            lines.extend(
-                [
-                    "",
-                    f"CSRW({csr_name}, x{temp_reg})      # set all bits",
-                    f"CSRC({csr_name}, x{walk_reg})      # clear walking 1 in column {i}",
-                    test_data.add_testcase(f"{csr_name}_clr_bit_{i}", coverpoint, covergroup),
-                    gen_csr_read_sigupd(check_reg, csr, test_data, mask_reg),
-                    f"slli x{walk_reg}, x{walk_reg}, 1      # walk the 1",
-                ]
-            )
+            if i in unspecified_clears:
+                lines.append(
+                    f"slli x{walk_reg}, x{walk_reg}, 1      # skip clearing bit {i} because it is unspecified behavior",
+                )
+            else:
+                lines.extend(
+                    [
+                        "",
+                        f"CSRW({csr_name}, x{temp_reg})      # set all bits",
+                        f"CSRC({csr_name}, x{walk_reg})      # clear walking 1 in column {i}",
+                        test_data.add_testcase(f"{csr_name}_clr_bit_{i}", coverpoint, covergroup),
+                        gen_csr_read_sigupd(check_reg, csr, test_data, mask_reg),
+                        f"slli x{walk_reg}, x{walk_reg}, 1      # walk the 1",
+                    ]
+                )
         if need_endif:
             lines.append("#endif\n")
             need_endif = False

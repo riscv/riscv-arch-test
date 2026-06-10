@@ -712,7 +712,7 @@ widening_mac_ins = [
 ]
 not_maskable    = vm_nomask_ins + mmins + vmvins + ls_not_maskable + crypto_ins
 
-saturating_ins = ["vsaddu.vv", "vsaddu.vx", "vsaddu.vi", "vsadd.vv", "vsadd.vx", "vsadd.vi", "vssubu.vv", "vssubu.vx", "vssub.vv", "vssub.vx"]
+saturating_ins = ["vsaddu.vv", "vsaddu.vx", "vsaddu.vi", "vsadd.vv", "vsadd.vx", "vsadd.vi", "vssubu.vv", "vssubu.vx", "vssub.vv", "vssub.vx", "vsmul.vv", "vsmul.vx"]
 
 # "vl1re8.v", "vl1re16.v", "vl1re32.v", "vl1re64.v"
 # "vs1r.v",

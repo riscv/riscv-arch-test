@@ -27872,8 +27872,14 @@ covergroup Vx32_vsadd_vi_cg with function sample(ins_t ins);
 
     cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
-        bins zero = {0};
-        bins one  = {1};
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+
+        `ifdef UDB_MXLEN_32
+            `ifdef COVER_VX64
+                ignore_bins ignore_one = { 1'b1 };
+            `endif
+        `endif
     }
 
     //// end cp_csr_vxsat ////////////////////////////////////////////////
@@ -28070,8 +28076,14 @@ covergroup Vx32_vsadd_vv_cg with function sample(ins_t ins);
 
     cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
-        bins zero = {0};
-        bins one  = {1};
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+
+        `ifdef UDB_MXLEN_32
+            `ifdef COVER_VX64
+                ignore_bins ignore_one = { 1'b1 };
+            `endif
+        `endif
     }
 
     //// end cp_csr_vxsat ////////////////////////////////////////////////
@@ -28254,8 +28266,14 @@ covergroup Vx32_vsadd_vx_cg with function sample(ins_t ins);
 
     cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
-        bins zero = {0};
-        bins one  = {1};
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+
+        `ifdef UDB_MXLEN_32
+            `ifdef COVER_VX64
+                ignore_bins ignore_one = { 1'b1 };
+            `endif
+        `endif
     }
 
     //// end cp_csr_vxsat ////////////////////////////////////////////////
@@ -28444,8 +28462,14 @@ covergroup Vx32_vsaddu_vi_cg with function sample(ins_t ins);
 
     cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
-        bins zero = {0};
-        bins one  = {1};
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+
+        `ifdef UDB_MXLEN_32
+            `ifdef COVER_VX64
+                ignore_bins ignore_one = { 1'b1 };
+            `endif
+        `endif
     }
 
     //// end cp_csr_vxsat ////////////////////////////////////////////////
@@ -28642,8 +28666,14 @@ covergroup Vx32_vsaddu_vv_cg with function sample(ins_t ins);
 
     cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
-        bins zero = {0};
-        bins one  = {1};
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+
+        `ifdef UDB_MXLEN_32
+            `ifdef COVER_VX64
+                ignore_bins ignore_one = { 1'b1 };
+            `endif
+        `endif
     }
 
     //// end cp_csr_vxsat ////////////////////////////////////////////////
@@ -28826,8 +28856,14 @@ covergroup Vx32_vsaddu_vx_cg with function sample(ins_t ins);
 
     cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
-        bins zero = {0};
-        bins one  = {1};
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+
+        `ifdef UDB_MXLEN_32
+            `ifdef COVER_VX64
+                ignore_bins ignore_one = { 1'b1 };
+            `endif
+        `endif
     }
 
     //// end cp_csr_vxsat ////////////////////////////////////////////////
@@ -31385,6 +31421,24 @@ covergroup Vx32_vsmul_vv_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+
+        `ifdef UDB_MXLEN_32
+            `ifdef COVER_VX64
+                ignore_bins ignore_one = { 1'b1 };
+            `endif
+        `endif
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
+
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -31574,6 +31628,24 @@ covergroup Vx32_vsmul_vx_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_csr_vxsat
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
+        // Value of VXSAT.vxsat (vector fixed-point saturation flag)
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+
+        `ifdef UDB_MXLEN_32
+            `ifdef COVER_VX64
+                ignore_bins ignore_one = { 1'b1 };
+            `endif
+        `endif
+    }
+
+    //// end cp_csr_vxsat ////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -34279,8 +34351,14 @@ covergroup Vx32_vssub_vv_cg with function sample(ins_t ins);
 
     cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
-        bins zero = {0};
-        bins one  = {1};
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+
+        `ifdef UDB_MXLEN_32
+            `ifdef COVER_VX64
+                ignore_bins ignore_one = { 1'b1 };
+            `endif
+        `endif
     }
 
     //// end cp_csr_vxsat ////////////////////////////////////////////////
@@ -34463,8 +34541,14 @@ covergroup Vx32_vssub_vx_cg with function sample(ins_t ins);
 
     cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
-        bins zero = {0};
-        bins one  = {1};
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+
+        `ifdef UDB_MXLEN_32
+            `ifdef COVER_VX64
+                ignore_bins ignore_one = { 1'b1 };
+            `endif
+        `endif
     }
 
     //// end cp_csr_vxsat ////////////////////////////////////////////////
@@ -34683,8 +34767,14 @@ covergroup Vx32_vssubu_vv_cg with function sample(ins_t ins);
 
     cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
-        bins zero = {0};
-        bins one  = {1};
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+
+        `ifdef UDB_MXLEN_32
+            `ifdef COVER_VX64
+                ignore_bins ignore_one = { 1'b1 };
+            `endif
+        `endif
     }
 
     //// end cp_csr_vxsat ////////////////////////////////////////////////
@@ -34867,8 +34957,14 @@ covergroup Vx32_vssubu_vx_cg with function sample(ins_t ins);
 
     cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
-        bins zero = {0};
-        bins one  = {1};
+        bins zero = {1'b0};
+        bins one  = {1'b1};
+
+        `ifdef UDB_MXLEN_32
+            `ifdef COVER_VX64
+                ignore_bins ignore_one = { 1'b1 };
+            `endif
+        `endif
     }
 
     //// end cp_csr_vxsat ////////////////////////////////////////////////

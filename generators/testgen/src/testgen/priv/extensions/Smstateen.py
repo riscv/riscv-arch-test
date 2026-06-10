@@ -572,6 +572,7 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
     # Unconditional coverpoints — required by all Smstateen targets
     tc.code.extend(_generate_csr_illegal_accesses(test_data))
     tc.code.extend(_generate_walking_ones(test_data))
+    tc.code.append("#ifndef SM1P11P0_SUPPORTED")
     tc.code.extend(
         _generate_bit_controlled(
             test_data,
@@ -580,8 +581,7 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
             bit_name="envcfg",
             banner="CSR ops on senvcfg from M/S/U-mode with mstateen0.envcfg (bit 62) enabled and disabled",
             csrs=["senvcfg"],
-        )
-    )
+     tc.code.append("#endif      // !defined( SM1P11P0_SUPPORTED) ")
 
     # cp_imsic — only when IMSIC is present
     tc.code.append("#ifdef IMSIC_SUPPORTED")

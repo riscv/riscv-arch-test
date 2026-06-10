@@ -600,10 +600,13 @@
       // menvcfg.CBCFE = 1: Enable Zicbom cache block clean/flush instructions
       // menvcfg.CBIE = 11: Enable Zicbom cache block invalidate instructions to perform invalidate operation
       #ifdef U_SUPPORTED // menvcfg only exists if U-mode is supported
-        li t0, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE
-        csrw menvcfg, t0
-        #if __riscv_xlen == 32
+        #ifndef SM1P11P0_SUPPORTED
           csrw menvcfgh, zero // Clear upper bits if they exist
+          li t0, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE
+          csrw menvcfg, t0
+          #if __riscv_xlen == 32
+            csrw menvcfgh, zero // Clear upper bits if they exist
+          #endif
         #endif
       #endif
 
@@ -856,8 +859,10 @@
     // senvcfg.CBZE = 1: Enable Zicboz cache block zero instructions
     // senvcfg.CBCFE = 1: Enable Zicbom cache block clean/flush instructions
     // senvcfg.CBIE = 11: Enable Zicbom cache block invalidate instructions to perform invalidate operation
-    li t0, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE
-    csrw senvcfg, t0
+    #ifndef SM1P11P0_SUPPORTED
+      li t0, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE
+      csrw senvcfg, t0
+    #endif
 
     // Boot into S-mode
     // temporarily gate going to SMODE with BOOT_TO_SMODE until all tests are updated to work with S-mode booting

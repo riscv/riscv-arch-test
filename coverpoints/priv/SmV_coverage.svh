@@ -261,7 +261,7 @@ covergroup SmV_cg with function sample(ins_t ins);
 
     // Like rs2_vtype_legal but excludes the MSB so it can be combined with rs2_vill_set
     // (rs2_vtype_legal demands rs2_val[XLEN-1:8]==0, which contradicts rs2_vill_set).
-    rs2_vtype_legal_no_msb : coverpoint ins.current.rs2_val[`XLEN-2:8] {
+    rs2_vtype_legal_no_msb : coverpoint ins.current.rs2_val[`UDB_MXLEN-2:8] {
         bins legal = {0};
     }
 

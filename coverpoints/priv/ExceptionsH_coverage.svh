@@ -522,7 +522,7 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
         hlv_illegal_address: coverpoint ins.current.rs1_val {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
         }
-        address_legality: coverpoint ((ins.current.imm + ins.current.rs1_val) & ~(`UDB_MXLEN'h3)) == (`RVMODEL_ACCESS_FAULT_ADDRESS & ~(`UDB_MXLEN'h3)) {
+        address_legality: coverpoint ((ins.current.imm + ins.current.rs1_val) & ~(64'h3)) == (`RVMODEL_ACCESS_FAULT_ADDRESS & ~(64'h3)) {
             bins legal = {0};
             bins illegal = {1};
         }

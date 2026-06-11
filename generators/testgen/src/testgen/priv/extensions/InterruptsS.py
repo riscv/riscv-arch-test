@@ -1867,8 +1867,13 @@ def _generate_wfi_timeout_s_tests(test_data: TestData) -> list[str]:
                         )
 
                         if mie_val:
-                            lines.append("# Set MIE")
-                            lines.append("csrsi mstatus, 8")
+                            lines.extend(
+                                [
+                                    "# Set MIE+MPIE so MIE=1 persists through MRET into U-mode",
+                                    f"LI(x{r_scratch}, 0x88)",
+                                    f"CSRS(mstatus, x{r_scratch})",
+                                ]
+                            )
 
                         if sie_val:
                             lines.append("# Set SIE")
@@ -4009,8 +4014,13 @@ def _generate_wfi_u_tests(test_data: TestData) -> list[str]:
                 )
 
                 if mie_val:
-                    lines.append("# Set MIE")
-                    lines.append("csrsi mstatus, 8")
+                    lines.extend(
+                        [
+                            "# Set MIE+MPIE so MIE=1 persists through MRET into U-mode",
+                            f"LI(x{r_scratch}, 0x88)",
+                            f"CSRS(mstatus, x{r_scratch})",
+                        ]
+                    )
 
                 if sie_val:
                     lines.append("# Set SIE")
@@ -4134,8 +4144,13 @@ def _generate_wfi_timeout_u_tests(test_data: TestData) -> list[str]:
             )
 
             if mie_val:
-                lines.append("# Set MIE")
-                lines.append("csrsi mstatus, 8")
+                lines.extend(
+                    [
+                        "# Set MIE+MPIE so MIE=1 persists through MRET into U-mode",
+                        f"LI(x{r_scratch}, 0x88)",
+                        f"CSRS(mstatus, x{r_scratch})",
+                    ]
+                )
 
             if sie_val:
                 lines.append("# Set SIE")

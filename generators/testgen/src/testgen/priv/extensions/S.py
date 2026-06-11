@@ -516,8 +516,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     )
 
     for csr in csrs:
-        unspecified_clears = [33] if csr[0] == "senvcfg" else []
-        lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint, unspecified_clears=unspecified_clears))
+        lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
 
     # cp_csr_satp waived because behavior of other fields is UNSPECIFIED when satp.MODE = Bare
     # ######################################

@@ -94,6 +94,11 @@
 --override cpu*/PMP_decompose=T  # unaligned accesses are decomposed into separate aligned accesses
 --override cpu*/PMP_undefined=T # access to unimplemented PMP registers cause illegal instruction exception
 
+# Pointer Masking
+--override iss/cpu0/Smmpm=48_57 # (Enumeration) (default=none) (default) Specify Smmpm implemented modes
+--override iss/cpu0/Smnpm=48_57 # (Enumeration) (default=48_57) (default) Specify Smnpm implemented modes
+--override iss/cpu0/Ssnpm=48_57 # (Enumeration) (default=48_57) (default) Specify Ssnpm implemented modes
+
 # More extensions
 #--override cpu*/Smdbltrp=T
 #--override cpu*/Ssdbltrp=T

@@ -383,7 +383,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     for csr in csrs:
         lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
     
-    lines.append("\n#ifdef SM1P11P0_SUPPORTED")
+    lines.append("\n#ifndef SM1P11P0_SUPPORTED")
     lines.extend(csr_access_test(test_data, ("menvcfg", None), covergroup, coverpoint))
     lines.append("#endif")
 

@@ -642,7 +642,7 @@ def _generate_changingtos_ssi_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_trigger_changingtos_ssi"
 
-    r_scratch = test_data.int_regs.get_registers(1)[0]
+    r_scratch = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(

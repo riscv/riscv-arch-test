@@ -606,7 +606,8 @@
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
     12:                                                                                                             \
         /* PASS */                                                                                                  \
-        RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)                                                    ;\
+        RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG3)                                                    ;\
+        vsetvl      _TEMP_REG, _TEMP_REG, _TEMP_REG2 ;  /* Restore original vl and vtype for segmented load/stores */   \
         .option pop
 #else
     #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR,  \
@@ -614,8 +615,18 @@
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
         /* Save architecture state of instruction under test (vl and vtype) */                                      \
-        nop                                  ;   /* _TEMP_REG2 load */                                              \
-        nop                                  ;   /* _TEMP_REG load */                                               \
+        csrr        _TEMP_REG2, vtype        ;                                                                      \
+        /* vl can be loaded in 3 distinct ways */ \
+        .if (_SCALAR_DST_FLAG==1) ;\
+            /* For scalar-dst instructions (vmv.s.x, reductions) only element 0 is written. */                          \
+            /* Override the saved vl to 1 so the active mask covers only element 0 and     */                           \
+            /* elements 1..VLMAX-1 are treated as tail, getting the vta-agnostic relaxation.*/                          \
+            li          _TEMP_REG, 1             ;                                                                      \
+        .elseif (_VCOMPRESS_FLAG == 1) ; \
+            vcpop.m _TEMP_REG, _VS1 ; /* Count number of active elements in vs1 to get effective vl for vcompress.m */ \
+        .else; \
+            csrr _TEMP_REG, vl ;\
+        .endif ; \
         /* Set vl = VLMAX for full-register comparison*/                                                            \
         vsetvli     _LINK_REG, x0, e ##_VD_EEW, m ##_LMUL, ta, ma ;                                                 \
         /* Load reference from signature and compute mismatch mask */                                               \
@@ -772,7 +783,8 @@
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
     12:                                                                                                             \
         /* PASS */                                                                                                  \
-        RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)                                                    ;\
+        RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG3)                                                    ;\
+        vsetvl      _TEMP_REG, _TEMP_REG, _TEMP_REG2 ;  /* Restore original vl and vtype for segmented load/stores */   \
         .option pop
 #endif
 

@@ -484,6 +484,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
 
     for csr in csrs:
         lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+
     lines.extend(["", "#ifndef SM1P11P0_SUPPORTED"])
     lines.extend(csr_access_test(test_data, csr_senvcfg, covergroup, coverpoint))
     lines.extend(["", "#endif"])
@@ -529,6 +530,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
     lines.extend(csr_walk_test(test_data, csr_senvcfg, covergroup, coverpoint, warl_fields=warl_fields))
     lines.extend(["", "#endif"])
+    
     # cp_csr_satp waived because behavior of other fields is UNSPECIFIED when satp.MODE = Bare
     # ######################################
     # coverpoint = "cp_csr_satp"

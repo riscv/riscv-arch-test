@@ -41,6 +41,8 @@ RVTEST_BEGIN
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
+    fence.i
+
     LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     // Execution Access Check
     LA (a4, \ADDRESS)
@@ -358,12 +360,14 @@ test_15_str: .string "\"test: 15; cp: cp_cfg_A_tor_jalr_address+g\""
 .align 12
 .align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
     jr ra
+    .endr
 
 .align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
-    .rept (1<<(UDB_PMP_GRANULARITY))
-    nop
+    .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
+    jr ra
     .endr
 
 

@@ -1778,15 +1778,19 @@ def writeSIGUPD_F(fd):
 #         writeLine(f"RVTEST_SIGUPD_V(x{sigReg}, x{tempReg}, {sew}, {offset}, v{vd})", f"# stores v{vd} (sew = {sew}, AVL = {avl}) in signature with base (x{sigReg}) and helper (x{tempReg}) register")
 
 
-def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, vs1=0, load_testline = None, sig_whole_register_store = False, vd_mask = False, testtype = "base", masked = False, lmul=1, scalar_dst=False, vlmax_mask_prod=False, is_crypto=False, egs=1):
+def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, vs1=0, load_testline = None, sig_whole_register_store = False, vd_mask = False, testtype = "base", masked = False, lmul=1, scalar_dst=False, vlmax_mask_prod=False, is_crypto=False, egs=1, segments = 1):
 
     global sigupd_count
 
     # The _LEN macro is only used for length-suite tests and for whole-register
-    # vmv*r_v moves (mirroring the original routing).  For base-suite calls
-    # with avl=="vlmax"/"random" the simple SIGUPD_V macro is still used,
-    # which only compares a single element (preserving prior behavior).
-    length_macro = (testtype == "length" or (("vmv" in inst_ptr) and ("r_v" in inst_ptr)))
+    # vmv*r_v moves (mirroring the original routing), whole-register load/stores
+    # like vl*re*.v/vs*r.v.  For base-suite calls with avl=="vlmax"/"random" the
+    # simple SIGUPD_V macro is still used, which only compares a single element
+    # (preserving prior behavior).
+    whole_register_operation = ((("vmv" in inst_ptr) and ("r_v" in inst_ptr))
+        or (re.search(r'vl\dre\d+_v', inst_ptr)) # matches vl*re*.v instructions
+        or (re.search(r'vs\dr_v', inst_ptr))) # matches vs*r.v instructions
+    length_macro = (testtype == "length" or whole_register_operation)
 
     # Count signature bytes this call will consume.  The macro itself computes
     # the same formula at runtime (bytes = vl << vsew, +4 pad, round up to 8)
@@ -1794,7 +1798,7 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, vs1=0, load_testlin
     # the reserved signature region is large enough.
     if length_macro or vlmax_mask_prod:
       # _LEN macro sets vl = VLMAX for (sew, emul) → bytes = maxVLEN_bits * emul / 8.
-      emul_for_bytes = int(sig_lmul) if (sig_lmul is not None and sig_lmul >= 1) else 1
+      emul_for_bytes = int(sig_lmul) if (sig_lmul is not None and sig_lmul >= 1 and not whole_register_operation) else 1
       worst_bytes = (maxVLEN * emul_for_bytes) // 8
     else:
       # Base suite: vl = 1 element of vd's EEW. `sew` here already reflects
@@ -1803,7 +1807,7 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, vs1=0, load_testlin
       worst_bytes = sew * egs // 8
     sig_stride = max(xlen, flen) // 8 if flen > 0 else xlen // 8
     offset_bytes = (worst_bytes + 4 + 7) & ~7
-    sigupd_count += max(1, (offset_bytes + sig_stride - 1) // sig_stride)
+    sigupd_count += max(1, (offset_bytes + sig_stride - 1) // sig_stride) * segments
 
     str_ptr = "test_" + str(testcase_count) + "_str"
 
@@ -1823,12 +1827,14 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, vs1=0, load_testlin
     # -------------------------------------------------
     if sig_lmul is None:
       emul = 1
+    elif whole_register_operation:
+      emul = 1
     elif sig_lmul >= 1:
       emul = int(sig_lmul)
     else:
       emul = 1
 
-    vd_group = [vd + i for i in range(emul)]
+    vd_group = [vd + i for i in range(emul * segments)]
 
     # -------------------------------------------------
     # Choose vtmp (LMUL aligned, no overlap)
@@ -1902,49 +1908,51 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, vs1=0, load_testlin
     else:
       masked_flag = 1
 
-    if vlmax_mask_prod:
-      writeLine("# The result is the same as the previous test, except that it is run at vlmax. On a DUT, the sigupd will nop here, but")
-      writeLine("# for the reference model, it will store a value. This is because for a mask-producing operation, there are 3 valid outputs")
-      writeLine("# in the tail region, as given by the spec: undisturbed, all ones, or computed as if vl = vlmax. So, to have self-checking tests")
-      writeLine("# this must be included as a no-op")
-      writeLine(f"# RVTEST_SIGUPD_VLMAX_MASK_PROD(_SIG_PTR, _LINK_REG, _TEMP_REG, _VR, _VD_EEW, _LMUL)")
-      writeLine(f"RVTEST_SIGUPD_VLMAX_MASK_PROD(x{sigReg}, x{linkReg}, x{tempReg}, v{vd}, {sew}, {emul})")
-    elif length_macro:
-      scalar_dst_flag = 1 if scalar_dst else 0
-      writeLine(f"# RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR, _VS1, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR)")
-      if "vcompress" in inst_ptr:
-        writeLine(
-          f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, 0, {masked_flag}, 1, {sew}, {emul}, 0, {inst_ptr}, {str_ptr})")
-        writeLine(f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
-      elif vd_mask:
-        writeLine(
-          f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, 1, {masked_flag}, 0, 8, {emul}, 0, {inst_ptr}, {str_ptr})")
-        writeLine(f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
-        writeLine("# This is a mask producing operation, so in the tail region, there are 3 valid outputs: undisturbed, all onees, or computed as if vl = vlmax. This means")
-        writeLine("# that the next test will be a duplication of the work done in this test, so that a reference model can give an output in the two non-trivial cases.")
-      else:
-        writeLine(
-          f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, 0, {masked_flag}, 0, {sew}, {emul}, {scalar_dst_flag}, {inst_ptr}, {str_ptr})")
-        writeLine(f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
-    elif is_crypto:
-      writeLine(f"vsetivli x0, {egs}, e{sew}, m{sig_lmul}, tu, mu", f"# set SEW={sew}, LMUL={sig_lmul}, VL={egs} before signature check")
-      writeLine(
-      f"RVTEST_SIGUPD_V(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, {sew}, v{vd}, {inst_ptr}, {str_ptr})")
-      writeLine(
-      f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
-    else:
-      writeLine(f"vsetivli x0, 1, e{sew}, m1, tu, mu", f"# set SEW={sew}, LMUL=1, VL=1 before signature check")
-      writeLine(f"# RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _VREG, _INST_PTR, _STR_PTR)")
-      if vd_mask:
-        writeLine(
-        f"RVTEST_SIGUPD_V(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, 8, v{vd}, {inst_ptr}, {str_ptr})")
-        writeLine(
-        f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
-      else:
+    for _ in range(segments):
+      if vlmax_mask_prod:
+        writeLine("# The result is the same as the previous test, except that it is run at vlmax. On a DUT, the sigupd will nop here, but")
+        writeLine("# for the reference model, it will store a value. This is because for a mask-producing operation, there are 3 valid outputs")
+        writeLine("# in the tail region, as given by the spec: undisturbed, all ones, or computed as if vl = vlmax. So, to have self-checking tests")
+        writeLine("# this must be included as a no-op")
+        writeLine(f"# RVTEST_SIGUPD_VLMAX_MASK_PROD(_SIG_PTR, _LINK_REG, _TEMP_REG, _VR, _VD_EEW, _LMUL)")
+        writeLine(f"RVTEST_SIGUPD_VLMAX_MASK_PROD(x{sigReg}, x{linkReg}, x{tempReg}, v{vd}, {sew}, {emul})")
+      elif length_macro:
+        scalar_dst_flag = 1 if scalar_dst else 0
+        writeLine(f"# RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR, _VS1, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR)")
+        if "vcompress" in inst_ptr:
+          writeLine(
+            f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, 0, {masked_flag}, 1, {sew}, {emul}, 0, {inst_ptr}, {str_ptr})")
+          writeLine(f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
+        elif vd_mask:
+          writeLine(
+            f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, 1, {masked_flag}, 0, 8, {emul}, 0, {inst_ptr}, {str_ptr})")
+          writeLine(f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
+          writeLine("# This is a mask producing operation, so in the tail region, there are 3 valid outputs: undisturbed, all onees, or computed as if vl = vlmax. This means")
+          writeLine("# that the next test will be a duplication of the work done in this test, so that a reference model can give an output in the two non-trivial cases.")
+        else:
+          writeLine(
+            f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, 0, {masked_flag}, 0, {sew}, {emul}, {scalar_dst_flag}, {inst_ptr}, {str_ptr})")
+          writeLine(f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
+      elif is_crypto:
+        writeLine(f"vsetivli x0, {egs}, e{sew}, m{sig_lmul}, tu, mu", f"# set SEW={sew}, LMUL={sig_lmul}, VL={egs} before signature check")
         writeLine(
         f"RVTEST_SIGUPD_V(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, {sew}, v{vd}, {inst_ptr}, {str_ptr})")
         writeLine(
         f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
+      else:
+        writeLine(f"vsetivli x0, 1, e{sew}, m1, tu, mu", f"# set SEW={sew}, LMUL=1, VL=1 before signature check")
+        writeLine(f"# RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _VREG, _INST_PTR, _STR_PTR)")
+        if vd_mask:
+          writeLine(
+          f"RVTEST_SIGUPD_V(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, 8, v{vd}, {inst_ptr}, {str_ptr})")
+          writeLine(
+          f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
+        else:
+          writeLine(
+          f"RVTEST_SIGUPD_V(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, {sew}, v{vd}, {inst_ptr}, {str_ptr})")
+          writeLine(
+          f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
+      vd += max(1 if whole_register_operation else int(sig_lmul), 1)
 
 
 
@@ -2030,6 +2038,8 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
       load_unique_vtype = True
     elif instruction in whole_register_ls:
       load_unique_vtype = lmul != getInstructionSegments(instruction)
+    elif (instruction in segment_loads or instruction in segment_stores) and lmul != register_emul_field:
+      load_unique_vtype = True
     else:
       if register_group_size <= 1 and register % lmul != 0:
         load_unique_vtype = True
@@ -2111,6 +2121,11 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
           # Use per-field EMUL (always a legal LMUL); segment ops are prefilled by
           # looping NF single-field vle's below, not one giant vle at NF*EMUL_field.
           set_avl(register_sew, max(register_emul_field, 1), "# set VLMAX for vd load under test vl=0")
+        elif instruction in segment_loads or instruction in segment_stores:
+          load_sew = register_sew
+          load_lmul = max(register_emul_field, 1)
+          set_avl(load_sew, load_lmul, f"# set lmul to {load_lmul} for load")
+
 
     load_vls_random_corner = register_val_pointer == "vs_corner_random_within_2vlmax"
 
@@ -2122,6 +2137,7 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
     # Segment destinations / sources must be fully prefilled so every element of
     # every field register is deterministic before the instruction runs.
     # - vd under test vl=0 (test instr writes nothing)
+    # - vd of segment stores
     # - vs3 of segment stores (carries NF fields of source data)
     # A single vle covering the whole NF*EMUL_field group would need an illegal
     # LMUL when NF is 3/5/6/7, so we emit NF separate field-sized prefills instead.
@@ -2131,6 +2147,7 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
         and instruction not in whole_register_move
         and (
             (register_argument_name == "vd" and vl == 0)
+            or (register_argument_name == "vd" and instruction in vector_ls_ins)
             or (register_argument_name == "vs3" and instruction in vector_ls_ins)
         )
     )
@@ -2404,7 +2421,7 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
     elif (test in crypto_ins):
       writeSIGUPD_V(inst_ptr, vd, sew, avl=vl, sig_lmul=sig_lmul, vs1=vs1, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked, lmul=lmul, is_crypto=True, egs=egs)
     else:
-      writeSIGUPD_V(inst_ptr, vd, sew, avl=vl, sig_lmul=sig_lmul, vs1=vs1, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked, lmul=lmul, scalar_dst=(test in vredins or test == "vmv.s.x" or test == "vfmv.s.f"))
+      writeSIGUPD_V(inst_ptr, vd, sew, avl=vl, sig_lmul=sig_lmul, vs1=vs1, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked, lmul=lmul, scalar_dst=(test in vredins or test == "vmv.s.x" or test == "vfmv.s.f"), segments=getInstructionSegments(instruction))
 
 # TODO : Make this works with vector FP
 def loadFrmRoundingMode(frm, *scalar_registers_used):
@@ -2966,9 +2983,11 @@ def writeTest(description, instruction, cp, instruction_data=None,
           f"csrr x{mi_t1}, vl",
           f"csrr x{mi_t2}, vtype",
           f"vsetvli x{mi_t3}, x0, e8, m{reload_zero_lmul}, tu, mu",
-          f"vmv.v.i v{load_vd}, 0",
-          f"vsetvli x0, x{mi_t1}, e{sew}, m{default_lmul_flag}, tu, mu",
         ]
+        for segment in range(getInstructionSegments(instruction)):
+          segment_lmul = reload_zero_lmul if instruction not in whole_register_ls else 1
+          reload_pre_init.append(f"vmv.v.i v{load_vd + segment*segment_lmul}, 0")
+        reload_pre_init.append(f"vsetvli x0, x{mi_t1}, e{sew}, m{default_lmul_flag}, tu, mu")
         reset_vl_post_load = f"vsetvl x0, x{mi_t1}, x{mi_t2}"
 
     if instruction in whole_register_ls:

@@ -33,7 +33,7 @@ def _generate_machine_sti_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "InterruptsSstc_cg"
     coverpoint = "cp_machine_sti"
-    r_scratch, r_stce = test_data.int_regs.get_registers(2, exclude_regs=[])
+    r_scratch, r_stce = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(f"{coverpoint}", "M-mode STI: mideleg x mie_stie (STCE=1, MIE=1 fixed)"),
@@ -71,7 +71,7 @@ def _generate_machine_tm_tests(test_data: TestData) -> list[str]:
     """cp_machine_tm: M-mode csrr stimecmp with mcounteren.TM={0,1}."""
     covergroup = "InterruptsSstc_cg"
     coverpoint = "cp_machine_tm"
-    r_scratch = test_data.int_regs.get_register(exclude_regs=[])
+    r_scratch = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(f"{coverpoint}", "M-mode stimecmp read: mcounteren.TM={0,1}"),
@@ -102,7 +102,7 @@ def _generate_machine_stce_tests(test_data: TestData) -> list[str]:
     """cp_machine_stce: M-mode csrr stimecmp with menvcfg.STCE={0,1}."""
     covergroup = "InterruptsSstc_cg"
     coverpoint = "cp_machine_stce"
-    r_scratch = test_data.int_regs.get_register(exclude_regs=[])
+    r_scratch = test_data.int_regs.get_register()
 
     lines = [
         comment_banner("cp_machine_stce", "M-mode stimecmp read: menvcfg.STCE={0,1}"),
@@ -221,7 +221,7 @@ def _generate_supervisor_tm_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "InterruptsSstc_cg"
     coverpoint = "cp_supervisor_tm"
-    r_scratch = test_data.int_regs.get_register(exclude_regs=[])
+    r_scratch = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(f"{coverpoint}", "S-mode stimecmp read: mcounteren.TM={0,1}"),
@@ -264,7 +264,7 @@ def _generate_supervisor_stce_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "InterruptsSstc_cg"
     coverpoint = "cp_supervisor_stce"
-    r_scratch = test_data.int_regs.get_register(exclude_regs=[])
+    r_scratch = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(f"{coverpoint}", "S-mode stimecmp read: menvcfg.STCE={0,1}"),
@@ -313,7 +313,7 @@ def _generate_user_sti_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "InterruptsSstc_cg"
     coverpoint = "cp_user_sti"
-    r_scratch, r_stce, r_hi = test_data.int_regs.get_registers(3, exclude_regs=[])
+    r_scratch, r_stce, r_hi = test_data.int_regs.get_registers(3)
 
     lines = [
         comment_banner(
@@ -405,7 +405,7 @@ def _generate_user_tm_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "InterruptsSstc_cg"
     coverpoint = "cp_user_tm"
-    r_scratch = test_data.int_regs.get_register(exclude_regs=[])
+    r_scratch = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(f"{coverpoint}", "U-mode stimecmp read: mcounteren.TM={0,1}"),
@@ -453,7 +453,7 @@ def _generate_user_stce_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "InterruptsSstc_cg"
     coverpoint = "cp_user_stce"
-    r_scratch = test_data.int_regs.get_register(exclude_regs=[])
+    r_scratch = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(f"{coverpoint}", "U-mode stimecmp read: menvcfg.STCE={0,1}"),
@@ -496,7 +496,7 @@ def _generate_user_stce_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator("InterruptsSstc", required_extensions=["Sm", "S", "Sstc"])
 def make_interruptss_s(test_data: TestData) -> list[str]:
     """Generate all Sstc interrupt tests (machine, supervisor, user modes)."""
-    r_temp, r_mtcmp = test_data.int_regs.get_registers(2, exclude_regs=[])
+    r_temp, r_mtcmp = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(

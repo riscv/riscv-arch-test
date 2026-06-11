@@ -307,7 +307,7 @@ def add_fp_store_misaligned_test(
     coverpoint: str,
     covergroup: str,
 ) -> list[str]:
-    addr_reg, check_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    addr_reg, check_reg = test_data.int_regs.get_registers(2)
     data_reg = test_data.float_regs.get_register()
 
     t_lines = [

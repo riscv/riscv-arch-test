@@ -111,7 +111,7 @@ def _generate_trigger_sti_tests(test_data: TestData) -> list[str]:
             lines.append("# 8. Set STIP: stimecmp=0 fires immediately (mtime>0 always); legacy: direct mip write")
             lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
             lines.extend(
-                [
+		[
                 "#ifndef SM1P11P0_SUPPORTED",
                 *set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce),
                 "#else",
@@ -623,7 +623,6 @@ def _generate_changingtos_sti_tests(test_data: TestData) -> list[str]:
             "#endif",
         ]
     )
-
     lines.extend(
         [
             "# Enter S-mode (SIE=0, so no trap yet despite STIP=1)",
@@ -917,6 +916,7 @@ def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
                     if mip_name == "stip":
                         lines.extend(
                             [
+                                f"li x{r_stce}, 0",               
                                 "#ifndef SM1P11P0_SUPPORTED",
                                 f"csrr x{r_stce}, menvcfg",
                                 "#if __riscv_xlen == 64",
@@ -1084,6 +1084,7 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
                 if int_name == "stip":
                     lines.extend(
                         [
+                            f"li x{r_stce}, 0",              
                             "#ifndef SM1P11P0_SUPPORTED",
                             f"csrr x{r_stce}, menvcfg",
                             "#if __riscv_xlen == 64",
@@ -1095,8 +1096,8 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
                             "#endif",
                         ]
                     )
-                    lines.extend(
-                        [
+
+                    lines.extend([
                             "#ifndef SM1P11P0_SUPPORTED",
                             *set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce),
                             "#else",

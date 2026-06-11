@@ -1,1 +1,34 @@
 normative_rule_definitions:
+  # The Exception Code field contains a code identifying the last exception or
+  # interrupt.
+  - name: mcause_exccode_op
+    coverpoint:
+      [
+        "ExceptionsF/cp_{load_address_misaligned, store_address_misaligned, load_access_fault, store_access_fault}",
+      ]
+
+  # Note that load and load-reserved instructions generate load exceptions
+  - name: mcause_exccode_ld_ldrsv
+    coverpoint: ["ExceptionsF/cp_{load_address_misaligned, load_access_fault}"]
+
+  # loads and stores whose effective addresses are naturally aligned shall not raise
+  # an address-misaligned exception.
+  - name: ldst_no_exc_aligned
+    coverpoint:
+      ["ExceptionsF_cg/cp_{load_address_misaligned, store_address_misaligned}"]
+
+  # Loads with a destination of x0 must still raise any exceptions and cause any
+  # other side effects even though the load value is discarded.
+  - name: load_exc_x0
+    coverpoint:
+      [
+        "TODO: currently have no cp in ExceptionsF that tests for load with rd = x0",
+      ]
+
+  # When an extension’s status is set to Off, any instruction that attempts to
+  # read or write the corresponding state will cause an illegal-instruction exception
+  - name: mstatus_fs_vs_xs_off_op
+    coverpoint:
+      [
+        "ExceptionsF_cg/cp_{mstatus_fs_illegal_instr,mstatus_fs_csr_write,mstatus_fs_legal}",
+      ]

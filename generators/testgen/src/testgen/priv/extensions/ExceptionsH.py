@@ -295,16 +295,42 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
 #     read hedelegh
 #     """
 
-# covergroup, coverpoint = _CG, "cp_priority"
-# r_temp, r_address = test_data.int_regs.get_registers(2, exclude_regs=[0])
+#     covergroup, coverpoint = _CG, "cp_virtual_instruction_vs"
+#     r_temp, r_address = test_data.int_regs.get_registers(2, exclude_regs=[0])
 
-# lines = [
-#     comment_banner(coverpoint, _generate_priority_tests.__doc__),
-# ]
+#     lines = [
+#         comment_banner(coverpoint, _generate_virtual_instruction_vs_tests.__doc__),
+#     ]
 
-# lines.append("#if __riscv_xlen == 64")
+#     lines.extend(
+#         [
+#             "# Read instret with hcounteren[2] = 0, mcounteren[2] = 1",
+#             "# set up in M mode",
+#             f"LI(x{r_temp}, 0x2) # IR bit"
+#             f"CSRC(hcounteren, x{r_temp})",
+#             f""
+#             "",
+#             "# Go to VS mode to execute the instruction",
 
-# return lines
+#         ]
+#     )
+
+#     lines.extend(
+#         [
+#             "# Read instret with hcounteren[2] = 0, mcounteren[2] = 1",
+#             "# set up in M mode",
+#             "",
+#             "# Go to VS mode to execute the instruction",
+
+#         ]
+#     )
+
+#     lines.append("#if __riscv_xlen == 32")
+
+#     "#endif"
+
+
+#     return lines
 
 
 @add_priv_test_generator(

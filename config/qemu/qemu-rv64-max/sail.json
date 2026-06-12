@@ -207,16 +207,38 @@
     // the `misaligned` PMA attribute for a region, see the comments for
     // `memory.misaligned.exceptions` above.
     "regions": [
-      // ROM
+      // QEMU Memory Map for the virt board. (see qemu/hw/riscv/virt.c)
+      // ── Debug ────────────────────────────────────────────────────────────────
+      // {
+      //   "base": { "len": 64, "value": "0x00000000" },
+      //   "size": { "len": 64, "value": "0x00000100" },
+      //   "attributes": {
+      //     "mem_type": "IOMemory",
+      //     "cacheable": false,
+      //     "coherent": false,
+      //     "executable": false,
+      //     "readable": true,
+      //     "writable": true,
+      //     "read_idempotent": false,
+      //     "write_idempotent": false,
+      //     "misaligned_exceptions": {
+      //       "load_store": { "Some": "AccessFault" },
+      //       "vector":     { "Some": "AccessFault" },
+      //       "amo":                  "AccessFault"
+      //     },
+      //     "atomic_support": "AMONone",
+      //     "reservability": "RsrvNone",
+      //     "supports_cbo_zero": false,
+      //     "supports_pte_read": false,
+      //     "supports_pte_write": false
+      //   },
+      //   "include_in_device_tree": true
+      // },
+
+      // ── ROM ──────────────────────────────────────────────────────────────────────
       {
-        "base": {
-          "len": 64,
-          "value": "0x1000"
-        },
-        "size": {
-          "len": 64,
-          "value": "0x1000"
-        },
+        "base": { "len": 64, "value": "0x00001000" },
+        "size": { "len": 64, "value": "0x0000f000" },
         "attributes": {
           "mem_type": "IOMemory",
           "cacheable": true,
@@ -227,13 +249,9 @@
           "read_idempotent": true,
           "write_idempotent": true,
           "misaligned_exceptions": {
-            "load_store": {
-              "None": null
-            },
-            "vector": {
-              "None": null
-            },
-            "amo": "AccessFault"
+            "load_store": { "None": null },
+            "vector":     { "None": null },
+            "amo":                  "AccessFault"
           },
           "atomic_support": "AMONone",
           "reservability": "RsrvNone",
@@ -243,16 +261,65 @@
         },
         "include_in_device_tree": false
       },
-      // MMIO
+
+      // ── Test / Power-off device ───────────────────────────────────────────────
       {
-        "base": {
-          "len": 64,
-          "value": "0x2000000"
+        "base": { "len": 64, "value": "0x00100000" },
+        "size": { "len": 64, "value": "0x00001000" },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": false,
+          "coherent": false,
+          "executable": false,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": false,
+          "write_idempotent": false,
+          "misaligned_exceptions": {
+            "load_store": { "Some": "AccessFault" },
+            "vector":     { "Some": "AccessFault" },
+            "amo":                  "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
         },
-        "size": {
-          "len": 64,
-          "value": "0x10000000"
+        "include_in_device_tree": true
+      },
+
+      // ── Goldfish RTC ──────────────────────────────────────────────────────────
+      {
+        "base": { "len": 64, "value": "0x00101000" },
+        "size": { "len": 64, "value": "0x00001000" },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": false,
+          "coherent": false,
+          "executable": false,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": false,
+          "write_idempotent": false,
+          "misaligned_exceptions": {
+            "load_store": { "Some": "AccessFault" },
+            "vector":     { "Some": "AccessFault" },
+            "amo":                  "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
         },
+        "include_in_device_tree": true
+      },
+
+      // ── CLINT (Core Local Interruptor — mtime, mtimecmp, MSIP) ───────────────
+      {
+        "base": { "len": 64, "value": "0x02000000" },
+        "size": { "len": 64, "value": "0x00010000" },
         "attributes": {
           "mem_type": "IOMemory",
           "cacheable": false,
@@ -263,13 +330,9 @@
           "read_idempotent": false,
           "write_idempotent": false,
           "misaligned_exceptions": {
-            "load_store": {
-              "None": null
-            },
-            "vector": {
-              "None": null
-            },
-            "amo": "AccessFault"
+            "load_store": { "Some": "AccessFault" },
+            "vector":     { "Some": "AccessFault" },
+            "amo":                  "AccessFault"
           },
           "atomic_support": "AMONone",
           "reservability": "RsrvNone",
@@ -279,16 +342,257 @@
         },
         "include_in_device_tree": false
       },
-      // RAM
+
+      // ── ACLINT SSWI (Supervisor-mode software interrupts) ────────────────────
       {
-        "base": {
-          "len": 64,
-          "value": "0x80000000"
+        "base": { "len": 64, "value": "0x02F00000" },
+        "size": { "len": 64, "value": "0x00004000" },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": false,
+          "coherent": false,
+          "executable": false,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": false,
+          "write_idempotent": false,
+          "misaligned_exceptions": {
+            "load_store": { "Some": "AccessFault" },
+            "vector":     { "Some": "AccessFault" },
+            "amo":                  "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
         },
-        "size": {
-          "len": 64,
-          "value": "0x80000000"
+        "include_in_device_tree": true
+      },
+
+      // ── PCIe PIO (I/O port space) ─────────────────────────────────────────────
+      {
+        "base": { "len": 64, "value": "0x03000000" },
+        "size": { "len": 64, "value": "0x00010000" },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": false,
+          "coherent": false,
+          "executable": false,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": false,
+          "write_idempotent": false,
+          "misaligned_exceptions": {
+            "load_store": { "Some": "AccessFault" },
+            "vector":     { "Some": "AccessFault" },
+            "amo":                  "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
         },
+        "include_in_device_tree": true
+      },
+
+      // ── PLIC (Platform-Level Interrupt Controller) ────────────────────────────
+      {
+        "base": { "len": 64, "value": "0x0C000000" },
+        "size": { "len": 64, "value": "0x00202000" },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": false,
+          "coherent": false,
+          "executable": false,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": false,
+          "write_idempotent": false,
+          "misaligned_exceptions": {
+            "load_store": { "Some": "AccessFault" },
+            "vector":     { "Some": "AccessFault" },
+            "amo":                  "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": true
+      },
+
+      // Sail requires page alignment for edges of the region
+      // ── UART0 (NS16550-compatible) ────────────────────────────────────────────
+      // {
+      //   "base": { "len": 64, "value": "0x10000000" },
+      //   "size": { "len": 64, "value": "0x00000100" },
+      //   "attributes": {
+      //     "mem_type": "IOMemory",
+      //     "cacheable": false,
+      //     "coherent": false,
+      //     "executable": false,
+      //     "readable": true,
+      //     "writable": true,
+      //     "read_idempotent": false,
+      //     "write_idempotent": false,
+      //     "misaligned_exceptions": {
+      //       "load_store": { "Some": "AccessFault" },
+      //       "vector":     { "Some": "AccessFault" },
+      //       "amo":                  "AccessFault"
+      //     },
+      //     "atomic_support": "AMONone",
+      //     "reservability": "RsrvNone",
+      //     "supports_cbo_zero": false,
+      //     "supports_pte_read": false,
+      //     "supports_pte_write": false
+      //   },
+      //   "include_in_device_tree": true
+      // },
+
+      // ── VirtIO MMIO ──────────────────────────────────────────────────────────
+      {
+        "base": { "len": 64, "value": "0x10001000" },
+        "size": { "len": 64, "value": "0x00001000" },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": false,
+          "coherent": false,
+          "executable": false,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": false,
+          "write_idempotent": false,
+          "misaligned_exceptions": {
+            "load_store": { "Some": "AccessFault" },
+            "vector":     { "Some": "AccessFault" },
+            "amo":                  "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": true
+      },
+
+      // Inaccessible by a program, and sail requires page alignment on the edges of
+      // the region
+      // ── FW_CFG (QEMU firmware config) ────────────────────────────────────────
+      // {
+      //   "base": { "len": 64, "value": "0x10100000" },
+      //   "size": { "len": 64, "value": "0x00000018" },
+      //   "attributes": {
+      //     "mem_type": "IOMemory",
+      //     "cacheable": false,
+      //     "coherent": false,
+      //     "executable": false,
+      //     "readable": true,
+      //     "writable": true,
+      //     "read_idempotent": false,
+      //     "write_idempotent": false,
+      //     "misaligned_exceptions": {
+      //       "load_store": { "Some": "AccessFault" },
+      //       "vector":     { "Some": "AccessFault" },
+      //       "amo":                  "AccessFault"
+      //     },
+      //     "atomic_support": "AMONone",
+      //     "reservability": "RsrvNone",
+      //     "supports_cbo_zero": false,
+      //     "supports_pte_read": false,
+      //     "supports_pte_write": false
+      //   },
+      //   "include_in_device_tree": false
+      // },
+
+      // ── Flash bank 0 (NOR, 64 MiB) ───────────────────────────────────────────
+      {
+        "base": { "len": 64, "value": "0x20000000" },
+        "size": { "len": 64, "value": "0x04000000" },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": true,
+          "coherent": true,
+          "executable": true,
+          "readable": true,
+          "writable": false,
+          "read_idempotent": true,
+          "write_idempotent": false,
+          "misaligned_exceptions": {
+            "load_store": { "None": null },
+            "vector":     { "None": null },
+            "amo":                  "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": true,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": true
+      },
+
+      // ── PCIe ECAM (config space, 256 MiB) ────────────────────────────────────
+      {
+        "base": { "len": 64, "value": "0x30000000" },
+        "size": { "len": 64, "value": "0x10000000" },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": false,
+          "coherent": false,
+          "executable": false,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": false,
+          "write_idempotent": false,
+          "misaligned_exceptions": {
+            "load_store": { "Some": "AccessFault" },
+            "vector":     { "Some": "AccessFault" },
+            "amo":                  "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": true
+      },
+
+      // ── PCIe MMIO (memory-mapped I/O, 1 GiB) ─────────────────────────────────
+      {
+        "base": { "len": 64, "value": "0x40000000" },
+        "size": { "len": 64, "value": "0x40000000" },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": false,
+          "coherent": false,
+          "executable": false,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": false,
+          "write_idempotent": false,
+          "misaligned_exceptions": {
+            "load_store": { "Some": "AccessFault" },
+            "vector":     { "Some": "AccessFault" },
+            "amo":                  "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": true
+      },
+
+      // ── DRAM (default 128 MiB; adjust size to match -m) ──────────────────────
+      {
+        "base": { "len": 64, "value": "0x80000000" },
+        "size": { "len": 64, "value": "0x08000000" },
         "attributes": {
           "mem_type": "MainMemory",
           "cacheable": true,
@@ -299,13 +603,9 @@
           "read_idempotent": true,
           "write_idempotent": true,
           "misaligned_exceptions": {
-            "load_store": {
-              "None": null
-            },
-            "vector": {
-              "None": null
-            },
-            "amo": "AccessFault"
+            "load_store": { "None": null },
+            "vector":     { "None": null },
+            "amo":                  "AccessFault"
           },
           "atomic_support": "AMOCASQ",
           "reservability": "RsrvEventual",
@@ -346,7 +646,7 @@
       // If supported, this must be in a suitable IO memory region (see `memory.regions`).
       // Otherwise, these values can be left as 0.
       "base": 33554432,
-      "size": 786432
+      "size": 65536
     },
     // Very simple MMIO device to generate interrupts for testing
     // purposes. See docs/SimpleInterruptGenerator.md for details.

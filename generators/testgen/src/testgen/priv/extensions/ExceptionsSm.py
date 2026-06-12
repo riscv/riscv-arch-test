@@ -35,7 +35,7 @@ _CG = "ExceptionsSm_cg"
 
 def _generate_mstatus_ie_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = _CG, "cp_mstatus_ie"
-    save_reg, mask_reg, arg_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
+    save_reg, mask_reg, arg_reg = test_data.int_regs.get_registers(3)
 
     lines = [
         comment_banner(coverpoint, "Mstatus Interrupt Enable"),

@@ -61,6 +61,7 @@ from vector_testgen_common import (
   loadScalarReg,
   loadScalarAddress,
   maxVLEN,
+  mask_ls_ins,
   minSEW_MIN,
   myhash,
   narrowins,
@@ -211,6 +212,8 @@ def make_vstart(instruction, maxlmul = 8):
     # vstart < evl and the instruction is never reserved (testable).
     if instruction in whole_register_move:
         maxlmul = min(maxlmul, int(instruction[3]))
+    if instruction in mask_ls_ins:
+        maxlmul = 1 # lmul is always one for these instructions
     vstartvals = ["one", "vlmaxm1", "vlmaxd2", "random"]
     for vstartval in vstartvals:
         if maxlmul <= 1:
@@ -218,19 +221,21 @@ def make_vstart(instruction, maxlmul = 8):
         else:
             lmul = 2 ** randint(1, int(math.log2(maxlmul))) # pick random integer LMUL to ensure that coverpoints are hit
 
-        maskval = randomizeMask(instruction)
-        no_overlap = [['vs1', 'v0'], ['vs2', 'v0'], ['vd', 'v0']] if maskval is not None else None
+        # We can't use masks because sigupd runs a base suite check
+        # maskval = randomizeMask(instruction)
+        # no_overlap = [['vs1', 'v0'], ['vs2', 'v0'], ['vd', 'v0'], ['vs3', 'v0']] # if maskval is not None else None
+        maskval = None
 
         description = f"cp_vstart (vstart = {vstartval})"
         sew = _eff_sew_for_instruction(instruction)
         instruction_data = randomizeVectorInstructionData(instruction, sew, getLengthSuiteTestCount(), suite = "length", lmul = lmul,
                                                           vd_val_pointer = "vector_random", vs2_val_pointer = "vector_random", vs1_val_pointer = "vector_random",
-                                                          additional_no_overlap=no_overlap)
+                                                         ) # additional_no_overlap=no_overlap)
 
         scratch = pickPrivScratch(instruction_data[1])
         scratch2 = pickPrivScratch(instruction_data[1], exclude=(scratch,))
-        writePrivTestPrep(description, instruction, instruction_data, lmul = lmul, vl = "vlmax", sew=sew, scratch=scratch)
-        prepVstart(vstartval, scratch=scratch, scratch2=scratch2)
+        writePrivTestPrep(description, instruction, instruction_data, lmul = lmul, vl = "vlmax", sew=sew, scratch=scratch, maskval=maskval)
+        prepVstart(vstartval, lmul=lmul, sew=sew, scratch=scratch, scratch2=scratch2)
         writePrivTestLine(instruction, instruction_data, cp="cp_vstart", lmul = lmul, vl = "vlmax", sew=sew, maskval = maskval)
 
 def make_vstart_gt_vl(instruction):
@@ -244,8 +249,21 @@ def make_vstart_gt_vl(instruction):
     lmul = min(4, _max_lmul_for_instruction(instruction))
     if instruction in vd_widen_ins or instruction in narrowins:
         lmul = min(lmul, 4)
+    if instruction in whole_register_move:
+        lmul = min(lmul, int(instruction[3]))
     instruction_data = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), lmul = lmul,
                                                       vd_val_pointer = "vector_random", vs2_val_pointer = "vector_random", vs1_val_pointer = "vector_random")
+    is_mask_ls = instruction in mask_ls_ins
+    if is_mask_ls:
+        lmul = 1
+    
+    # If this isn't satisfied, then generating elements such that VLMAX > vstart > vl > 0 is impossible
+    if lmul == 1 and not is_mask_ls:
+        ifdef = "UDB_ZVL256B"
+    elif lmul == 2 and not is_mask_ls:
+        ifdef = "UDB_ZVL128B"
+    else:
+        ifdef = ""
 
     # a0 (x10) and a1 (x11) are used by the cp_vstart_gt_vl_setup helper for vl/vstart
     # inputs and are clobbered on return; exclude them from the scratch candidate set.
@@ -280,7 +298,7 @@ def make_vstart_gt_vl(instruction):
     writeLine(f"vsetvli x{scratch}, x{scratch2}, e{sew}, m{lmul}, tu, mu", "# set vl")
     writeLine("csrw vstart, a1",                                        "# set vstart > vl, < VLMAX")
 
-    writePrivTestLine(instruction, instruction_data, cp="cp_vstart_gt_vl", vl = "vlmax", lmul = lmul, sew=sew)
+    writePrivTestLine(instruction, instruction_data, cp="cp_vstart_gt_vl", vl = "vlmax", lmul = lmul, sew=sew, ifdef=ifdef)
 
 #####################################           test generation           #####################################
 
@@ -323,7 +341,7 @@ def _emul_lmul_str(group_size):
     return "m8"
 
 
-def writePrivTestPrep(description, instruction, instruction_data=None, lmul = 1, vl = 1, vstart = False, sew = None, scratch=None):
+def writePrivTestPrep(description, instruction, instruction_data=None, lmul = 1, vl = 1, vstart = False, sew = None, scratch=None, maskval=None):
     instruction_arguments = getInstructionArguments(instruction)
     if sew is None:
         sew = minSEW_MIN
@@ -387,6 +405,8 @@ def writePrivTestPrep(description, instruction, instruction_data=None, lmul = 1,
     _emit_init("vd",  vd_reg,  vd_emul)
     _emit_init("vs2", vs2_reg, vs2_emul)
     _emit_init("vs1", vs1_reg, vs1_emul)
+    if maskval:
+        _emit_init("v0", 0, 1)
 
     # Restore the requested test-time vl/lmul after the init loads.
     if (vl == "vlmax"):
@@ -394,7 +414,7 @@ def writePrivTestPrep(description, instruction, instruction_data=None, lmul = 1,
     else:
       writeLine(f"vsetivli x{scratch}, {vl}, e{sew}, m{lmul}, tu, mu",  f"# restore test vtype: vl={vl}, LMUL={lmul}, SEW={sew}")
 
-def writePrivTestLine(instruction, instruction_data, cp="cp_vill", vl=1, lmul=1, sew=None, maskval=None):
+def writePrivTestLine(instruction, instruction_data, cp="cp_vill", vl=1, lmul=1, sew=None, maskval=None, ifdef=""):
     if sew is None:
         sew = minSEW_MIN
     instruction_arguments = getInstructionArguments(instruction)
@@ -404,6 +424,10 @@ def writePrivTestLine(instruction, instruction_data, cp="cp_vill", vl=1, lmul=1,
     # GPR-writing vector ops (vcpop.m, vfirst.m, vmv.x.s, ...) can land on x2
     # and produce a self-colliding RVTEST_SIGUPD(x2, ..., x2).
     resolveScalarSigConflict(instruction_arguments, scalar_register_data)
+
+    if ifdef != "":
+        writeLine(f"#ifdef {ifdef}")
+        common.tab_count += 1
 
     testline = instruction + " "
 
@@ -485,6 +509,10 @@ def writePrivTestLine(instruction, instruction_data, cp="cp_vill", vl=1, lmul=1,
         or (cp == "cp_vstart" and instruction in vstart_zero_required)
     )
     writeVecTest(instruction, cp, vd, sew, testline, test=instruction, rd=rd, fd=fd, vl=vl, lmul=lmul, sig_lmul=sig_lmul, sig_whole_register_store=sig_whole_register_store, priv=True, force_vill=(cp == "cp_vill"), skip_sigupd=skip_sigupd)
+
+    if ifdef != "":
+        common.tab_count -= 1
+        writeLine("#endif")
 
 
 
@@ -603,7 +631,7 @@ if __name__ == '__main__':
             f.write(line)
 
             # insert generic header
-            insertTemplate(chunk_basename, 0, "testgen_header.S", priv=True)
+            insertTemplate(chunk_basename, 0, "testgen_header.S", priv=True, vdsew=64)
 
             ###############################     test body      ###############################
             for instruction in chunk_instructions:

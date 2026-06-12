@@ -256,7 +256,7 @@ def make_vstart_gt_vl(instruction):
     is_mask_ls = instruction in mask_ls_ins
     if is_mask_ls:
         lmul = 1
-    
+
     # If this isn't satisfied, then generating elements such that VLMAX > vstart > vl > 0 is impossible
     if lmul == 1 and not is_mask_ls:
         ifdef = "UDB_ZVL256B"

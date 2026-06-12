@@ -36,7 +36,7 @@ def _build_testline(instruction: str, instruction_data: list, maskval: str | Non
             if arg == "rs1" and instruction in common.vector_ls_ins:
                 # Use random_mask_x as valid address (vector_ls_random_base
                 # isn't available in priv tests). The randomly chosen rs1
-                # holds the address. Stores can overwrite this value, so 
+                # holds the address. Stores can overwrite this value, so
                 # we separate the values used for loads and stores
                 rs1_val_ptr = "random_mask_1" if instruction in common.vector_stores else "random_mask_0"
                 reg = scalar_data[arg]["reg"]

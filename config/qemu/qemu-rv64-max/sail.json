@@ -250,8 +250,8 @@
           "write_idempotent": true,
           "misaligned_exceptions": {
             "load_store": { "None": null },
-            "vector":     { "None": null },
-            "amo":                  "AccessFault"
+            "vector": { "None": null },
+            "amo": "AccessFault"
           },
           "atomic_support": "AMONone",
           "reservability": "RsrvNone",
@@ -277,8 +277,8 @@
           "write_idempotent": false,
           "misaligned_exceptions": {
             "load_store": { "Some": "AccessFault" },
-            "vector":     { "Some": "AccessFault" },
-            "amo":                  "AccessFault"
+            "vector": { "Some": "AccessFault" },
+            "amo": "AccessFault"
           },
           "atomic_support": "AMONone",
           "reservability": "RsrvNone",
@@ -304,8 +304,8 @@
           "write_idempotent": false,
           "misaligned_exceptions": {
             "load_store": { "Some": "AccessFault" },
-            "vector":     { "Some": "AccessFault" },
-            "amo":                  "AccessFault"
+            "vector": { "Some": "AccessFault" },
+            "amo": "AccessFault"
           },
           "atomic_support": "AMONone",
           "reservability": "RsrvNone",
@@ -331,8 +331,8 @@
           "write_idempotent": false,
           "misaligned_exceptions": {
             "load_store": { "Some": "AccessFault" },
-            "vector":     { "Some": "AccessFault" },
-            "amo":                  "AccessFault"
+            "vector": { "Some": "AccessFault" },
+            "amo": "AccessFault"
           },
           "atomic_support": "AMONone",
           "reservability": "RsrvNone",
@@ -358,8 +358,8 @@
           "write_idempotent": false,
           "misaligned_exceptions": {
             "load_store": { "Some": "AccessFault" },
-            "vector":     { "Some": "AccessFault" },
-            "amo":                  "AccessFault"
+            "vector": { "Some": "AccessFault" },
+            "amo": "AccessFault"
           },
           "atomic_support": "AMONone",
           "reservability": "RsrvNone",
@@ -385,8 +385,8 @@
           "write_idempotent": false,
           "misaligned_exceptions": {
             "load_store": { "Some": "AccessFault" },
-            "vector":     { "Some": "AccessFault" },
-            "amo":                  "AccessFault"
+            "vector": { "Some": "AccessFault" },
+            "amo": "AccessFault"
           },
           "atomic_support": "AMONone",
           "reservability": "RsrvNone",
@@ -412,8 +412,8 @@
           "write_idempotent": false,
           "misaligned_exceptions": {
             "load_store": { "Some": "AccessFault" },
-            "vector":     { "Some": "AccessFault" },
-            "amo":                  "AccessFault"
+            "vector": { "Some": "AccessFault" },
+            "amo": "AccessFault"
           },
           "atomic_support": "AMONone",
           "reservability": "RsrvNone",
@@ -467,8 +467,8 @@
           "write_idempotent": false,
           "misaligned_exceptions": {
             "load_store": { "Some": "AccessFault" },
-            "vector":     { "Some": "AccessFault" },
-            "amo":                  "AccessFault"
+            "vector": { "Some": "AccessFault" },
+            "amo": "AccessFault"
           },
           "atomic_support": "AMONone",
           "reservability": "RsrvNone",
@@ -523,8 +523,8 @@
           "write_idempotent": false,
           "misaligned_exceptions": {
             "load_store": { "None": null },
-            "vector":     { "None": null },
-            "amo":                  "AccessFault"
+            "vector": { "None": null },
+            "amo": "AccessFault"
           },
           "atomic_support": "AMONone",
           "reservability": "RsrvNone",
@@ -550,8 +550,8 @@
           "write_idempotent": false,
           "misaligned_exceptions": {
             "load_store": { "Some": "AccessFault" },
-            "vector":     { "Some": "AccessFault" },
-            "amo":                  "AccessFault"
+            "vector": { "Some": "AccessFault" },
+            "amo": "AccessFault"
           },
           "atomic_support": "AMONone",
           "reservability": "RsrvNone",
@@ -577,8 +577,8 @@
           "write_idempotent": false,
           "misaligned_exceptions": {
             "load_store": { "Some": "AccessFault" },
-            "vector":     { "Some": "AccessFault" },
-            "amo":                  "AccessFault"
+            "vector": { "Some": "AccessFault" },
+            "amo": "AccessFault"
           },
           "atomic_support": "AMONone",
           "reservability": "RsrvNone",
@@ -604,8 +604,8 @@
           "write_idempotent": true,
           "misaligned_exceptions": {
             "load_store": { "None": null },
-            "vector":     { "None": null },
-            "amo":                  "AccessFault"
+            "vector": { "None": null },
+            "amo": "AccessFault"
           },
           "atomic_support": "AMOCASQ",
           "reservability": "RsrvEventual",

@@ -34,7 +34,7 @@
 
     vl_nonzero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
         //Any value between max and 1
-        bins target = {[`UDB_MXLEN'h10000:`UDB_MXLEN'h1]};
+        bins target = {[64'h10000:64'h1]};
     }
 
     mask_enabled: coverpoint ins.current.insn[25] {

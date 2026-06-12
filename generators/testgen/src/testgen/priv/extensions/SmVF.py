@@ -164,7 +164,7 @@ def _gen_fs_off(test_data: TestData, temp_reg: int) -> list[str]:
 )
 def make_smvf(test_data: TestData) -> list[str]:
     """Generate SmVF tests (vector-FP × mstatus.FS state)."""
-    temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
+    temp_reg = test_data.int_regs.get_register()
 
     lines: list[str] = []
     lines.extend(_gen_fs_state_affecting_register(test_data, temp_reg))

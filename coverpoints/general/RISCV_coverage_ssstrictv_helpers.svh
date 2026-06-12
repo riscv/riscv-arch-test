@@ -30,7 +30,7 @@
 
     vl_nonzero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
         type_option.weight = 0;
-        bins target = {[`XLEN'h10000:`XLEN'h1]};
+        bins target = {[64'h10000:64'h1]};
     }
 
     mask_enabled: coverpoint ins.current.insn[25] {

@@ -17,8 +17,8 @@ from testgen.priv.registry import add_priv_test_generator
 # Helpers
 # ---------------------------------------------------------------------------
 
-CSR_OPS = ["csrrw", "csrrs", "csrrc", "csrr"]
 
+CSR_OPS = ["csrrw", "csrrs", "csrrc", "csrr"]
 
 # RVTEST mode-switch macros, emitted as plain assembly
 GOTO_UMODE = "RVTEST_GOTO_LOWER_MODE Umode  # enter U-mode"
@@ -209,7 +209,6 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
         ]
     )
     lines.extend(csr_walk_test(test_data, ("sstateen0", 0x7), covergroup, coverpoint))
-
     lines.append(GOTO_MMODE)
     lines.extend(
         [

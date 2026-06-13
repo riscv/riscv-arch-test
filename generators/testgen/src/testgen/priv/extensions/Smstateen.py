@@ -24,7 +24,6 @@ MSTATEEN_CSRS_H = ["mstateen0h", "mstateen1h", "mstateen2h", "mstateen3h"]
 
 CSR_OPS = ["csrrw", "csrrs", "csrrc", "csrr"]
 
-
 # RVTEST mode-switch macros, emitted as plain assembly (see other priv generators).
 GOTO_UMODE = "RVTEST_GOTO_LOWER_MODE Umode  # enter U-mode"
 GOTO_SMODE = "RVTEST_GOTO_LOWER_MODE Smode  # enter S-mode"
@@ -46,7 +45,6 @@ def _csr_insn(op: str, rd: int, csr: str, rs1: int) -> str:
     if op == "csrr":
         return f"{op} x{rd}, {csr}"
     return f"{op} x{rd}, {csr}, x{rs1}"
-
 
 # ---------------------------------------------------------------------------
 # cp_csr_illegal_accesses

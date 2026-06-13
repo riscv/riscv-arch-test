@@ -71,7 +71,7 @@ RVTEST_BEGIN
   // After PTE_SETUP_SV32 completes, a0 has the PTE (PPN and Permission bits) while t1 has the PTE address
   li a3, 0
   li a4, 0
-  li a5, 56
+  li a5, 24
   .rept(4)
     andi a3, a0, 0xFF
     srli a0, a0, 8
@@ -104,7 +104,7 @@ main:
 
   // Save area setup for code region
   csrr a0, mscratch
-  SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code)
+  SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL1)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                               Test Cases Start from here

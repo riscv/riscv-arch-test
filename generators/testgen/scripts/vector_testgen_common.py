@@ -16,7 +16,7 @@ import os
 import re
 import sys
 import textwrap
-from random import getrandbits, randint
+from random import getrandbits, randint, shuffle
 
 # change these to suite your tests
 ARCH_VERIF = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), "..", "..", ".."))
@@ -1136,6 +1136,35 @@ def writeData(argument: str, comment=""):
 
     return argument + comment + "\n"
 
+def to_fp_words(integers: list[int], precision: int) -> list[int]:
+  fp_biases = {16: 15, 32: 127, 64: 1023}
+  fp_mantissa_lengths = {16: 11, 32: 24, 64: 53}
+  bias = fp_biases[precision]
+  mantissa_length = fp_mantissa_lengths[precision]
+  fps = []
+
+  for integer in integers:
+    if integer == 0:
+      fps.append(0)
+      continue
+
+    sign = integer < 0
+    integer = abs(integer)
+    exponent = integer.bit_length() - 1
+    biased_exponent = exponent + bias
+
+    # Align the "fractional" bits of the integer, and remove the leading one
+    significand = (integer << (mantissa_length - integer.bit_length())) & ((1 << (mantissa_length - 1)) - 1)
+    fp = (sign << (precision - 1)) | (biased_exponent << (mantissa_length - 1)) | significand
+
+    fps.append(fp)
+
+  words = fps
+  if precision == 16:
+    words = [i << 16 | j for i, j in zip(fps[::2], fps[1::2] + [0])]
+
+  return words
+
 def genRandomVector(test, sew, vs="vs2", emul=1):
   vectordata = ""
   vectordata += writeData("\n")
@@ -1160,9 +1189,50 @@ def genRandomVector(test, sew, vs="vs2", emul=1):
         num_words = math.ceil(maxVLEN / 32)
     for t in range(maxVtests):
         vectordata += writeData(f"{vs}_random_{suite}_{t:03d}:")
-        for i in range(num_words):
-            randomElem = getrandbits(32)
-            vectordata += writeData(f"    .word 0x{randomElem:08x}")
+        if test in ["vfredusum.vs", "vfwredusum.vs"] and vs in ["vs2", "vs1"] and suite == "length":
+          # We want to avoid ever setting a rounding bit because implementations are allowed to differ
+          # on intermediate results for unordered floating point reductions, we only use integers representable
+          # as floating point values
+          fp_mantissas = {16: 11, 32: 24, 64: 53}
+          max_exact_fp_integer = 2 ** fp_mantissas[eew]
+          num_vals = math.ceil(maxVLEN * 8 / eew)
+
+          if vs == "vs1":
+            # We also need to ensure that the value in vs1 doesn't lead to an overflow in what is exactly
+            # representable.
+            vs1_range = [-max_exact_fp_integer // 4, max_exact_fp_integer // 4]
+            final_sequence = [0 for _ in range(num_vals)]
+            final_sequence[0] = randint(*vs1_range)
+          else:
+            # Get a random positive and negative upper bound for the sum (i.e. with the positive and negative numbers
+            # we use, this is the maximum value a reduction tree could reach)
+
+            # These bounds are chosen so that no matter the value in vs1, no reduction tree could reach a value
+            # where rounding could happen
+            negative_target = randint(max_exact_fp_integer // 2, max_exact_fp_integer * 3 // 4)
+            positive_target = randint(max_exact_fp_integer // 2, max_exact_fp_integer * 3 // 4)
+
+            # Find numbers that sum to the target by picking random points as barriers between them
+            # e.g. insert | into *********** to get ****|*|****|**, meaning 4 + 1 + 4 + 2 = 11
+            negative_cuts = sorted(randint(0, negative_target) for _ in range(math.ceil(num_vals / 2)))
+            negative_sequence = [negative_cuts[0]] + [negative_cuts[i+1] - negative_cuts[i] for i in range(len(negative_cuts) - 1)] + [negative_target - negative_cuts[-1]]
+            negative_sequence = [-item for item in negative_sequence]
+
+            positive_cuts = sorted(randint(0, positive_target) for _ in range(math.floor(num_vals / 2)))
+            positive_sequence = [positive_cuts[0]] + [positive_cuts[i+1] - positive_cuts[i] for i in range(len(positive_cuts) - 1)] + [positive_target - positive_cuts[-1]]
+
+            final_sequence = negative_sequence + positive_sequence
+            shuffle(final_sequence)
+
+          for word in to_fp_words(final_sequence, eew):
+            if eew == 64:
+              vectordata += writeData(f"   .dword 0x{word:016x}")
+            else:
+              vectordata += writeData(f"   .word 0x{word:08x}")
+        else:
+          for i in range(num_words),:
+              randomElem = getrandbits(32)
+              vectordata += writeData(f"    .word 0x{randomElem:08x}")
 
   vectordata += writeData("")
   return vectordata

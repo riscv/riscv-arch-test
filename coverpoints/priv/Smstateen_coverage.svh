@@ -69,11 +69,11 @@ covergroup Smstateen_cg with function sample(ins_t ins);
             bins aia_enabled  = {1'b1};
         }
         aia_csrs: coverpoint ins.current.insn[31:20] {
-            `ifdef XLEN64
+            `ifdef UDB_MXLEN_64
                 wildcard bins aia_m = {CSR_SIE};
                 wildcard bins aia_s = {CSR_SIP};
             `endif
-            `ifdef XLEN32
+            `ifdef UDB_MXLEN_32
                 bins aia_m = {CSR_SIEH};
                 bins aia_s = {CSR_SIPH};
             `endif
@@ -98,7 +98,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
             `ifdef SM1P13_SUPPORTED
                 wildcard bins walking1_56  = {64'b???????1????????????????????????????????????????????????????????};
             `endif
-            `ifdef SSDTRIG_SUPPORTED
+            `ifdef SDTRIG_SUPPORTED
                 wildcard bins walking1_57 = {64'b??????1?????????????????????????????????????????????????????????};
             `endif
             `ifdef IMSIC_SUPPORTED
@@ -144,7 +144,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
             `ifdef SM1P13_SUPPORTED
                 wildcard bins walking1_24 = {32'b???????1????????????????????????};
             `endif
-            `ifdef SSDTRIG_SUPPORTED
+            `ifdef SDTRIG_SUPPORTED
                 wildcard bins walking1_25 = {32'b??????1?????????????????????????};
             `endif
             `ifdef IMSIC_SUPPORTED
@@ -223,7 +223,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
                 bins senvcfg = {CSR_SENVCFG};
     }
 
-    // ── Zcmt-dependent coverpoints (cp_jvt, cp_jvt_lower_mode) ──────────
+    // ── Zcmt-dependent coverpoints (cp_jvt_access) ──────────
 `ifdef ZCMT_SUPPORTED
     jvt_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "jvt") {
         bins jvt_disabled = {1'b0};
@@ -234,8 +234,8 @@ covergroup Smstateen_cg with function sample(ins_t ins);
     }
 `endif
 
-    // ── Ssdtrig-dependent coverpoints (cp_context) ───────────────────────
-`ifdef SSDTRIG_SUPPORTED
+    // ── Sdtrig-dependent coverpoints (cp_context) ───────────────────────
+`ifdef SDTRIG_SUPPORTED
     context_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "context") {
         bins context_disabled = {1'b0};
         bins context_enabled  = {1'b1};
@@ -320,8 +320,8 @@ covergroup Smstateen_cg with function sample(ins_t ins);
     cp_jvt_access:     cross priv_mode_maybes_u, csrops, jvt_csr, jvt_state;
 `endif
 
-    // Row 12: Ssdtrig only
-`ifdef SSDTRIG_SUPPORTED
+    // Row 12: Sdtrig only
+`ifdef SDTRIG_SUPPORTED
     cp_context: cross csrops, scontext_csr, context_state, priv_mode_m_maybes_u;
 `endif
 

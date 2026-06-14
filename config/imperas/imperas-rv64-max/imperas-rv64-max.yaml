@@ -35,7 +35,7 @@ implemented_extensions:
   - { name: Smepmp, version: "= 1.0.0" }
   - { name: Smmpm, version: "= 1.0.0" }
   - { name: Smnpm, version: "= 1.0.0" }
-  - { name: Smrnmi, version: "= 1.0.0" }
+  # - { name: Smrnmi, version: "= 1.0.0" } # Sail does not support this extension yet
   - { name: Smstateen, version: "= 1.0.0" }
   - { name: Ssaia, version: "= 1.0.0" }
   - { name: Ssccfg, version: "= 1.0.0" }

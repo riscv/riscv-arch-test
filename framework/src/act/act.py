@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 import sys
 from pathlib import Path
 from typing import Annotated
@@ -64,6 +65,7 @@ def run_act(
     coverage: Annotated[bool, typer.Option(help="Enable coverage generation")] = False,
     debug: Annotated[bool, typer.Option(help="Enable debug output (signature objdump and trace files)")] = False,
     fast: Annotated[bool, typer.Option(help="Disable objdump generation for faster builds")] = False,
+    clean_intermediates: Annotated[bool, typer.Option(help="Delete intermediate build/ dirs")] = False,
     verbose: Annotated[
         bool, typer.Option(help="Implies --debug, serializes builds (jobs=1), and prints each command as it runs")
     ] = False,
@@ -84,6 +86,9 @@ def run_act(
 
     if debug and fast:
         raise typer.BadParameter("--debug and --fast cannot be used together")
+
+    if debug and clean_intermediates:
+        raise typer.BadParameter("--debug and --clean-intermediates cannot be used together")
 
     if workdir is None:
         workdir = Path.cwd() / "work"
@@ -167,6 +172,11 @@ def run_act(
                 rprint(f"    - {error.task_name}", file=sys.stderr)
         sys.exit(1)
     rprint(f"[bold green]✓ Build complete:[/] {summary}")
+
+    # Remove intermediate build artifacts to save disk space (final ELFs live in elfs/)
+    if clean_intermediates and not dry_run:
+        for name in config_names:
+            shutil.rmtree(workdir / name / "build", ignore_errors=True)
 
     # Always print coverage summaries when coverage is enabled, even if up-to-date
     if coverage:

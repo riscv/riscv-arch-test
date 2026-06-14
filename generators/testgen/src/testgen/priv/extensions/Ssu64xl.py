@@ -22,7 +22,7 @@ def _generate_ssu64xl_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "sstatus.UXL=2 (UXLEN=64 for User mode)\nWrite 64-bit value to GPR in U-mode and read it back.",
         ),
     ]

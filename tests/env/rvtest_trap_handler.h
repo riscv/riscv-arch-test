@@ -2370,7 +2370,7 @@ fast_Mothertrap:
 // ── Fast S-mode handler (stvec) — delegated illegal instructions ───────────
 // scause==2 -> write scause/sepc/stval to signature, advance sepc, sret.
 // Any other S-mode trap -> Strampoline (standard framework S-mode handler).
-        .align UDB_MTVEC_BASE_ALIGNMENT_DIRECT  // TODO: UDB_STVEC_BASE_ALIGNMENT_DIRECT once defined
+        .balign UDB_MTVEC_BASE_ALIGNMENT_DIRECT  // TODO: UDB_STVEC_BASE_ALIGNMENT_DIRECT once defined
 strap_handler_fastillegalinstr:
         csrr t0, scause
         xori t0, t0, 2                  // t0=0 iff scause==2 (illegal instruction)

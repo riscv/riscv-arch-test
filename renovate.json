@@ -8,11 +8,11 @@
   "prConcurrentLimit": 10,
   "minimumReleaseAge": "7 days",
   "internalChecksFilter": "strict",
+  "automerge": true,
   "osvVulnerabilityAlerts": true,
   "vulnerabilityAlerts": {
     "labels": ["dependencies", "security"],
-    "minimumReleaseAge": "4 hours",
-    "automerge": true
+    "minimumReleaseAge": "4 hours"
   },
   "git-submodules": {
     "enabled": true
@@ -22,8 +22,7 @@
   },
   "lockFileMaintenance": {
     "enabled": true,
-    "schedule": ["before 6am on monday"],
-    "automerge": true
+    "schedule": ["before 6am on monday"]
   },
   "customManagers": [
     {
@@ -33,8 +32,7 @@
       "matchStrings": ["QEMU_VERSION=\"(?<currentValue>[^\"]+)\""],
       "depNameTemplate": "qemu/qemu",
       "datasourceTemplate": "github-tags",
-      "extractVersionTemplate": "^v(?<version>.*)$",
-      "automerge": true
+      "extractVersionTemplate": "^v(?<version>.*)$"
     },
     {
       "description": "Spike commit in install script",
@@ -44,8 +42,7 @@
       "depNameTemplate": "riscv/riscv-isa-sim",
       "datasourceTemplate": "git-refs",
       "packageNameTemplate": "https://github.com/riscv/riscv-isa-sim",
-      "currentValueTemplate": "master",
-      "automerge": true
+      "currentValueTemplate": "master"
     },
     {
       "description": "Whisper commit in install script",
@@ -55,8 +52,7 @@
       "depNameTemplate": "tenstorrent/whisper",
       "datasourceTemplate": "git-refs",
       "packageNameTemplate": "https://github.com/tenstorrent/whisper",
-      "currentValueTemplate": "master",
-      "automerge": true
+      "currentValueTemplate": "master"
     },
     {
       "description": "CVW commit in install script",
@@ -66,8 +62,7 @@
       "depNameTemplate": "openhwgroup/cvw",
       "datasourceTemplate": "git-refs",
       "packageNameTemplate": "https://github.com/openhwgroup/cvw",
-      "currentValueTemplate": "main",
-      "automerge": true
+      "currentValueTemplate": "main"
     },
     {
       "description": "cv32e20-dv (cve2) commit in install script",
@@ -77,8 +72,7 @@
       "depNameTemplate": "openhwgroup/cv32e20-dv",
       "datasourceTemplate": "git-refs",
       "packageNameTemplate": "https://github.com/openhwgroup/cv32e20-dv",
-      "currentValueTemplate": "main",
-      "automerge": true
+      "currentValueTemplate": "main"
     },
     {
       "description": "cv32e40p-dv-review (cve4) commit in install script",
@@ -88,8 +82,7 @@
       "depNameTemplate": "openhwgroup/cv32e40p-dv-review",
       "datasourceTemplate": "git-refs",
       "packageNameTemplate": "https://github.com/openhwgroup/cv32e40p-dv-review",
-      "currentValueTemplate": "main",
-      "automerge": true
+      "currentValueTemplate": "main"
     },
     {
       "description": "cv32e40x-dv (cve4) commit in install script",
@@ -99,8 +92,7 @@
       "depNameTemplate": "openhwgroup/cv32e40x-dv",
       "datasourceTemplate": "git-refs",
       "packageNameTemplate": "https://github.com/openhwgroup/cv32e40x-dv",
-      "currentValueTemplate": "main",
-      "automerge": true
+      "currentValueTemplate": "main"
     },
     {
       "description": "cv32e40x RTL hash pinned in cve4 install script",
@@ -110,8 +102,7 @@
       "depNameTemplate": "openhwgroup/cv32e40x",
       "datasourceTemplate": "git-refs",
       "packageNameTemplate": "https://github.com/openhwgroup/cv32e40x",
-      "currentValueTemplate": "master",
-      "automerge": true
+      "currentValueTemplate": "master"
     },
     {
       "description": "RISC-V GCC toolchain version in CI workflow and Dockerfile",
@@ -125,8 +116,7 @@
       ],
       "depNameTemplate": "riscv-collab/riscv-gnu-toolchain",
       "datasourceTemplate": "github-releases",
-      "versioningTemplate": "loose",
-      "automerge": true
+      "versioningTemplate": "loose"
     },
     {
       "description": "LLVM version in CI workflow",
@@ -135,8 +125,7 @@
       "matchStrings": ["LLVM_VERSION:\\s*\"(?<currentValue>\\d+)\""],
       "depNameTemplate": "llvm/llvm-project",
       "datasourceTemplate": "github-tags",
-      "extractVersionTemplate": "^llvmorg-(?<version>\\d+)\\.\\d+\\.\\d+$",
-      "automerge": true
+      "extractVersionTemplate": "^llvmorg-(?<version>\\d+)\\.\\d+\\.\\d+$"
     },
     {
       "description": "Bundler version recorded in Gemfile.lock (kept in sync with .mise.toml gem:bundler)",
@@ -145,8 +134,7 @@
       "matchStrings": ["BUNDLED WITH\\s+(?<currentValue>[\\d.]+)"],
       "depNameTemplate": "gem:bundler",
       "packageNameTemplate": "bundler",
-      "datasourceTemplate": "rubygems",
-      "automerge": true
+      "datasourceTemplate": "rubygems"
     }
   ],
   "packageRules": [
@@ -168,12 +156,6 @@
       "minimumReleaseAge": null
     },
     {
-      "description": "Automerge non-major Ruby updates",
-      "matchDepNames": ["ruby"],
-      "matchUpdateTypes": ["digest", "patch", "minor"],
-      "automerge": true
-    },
-    {
       "description": "Do not update Ruby major versions",
       "matchDepNames": ["ruby"],
       "matchUpdateTypes": ["major"],
@@ -182,35 +164,17 @@
     {
       "description": "Keep ruff in sync across pyproject.toml dev deps and the pre-commit hook",
       "matchDepNames": ["ruff", "astral-sh/ruff-pre-commit"],
-      "groupName": "ruff",
-      "automerge": true
+      "groupName": "ruff"
     },
     {
       "description": "Keep uv in sync across .mise.toml and the pre-commit hook",
       "matchDepNames": ["uv", "astral-sh/uv-pre-commit"],
-      "groupName": "uv",
-      "automerge": true
-    },
-    {
-      "description": "Automerge non-major bundler bumps (.mise.toml gem:bundler + Gemfile.lock BUNDLED WITH update together as one dep); majors reviewed manually",
-      "matchDepNames": ["gem:bundler"],
-      "automerge": true
-    },
-    {
-      "description": "Automerge prek (mise-managed pre-commit runner) bumps",
-      "matchDepNames": ["prek", "j178/prek"],
-      "automerge": true
-    },
-    {
-      "description": "Automerge Python package updates (pydantic, typer, pyjson5, ruamel-yaml, pyright, etc.)",
-      "matchDatasources": ["pypi"],
-      "automerge": true
+      "groupName": "uv"
     },
     {
       "description": "Group all GitHub Actions updates into one PR",
       "matchManagers": ["github-actions"],
-      "groupName": "github-actions",
-      "automerge": true
+      "groupName": "github-actions"
     },
     {
       "description": "Group remaining pre-commit hook bumps (ruff/uv are grouped with their non-hook counterparts above); auto-merge non-major",
@@ -220,8 +184,7 @@
         "!astral-sh/uv-pre-commit"
       ],
       "groupName": "pre-commit hooks",
-      "schedule": ["before 6am on monday"],
-      "automerge": true
+      "schedule": ["before 6am on monday"]
     }
   ]
 }

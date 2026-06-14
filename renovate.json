@@ -64,6 +64,50 @@
       "automerge": true
     },
     {
+      "description": "cv32e20-dv (cve2) commit in install script",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/scripts/install-cve2\\.sh$/"],
+      "matchStrings": ["CVE2_DV_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
+      "depNameTemplate": "openhwgroup/cv32e20-dv",
+      "datasourceTemplate": "git-refs",
+      "packageNameTemplate": "https://github.com/openhwgroup/cv32e20-dv",
+      "currentValueTemplate": "main",
+      "automerge": true
+    },
+    {
+      "description": "cv32e40p-dv-review (cve4) commit in install script",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/scripts/install-cve4\\.sh$/"],
+      "matchStrings": ["CVE4_DV_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
+      "depNameTemplate": "openhwgroup/cv32e40p-dv-review",
+      "datasourceTemplate": "git-refs",
+      "packageNameTemplate": "https://github.com/openhwgroup/cv32e40p-dv-review",
+      "currentValueTemplate": "main",
+      "automerge": true
+    },
+    {
+      "description": "cv32e40x-dv (cve4) commit in install script",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/scripts/install-cve4\\.sh$/"],
+      "matchStrings": ["CVE40X_DV_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
+      "depNameTemplate": "openhwgroup/cv32e40x-dv",
+      "datasourceTemplate": "git-refs",
+      "packageNameTemplate": "https://github.com/openhwgroup/cv32e40x-dv",
+      "currentValueTemplate": "main",
+      "automerge": true
+    },
+    {
+      "description": "cv32e40x RTL hash pinned in cve4 install script",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/scripts/install-cve4\\.sh$/"],
+      "matchStrings": ["CVE40X_CORE_HASH=\"(?<currentDigest>[a-f0-9]+)\""],
+      "depNameTemplate": "openhwgroup/cv32e40x",
+      "datasourceTemplate": "git-refs",
+      "packageNameTemplate": "https://github.com/openhwgroup/cv32e40x",
+      "currentValueTemplate": "master",
+      "automerge": true
+    },
+    {
       "description": "RISC-V GCC toolchain version in CI workflow and Dockerfile",
       "customType": "regex",
       "managerFilePatterns": [
@@ -106,6 +150,10 @@
         "tenstorrent/whisper",
         "riscv/riscv-isa-sim",
         "openhwgroup/cvw",
+        "openhwgroup/cv32e20-dv",
+        "openhwgroup/cv32e40p-dv-review",
+        "openhwgroup/cv32e40x-dv",
+        "openhwgroup/cv32e40x",
         "udb",
         "udb-gen",
         "idlc",

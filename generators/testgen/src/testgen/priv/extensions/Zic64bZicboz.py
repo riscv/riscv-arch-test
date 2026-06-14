@@ -29,7 +29,7 @@ def _generate_zic64b_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Zic64b + Zicboz: 64-byte cache blocks.\n"
             "Test cbo.zero at offsets 0..64 on 128B all-1s buffer; verify via signature.",
         ),

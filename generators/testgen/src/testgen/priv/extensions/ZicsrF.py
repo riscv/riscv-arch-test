@@ -219,7 +219,7 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
 
     lines.append(
         comment_banner(
-            "cp_underflow_after_rounding",
+            f"{coverpoint}",
             "Check underflow flag is determined after rounding",
         )
     )

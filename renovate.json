@@ -8,6 +8,12 @@
   "prConcurrentLimit": 10,
   "minimumReleaseAge": "7 days",
   "internalChecksFilter": "strict",
+  "osvVulnerabilityAlerts": true,
+  "vulnerabilityAlerts": {
+    "labels": ["dependencies", "security"],
+    "minimumReleaseAge": "4 hours",
+    "automerge": true
+  },
   "git-submodules": {
     "enabled": true
   },
@@ -188,6 +194,11 @@
     {
       "description": "Automerge non-major bundler bumps (.mise.toml gem:bundler + Gemfile.lock BUNDLED WITH update together as one dep); majors reviewed manually",
       "matchDepNames": ["gem:bundler"],
+      "automerge": true
+    },
+    {
+      "description": "Automerge prek (mise-managed pre-commit runner) bumps",
+      "matchDepNames": ["prek", "j178/prek"],
       "automerge": true
     },
     {

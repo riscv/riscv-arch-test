@@ -2314,7 +2314,7 @@ rtn_fm_mmode:
 //
 //  Register usage:
 //    t0 (x5) — scratch throughout: CSR reads, instruction word, advance amount
-//    t1 (x6) — M-mode handler only, and only at the very end (mepc advance).
+//    t1 (x6) — M-mode handler only: used for the mcause==2 compare and for the final mepc advance.
 //              The S-mode handler never touches t1/x6: with
 //              rvtest_strap_routine defined, x6 is the Mtrampoline save-area
 //              pointer.

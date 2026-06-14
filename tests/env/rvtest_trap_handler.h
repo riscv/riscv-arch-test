@@ -2368,9 +2368,15 @@ fast_Mothertrap:
 
 #ifdef S_SUPPORTED
 // ── Fast S-mode handler (stvec) — delegated illegal instructions ───────────
-// scause==2 -> write scause/sepc/stval to signature, advance sepc, sret.
-// Any other S-mode trap -> Strampoline (standard framework S-mode handler).
-        .balign UDB_MTVEC_BASE_ALIGNMENT_DIRECT  // TODO: UDB_STVEC_BASE_ALIGNMENT_DIRECT once defined
+// Align to the core's WARL mtvec BASE boundary so the prolog's write of the
+// handler address into stvec survives.
+.balign 64
+#ifdef UDB_MTVEC_BASE_ALIGNMENT_VECTORED // TODO: UDB_STVEC_BASE_ALIGNMENT once defined
+.balign UDB_MTVEC_BASE_ALIGNMENT_VECTORED
+#endif
+#ifdef UDB_MTVEC_BASE_ALIGNMENT_DIRECT
+.balign UDB_MTVEC_BASE_ALIGNMENT_DIRECT
+#endif
 strap_handler_fastillegalinstr:
         csrr t0, scause
         xori t0, t0, 2                  // t0=0 iff scause==2 (illegal instruction)

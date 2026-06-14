@@ -27,7 +27,8 @@
       "matchStrings": ["QEMU_VERSION=\"(?<currentValue>[^\"]+)\""],
       "depNameTemplate": "qemu/qemu",
       "datasourceTemplate": "github-tags",
-      "extractVersionTemplate": "^v(?<version>.*)$"
+      "extractVersionTemplate": "^v(?<version>.*)$",
+      "automerge": true
     },
     {
       "description": "Spike commit in install script",
@@ -37,7 +38,8 @@
       "depNameTemplate": "riscv/riscv-isa-sim",
       "datasourceTemplate": "git-refs",
       "packageNameTemplate": "https://github.com/riscv/riscv-isa-sim",
-      "currentValueTemplate": "master"
+      "currentValueTemplate": "master",
+      "automerge": true
     },
     {
       "description": "Whisper commit in install script",
@@ -47,7 +49,8 @@
       "depNameTemplate": "tenstorrent/whisper",
       "datasourceTemplate": "git-refs",
       "packageNameTemplate": "https://github.com/tenstorrent/whisper",
-      "currentValueTemplate": "master"
+      "currentValueTemplate": "master",
+      "automerge": true
     },
     {
       "description": "CVW commit in install script",
@@ -57,7 +60,8 @@
       "depNameTemplate": "openhwgroup/cvw",
       "datasourceTemplate": "git-refs",
       "packageNameTemplate": "https://github.com/openhwgroup/cvw",
-      "currentValueTemplate": "main"
+      "currentValueTemplate": "main",
+      "automerge": true
     },
     {
       "description": "RISC-V GCC toolchain version in CI workflow and Dockerfile",
@@ -71,7 +75,8 @@
       ],
       "depNameTemplate": "riscv-collab/riscv-gnu-toolchain",
       "datasourceTemplate": "github-releases",
-      "versioningTemplate": "loose"
+      "versioningTemplate": "loose",
+      "automerge": true
     },
     {
       "description": "LLVM version in CI workflow",
@@ -80,7 +85,8 @@
       "matchStrings": ["LLVM_VERSION:\\s*\"(?<currentValue>\\d+)\""],
       "depNameTemplate": "llvm/llvm-project",
       "datasourceTemplate": "github-tags",
-      "extractVersionTemplate": "^llvmorg-(?<version>\\d+)\\.\\d+\\.\\d+$"
+      "extractVersionTemplate": "^llvmorg-(?<version>\\d+)\\.\\d+\\.\\d+$",
+      "automerge": true
     },
     {
       "description": "Bundler version recorded in Gemfile.lock (kept in sync with .mise.toml gem:bundler)",
@@ -89,7 +95,8 @@
       "matchStrings": ["BUNDLED WITH\\s+(?<currentValue>[\\d.]+)"],
       "depNameTemplate": "gem:bundler",
       "packageNameTemplate": "bundler",
-      "datasourceTemplate": "rubygems"
+      "datasourceTemplate": "rubygems",
+      "automerge": true
     }
   ],
   "packageRules": [
@@ -97,6 +104,8 @@
       "description": "Always use the latest version of specified packages",
       "matchDepNames": [
         "tenstorrent/whisper",
+        "riscv/riscv-isa-sim",
+        "openhwgroup/cvw",
         "udb",
         "udb-gen",
         "idlc",
@@ -105,56 +114,44 @@
       "minimumReleaseAge": null
     },
     {
-      "description": "Do not update Ruby language versions",
+      "description": "Automerge non-major Ruby updates",
       "matchDepNames": ["ruby"],
+      "matchUpdateTypes": ["digest", "patch", "minor"],
+      "automerge": true
+    },
+    {
+      "description": "Do not update Ruby major versions",
+      "matchDepNames": ["ruby"],
+      "matchUpdateTypes": ["major"],
       "enabled": false
     },
     {
       "description": "Keep ruff in sync across pyproject.toml dev deps and the pre-commit hook",
       "matchDepNames": ["ruff", "astral-sh/ruff-pre-commit"],
-      "groupName": "ruff"
-    },
-    {
-      "description": "Automerge non-major ruff bumps; majors stay grouped for manual review",
-      "matchDepNames": ["ruff", "astral-sh/ruff-pre-commit"],
-      "matchUpdateTypes": ["digest", "patch", "minor"],
+      "groupName": "ruff",
       "automerge": true
     },
     {
       "description": "Keep uv in sync across .mise.toml and the pre-commit hook",
       "matchDepNames": ["uv", "astral-sh/uv-pre-commit"],
-      "groupName": "uv"
-    },
-    {
-      "description": "Automerge non-major uv bumps; majors stay grouped for manual review",
-      "matchDepNames": ["uv", "astral-sh/uv-pre-commit"],
-      "matchUpdateTypes": ["digest", "patch", "minor"],
+      "groupName": "uv",
       "automerge": true
     },
     {
       "description": "Automerge non-major bundler bumps (.mise.toml gem:bundler + Gemfile.lock BUNDLED WITH update together as one dep); majors reviewed manually",
       "matchDepNames": ["gem:bundler"],
-      "matchUpdateTypes": ["digest", "patch", "minor"],
       "automerge": true
     },
     {
-      "description": "Automerge non-major Python package updates (pydantic, typer, pyjson5, ruamel-yaml, pyright, etc.); majors still reviewed manually",
+      "description": "Automerge Python package updates (pydantic, typer, pyjson5, ruamel-yaml, pyright, etc.)",
       "matchDatasources": ["pypi"],
-      "matchUpdateTypes": ["patch", "minor"],
       "automerge": true
     },
     {
-      "description": "Group all GitHub Actions updates into one PR; auto-merge non-major bumps (digests, patches, minors)",
+      "description": "Group all GitHub Actions updates into one PR",
       "matchManagers": ["github-actions"],
       "groupName": "github-actions",
-      "matchUpdateTypes": ["digest", "patch", "minor"],
       "automerge": true
-    },
-    {
-      "description": "Major GitHub Actions bumps still get grouped but require manual review",
-      "matchManagers": ["github-actions"],
-      "matchUpdateTypes": ["major"],
-      "groupName": "github-actions (major)"
     },
     {
       "description": "Group remaining pre-commit hook bumps (ruff/uv are grouped with their non-hook counterparts above); auto-merge non-major",
@@ -163,21 +160,9 @@
         "!astral-sh/ruff-pre-commit",
         "!astral-sh/uv-pre-commit"
       ],
-      "matchUpdateTypes": ["digest", "patch", "minor"],
       "groupName": "pre-commit hooks",
       "schedule": ["before 6am on monday"],
       "automerge": true
-    },
-    {
-      "description": "Major pre-commit hook bumps still get grouped but require manual review",
-      "matchManagers": ["pre-commit"],
-      "matchDepNames": [
-        "!astral-sh/ruff-pre-commit",
-        "!astral-sh/uv-pre-commit"
-      ],
-      "matchUpdateTypes": ["major"],
-      "groupName": "pre-commit hooks (major)",
-      "schedule": ["before 6am on monday"]
     }
   ]
 }

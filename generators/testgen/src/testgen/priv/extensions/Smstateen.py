@@ -522,7 +522,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
 
     fp_instrs = [
         (f"fadd.s x{temp_reg1}, x{temp_reg2}, x{temp_reg3}", "fadd_s"),
-        (f"fcvt.w.s x{temp_reg1}, {temp_reg2}", "fcvt_w_s"),
+        (f"fcvt.w.s x{temp_reg1}, x{temp_reg2}", "fcvt_w_s"),
         (f"fcvt.s.w x{temp_reg1}, x{temp_reg2}", "fcvt_s_w"),
         (f"fclass.s x{temp_reg1}, x{temp_reg2}", "fclass_s"),
     ]

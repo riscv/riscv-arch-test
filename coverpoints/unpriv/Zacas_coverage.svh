@@ -119,7 +119,7 @@ covergroup Zacas_amocas_d_cg with function sample(ins_t ins);
 
     cmp_rd_rs1_pair_partial_val : coverpoint (
             (ins.current.rd_val == ins.prev.rd_val) ^
-            (ins.current.rd_next_val == ins.prev.rd_next_val)
+            (ins.current.rd_upper_pair_val == ins.prev.rd_upper_pair_val)
         ) iff (ins.trap == 0)
         {
         // Cases where rd and rs1 have matching high or low halves but not both
@@ -329,7 +329,7 @@ covergroup Zacas_amocas_q_cg with function sample(ins_t ins);
 
     cmp_rd_rs1_pair_partial_val : coverpoint (
             (ins.current.rd_val == ins.prev.rd_val) ^
-            (ins.current.rd_next_val == ins.prev.rd_next_val)
+            (ins.current.rd_upper_pair_val == ins.prev.rd_upper_pair_val)
         ) iff (ins.trap == 0)
         {
         // Cases where rd and rs1 have matching high or low halves but not both

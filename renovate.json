@@ -8,6 +8,12 @@
   "prConcurrentLimit": 10,
   "minimumReleaseAge": "7 days",
   "internalChecksFilter": "strict",
+  "automerge": true,
+  "osvVulnerabilityAlerts": true,
+  "vulnerabilityAlerts": {
+    "labels": ["dependencies", "security"],
+    "minimumReleaseAge": "4 hours"
+  },
   "git-submodules": {
     "enabled": true
   },
@@ -16,8 +22,7 @@
   },
   "lockFileMaintenance": {
     "enabled": true,
-    "schedule": ["before 6am on monday"],
-    "automerge": true
+    "schedule": ["before 6am on monday"]
   },
   "customManagers": [
     {
@@ -60,6 +65,46 @@
       "currentValueTemplate": "main"
     },
     {
+      "description": "cv32e20-dv (cve2) commit in install script",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/scripts/install-cve2\\.sh$/"],
+      "matchStrings": ["CVE2_DV_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
+      "depNameTemplate": "openhwgroup/cv32e20-dv",
+      "datasourceTemplate": "git-refs",
+      "packageNameTemplate": "https://github.com/openhwgroup/cv32e20-dv",
+      "currentValueTemplate": "main"
+    },
+    {
+      "description": "cv32e40p-dv-review (cve4) commit in install script",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/scripts/install-cve4\\.sh$/"],
+      "matchStrings": ["CVE4_DV_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
+      "depNameTemplate": "openhwgroup/cv32e40p-dv-review",
+      "datasourceTemplate": "git-refs",
+      "packageNameTemplate": "https://github.com/openhwgroup/cv32e40p-dv-review",
+      "currentValueTemplate": "main"
+    },
+    {
+      "description": "cv32e40x-dv (cve4) commit in install script",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/scripts/install-cve4\\.sh$/"],
+      "matchStrings": ["CVE40X_DV_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
+      "depNameTemplate": "openhwgroup/cv32e40x-dv",
+      "datasourceTemplate": "git-refs",
+      "packageNameTemplate": "https://github.com/openhwgroup/cv32e40x-dv",
+      "currentValueTemplate": "main"
+    },
+    {
+      "description": "cv32e40x RTL hash pinned in cve4 install script",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/scripts/install-cve4\\.sh$/"],
+      "matchStrings": ["CVE40X_CORE_HASH=\"(?<currentDigest>[a-f0-9]+)\""],
+      "depNameTemplate": "openhwgroup/cv32e40x",
+      "datasourceTemplate": "git-refs",
+      "packageNameTemplate": "https://github.com/openhwgroup/cv32e40x",
+      "currentValueTemplate": "master"
+    },
+    {
       "description": "RISC-V GCC toolchain version in CI workflow and Dockerfile",
       "customType": "regex",
       "managerFilePatterns": [
@@ -97,6 +142,12 @@
       "description": "Always use the latest version of specified packages",
       "matchDepNames": [
         "tenstorrent/whisper",
+        "riscv/riscv-isa-sim",
+        "openhwgroup/cvw",
+        "openhwgroup/cv32e20-dv",
+        "openhwgroup/cv32e40p-dv-review",
+        "openhwgroup/cv32e40x-dv",
+        "openhwgroup/cv32e40x",
         "udb",
         "udb-gen",
         "idlc",
@@ -105,8 +156,9 @@
       "minimumReleaseAge": null
     },
     {
-      "description": "Do not update Ruby language versions",
+      "description": "Do not update Ruby major versions",
       "matchDepNames": ["ruby"],
+      "matchUpdateTypes": ["major"],
       "enabled": false
     },
     {
@@ -115,68 +167,23 @@
       "groupName": "ruff"
     },
     {
-      "description": "Automerge non-major ruff bumps; majors stay grouped for manual review",
-      "matchDepNames": ["ruff", "astral-sh/ruff-pre-commit"],
-      "matchUpdateTypes": ["digest", "patch", "minor"],
-      "automerge": true
-    },
-    {
       "description": "Keep uv in sync across .mise.toml and the pre-commit hook",
       "matchDepNames": ["uv", "astral-sh/uv-pre-commit"],
       "groupName": "uv"
     },
     {
-      "description": "Automerge non-major uv bumps; majors stay grouped for manual review",
-      "matchDepNames": ["uv", "astral-sh/uv-pre-commit"],
-      "matchUpdateTypes": ["digest", "patch", "minor"],
-      "automerge": true
-    },
-    {
-      "description": "Automerge non-major bundler bumps (.mise.toml gem:bundler + Gemfile.lock BUNDLED WITH update together as one dep); majors reviewed manually",
-      "matchDepNames": ["gem:bundler"],
-      "matchUpdateTypes": ["digest", "patch", "minor"],
-      "automerge": true
-    },
-    {
-      "description": "Automerge non-major Python package updates (pydantic, typer, pyjson5, ruamel-yaml, pyright, etc.); majors still reviewed manually",
-      "matchDatasources": ["pypi"],
-      "matchUpdateTypes": ["patch", "minor"],
-      "automerge": true
-    },
-    {
-      "description": "Group all GitHub Actions updates into one PR; auto-merge non-major bumps (digests, patches, minors)",
+      "description": "Group all GitHub Actions updates into one PR",
       "matchManagers": ["github-actions"],
-      "groupName": "github-actions",
-      "matchUpdateTypes": ["digest", "patch", "minor"],
-      "automerge": true
+      "groupName": "github-actions"
     },
     {
-      "description": "Major GitHub Actions bumps still get grouped but require manual review",
-      "matchManagers": ["github-actions"],
-      "matchUpdateTypes": ["major"],
-      "groupName": "github-actions (major)"
-    },
-    {
-      "description": "Group remaining pre-commit hook bumps (ruff/uv are grouped with their non-hook counterparts above); auto-merge non-major",
+      "description": "Group remaining pre-commit hook bumps (ruff/uv are grouped with their non-hook counterparts above)",
       "matchManagers": ["pre-commit"],
       "matchDepNames": [
         "!astral-sh/ruff-pre-commit",
         "!astral-sh/uv-pre-commit"
       ],
-      "matchUpdateTypes": ["digest", "patch", "minor"],
       "groupName": "pre-commit hooks",
-      "schedule": ["before 6am on monday"],
-      "automerge": true
-    },
-    {
-      "description": "Major pre-commit hook bumps still get grouped but require manual review",
-      "matchManagers": ["pre-commit"],
-      "matchDepNames": [
-        "!astral-sh/ruff-pre-commit",
-        "!astral-sh/uv-pre-commit"
-      ],
-      "matchUpdateTypes": ["major"],
-      "groupName": "pre-commit hooks (major)",
       "schedule": ["before 6am on monday"]
     }
   ]

@@ -36,14 +36,14 @@ _LOWER_MODES = [
 def _write_se0(temp_reg: int, *, enable: bool) -> list[str]:
     """Set (enable=True) or clear (enable=False) SE0 in mstateen0/mstateen0h."""
     action = "CSRS" if enable else "CSRC"
-    verb = "set SE0=1" if enable else "clear SE0=0"
+    description = "set SE0=1" if enable else "clear SE0=0"
     return [
         "#if __riscv_xlen == 64",
         f"LI(x{temp_reg}, 0x8000000000000000)  # SE0 = bit 63 of mstateen0",
-        f"{action}(mstateen0, x{temp_reg})  # {verb}",
+        f"{action}(mstateen0, x{temp_reg})  # {description}",
         "#else",
         f"LI(x{temp_reg}, 0x80000000)  # SE0 = bit 31 of mstateen0h",
-        f"{action}(mstateen0h, x{temp_reg})  # {verb}",
+        f"{action}(mstateen0h, x{temp_reg})  # {description}",
         "#endif",
     ]
 
@@ -373,21 +373,16 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
         )
     ]
 
-    temp_reg, save_mstateen, save_mstatenh, save_sstateen, scratch_reg = test_data.int_regs.get_registers(5)
+    (temp_reg1, temp_reg2, temp_reg3, save_mstateen, save_mstatenh, save_sstateen) = test_data.int_regs.get_registers(6)
 
     FCSR_BIT = 1  # sstateen0 bit 1 = FCSR
 
     fp_instrs = [
-        ("fadd.s f0, f1, f2", "fadd_s"),
-        ("flw f0, 0(x{scratch})", "flw"),
-        ("fcvt.w.s x{temp}, f0", "fcvt_w_s"),
-        ("fcvt.s.w f0, x0", "fcvt_s_w"),
-        ("fmv.x.w x{temp}, f0", "fmv_x_w"),
-        ("fmv.w.x f0, x{temp}", "fmv_w_x"),
-        ("fclass.s x{temp}, f0", "fclass_s"),
+        (f"fadd.s x{temp_reg1}, x{temp_reg2}, x{temp_reg3}", "fadd_s"),
+        (f"fcvt.w.s x{temp_reg1}, x{temp_reg2}", "fcvt_w_s"),
+        (f"fcvt.s.w x{temp_reg1}, x{temp_reg2}", "fcvt_s_w"),
+        (f"fclass.s x{temp_reg1}, x{temp_reg2}", "fclass_s"),
     ]
-
-    lines.append(f"LA(x{scratch_reg}, scratch)  # scratch memory pointer")
 
     for fcsr_bit in [0, 1]:
         fcsr_action = "CSRC" if fcsr_bit == 0 else "CSRS"
@@ -402,16 +397,15 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
                 ]
             )
             lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
-            lines.extend(_write_se0(temp_reg, enable=True))
+            lines.extend(_write_se0(temp_reg1, enable=True))
             lines.extend(
                 [
-                    f"LI(x{temp_reg}, {1 << FCSR_BIT})",
-                    f"{fcsr_action}(sstateen0, x{temp_reg})  # sstateen0.FCSR = {fcsr_bit}",
+                    f"LI(x{temp_reg1}, {1 << FCSR_BIT})",
+                    f"{fcsr_action}(sstateen0, x{temp_reg1})  # sstateen0.FCSR = {fcsr_bit}",
                 ]
             )
             lines.append(enter_line)
-            for insn_template, label in fp_instrs:
-                insn = insn_template.replace("{temp}", str(temp_reg)).replace("{scratch}", str(scratch_reg))
+            for insn, label in fp_instrs:
                 lines.extend(
                     [
                         "",
@@ -430,7 +424,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
             if needs_guard:
                 lines.append("#endif  // S_SUPPORTED")
 
-    test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh, save_sstateen, scratch_reg])
+    test_data.int_regs.return_registers([temp_reg1, temp_reg2, temp_reg3, save_mstateen, save_mstatenh, save_sstateen])
     return lines
 
 
@@ -442,7 +436,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "Ssstateen",
     required_extensions=["S", "Zicsr", "Smstateen", "Ssstateen"],
-    march_extensions=["Ssstateen", "Smstateen", "Zicsr", "Zcmt"],
+    march_extensions=["Ssstateen", "Smstateen", "Zicsr", "Zcmt", "Zfinx"],
 )
 def make_ssstateen(test_data: TestData) -> list[str]:
     """Generate tests for Ssstateen state-enable extension testsuite."""
@@ -454,7 +448,7 @@ def make_ssstateen(test_data: TestData) -> list[str]:
     lines.extend(_generate_csr_illegal_accesses(test_data))
     lines.extend(_generate_walking_ones(test_data))
 
-    # cp_fcsr_lower, cp_fcsr_fp_instrs — only when F (Zfinx) is supported
+    # cp_fcsr_lower, cp_fcsr_fp_instrs — only when Zfinx is supported
     lines.append("#ifdef ZFINX_SUPPORTED")
     lines.extend(_generate_fcsr_lower(test_data))
     lines.extend(_generate_fcsr_lower_fp_instrs(test_data))

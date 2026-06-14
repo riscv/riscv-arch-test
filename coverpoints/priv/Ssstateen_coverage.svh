@@ -93,11 +93,8 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
         }
         fp_instrs: coverpoint ins.current.insn {
                 wildcard bins fadd_s   = {FADD_S};
-                wildcard bins flw      = {FLW};
                 wildcard bins fcvt_ws  = {FCVT_W_S};
                 wildcard bins fcvt_sw  = {FCVT_S_W};
-                wildcard bins fmv_xw   = {FMV_X_W};
-                wildcard bins fmv_wx   = {FMV_W_X};
                 wildcard bins fclass_s = {FCLASS_S};
         }
     `endif

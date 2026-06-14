@@ -517,20 +517,15 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
         )
     ]
 
-    temp_reg, scratch_reg = test_data.int_regs.get_registers(2)
+    temp_reg1, temp_reg2, temp_reg3 = test_data.int_regs.get_registers(3)
     FCSR_BIT_MASK = 1 << 1
 
     fp_instrs = [
-        ("fadd.s f0, f1, f2", "fadd_s"),
-        ("flw f0, 0(x{scratch})", "flw"),
-        ("fcvt.w.s x{temp}, f0", "fcvt_w_s"),
-        ("fcvt.s.w f0, x0", "fcvt_s_w"),
-        ("fmv.x.w x{temp}, f0", "fmv_x_w"),
-        ("fmv.w.x f0, x{temp}", "fmv_w_x"),
-        ("fclass.s x{temp}, f0", "fclass_s"),
+        (f"fadd.s x{temp_reg1}, x{temp_reg2}, x{temp_reg3}", "fadd_s"),
+        (f"fcvt.w.s x{temp_reg1}, {temp_reg2}", "fcvt_w_s"),
+        (f"fcvt.s.w x{temp_reg1}, x{temp_reg2}", "fcvt_s_w"),
+        (f"fclass.s x{temp_reg1}, x{temp_reg2}", "fclass_s"),
     ]
-
-    lines.append(f"LA(x{scratch_reg}, scratch)  # scratch memory for flw")
 
     # Lower modes only (U + S); these crosses do not sample M-mode.
     for mode_label, enter_line, needs_guard in _MODES_MUS[1:]:
@@ -542,13 +537,12 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
                 [
                     "",
                     f"{INDENT}# mstateen0.fcsr = {state}, {mode_label}",
-                    f"LI(x{temp_reg}, {FCSR_BIT_MASK})",
-                    f"{bit_action}(mstateen0, x{temp_reg})",
+                    f"LI(x{temp_reg1}, {FCSR_BIT_MASK})",
+                    f"{bit_action}(mstateen0, x{temp_reg1})",
                 ]
             )
             lines.append(enter_line)
-            for insn_template, label in fp_instrs:
-                insn = insn_template.replace("{temp}", str(temp_reg)).replace("{scratch}", str(scratch_reg))
+            for insn, label in fp_instrs:
                 lines.extend(
                     [
                         "",
@@ -561,7 +555,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
         if needs_guard:
             lines.append("#endif  // S_SUPPORTED")
 
-    test_data.int_regs.return_registers([temp_reg, scratch_reg])
+    test_data.int_regs.return_registers([temp_reg1, temp_reg2, temp_reg3])
     return lines
 
 
@@ -573,7 +567,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "Smstateen",
     required_extensions=["S", "Zicsr", "Smstateen"],
-    march_extensions=["S", "Smstateen", "Zicsr", "Zcmt"],
+    march_extensions=["S", "Smstateen", "Zicsr", "Zcmt", "Zfinx"],
 )
 def make_smstateen(test_data: TestData) -> list[str]:
     """Generate tests for Smstateen state-enable extension testsuite."""

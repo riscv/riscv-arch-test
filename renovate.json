@@ -177,7 +177,7 @@
       "groupName": "github-actions"
     },
     {
-      "description": "Group remaining pre-commit hook bumps (ruff/uv are grouped with their non-hook counterparts above); auto-merge non-major",
+      "description": "Group remaining pre-commit hook bumps (ruff/uv are grouped with their non-hook counterparts above)",
       "matchManagers": ["pre-commit"],
       "matchDepNames": [
         "!astral-sh/ruff-pre-commit",

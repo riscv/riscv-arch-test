@@ -431,6 +431,7 @@ def _print_failure(console: Console, task: BuildTask, error: BuildError, verbose
             output_lines = output_lines[-max_output_lines:]
         for line in output_lines:
             console.print(f"    {line}", soft_wrap=True, highlight=False)
+        console.print()  # blank line separator
     else:
         console.print(f"  [dim](no output captured; exit status {error.returncode})[/]")
 

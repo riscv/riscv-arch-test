@@ -128,7 +128,12 @@
   // labels) are defined by RVTEST_TRAP_EPILOG, so the handler that references
   // them must only be emitted when the epilog is also emitted.
   #ifdef STANDARD_SM_SUPPORTED
-  INSTANTIATE_MODE_MACRO RVTEST_TRAP_HANDLER
+    INSTANTIATE_MODE_MACRO RVTEST_TRAP_HANDLER
+    // Fast illegal-instruction handler for high-trap-volume suites (Ssstrict).
+    // The prolog installs it in mtvec/stvec instead of the standard trampolines.
+    #ifdef RVTEST_USE_FAST_TRAP_HANDLER
+      RVTEST_FAST_TRAP_HANDLER
+    #endif
   #endif
 
   // Include test failure handling code

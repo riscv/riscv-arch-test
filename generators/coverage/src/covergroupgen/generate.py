@@ -47,14 +47,8 @@ def _load_ssstrictv_skip_combinations() -> dict[str, set[str]]:
 SSSTRICTV_SKIP_COMBINATIONS = _load_ssstrictv_skip_combinations()
 
 
-_VECTOR_TESTGEN_COMMON = None
-
-
 def _load_vector_testgen_common() -> ModuleType | None:
     """Lazy-load the testgen ``vector_testgen_common`` module by file path."""
-    global _VECTOR_TESTGEN_COMMON
-    if _VECTOR_TESTGEN_COMMON is not None:
-        return _VECTOR_TESTGEN_COMMON
     import importlib.util
 
     repo_root = Path(__file__).resolve().parents[4]
@@ -69,7 +63,6 @@ def _load_vector_testgen_common() -> ModuleType | None:
         spec.loader.exec_module(module)
     except Exception:  # noqa: BLE001
         return None
-    _VECTOR_TESTGEN_COMMON = module
     return module
 
 

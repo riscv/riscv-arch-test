@@ -576,7 +576,7 @@
       csrw mhpmevent30, zero
       csrw mhpmevent31, zero
       // mhpmevent*h high-half CSRs only exist on RV32 with Sscofpmf; otherwise
-      // accessing them is an illegal instruction.
+      // accessing them is reserved.
       #if __riscv_xlen == 32
         #ifdef SSCOFPMF_SUPPORTED
         csrw mhpmevent3h, zero

@@ -43,3 +43,30 @@ class TestChunk:
     start_data_reg: int = 3
     end_sig_reg: int = 2
     end_data_reg: int = 3
+
+
+def split_test_chunks(test_chunks: list[TestChunk], max_per_file: int) -> list[list[TestChunk]]:
+    """
+    Split a list of TestChunks into groups that don't exceed max_per_file testcases each.
+    A single chunk that exceeds max_per_file is never split.
+    """
+    if not test_chunks:
+        raise ValueError("No test chunks provided!")
+
+    test_files: list[list[TestChunk]] = []
+    current_file_chunks: list[TestChunk] = []
+    count = 0
+
+    # Iterate over all test chunks and group into test files
+    for tc in test_chunks:
+        if count > 0 and count + tc.num_testcases > max_per_file:
+            test_files.append(current_file_chunks)
+            current_file_chunks = []
+            count = 0
+        current_file_chunks.append(tc)
+        count += tc.num_testcases
+
+    # Add final file
+    if current_file_chunks:
+        test_files.append(current_file_chunks)
+    return test_files

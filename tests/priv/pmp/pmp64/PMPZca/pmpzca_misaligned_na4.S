@@ -88,7 +88,7 @@ main:
     csrw pmpcfg2, x4
 
 // For larger UDB_PMP_GRANUMARITY, NA4 is not supported
-#if UDB_PMP_GRANULARITY == 4
+#if UDB_PMP_GRANULARITY == 2
 //                                            Verification Section
 // Test Case: Three NA4 regions with L=1 and XWR = 111 for first 2 regions, and XWR = 000 for third region.
 

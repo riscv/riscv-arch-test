@@ -89,7 +89,7 @@ main:
 // relocation truncation error to fit: R_RISCV_JAL
 // Regions get so large, trap handler, RVMODEL macros,
 // and failure macros gets far apart and start raising errors
-#if UDB_PMP_GRANULARITY == 4
+#if UDB_PMP_GRANULARITY == 2
 
     LA(x4, TEST_FOR_EXECUTION_0)
     srl x4, x4, PMP_SHIFT
@@ -186,7 +186,7 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpm_cfg_tor_all_lw\""
 
-#if UDB_PMP_GRANULARITY == 4
+#if UDB_PMP_GRANULARITY == 2
 
 .align 12
 TEST_FOR_EXECUTION_X:

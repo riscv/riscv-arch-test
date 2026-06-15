@@ -103,7 +103,7 @@ main:
     csrw pmpaddr14, x5
 
 // For larger UDB_PMP_GRANUMARITY, NA4 is not supported
-#if UDB_PMP_GRANULARITY == 4
+#if UDB_PMP_GRANULARITY == 2
     LI(x4, (PMPREGION_XWR_000 << PMP6_CFG_SHIFT))
     csrw pmpcfg2, x4
 

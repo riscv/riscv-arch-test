@@ -94,7 +94,7 @@ main:
     srl x4, x4, PMP_SHIFT
     csrw pmpaddr1, x4
 // For larger UDB_PMP_GRANUMARITY, NA4 is not supported
-#if UDB_PMP_GRANULARITY == 4
+#if UDB_PMP_GRANULARITY == 2
 //                                            Verification Section
 // Test Case: 1 -- LXWR Permissions given to the na4 Region and accessing double word.
 

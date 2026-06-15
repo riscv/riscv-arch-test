@@ -155,7 +155,7 @@ main:
 // relocation truncation error to fit: R_RISCV_JAL
 // Regions get so large, trap handler, RVMODEL macros,
 // and failure macros gets far apart and start raising errors
-#if UDB_PMP_GRANULARITY == 4
+#if UDB_PMP_GRANULARITY == 2
 // Test Case: 3 : Accessing at end of region with WR Permissions
 
     VERIFICATION_RWX   (TEST_FOR_EXECUTION + 3*g - 4), test_3
@@ -196,7 +196,7 @@ TEST_FOR_EXECUTION:
 // relocation truncation error to fit: R_RISCV_JAL
 // Regions get so large, trap handler, RVMODEL macros,
 // and failure macros gets far apart and start raising errors
-#if UDB_PMP_GRANULARITY == 4
+#if UDB_PMP_GRANULARITY == 2
     .rept (8*(1<<(UDB_PMP_GRANULARITY)))
 #else
     .rept (2*(1<<(UDB_PMP_GRANULARITY)))

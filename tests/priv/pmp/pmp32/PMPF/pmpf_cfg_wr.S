@@ -22,7 +22,7 @@
 # REQUIRED_EXTENSIONS:  ['F','Sm']
 # params:
 #   MXLEN: 32
-#   UDB_NUM_PMP_ENTRIES: '>0'
+#   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv32ifd_zicsr_zifencei_zfhmin
 ##### END_TEST_CONFIG #####
 
@@ -128,7 +128,7 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_SHIFT)
+    LI(x6, PMP_MASK)
     and x5, x5, x6
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
@@ -143,7 +143,7 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_SHIFT)
+    LI(x6, PMP_MASK)
     and x5, x5, x6
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
@@ -158,7 +158,7 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_SHIFT)
+    LI(x6, PMP_MASK)
     and x5, x5, x6
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
@@ -173,7 +173,7 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_SHIFT)
+    LI(x6, PMP_MASK)
     and x5, x5, x6
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
@@ -188,7 +188,7 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_SHIFT)
+    LI(x6, PMP_MASK)
     and x5, x5, x6
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6
@@ -203,7 +203,7 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    LI(x6, PMP_SHIFT)
+    LI(x6, PMP_MASK)
     and x5, x5, x6
     LI(x6, PMP_REGION_SIZE)
     or x5, x5, x6

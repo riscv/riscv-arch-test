@@ -17,8 +17,9 @@ from typing import Annotated
 import typer
 from rich import print as rprint
 
-from act.build import BuildTask, build, prune_empty_dirs
+from act.build import build, prune_empty_dirs
 from act.build_plan import generate_build_plan
+from act.build_types import BuildTask
 from act.config import Config, CoverageSimulator, load_config
 from act.coverreport import print_coverage_summary
 from act.parse_test_constraints import TestYamlHeaderError, generate_test_dict

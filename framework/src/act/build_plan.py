@@ -12,7 +12,7 @@ import importlib.resources
 from collections import defaultdict
 from pathlib import Path
 
-from act.build import BuildTask, PythonAction, SubprocessAction, SymlinkAction
+from act.build_types import BuildTask, PythonAction, SubprocessAction, SymlinkAction
 from act.config import CompilerType, Config, CoverageSimulator, RefModelType, spike_isa_string
 from act.coverreport import generate_report, merge_summaries
 from act.parse_test_constraints import TestMetadata

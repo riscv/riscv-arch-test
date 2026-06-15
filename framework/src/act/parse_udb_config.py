@@ -21,7 +21,8 @@ from typing import TYPE_CHECKING
 from rich import print as rprint
 from ruamel.yaml import YAML
 
-from act.build import BuildTask, PythonAction, build
+from act.build import build
+from act.build_types import BuildTask, PythonAction
 from act.dut_macros import generate_rvmodel_svh
 
 if TYPE_CHECKING:

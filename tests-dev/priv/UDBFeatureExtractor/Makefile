@@ -77,7 +77,7 @@ $(SAIL_LD): | $(BUILD_DIR)
 
 $(CVW_LD): | $(BUILD_DIR)
 	@echo "=== Generating CVW C linker script ==="
-	@printf 'INCLUDE "%s/link.ld"\nENTRY(rvtest_entry_point)\nSECTIONS {\n  .rodata : { *(.rodata .rodata.*) }\n  .sdata  : { *(.sdata .sdata.*) }\n  .bss (NOLOAD) : {\n    __bss_start = .;\n    *(.bss .bss.*)\n    *(COMMON)\n    . = ALIGN(8);\n    __bss_end = .;\n  }\n  .stack (NOLOAD) : {\n    . = ALIGN(16);\n    __stack_bottom = .;\n    . += 128K;\n    _stack_top = .;\n  }\n  PROVIDE(__global_pointer$$ = ADDR(.sdata) + 0x800);\n} INSERT AFTER .data;\n' "$(SAIL_CONFIG)" > $@
+	@printf 'INCLUDE "%s/link.ld"\nENTRY(rvtest_entry_point)\nSECTIONS {\n  .rodata : { *(.rodata .rodata.*) }\n  .sdata  : { *(.sdata .sdata.*) }\n  .bss (NOLOAD) : {\n    __bss_start = .;\n    *(.bss .bss.*)\n    *(COMMON)\n    . = ALIGN(8);\n    __bss_end = .;\n  }\n  .stack (NOLOAD) : {\n    . = ALIGN(16);\n    __stack_bottom = .;\n    . += 128K;\n    _stack_top = .;\n  }\n  PROVIDE(__global_pointer$$ = ADDR(.sdata) + 0x800);\n} INSERT AFTER .data;\n' "$(CVW_CONFIG)" > $@
 
 $(SAIL_C_ELF): $(C_SRCS) $(SAIL_LD) | $(BUILD_DIR)
 	@echo "=== [C] Compiling for Sail ==="

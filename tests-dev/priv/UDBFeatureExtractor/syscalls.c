@@ -45,17 +45,14 @@ int printf(const char *fmt, ...)
 
     while (*fmt != '\0') {
         if (*fmt != '%') {
-            /* Batch all literal characters up to the next '%' or end. */
             const char *span_start = fmt;
             while (*fmt != '\0' && *fmt != '%')
                 fmt++;
-            int span_len = (int)(fmt - span_start);
-            char span[span_len + 1];
-            for (int i = 0; i < span_len; i++)
-                span[i] = span_start[i];
-            span[span_len] = '\0';
-            arch_write_str_asm(span);
-            count += span_len;
+            count += (int)(fmt - span_start);
+            /* Write span using put_char to avoid VLA stack allocation. */
+            const char *p = span_start;
+            while (p < fmt)
+                put_char(*p++);
             continue;
         }
 

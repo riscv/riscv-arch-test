@@ -22,7 +22,7 @@ static inline uint32_t read_trap_count(void)
  * Probe M by executing:
  *     div a2, a0, a1
  *
-* Returns:
+ * Returns:
  *     true  if DIV executed successfully (M is supported)
  *     false if DIV trapped (M is not supported)
  */

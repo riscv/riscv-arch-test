@@ -529,7 +529,6 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
             # instead of exact-matching the reference model.
     warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
     lines.extend(csr_walk_test(test_data, csr_senvcfg, covergroup, coverpoint, warl_fields=warl_fields))
-    lines.extend(["", "#endif"])
     
     # cp_csr_satp waived because behavior of other fields is UNSPECIFIED when satp.MODE = Bare
     # ######################################
@@ -635,15 +634,8 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     lines.append("RVTEST_GOTO_MMODE      # enter machine mode for testing S-mode CSRs from M-mode\n")
     for csr in csrs:
         lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
-    
-<<<<<<< HEAD
     lines.extend(["", "#ifndef SM1P11P0_SUPPORTED"])
     lines.extend(csr_walk_test(test_data, csr_senvcfg, covergroup, coverpoint))
-=======
-    lines.extend(["", "#ifndef S1P11P0_SUPPORTED"])
-    for csr in csrs_senvcfg:
-       lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
->>>>>>> 3607568f (Update generators/testgen/src/testgen/priv/extensions/S.py)
     lines.extend(["", "#endif"])
 
     ######################################

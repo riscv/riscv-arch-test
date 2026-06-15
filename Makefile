@@ -17,14 +17,16 @@ COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/
 EXTENSIONS  ?=
 EXCLUDE_EXTENSIONS ?= Sm,PMPSm
 
-# DEBUG, FAST, and VERBOSE are runtime options for controlling build output. DEBUG and FAST are mutually exclusive.
+# DEBUG, FAST, VERBOSE, and CLEAN_INTERMEDIATES are runtime options for controlling build output. DEBUG is mutually exclusive with FAST and CLEAN_INTERMEDIATES.
 # Set to True to enable, or leave blank to disable.
 # DEBUG enables debug output (signature objdump, trace files, and trap report). This will slow down ELF generation significantly.
 # FAST disables objdump generation for faster builds. This speeds up ELF generation significantly, but makes debugging mismatches harder.
 # VERBOSE implies DEBUG, serializes all commands (JOBS=1), and prints each command as it is issued.
+# CLEAN_INTERMEDIATES deletes each config's intermediate build/ dir after a successful build to save disk space (only final ELFs/objdumps are kept). Forces a full rebuild next run.
 DEBUG       ?=
 FAST        ?=
 VERBOSE     ?=
+CLEAN_INTERMEDIATES ?=
 
 # COVERAGE_SIMULATOR is only used when collecting coverage (make coverage)
 COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa or vcs
@@ -150,6 +152,7 @@ help:
 	  'JOBS'                'Parallel build jobs (0 = auto, also honors -j)' \
 	  'DEBUG'               'Emit objdump/trace/trap reports (slower)' \
 	  'FAST'                'Skip objdump for faster ELF builds' \
+	  'CLEAN_INTERMEDIATES' 'Delete intermediate build/ dirs after build (saves disk)' \
 	  'VERBOSE'             'Implies DEBUG, JOBS=1, prints each command' \
 	  'COVERAGE_SIMULATOR'  'questa or vcs (used with make coverage)'
 	@printf '\n\033[1mExamples:\033[0m\n'
@@ -173,6 +176,7 @@ elfs: tests
 		$(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) \
 		$(if $(DEBUG),--debug) \
 		$(if $(FAST),--fast) \
+		$(if $(CLEAN_INTERMEDIATES),--clean-intermediates) \
 		$(if $(VERBOSE),--verbose) \
 		$(if $(COVERAGE),--coverage) \
 		$(if $(COVERAGE),--coverage-simulator $(COVERAGE_SIMULATOR))

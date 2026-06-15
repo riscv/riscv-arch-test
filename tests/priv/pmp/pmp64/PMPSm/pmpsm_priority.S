@@ -151,7 +151,7 @@ main:
 // Test Case: 2 : Accessing at end of region with XR Permissions
 
     VERIFICATION_RWX   (TEST_FOR_EXECUTION + 2*g - 4), test_2
-// For larger UDB_PMP_GRANUMARITY, it is raising
+// For larger UDB_PMP_GRANULARITY, it is raising
 // relocation truncation error to fit: R_RISCV_JAL
 // Regions get so large, trap handler, RVMODEL macros,
 // and failure macros gets far apart and start raising errors

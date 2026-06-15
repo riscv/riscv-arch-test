@@ -277,21 +277,19 @@ def main() -> int:
     partial_run_test = partial(run_test, command, log_dir, elf_dir, verbose=args.verbose, timeout=args.timeout)
 
     failed = 0
-    all_results: list[tuple[Path, str]] = []
+    entries: list[tuple[str, str]] = []
 
     # Run individual tests
-    with Pool(args.jobs) as pool:
+    with Pool(args.jobs) as pool, summary_log.open("w") as f:
         for fail_status, elf_path, rvcp_summary in pool.imap_unordered(partial_run_test, elf_files):
             if fail_status:
                 failed += 1
-            all_results.append((elf_path, rvcp_summary))
+            rel_log = str(elf_path.relative_to(elf_dir).with_suffix(".log"))
+            entries.append((rel_log, rvcp_summary))
+            print(f"{rel_log}  {rvcp_summary}", file=f, flush=True)
 
-    # Write single top-level summary log at the shared ancestor of elfs/ and logs/
-    entries = []
-    for elf_path, rvcp_summary in sorted(all_results, key=lambda x: x[0]):
-        log_path = log_dir / elf_path.relative_to(elf_dir).with_suffix(".log")
-        rel_log = str(log_path.relative_to(log_dir))
-        entries.append((rel_log, rvcp_summary))
+    # Rewrite the top-level summary log sorted and column-aligned now that all results are in.
+    entries.sort()
     col_width = max((len(p) for p, _ in entries), default=0)
     with summary_log.open("w") as f:
         for rel_log, rvcp_summary in entries:

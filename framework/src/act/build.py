@@ -172,8 +172,10 @@ def build(
         keep_going: If True, continue building independent tasks after a failure.
         dry_run: If True, print what would be built without executing.
         verbose: If True, print each command as it is issued.
-        clean_intermediates: If True, intermediate build/ outputs are disposable, so a
-            satisfied deliverable will not rebuild them when they are missing.
+        clean_intermediates: If True, intermediate outputs are disposable, so a
+            satisfied deliverable will not rebuild them when they are missing. Each
+            intermediate's output files (and log) are also deleted as soon as every task that
+            consumes them has finished.
         phase_label: Label shown in the transient progress widget (e.g.
             "Building", "Preparing DUT configs"). Trailing "..." is appended.
 
@@ -185,71 +187,52 @@ def build(
     if not tasks:
         return result
 
+    # Process-group tracking so a failure/interrupt can kill in-flight subprocess trees.
     active_pgids: set[int] = set()
     pgids_lock = threading.Lock()
     shutdown_event = threading.Event()
 
-    def _kill_active() -> None:
-        with pgids_lock:
-            shutdown_event.set()
-            pgids = set(active_pgids)
-        for pgid in pgids:
-            with contextlib.suppress(ProcessLookupError, PermissionError):
-                os.killpg(pgid, signal.SIGKILL)
-
-    # Build task lookup and dependency graph (keyed by primary output path)
+    # Task lookup and dependency graph (keyed by primary output path).
     task_map: dict[Path, BuildTask] = {}
     graph: dict[Path, tuple[Path, ...]] = {}
     for task in tasks:
-        key = task.key
-        task_map[key] = task
-        graph[key] = task.deps
+        task_map[task.key] = task
+        graph[task.key] = task.deps
 
     missing_deps = sorted({dep for task in tasks for dep in task.deps if dep not in task_map})
     if missing_deps:
         raise KeyError(f"Build plan contains dependencies with no producing task: {missing_deps}")
 
-    # Create all output directories upfront to avoid races
-    dirs: set[Path] = set()
+    # Create all output directories upfront to avoid races.
     for task in tasks:
         for out in task.outputs:
-            dirs.add(out.parent)
-    for d in dirs:
-        d.mkdir(parents=True, exist_ok=True)
+            out.parent.mkdir(parents=True, exist_ok=True)
 
-    # Topological sort with parallel scheduling
+    # Topological sort; prepare() locks the graph and errors on cycles.
     sorter: TopologicalSorter[Path] = TopologicalSorter(graph)
-
-    # Lock graph and throw error if there are cycles
     sorter.prepare()
 
-    # Create list of tasks that need to run based on which outputs
-    # do not exist and which hashes do not match the cached values
+    # Tasks whose outputs are missing or whose recipe hash no longer matches the cache.
     cache = build_cache.BuildCache(cache_root, task_map, clean_intermediates=clean_intermediates)
     needed_tasks = cache.needed_tasks()
 
-    # Track failed tasks and their transitive dependents
+    # Incremental intermediate cleanup: count, per intermediate task, how many tasks consume
+    # its outputs. Once every consumer has finished, the intermediate's files are deleted so
+    # peak disk usage stays bounded rather than holding all intermediates until the end.
+    remaining_consumers: dict[Path, int] = {}
+    if clean_intermediates and not dry_run:
+        for task in tasks:
+            for dep in task.deps:
+                dep_task = task_map.get(dep)
+                if dep_task is not None and dep_task.intermediate:
+                    remaining_consumers[dep] = remaining_consumers.get(dep, 0) + 1
+
     failed_tasks: set[Path] = set()
+    in_flight: dict[Path, Future[BuildError | None]] = {}
+    future_to_key: dict[Future[BuildError | None], Path] = {}
 
-    def _has_failed_dep(key: Path) -> bool:
-        """Check if any direct dependency has failed (transitive propagation is handled by the topological ordering)."""
-        return any(dep in failed_tasks for dep in task_map[key].deps)
-
-    # Set up status bar for in-flight tasks
+    # Progress display.
     status_text = Text()
-
-    def _update_status(in_flight_keys: dict[Path, Future[BuildError | None]]) -> None:
-        """Update the status line to show currently in-flight task names."""
-        status_text.truncate(0)
-        if not in_flight_keys:
-            return
-        if len(in_flight_keys) <= 4:
-            status_text.append("  " + ", ".join(str(k) for k in in_flight_keys), style="dim")
-        else:
-            active = min(len(in_flight_keys), jobs)
-            oldest = next(iter(in_flight_keys))
-            status_text.append(f"  {active} tasks running, oldest: {oldest}", style="dim")
-
     progress = Progress(
         SpinnerColumn(),
         TextColumn(f"[cyan]{phase_label}..."),
@@ -261,92 +244,148 @@ def build(
     )
     progress_task = progress.add_task(phase_label, total=len(tasks))
 
+    def retire(key: Path) -> None:
+        """Mark a task done, delete any intermediate deps no remaining consumer needs, and
+        advance the progress bar."""
+        sorter.done(key)
+        for dep in task_map[key].deps if remaining_consumers else ():
+            count = remaining_consumers.get(dep)
+            if count is None:
+                continue
+            if count > 1:
+                remaining_consumers[dep] = count - 1
+                continue
+            del remaining_consumers[dep]
+            dep_task = task_map[dep]
+            disposable = [*dep_task.outputs]
+            log_file = getattr(dep_task.action, "stdout_file", None)
+            if log_file is not None:
+                disposable.append(log_file)
+            for path in disposable:
+                with contextlib.suppress(OSError):
+                    path.unlink(missing_ok=True)
+        progress.advance(progress_task)
+
+    def schedule(key: Path, *, live: Live, executor: ThreadPoolExecutor) -> None:
+        """Handle one ready task: skip, print (dry run), or submit it to the pool."""
+        task = task_map[key]
+
+        # Skip (but count as a failure) if a dependency failed.
+        if any(dep in failed_tasks for dep in task.deps):
+            failed_tasks.add(key)
+            result.failed += 1
+            retire(key)
+            return
+
+        # Skip tasks whose outputs are already up to date.
+        if key not in needed_tasks:
+            result.skipped += 1
+            retire(key)
+            return
+
+        # Print the task without running it.
+        if dry_run:
+            live.console.print(f"  {task.name}: {_task_str(task)}")
+            result.skipped += 1
+            retire(key)
+            return
+
+        # Submit task to thread pool if none of the above apply.
+        future = executor.submit(
+            execute_task,
+            task,
+            verbose=verbose,
+            active_pgids=active_pgids,
+            pgids_lock=pgids_lock,
+            shutdown_event=shutdown_event,
+        )
+        in_flight[key] = future
+        future_to_key[future] = key
+
+    def kill_active() -> None:
+        """Signal shutdown and SIGKILL every in-flight subprocess group."""
+        with pgids_lock:
+            shutdown_event.set()
+            pgids = set(active_pgids)
+        for pgid in pgids:
+            with contextlib.suppress(ProcessLookupError, PermissionError):
+                os.killpg(pgid, signal.SIGKILL)
+
+    def record_result(done_future: Future[BuildError | None], *, live: Live, executor: ThreadPoolExecutor) -> bool:
+        """Record the outcome of one finished future. Returns True if the run should abort."""
+        key = future_to_key.pop(done_future)
+        in_flight.pop(key)
+        error = done_future.result()
+        if error is not None:
+            result.failed += 1
+            result.errors.append(error)
+            failed_tasks.add(key)
+            _print_failure(live.console, task_map[key], error, verbose=verbose)
+            if not keep_going:
+                kill_active()
+                executor.shutdown(wait=False, cancel_futures=True)
+                return True
+        else:
+            result.succeeded += 1
+            cache.record_success(key)
+        retire(key)
+        return False
+
+    def update_status() -> None:
+        """Update the status line to show currently in-flight task names."""
+        status_text.truncate(0)
+        if not in_flight:
+            return
+        if len(in_flight) <= 4:
+            status_text.append("  " + ", ".join(str(k) for k in in_flight), style="dim")
+        else:
+            active = min(len(in_flight), jobs)
+            oldest = next(iter(in_flight))
+            status_text.append(f"  {active} tasks running, oldest: {oldest}", style="dim")
+
     with (
         Live(Group(progress, status_text), console=progress.console, transient=True) as live,
         ThreadPoolExecutor(max_workers=jobs) as executor,
     ):
-        in_flight: dict[Path, Future[BuildError | None]] = {}
-        future_to_key: dict[Future[BuildError | None], Path] = {}
-
         try:
             while sorter.is_active():
-                # Submit all ready tasks
                 for key in sorter.get_ready():
-                    task = task_map[key]
+                    schedule(key, live=live, executor=executor)
+                update_status()
 
-                    # Skip if a dependency failed
-                    if _has_failed_dep(key):
-                        failed_tasks.add(key)
-                        result.failed += 1
-                        sorter.done(key)
-                        progress.advance(progress_task)
-                        continue
-
-                    # Skip tasks whose outputs are already up to date
-                    if key not in needed_tasks:
-                        result.skipped += 1
-                        sorter.done(key)
-                        progress.advance(progress_task)
-                        continue
-
-                    # Print task without running it
-                    if dry_run:
-                        live.console.print(f"  {task.name}: {_task_str(task)}")
-                        result.skipped += 1
-                        sorter.done(key)
-                        progress.advance(progress_task)
-                        continue
-
-                    # Submit task to thread pool
-                    future = executor.submit(
-                        execute_task,
-                        task,
-                        verbose=verbose,
-                        active_pgids=active_pgids,
-                        pgids_lock=pgids_lock,
-                        shutdown_event=shutdown_event,
-                    )
-                    in_flight[key] = future
-                    future_to_key[future] = key
-
-                _update_status(in_flight)
-
-                # If no tasks are running, continue to the next iteration
+                # Nothing in flight means every ready task was handled inline (skipped/failed).
                 if not in_flight:
                     continue
 
-                # Wait for at least one task to complete
                 done_futures = wait(in_flight.values(), return_when=FIRST_COMPLETED).done
-
-                # Process completed tasks
                 for done_future in done_futures:
-                    key = future_to_key.pop(done_future)
-                    in_flight.pop(key)
-                    error = done_future.result()
-                    if error is not None:
-                        result.failed += 1
-                        result.errors.append(error)
-                        failed_tasks.add(key)
-                        _print_failure(live.console, task_map[key], error, verbose=verbose)
-                        if not keep_going:
-                            _kill_active()
-                            executor.shutdown(wait=False, cancel_futures=True)
-                            return result
-                    else:
-                        result.succeeded += 1
-                        cache.record_success(key)
-                    sorter.done(key)
-                    progress.advance(progress_task)
-
-                _update_status(in_flight)
+                    if record_result(done_future, live=live, executor=executor):
+                        return result  # fatal failure, abort the run
+                update_status()
         except KeyboardInterrupt:
-            _kill_active()
+            kill_active()
             executor.shutdown(wait=False, cancel_futures=True)
             raise
         finally:
             cache.save()
-
     return result
+
+
+def prune_empty_dirs(root: Path) -> None:
+    """Remove root and its subdirectories, but only those that are empty (bottom-up).
+
+    With clean_intermediates the build deletes intermediate files as they become unneeded, so
+    the tree is normally empty by the end. Pruning empty-only means any unexpected leftover
+    file (and its parents) survives and stays visible instead of being silently force-deleted.
+    """
+    if not root.is_dir():
+        return
+    for child in sorted(root.rglob("*"), reverse=True):
+        if child.is_dir():
+            with contextlib.suppress(OSError):
+                child.rmdir()
+    with contextlib.suppress(OSError):
+        root.rmdir()
 
 
 def _print_failure(console: Console, task: BuildTask, error: BuildError, verbose: bool) -> None:

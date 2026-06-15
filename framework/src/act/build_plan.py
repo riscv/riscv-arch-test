@@ -159,6 +159,7 @@ def gen_compile_tasks(
             outputs=(sig_elf,),
             extra_inputs=(test_path, *compile_inputs),
             action=SubprocessAction(cmd=sig_elf_cmd),
+            intermediate=True,
         )
     )
 
@@ -185,6 +186,7 @@ def gen_compile_tasks(
             deps=(sig_elf,),
             extra_inputs=ref_model_inputs,
             action=SubprocessAction(cmd=ref_model_cmd, stdout_file=sig_log_file),
+            intermediate=True,
         )
     )
 
@@ -211,6 +213,7 @@ def gen_compile_tasks(
             outputs=(result_file,),
             deps=(sig_file,),
             action=PythonAction(fn=process_signature_file, args=(sig_file, xlen)),
+            intermediate=True,
         )
     )
 
@@ -309,6 +312,7 @@ def gen_rvvi_tasks(
             deps=(elf,),
             extra_inputs=ref_model_inputs,
             action=SubprocessAction(cmd=sail_cmd, stdout_file=sail_log),
+            intermediate=True,
         )
     )
 
@@ -318,6 +322,7 @@ def gen_rvvi_tasks(
             outputs=(rvvi_trace,),
             deps=(sail_trace,),
             action=PythonAction(fn=sailLog2Trace, args=(sail_trace, rvvi_trace)),
+            intermediate=True,
         )
     )
 
@@ -421,6 +426,7 @@ def gen_coverage_tasks(
                 deps=rvvi_deps,
                 extra_inputs=(*coverage_inputs, tracelist_file),
                 action=SubprocessAction(cmd=coverage_cmd, stdout_file=simulator_log, cwd=coverage_dir),
+                intermediate=True,
             )
         )
 
@@ -515,7 +521,6 @@ def generate_build_plan(
                 compile_inputs,
                 ref_model_inputs,
                 debug,
-                fast,
             )
         )
 

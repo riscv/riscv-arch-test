@@ -152,7 +152,15 @@ def run_act(
         )
 
     # Run all tasks to compile ELFs
-    result = build(tasks, jobs=jobs, keep_going=keep_going, dry_run=dry_run, verbose=verbose)
+    result = build(
+        tasks,
+        jobs=jobs,
+        cache_root=workdir,
+        keep_going=keep_going,
+        dry_run=dry_run,
+        verbose=verbose,
+        clean_intermediates=clean_intermediates,
+    )
 
     # Print summary
     parts = []

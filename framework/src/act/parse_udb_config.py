@@ -180,7 +180,7 @@ def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int, verbose
         )
 
     start = time.monotonic()
-    result = build(tasks, jobs=jobs, verbose=verbose, phase_label="Preparing DUT configs")
+    result = build(tasks, jobs=jobs, cache_root=workdir, verbose=verbose, phase_label="Preparing DUT configs")
     elapsed = time.monotonic() - start
 
     if result.errors:

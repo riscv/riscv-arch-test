@@ -15,12 +15,10 @@ import re
 import signal
 import subprocess
 import threading
-from collections.abc import Callable
 from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from dataclasses import dataclass, field
 from graphlib import TopologicalSorter
 from pathlib import Path
-from typing import Any
 
 from rich.console import Console, Group
 from rich.live import Live
@@ -35,55 +33,13 @@ from rich.progress import (
 )
 from rich.text import Text
 
-
-@dataclass(frozen=True)
-class SubprocessAction:
-    """Run a subprocess (shell) command."""
-
-    cmd: list[str]
-    stdout_file: Path | None = None  # redirect stdout to file
-    cwd: Path | None = None  # working directory for the subprocess
-
-
-@dataclass(frozen=True)
-class PythonAction:
-    """Call a Python function directly (avoids subprocess overhead)."""
-
-    fn: Callable[..., None]
-    args: tuple[Any, ...] = ()
-
-
-@dataclass(frozen=True)
-class SymlinkAction:
-    """Create a symbolic link from src to dst."""
-
-    src: Path
-    dst: Path
-
-
-BuildAction = SubprocessAction | PythonAction | SymlinkAction
-
-
-@dataclass(frozen=True)
-class BuildTask:
-    """A single node in the build DAG.
-
-    The primary output path (outputs[0]) is used as the task's identity for dependency tracking.
-    Dependencies reference tasks by their primary output path. Deps are automatically treated
-    as staleness inputs (since they are file paths produced by predecessor tasks), so only
-    files NOT produced by other tasks (e.g., source .S files) need to be listed in extra_inputs.
-    """
-
-    outputs: tuple[Path, ...]  # Files produced; outputs[0] is the task identity
-    action: BuildAction
-    extra_inputs: tuple[Path, ...] = ()  # Source files not produced by other tasks (for staleness check)
-    deps: tuple[Path, ...] = ()  # Primary output paths of predecessor BuildTasks
-    label: str | None = None  # Human-readable name for failure messages (defaults to outputs[0].stem)
-
-    @property
-    def name(self) -> str:
-        """Task identity: string form of the primary output path."""
-        return str(self.outputs[0])
+from act import build_cache
+from act.build_types import (
+    BuildTask,
+    PythonAction,
+    SubprocessAction,
+    SymlinkAction,
+)
 
 
 @dataclass
@@ -105,32 +61,6 @@ class BuildResult:
     failed: int = 0
     skipped: int = 0  # up-to-date
     errors: list[BuildError] = field(default_factory=list)
-
-
-def is_stale(task: BuildTask) -> bool:
-    """Check if a task needs to be rebuilt.
-
-    A task is stale if any output is missing or any input is newer than the oldest output.
-    Both extra_inputs and deps (as Paths) are checked for staleness.
-    Tasks with no outputs are always stale.
-    """
-    if not task.outputs:
-        return True
-
-    # Check if all outputs exist and find oldest output time
-    oldest_output_mtime: float | None = None
-    for out in task.outputs:
-        if not out.exists():
-            return True
-        mtime = out.stat().st_mtime
-        if oldest_output_mtime is None or mtime < oldest_output_mtime:
-            oldest_output_mtime = mtime
-
-    assert oldest_output_mtime is not None
-
-    # Check extra_inputs and deps (deps are file paths of predecessor outputs)
-    all_inputs = (*task.extra_inputs, *task.deps)
-    return any(inp.exists() and inp.stat().st_mtime > oldest_output_mtime for inp in all_inputs)
 
 
 def execute_task(
@@ -226,9 +156,11 @@ def build(
     tasks: list[BuildTask],
     *,
     jobs: int,
+    cache_root: Path,
     keep_going: bool = False,
     dry_run: bool = False,
     verbose: bool = False,
+    clean_intermediates: bool = False,
     phase_label: str = "Building",
 ) -> BuildResult:
     """Execute a DAG of build tasks using TopologicalSorter + ThreadPoolExecutor.
@@ -236,9 +168,12 @@ def build(
     Args:
         tasks: List of build tasks forming a DAG.
         jobs: Number of parallel workers.
+        cache_root: Workdir whose immediate children are config dirs.
         keep_going: If True, continue building independent tasks after a failure.
         dry_run: If True, print what would be built without executing.
         verbose: If True, print each command as it is issued.
+        clean_intermediates: If True, intermediate build/ outputs are disposable, so a
+            satisfied deliverable will not rebuild them when they are missing.
         phase_label: Label shown in the transient progress widget (e.g.
             "Building", "Preparing DUT configs"). Trailing "..." is appended.
 
@@ -266,9 +201,13 @@ def build(
     task_map: dict[Path, BuildTask] = {}
     graph: dict[Path, tuple[Path, ...]] = {}
     for task in tasks:
-        key = task.outputs[0]
+        key = task.key
         task_map[key] = task
         graph[key] = task.deps
+
+    missing_deps = sorted({dep for task in tasks for dep in task.deps if dep not in task_map})
+    if missing_deps:
+        raise KeyError(f"Build plan contains dependencies with no producing task: {missing_deps}")
 
     # Create all output directories upfront to avoid races
     dirs: set[Path] = set()
@@ -283,6 +222,11 @@ def build(
 
     # Lock graph and throw error if there are cycles
     sorter.prepare()
+
+    # Create list of tasks that need to run based on which outputs
+    # do not exist and which hashes do not match the cached values
+    cache = build_cache.BuildCache(cache_root, task_map, clean_intermediates=clean_intermediates)
+    needed_tasks = cache.needed_tasks()
 
     # Track failed tasks and their transitive dependents
     failed_tasks: set[Path] = set()
@@ -338,8 +282,8 @@ def build(
                         progress.advance(progress_task)
                         continue
 
-                    # Check staleness
-                    if not is_stale(task):
+                    # Skip tasks whose outputs are already up to date
+                    if key not in needed_tasks:
                         result.skipped += 1
                         sorter.done(key)
                         progress.advance(progress_task)
@@ -390,6 +334,7 @@ def build(
                             return result
                     else:
                         result.succeeded += 1
+                        cache.record_success(key)
                     sorter.done(key)
                     progress.advance(progress_task)
 
@@ -398,6 +343,8 @@ def build(
             _kill_active()
             executor.shutdown(wait=False, cancel_futures=True)
             raise
+        finally:
+            cache.save()
 
     return result
 

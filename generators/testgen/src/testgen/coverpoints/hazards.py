@@ -22,7 +22,6 @@ def make_cp_gpr_hazard(instr_name: str, instr_type: str, coverpoint: str, test_d
     parts = coverpoint.split("_")
     haz_class = parts[-1] if len(parts) > 3 and parts[-1] in ["r", "w", "rw"] else "rw"
 
-
     # Determine which hazard types to test
     hazard_types: list[str] = ["nohaz"]
     if "r" in haz_class:

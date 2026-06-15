@@ -119,9 +119,7 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
             # Workaround for GCC bug with -2048 offset
             # https://github.com/riscv-collab/riscv-gnu-toolchain/issues/1647
             if instr_name == "c.j":
-                tc.code.append(
-                    ".insn 0xB001 # backward c.j by -2048; GCC doesn't generate compressed branch properly"
-                )
+                tc.code.append(".insn 0xB001 # backward c.j by -2048; GCC doesn't generate compressed branch properly")
             else:  # c.jal
                 tc.code.append(
                     ".insn 0x3001 # backward c.jal by -2048; GCC doesn't generate compressed branch properly"

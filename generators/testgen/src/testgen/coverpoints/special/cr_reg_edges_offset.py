@@ -24,7 +24,6 @@ def make_cr_rs1_rs2_edges_offset(
     edges1 = get_general_edges(test_data.xlen)
     edges2 = get_general_edges(test_data.xlen)
 
-
     for edge_val1 in edges1:
         for edge_val2 in edges2:
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs1val=edge_val1, rs2val=edge_val2)

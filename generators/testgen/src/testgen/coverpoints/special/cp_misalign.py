@@ -23,7 +23,6 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
     else:
         raise ValueError(f"Unknown cp_misalign coverpoint variant: {coverpoint} for {instr_name}")
 
-
     # Allocate some registers for testing.  Restrict them to [8,15] in case the registers are used for compressed instructions
     r1, r2 = test_data.int_regs.get_registers(2, exclude_regs=[0], reg_range=list(range(8, 16)))
 

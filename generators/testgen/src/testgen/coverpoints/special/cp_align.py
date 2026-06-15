@@ -28,7 +28,6 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
     else:
         raise ValueError(f"Unknown cp_align coverpoint variant: {coverpoint} for {instr_name}")
 
-
     for alignment in alignments:
         if instr_type == "L":
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], immval=alignment)

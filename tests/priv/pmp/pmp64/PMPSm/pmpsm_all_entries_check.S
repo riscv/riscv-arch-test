@@ -167,8 +167,10 @@ RVTEST_BEGIN
 .macro SET_PMP_ENTRY ADDR_REG, CFG_REG, CFG_BITS
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI (x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw \ADDR_REG, x5
     LI(x4, \CFG_BITS)
     csrw \CFG_REG, x4
@@ -539,7 +541,6 @@ main:
 
 #endif  // UDB_NUM_PMP_ENTRIES == 16
 
-    j exit                                                  // Verification complete
 
 exit:
 
@@ -555,6 +556,7 @@ test_2_str: .string "\"test: 2; cp: cp_pmpm64_sw\""
 TEST_FOR_EXECUTION_0:
     jr ra
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

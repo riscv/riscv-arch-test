@@ -130,22 +130,27 @@ RVTEST_DATA_BEGIN
 test_1_str: .string "\"test: 1; cp: pmpzca_misaligned_off_execute\""
 
 .align 12
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jalr x0, x1, 0
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:
     .rept (((1<<(UDB_PMP_GRANULARITY)) / 2) -1)
     nop
     .endr
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_2:
     jalr x0, x1, 0                                              //uncompressed return straddling the start of the second region
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_3:
     .rept (((1<<(UDB_PMP_GRANULARITY)) / 2) -2)
     nop
     .endr
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_4:
     jalr x0, x1, 0                                              // Uncompressed return straddling the end of the second region
 

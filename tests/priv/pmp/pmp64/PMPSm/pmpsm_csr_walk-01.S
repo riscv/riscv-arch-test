@@ -47,15 +47,18 @@
 RVTEST_BEGIN
 
 main:
-    RVTEST_GOTO_MMODE
 
-    // -----------------------------------------------------------------------
-    // SET ALL pmpaddr REGs to ones
-    // -----------------------------------------------------------------------
-    li t0, -1
+    // Loop to SET ALL pmpcfg REGs to zero
+    .set pmpcfgi, CSR_PMPCFG0
+    .rept UDB_NUM_PMP_ENTRIES/8
+    csrw pmpcfgi , x0
+    .set pmpcfgi, pmpcfgi+2
+    .endr
+
+    // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t0, 1b, test_9_str)
+    csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
 
@@ -78,6 +81,16 @@ main:
     .endr
 
     // -----------------------------------------------------------------------
+    // SET ALL pmpaddr REGs to ones
+    // -----------------------------------------------------------------------
+    LI(t0, -1)
+    .set pmpaddri, CSR_PMPADDR0
+    .rept UDB_NUM_PMP_ENTRIES
+1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t0, 1b, test_9_str)
+    .set pmpaddri, pmpaddri+1
+    .endr
+
+    // -----------------------------------------------------------------------
     // Walking ones through pmpaddr registers — bits 0..63 fully unrolled.
     //
     // Label strategy: place GAS numeric local label "1:" immediately before
@@ -86,7 +99,7 @@ main:
     // label, so there are no name collisions and no branch instructions.
     //
     // The outer walking-ones loop from the original (slli / bnez) is replaced
-    // by 64 explicit li t2, (1<<N) blocks — one per bit — each containing a
+    // by 64 explicit LI(t2, 1<<N) blocks — one per bit — each containing a
     // .rept over all PMP registers.  No runtime branching is used.
     // -----------------------------------------------------------------------
 
@@ -94,7 +107,7 @@ main:
 
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
-1:  li t2, (1 << 0)
+1:  LI(t2, (1 << 0))
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_1_str)
     .set pmpaddri, pmpaddri+1
     .endr
@@ -103,7 +116,7 @@ main:
 
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
-1:  li t2, (1 << 1)
+1:  LI(t2, (1 << 1))
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_2_str)
     .set pmpaddri, pmpaddri+1
     .endr
@@ -112,7 +125,7 @@ main:
 
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
-1:  li t2, (1 << 2)
+1:  LI(t2, (1 << 2))
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_3_str)
     .set pmpaddri, pmpaddri+1
     .endr
@@ -121,7 +134,7 @@ main:
 
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
-1:  li t2, (1 << 3)
+1:  LI(t2, (1 << 3))
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_4_str)
     .set pmpaddri, pmpaddri+1
     .endr
@@ -130,7 +143,7 @@ main:
 
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
-1:  li t2, (1 << 4)
+1:  LI(t2, (1 << 4))
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_5_str)
     .set pmpaddri, pmpaddri+1
     .endr
@@ -139,7 +152,7 @@ main:
 
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
-1:  li t2, (1 << 5)
+1:  LI(t2, (1 << 5))
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_6_str)
     .set pmpaddri, pmpaddri+1
     .endr
@@ -148,7 +161,7 @@ main:
 
     .set pmpaddri, CSR_PMPADDR0
     .rept UDB_NUM_PMP_ENTRIES
-1:  li t2, (1 << 6)
+1:  LI(t2, (1 << 6))
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_7_str)
     .set pmpaddri, pmpaddri+1
     .endr

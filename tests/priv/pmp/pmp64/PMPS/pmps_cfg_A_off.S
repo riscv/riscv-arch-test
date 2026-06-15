@@ -121,9 +121,11 @@ test_2_str: .string "\"test: 2; cp: pmpm_cfg_A_off_all_sw\""
 test_3_str: .string "\"test: 3; cp: pmpm_cfg_A_off_all_lw\""
 
 .align 12
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jr ra
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

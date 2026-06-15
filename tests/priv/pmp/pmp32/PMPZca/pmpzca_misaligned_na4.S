@@ -124,7 +124,6 @@ main:
 
    j exit                                                        // Verification Complete, exit the test
 
-
 exit:
 
 RVTEST_CODE_END
@@ -136,15 +135,19 @@ RVTEST_DATA_BEGIN
 test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
 
 .align 12
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_X:
     jalr x0, x1, 0
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     nop
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:
     jalr x0, x1, 0                                                // Uncompressed return straddling the start of 2nd region
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_2:
     jalr x0, x1, 0                                              // Uncompressed return straddling the end of 2nd region
 

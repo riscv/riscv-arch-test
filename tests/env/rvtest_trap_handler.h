@@ -1867,6 +1867,7 @@ vmem_adj_\__MODE__\()epc:
                 addi    T2, T2, 2
                 beq     T3, T2, sv_\__MODE__\()epc
         #endif
+                beqz    T3, sv_\__MODE__\()epc
 #endif
         LREG    T2, vmem_bgn_off(T4)                  // check if EPC is in vmem segment
         LREG    T6, vmem_seg_siz(T4)

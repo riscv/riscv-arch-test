@@ -173,7 +173,6 @@ main:
     VERIFICATION_RWX    TEST_FOR_EXECUTION_12, test_13
     VERIFICATION_RWX    TEST_FOR_EXECUTION_13, test_14
     VERIFICATION_RWX    TEST_FOR_EXECUTION_14, test_15
-
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 .align 4
@@ -181,9 +180,12 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpm_cfg_tor_all_lw\""
 
+
 .align 12
 TEST_FOR_EXECUTION_X:
+    .rept 1024
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION_0:                       // Adding nops in TOR Region from 0x80001000 to 0x80001000 + g
     .rept ((1<<(UDB_PMP_GRANULARITY))/4)

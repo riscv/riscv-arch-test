@@ -75,8 +75,8 @@ def execute_task(
     active_pgids: set[int],
     pgids_lock: threading.Lock,
     shutdown_event: threading.Event,
-) -> BuildError | None:
-    """Execute a single build task. Returns None on success, BuildError on failure."""
+) -> tuple[Path, BuildError | None]:
+    """Execute a single build task. Returns (task key, None on success / BuildError on failure)."""
     if verbose:
         print(f"  {_task_str(task)}")
     action = task.action
@@ -112,7 +112,7 @@ def execute_task(
             if action.stdout_file is not None:
                 action.stdout_file.write_text(stderr + stdout)
             if proc.returncode != 0:
-                return BuildError(
+                return task.key, BuildError(
                     task_name=task.name,
                     command=_task_str(task),
                     returncode=proc.returncode,
@@ -120,13 +120,13 @@ def execute_task(
                     log_file=action.stdout_file,
                 )
         except OSError as e:
-            return _exception_error(task, e)
+            return task.key, _exception_error(task, e)
 
     elif isinstance(action, PythonAction):
         try:
             action.fn(*action.args)
         except Exception as e:  # noqa: BLE001
-            return _exception_error(task, e)
+            return task.key, _exception_error(task, e)
 
     elif isinstance(action, SymlinkAction):
         try:
@@ -134,12 +134,12 @@ def execute_task(
             relative_src = os.path.relpath(action.src, action.dst.parent)
             action.dst.symlink_to(relative_src)
         except OSError as e:
-            return _exception_error(task, e)
+            return task.key, _exception_error(task, e)
 
     else:
         raise TypeError(f"Unknown build action type: {type(action)}")
 
-    return None
+    return task.key, None
 
 
 def build(
@@ -218,8 +218,7 @@ def build(
                     remaining_consumers[dep] = remaining_consumers.get(dep, 0) + 1
 
     failed_tasks: set[Path] = set()
-    in_flight: dict[Path, Future[BuildError | None]] = {}
-    future_to_key: dict[Future[BuildError | None], Path] = {}
+    in_flight: dict[Path, Future[tuple[Path, BuildError | None]]] = {}
 
     # Progress display.
     status_text = Text()
@@ -290,7 +289,6 @@ def build(
             shutdown_event=shutdown_event,
         )
         in_flight[key] = future
-        future_to_key[future] = key
 
     def kill_active() -> None:
         """Signal shutdown and SIGKILL every in-flight subprocess group."""
@@ -301,11 +299,12 @@ def build(
             with contextlib.suppress(ProcessLookupError, PermissionError):
                 os.killpg(pgid, signal.SIGKILL)
 
-    def record_result(done_future: Future[BuildError | None], *, live: Live, executor: ThreadPoolExecutor) -> bool:
+    def record_result(
+        done_future: Future[tuple[Path, BuildError | None]], *, live: Live, executor: ThreadPoolExecutor
+    ) -> bool:
         """Record the outcome of one finished future. Returns True if the run should abort."""
-        key = future_to_key.pop(done_future)
+        key, error = done_future.result()
         in_flight.pop(key)
-        error = done_future.result()
         if error is not None:
             result.failed += 1
             result.errors.append(error)

@@ -22,7 +22,7 @@
 # REQUIRED_EXTENSIONS:  ['F','Sm']
 # params:
 #   MXLEN: 64
-#   UDB_NUM_PMP_ENTRIES: '>0'
+#   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv64ifd_zicsr_zifencei_zfhmin
 ##### END_TEST_CONFIG #####
 

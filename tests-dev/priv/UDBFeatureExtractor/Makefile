@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
-# Makefile for tests/priv/UDBFeatureExtractor
+# Makefile for tests-dev/priv/UDBFeatureExtractor
 
 REPO_ROOT := $(shell git rev-parse --show-toplevel 2>/dev/null || pwd)
-TEST_SRC  := $(REPO_ROOT)/tests/priv/UDBFeatureExtractor
+TEST_SRC  := $(REPO_ROOT)/tests-dev/priv/UDBFeatureExtractor
 BUILD_DIR := $(REPO_ROOT)/work/UDBFeatureExtractor
 
 SAIL_CONFIG := $(REPO_ROOT)/config/sail/sail-RVA23S64
@@ -27,7 +27,8 @@ COMMON_FLAGS := \
     -DXLEN=64 \
     -DTEST_FLEN=32 \
     -DSIGNATURE \
-    -Wl,--no-warn-rwx-segments
+    -Wl,--no-warn-rwx-segments \
+    -Wl,-e,rvtest_entry_point \
 
 SAIL_FLAGS := $(COMMON_FLAGS) \
 	-I$(SAIL_CONFIG) \
@@ -72,15 +73,18 @@ $(BUILD_DIR):
 # Wraps the target's link.ld and appends a 128-KB stack region.
 $(SAIL_LD): | $(BUILD_DIR)
 	@echo "=== Generating Sail C linker script ==="
-	@printf 'INCLUDE "%s/link.ld"\nPROVIDE(__global_pointer$$ = . + 0x800);\nSECTIONS {\n  .stack (NOLOAD) : {\n    . = ALIGN(16);\n    __stack_bottom = .;\n    . += 128K;\n    _stack_top = .;\n  }\n} INSERT AFTER .data;\n' "$(SAIL_CONFIG)" > $@
+	@printf 'INCLUDE "%s/link.ld"\nENTRY(rvtest_entry_point)\nSECTIONS {\n  .rodata : { *(.rodata .rodata.*) }\n  .sdata  : { *(.sdata .sdata.*) }\n  .bss (NOLOAD) : {\n    __bss_start = .;\n    *(.bss .bss.*)\n    *(COMMON)\n    . = ALIGN(8);\n    __bss_end = .;\n  }\n  .stack (NOLOAD) : {\n    . = ALIGN(16);\n    __stack_bottom = .;\n    . += 128K;\n    _stack_top = .;\n  }\n  PROVIDE(__global_pointer$$ = ADDR(.sdata) + 0x800);\n} INSERT AFTER .data;\n' "$(SAIL_CONFIG)" > $@
 
 $(CVW_LD): | $(BUILD_DIR)
 	@echo "=== Generating CVW C linker script ==="
-	@printf 'INCLUDE "%s/link.ld"\nPROVIDE(__global_pointer$$ = . + 0x800);\nSECTIONS {\n  .stack (NOLOAD) : {\n    . = ALIGN(16);\n    __stack_bottom = .;\n    . += 128K;\n    _stack_top = .;\n  }\n} INSERT AFTER .data;\n' "$(CVW_CONFIG)" > $@
+	@printf 'INCLUDE "%s/link.ld"\nENTRY(rvtest_entry_point)\nSECTIONS {\n  .rodata : { *(.rodata .rodata.*) }\n  .sdata  : { *(.sdata .sdata.*) }\n  .bss (NOLOAD) : {\n    __bss_start = .;\n    *(.bss .bss.*)\n    *(COMMON)\n    . = ALIGN(8);\n    __bss_end = .;\n  }\n  .stack (NOLOAD) : {\n    . = ALIGN(16);\n    __stack_bottom = .;\n    . += 128K;\n    _stack_top = .;\n  }\n  PROVIDE(__global_pointer$$ = ADDR(.sdata) + 0x800);\n} INSERT AFTER .data;\n' "$(SAIL_CONFIG)" > $@
 
 $(SAIL_C_ELF): $(C_SRCS) $(SAIL_LD) | $(BUILD_DIR)
 	@echo "=== [C] Compiling for Sail ==="
 	$(CC) $(SAIL_FLAGS) $(C_EXTRA) -T $(SAIL_LD) $(C_SRCS) -o $@
+
+$(NO_M_CFG): | $(BUILD_DIR)
+	@printf '{\n  "extensions": {\n    "M": { "supported": false }\n  }\n}\n' > $@
 
 sail-c: $(SAIL_C_ELF)
 	@echo "=== [C] Running on Sail ==="
@@ -110,7 +114,7 @@ clean:
 	rm -rf $(BUILD_DIR)
 
 help:
-	@echo "make -f tests/priv/UDBFeatureExtractor/Makefile <target>"
+	@echo "make -f tests-dev/priv/UDBFeatureExtractor/Makefile <target>"
 	@echo ""
 	@echo "C version: sail-c  sail-c-no-M  dump-c"
 	@echo "shared:    cvw  clean"

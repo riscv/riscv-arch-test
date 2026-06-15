@@ -42,7 +42,7 @@ RVTEST_BEGIN
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
-    fence.i
+    RVMODEL_FENCEI
 
     LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     // Execution Access Check

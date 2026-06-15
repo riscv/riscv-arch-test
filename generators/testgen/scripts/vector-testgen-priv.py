@@ -402,6 +402,21 @@ def writePrivTestPrep(description, instruction, instruction_data=None, lmul = 1,
             writeLine(f"la x{scratch}, random_mask_0",       "# load random vector base")
             writeLine(f"VLESEWMIN v{base_reg + i}, (x{scratch})",  f"# load to initialize {arg_name} reg #{i} (v{base_reg + i})")
 
+        # Indexed Load/Stores need to read from reasonable values, not to arbitrary parts of memory
+        # Adapted from loadVecReg in vector_testgen_common
+        if arg_name == "vs2" and instruction in vector_ls_ins and base_reg % emul == 0: # Only when we have a properly aligned register does this matter
+            if   sew == 8  : sew_aligned = -1
+            elif sew == 16 : sew_aligned = -2
+            elif sew == 32 : sew_aligned = -4
+            elif sew == 64 : sew_aligned = -8
+
+            writeLine(f"vsetvli x{scratch}, x0, e{sew}, m{common.getLmulFlag(vs2_emul)}, tu, mu", f"# set x{scratch}=VLMAX at full SEW and LMUL")
+            writeLine(f"add x{scratch}, x{scratch}, x{scratch}",                   "# save vlmax * 2")
+            # spec zero-extends index elements to XLEN; use unsigned remainder so
+            # offsets stay non-negative in [0, 2*vlmax) and never alias to huge addrs.
+            writeLine(f"vremu.vx v{base_reg}, v{base_reg}, x{scratch}",              "# ensure all values are within [0, 2*vlmax)")
+            writeLine(f"vand.vi v{base_reg}, v{base_reg}, {sew_aligned}",             "# sew-aligning elements")
+
     _emit_init("vd",  vd_reg,  vd_emul)
     _emit_init("vs2", vs2_reg, vs2_emul)
     _emit_init("vs1", vs1_reg, vs1_emul)

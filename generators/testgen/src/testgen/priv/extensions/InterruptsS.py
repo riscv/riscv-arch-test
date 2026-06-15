@@ -31,7 +31,7 @@ def _generate_trigger_sti_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_trigger_sti"
 
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -146,7 +146,7 @@ def _generate_trigger_ssi_mip_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "InterruptsS_S_cg"
 
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -268,7 +268,7 @@ def _generate_trigger_ssi_sip_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_trigger_ssi_sip"
 
-    r_scratch = test_data.int_regs.get_register(exclude_regs=[])
+    r_scratch = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(
@@ -342,7 +342,7 @@ def _generate_trigger_sei_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_trigger_sei"
 
-    r_scratch, r_temp, r_stimecmp = test_data.int_regs.get_registers(3, exclude_regs=[])
+    r_scratch, r_temp, r_stimecmp = test_data.int_regs.get_registers(3)
 
     lines = [
         comment_banner(
@@ -460,7 +460,7 @@ def _generate_trigger_sei_seip_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_trigger_sei_seip"
 
-    r_scratch = test_data.int_regs.get_register(exclude_regs=[])
+    r_scratch = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(
@@ -547,7 +547,7 @@ def _generate_changingtos_sti_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_trigger_changingtos_sti"
 
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -642,7 +642,7 @@ def _generate_changingtos_ssi_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_trigger_changingtos_ssi"
 
-    r_scratch = test_data.int_regs.get_registers(1, exclude_regs=[])[0]
+    r_scratch = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(
@@ -728,7 +728,7 @@ def _generate_changingtos_sei_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_trigger_changingtos_sei"
 
-    r_scratch = test_data.int_regs.get_register(exclude_regs=[])
+    r_scratch = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(
@@ -778,7 +778,7 @@ def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_interrupts_s"
 
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -947,7 +947,7 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_vectored_s"
 
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -1107,7 +1107,7 @@ def _generate_priority_mip_s_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "InterruptsS_S_cg"
 
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -1238,7 +1238,7 @@ def _generate_priority_mie_s_tests(test_data: TestData) -> list[str]:
     15 cases: 8 S-mode + 7 M-mode
     """
     covergroup = "InterruptsS_S_cg"
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
     lines = [comment_banner("cp_priority_mie_s / cp_priority_mie_s_m", _generate_priority_mie_s_tests.__doc__), ""]
 
     def _setup(mideleg_hex: str, mie_val: int) -> list[str]:
@@ -1344,7 +1344,7 @@ def _generate_priority_both_s_tests(test_data: TestData) -> list[str]:
     Set up with mstatus.MIE = 0, mstatus.SIE=1, and change to supervisor
     """
     covergroup = "InterruptsS_S_cg"
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
     lines = [comment_banner("cp_priority_both_s / cp_priority_both_m", _generate_priority_both_s_tests.__doc__), ""]
 
     def _setup(mideleg_hex: str, mie_val: int) -> list[str]:
@@ -1453,7 +1453,7 @@ def _generate_priority_mideleg_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "InterruptsS_S_cg"
 
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -1657,7 +1657,7 @@ def _generate_wfi_s_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "InterruptsS_S_cg"
 
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -1781,7 +1781,7 @@ def _generate_wfi_timeout_s_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "InterruptsS_S_cg"
 
-    r_temp, r_stimecmp, r_scratch = test_data.int_regs.get_registers(3, exclude_regs=[])
+    r_temp, r_stimecmp, r_scratch = test_data.int_regs.get_registers(3)
 
     lines = [
         comment_banner(
@@ -1920,7 +1920,7 @@ def _generate_interrupts_m_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "InterruptsS_S_cg"
 
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -2111,7 +2111,7 @@ def _generate_vectored_m_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_vectored_m"
 
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -2229,7 +2229,7 @@ def _generate_priority_mip_m_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_priority_mip_m"
 
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -2352,7 +2352,7 @@ def _generate_priority_mie_m_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_priority_mie_m"
 
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -2465,7 +2465,7 @@ def _generate_wfi_m_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_wfi_m"
 
-    r_mtime, r_mtimecmp, r_temp1, r_temp2, r_temp3, r_temp4 = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_mtimecmp, r_temp1, r_temp2, r_temp3, r_temp4 = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -2567,7 +2567,7 @@ def _generate_trigger_mti_m_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_trigger_mti_m"
 
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -2651,7 +2651,7 @@ def _generate_trigger_ssi_sip_m_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_trigger_ssi_sip_m"
 
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -2758,7 +2758,7 @@ def _generate_trigger_msi_m_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_trigger_msi_m"
 
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -2846,7 +2846,7 @@ def _generate_trigger_mei_m_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_trigger_mei_m"
 
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -2927,7 +2927,7 @@ def _generate_trigger_sti_m_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_trigger_sti_m"
 
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -3010,7 +3010,7 @@ def _generate_trigger_ssi_m_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_trigger_ssi_m"
 
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -3100,7 +3100,7 @@ def _generate_trigger_sei_m_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_trigger_sei_m"
 
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -3183,7 +3183,7 @@ def _generate_sei_interaction_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "InterruptsS_S_cg"
 
-    r_scratch = test_data.int_regs.get_register(exclude_regs=[])
+    r_scratch = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(
@@ -3347,7 +3347,7 @@ def _generate_global_ie_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_global_ie"
 
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -3453,7 +3453,7 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_user_mti"
 
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -3561,7 +3561,7 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_user_msi"
 
-    r_scratch = test_data.int_regs.get_register(exclude_regs=[])
+    r_scratch = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(
@@ -3673,7 +3673,7 @@ def _generate_user_mei_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_user_mei"
 
-    r_scratch = test_data.int_regs.get_register(exclude_regs=[])
+    r_scratch = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(
@@ -3785,7 +3785,7 @@ def _generate_user_sei_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "InterruptsS_S_cg"
 
-    r_scratch = test_data.int_regs.get_register(exclude_regs=[])
+    r_scratch = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(
@@ -3953,7 +3953,7 @@ def _generate_wfi_u_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "InterruptsS_S_cg"
 
-    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -4073,7 +4073,7 @@ def _generate_wfi_timeout_u_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_wfi_timeout_u"
 
-    r_temp, r_stimecmp, r_scratch = test_data.int_regs.get_registers(3, exclude_regs=[])
+    r_temp, r_stimecmp, r_scratch = test_data.int_regs.get_registers(3)
 
     lines = [
         comment_banner(
@@ -4193,7 +4193,7 @@ def make_interruptss_s(test_data: TestData) -> list[str]:
     including trigger conditions, delegation, priority, vectoring, and WFI.
     Individual test groups are enabled incrementally as they are validated.
     """
-    r_temp = test_data.int_regs.get_register(exclude_regs=[])
+    r_temp = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(

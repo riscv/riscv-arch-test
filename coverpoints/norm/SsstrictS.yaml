@@ -29,8 +29,8 @@ normative_rule_definitions:
 
   # F rules
   - name: roundingmode_rsv
-    # static and dynamic rounding mode checks, respectively
-    coverpoint: ["SsstrictS_instr_cg/cp_Ftype, ExceptionsF_cg/cp_badfrm"]
+    # static rounding mode check
+    coverpoint: ["SsstrictS_instr_cg/cp_Ftype"]
 
   # Zfa rules
   - name: fcvtmod-w-d_rsv

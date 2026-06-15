@@ -13,8 +13,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  SAIL_VERSION: "0.11"
-  RISCV_TOOLCHAIN_VERSION: "2026.05.06"
+  SAIL_VERSION: "0.12"
+  RISCV_TOOLCHAIN_VERSION: "2026.06.06"
   LLVM_VERSION: "22"
 
 jobs:

@@ -60,7 +60,7 @@
 --override cpu*/Zvfbfmin=T #(Boolean) (default=T) (default) Specify that Zvfbfmin is implemented
 --override cpu*/Zvfbfwma=T #(Boolean) (default=T) (default) Specify that Zvfbfwma is implemented
 --override cpu*/Zvfh=T #(Boolean) (default=T) (default) Specify that Zvfh is implemented
---override cpu*/Zvfhmin=T #(Boolean) (default=T) (default) Specify that Zvfhfmin is implemented
+--override cpu*/Zvfhmin=T #(Boolean) (default=T) (default) Specify that Zvfhmin is implemented
 # This is needed to support segmented load/store from the V extension
 --override cpu*/Zvlsseg=T #(Boolean) (default=F) (default) Specify that Zvlsseg is implemented
 --override cpu*/agnostic_mask=F #(Boolean) (default=F) (default) Specify that artifact mask registers holding agnostic bits are present
@@ -80,6 +80,8 @@
 --override cpu*/Zfa=T
 --override cpu*/Zcb=T
 --override cpu*/Sstc=T
+--override cpu*/Smstateen=T
+--override cpu*/Ssstateen=T
 
 # Misaligned access (Zicclsm) is supported
 --override cpu*/unaligned=T
@@ -93,6 +95,11 @@
 --override cpu*/PMP_grain=4   # 64-byte grains to match cache line width
 --override cpu*/PMP_decompose=T  # unaligned accesses are decomposed into separate aligned accesses
 --override cpu*/PMP_undefined=T # access to unimplemented PMP registers cause illegal instruction exception
+
+# Pointer Masking
+--override iss/cpu0/Smmpm=48_57 # (Enumeration) (default=none) (default) Specify Smmpm implemented modes
+--override iss/cpu0/Smnpm=48_57 # (Enumeration) (default=48_57) (default) Specify Smnpm implemented modes
+--override iss/cpu0/Ssnpm=48_57 # (Enumeration) (default=48_57) (default) Specify Ssnpm implemented modes
 
 # More extensions
 #--override cpu*/Smdbltrp=T

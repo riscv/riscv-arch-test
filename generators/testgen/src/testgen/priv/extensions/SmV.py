@@ -543,7 +543,7 @@ def _gen_vl_walking1s_sew_lmul(test_data: TestData, temp_reg: int) -> list[str]:
 )
 def make_smv(test_data: TestData) -> list[str]:
     """Generate SmV tests (vector CSRs, vsetvl* behavior, vill, vstart, mstatus.VS, misa.V)."""
-    temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
+    temp_reg = test_data.int_regs.get_register()
 
     lines: list[str] = []
     lines.extend(_gen_vcsrrswc(test_data, temp_reg))

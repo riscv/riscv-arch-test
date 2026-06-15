@@ -9,10 +9,12 @@
 
 """SsstrictU — user-mode strict/negative compliance tests.
 
-The fast trap handlers are NOT emitted here — generate/priv.py prepends
-_FAST_SMODE_HANDLER_PREFIX (mtvec → full M-mode handler, stvec →
-strap_handler_fastillegalinstr) plus _SPLIT_FILE_UMODE_GPR_INIT (which
-issues RVTEST_GOTO_LOWER_MODE Umode) to every split file.
+The fast trap handlers are NOT emitted here — every split file defines
+RVTEST_USE_FAST_TRAP_HANDLER, which instantiates RVTEST_FAST_TRAP_HANDLER
+(rvtest_trap_handler.h: mtvec → fast M-mode handler, stvec →
+strap_handler_fastillegalinstr); generate/priv.py prepends
+_SPLIT_FILE_UMODE_GPR_INIT (which issues RVTEST_GOTO_LOWER_MODE Umode)
+to every split file.
 
 Structure
 ---------

@@ -484,7 +484,6 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
 
     for csr in csrs:
         lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
-
     lines.extend(["", "#ifndef SM1P11P0_SUPPORTED"])
     lines.extend(csr_access_test(test_data, csr_senvcfg, covergroup, coverpoint))
     lines.extend(["", "#endif"])

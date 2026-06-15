@@ -83,4 +83,4 @@
 --callcommand iss/cpu0/setPMA -lo 0x0002000000 -hi 0x000200FFFF -attributes " rw-aA- 1248 " # CLINT
 --callcommand iss/cpu0/setPMA -lo 0x000C000000 -hi 0x000FFFFFFF -attributes " rw-aA- --4- " # PLIC
 --callcommand iss/cpu0/setPMA -lo 0x0010010000 -hi 0x0010010007 -attributes " rw-aA- 1248 " # UART0
---callcommand iss/cpu0/setPMA -lo 0x0080000000 -hi 0x00FFFFFFFF -attributes " rwx--- 1248 " # UNCORE_RAM
+--callcommand iss/cpu0/setPMA -lo 0x0080000000 -hi 0x008FFFFFFF -attributes " rwx--- 1248 " # UNCORE_RAM

@@ -28,11 +28,17 @@ from act.build_types import BuildAction, BuildTask, PythonAction, SubprocessActi
 
 _RECIPE_CACHE_NAME = ".act_build_cache.json"  # one manifest per config dir
 _NUL = b"\x00"  # field delimiter so concatenated fields cannot ambiguously merge
+_DIGEST_HEX = 32  # truncate to 16 bytes; collisions irrelevant for staleness
 
 
-def _new_hash() -> hashlib.blake2b:
-    """A fast, non-cryptographic-strength digest (collision-safe for this use)."""
-    return hashlib.blake2b(digest_size=16)
+def _new_hash() -> hashlib._Hash:
+    """SHA-256 digest. Hardware-accelerated (SHA-NI), faster here than blake2b."""
+    return hashlib.sha256()
+
+
+def _digest(h: hashlib._Hash) -> str:
+    """Truncated hex digest; 16 bytes keeps manifests compact, ample for staleness."""
+    return h.hexdigest()[:_DIGEST_HEX]
 
 
 # ---------------------------------------------------------------------------
@@ -45,7 +51,7 @@ def _content_hash(path: Path) -> str:
     """Digest of a file's content. Cleared per build via _compute_recipe_hashes."""
     digest = _new_hash()
     digest.update(path.read_bytes())
-    return digest.hexdigest()
+    return _digest(digest)
 
 
 def _action_repr(action: BuildAction) -> str:
@@ -77,7 +83,7 @@ def _compute_recipe_hashes(task_map: dict[Path, BuildTask]) -> dict[Path, str]:
             if dep not in task_map:
                 raise KeyError(f"Task {key} depends on {dep}, which is not produced by any task in the build plan")
             h.update(_NUL + b"d" + recipe_for(dep).encode())
-        return h.hexdigest()
+        return _digest(h)
 
     return {key: recipe_for(key) for key in task_map}
 

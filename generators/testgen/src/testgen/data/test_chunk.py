@@ -21,7 +21,8 @@ class TestChunk:
     or privileged tests. Test chunks cannot be split across test files.
 
     Attributes:
-        code: Assembly code for this test chunk
+        code: Assembly code for this test chunk, as a list of lines (joined with
+              newlines when the file is written).
         data_values: Values for .data section
         data_strings: Debug strings for .data section
         sigupd_count: Number of signature updates
@@ -33,7 +34,7 @@ class TestChunk:
         end_data_reg: Data pointer register in use at the end of this chunk
     """
 
-    code: str = ""
+    code: list[str] = field(default_factory=list)
     data_values: list[int] = field(default_factory=list)
     data_strings: list[str] = field(default_factory=list)
     sigupd_count: int = 0

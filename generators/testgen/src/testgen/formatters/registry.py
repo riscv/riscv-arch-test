@@ -178,5 +178,5 @@ def format_single_testcase(
     if check:
         test_lines.append(check)
 
-    tc.code = "\n".join(test_lines)
+    tc.code = test_lines
     return test_data.end_test_chunk()

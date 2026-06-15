@@ -40,7 +40,7 @@ def _append_sig_reg_reset(test_file_chunks: list[TestChunk]) -> None:
         f"{INDENT}mv x{IntegerRegisterFile.default_sig_reg}, x{last_chunk.end_sig_reg}"
         f" # restore signature pointer to default register for teardown"
     )
-    last_chunk.code = f"{last_chunk.code}\n{reset}" if last_chunk.code else reset
+    last_chunk.code.append(reset)
 
 
 def generate_unpriv_extension_tests(

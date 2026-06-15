@@ -63,6 +63,11 @@ class BuildResult:
     errors: list[BuildError] = field(default_factory=list)
 
 
+def _exception_error(task: BuildTask, e: Exception) -> BuildError:
+    """BuildError for a task that raised before producing a return code."""
+    return BuildError(task_name=task.name, command=_task_str(task), returncode=-1, output=str(e))
+
+
 def execute_task(
     task: BuildTask,
     *,
@@ -115,23 +120,13 @@ def execute_task(
                     log_file=action.stdout_file,
                 )
         except OSError as e:
-            return BuildError(
-                task_name=task.name,
-                command=_task_str(task),
-                returncode=-1,
-                output=str(e),
-            )
+            return _exception_error(task, e)
 
     elif isinstance(action, PythonAction):
         try:
             action.fn(*action.args)
         except Exception as e:  # noqa: BLE001
-            return BuildError(
-                task_name=task.name,
-                command=_task_str(task),
-                returncode=-1,
-                output=str(e),
-            )
+            return _exception_error(task, e)
 
     elif isinstance(action, SymlinkAction):
         try:
@@ -139,12 +134,7 @@ def execute_task(
             relative_src = os.path.relpath(action.src, action.dst.parent)
             action.dst.symlink_to(relative_src)
         except OSError as e:
-            return BuildError(
-                task_name=task.name,
-                command=_task_str(task),
-                returncode=-1,
-                output=str(e),
-            )
+            return _exception_error(task, e)
 
     else:
         raise TypeError(f"Unknown build action type: {type(action)}")

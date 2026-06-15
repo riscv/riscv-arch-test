@@ -178,9 +178,10 @@ def gen_compile_tasks(
 
     # 2. sig – run reference model
     ref_model_cmd = _ref_model_sig_cmd(config, sig_elf, sig_file, sig_trace_file, xlen, debug)
+    ref_model_outputs = (sig_file, sig_trace_file) if debug else (sig_file,)
     tasks.append(
         BuildTask(
-            outputs=(sig_file,),
+            outputs=ref_model_outputs,
             deps=(sig_elf,),
             extra_inputs=ref_model_inputs,
             action=SubprocessAction(cmd=ref_model_cmd, stdout_file=sig_log_file),

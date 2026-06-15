@@ -27,6 +27,7 @@
 # REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 64
+#   PMP_GRANULARITY: 2
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
@@ -93,8 +94,6 @@ main:
     addi x4, x4, 4
     srl x4, x4, PMP_SHIFT
     csrw pmpaddr1, x4
-// For larger UDB_PMP_GRANUMARITY, NA4 is not supported
-#if UDB_PMP_GRANULARITY == 2
 //                                            Verification Section
 // Test Case: 1 -- LXWR Permissions given to the na4 Region and accessing double word.
 
@@ -102,7 +101,6 @@ main:
     csrw pmpcfg0, x4
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION,test_1
-#endif
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 .align 4

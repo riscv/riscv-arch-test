@@ -78,9 +78,9 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept UDB_NUM_PMP_ENTRIES/4
+    .rept UDB_NUM_PMP_ENTRIES/8
     csrw pmpcfgi , x0
-    .set pmpcfgi, pmpcfgi+1
+    .set pmpcfgi, pmpcfgi+2
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero

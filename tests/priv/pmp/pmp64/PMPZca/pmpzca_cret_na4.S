@@ -81,8 +81,6 @@ main:
     LI(x4, PMP_REGION_GLOBAL)
     csrw pmpcfg2, x4
 
-// For larger UDB_PMP_GRANUMARITY, NA4 is not supported
-#if UDB_PMP_GRANULARITY == 2
 //                                          Verification Section
 // Test Case: NA4 Region with L->1 and XWR->111
 
@@ -105,10 +103,6 @@ main:
     //Test case4
     VERIFICATION_RWX TEST_FOR_EXECUTION_3, test4
 
-    j exit                                                  // Verification Complete, exit the test
-#endif
-
-exit:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN

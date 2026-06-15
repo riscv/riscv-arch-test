@@ -26,6 +26,7 @@
 # REQUIRED_EXTENSIONS:  ['S']
 # params:
 #   MXLEN: 32
+#   PMP_GRANULARITY: 2
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
@@ -146,8 +147,6 @@ main:
     //Lock the Background region.
     LI(x4, PMP_REGION_GLOBAL)
     csrw pmpcfg3, x4
-// For larger UDB_PMP_GRANUMARITY, NA4 is not supported
-#if UDB_PMP_GRANULARITY == 2
 //                                            Verification Section
 // Test Case: 1 : L -> 0 and No Permissions given to the PMP Region 5
 
@@ -220,7 +219,6 @@ main:
     RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
 
-#endif
 exit:
 
 RVTEST_CODE_END

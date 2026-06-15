@@ -30,6 +30,7 @@
 # REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 32
+#   PMP_GRANULARITY: 2
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
@@ -155,8 +156,6 @@ main:
     LI(x4, PMP_REGION_GLOBAL)
     csrw pmpcfg3, x4
 
-// For larger UDB_PMP_GRANUMARITY, NA4 is not supported
-#if UDB_PMP_GRANULARITY == 2
 //                                          Verification Section
 // Test Case: 1 : L -> 1 and No Permissions given to the PMP Region 5
 
@@ -223,8 +222,6 @@ main:
     csrw pmpcfg0, x4
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
-
-#endif
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN

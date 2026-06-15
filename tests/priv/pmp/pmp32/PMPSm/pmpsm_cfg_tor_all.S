@@ -85,11 +85,6 @@ main:
     //Lock the Background region.
     LI(x4, (PMP_REGION_GLOBAL))
     csrw pmpcfg3, x4
-// For larger UDB_PMP_GRANUMARITY, it is raising
-// relocation truncation error to fit: R_RISCV_JAL
-// Regions get so large, trap handler, RVMODEL macros,
-// and failure macros gets far apart and start raising errors
-#if UDB_PMP_GRANULARITY == 2
 
     LA(x4, TEST_FOR_EXECUTION_0)
     srl x4, x4, PMP_SHIFT
@@ -178,7 +173,7 @@ main:
     VERIFICATION_RWX    TEST_FOR_EXECUTION_12, test_13
     VERIFICATION_RWX    TEST_FOR_EXECUTION_13, test_14
     VERIFICATION_RWX    TEST_FOR_EXECUTION_14, test_15
-#endif
+//#endif
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 .align 4
@@ -186,7 +181,6 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpm_cfg_tor_all_lw\""
 
-#if UDB_PMP_GRANULARITY == 2
 
 .align 12
 TEST_FOR_EXECUTION_X:
@@ -273,7 +267,7 @@ RETURN_INSTRUCTION:
     nop
     nop
     jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
-#endif
+
 RVTEST_DATA_END
 
 // Signature region for self-checking

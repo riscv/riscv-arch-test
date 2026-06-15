@@ -166,18 +166,6 @@ def writeLine(argument: str, comment = ""):
 #####################################       test for each coverpoint      #####################################
 
 def make_vill(instruction):
-    # ============================================================
-    # SPIKE-VS-SAIL DISAGREEMENT — cp_vill SKIP FOR vmv<nr>r.v
-    # ------------------------------------------------------------
-    # Per V-spec §16.6, the whole-register-move family vmv<nr>r.v
-    # still observes vill: Spike correctly traps after we install an
-    # illegal vtype, but Sail does not.
-    #
-    # TO RE-ENABLE cp_vill FOR vmv<nr>r.v (once Sail honors vill):
-    #   Delete the `if instruction in (...): return` block below.
-    # ============================================================
-    if instruction in ("vmv1r.v", "vmv2r.v", "vmv4r.v", "vmv8r.v"):
-        return  # noqa: cp_vill disabled for vmv<nr>r.v — see banner above
     description = "cp_vill"
     sew = _eff_sew_for_instruction(instruction)
     instruction_data = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(),
@@ -259,9 +247,9 @@ def make_vstart_gt_vl(instruction):
 
     # If this isn't satisfied, then generating elements such that VLMAX > vstart > vl > 0 is impossible
     if lmul == 1 and not is_mask_ls:
-        ifdef = "UDB_ZVL256B"
+        ifdef = f"ZVL{max(sew*4, 32)}B_SUPPORTED"
     elif lmul == 2 and not is_mask_ls:
-        ifdef = "UDB_ZVL128B"
+        ifdef = f"ZVL{max(sew*2, 32)}B_SUPPORTED"
     else:
         ifdef = ""
 

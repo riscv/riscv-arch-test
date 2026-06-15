@@ -20,10 +20,9 @@ from testgen.formatters.params import generate_random_params
 def make_cp_imm_edges_branch(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for branch immediate edge values."""
     tc = test_data.begin_test_chunk()
-    test_lines: list[str] = []
     params = generate_random_params(test_data, instr_type, exclude_regs=[0])
     assert params.rs1 is not None and params.rs2 is not None and params.temp_reg is not None
-    test_lines.extend(
+    tc.code.extend(
         [
             load_int_reg("branch check value", params.temp_reg, 4096, test_data),
             f"LI(x{params.rs1}, 1)",
@@ -111,7 +110,6 @@ def make_cp_imm_edges_branch(instr_name: str, instr_type: str, coverpoint: str, 
         ]
     )
     return_test_regs(test_data, params)
-    tc.code = "\n".join(test_lines)
     return [test_data.end_test_chunk()]
 
 

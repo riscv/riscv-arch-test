@@ -23,13 +23,12 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
     else:
         raise ValueError(f"Unknown cp_misalign coverpoint variant: {coverpoint} for {instr_name}")
 
-    test_lines: list[str] = []
 
     # Allocate some registers for testing.  Restrict them to [8,15] in case the registers are used for compressed instructions
     r1, r2 = test_data.int_regs.get_registers(2, exclude_regs=[0], reg_range=list(range(8, 16)))
 
     if instr_type in {"L", "FL", "CL", "CILS"}:
-        test_lines.extend(
+        tc.code.extend(
             [
                 "# Start by placing 0x01234567_89ABCDEF_00112233_44556677 into 16 bytes starting at scratch address to facilitate misaligned load tests",
                 f"LA(x{r1}, scratch) # load base address",
@@ -47,7 +46,7 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
 
     for alignment in alignments:
         if instr_type == "L":
-            test_lines.extend(
+            tc.code.extend(
                 [
                     f"# Testcase: {coverpoint} (imm[2:0] = {alignment:03b})",
                     f"LA(x{r1}, scratch) # load base address",
@@ -58,7 +57,7 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
                 ]
             )
         elif instr_type == "FL":
-            test_lines.extend(
+            tc.code.extend(
                 [
                     f"# Testcase: {coverpoint} (imm[2:0] = {alignment:03b})",
                     f"LA(x{r1}, scratch) # load base address",
@@ -69,7 +68,7 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
                 ]
             )
         elif instr_type == "CL":
-            test_lines.extend(
+            tc.code.extend(
                 [
                     f"# Testcase: {coverpoint} (addr[2:0] = {alignment:03b})",
                     f"LA(x{r1}, scratch) # load base address",
@@ -82,10 +81,10 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
             )
         elif instr_type == "CILS":
             asm = test_data.int_regs.consume_registers([2])
-            test_lines.append(f"# Testcase: {coverpoint} (imm[2:0] = {alignment:03b})")
+            tc.code.append(f"# Testcase: {coverpoint} (imm[2:0] = {alignment:03b})")
             if asm:
-                test_lines.append(asm)
-            test_lines.extend(
+                tc.code.append(asm)
+            tc.code.extend(
                 [
                     "LA(sp, scratch) # load base address",
                     f"addi sp, sp, {alignment} # adjust for alignment",
@@ -100,7 +99,7 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
             val = (
                 0x0F1E2D3C if test_data.xlen == 32 else 0x0F1E2D3C4B5A6978
             )  # bytes to store all differ from values placed in scratch
-            test_lines.extend(
+            tc.code.extend(
                 [
                     f"# Testcase: {coverpoint} (imm[2:0] = {alignment:03b})",
                     f"{INDENT}# Start by placing 0x01234567_89ABCDEF_00112233_44556677 into 16 bytes starting at scratch address to facilitate misaligned load tests",
@@ -117,21 +116,21 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
                 ]
             )
             if instr_type == "S":
-                test_lines.extend(
+                tc.code.extend(
                     [
                         test_data.add_testcase(f"{alignment}", coverpoint),
                         f"{instr_name} x{r2}, {alignment}(x{r1}) # perform store to scratch memory",
                     ]
                 )
             elif instr_type == "FS":
-                test_lines.extend(
+                tc.code.extend(
                     [
                         test_data.add_testcase(f"{alignment}", coverpoint),
                         f"{instr_name} f{r2}, {alignment}(x{r1}) # perform store to scratch memory",
                     ]
                 )
             elif instr_type == "CS":
-                test_lines.extend(
+                tc.code.extend(
                     [
                         f"addi x{r1}, x{r1}, {alignment} # adjust for alignment",
                         test_data.add_testcase(f"{alignment}", coverpoint),
@@ -142,8 +141,8 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
             elif instr_type == "CSS":
                 asm = test_data.int_regs.consume_registers([2])
                 if asm:
-                    test_lines.append(asm)
-                test_lines.extend(
+                    tc.code.append(asm)
+                tc.code.extend(
                     [
                         "LA(sp, scratch) # load base address",
                         f"addi sp, sp, {alignment} # adjust for alignment",
@@ -153,7 +152,7 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
                 )
                 test_data.int_regs.return_registers([2])
             if test_data.xlen == 32:
-                test_lines.extend(
+                tc.code.extend(
                     [
                         f"{INDENT}# Check all 16 bytes as signature",
                         f"LREG x{r2}, 0(x{r1})",
@@ -168,7 +167,7 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
                     ]
                 )
             else:  # RV64
-                test_lines.extend(
+                tc.code.extend(
                     [
                         f"{INDENT}# Check all 16 bytes as signature",
                         f"LREG x{r2}, 0(x{r1})",
@@ -183,5 +182,4 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
 
     test_data.int_regs.return_registers([r1, r2])
 
-    tc.code = "\n".join(test_lines)
     return [test_data.end_test_chunk()]

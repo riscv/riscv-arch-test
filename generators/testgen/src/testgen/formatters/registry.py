@@ -160,7 +160,7 @@ def format_single_testcase(
         TestChunk containing the complete testcase
     """
     tc = test_data.begin_test_chunk()
-    test_lines = [f"# Testcase {desc}"]
+    tc.code.append(f"# Testcase {desc}")
 
     # Register the testcase label first so SIGUPD references the current testcase
     label_line = test_data.add_testcase(bin_name, coverpoint)
@@ -168,15 +168,14 @@ def format_single_testcase(
     # Add test and signature update lines
     setup, test, check = format_instruction(instr_name, instr_type, test_data, params)
     if setup:
-        test_lines.append(setup)
-    test_lines.extend(
+        tc.code.append(setup)
+    tc.code.extend(
         [
             label_line,
             test,
         ]
     )
     if check:
-        test_lines.append(check)
+        tc.code.append(check)
 
-    tc.code = test_lines
     return test_data.end_test_chunk()

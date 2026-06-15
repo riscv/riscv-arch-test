@@ -28,7 +28,6 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
     else:
         raise ValueError(f"Unknown cp_align coverpoint variant: {coverpoint} for {instr_name}")
 
-    test_lines: list[str] = []
 
     for alignment in alignments:
         if instr_type == "L":
@@ -39,7 +38,7 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
                 "immval, temp_val, and temp_reg must be provided for L-type instruction"
             )
 
-            test_lines.extend(
+            tc.code.extend(
                 [
                     f"# Testcase: {coverpoint} (imm[2:0] = {params.immval:03b})",
                     f"LA(x{params.rs1}, scratch) # load base address",
@@ -64,7 +63,7 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
 
             tc.sigupd_count += 3  # extra space in signature region is needed
             offset = 8
-            test_lines.extend(
+            tc.code.extend(
                 [
                     f"# Testcase: {coverpoint} (imm[2:0] = {params.immval:03b})",
                     load_int_reg("rs2", params.rs2, params.rs2val, test_data),
@@ -78,13 +77,13 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
             )
             # For XLEN == 32, two sigupds are needed to handle alignments up to 7 that enter a second word
             if test_data.xlen == 32:
-                test_lines.extend(
+                tc.code.extend(
                     [
                         f"LREG x{params.temp_reg}, -{offset}(x{test_data.int_regs.sig_reg}) # load stored value for checking",
                         write_sigupd(params.temp_reg, test_data),
                     ]
                 )
-            test_lines.extend(
+            tc.code.extend(
                 [
                     "#else",
                     f"{instr_name} x{params.rs2}, {params.immval}(x{test_data.int_regs.sig_reg}) # repeat store so it is available for checking",
@@ -120,7 +119,7 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
             else:
                 raise ValueError(f"Unknown amo ending for {instr_name} in cp_align.")
 
-            test_lines.extend(
+            tc.code.extend(
                 [
                     f"# Testcase: {coverpoint} (address[2:0] = {alignment:03b})",
                     load_int_reg("value in memory", params.temp_reg, params.rs1val, test_data),
@@ -142,5 +141,4 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
 
         return_test_regs(test_data, params)
 
-    tc.code = "\n".join(test_lines)
     return [test_data.end_test_chunk()]

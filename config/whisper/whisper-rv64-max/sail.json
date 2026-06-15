@@ -134,7 +134,7 @@
   },
   "memory": {
     "pmp": {
-      "grain": 2,
+      "grain": 10,
       // This specifies the number of PMP entries present.
       // The value must be one of 0, 16, or 64.
       "count": 64,

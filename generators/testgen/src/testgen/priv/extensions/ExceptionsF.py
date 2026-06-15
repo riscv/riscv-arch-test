@@ -11,6 +11,7 @@
 from testgen.asm.csr import gen_csr_read_sigupd, gen_csr_write_sigupd
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -598,25 +599,26 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
     ],  # Some priv mode is needed to set up trap handler.  Generalize so that this could run in U mode in the future.  Applies to many other Exceptions tests.
     march_extensions=["Zfa", "D", "Zfhmin"],
 )
-def make_exceptionsf(test_data: TestData) -> list[str]:
+def make_exceptionsf(test_data: TestData) -> list[TestChunk]:
     """Main entry point for F exception test generation."""
-
-    lines = []
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
 
     # initialize fp registers
     for i in range(32):
-        lines.extend(
+        tc.code.extend(
             [
                 f"li t0, {i + 1}",
                 f"fcvt.s.w f{i}, t0",
             ]
         )
 
-    lines.extend(_generate_mstatus_fs_illegal_instr_tests(test_data))
-    lines.extend(_generate_mstatus_fs_csr_write_tests(test_data))
-    lines.extend(_generate_mstatus_fs_legal_tests(test_data))
-    lines.extend(_generate_load_address_misaligned_tests(test_data))
-    lines.extend(_generate_load_access_fault_tests(test_data))
-    lines.extend(_generate_store_address_misaligned_tests(test_data))
-    lines.extend(_generate_store_access_fault_tests(test_data))
-    return lines
+    tc.code.extend(_generate_mstatus_fs_illegal_instr_tests(test_data))
+    tc.code.extend(_generate_mstatus_fs_csr_write_tests(test_data))
+    tc.code.extend(_generate_mstatus_fs_legal_tests(test_data))
+    tc.code.extend(_generate_load_address_misaligned_tests(test_data))
+    tc.code.extend(_generate_load_access_fault_tests(test_data))
+    tc.code.extend(_generate_store_address_misaligned_tests(test_data))
+    tc.code.extend(_generate_store_access_fault_tests(test_data))
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

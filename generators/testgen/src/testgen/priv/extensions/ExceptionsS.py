@@ -10,6 +10,7 @@
 
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ExceptionsCommon import (
     generate_breakpoint_tests,
     generate_ecall_tests,
@@ -422,40 +423,44 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
     required_extensions=["S"],
     extra_defines=["#define SKIP_MEPC"],
 )
-def make_exceptionss(test_data: TestData) -> list[str]:
+def make_exceptionss(test_data: TestData) -> list[TestChunk]:
     """Main entry point for S-mode exception test generation (refactored)."""
-    lines: list[str] = []
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
 
-    lines.extend(["RVTEST_GOTO_LOWER_MODE Smode  # use S-mode"])
-    lines.extend(generate_instr_adr_misaligned_jal_tests(test_data, _CG))
-    lines.extend(generate_instr_adr_misaligned_jalr_tests(test_data, _CG))
-    lines.extend(generate_instr_adr_misaligned_branch_tests(test_data, _CG))
-    lines.extend(generate_instr_adr_misaligned_branch_nottaken(test_data, _CG))
-    lines.extend(generate_instr_access_fault_tests(test_data, _CG))
-    lines.extend(generate_illegal_instruction_tests(test_data, _CG))
-    lines.extend(generate_illegal_instruction_seed_tests(test_data, _CG))
-    lines.extend(generate_breakpoint_tests(test_data, _CG))
-    lines.extend(generate_load_address_misaligned_tests(test_data, _CG, use_sentinel=True))
-    lines.extend(generate_load_access_fault_tests(test_data, _CG, use_sigupd=True))
-    lines.extend(generate_store_address_misaligned_tests(test_data, _CG))
-    lines.extend(generate_store_access_fault_tests(test_data, _CG))
-    lines.extend(generate_misaligned_priority_load_tests(test_data, _CG, "cp_misaligned_priority", name_infix="_load_"))
-    lines.extend(
+    tc.code.extend(["RVTEST_GOTO_LOWER_MODE Smode  # use S-mode"])
+    tc.code.extend(generate_instr_adr_misaligned_jal_tests(test_data, _CG))
+    tc.code.extend(generate_instr_adr_misaligned_jalr_tests(test_data, _CG))
+    tc.code.extend(generate_instr_adr_misaligned_branch_tests(test_data, _CG))
+    tc.code.extend(generate_instr_adr_misaligned_branch_nottaken(test_data, _CG))
+    tc.code.extend(generate_instr_access_fault_tests(test_data, _CG))
+    tc.code.extend(generate_illegal_instruction_tests(test_data, _CG))
+    tc.code.extend(generate_illegal_instruction_seed_tests(test_data, _CG))
+    tc.code.extend(generate_breakpoint_tests(test_data, _CG))
+    tc.code.extend(generate_load_address_misaligned_tests(test_data, _CG, use_sentinel=True))
+    tc.code.extend(generate_load_access_fault_tests(test_data, _CG, use_sigupd=True))
+    tc.code.extend(generate_store_address_misaligned_tests(test_data, _CG))
+    tc.code.extend(generate_store_access_fault_tests(test_data, _CG))
+    tc.code.extend(
+        generate_misaligned_priority_load_tests(test_data, _CG, "cp_misaligned_priority", name_infix="_load_")
+    )
+    tc.code.extend(
         generate_misaligned_priority_store_tests(test_data, _CG, "cp_misaligned_priority", name_infix="_store_")
     )
-    lines.extend(
+    tc.code.extend(
         generate_misaligned_priority_fetch_tests(
             test_data, _CG, "cp_misaligned_priority", name_prefix="fetch_", name_suffix="_priority"
         )
     )
-    lines.extend(generate_ecall_tests(test_data, _CG, "cp_ecall_s", "ecall_s", "Ecall"))
-    lines.extend(_generate_illegal_instruction_csr_tests(test_data))
-    lines.extend(_generate_medeleg_msu_tests(test_data, "mode_m", priv_mode=3))
-    lines.extend(_generate_medeleg_msu_tests(test_data, "mode_s", priv_mode=1))
-    lines.extend(_generate_medeleg_msu_tests(test_data, "mode_u", priv_mode=0))
-    lines.extend(_generate_stvec_tests(test_data, "mode_s", priv_mode=1))
-    lines.extend(_generate_stvec_tests(test_data, "mode_u", priv_mode=0))
-    lines.extend(_generate_xstatus_ie_tests(test_data, "mode_s", priv_mode=1))
-    lines.extend(_generate_xstatus_ie_tests(test_data, "mode_u", priv_mode=0))
+    tc.code.extend(generate_ecall_tests(test_data, _CG, "cp_ecall_s", "ecall_s", "Ecall"))
+    tc.code.extend(_generate_illegal_instruction_csr_tests(test_data))
+    tc.code.extend(_generate_medeleg_msu_tests(test_data, "mode_m", priv_mode=3))
+    tc.code.extend(_generate_medeleg_msu_tests(test_data, "mode_s", priv_mode=1))
+    tc.code.extend(_generate_medeleg_msu_tests(test_data, "mode_u", priv_mode=0))
+    tc.code.extend(_generate_stvec_tests(test_data, "mode_s", priv_mode=1))
+    tc.code.extend(_generate_stvec_tests(test_data, "mode_u", priv_mode=0))
+    tc.code.extend(_generate_xstatus_ie_tests(test_data, "mode_s", priv_mode=1))
+    tc.code.extend(_generate_xstatus_ie_tests(test_data, "mode_u", priv_mode=0))
 
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

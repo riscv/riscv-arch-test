@@ -10,6 +10,7 @@
 
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -237,12 +238,13 @@ def _generate_mcounteren_access_m_tests(test_data: TestData) -> list[str]:
     required_extensions=["U", "Zicntr"],
     march_extensions=["Zicsr", "Zicntr", "I", "Zihpm"],
 )
-def make_zicntru(test_data: TestData) -> list[str]:
+def make_zicntru(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZicntrU coverpoints"""
-    lines = []
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
 
     tmpreg = test_data.int_regs.get_register()
-    lines.extend(
+    tc.code.extend(
         [
             "#ifdef S_SUPPORTED",
             "# Initialize scounteren if S-mode is supported (the boot logic should do this but isn't implemented yet)",
@@ -253,9 +255,10 @@ def make_zicntru(test_data: TestData) -> list[str]:
         ]
     )
 
-    lines.extend(_generate_mcounteren_access_u_tests(test_data))
-    lines.extend(_generate_mcounteren_access_m_tests(test_data))
+    tc.code.extend(_generate_mcounteren_access_u_tests(test_data))
+    tc.code.extend(_generate_mcounteren_access_m_tests(test_data))
 
     test_data.int_regs.return_register(tmpreg)
 
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

@@ -12,6 +12,7 @@ from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, ge
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -968,16 +969,18 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
 
 
 @add_priv_test_generator("Sm", required_extensions=["Sm"])
-def make_sm(test_data: TestData) -> list[str]:
+def make_sm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Sm machine-mode testsuite."""
-    lines: list[str] = []
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
 
-    lines.extend(_generate_mcause_tests(test_data))
-    lines.extend(_generate_mstatus_sd_tests(test_data))
-    lines.extend(_generate_priv_inst_tests(test_data))
-    lines.extend(_generate_mret_tests(test_data))
-    lines.extend(_generate_sret_tests(test_data))
-    lines.extend(_generate_mcsr_tests(test_data))
-    lines.extend(_generate_mcsr_cntr_tests(test_data))
+    tc.code.extend(_generate_mcause_tests(test_data))
+    tc.code.extend(_generate_mstatus_sd_tests(test_data))
+    tc.code.extend(_generate_priv_inst_tests(test_data))
+    tc.code.extend(_generate_mret_tests(test_data))
+    tc.code.extend(_generate_sret_tests(test_data))
+    tc.code.extend(_generate_mcsr_tests(test_data))
+    tc.code.extend(_generate_mcsr_cntr_tests(test_data))
 
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

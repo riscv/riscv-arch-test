@@ -200,8 +200,7 @@ def gen_compile_tasks(
         tasks.append(
             BuildTask(
                 outputs=(trap_report_file,),
-                deps=(sig_file,),
-                extra_inputs=(sig_elf,),
+                deps=(sig_file, sig_elf),
                 action=PythonAction(fn=generate_trap_report, args=(sig_file, xlen, sig_elf, nm_exe)),
             )
         )

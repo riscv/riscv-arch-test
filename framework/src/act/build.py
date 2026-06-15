@@ -63,7 +63,7 @@ class BuildResult:
     errors: list[BuildError] = field(default_factory=list)
 
 
-def _exception_error(task: BuildTask, e: Exception) -> BuildError:
+def _exception_error(task: BuildTask, e: BaseException) -> BuildError:
     """BuildError for a task that raised before producing a return code."""
     return BuildError(task_name=task.name, command=_task_str(task), returncode=-1, output=str(e))
 
@@ -303,7 +303,14 @@ def build(
         done_future: Future[tuple[Path, BuildError | None]], *, live: Live, executor: ThreadPoolExecutor
     ) -> bool:
         """Record the outcome of one finished future. Returns True if the run should abort."""
-        key, error = done_future.result()
+        exc = done_future.exception()
+        if exc is not None:
+            # execute_task raised unexpectedly: recover the key and turn it into a BuildError
+            # so the build reports a failure and saves its summary instead of crashing the loop.
+            key = next(k for k, f in in_flight.items() if f is done_future)
+            error = _exception_error(task_map[key], exc)
+        else:
+            key, error = done_future.result()
         in_flight.pop(key)
         if error is not None:
             result.failed += 1

@@ -521,6 +521,7 @@ def generate_build_plan(
                 compile_inputs,
                 ref_model_inputs,
                 debug,
+                fast,
             )
         )
 

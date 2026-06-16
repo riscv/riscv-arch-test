@@ -55,6 +55,8 @@ def _generate_ecall_to_vs_tests(test_data: TestData) -> list[str]:
             "RVTEST_GOTO_LOWER_MODE VUmode",
             "ecall",
             "nop",
+            "# Return to M mode",
+            "RVTEST_GOTO_MMODE",
         ]
     )
 
@@ -85,12 +87,13 @@ def _generate_ecall_to_hs_tests(test_data: TestData) -> list[str]:
             binname = f"mode_{priv}_SPVP_{spvp}"
             lines.extend(
                 [
-                    "--- M mode setup ---",
+                    "# --- M mode setup ---",
                     f"# Set medeleg for ecall from {priv} mode",
                     f"LI(x{r_temp}, {deleg_bit})",
                     f"CSRS(medeleg, x{r_temp})",
                     "",
-                    "# Clear hedelegCSRW(hedeleg, zero)",
+                    "# Clear hedeleg",
+                    "CSRW(hedeleg, zero)",
                     "",
                     "# Write hstatus.SPVP based on bins",
                     f"LI(x{r_temp}, 0x100) # SPVP bit",
@@ -101,6 +104,8 @@ def _generate_ecall_to_hs_tests(test_data: TestData) -> list[str]:
                     f"RVTEST_GOTO_LOWER_MODE {priv}mode",
                     "ecall",
                     "nop",
+                    "# Return to M mode",
+                    "RVTEST_GOTO_MMODE",
                 ]
             )
 
@@ -127,8 +132,9 @@ def _generate_ecall_to_m_tests(test_data: TestData) -> list[str]:
         binname = f"mode_{priv}"
         lines.extend(
             [
-                "--- M mode setup ---",
-                "# Clear medelegCSRW(medeleg, zero)",
+                "# --- M mode setup ---",
+                "# Clear medeleg",
+                "CSRW(medeleg, zero)",
                 "",
                 test_data.add_testcase(binname, coverpoint, covergroup),
             ]
@@ -139,6 +145,8 @@ def _generate_ecall_to_m_tests(test_data: TestData) -> list[str]:
             [
                 "ecall",
                 "nop",
+                "# Return to M mode",
+                "RVTEST_GOTO_MMODE",
             ]
         )
 
@@ -163,8 +171,9 @@ def _generate_ebreak_to_m_tests(test_data: TestData) -> list[str]:
         binname = f"mode_{priv}"
         lines.extend(
             [
-                "--- M mode setup ---",
-                "# Clear medelegCSRW(medeleg, zero)",
+                "# --- M mode setup ---",
+                "# Clear medeleg",
+                "CSRW(medeleg, zero)",
                 "",
                 test_data.add_testcase(binname, coverpoint, covergroup),
             ]
@@ -175,6 +184,8 @@ def _generate_ebreak_to_m_tests(test_data: TestData) -> list[str]:
             [
                 "ebreak",
                 "nop",
+                "# Return to M mode",
+                "RVTEST_GOTO_MMODE",
             ]
         )
 
@@ -209,6 +220,8 @@ def _generate_vstvec_tests(test_data: TestData) -> list[str]:
             "RVTEST_GOTO_LOWER_MODE VUmode",
             "ecall",
             "nop",
+            "# Return to M mode",
+            "RVTEST_GOTO_MMODE",
         ]
     )
 
@@ -247,10 +260,12 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
 
                         lines.extend(
                             [
-                                "--- M mode setup ---",
-                                "# Clear medeleg and hedelegCSRW(medeleg, zero)",
+                                "# --- M mode setup ---",
+                                "# Clear medeleg and hedeleg",
+                                "CSRW(medeleg, zero)",
                                 "CSRW(hedeleg, zero)",
-                                f"# Write to hstatus.HU based on binsLI(x{r_temp}, 0x200) # HU bit",
+                                "# Write to hstatus.HU based on bins",
+                                f"LI(x{r_temp}, 0x200) # HU bit",
                                 f"{'CSRS' if hstatus_HU else 'CSRC'}(hstatus, x{r_temp})",
                                 "",
                             ]
@@ -267,12 +282,16 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
                         if hInstr == "hsv.w":
                             lines.extend(["# Set up the value to load", f"LI(x{r_temp}, 0xDEADBEEF)"])
 
-                        lines.extend(test_data.add_testcase(binname, coverpoint, covergroup))
+                        lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
                         if priv != "M":
                             lines.append(f"RVTEST_GOTO_LOWER_MODE {priv}mode")
                         lines.extend(
                             [
-                                f"# Execute the instr based on bins{hInstr} x{r_temp}, (x{r_address})",
+                                "# Execute the instr based on bins",
+                                f"{hInstr} x{r_temp}, (x{r_address})",
+                                "",
+                                "# Return to M mode",
+                                "RVTEST_GOTO_MMODE",
                             ]
                         )
 
@@ -280,55 +299,175 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-# def _generate_virtual_instruction_vs_tests(test_data: TestData) -> list[str]:
-#     """Generate virtual instructions Exceptions from VS mode
+def _generate_virtual_instruction_vs_tests(test_data: TestData) -> list[str]:
+    """Generate virtual instructions Exceptions from VS mode
 
-#     read instret with hcounteren[2] = 0, mcounteren[2] = 1
-#     execute hlv.w, hlvx.wu, hsv.w, hfence.vvma, hfence.gvma
-#     read vstval, htval
-#     with mstatus.TVM = 0, read satp, vsatp
-#     wfi with hstatus.VTW=1, mstatus.TW=0, no interrupt firing
-#     sret with hstatus.VTSR=1
-#     {sfence.vma, sinval.vma, read satp} with hstatus.VTVM=1
-#     RV32 only:
-#     access instreth with hcounteren[2] = 0, mcounteren[2] = 1
-#     read hedelegh
+    read instret with hcounteren[2] = 0, mcounteren[2] = 1
+    execute hlv.w, hlvx.wu, hsv.w, hfence.vvma, hfence.gvma
+    read vstval, htval
+    with mstatus.TVM = 0, read satp, vsatp
+    wfi with hstatus.VTW=1, mstatus.TW=0, no interrupt firing
+    sret with hstatus.VTSR=1
+    {sfence.vma, sinval.vma, read satp} with hstatus.VTVM=1
+    RV32 only:
+    access instreth with hcounteren[2] = 0, mcounteren[2] = 1
+    read hedelegh
+    """
+
+    covergroup, coverpoint = _CG, "cp_virtual_instruction_vs"
+    r_temp, r_address = test_data.int_regs.get_registers(2, exclude_regs=[0])
+
+    lines = [
+        comment_banner(coverpoint, _generate_virtual_instruction_vs_tests.__doc__),
+    ]
+
+    lines.extend(
+        [
+            "# Read instret with hcounteren[2] = 0, mcounteren[2] = 1",
+            "# set up in M mode",
+            f"LI(x{r_temp}, 0x2) # IR bit",
+            f"CSRC(hcounteren, x{r_temp})",
+            f"CSRS(mcounteren, x{r_temp})",
+            "",
+            test_data.add_testcase("instret", coverpoint, covergroup),
+            "# Go to VS mode to execute the instruction",
+            "RVTEST_GOTO_LOWER_MODE VSmode",
+            f"csrr x{r_temp}, instret",
+            "#if __riscv_xlen == 32",
+            f"csrr x{r_temp}, instreth",
+            "#endif",
+        ]
+    )
+
+    lines.extend(
+        [
+            "# execute hlv.w, hlvx.wu, hsv.w, hfence.vvma, hfence.gvma",
+            "",
+            f"LA(x{r_address}, scratch)",
+            test_data.add_testcase("hlv", coverpoint, covergroup),
+            f"hlv.w x{r_temp}, (x{r_address})",
+            "",
+            test_data.add_testcase("hlvx", coverpoint, covergroup),
+            f"hlvx.wu x{r_temp}, (x{r_address})",
+            "",
+            test_data.add_testcase("hsv", coverpoint, covergroup),
+            f"LI(x{r_temp}, 0xBAD)",
+            f"hsv.w x{r_temp}, (x{r_address})",
+            "",
+            test_data.add_testcase("hfence_vvma", coverpoint, covergroup),
+            "hfence.vvma",
+            "",
+            test_data.add_testcase("hfence_gvma", coverpoint, covergroup),
+            "hfence.gvma",
+            "",
+        ]
+    )
+
+    lines.extend(
+        [
+            "# read vstval, htval",
+            "",
+            test_data.add_testcase("vstval", coverpoint, covergroup),
+            f"csrr x{r_temp}, vstval",
+            "",
+            test_data.add_testcase("htval", coverpoint, covergroup),
+            f"csrr x{r_temp}, htval",
+            "",
+        ]
+    )
+
+    lines.extend(
+        [
+            "# with mstatus.TVM = 0, read satp, vsatp",
+            "RVTEST_GOTO_MMODE",
+            f"LI(x{r_temp}, 0x100000) # TVM bit",
+            f"CSRC(mstatus, x{r_temp})",
+            "RVTEST_GOTO_LOWER_MODE VSmode",
+            test_data.add_testcase("satp", coverpoint, covergroup),
+            f"csrr x{r_temp}, satp",
+            test_data.add_testcase("vsatp", coverpoint, covergroup),
+            f"csrr x{r_temp}, vsatp",
+            "",
+        ]
+    )
+
+    lines.extend(
+        [
+            "# wfi with hstatus.VTW=1, mstatus.TW=0",
+            "RVTEST_GOTO_MMODE",
+            f"LI(x{r_temp}, 0x200000) # TW bit",
+            f"CSRC(mstatus, x{r_temp})",
+            f"CSRS(hstatus, x{r_temp})",
+            "",
+            "RVTEST_GOTO_LOWER_MODE VSmode",
+            test_data.add_testcase("wfi", coverpoint, covergroup),
+            "wfi",
+        ]
+    )
+
+    lines.extend(
+        [
+            "# sret with hstatus.VTSR=1",
+            "RVTEST_GOTO_MMODE",
+            f"LI(x{r_temp}, 0x400000) # VTSR bit",
+            f"CSRS(hstatus, x{r_temp})",
+            "",
+            "RVTEST_GOTO_LOWER_MODE VSmode",
+            test_data.add_testcase("sret", coverpoint, covergroup),
+            "sret",
+            "nop",
+        ]
+    )
+
+    lines.extend(
+        [
+            "# {sfence.vma, sinval.vma, read satp} with hstatus.VTVM=1",
+            "RVTEST_GOTO_MMODE",
+            f"LI(x{r_temp}, 0x100000) # VTVM bit",
+            f"CSRS(hstatus, x{r_temp})",
+            "",
+            "RVTEST_GOTO_LOWER_MODE VSmode",
+            test_data.add_testcase("sfence.vma", coverpoint, covergroup),
+            "sfence.vma",
+            "",
+            "#ifdef SVINVAL_SUPPORTED",
+            test_data.add_testcase("sinval.vma", coverpoint, covergroup),
+            "sinval.vma zero, zero",
+            "#endif",
+            "",
+            test_data.add_testcase("VTVMsatp", coverpoint, covergroup),
+            f"csrr x{r_temp}, satp",
+            "",
+        ]
+    )
+
+    lines.extend(
+        [
+            "#if __riscv_xlen == 32",
+            "# read hedelegh",
+            f"csrr x{r_temp}, hedelegh",
+            "#endif",
+        ]
+    )
+
+    test_data.int_regs.return_registers([r_temp, r_address])
+
+    return lines
+
+
+# def _generate_virtual_instruction_vu_tests(test_data: TestData) -> list[str]:
+#         # too tired today ima do it next week
+#     return lines
+
+# def _generate_loadstore_priv_tests(test_data: TestData) -> list[str]:
+#     """Generate load/store Hypervisor tests
+
+#     In each privilege mode {M/HS/VS/U/VU} with hstatus.HU={0/1},
+#     attempt {HLV.W, HLVX.W, HSV.W} from scratch memory
 #     """
 
-#     covergroup, coverpoint = _CG, "cp_virtual_instruction_vs"
-#     r_temp, r_address = test_data.int_regs.get_registers(2, exclude_regs=[0])
-
-#     lines = [
-#         comment_banner(coverpoint, _generate_virtual_instruction_vs_tests.__doc__),
-#     ]
-
-#     lines.extend(
-#         [
-#             "# Read instret with hcounteren[2] = 0, mcounteren[2] = 1",
-#             "# set up in M mode",
-#             f"LI(x{r_temp}, 0x2) # IR bit"
-#             f"CSRC(hcounteren, x{r_temp})",
-#             f""
-#             "",
-#             "# Go to VS mode to execute the instruction",
-
-#         ]
-#     )
-
-#     lines.extend(
-#         [
-#             "# Read instret with hcounteren[2] = 0, mcounteren[2] = 1",
-#             "# set up in M mode",
-#             "",
-#             "# Go to VS mode to execute the instruction",
-
-#         ]
-#     )
-
-#     lines.append("#if __riscv_xlen == 32")
-
-#     "#endif"
-
+#     priv_mode = ["M", "HS", "U", "VS", "VU"]
+#     instr = ["hlv.w", "hlvx.w", "hsv.w"]
 
 #     return lines
 
@@ -336,7 +475,7 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "ExceptionsH",
     required_extensions=["S", "H"],
-    extra_defines=[],
+    march_extensions=["H", "Svinval"],
 )
 def make_exceptionss(test_data: TestData) -> list[str]:
     """Main entry point for S-mode exception test generation (refactored)."""
@@ -354,5 +493,7 @@ def make_exceptionss(test_data: TestData) -> list[str]:
     ### not sure ###
     lines.extend(_generate_vstvec_tests(test_data))
     lines.extend(_generate_priority_tests(test_data))
+    lines.extend(_generate_virtual_instruction_vs_tests(test_data))
+    # lines.extend(_generate_virtual_instruction_vu_tests(test_data))
 
     return lines

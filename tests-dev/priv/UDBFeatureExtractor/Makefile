@@ -20,7 +20,12 @@ BUILD_DIR := $(REPO_ROOT)/work/UDBFeatureExtractor
 CONFIG_DIR ?= $(REPO_ROOT)/config/sail/sail-RVA23S64
 SIM        ?= sail_riscv_sim
 XLEN       ?= 64
+
+ifeq ($(XLEN),32)
+ABI        ?= ilp32
+else
 ABI        ?= lp64
+endif
 
 CC      := riscv64-unknown-elf-gcc
 OBJDUMP := riscv64-unknown-elf-objdump
@@ -56,7 +61,8 @@ YAML_C_NOM := $(BUILD_DIR)/extracted_config-no-M.yaml
 
 ELF           := $(BUILD_DIR)/FeatureExtractorC.elf
 NO_M_CFG      := $(BUILD_DIR)/no_M_config.json
-LINKER_SCRIPT := $(BUILD_DIR)/link.ld
+LINKER_TEMPLATE := $(TEST_SRC)/link.template.ld
+LINKER_SCRIPT   := $(BUILD_DIR)/link.ld
 
 
 C_SRCS := \
@@ -71,7 +77,7 @@ all: run
 $(BUILD_DIR):
 	mkdir -p $@
 
-$(LINKER_SCRIPT): $(TEST_SRC)/link.ld | $(BUILD_DIR)
+$(LINKER_SCRIPT): $(LINKER_TEMPLATE) | $(BUILD_DIR)
 	@sed 's|INCLUDE "link.ld"|INCLUDE "$(CONFIG_DIR)/link.ld"|g' $< > $@
 
 $(ELF): $(C_SRCS) $(LINKER_SCRIPT) | $(BUILD_DIR)

@@ -25,7 +25,7 @@ def _generate_trigger_mti_tests(test_data: TestData) -> list[str]:
     r1, r_mtime, r_mtimecmp, r_temp, r_temp2 = test_data.int_regs.get_registers(5)
 
     lines = [
-        "#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)",
+       "#ifdef RVMODEL_MTIME_ADDRESS",
         comment_banner(
             "cp_trigger_mti",
             "With mstatus.MIE = {0/1}, and mie = all 1s, use MTIMECMP to cause mip.MTIP",
@@ -408,7 +408,7 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
     r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3, r_scratch = test_data.int_regs.get_registers(7)
 
     lines = [
-        "#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)",
+       "#ifdef RVMODEL_MTIME_ADDRESS",
         comment_banner(
             "cp_wfi",
             "Cross Product of mstatus.MIE = {0/1}, mstatus.TW = {0/1}, mie.MTIE = 1\nWFI instruction",

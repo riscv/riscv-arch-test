@@ -819,7 +819,6 @@ def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
                 if mip_name == "mtip":
                     lines.append("#ifdef RVMODEL_MTIME_ADDRESS")
 
-                # === M-MODE SETUP ===
                 lines.extend(
                     [
                         "# === M-MODE SETUP ===",
@@ -983,7 +982,6 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
             if int_name == "mtip":
                 lines.append("#ifdef RVMODEL_MTIME_ADDRESS")
 
-            # === M-MODE SETUP ===
             lines.extend(
                 [
                     "# === M-MODE SETUP ===",
@@ -1982,7 +1980,6 @@ def _generate_interrupts_m_tests(test_data: TestData) -> list[str]:
                     if mip_name == "mtip":
                         lines.append("#ifdef RVMODEL_MTIME_ADDRESS")
 
-                    # === SETUP ===
                     lines.extend(
                         [
                             "",

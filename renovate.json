@@ -6,6 +6,7 @@
   "labels": ["dependencies"],
   "prHourlyLimit": 4,
   "prConcurrentLimit": 10,
+  "rebaseWhen": "conflicted",
   "minimumReleaseAge": "7 days",
   "internalChecksFilter": "strict",
   "automerge": true,

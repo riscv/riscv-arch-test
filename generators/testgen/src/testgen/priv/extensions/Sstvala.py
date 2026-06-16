@@ -8,6 +8,8 @@
 
 """Sstvala S-mode test generator."""
 
+from __future__ import annotations
+
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.priv.extensions.ExceptionsCommon import (
@@ -63,12 +65,16 @@ def _generate_page_table_data_section() -> list[str]:
         "# Page-table labels for Sstvala page-fault tests (rvtest_Sroot_pg_tbl is",
         "# already declared by the framework). Injected into .data via .pushsection.",
         ".pushsection .data",
+        "#ifdef SV39_SUPPORTED",
         ".align 12",
         "rvtest_slvl1_pg_tbl: .zero 4096   # Sv39 L1 intermediate PT (unused on Sv32)",
+        "#endif  // SV39_SUPPORTED",
+        "#if defined(SV39_SUPPORTED) || defined(SV32_SUPPORTED)",
         ".align 12",
         "rvtest_slvl0_pg_tbl: .zero 4096   # leaf PT (Sv39/Sv32)",
         ".align 12",
         "rvtest_pf_data:      .zero 4096   # physical backing page for the fault VA",
+        "#endif  // SV39_SUPPORTED || SV32_SUPPORTED",
         ".popsection",
         "",
     ]
@@ -179,18 +185,22 @@ def _emit_pf_block(
 
     lines = [comment_banner(coverpoint, section_title), ""]
     lines.append("#if __riscv_xlen == 64")
+    lines.append("#ifdef SV39_SUPPORTED")
     lines.append("# RV64: Sv39")
     lines.extend(_xlen_block(["SATP_SETUP_RV64(sv39)"], _pf_pte_setup_sv39(_VA_PF_PAGE_RV64, pte_flags), instrs_rv64))
+    lines.append("#endif  // SV39_SUPPORTED")
     lines.append("#else")
+    lines.append("#ifdef SV32_SUPPORTED")
     lines.append("# RV32: Sv32")
     lines.extend(_xlen_block(["SATP_SETUP_SV32"], _pf_pte_setup_sv32(_VA_PF_PAGE_RV32, pte_flags), instrs_rv32))
-    lines.append("#endif")
+    lines.append("#endif  // SV32_SUPPORTED")
+    lines.append("#endif  // xlen")
     return lines
 
 
 def _generate_load_page_fault_tests(test_data: TestData, covergroup: str) -> list[str]:
     """cp_stval_load_page_fault — W-only PTE → load page fault on lw/ld."""
-    addr_reg, data_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    addr_reg, data_reg = test_data.int_regs.get_registers(2)
 
     def _load(mnemonic: str, va: int, suffix: str) -> tuple[str, list[str]]:
         return (
@@ -213,7 +223,7 @@ def _generate_load_page_fault_tests(test_data: TestData, covergroup: str) -> lis
 
 def _generate_store_page_fault_tests(test_data: TestData, covergroup: str) -> list[str]:
     """cp_stval_store_page_fault — R|X PTE (no W) → store page fault on sw/sd."""
-    addr_reg, data_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    addr_reg, data_reg = test_data.int_regs.get_registers(2)
 
     def _store(mnemonic: str, va: int, value: int, suffix: str) -> tuple[str, list[str]]:
         return (
@@ -246,7 +256,7 @@ def _generate_instr_page_fault_tests(test_data: TestData, covergroup: str) -> li
 
     x4 = 0xACCE signals the trap handler to use ra (x1) as the return address.
     """
-    addr_reg = test_data.int_regs.get_register(exclude_regs=[0, 1, 4])
+    addr_reg = test_data.int_regs.get_register()
 
     def _jalr(va: int, suffix: str) -> tuple[str, list[str]]:
         return (
@@ -284,7 +294,7 @@ def _generate_sstvala_tests(test_data: TestData) -> list[str]:
 
     # Delegate exceptions to S-mode via medeleg.
     # 0xB0F7 = bits {15,13,12,7,6,5,4,2,1,0}
-    medeleg_reg = test_data.int_regs.get_register(exclude_regs=[0])
+    medeleg_reg = test_data.int_regs.get_register()
     lines.extend(
         [
             "RVTEST_GOTO_MMODE",
@@ -312,7 +322,7 @@ def _generate_sstvala_tests(test_data: TestData) -> list[str]:
     lines.extend(_generate_store_page_fault_tests(test_data, covergroup))
     lines.extend(_generate_instr_page_fault_tests(test_data, covergroup))
 
-    medeleg_reg = test_data.int_regs.get_register(exclude_regs=[0])
+    medeleg_reg = test_data.int_regs.get_register()
     lines.extend(
         [
             f"LI(x{medeleg_reg}, 0)",

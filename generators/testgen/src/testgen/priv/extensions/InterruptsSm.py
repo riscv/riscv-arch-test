@@ -22,9 +22,7 @@ def _generate_trigger_mti_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_trigger_mti"
     ######################################
 
-    # Exclude: x2 (sp), x5 (t0-used by macros),
-    # x7 (t2-consumed by interrupt macros), x30 (t5-consumed by interrupt macros)
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2 = test_data.int_regs.get_registers(5, exclude_regs=[])
+    r1, r_mtime, r_mtimecmp, r_temp, r_temp2 = test_data.int_regs.get_registers(5)
 
     lines = [
         "#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)",
@@ -72,7 +70,7 @@ def _generate_trigger_msi_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_trigger_msi"
     ######################################
 
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_cleanup = test_data.int_regs.get_registers(6, exclude_regs=[])
+    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_cleanup = test_data.int_regs.get_registers(6)
 
     lines = [
         comment_banner(
@@ -119,7 +117,7 @@ def _generate_trigger_mei_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_trigger_mei"
     ######################################
 
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2 = test_data.int_regs.get_registers(5, exclude_regs=[])
+    r1, r_mtime, r_mtimecmp, r_temp, r_temp2 = test_data.int_regs.get_registers(5)
 
     lines = [
         comment_banner(
@@ -167,9 +165,7 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_interrupts"
     ######################################
 
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_val, r_mie_save = test_data.int_regs.get_registers(
-        7, exclude_regs=[]
-    )
+    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_val, r_mie_save = test_data.int_regs.get_registers(7)
 
     lines = [
         comment_banner(
@@ -177,7 +173,10 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
             "Cross of mstatus.MIE = {0/1}, mtvec.MODE = 00, 3 walking 1s in mip.MTIP/MSIP/MEIP,\n"
             "3 walking 1s in mie.MTIE/MSIE/MEIE (2 x 3 x 3 bins)",
         ),
+        # Direct mode (MODE=00) only where supported; vectored-only cores run this cross in vectored mode.
+        "#ifdef UDB_MTVEC_MODES_0",
         "csrci mtvec, 3     # Clear MODE bits (set to 00=direct)",
+        "#endif",
         "",
     ]
 
@@ -252,9 +251,7 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_vectored"
     ######################################
 
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_all, r_mie_save = test_data.int_regs.get_registers(
-        7, exclude_regs=[]
-    )
+    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_all, r_mie_save = test_data.int_regs.get_registers(7)
 
     lines = [
         comment_banner(
@@ -264,8 +261,10 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
         )
     ]
 
-    # Test both mtvec modes
+    # Test both mtvec modes; gate each mode on its own MTVEC_MODES parameter so single-mode
+    # cores (direct-only or vectored-only) only exercise the mode they implement.
     for mode, mode_name in [(0, "direct"), (1, "vectored")]:
+        lines.append(f"#ifdef UDB_MTVEC_MODES_{mode}")
         lines.extend(
             [
                 f"# Set mtvec.MODE = {mode:02b} ({mode_name})",
@@ -321,7 +320,12 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
             if int_pending == "mtip":
                 lines.append("#endif // RVMODEL_MTIME_ADDRESS")
 
+        lines.append("#endif")
+
+    # Restore direct mode only where supported; vectored-only cores stay vectored.
+    lines.append("#ifdef UDB_MTVEC_MODES_0")
     lines.append("CSRCI mtvec, 1     # restore mtvec.MODE = 00 (direct)")
+    lines.append("#endif")
 
     test_data.int_regs.return_registers([r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_all, r_mie_save])
     return lines
@@ -334,9 +338,7 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_priority"
     ######################################
 
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_mask, r_scratch = test_data.int_regs.get_registers(
-        7, exclude_regs=[]
-    )
+    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_mask, r_scratch = test_data.int_regs.get_registers(7)
 
     lines = [
         comment_banner(
@@ -403,7 +405,7 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsSm_cg"
     coverpoint = "cp_wfi"
 
-    r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3, r_scratch = test_data.int_regs.get_registers(7, exclude_regs=[])
+    r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3, r_scratch = test_data.int_regs.get_registers(7)
 
     lines = [
         "#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)",

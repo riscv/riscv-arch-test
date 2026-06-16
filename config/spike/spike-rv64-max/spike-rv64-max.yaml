@@ -35,7 +35,7 @@ implemented_extensions:
   - { name: Smepmp, version: "= 1.0.0" }
   - { name: Smmpm, version: "= 1.0.0" }
   - { name: Smnpm, version: "= 1.0.0" }
-  - { name: Smrnmi, version: "= 1.0.0" }
+  # - { name: Smrnmi, version: "= 1.0.0" } spike does not support Smrnmi
   - { name: Smstateen, version: "= 1.0.0" }
   - { name: Ssaia, version: "= 1.0.0" }
   - { name: Ssccfg, version: "= 1.0.0" }
@@ -287,7 +287,7 @@ params:
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   NUM_PMP_ENTRIES: 16
-  PMP_GRANULARITY: 4
+  PMP_GRANULARITY: 2
   HPM_COUNTER_EN:
     [
       false,

@@ -1,0 +1,1 @@
+../cv32e40s-rv32imc-pma-pmp/rvmodel_macros.h

@@ -21,7 +21,8 @@ from typing import TYPE_CHECKING
 from rich import print as rprint
 from ruamel.yaml import YAML
 
-from act.build import BuildTask, PythonAction, build
+from act.build import build
+from act.build_types import BuildTask, PythonAction
 from act.dut_macros import generate_rvmodel_svh
 
 if TYPE_CHECKING:
@@ -115,7 +116,7 @@ def validate_udb_config(udb_config_file: Path, marker: Path) -> None:
     marker.touch()
 
 
-def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int) -> None:
+def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int, verbose: bool) -> None:
     """Generate every DUT-derived file (extensions.txt, rvtest_config.{h,svh},
     rvmodel_macros.svh) for every config, in parallel, using the same
     `build()` DAG executor as the main pipeline.
@@ -180,7 +181,7 @@ def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int) -> None
         )
 
     start = time.monotonic()
-    result = build(tasks, jobs=jobs, phase_label="Preparing DUT configs")
+    result = build(tasks, jobs=jobs, cache_root=workdir, verbose=verbose, phase_label="Preparing DUT configs")
     elapsed = time.monotonic() - start
 
     if result.errors:

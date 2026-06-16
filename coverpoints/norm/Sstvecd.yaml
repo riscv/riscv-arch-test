@@ -1,0 +1,13 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # If the Sstvecd extension is implemented, then stvec.MODE must be capable of
+  # holding the value 0 (Direct).
+  - name: sstvecd_stvec_mode_direct
+    coverpoint: ["Sstvecd_cg/cp_stvec_mode"]
+
+  # Furthermore, when stvec.MODE=Direct, stvec.BASE must be capable of holding any
+  # valid four-byte-aligned address.
+  - name: sstvecd_stvec_base_aligned_address
+    coverpoint: ["Sstvecd_cg/cp_stvec_mode"]

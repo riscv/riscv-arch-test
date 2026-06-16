@@ -166,6 +166,36 @@ class RISCV_instruction
     return 0;
   endfunction
 
+  function bit[`UDB_VLEN*4-1:0] get_vr_val_lmul4(string key);
+    case (key)
+      "v0" : return prev.v_wdata[3:0];   // { v3,  v2,  v1,  v0  };
+      "v4" : return prev.v_wdata[7:4];   // { v7,  v6,  v5,  v4  };
+      "v8" : return prev.v_wdata[11:8];  // { v11, v10, v9,  v8  };
+      "v12": return prev.v_wdata[15:12]; // { v15, v14, v13, v12 };
+      "v16": return prev.v_wdata[19:16]; // { v19, v18, v17, v16 };
+      "v20": return prev.v_wdata[23:20]; // { v23, v22, v21, v20 };
+      "v24": return prev.v_wdata[27:24]; // { v27, v26, v25, v24 };
+      "v28": return prev.v_wdata[31:28]; // { v31, v30, v29, v28 };
+      default: begin
+        $error("ERROR: SystemVerilog Functional Coverage: given (%s) as a register with LMUL 4", key);
+        $fatal(1);
+      end
+    endcase
+  endfunction
+
+  function bit[`UDB_VLEN*4-1:0] get_vr_val_lmul8(string key);
+    case (key)
+      "v0" : return prev.v_wdata[7:0];   // { v7,  v6,  v5,  v4,  v3,  v2,  v1,  v0  };
+      "v8" : return prev.v_wdata[15:8];  // { v15, v14, v13, v12, v11, v10, v9,  v8  };
+      "v16": return prev.v_wdata[23:16]; // { v23, v22, v21, v20, v19, v18, v17, v16 };
+      "v24": return prev.v_wdata[31:24]; // { v31, v30, v29, v28, v27, v26, v25, v24 };
+      default: begin
+        $error("ERROR: SystemVerilog Functional Coverage: given (%s) as a register with LMUL 8", key);
+        $fatal(1);
+      end
+    endcase
+  endfunction
+
   function `SIGNED_XLEN_BITS get_pc();
     return current.pc_rdata;
   endfunction
@@ -396,6 +426,24 @@ class RISCV_instruction
     current.rd = ops[offset].key;
     current.rd_val = current.x_wdata[get_gpr_num(ops[offset].key)];
     current.rd_val_pre = prev.x_wdata[get_gpr_num(ops[offset].key)];
+  endfunction
+
+  virtual function void add_rd_pair(int offset);
+    int rd_idx;
+
+    add_rd(offset);
+
+    rd_idx = get_gpr_num(ops[offset].key);
+
+    if ((rd_idx % 2 == 0) && (rd_idx < 31)) begin
+      current.rd_upper_pair_val = current.x_wdata[rd_idx+1];
+      current.rd_upper_pair_val_pre = prev.x_wdata[rd_idx+1];
+
+    end else begin
+      current.rd_upper_pair_val = '0;
+      current.rd_upper_pair_val_pre = '0;
+    end
+
   endfunction
 
   virtual function void add_rd_ra();

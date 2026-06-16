@@ -23,7 +23,7 @@ def _generate_za64rs_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Za64rs: Reservation set size test",
         ),
         "",

@@ -17,8 +17,9 @@ from typing import Annotated
 import typer
 from rich import print as rprint
 
-from act.build import BuildTask, build
+from act.build import build, prune_empty_dirs
 from act.build_plan import generate_build_plan
+from act.build_types import BuildTask
 from act.config import Config, CoverageSimulator, load_config
 from act.coverreport import print_coverage_summary
 from act.parse_test_constraints import TestYamlHeaderError, generate_test_dict
@@ -64,6 +65,7 @@ def run_act(
     coverage: Annotated[bool, typer.Option(help="Enable coverage generation")] = False,
     debug: Annotated[bool, typer.Option(help="Enable debug output (signature objdump and trace files)")] = False,
     fast: Annotated[bool, typer.Option(help="Disable objdump generation for faster builds")] = False,
+    clean_intermediates: Annotated[bool, typer.Option(help="Delete intermediate build/ dirs")] = False,
     verbose: Annotated[
         bool, typer.Option(help="Implies --debug, serializes builds (jobs=1), and prints each command as it runs")
     ] = False,
@@ -84,6 +86,9 @@ def run_act(
 
     if debug and fast:
         raise typer.BadParameter("--debug and --fast cannot be used together")
+
+    if debug and clean_intermediates:
+        raise typer.BadParameter("--debug and --clean-intermediates cannot be used together")
 
     if workdir is None:
         workdir = Path.cwd() / "work"
@@ -115,7 +120,7 @@ def run_act(
         config_dir = workdir / config.name
         loaded_configs.append((config, config_dir))
 
-    prepare_dut_outputs([cfg for cfg, _ in loaded_configs], workdir, jobs)
+    prepare_dut_outputs([cfg for cfg, _ in loaded_configs], workdir, jobs, verbose)
 
     for config, config_dir in loaded_configs:
         implemented_extensions = get_implemented_extensions(config_dir / "extensions.txt")
@@ -147,7 +152,15 @@ def run_act(
         )
 
     # Run all tasks to compile ELFs
-    result = build(tasks, jobs=jobs, keep_going=keep_going, dry_run=dry_run, verbose=verbose)
+    result = build(
+        tasks,
+        jobs=jobs,
+        cache_root=workdir,
+        keep_going=keep_going,
+        dry_run=dry_run,
+        verbose=verbose,
+        clean_intermediates=clean_intermediates,
+    )
 
     # Print summary
     parts = []
@@ -167,6 +180,11 @@ def run_act(
                 rprint(f"    - {error.task_name}", file=sys.stderr)
         sys.exit(1)
     rprint(f"[bold green]✓ Build complete:[/] {summary}")
+
+    # Prune empty build directories if requested
+    if clean_intermediates and not dry_run:
+        for name in config_names:
+            prune_empty_dirs(workdir / name / "build")
 
     # Always print coverage summaries when coverage is enabled, even if up-to-date
     if coverage:

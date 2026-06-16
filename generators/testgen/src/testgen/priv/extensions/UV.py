@@ -76,7 +76,7 @@ def _gen_uvcsrwalk(test_data: TestData) -> list[str]:
 )
 def make_uv(test_data: TestData) -> list[str]:
     """Generate UV tests (vector CSR access from U-mode)."""
-    temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
+    temp_reg = test_data.int_regs.get_register()
 
     lines: list[str] = []
     lines.extend(_enable_vs_and_vector(temp_reg))

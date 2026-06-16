@@ -32,6 +32,9 @@
 # Vector
 --override cpu*/Zvfbfmin=T
 --override cpu*/Zvfbfwma=T
+--override cpu*/Zvfh=T
+--override cpu*/Zvfhmin=T
+--override cpu*/unalignedV=F # Disallow misaligned accesses on one imperas sim to test both cases
 
 # Miscellaneous extensions
 --override cpu*/Zicond=T
@@ -44,6 +47,9 @@
 --override cpu*/Sstc=T
 --override cpu*/Zimop=T
 --override cpu*/Zcmop=T
+--override cpu*/Smstateen=T
+--override cpu*/Ssstateen=T
+
 
 # Misaligned access (Zicclsm)
 --override cpu*/unaligned=T

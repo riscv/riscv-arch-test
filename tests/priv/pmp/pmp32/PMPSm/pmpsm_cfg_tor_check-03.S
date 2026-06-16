@@ -152,7 +152,8 @@ main:
 
     //addresses for a default TOR region
     LA(x4, TEST_FOR_EXECUTION)
-    addi    x5, x4, g
+    LI(t0, g)
+    add    x5, x4, t0
     srl x4, x4, PMP_SHIFT
     srl x5, x5, PMP_SHIFT
 
@@ -160,7 +161,7 @@ main:
 
 // Test Case:  pmpaddr0 = all1s
 
-    li x5, -1
+    LI(x5, -1)
     csrw    pmpaddr0, x5
     csrw    pmpaddr1, x4
 
@@ -188,7 +189,9 @@ test_6_str: .string "\"test: 6; cp: pmpm_cfg_tor_check3_load_access_at_pmpaddr+4
 .align 12
 .align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept 1024
     jr ra
+    .endr
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

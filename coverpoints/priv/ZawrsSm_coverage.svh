@@ -37,45 +37,50 @@ covergroup ZawrsSm_cg with function sample(ins_t ins);
         wildcard bins lr_w = {LR_W};
     }
 
-    mstatus_tw:  coverpoint ins.current.csr[CSR_MSTATUS][21] {
+    mstatus_tw:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")) {
         // autofill 0/1
     }
 
-    mstatus_tw_one:  coverpoint ins.current.csr[CSR_MSTATUS][21] {
+    mstatus_tw_one:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")) {
         bins one = {1};
     }
 
-    mstatus_tw_zero:  coverpoint ins.current.csr[CSR_MSTATUS][21] {
+    mstatus_tw_zero:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")) {
         bins zero = {0};
     }
 
-    mstatus_mie: coverpoint ins.prev.csr[CSR_MSTATUS][3]  {
+    mstatus_mie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie"))  {
         // autofill 0/1
     }
-    mstatus_mie_zero: coverpoint ins.prev.csr[CSR_MSTATUS][3] {
+    mstatus_mie_zero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")) {
         bins zero = {0};
     }
-    mstatus_mie_one: coverpoint ins.prev.csr[CSR_MSTATUS][3] {
+    mstatus_mie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")) {
         bins one = {1};
     }
 
-    mip_mtip_one: coverpoint ins.current.csr[CSR_MIP][7] {
+    mip_mtip_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip")) {
         bins one = {1};
     }
 
-    mie_zeros: coverpoint ins.current.csr[CSR_MIE][15:0] {
-        wildcard bins zeros = {16'b????0?0?0?0?0?0?}; // zero in all 6 interrupt enable bits
+    mie_zeros: coverpoint ({get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "meie"),
+                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "seie"),
+                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie"),
+                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "stie"),
+                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "msee"),
+                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "ssie")}) {
+        bins zeros = {0}; // zero in all 6 interrupt enable bits
     }
-    mie_mtie_one: coverpoint ins.current.csr[CSR_MIE][7] {
+    mie_mtie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie")) {
         bins one = {1}
     }
 
 
 
     // main coverpoints
-    cp_wrs_sto_timeout:     cross priv_mode_m, wrs_sto, mstatus_tw, mstatus_mie_zero, mie_zeros, lr_w;
-    cp_wrs_no_res:          cross priv_mode_m, mstatus_tw, mstatus_mie_zero, mie_zeros, sc_w, wrs_ops;
-    cp_wrs_resume:          cross priv_mode_m, mstatus_tw_zero, mie_mtie_one, mstatus_mie, wrs_nto, lr_w;
+    cp_wrs_sto_timeout_m:     cross priv_mode_m, wrs_sto, mstatus_tw, mstatus_mie_zero, mie_zeros, lr_w;
+    cp_wrs_no_res_m:          cross priv_mode_m, mstatus_tw, mstatus_mie_zero, mie_zeros, sc_w, wrs_ops;
+    cp_wrs_resume_m:          cross priv_mode_m, mstatus_tw_zero, mie_mtie_one, mstatus_mie, wrs_nto, lr_w;
 
 
 endgroup

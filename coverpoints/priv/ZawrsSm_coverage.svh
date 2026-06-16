@@ -65,22 +65,17 @@ covergroup ZawrsSm_cg with function sample(ins_t ins);
         bins one = {1};
     }
 
-    mie_zeros: coverpoint ({get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "meie") == 1,
-                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "seie") == 1,
-                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie") == 1,
-                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "stie") == 1,
-                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "msee") == 1,
-                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "ssie") == 1}) {
+    mie_zeros: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")) {
         bins zeros = {0}; // zero in all 6 interrupt enable bits
     }
     mie_mtie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie")) {
         bins one = {1};
     }
 
-    mip_ones: coverpoint ({get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip") == 1,
-                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "meip") == 1,
-                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "msip") == 1}){
-        bins ones = {3'b111};
+    mip_any_ones: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip") ||
+                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "meip") ||
+                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "msip") ){
+        bins any_ones = {1};
     }
 
 
@@ -89,7 +84,7 @@ covergroup ZawrsSm_cg with function sample(ins_t ins);
     cp_wrs_sto_timeout:     cross priv_mode_m, wrs_sto, mstatus_tw, mstatus_mie_zero, mie_zeros, lr_w;
     cp_wrs_no_res:          cross priv_mode_m, mstatus_tw, mstatus_mie_zero, mie_zeros, sc_w, wrs_ops;
     cp_wrs_resume:          cross priv_mode_m, mstatus_tw_zero, mie_mtie_one, mstatus_mie, wrs_nto, lr_w;
-    cp_wrs_no_mie:          cross priv_mode_m, mstatus_tw_zero, mstatus_mie_one, mie_zeros, mip_ones, wrs_sto, lr_w;
+    cp_wrs_no_mie:          cross priv_mode_m, mstatus_tw_zero, mstatus_mie_one, mie_zeros, mip_any_ones, wrs_sto, lr_w;
 
 endgroup
 

@@ -117,7 +117,8 @@ main:
 
     LA(x4, TEST_FOR_EXECUTION)
     srl x4, x4, PMP_SHIFT
-    addi x5, x0, g
+    LI(t0, g)
+    add x5, x0, t0
 
     // REGIONSTART in even PMPADDR
     .set pmpaddri, CSR_PMPADDR0
@@ -130,7 +131,8 @@ main:
     LA(x5, TEST_FOR_EXECUTION)
     .set pmpaddri, CSR_PMPADDR0+1
     .rept 7
-    addi x5, x5, g
+    LI(t0, g)
+    add x5, x5, t0
     srl x6, x5, PMP_SHIFT
     csrw pmpaddri, x6
     .set pmpaddri, pmpaddri+2
@@ -156,12 +158,16 @@ main:
 
     VERIFICATION_RWX   (TEST_FOR_EXECUTION + 2*g - 4), test_2
 
+// For larger UDB_PMP_GRANUMARITY, it is raising
+// relocation truncation error to fit: R_RISCV_JAL
+// Regions get so large, trap handler, RVMODEL macros,
+// and failure macros gets far apart and start raising errors
+#if UDB_PMP_GRANULARITY == 2
 // Test Case: 3 : Accessing at end of region with WR Permissions
 
     VERIFICATION_RWX   (TEST_FOR_EXECUTION + 3*g - 4), test_3
 
 // Test Case: 4 : Accessing at end of region with X Permissions
-
     VERIFICATION_RWX   (TEST_FOR_EXECUTION + 4*g - 4), test_4
 
 // Test Case: 5 : Accessing at end of region with R Permissions
@@ -172,10 +178,10 @@ main:
 
     VERIFICATION_RWX   (TEST_FOR_EXECUTION + 6*g - 4), test_6
 
-// Test Case: 6 : Accessing at end of region with No Permissions
+// Test Case: 7 : Accessing at end of region with No Permissions
 
     VERIFICATION_RWX   (TEST_FOR_EXECUTION + 7*g - 4), test_7
-
+#endif
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
@@ -188,11 +194,21 @@ test_3_str: .string "\"test: 3; cp: pmpm_priority_jalr\""
 
 
 .align 12
-TEST_FOR_EXECUTION_x:
+TEST_FOR_EXECUTION_0:
+    .rept 1024
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
+// For larger UDB_PMP_GRANUMARITY, it is raising
+// relocation truncation error to fit: R_RISCV_JAL
+// Regions get so large, trap handler, RVMODEL macros,
+// and failure macros gets far apart and start raising errors
+#if UDB_PMP_GRANULARITY == 2
     .rept (8*(1<<(UDB_PMP_GRANULARITY)))
+#else
+    .rept (2*(1<<(UDB_PMP_GRANULARITY)))
+#endif
     nop
     .endr
 

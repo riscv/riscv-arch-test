@@ -103,8 +103,10 @@ main:
 
     LA(x5, NEWREGION1)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr0, x5
 
     LA(x4, PMP0CFG)
@@ -112,8 +114,10 @@ main:
 
     LA(x5, NEWREGION2)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr1, x5
 
     LA(x4, PMP1CFG)
@@ -121,8 +125,10 @@ main:
 
     LA(x5, NEWREGION3)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr2, x5
 
     LA(x4, PMP2CFG)
@@ -147,21 +153,25 @@ RVTEST_DATA_BEGIN
 test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
 
 .align 12
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jalr x0, x1, 0
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:
     jalr x0, x1, 0                                              // Uncompressed return inside the first region
     .rept ((REGION_SIZE - 4) / 2)                        //(region size - jalr size)/ compressed nop size
     nop
     .endr
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_2:
     jalr x0, x1, 0                                              // Uncompressed return inside the second region
     .rept ((REGION_SIZE - 4) / 2)
     nop
     .endr
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_3:
     .rept (REGION_SIZE)
     nop

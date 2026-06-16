@@ -151,7 +151,8 @@ main:
 
     //addresses for a default TOR region
     LA(x4, TEST_FOR_EXECUTION)
-    addi    x5, x4, g
+    LI(t0, g)
+    add x5, x4, t0
     srl x4, x4, PMP_SHIFT
     srl x5, x5, PMP_SHIFT
 

@@ -58,7 +58,7 @@ main:
     // label, so there are no name collisions and no branch instructions.
     //
     // The outer walking-ones loop from the original (slli / bnez) is replaced
-    // by 64 explicit li t2, (1<<N) blocks — one per bit — each containing a
+    // by 64 explicit LI(t2, 1<<N) blocks — one per bit — each containing a
     // .rept over all PMP registers.  No runtime branching is used.
     // -----------------------------------------------------------------------
 
@@ -66,7 +66,7 @@ main:
 
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 34)
+1:  LI(t2, 1 << 34)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_95_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -75,7 +75,7 @@ main:
 
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 35)
+1:  LI(t2, 1 << 35)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_96_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -84,7 +84,7 @@ main:
 
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 37)
+1:  LI(t2, 1 << 37)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_97_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -93,7 +93,7 @@ main:
 
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 38)
+1:  LI(t2, 1 << 38)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_98_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -102,7 +102,7 @@ main:
 
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 39)
+1:  LI(t2, 1 << 39)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_99_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -111,7 +111,7 @@ main:
 
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 40)
+1:  LI(t2, 1 << 40)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_100_str)
     .set pmpcfgi, pmpcfgi+2
     .endr

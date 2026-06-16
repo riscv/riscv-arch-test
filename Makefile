@@ -13,9 +13,8 @@ COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/
 # EXCLUDE_EXTENSIONS overrides EXTENSIONS to exclude particular extensions from test generation. Applies as a negative filter after EXTENSIONS.
 # Default exclusion reasons:
 #  - Sm: Insufficient WARL configuration options.
-#  - PMPSm: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
 EXTENSIONS  ?=
-EXCLUDE_EXTENSIONS ?= Sm,PMPSm
+EXCLUDE_EXTENSIONS ?= Sm
 
 # DEBUG, FAST, VERBOSE, and CLEAN_INTERMEDIATES are runtime options for controlling build output. DEBUG is mutually exclusive with FAST and CLEAN_INTERMEDIATES.
 # Set to True to enable, or leave blank to disable.

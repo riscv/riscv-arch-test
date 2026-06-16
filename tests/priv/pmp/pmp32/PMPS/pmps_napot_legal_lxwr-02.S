@@ -31,7 +31,7 @@
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "pmps_napot_legal_lxwr.S"
+#define TEST_FILE "pmps_napot_legal_lxwr-02.S"
 #define SIGUPD_COUNT 150
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
@@ -49,6 +49,8 @@ RVTEST_BEGIN
 #endif
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
+
+    RVMODEL_FENCEI
 
     LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     // Execution Access Check
@@ -280,8 +282,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr2, x5
 
     LI(t1, PMPREGION_LXWR_1011|PMPREGION_LXWR_1100)
@@ -295,8 +299,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr1, x5
 
     LI(t1, PMPREGION_LXWR_1011|PMPREGION_LXWR_1100|PMPREGION_LXWR_1101)
@@ -310,8 +316,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr0, x5
 
     LI(t1, PMPREGION_LXWR_1011|PMPREGION_LXWR_1100|PMPREGION_LXWR_1101|PMPREGION_LXWR_1111)
@@ -355,12 +363,15 @@ test_20_str: .string "\"test: 15; cp: pmps_napot_legal_lwxr_jalr_address+g-4\""
 test_21_str: .string "\"test: 16; cp: pmps_napot_legal_lwxr_jalr_address+g\""
 
 .align 12
-TEST_FOR_EXECUTION_0:
+.align (UDB_PMP_GRANULARITY)
+    .rept (g>>2)
     jr ra
+    .endr
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
-    .rept (1<<(UDB_PMP_GRANULARITY))
-    nop
+    .rept (g>>2)
+    jr ra
     .endr
 
 RETURN_INSTRUCTION:

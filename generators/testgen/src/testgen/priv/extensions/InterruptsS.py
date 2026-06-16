@@ -816,13 +816,10 @@ def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
             for mie_name, mie_bit in mie_bits:
                 binname = f"{mideleg_name}_{mip_name}_{mie_name}"
 
-<<<<<<< testcase-gating
                 if mip_name == "mtip":
                     lines.append("#ifdef RVMODEL_MTIME_ADDRESS")
 
                 # === M-MODE SETUP ===
-=======
->>>>>>> act4
                 lines.extend(
                     [
                         "# === M-MODE SETUP ===",
@@ -983,13 +980,10 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
         for int_name, int_bit, int_set, int_clr, uses_timer in interrupts:
             binname = f"{stvec_mode_name}_{int_name}"
 
-<<<<<<< testcase-gating
             if int_name == "mtip":
                 lines.append("#ifdef RVMODEL_MTIME_ADDRESS")
 
             # === M-MODE SETUP ===
-=======
->>>>>>> act4
             lines.extend(
                 [
                     "# === M-MODE SETUP ===",
@@ -1885,11 +1879,8 @@ def _generate_wfi_timeout_s_tests(test_data: TestData) -> list[str]:
 
                         lines.extend(
                             [
-<<<<<<< testcase-gating
                                 "#ifdef RVMODEL_MTIMECMP_ADDRESS",
-=======
                                 "# Set MTIMECMP to max (no interrupt)",
->>>>>>> act4
                                 f"LA(x{r_temp}, RVMODEL_MTIMECMP_ADDRESS)",
                                 f"LI(x{r_scratch}, -1)",
                                 f"SREG x{r_scratch}, 0(x{r_temp})",
@@ -1988,13 +1979,10 @@ def _generate_interrupts_m_tests(test_data: TestData) -> list[str]:
                     mideleg_name = ["zeros", "ones"][mideleg_val]
                     binname = f"mie{mie_val}_{mideleg_name}_{mip_name}_{mie_name}"
 
-<<<<<<< testcase-gating
                     if mip_name == "mtip":
                         lines.append("#ifdef RVMODEL_MTIME_ADDRESS")
 
                     # === SETUP ===
-=======
->>>>>>> act4
                     lines.extend(
                         [
                             "",

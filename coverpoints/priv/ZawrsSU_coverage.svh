@@ -38,7 +38,8 @@ covergroup ZawrsSU_cg with function sample(ins_t ins);
     }
 
     mstatus_tw:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")) {
-        // autofill 0/1
+        bins zero = {0};
+        bins one  = {1};
     }
 
     mstatus_tw_one:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")) {
@@ -50,7 +51,8 @@ covergroup ZawrsSU_cg with function sample(ins_t ins);
     }
 
     mstatus_mie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie"))  {
-        // autofill 0/1
+        bins zero = {0};
+        bins one  = {1};
     }
     mstatus_mie_zero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")) {
         bins zero = {0};
@@ -71,13 +73,14 @@ covergroup ZawrsSU_cg with function sample(ins_t ins);
                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "seip"),
                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "ssip")
                            `endif}){
-        bins ones = {1};
+        bins ones = `ifdef S_SUPPORTED {6'b111111} `else {3'b111} `endif;
     }
 
 
     `ifdef S_SUPPORTED
         mstatus_sie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")) {
-            // autofill 0/1
+            bins zero = {0};
+            bins one  = {1};
         }
         mstatus_sie_zero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")) {
             bins zero = {0};

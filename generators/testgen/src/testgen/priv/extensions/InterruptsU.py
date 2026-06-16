@@ -23,7 +23,7 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
     r_mtime, r_mtimecmp, r_temp, r_temp2, r_scratch = test_data.int_regs.get_registers(5)
 
     lines = [
-        "#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)",
+        "#ifdef RVMODEL_MTIME_ADDRESS",
         comment_banner(
             "cp_user_mti",
             "Undelegated MTI interrupt from U-mode\n"
@@ -198,7 +198,7 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
     r_mtime, r_mtimecmp, r_temp, r_temp2, r_t1, r_t2, r_scratch = test_data.int_regs.get_registers(7)
 
     lines = [
-        "#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)",
+        "#ifdef RVMODEL_MTIME_ADDRESS",
         comment_banner(
             "cp_wfi",
             "WFI in U-mode waits for interrupt\n"

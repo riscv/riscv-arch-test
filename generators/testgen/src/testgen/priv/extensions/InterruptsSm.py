@@ -206,7 +206,7 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
                 binname = f"mie_{mstatus_mie}_{int_pending}_{enable_name}"
 
                 if int_pending == "mtip":
-                    lines.append("#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)")
+                    lines.append("#ifdef RVMODEL_MTIME_ADDRESS")
 
                 lines.extend(
                     [
@@ -281,7 +281,7 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
         for int_pending in ["meip", "mtip", "msip"]:
 
             if int_pending == "mtip":
-                lines.append("#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)")
+                lines.append("#ifdef RVMODEL_MTIME_ADDRESS")
 
             lines.extend(
                 [
@@ -363,7 +363,7 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
         for mip_bits in range(8):
 
             if mip_bits & 2:
-                lines.append("#if defined(RVMODEL_MTIME_ADDRESS) || defined(RVMODEL_SET_MTIMER_INT)")
+                lines.append("#ifdef RVMODEL_MTIME_ADDRESS")
 
             lines.extend(
                 [

@@ -456,7 +456,6 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
         ("stval", None),
         ("sip", None),
     ]
-
     # senvcfg CBIE/PMM reserved values are handled with warl_fields in the walk test below
     csr_senvcfg = ("senvcfg", None)
     # Floating-point CSRs
@@ -471,9 +470,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
         ("vtype", None),
         ("vlenb", None),
     ]
-    # senvcfg CBIE/PMM reserved values are handled with warl_fields in the walk test below
-    csr_senvcfg = ("senvcfg", None)
-
+    
     ######################################
     coverpoint = "cp_scsr_access"
     ######################################

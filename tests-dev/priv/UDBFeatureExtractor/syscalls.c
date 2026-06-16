@@ -72,6 +72,9 @@ int printf(const char *fmt, ...)
         } else if (*fmt == '%') {
             count += put_char('%');
         } else {
+            // Unsupported specifier: print literally without consuming
+            // a va_arg. Safe because all callsites in this tool only
+            // use %s, %c, and %%.
             count += put_char('%');
             count += put_char(*fmt);
         }

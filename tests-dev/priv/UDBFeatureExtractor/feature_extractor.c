@@ -10,8 +10,8 @@
 extern int printf(const char *fmt, ...);
 
 /* Defined by the ACT trap-signature setup. */
-extern uint32_t c_trap_flag;
-extern uint32_t c_unexpected_trap;
+extern volatile uint32_t c_trap_flag;
+extern volatile uint32_t c_unexpected_trap;
 
 static inline uint32_t read_trap_flag(void)
 {
@@ -54,7 +54,7 @@ static bool check_i_supported(void)
         ".option pop\n"
         :
         :
-        : "memory"
+        : "memory", "a6", "t0", "t1"
     );
 
     return !read_trap_flag();

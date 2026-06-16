@@ -3,11 +3,6 @@
 //
 // crt.S  –  Minimal bare-metal C runtime for UDBFeatureExtractor (C version).
 
-##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Zicsr, Zifencei, Sm]
-# MARCH: rv${XLEN}i_zicsr_zifencei
-##### END_TEST_CONFIG #####
-
 #if __riscv_xlen == 64
 # define LREG ld
 # define SREG sd

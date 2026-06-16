@@ -10,12 +10,54 @@
 extern int printf(const char *fmt, ...);
 
 /* Defined by the ACT trap-signature setup. */
-extern uint32_t read_trap_count_asm(void);
-extern uint32_t read_unexpected_trap_asm(void);
+extern uint32_t c_trap_flag;
+extern uint32_t c_unexpected_trap;
 
-static inline uint32_t read_trap_count(void)
+static inline uint32_t read_trap_flag(void)
 {
-    return read_trap_count_asm();
+    return c_trap_flag;
+}
+
+static inline void reset_trap_flag(void)
+{
+    c_trap_flag = 0;
+}
+
+static inline uint32_t read_unexpected_trap(void)
+{
+    return c_unexpected_trap;
+}
+
+
+/*
+ * check_i_supported() - probe for the I (base integer) extension.
+ *
+ * I supports 32 general-purpose registers (x0-x31).
+ * E only supports 16 (x0-x15); accessing x16-x31 is illegal on E.
+ *
+ * Probe: addi x16, x16, 0  (no-op using an upper register)
+ *     trap   -> E only
+ *     no trap -> I is supported
+ *
+ * Returns:
+ *     true  if I is supported
+ *     false if only E is supported
+ */
+static bool check_i_supported(void)
+{
+    reset_trap_flag();
+
+    __asm__ volatile (
+        ".option push\n"
+        ".option norvc\n"
+        "addi x16, x16, 0\n"
+        ".option pop\n"
+        :
+        :
+        : "memory"
+    );
+
+    return !read_trap_flag();
 }
 
 /*
@@ -28,8 +70,7 @@ static inline uint32_t read_trap_count(void)
  */
 static bool check_m_supported(void)
 {
-    uint32_t before = read_trap_count();
-
+    reset_trap_flag();
     /*
     * The inline assembly executes one candidate instruction and then C checks
     * whether the local trap counter changed.
@@ -57,22 +98,26 @@ static bool check_m_supported(void)
         : "memory", "a0", "a1", "a2", "t0", "t1"
     );
 
-    uint32_t after = read_trap_count();
-
-    return after == before;
+    return !read_trap_flag();
 }
 
 int main(void)
 {
+    bool i_supported = check_i_supported();
     bool m_supported = check_m_supported();
 
-    if (read_unexpected_trap_asm() != 0) {
+    if (read_unexpected_trap() != 0) {
         printf("error: unexpected trap occurred\n");
         return 1;
     }
 
     printf("implemented_extensions:\n");
-    printf("  - { name: I, version: '= 2.1' }\n");
+
+    if (i_supported) {
+        printf("  - { name: I, version: '= 2.1' }\n");
+    } else {
+        printf("  - { name: E, version: '= 2.0' }\n");
+    }
 
     if (m_supported) {
         printf("  - { name: M, version: '= 2.0' }\n");

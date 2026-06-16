@@ -22,7 +22,7 @@ RVTEST_BEGIN
     csrw    mtvec, t0
 
     // Clear trap counter before entering C.
-    LA      t0, c_trap_count
+    LA      t0, c_trap_flag
     sw      zero, 0(t0)
 
     // Enter the C runtime in crt.S.
@@ -42,45 +42,13 @@ RVTEST_BEGIN
 .globl arch_write_str_asm
 .type arch_write_str_asm, @function
 arch_write_str_asm:
-    addi    sp, sp, -32
+    addi    sp, sp, -16
     SREG    ra, 0(sp)
-    SREG    t0, 8(sp)
-    SREG    t1, 16(sp)
-    SREG    t2, 24(sp)
-
     RVMODEL_IO_WRITE_STR(t0, t1, t2, a0)
-
-    LREG    t2, 24(sp)
-    LREG    t1, 16(sp)
-    LREG    t0, 8(sp)
     LREG    ra, 0(sp)
-    addi    sp, sp, 32
+    addi    sp, sp, 16
     ret
 .size arch_write_str_asm, . - arch_write_str_asm
-
-// Called from feature_extractor.c.
-// Returns nonzero if an unexpected trap occurred.
-.globl read_unexpected_trap_asm
-.type read_unexpected_trap_asm, @function
-read_unexpected_trap_asm:
-    LA      t0, c_unexpected_trap
-    lw      a0, 0(t0)
-    ret
-.size read_unexpected_trap_asm, . - read_unexpected_trap_asm
-
-// Called from feature_extractor.c.
-// Returns current trap count in a0.
-.globl read_trap_count_asm
-.type read_trap_count_asm, @function
-read_trap_count_asm:
-    LA      t0, c_trap_count
-#if __riscv_xlen == 64
-    lw     a0, 0(t0)
-#else
-    lw      a0, 0(t0)
-#endif
-    ret
-.size read_trap_count_asm, . - read_trap_count_asm
 
 // Local trap handler for feature-probe instructions.
 // Handles expected illegal-instruction traps from fixed-width probe opcodes.
@@ -92,13 +60,8 @@ c_feature_trap_handler:
     bne     t0, t1, unexpected_trap
 
     // Count the trap.
-    LA      t0, c_trap_count
-#if __riscv_xlen == 64
-    lw     t1, 0(t0)
-#else
-    lw      t1, 0(t0)
-#endif
-    addi    t1, t1, 1
+    LA      t0, c_trap_flag
+    li      t1, 1
     sw      t1, 0(t0)
 
     // TODO: Future compressed-instruction probes will need 2-byte mepc advance.
@@ -130,10 +93,12 @@ RVTEST_DATA_BEGIN
 saved_mtvec:
     .dword 0
 
+.globl c_trap_flag
 .align 2
-c_trap_count:
+c_trap_flag:
     .word 0
 
+.globl c_unexpected_trap
 .align 2
 c_unexpected_trap:
     .word 0

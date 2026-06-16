@@ -37,34 +37,6 @@
 
 RVTEST_BEGIN                                // Encoded Instruction of nop (64 bit case)
 
-.macro VERIFICATION_RWX ADDRESS TEST_CASE      // {jalr, sw, lw} at start of region
-    // Execution Access Check
-    LA (a4, \ADDRESS)
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
-    LA(x1, 1f)                            // Store the return Address in x1
-    RVMODEL_FENCEI                              // sync I-cache: a prior store may have updated this executable region
-    \TEST_CASE\()_1:
-    jalr ra, 0(a4)
-    nop
-1:
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-
-    // Store Access Check
-    LA(a5, \ADDRESS)                                         // Address to be verified
-    LI(a4, DOUBLE_NOP)                                              // Value to write (DOUBLE_NOP)
-    \TEST_CASE\()_2:
-    sw a4, 0(a5)                                             // Word store test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
-
-    // Load Access Check
-    \TEST_CASE\()_3:
-    lw a4, 0(a5)                                             // Word load test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
-
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
@@ -128,7 +100,7 @@ main:
     li t0, (MPP|MPRV)        // Initialize mstatus.MPRV & mstatus.MPP
     csrc mstatus, t0
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
 // Test Case: 2 : mstatus.MPRV = 1, L = 0, mstatus.MPP = 00 and XWR Permissions given to the PMP Region 0
 
@@ -138,7 +110,7 @@ main:
     li t0, (MPRV)
     csrs mstatus, t0
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
 
 //-------------------------------------
     LA(x5, REGIONSTART)
@@ -158,7 +130,7 @@ main:
     li t0, (MPP|MPRV)        // Initialize mstatus.MPRV & mstatus.MPP
     csrc mstatus, t0
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
 
 // Test Case: 4 : mstatus.MPRV = 1, L = 1, mstatus.MPP = 00 and XWR Permissions given to the PMP Region 0
 
@@ -168,7 +140,7 @@ main:
     li t0, (MPRV)
     csrs mstatus, t0
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
 
     j exit                                                        // Verification Complete, exit the test
 

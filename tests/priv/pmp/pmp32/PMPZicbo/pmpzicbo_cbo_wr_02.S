@@ -87,7 +87,7 @@ main:
     LI(x4, PMPCFG_1|PMPCFG_0)
     csrw pmpcfg0, x4
 
-    VERIFICATION_CBO    TEST_FOR_EXECUTION_1, test_1
+    PMP_VERIFICATION_CBO    TEST_FOR_EXECUTION_1, test_1
 
     j exit                                        // Verification Complete, exit the test
 exit:

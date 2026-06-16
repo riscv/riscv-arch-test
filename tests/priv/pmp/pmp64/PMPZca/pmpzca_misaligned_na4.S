@@ -109,10 +109,10 @@ main:
     csrw pmpcfg0, x4
 
     // Test Case 1: Uncompressed return straddling the start of 2nd region
-    VERIFICATION_X_C TEST_FOR_EXECUTION_1, test_1
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_1, test_1
 
     // Test Case 2: Uncompressed return straddling the end of 2nd region
-    VERIFICATION_X_C TEST_FOR_EXECUTION_2, test_2
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_2, test_2
 
     j exit                                                        // Verification Complete, exit the test
 exit:

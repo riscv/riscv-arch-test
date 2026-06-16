@@ -38,34 +38,6 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-.macro VERIFICATION_RWX ADDRESS TEST_CASE
-    // Execution Access Check
-    LA (a4, \ADDRESS)
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
-    LA(x1, 1f)                            // Store the return Address in x1
-    RVMODEL_FENCEI                              // sync I-cache: a prior store may have updated this executable region
-    \TEST_CASE\()_1:
-    jalr ra, 0(a4)
-    nop
-1:
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-
-    // Store Access Check
-    LA(a5, \ADDRESS)                                         // Address to be verified
-    LI(a4, NOP)                                              // Value to write (NOP)
-    \TEST_CASE\()_2:
-    sw a4, 0(a5)                                             // Word store test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
-
-    // Load Access Check
-    \TEST_CASE\()_3:
-    lw a4, 0(a5)                                             // Word load test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)                                   // Signature update
-
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
@@ -115,7 +87,7 @@ main:
     LI(x4, (0x80 << PMP2_CFG_SHIFT))
     csrw pmpcfg3, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
     RVTEST_GOTO_MMODE
 
@@ -132,7 +104,7 @@ main:
     LI(x4, (0x80 << PMP1_CFG_SHIFT))
     csrw pmpcfg3, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
 
     RVTEST_GOTO_MMODE
 
@@ -149,7 +121,7 @@ main:
     LI(x4, (0x80 << PMP0_CFG_SHIFT))
     csrw pmpcfg3, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
 
     RVTEST_GOTO_MMODE
 
@@ -166,7 +138,7 @@ main:
     LI(x4, (0x80 << PMP3_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
 
     RVTEST_GOTO_MMODE
 
@@ -183,7 +155,7 @@ main:
     LI(x4, (0x80 << PMP2_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
 
     RVTEST_GOTO_MMODE
 
@@ -200,7 +172,7 @@ main:
     LI(x4, (0x80 << PMP1_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
 
     RVTEST_GOTO_MMODE
 
@@ -217,7 +189,7 @@ main:
     LI(x4, (0x80 << PMP0_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_7
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_7
 
     RVTEST_GOTO_MMODE
 
@@ -234,7 +206,7 @@ main:
     LI(x4, (0x80 << PMP3_CFG_SHIFT))
     csrw pmpcfg1, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_8
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_8
 
     RVTEST_GOTO_MMODE
 
@@ -251,7 +223,7 @@ main:
     LI(x4, (0x80 << PMP2_CFG_SHIFT))
     csrw pmpcfg1, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_9
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_9
 
     RVTEST_GOTO_MMODE
 
@@ -268,7 +240,7 @@ main:
     LI(x4, (0x80 << PMP1_CFG_SHIFT))
     csrw pmpcfg1, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_10
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_10
 
     RVTEST_GOTO_MMODE
 
@@ -285,7 +257,7 @@ main:
     LI(x4, (0x80 << PMP0_CFG_SHIFT))
     csrw pmpcfg1, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_11
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_11
 
     RVTEST_GOTO_MMODE
 
@@ -302,7 +274,7 @@ main:
     LI(x4, (0x80 << PMP3_CFG_SHIFT))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_12
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_12
 
     RVTEST_GOTO_MMODE
 
@@ -319,7 +291,7 @@ main:
     LI(x4, (0x80 << PMP2_CFG_SHIFT))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_13
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_13
 
     RVTEST_GOTO_MMODE
 
@@ -336,7 +308,7 @@ main:
     LI(x4, (0x80 << PMP1_CFG_SHIFT))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_14
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_14
 
     RVTEST_GOTO_MMODE
 
@@ -353,7 +325,7 @@ main:
     LI(x4, (0x80 << PMP0_CFG_SHIFT))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
 
     RVTEST_GOTO_MMODE
 

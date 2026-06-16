@@ -96,16 +96,16 @@ main:
     csrw pmpcfg0, x4
 
     //Test case1
-    VERIFICATION_X_C TEST_FOR_EXECUTION_0, test1
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_0, test1
 
     //Test case2
-    VERIFICATION_X_C TEST_FOR_EXECUTION_1, test2
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_1, test2
 
     //Test case3
-    VERIFICATION_X_C TEST_FOR_EXECUTION_2, test3
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_2, test3
 
     //Test case4
-    VERIFICATION_X_C TEST_FOR_EXECUTION_3, test4
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_3, test4
 
     j exit                                                      // Verification Complete, exit the test
 

@@ -521,8 +521,6 @@ function int get_csr_addr(int hart, string s);
     "vtype": return CSR_VTYPE;
     "vlenb": return CSR_VLENB;
     "sstatus": return CSR_SSTATUS;
-    "sedeleg": return CSR_SEDELEG;
-    "sideleg": return CSR_SIDELEG;
     "sie": return CSR_SIE;
     "stvec": return CSR_STVEC;
     "scounteren": return CSR_SCOUNTEREN;

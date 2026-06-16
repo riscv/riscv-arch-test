@@ -134,21 +134,25 @@ RVTEST_DATA_BEGIN
 test_1_str: .string "\"test: 1; cp: pmpzca_aligned_tor_region_execute\""
 
 .align 12
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jalr x0, x1, 0
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:
     jalr x0, x1, 0                                              // Uncompressed return inside the first region
     .rept (((1<<(UDB_PMP_GRANULARITY)) - 4) / 2)
     nop
     .endr
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_2:
     jalr x0, x1, 0                                             // Uncompressed return inside the second region
     .rept (((1<<(UDB_PMP_GRANULARITY)) - 4) / 2)
     nop
     .endr
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_3:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

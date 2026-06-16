@@ -26,6 +26,7 @@
 # REQUIRED_EXTENSIONS:  ['S']
 # params:
 #   MXLEN: 32
+#   PMP_GRANULARITY: 2
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
@@ -42,6 +43,8 @@
 RVTEST_BEGIN
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
+
+    RVMODEL_FENCEI
 
     LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     // Execution Access Check
@@ -144,7 +147,6 @@ main:
     //Lock the Background region.
     LI(x4, PMP_REGION_GLOBAL)
     csrw pmpcfg3, x4
-
 //                                            Verification Section
 // Test Case: 1 : L -> 0 and No Permissions given to the PMP Region 5
 
@@ -216,9 +218,6 @@ main:
 
     RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
-    RVTEST_GOTO_MMODE
-
-    j exit                                                        // Verification Complete, exit the test
 
 exit:
 
@@ -238,12 +237,16 @@ test_8_str: .string "\"test: 8; cp: pmpm_cfg_A_off_all_sw_address+4\""
 test_9_str: .string "\"test: 9; cp: pmpm_cfg_A_off_all_lw_address+4\""
 
 .align 12
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
     jr ra
+    .endr
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
-    .rept (1<<(UDB_PMP_GRANULARITY))
-    nop
+    .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
+    jr ra
     .endr
 
 RETURN_INSTRUCTION:

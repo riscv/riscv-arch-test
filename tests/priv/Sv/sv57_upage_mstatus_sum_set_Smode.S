@@ -140,7 +140,7 @@ main:
 
   // Save area setup for code region
   csrr a0, mscratch
-  SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code)
+  SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL4)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                               Test Cases Start from here

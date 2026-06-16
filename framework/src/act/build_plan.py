@@ -12,7 +12,7 @@ import importlib.resources
 from collections import defaultdict
 from pathlib import Path
 
-from act.build import BuildTask, PythonAction, SubprocessAction, SymlinkAction
+from act.build_types import BuildTask, PythonAction, SubprocessAction, SymlinkAction
 from act.config import CompilerType, Config, CoverageSimulator, RefModelType, spike_isa_string
 from act.coverreport import generate_report, merge_summaries
 from act.parse_test_constraints import TestMetadata
@@ -159,6 +159,7 @@ def gen_compile_tasks(
             outputs=(sig_elf,),
             extra_inputs=(test_path, *compile_inputs),
             action=SubprocessAction(cmd=sig_elf_cmd),
+            intermediate=True,
         )
     )
 
@@ -178,12 +179,14 @@ def gen_compile_tasks(
 
     # 2. sig – run reference model
     ref_model_cmd = _ref_model_sig_cmd(config, sig_elf, sig_file, sig_trace_file, xlen, debug)
+    ref_model_outputs = (sig_file, sig_trace_file) if debug else (sig_file,)
     tasks.append(
         BuildTask(
-            outputs=(sig_file,),
+            outputs=ref_model_outputs,
             deps=(sig_elf,),
             extra_inputs=ref_model_inputs,
             action=SubprocessAction(cmd=ref_model_cmd, stdout_file=sig_log_file),
+            intermediate=True,
         )
     )
 
@@ -199,8 +202,7 @@ def gen_compile_tasks(
         tasks.append(
             BuildTask(
                 outputs=(trap_report_file,),
-                deps=(sig_file,),
-                extra_inputs=(sig_elf,),
+                deps=(sig_file, sig_elf),
                 action=PythonAction(fn=generate_trap_report, args=(sig_file, xlen, sig_elf, nm_exe)),
             )
         )
@@ -211,6 +213,7 @@ def gen_compile_tasks(
             outputs=(result_file,),
             deps=(sig_file,),
             action=PythonAction(fn=process_signature_file, args=(sig_file, xlen)),
+            intermediate=True,
         )
     )
 
@@ -309,6 +312,7 @@ def gen_rvvi_tasks(
             deps=(elf,),
             extra_inputs=ref_model_inputs,
             action=SubprocessAction(cmd=sail_cmd, stdout_file=sail_log),
+            intermediate=True,
         )
     )
 
@@ -318,6 +322,7 @@ def gen_rvvi_tasks(
             outputs=(rvvi_trace,),
             deps=(sail_trace,),
             action=PythonAction(fn=sailLog2Trace, args=(sail_trace, rvvi_trace)),
+            intermediate=True,
         )
     )
 
@@ -421,6 +426,7 @@ def gen_coverage_tasks(
                 deps=rvvi_deps,
                 extra_inputs=(*coverage_inputs, tracelist_file),
                 action=SubprocessAction(cmd=coverage_cmd, stdout_file=simulator_log, cwd=coverage_dir),
+                intermediate=True,
             )
         )
 

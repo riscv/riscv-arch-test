@@ -112,7 +112,8 @@ main:
     csrw pmpcfg3, x4
 
     LA(x4, TEST_FOR_EXECUTION)
-    addi x5, x4, g
+    LI(t0, g)
+    add    x5, x4, t0
     srl x4, x4, PMP_SHIFT
     csrw pmpaddr0, x4
     csrw pmpaddr2, x4
@@ -142,7 +143,9 @@ test_3_str: .string "\"test: 2; cp: pmpm_priority_off_jalr\""
 
 .align 12
 TEST_FOR_EXECUTION_0:
+    .rept 1024
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

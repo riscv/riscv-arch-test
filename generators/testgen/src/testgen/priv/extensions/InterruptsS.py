@@ -1877,8 +1877,8 @@ def _generate_wfi_timeout_s_tests(test_data: TestData) -> list[str]:
 
                         lines.extend(
                             [
-                                "#ifdef RVMODEL_MTIMECMP_ADDRESS",
                                 "# Set MTIMECMP to max (no interrupt)",
+                                "#ifdef RVMODEL_MTIMECMP_ADDRESS",
                                 f"LA(x{r_temp}, RVMODEL_MTIMECMP_ADDRESS)",
                                 f"LI(x{r_scratch}, -1)",
                                 f"SREG x{r_scratch}, 0(x{r_temp})",

@@ -247,3 +247,207 @@
     srli t6, t6, 12                                             ;\
     or t6, t6, t5                                               ;\
     csrw satp, t6                                               ;
+
+//==============================================================================
+// PMP R/W/X verification macros
+//
+// Shared, centralized versions of the per-test VERIFICATION_* macros used by
+// the PMP test suite (tests/priv/pmp/...). Each macro probes how a PMP-protected
+// region responds to execute / store / load accesses and records the outcome
+// with RVTEST_SIGUPD.
+//
+// Defined here (instead of redefined in every test) so that cross-cutting fixes
+// — e.g. inserting RVMODEL_FENCEI to sync the I-cache after writing executable
+// code — are made in one place. RVMODEL_FENCEI is self-disabling: it expands to
+// fence.i only when Zifencei is supported, otherwise to nop, so it is always
+// safe to include.
+//
+// Contract for callers (must hold in each test that uses these):
+//   - The signature pointer / temp registers x2, x5, x4 follow suite convention.
+//   - The string label(s) test_<n>_str referenced below are defined in the
+//     test's RVTEST_DATA section.
+//   - `g` (PMP granule, 1<<UDB_PMP_GRANULARITY) is defined where a macro uses it.
+//
+// These are GAS (.macro) definitions; a test that uses one must NOT also define
+// a local .macro of the same name (GAS errors on macro redefinition).
+//==============================================================================
+
+// rvtest_macros.h is included before rvtest_trap_handler.h (where RVMODEL_FENCEI is
+// normally defined), so define it here too. The #ifndef guard makes the later
+// definition in rvtest_trap_handler.h a no-op; ZIFENCEI_SUPPORTED comes from the
+// already-included derived_config.h. Keep this in sync with rvtest_trap_handler.h.
+#ifndef   RVMODEL_FENCEI
+  #ifndef ZIFENCEI_SUPPORTED
+       #define RVMODEL_FENCEI nop                // no Zifencei: assume coherent I-cache
+  #else
+       #define RVMODEL_FENCEI fence.i            // Zifencei available: use fence.i
+  #endif
+#endif
+
+// VERIFICATION_X_C: compressed execute-only check.
+// Jumps (c.jalr) to ADDRESS and records whether execution was permitted.
+// No store occurs, so no RVMODEL_FENCEI is required.
+//   ADDRESS   - region label to execute from
+//   TEST_CASE - prefix for the local result label (TEST_CASE_1)
+.macro VERIFICATION_X_C ADDRESS, TEST_CASE
+    \TEST_CASE\()_1:
+    LA(x15, \ADDRESS)               // Address to be verified
+    c.jalr x15
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
+.endm
+
+// VERIFICATION_CBO: cache-block-operation permission check (the Zicbo cbo_wr family).
+// Runs cbo.zero/clean/flush/inval on ADDRESS and records each outcome. No jump and no
+// ordinary store, so no RVMODEL_FENCEI is required. XLEN-independent.
+//   ADDRESS   - cache-block-aligned region label
+//   TEST_CASE - prefix for the local result labels (TEST_CASE_1 .. _4)
+.macro VERIFICATION_CBO ADDRESS, TEST_CASE
+    // Address must be aligned to the cache block
+    LA(a4, \ADDRESS)
+
+    \TEST_CASE\()_1:
+    cbo.zero  (a4)
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
+
+    \TEST_CASE\()_2:
+    cbo.clean (a4)
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
+
+    \TEST_CASE\()_3:
+    cbo.flush (a4)
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
+
+    \TEST_CASE\()_4:
+    cbo.inval (a4)
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)
+.endm
+
+// VERIFICATION_RWX_ALL_RV32 / _RV64: all-access-width R/W/X check (the cfg_XWR_all
+// family). Execute-first: probe execution, then every store width, then every load
+// width, recording each outcome. RVMODEL_FENCEI syncs the I-cache before the jump in
+// case a prior invocation's store updated this executable region.
+// XLEN-suffixed because RV64 additionally exercises doubleword accesses (sd/lwu/ld)
+// and uses DOUBLE_NOP; RV32 uses NOP. Each referenced test_<n>_str must be defined
+// in the test, and SIGUPD_COUNT sized accordingly (RV32: 9 cases, RV64: 12).
+//   ADDRESS   - region label to probe
+//   TEST_CASE - prefix for the local result labels
+.macro VERIFICATION_RWX_ALL_RV32 ADDRESS, TEST_CASE
+    // Execution Access Check
+    LA (a4, \ADDRESS)
+    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
+    LA(x1, 1f)                            // Store the return Address in x1
+    RVMODEL_FENCEI                              // sync I-cache: a prior store may have updated this executable region
+    \TEST_CASE\()_9:
+    jalr ra, 0(a4)
+    nop
+1:
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_9, test_9_str)
+
+    // Store Access Check
+    LA(a5, \ADDRESS)                                         // Address to be verified
+    LI(a4, NOP)                                              // Value to write (NOP)
+    \TEST_CASE\()_1:
+    sb a4, 0(a5)                                             // Byte-level store test
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
+    \TEST_CASE\()_2:
+    sh a4, 0(a5)                                             // Half-word store test
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
+    \TEST_CASE\()_3:
+    sw a4, 0(a5)                                             // Word store test
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
+
+    // Load Access Check
+    \TEST_CASE\()_4:
+    lb a4, 0(a5)                                             // Byte-level load test
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)                                   // Signature update
+    \TEST_CASE\()_5:
+    lbu a4, 0(a5)                                             // Byte-level load test
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_5, test_5_str)                                  // Signature update
+    \TEST_CASE\()_6:
+    lh a4, 0(a5)
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_6, test_6_str)                                   // Signature update
+    \TEST_CASE\()_7:
+    lhu a4, 0(a5)
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_7, test_7_str)                                  // Signature update
+    \TEST_CASE\()_8:
+    lw a4, 0(a5)                                             // Word load test
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)                                   // Signature update
+.endm
+
+.macro VERIFICATION_RWX_ALL_RV64 ADDRESS, TEST_CASE
+    // Execution Access Check
+    LA (a4, \ADDRESS)
+    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
+    LA(x1, 1f)                            // Store the return Address in x1
+    RVMODEL_FENCEI                              // sync I-cache: a prior store may have updated this executable region
+    \TEST_CASE\()_12:
+    jalr ra, 0(a4)
+    nop
+1:
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_12, test_12_str)
+
+    // Store Access Check
+    LA(a5, \ADDRESS)                                         // Address to be verified
+    LI(a4, DOUBLE_NOP)                                              // Value to write (DOUBLE_NOP)
+    \TEST_CASE\()_1:
+    sb a4, 0(a5)                                             // Byte-level store test
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
+    \TEST_CASE\()_2:
+    sh a4, 0(a5)                                             // Half-word store test
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
+    \TEST_CASE\()_3:
+    sw a4, 0(a5)                                             // Word store test
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
+    \TEST_CASE\()_4:
+    sd a4, 0(a5)                                             // Doubleword store test
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)
+
+    // Load Access Check
+    \TEST_CASE\()_5:
+    lb a4, 0(a5)                                             // Byte-level load test
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_5, test_5_str)                                   // Signature update
+    \TEST_CASE\()_6:
+    lbu a4, 0(a5)                                             // Byte-level load test
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_6, test_6_str)                                  // Signature update
+    \TEST_CASE\()_7:
+    lh a4, 0(a5)
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_7, test_7_str)                                   // Signature update
+    \TEST_CASE\()_8:
+    lhu a4, 0(a5)
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)                                  // Signature update
+    \TEST_CASE\()_9:
+    lw a4, 0(a5)                                             // Word load test
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_9, test_9_str)                                   // Signature update
+    \TEST_CASE\()_10:
+    lwu a4, 0(a5)                                             // Word load test
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_10, test_10_str)                                   // Signature update
+    \TEST_CASE\()_11:
+    ld a4, 0(a5)                                             // Doubleword load test
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_11, test_11_str)                                   // Signature update
+.endm

@@ -46,58 +46,6 @@
 RVTEST_BEGIN
 
 
-.macro VERIFICATION_RWX ADDRESS, TEST_CASE
-    // Execution Access Check
-    LA (a4, \ADDRESS)
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
-    LA(x1, 1f)                            // Store the return Address in x1
-    RVMODEL_FENCEI                              // sync I-cache: a prior store may have updated this executable region
-    \TEST_CASE\()_9:
-    jalr ra, 0(a4)
-    nop
-1:
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_9, test_9_str)
-
-    // Store Access Check
-    LA(a5, \ADDRESS)                                         // Address to be verified
-    LI(a4, NOP)                                              // Value to write (NOP)
-    \TEST_CASE\()_1:
-    sb a4, 0(a5)                                             // Byte-level store test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-    \TEST_CASE\()_2:
-    sh a4, 0(a5)                                             // Half-word store test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
-    \TEST_CASE\()_3:
-    sw a4, 0(a5)                                             // Word store test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
-
-    // Load Access Check
-    \TEST_CASE\()_4:
-    lb a4, 0(a5)                                             // Byte-level load test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)                                   // Signature update
-    \TEST_CASE\()_5:
-    lbu a4, 0(a5)                                             // Byte-level load test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_5, test_5_str)                                  // Signature update
-    \TEST_CASE\()_6:
-    lh a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_6, test_6_str)                                   // Signature update
-    \TEST_CASE\()_7:
-    lhu a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_7, test_7_str)                                  // Signature update
-    \TEST_CASE\()_8:
-    lw a4, 0(a5)                                             // Word load test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)                                   // Signature update
-
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
@@ -163,105 +111,105 @@ main:
     LI(x4, (PMPREGION_XWR_101 << PMP2_CFG_SHIFT))
     csrw pmpcfg3, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_16
+    VERIFICATION_RWX_ALL_RV32    TEST_FOR_EXECUTION, test_16
 
 // Test Case: 17 -- WR Permissions given to the PMP Region 13
 
     LI(x4, (PMPREGION_XWR_011 << PMP1_CFG_SHIFT))
     csrw pmpcfg3, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_17
+    VERIFICATION_RWX_ALL_RV32    TEST_FOR_EXECUTION, test_17
 
 // Test Case: 18 -- XWR Permissions given to the PMP Region 12
 
     LI(x4, (PMPREGION_XWR_111 << PMP0_CFG_SHIFT))
     csrw pmpcfg3, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_18
+    VERIFICATION_RWX_ALL_RV32    TEST_FOR_EXECUTION, test_18
 
 // Test Case: 19 -- No Permissions given to the PMP Region 11
 
     LI(x4, (PMPREGION_XWR_000 << PMP3_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_19
+    VERIFICATION_RWX_ALL_RV32    TEST_FOR_EXECUTION, test_19
 
 // Test Case: 20 -- X Permissions given to the PMP Region 10
 
     LI(x4, (PMPREGION_XWR_100 << PMP2_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_20
+    VERIFICATION_RWX_ALL_RV32    TEST_FOR_EXECUTION, test_20
 
 // Test Case: 21 -- R Permissions given to the PMP Region 9
 
     LI(x4, (PMPREGION_XWR_001<< PMP1_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_21
+    VERIFICATION_RWX_ALL_RV32    TEST_FOR_EXECUTION, test_21
 
 // Test Case: 22 -- XR Permissions given to the PMP Region 8
 
     LI(x4, (PMPREGION_XWR_101 << PMP0_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_22
+    VERIFICATION_RWX_ALL_RV32    TEST_FOR_EXECUTION, test_22
 
 // Test Case: 23 -- WR Permissions given to the PMP Region 7
 
     LI(x4, (PMPREGION_XWR_011 << PMP3_CFG_SHIFT))
     csrw pmpcfg1, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_23
+    VERIFICATION_RWX_ALL_RV32    TEST_FOR_EXECUTION, test_23
 
 // Test Case: 24 -- XWR Permissions given to the PMP Region 6
 
     LI(x4, (PMPREGION_XWR_111 << PMP2_CFG_SHIFT))
     csrw pmpcfg1, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_24
+    VERIFICATION_RWX_ALL_RV32    TEST_FOR_EXECUTION, test_24
 
 // Test Case: 25 -- No Permissions given to the PMP Region 5
 
     LI(x4, (PMPREGION_XWR_000<< PMP1_CFG_SHIFT))
     csrw pmpcfg1, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_25
+    VERIFICATION_RWX_ALL_RV32    TEST_FOR_EXECUTION, test_25
 
 // Test Case: 26 -- X Permissions given to the PMP Region 4
 
     LI(x4, (PMPREGION_XWR_100 << PMP0_CFG_SHIFT))
     csrw pmpcfg1, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_26
+    VERIFICATION_RWX_ALL_RV32    TEST_FOR_EXECUTION, test_26
 
 // Test Case: 27 -- R Permissions given to the PMP Region 3
 
     LI(x4, (PMPREGION_XWR_001 << PMP3_CFG_SHIFT))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_27
+    VERIFICATION_RWX_ALL_RV32    TEST_FOR_EXECUTION, test_27
 
 // Test Case: 28 -- XR Permissions given to the PMP Region 2
 
     LI(x4, (PMPREGION_XWR_101 << PMP2_CFG_SHIFT))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_28
+    VERIFICATION_RWX_ALL_RV32    TEST_FOR_EXECUTION, test_28
 
 // Test Case: 29 -- WR Permissions given to the PMP Region 1
 
     LI(x4, (PMPREGION_XWR_011<< PMP1_CFG_SHIFT))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_29
+    VERIFICATION_RWX_ALL_RV32    TEST_FOR_EXECUTION, test_29
 
 // Test Case: 30 -- XWR Permissions given to the PMP Region 0
 
     LI(x4, (PMPREGION_XWR_111 << PMP0_CFG_SHIFT))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_30
+    VERIFICATION_RWX_ALL_RV32    TEST_FOR_EXECUTION, test_30
 
 
 RVTEST_CODE_END

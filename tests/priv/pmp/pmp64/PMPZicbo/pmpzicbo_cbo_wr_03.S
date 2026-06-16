@@ -36,33 +36,6 @@
 
 RVTEST_BEGIN
 
-.macro VERIFICATION_RWX ADDRESS TEST_CASE
-
-    // Address must be aligned to the cache block
-    LA(a4, \ADDRESS)
-
-    \TEST_CASE\()_1:
-    cbo.zero  (a4)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-
-    \TEST_CASE\()_2:
-    cbo.clean (a4)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
-
-    \TEST_CASE\()_3:
-    cbo.flush (a4)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
-
-    \TEST_CASE\()_4:
-    cbo.inval (a4)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)
-
-
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
@@ -116,7 +89,7 @@ main:
     LI(x4, PMPCFG_1|PMPCFG_0)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_1, test_1
+    VERIFICATION_CBO    TEST_FOR_EXECUTION_1, test_1
 
     j exit                                        // Verification Complete, exit the test
 exit:

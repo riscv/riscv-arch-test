@@ -43,13 +43,6 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-.macro VERIFICATION_RWX ADDRESS, TEST_CASE
-    \TEST_CASE\()_1:
-    LA(x15, \ADDRESS)               // Address to be verified
-    c.jalr x15
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
@@ -103,16 +96,16 @@ main:
     csrw pmpcfg0, x4
 
     //Test case1
-    VERIFICATION_RWX TEST_FOR_EXECUTION_0, test1
+    VERIFICATION_X_C TEST_FOR_EXECUTION_0, test1
 
     //Test case2
-    VERIFICATION_RWX TEST_FOR_EXECUTION_1, test2
+    VERIFICATION_X_C TEST_FOR_EXECUTION_1, test2
 
     //Test case3
-    VERIFICATION_RWX TEST_FOR_EXECUTION_2, test3
+    VERIFICATION_X_C TEST_FOR_EXECUTION_2, test3
 
     //Test case4
-    VERIFICATION_RWX TEST_FOR_EXECUTION_3, test4
+    VERIFICATION_X_C TEST_FOR_EXECUTION_3, test4
 
     j exit                                                      // Verification Complete, exit the test
 

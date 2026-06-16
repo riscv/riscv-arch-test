@@ -10,7 +10,6 @@
 from __future__ import annotations
 
 import os
-import shutil
 import sys
 from pathlib import Path
 from typing import Annotated
@@ -18,8 +17,9 @@ from typing import Annotated
 import typer
 from rich import print as rprint
 
-from act.build import BuildTask, build
+from act.build import build, prune_empty_dirs
 from act.build_plan import generate_build_plan
+from act.build_types import BuildTask
 from act.config import Config, CoverageSimulator, load_config
 from act.coverreport import print_coverage_summary
 from act.parse_test_constraints import TestYamlHeaderError, generate_test_dict
@@ -152,7 +152,15 @@ def run_act(
         )
 
     # Run all tasks to compile ELFs
-    result = build(tasks, jobs=jobs, keep_going=keep_going, dry_run=dry_run, verbose=verbose)
+    result = build(
+        tasks,
+        jobs=jobs,
+        cache_root=workdir,
+        keep_going=keep_going,
+        dry_run=dry_run,
+        verbose=verbose,
+        clean_intermediates=clean_intermediates,
+    )
 
     # Print summary
     parts = []
@@ -173,10 +181,10 @@ def run_act(
         sys.exit(1)
     rprint(f"[bold green]✓ Build complete:[/] {summary}")
 
-    # Remove intermediate build artifacts to save disk space (final ELFs live in elfs/)
+    # Prune empty build directories if requested
     if clean_intermediates and not dry_run:
         for name in config_names:
-            shutil.rmtree(workdir / name / "build", ignore_errors=True)
+            prune_empty_dirs(workdir / name / "build")
 
     # Always print coverage summaries when coverage is enabled, even if up-to-date
     if coverage:

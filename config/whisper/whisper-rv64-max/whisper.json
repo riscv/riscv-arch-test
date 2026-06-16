@@ -21,20 +21,8 @@
       {
         // Make address range 0 to 1023 non readable to support ACCESS_FAULT_ADDR in rvtest_config.h
         "attribs": [],
-        "high": "0x1FFFFFF",
+        "high": 1023,
         "low": 0
-      },
-      {
-        // Space between MMIO and RAM Should Also be Blocked
-        "attribs": [],
-        "high": "0x7FFFFFFF",
-        "low": "0x12000000"
-      },
-      {
-        // Space after RAM
-        "attribs": [],
-        "low": "0x100000000",
-        "high": "0x400000000"
       }
     ],
     "consoleio": "0x10000000", // Matches virtual printer address in rvmodel_macros.h

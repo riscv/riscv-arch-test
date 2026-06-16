@@ -51,6 +51,7 @@ RVTEST_BEGIN
     LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     LA (x15, \ADDRESS)
     LA(x1, 1f)                            // Store the return Address in x1
+    RVMODEL_FENCEI                              // sync I-cache: a prior store may have updated this executable region
     \TEST_CASE\()_3:
     c.jalr x15
     c.nop

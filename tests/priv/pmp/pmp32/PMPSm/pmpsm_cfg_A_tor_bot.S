@@ -104,6 +104,7 @@ RVTEST_BEGIN
     LA (a4, (\ADDRESS-4))
     LI(x4, 0xACCE)                                            // Store a value which is to be checked in trap handler
     LA(x1, 1f)                                                // Store the return Address in x1
+    RVMODEL_FENCEI                              // sync I-cache: a prior store may have updated this executable region
     jalr ra, 0(a4)
     nop
 1:

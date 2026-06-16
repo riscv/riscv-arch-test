@@ -65,13 +65,13 @@ covergroup ZawrsSU_cg with function sample(ins_t ins);
         bins one = {1};
     }
 
-    mip_ones: coverpoint ({get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip"),
-                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "meip"),
-                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "msip")
+    mip_ones: coverpoint ({get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip") == 1,
+                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "meip") == 1,
+                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "msip") == 1
                            `ifdef S_SUPPORTED
-                           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "stip"),
-                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "seip"),
-                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "ssip")
+                           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "stip") == 1,
+                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "seip") == 1,
+                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "ssip") == 1
                            `endif}){
         bins ones = `ifdef S_SUPPORTED {6'b111111} `else {3'b111} `endif;
     }
@@ -89,12 +89,12 @@ covergroup ZawrsSU_cg with function sample(ins_t ins);
             bins one = {1};
         }
     `endif
-    mie_zeros: coverpoint ({get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "meie"),
-                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "seie"),
-                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie"),
-                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "stie"),
-                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "msee"),
-                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "ssie")}) {
+    mie_zeros: coverpoint ({get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "meie") == 1,
+                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "seie") == 1,
+                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie") == 1,
+                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "stie") == 1,
+                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "msee") == 1,
+                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "ssie") == 1}) {
         bins zeros = {0}; // zero in all 6 interrupt enable bits
     }
     mie_mtie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie")) {

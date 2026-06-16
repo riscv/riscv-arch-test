@@ -75,9 +75,9 @@ main:
 //                                          Verification Section
 // Test Case: Write 0 to pmpcfg0, all 1s to pmpaddr0, read back pmpaddr0.
 
-    li x6, 0
+    LI(x6, 0)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     test_1:
          # Write x6 to pmpaddr0, read back and check against expected.
          RVTEST_SIGUPD_CSR_WRITE(pmpaddr0, x6, test_1, test_1_str)
@@ -98,7 +98,9 @@ test_2_str: .string "\"test: 1; cp: cp_pmp_grain_check_2\""
 
 .align 12
 TEST_FOR_EXECUTION_0:
+    .rept 1024
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

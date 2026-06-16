@@ -409,7 +409,9 @@ test_64_str: .string "\"test: 64; cp: cp_cfg_A_all_test_64\""
 
 .align 12
 TEST_FOR_EXECUTION_0:
+    .rept 1024
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

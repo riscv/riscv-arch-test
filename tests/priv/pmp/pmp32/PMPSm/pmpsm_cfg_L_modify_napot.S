@@ -184,7 +184,9 @@ test_14_str: .string "\"test: 14; cp: cp_cfg_L_modify_test_14\""
 
 .align 12
 TEST_FOR_EXECUTION_0:
+    .rept 1024
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

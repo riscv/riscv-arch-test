@@ -208,12 +208,12 @@ test_3_str:  .string "\"test: 3;  cp: pmpzicbo_prefetch_w\""
 
 .align 12
 .align (UDB_PMP_GRANULARITY)
-
 TEST_FOR_EXECUTION_1:
     .rept 1024
     nop
     .endr
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_2:
     .rept 1024
     nop

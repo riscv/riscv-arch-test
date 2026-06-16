@@ -26,6 +26,7 @@
 # REQUIRED_EXTENSIONS:  ['S']
 # params:
 #   MXLEN: 64
+#   PMP_GRANULARITY: 2
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
@@ -42,6 +43,8 @@
 RVTEST_BEGIN                                // Encoded Instruction of nop (64 bit case)
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
+
+    RVMODEL_FENCEI
 
     LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     // Execution Access Check
@@ -218,10 +221,6 @@ main:
 
     RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
-    RVTEST_GOTO_MMODE
-
-    j exit                                                        // Verification Complete, exit the test
-
 
 exit:
 
@@ -243,13 +242,15 @@ test_9_str: .string "\"test: 9; cp: pmps_cfg_A_off_all_lw_address+4\""
 .align 12
 .align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
     jr ra
-
-TEST_FOR_EXECUTION:
-    .rept (1<<(UDB_PMP_GRANULARITY))
-    nop
     .endr
 
+.align (UDB_PMP_GRANULARITY)
+TEST_FOR_EXECUTION:
+    .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
+    jr ra
+    .endr
 
 RETURN_INSTRUCTION:
     nop

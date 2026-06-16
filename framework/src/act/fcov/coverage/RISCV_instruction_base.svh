@@ -436,12 +436,12 @@ class RISCV_instruction
     rd_idx = get_gpr_num(ops[offset].key);
 
     if ((rd_idx % 2 == 0) && (rd_idx < 31)) begin
-      current.rd_next_val = current.x_wdata[rd_idx+1];
-      current.rd_next_val_pre = prev.x_wdata[rd_idx+1];
+      current.rd_upper_pair_val = current.x_wdata[rd_idx+1];
+      current.rd_upper_pair_val_pre = prev.x_wdata[rd_idx+1];
 
     end else begin
-      current.rd_next_val = '0;
-      current.rd_next_val_pre = '0;
+      current.rd_upper_pair_val = '0;
+      current.rd_upper_pair_val_pre = '0;
     end
 
   endfunction

@@ -105,7 +105,6 @@ main:
     VERIFICATION_RWX TEST_FOR_EXECUTION_3, test4
 
     j exit                                                      // Verification Complete, exit the test
-
 exit:
 
 RVTEST_CODE_END

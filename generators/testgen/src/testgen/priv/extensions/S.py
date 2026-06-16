@@ -156,7 +156,7 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
             "#ifdef S1P13P0_SUPPORTED",
             "#if __riscv_xlen == 64",
             comment_banner(
-                f"{coverpoint}",
+                coverpoint,
                 "Ss1p13: from S-mode attempt to set sstatus.UXL = 1 and UXL = 2.\n"
                 "UXL=2 must be silently rejected when SXLEN=32 (UXLEN <= SXLEN).",
             ),

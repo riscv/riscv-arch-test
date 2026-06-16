@@ -295,7 +295,6 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
                         f"CSRS(mie, x{r_scratch})",
                     ]
                 )
-               
             lines.append("# Clear timer (ensure no interrupt)")
             lines.extend(clr_mtimer_int(r_temp, r_mtimecmp))
 

@@ -20,7 +20,7 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsU_cg"
     coverpoint = "cp_user_mti"
 
-    r_mtime, r_mtimecmp, r_temp, r_temp2, r_scratch = test_data.int_regs.get_registers(5, exclude_regs=[])
+    r_mtime, r_mtimecmp, r_temp, r_temp2, r_scratch = test_data.int_regs.get_registers(5)
 
     lines = [
         comment_banner(
@@ -32,7 +32,7 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
         "",
     ]
 
-    # Cross: mtvec.MODE x mstatus.MIE (2x2 = 4 bins)
+    lines.append("# Cross: mtvec.MODE x mstatus.MIE (2x2 = 4 bins)")
     for mtvec_mode in [0, 1]:
         for mstatus_mie in [0, 1]:
             mode_name = ["direct", "vectored"][mtvec_mode]
@@ -42,8 +42,8 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "",
-                    "csrci mstatus, 8",  # Clear mstatus.MIE (bit 3)
-                    "csrci mtvec, 3",  # Clear mtvec.MODE (bits 1:0)
+                    "csrci mstatus, 8 # Clear mstatus.MIE (bit 3)",
+                    "csrci mtvec, 3 # Clear mtvec.MODE (bits 1:0)",
                 ]
             )
 
@@ -80,7 +80,7 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsU_cg"
     coverpoint = "cp_user_msi"
 
-    r_scratch = test_data.int_regs.get_register(exclude_regs=[])
+    r_scratch = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(
@@ -101,19 +101,19 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "",
-                    "csrci mstatus, 8",  # Clear mstatus.MIE (bit 3)
-                    "csrci mtvec, 3",  # Clear mtvec.MODE (bits 1:0)
+                    "csrci mstatus, 8 # Clear mstatus.MIE (bit 3)",
+                    "csrci mtvec, 3 # Clear mtvec.MODE (bits 1:0)",
                 ]
             )
 
             if mtvec_mode:
-                lines.append("csrsi mtvec, 1")  # Set mtvec.MODE to vectored (01)
+                lines.append("csrsi mtvec, 1 # Set mtvec.MODE to vectored (01)")
 
             lines.extend(
                 [
-                    f"LI(x{r_scratch}, 0x80)",  # mstatus.MPIE bit mask (bit 7)
+                    f"LI(x{r_scratch}, 0x80) # mstatus.MPIE bit mask (bit 7)",
                     f"{'CSRS' if mstatus_mie else 'CSRC'}(mstatus, x{r_scratch})",
-                    f"LI(x{r_scratch}, 0x08)",  # Enable MSIE
+                    f"LI(x{r_scratch}, 0x08) # Enable MSIE",
                     f"CSRW(mie, x{r_scratch})",
                     "RVTEST_GOTO_LOWER_MODE Umode",
                     test_data.add_testcase(binname, coverpoint, covergroup),
@@ -139,7 +139,7 @@ def _generate_user_mei_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsU_cg"
     coverpoint = "cp_user_mei"
 
-    r_scratch = test_data.int_regs.get_register(exclude_regs=[])
+    r_scratch = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(
@@ -160,19 +160,19 @@ def _generate_user_mei_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "",
-                    "csrci mstatus, 8",  # Clear mstatus.MIE (bit 3)
-                    "csrci mtvec, 3",  # Clear mtvec.MODE (bits 1:0)
+                    "csrci mstatus, 8 # Clear mstatus.MIE (bit 3)",
+                    "csrci mtvec, 3 # Clear mtvec.MODE (bits 1:0)",
                 ]
             )
 
             if mtvec_mode:
-                lines.append("csrsi mtvec, 1")  # Set mtvec.MODE to vectored (01)
+                lines.append("csrsi mtvec, 1 # Set mtvec.MODE to vectored (01)")
 
             lines.extend(
                 [
-                    f"LI(x{r_scratch}, 0x80)",  # mstatus.MPIE bit mask (bit 7)
+                    f"LI(x{r_scratch}, 0x80) # mstatus.MPIE bit mask (bit 7)",
                     f"{'CSRS' if mstatus_mie else 'CSRC'}(mstatus, x{r_scratch})",
-                    f"LI(x{r_scratch}, 0x800)",  # Enable MEIE
+                    f"LI(x{r_scratch}, 0x800) # Enable MEIE",
                     f"CSRW(mie, x{r_scratch})",
                     "RVTEST_GOTO_LOWER_MODE Umode",
                     test_data.add_testcase(binname, coverpoint, covergroup),
@@ -193,7 +193,7 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsU_cg"
     coverpoint = "cp_wfi"
 
-    r_mtime, r_mtimecmp, r_temp, r_temp2, r_t1, r_t2, r_scratch = test_data.int_regs.get_registers(7, exclude_regs=[])
+    r_mtime, r_mtimecmp, r_temp, r_temp2, r_t1, r_t2, r_scratch = test_data.int_regs.get_registers(7)
 
     lines = [
         comment_banner(
@@ -217,21 +217,22 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
             ]
         )
 
-        # Set MIE if needed
         lines.extend(
             [
-                f"LI(x{r_scratch}, 0x80)",  # mstatus.MPIE bit mask (bit 7)
+                "# Write MIE based on bins",
+                f"LI(x{r_scratch}, 0x80) # mstatus.MPIE bit mask (bit 7)",
                 f"{'CSRS' if mie_val else 'CSRC'}(mstatus, x{r_scratch})",
             ]
         )
 
-        # Enable MTIE
+        lines.append("# Enable MTIE")
         lines.extend([f"LI(x{r_scratch}, 0x80)", f"CSRW(mie, x{r_scratch})", "RVTEST_GOTO_LOWER_MODE Umode"])
 
         # WFI - label right before
         lines.extend(
             [
-                *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_temp2),  # Set timer to fire soon
+                "# Set timer to fire soon",
+                *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_temp2),
                 test_data.add_testcase(binname, coverpoint, covergroup),
                 "    wfi",
                 "    nop",
@@ -249,7 +250,7 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsU_cg"
     coverpoint = "cp_wfi_timeout"
 
-    r_temp, r_mtimecmp, r_scratch = test_data.int_regs.get_registers(3, exclude_regs=[])
+    r_temp, r_mtimecmp, r_scratch = test_data.int_regs.get_registers(3)
 
     lines = [
         comment_banner(
@@ -260,6 +261,7 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
         ),
         "",
         "# Set TW=1 for entire test block",
+        "CSRW(medeleg, x0)",
         f"LI(x{r_scratch}, 0x200000)",
         f"CSRS(mstatus, x{r_scratch})",
         "",
@@ -273,24 +275,24 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "",
-                    "csrci mstatus, 8",  # Clear mstatus.MIE (bit 3)
+                    "csrci mstatus, 8 # Clear mstatus.MIE (bit 3)",
                     f"LI(x{r_scratch}, 0x80)",
                     f"CSRC(mie, x{r_scratch})",
-                    f"LI(x{r_scratch}, 0x80)",  # mstatus.MPIE bit mask (bit 7)
+                    f"LI(x{r_scratch}, 0x80) # mstatus.MPIE bit mask (bit 7)",
                     f"{'CSRS' if mie_val else 'CSRC'}(mstatus, x{r_scratch})",
                 ]
             )
 
-            # Set MTIE if needed
             if mtie_val:
                 lines.extend(
                     [
+                        "# Set MTIE",
                         f"LI(x{r_scratch}, 0x80)",
                         f"CSRS(mie, x{r_scratch})",
                     ]
                 )
 
-            # Clear timer (ensure no interrupt)
+            lines.append("# Clear timer (ensure no interrupt)")
             lines.extend(clr_mtimer_int(r_temp, r_mtimecmp))
 
             lines.extend(
@@ -314,7 +316,7 @@ def make_interruptsu(test_data: TestData) -> list[str]:
 
     lines: list[str] = []
 
-    r_temp, r_mtimecmp = test_data.int_regs.get_registers(2, exclude_regs=[])
+    r_temp, r_mtimecmp = test_data.int_regs.get_registers(2)
 
     # Initial setup - clear any pending timer
     lines.append("CSRW(mideleg, zero)")

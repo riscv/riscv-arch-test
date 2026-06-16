@@ -23,13 +23,13 @@ def _generate_zic64b_tests(test_data: TestData) -> list[str]:
     """Generate cp_zic64bZicboz tests for Zic64bZicboz."""
 
     covergroup = "Zic64bZicboz_cg"
-    coverpoint = "cp_zi64cb"
+    coverpoint = "cp_zic64b"
 
     base_reg, tmp_reg, val_reg = test_data.int_regs.get_registers(3)
 
     lines = [
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Zic64b + Zicboz: 64-byte cache blocks.\n"
             "Test cbo.zero at offsets 0..64 on 128B all-1s buffer; verify via signature.",
         ),

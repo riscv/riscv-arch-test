@@ -143,9 +143,9 @@ main:
     srl x4, x4, PMP_SHIFT
 
 .if UDB_PMP_GRANULARITY != 2
-    li t0, PMP_MASK
+    LI(t0, PMP_MASK)
     and x4, x4, t0
-    li t0, PMP_REGION_SIZE
+    LI(t0, PMP_REGION_SIZE)
     or x4, x4, t0
 .endif
 
@@ -278,9 +278,13 @@ test_8_str: .string "\"test: 8; cp: pmpm_cfg_XWR_all_lw\""
 test_9_str: .string "\"test: 9; cp: pmpm_cfg_XWR_all_jalr\""
 
 .align 12
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept 1024
     jr ra
+    .endr
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

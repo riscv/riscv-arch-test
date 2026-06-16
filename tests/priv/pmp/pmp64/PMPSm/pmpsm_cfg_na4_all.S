@@ -24,6 +24,7 @@
 # REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 64
+#   PMP_GRANULARITY: 2
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
@@ -260,7 +261,6 @@ main:
     csrw pmpcfg0, x4
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
-
 
 RVTEST_CODE_END
 

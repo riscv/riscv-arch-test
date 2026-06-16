@@ -105,8 +105,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6,PMP_MASK)
+    and x5, x5, x6
+    LI(x6,PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr14, x5
 
     LI(x4, (0x80 << PMP2_CFG_SHIFT))
@@ -120,8 +122,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6,PMP_MASK)
+    and x5, x5, x6
+    LI(x6,PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr13, x5
 
     LI(x4, (0x80 << PMP1_CFG_SHIFT))
@@ -135,8 +139,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6,PMP_MASK)
+    and x5, x5, x6
+    LI(x6,PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr12, x5
 
     LI(x4, (0x80 << PMP0_CFG_SHIFT))
@@ -150,8 +156,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6,PMP_MASK)
+    and x5, x5, x6
+    LI(x6,PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr11, x5
 
     LI(x4, (0x80 << PMP3_CFG_SHIFT))
@@ -165,8 +173,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6,PMP_MASK)
+    and x5, x5, x6
+    LI(x6,PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr10, x5
 
     LI(x4, (0x80 << PMP2_CFG_SHIFT))
@@ -180,8 +190,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6,PMP_MASK)
+    and x5, x5, x6
+    LI(x6,PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr9, x5
 
     LI(x4, (0x80 << PMP1_CFG_SHIFT))
@@ -195,8 +207,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6,PMP_MASK)
+    and x5, x5, x6
+    LI(x6,PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr8, x5
 
     LI(x4, (0x80 << PMP0_CFG_SHIFT))
@@ -210,8 +224,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6,PMP_MASK)
+    and x5, x5, x6
+    LI(x6,PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr7, x5
 
     LI(x4, (0x80 << PMP3_CFG_SHIFT))
@@ -225,8 +241,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6,PMP_MASK)
+    and x5, x5, x6
+    LI(x6,PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr6, x5
 
     LI(x4, (0x80 << PMP2_CFG_SHIFT))
@@ -240,8 +258,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6,PMP_MASK)
+    and x5, x5, x6
+    LI(x6,PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr5, x5
 
     LI(x4, (0x80 << PMP1_CFG_SHIFT))
@@ -255,8 +275,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6,PMP_MASK)
+    and x5, x5, x6
+    LI(x6,PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr4, x5
 
     LI(x4, (0x80 << PMP0_CFG_SHIFT))
@@ -270,8 +292,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6,PMP_MASK)
+    and x5, x5, x6
+    LI(x6,PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr3, x5
 
     LI(x4, (0x80 << PMP3_CFG_SHIFT))
@@ -285,8 +309,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6,PMP_MASK)
+    and x5, x5, x6
+    LI(x6,PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr2, x5
 
     LI(x4, (0x80 << PMP2_CFG_SHIFT))
@@ -300,8 +326,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6,PMP_MASK)
+    and x5, x5, x6
+    LI(x6,PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr1, x5
 
     LI(x4, (0x80 << PMP1_CFG_SHIFT))
@@ -315,8 +343,10 @@ main:
 
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6,PMP_MASK)
+    and x5, x5, x6
+    LI(x6,PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr0, x5
 
     LI(x4, (0x80 << PMP0_CFG_SHIFT))
@@ -338,7 +368,9 @@ test_3_str: .string "\"test: 3; cp: pmpm_cfg_A_off_all_lw\""
 
 .align 12
 TEST_FOR_EXECUTION_0:
+    .rept 1024
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

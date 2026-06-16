@@ -58,7 +58,7 @@ main:
     // label, so there are no name collisions and no branch instructions.
     //
     // The outer walking-ones loop from the original (slli / bnez) is replaced
-    // by 64 explicit li t2, (1<<N) blocks — one per bit — each containing a
+    // by 64 explicit LI(t2, 1<<N) blocks — one per bit — each containing a
     // .rept over all PMP registers.  No runtime branching is used.
     // -----------------------------------------------------------------------
 
@@ -66,7 +66,7 @@ main:
 
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 62)
+1:  LI(t2, 1 << 62)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_119_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -75,7 +75,7 @@ main:
 
     .set pmpcfgi, CSR_PMPCFG0
     .rept UDB_NUM_PMP_ENTRIES/8
-1:  li t2, (1 << 63)
+1:  LI(t2, 1 << 63)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_120_str)
     .set pmpcfgi, pmpcfgi+2
     .endr

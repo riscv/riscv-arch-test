@@ -130,12 +130,12 @@ test_4_str:  .string "\"test: 4;  cp: pmpzicbo_cbo_inval\""
 
 .align 12
 .align (UDB_PMP_GRANULARITY)
-
 TEST_FOR_EXECUTION_1:
     .rept 1024
     nop
     .endr
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_2:
     .rept 1024
     nop

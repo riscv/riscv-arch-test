@@ -85,7 +85,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -100,7 +100,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -114,7 +114,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in  TOR
@@ -130,7 +130,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -144,7 +144,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -158,7 +158,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in TOR
@@ -174,7 +174,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -188,7 +188,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -202,7 +202,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in TOR
@@ -219,7 +219,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -233,7 +233,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -247,7 +247,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in TOR
@@ -263,7 +263,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, CHECKERBOARD
+    LI(x6, CHECKERBOARD)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -277,7 +277,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, CHECKERBOARD
+    LI(x6, CHECKERBOARD)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -291,7 +291,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, CHECKERBOARD
+    LI(x6, CHECKERBOARD)
     csrw pmpaddr0, x6
 
 // Read back in TOR
@@ -308,7 +308,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, CHECKERBOARD
+    LI(x6, CHECKERBOARD)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -322,7 +322,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, CHECKERBOARD
+    LI(x6, CHECKERBOARD)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -336,7 +336,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, CHECKERBOARD
+    LI(x6, CHECKERBOARD)
     csrw pmpaddr0, x6
 
 // Read back in TOR

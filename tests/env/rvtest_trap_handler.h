@@ -926,6 +926,21 @@ init_\__MODE__\()tvec:
         LREG    T4, tentry_addr_off(T1)            // T4 = common entry point (end of trampoline)
         addi    T4, T4, -actual_tramp_sz           // T4 = start of trampoline (entry point - tramp size)
         or      T2, T4, T2                         // T2 = trampoline start + selected mode bits
+#ifdef RVTEST_USE_FAST_TRAP_HANDLER
+        // Fast trap handler (see RVTEST_FAST_TRAP_HANDLER): install it in M/S
+        // xTVEC instead of the standard trampoline, in direct mode. Requires a
+        // writable xTVEC that supports direct mode; the trampoline-relocation
+        // fallback below does not apply to the fast handler.
+        // TODO: Update this to use the trampoline so it works for all xTVEC configs.
+  .ifc \__MODE__ , M
+        LA(     T2, trap_handler_fastillegalinstr)
+  .endif
+  #ifdef S_SUPPORTED
+    .ifc \__MODE__ , S
+        LA(     T2, strap_handler_fastillegalinstr)
+    .endif
+  #endif
+#endif
         SREG    T2, xtvec_new_off(T1)              // save new xTVEC value in save area
         csrw    CSR_XTVEC, T2                      // attempt to write trampoline address to xTVEC
 
@@ -1853,6 +1868,7 @@ vmem_adj_\__MODE__\()epc:
                 addi    T2, T2, 2
                 beq     T3, T2, sv_\__MODE__\()epc
         #endif
+                beqz    T3, sv_\__MODE__\()epc
 #endif
         LREG    T2, vmem_bgn_off(T4)                  // check if EPC is in vmem segment
         LREG    T6, vmem_seg_siz(T4)
@@ -2281,6 +2297,156 @@ rtn_fm_mmode:
 
 .option pop
 .endm                                                 // end of RVTEST_TRAP_HANDLER
+
+//==============================================================================
+//==============================================================================
+//
+//  SECTION 15B: RVTEST_FAST_TRAP_HANDLER
+//
+//  Minimal-overhead illegal-instruction trap handler for test suites that
+//  generate very large numbers of illegal-instruction traps (e.g. the
+//  Ssstrict CSR and instruction-encoding sweeps, 150k+ traps). The standard
+//  RVTEST_TRAP_HANDLER records several words per trap into the dedicated
+//  trap-signature region, which those sweeps would overflow. This handler
+//  instead writes three words (xcause, xepc, xtval) per illegal-instruction
+//  trap directly to the regular test signature (x2), advances xEPC past the
+//  trapping instruction, and returns.
+//
+//  Enabled with:    #define RVTEST_USE_FAST_TRAP_HANDLER   (in the test file)
+//  Instantiated by: RVTEST_CODE_END, alongside the standard trap handlers
+//  Installed by:    RVTEST_TRAP_PROLOG — when RVTEST_USE_FAST_TRAP_HANDLER is
+//                   defined, the M-mode prolog installs
+//                   trap_handler_fastillegalinstr in mtvec and the S-mode
+//                   prolog installs strap_handler_fastillegalinstr in stvec
+//                   (both direct mode), instead of the standard trampolines.
+//
+//  M-mode handler (mtvec): handles illegal-instruction traps taken in (or not
+//  delegated from) M-mode. Any other cause is forwarded to Mtrampoline, the
+//  standard framework handler, so T-SBI calls, fetch faults, and the
+//  RVTEST_CODE_END ecall all still work.
+//
+//  S-mode handler (stvec, S_SUPPORTED only): handles illegal-instruction
+//  traps delegated to S-mode via medeleg[2] (set by RVTEST_BOOT_TO_SMODE).
+//  Any other S-mode trap is forwarded to Strampoline.
+//
+//  Assumptions:
+//    - xTVEC accepts the handler address in direct mode (the prolog's
+//      trampoline-relocation fallback for read-only xTVEC does not apply to
+//      the fast handler).
+//    - The hart has read access to the trapping instruction (PMP/physical
+//      memory allows instruction reads at the faulting PC) and address
+//      translation is disabled, so the handler can read the instruction word
+//      directly from xEPC without manipulating mstatus.MPRV.
+//
+//  Instruction-width detection reads bits[1:0] of the trapping instruction:
+//    bits[1:0] == 0b11 (uncompressed) -> advance xEPC by 4
+//    bits[1:0] != 0b11 (compressed)   -> advance xEPC by 2
+//  lhu (not lw) is used because xEPC is only guaranteed 2-byte aligned; a
+//  4-byte lw at a 2 mod 4 address would misalign on cores without hardware
+//  misaligned-load support. bits[1:0] fit in the loaded 16 bits.
+//
+//  Register usage:
+//    t0 (x5) — scratch throughout: CSR reads, instruction word, advance amount
+//    t1 (x6) — M-mode handler only: used for the mcause==2 compare and for the final mepc advance.
+//              The S-mode handler never touches t1/x6: with
+//              rvtest_strap_routine defined, x6 is the Mtrampoline save-area
+//              pointer.
+//==============================================================================
+//==============================================================================
+
+.macro RVTEST_FAST_TRAP_HANDLER
+.option push
+.option norvc                                    // all handler code must be uncompressed
+
+// ── Fast M-mode handler (mtvec) ─────────────────────────────────────────────
+// Align to the core's WARL mtvec BASE boundary so the prolog's write of the
+// handler address into mtvec survives.
+.balign 64
+#ifdef UDB_MTVEC_BASE_ALIGNMENT_VECTORED
+.balign UDB_MTVEC_BASE_ALIGNMENT_VECTORED
+#endif
+#ifdef UDB_MTVEC_BASE_ALIGNMENT_DIRECT
+.balign UDB_MTVEC_BASE_ALIGNMENT_DIRECT
+#endif
+trap_handler_fastillegalinstr:
+        csrr t0, mcause                 // read trap cause
+        li   t1, 2                      // Illegal Instruction cause = 2
+        bne  t0, t1, fast_Mothertrap    // not illegal instruction — use regular handler
+fast_Millegalinstruction:
+        SREG t0, 0(x2)                  // store mcause (=2) to signature
+        addi x2, x2, SIG_STRIDE
+        csrr t0, mepc
+        SREG t0, 0(x2)                  // store mepc to signature
+        addi x2, x2, SIG_STRIDE
+        csrr t0, mtval
+        SREG t0, 0(x2)                  // store mtval to signature
+        addi x2, x2, SIG_STRIDE
+        // Branchless mepc advance — reads bits[1:0] from *mepc using lhu.
+        // advance = (((bits[1:0]+1) >> 2) + 1) << 1  =  4 if bits[1:0]==0b11, else 2.
+        // (bits[1:0]+1)>>2 is 1 only for 0b11; all other values (0b10,0b01,0b00) give 0.
+        csrr t0, mepc
+        lhu  t0, 0(t0)                  // load lower 16 bits from *mepc (always 2-byte aligned)
+        andi t0, t0, 3                  // t0 = bits[1:0]
+        addi t0, t0, 1                  // t0 = bits[1:0]+1; equals 4 only when was 0b11
+        srli t0, t0, 2                  // t0 = 1 iff uncompressed (0b11), else 0
+        addi t0, t0, 1                  // t0 = 2 or 1
+        slli t0, t0, 1                  // t0 = 4 (uncompressed) or 2 (compressed)
+        csrr t1, mepc                   // t1 = mepc  (t1 first written here)
+        add  t1, t1, t0                 // t1 = mepc + advance
+        csrw mepc, t1
+        mret
+
+fast_Mothertrap:
+        j    Mtrampoline                // hand off all non-illegal-instruction traps
+
+#ifdef S_SUPPORTED
+// ── Fast S-mode handler (stvec) — delegated illegal instructions ───────────
+// Align to the core's WARL mtvec BASE boundary so the prolog's write of the
+// handler address into stvec survives.
+.balign 64
+#ifdef UDB_MTVEC_BASE_ALIGNMENT_VECTORED // TODO: UDB_STVEC_BASE_ALIGNMENT once defined
+.balign UDB_MTVEC_BASE_ALIGNMENT_VECTORED
+#endif
+#ifdef UDB_MTVEC_BASE_ALIGNMENT_DIRECT
+.balign UDB_MTVEC_BASE_ALIGNMENT_DIRECT
+#endif
+strap_handler_fastillegalinstr:
+        csrr t0, scause
+        xori t0, t0, 2                  // t0=0 iff scause==2 (illegal instruction)
+        bnez t0, fast_Sothertrap        // not illegal — use S-mode framework handler
+fast_Sillegalinstruction:
+        csrr t0, scause                 // re-read (=2)
+        SREG t0, 0(x2)                  // store scause to signature
+        addi x2, x2, SIG_STRIDE
+        csrr t0, sepc
+        SREG t0, 0(x2)                  // store sepc to signature
+        addi x2, x2, SIG_STRIDE
+        csrr t0, stval
+        SREG t0, 0(x2)                  // store stval to signature
+        addi x2, x2, SIG_STRIDE
+        // Width detection: lhu at sepc (2-byte aligned -> no misalign trap).
+        csrr t0, sepc
+        lhu  t0, 0(t0)                  // load lower 16 bits of faulting instruction
+        andi t0, t0, 3
+        xori t0, t0, 3                  // t0=0 iff bits[1:0]==0b11 (uncompressed)
+        beqz t0, fast_Suncompressed
+fast_Scompressed:
+        csrr t0, sepc
+        addi t0, t0, 2                  // 16-bit instruction: advance sepc by 2
+        j    fast_Sdone
+fast_Suncompressed:
+        csrr t0, sepc
+        addi t0, t0, 4                  // 32-bit instruction: advance sepc by 4
+fast_Sdone:
+        csrw sepc, t0
+        sret
+
+fast_Sothertrap:
+        j    Strampoline                // hand off non-illegal S-mode traps to framework
+#endif // S_SUPPORTED
+
+.option pop
+.endm                                            // end of RVTEST_FAST_TRAP_HANDLER
 
 //==============================================================================
 //==============================================================================

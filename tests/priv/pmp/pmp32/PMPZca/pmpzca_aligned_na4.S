@@ -81,7 +81,6 @@ main:
     //Lock the Background region.
     LI(x4, PMP_REGION_GLOBAL)
     csrw pmpcfg3, x4
-
     // Test Case: Three NA4 regions with L=1 and XWR = 111 for first 2 regions, and XWR = 000 for third region.
 
     LA(x5, REGIONSTART)
@@ -117,7 +116,6 @@ main:
 
     j exit
 
-
 exit:
 
 RVTEST_CODE_END
@@ -128,12 +126,15 @@ RVTEST_DATA_BEGIN
 test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
 
 .align 12
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jalr x0, x1, 0
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:               // Uncompressed return inside the first region
     jalr x0, x1, 0
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_2:
     jalr x0, x1, 0                  // Uncompressed return inside the second region
 

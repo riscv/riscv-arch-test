@@ -8,6 +8,8 @@
 
 """Sstvala S-mode test generator."""
 
+from __future__ import annotations
+
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.priv.extensions.ExceptionsCommon import (
@@ -198,7 +200,7 @@ def _emit_pf_block(
 
 def _generate_load_page_fault_tests(test_data: TestData, covergroup: str) -> list[str]:
     """cp_stval_load_page_fault — W-only PTE → load page fault on lw/ld."""
-    addr_reg, data_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    addr_reg, data_reg = test_data.int_regs.get_registers(2)
 
     def _load(mnemonic: str, va: int, suffix: str) -> tuple[str, list[str]]:
         return (
@@ -221,7 +223,7 @@ def _generate_load_page_fault_tests(test_data: TestData, covergroup: str) -> lis
 
 def _generate_store_page_fault_tests(test_data: TestData, covergroup: str) -> list[str]:
     """cp_stval_store_page_fault — R|X PTE (no W) → store page fault on sw/sd."""
-    addr_reg, data_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    addr_reg, data_reg = test_data.int_regs.get_registers(2)
 
     def _store(mnemonic: str, va: int, value: int, suffix: str) -> tuple[str, list[str]]:
         return (
@@ -254,7 +256,7 @@ def _generate_instr_page_fault_tests(test_data: TestData, covergroup: str) -> li
 
     x4 = 0xACCE signals the trap handler to use ra (x1) as the return address.
     """
-    addr_reg = test_data.int_regs.get_register(exclude_regs=[0, 1, 4])
+    addr_reg = test_data.int_regs.get_register()
 
     def _jalr(va: int, suffix: str) -> tuple[str, list[str]]:
         return (
@@ -292,7 +294,7 @@ def _generate_sstvala_tests(test_data: TestData) -> list[str]:
 
     # Delegate exceptions to S-mode via medeleg.
     # 0xB0F7 = bits {15,13,12,7,6,5,4,2,1,0}
-    medeleg_reg = test_data.int_regs.get_register(exclude_regs=[0])
+    medeleg_reg = test_data.int_regs.get_register()
     lines.extend(
         [
             "RVTEST_GOTO_MMODE",
@@ -320,7 +322,7 @@ def _generate_sstvala_tests(test_data: TestData) -> list[str]:
     lines.extend(_generate_store_page_fault_tests(test_data, covergroup))
     lines.extend(_generate_instr_page_fault_tests(test_data, covergroup))
 
-    medeleg_reg = test_data.int_regs.get_register(exclude_regs=[0])
+    medeleg_reg = test_data.int_regs.get_register()
     lines.extend(
         [
             f"LI(x{medeleg_reg}, 0)",

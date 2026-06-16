@@ -11,6 +11,12 @@
 --extlib iss/cpu0/cc=riscv.ovpworld.org/intercept/customControl/1.0
 --override iss/cpu0/simulateexceptions=T
 --override iss/cpu0/defaultsemihost=F
+# Physical address bus width. The ISS harness defaults to a 32-bit address bus,
+# which limits the writable PMP address bits to PA[31:2] (30 bits). CVW/PA_BITS=56
+# implements 56-bit physical addresses, so pmpaddr exposes PA[55:2] (54 writable bits).
+# This is a harness option (not a cpu* parameter); PMP_maskparams cannot widen the
+# field — it only adds read-only bits. See riscvVM.c:riscvVMWritePMPAddr (extBits clamp).
+--addressbits 56
 
 # Bit manipulation
 --override cpu*/add_Extensions=B
@@ -125,4 +131,4 @@
 --callcommand iss/cpu0/setPMA -lo 0x0002000000 -hi 0x0000000200FFFF -attributes " rw-aA- 1248 " # CLINT
 --callcommand iss/cpu0/setPMA -lo 0x000C000000 -hi 0x0000000FFFFFFF -attributes " rw-aA- --4- " # PLIC
 --callcommand iss/cpu0/setPMA -lo 0x0010010000 -hi 0x00000010010007 -attributes " rw-aA- 1248 " # UART0
---callcommand iss/cpu0/setPMA -lo 0x0080000000 -hi 0x0000008FFFFFFF -attributes " rwx--- 1248 " # UNCORE_RAM
+--callcommand iss/cpu0/setPMA -lo 0x0080000000 -hi 0x008FFFFFFFFFFF -attributes " rwx--- 1248 " # UNCORE_RAM

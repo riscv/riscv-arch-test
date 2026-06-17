@@ -361,23 +361,23 @@ def _generate_mstatus_fs_illegal_instr_tests(test_data: TestData) -> list[str]:
 
 def _generate_mstatus_fs_csr_access_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "ExceptionsF_cg", "cp_mstatus_fs_csr_access"
-    clear_mask_reg, check_reg = test_data.int_regs.get_registers(2)
+    mstatus_fs_mask_reg, check_reg = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(
             coverpoint,
             "Test that access to floating point CSRs trap when mstatus.fs is set to 0 (Off)",
         ),
-        f"LI(x{clear_mask_reg}, 0x6000) # MSTATUS_FS mask",
+        f"LI(x{mstatus_fs_mask_reg}, 0x6000) # MSTATUS_FS mask",
     ]
 
     for csr in ["fcsr", "frm", "fflags"]:
         for csr_instr in ["CSRR", "CSRW", "CSRC", "CSRS"]:
             lines.extend(
                 [
-                    f"csrc mstatus, x{clear_mask_reg}",
+                    f"csrc mstatus, x{mstatus_fs_mask_reg}",
                     f"LI(x{check_reg}, -1)",
-                    test_data.add_testcase(f"{csr_instr}{csr}00{coverpoint[2:]}", coverpoint, covergroup),
+                    test_data.add_testcase(f"{csr_instr}_{csr}_00_{coverpoint[2:]}", coverpoint, covergroup),
                 ]
             )
             if csr_instr == "CSRR":
@@ -386,13 +386,13 @@ def _generate_mstatus_fs_csr_access_tests(test_data: TestData) -> list[str]:
                 lines.append(f"{csr_instr}({csr}, x{check_reg})")
             lines.extend(
                 [
-                    f"csrs mstatus, x{clear_mask_reg}",
+                    "# Need to enable mstatus.FS so that the csrs can be accessed",
+                    f"csrs mstatus, x{mstatus_fs_mask_reg}",
                     gen_csr_read_sigupd(check_reg, (csr, None), test_data),
-                    f"csrc mstatus, x{clear_mask_reg}",
                 ]
             )
 
-    test_data.int_regs.return_registers([clear_mask_reg, check_reg])
+    test_data.int_regs.return_registers([mstatus_fs_mask_reg, check_reg])
     return lines
 
 

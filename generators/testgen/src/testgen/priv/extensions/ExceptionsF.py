@@ -8,6 +8,7 @@
 
 """ExceptionsF test generator."""
 
+from testgen.asm.csr import gen_csr_read_sigupd, gen_csr_write_sigupd
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
@@ -211,66 +212,57 @@ def add_csr_instructions(
         f"csrc mstatus, x{clear_mask_reg}",
         f"csrs mstatus, x{set_mask_reg}",
         f"LI(x{check_reg}, 0)",
-        test_data.add_testcase(f"csrrw_fcsr_zero_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
-        f"CSRRW(x{check_reg}, fcsr, x{check_reg})",
-        write_sigupd(check_reg, test_data),
-        "",
+        test_data.add_testcase(f"csrw_fcsr_zero_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
+        gen_csr_write_sigupd(check_reg, "fcsr", test_data),
         f"csrc mstatus, x{clear_mask_reg}",
         f"csrs mstatus, x{set_mask_reg}",
         f"LI(x{check_reg}, -1)",
         test_data.add_testcase(f"csrrs_fcsr_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
         f"CSRRS(x{check_reg}, fcsr, x{check_reg})",
-        write_sigupd(check_reg, test_data),
-        "",
+        gen_csr_read_sigupd(check_reg, ("fcsr", None), test_data),
         f"csrc mstatus, x{clear_mask_reg}",
         f"csrs mstatus, x{set_mask_reg}",
         f"LI(x{check_reg}, -1)",
         test_data.add_testcase(f"csrrc_fcsr_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
         f"CSRRC(x{check_reg}, fcsr, x{check_reg})",
-        write_sigupd(check_reg, test_data),
+        gen_csr_read_sigupd(check_reg, ("fcsr", None), test_data),
         "",
         f"csrc mstatus, x{clear_mask_reg}",
         f"csrs mstatus, x{set_mask_reg}",
         f"LI(x{check_reg}, 0)",
-        test_data.add_testcase(f"csrrw_frm_zero_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
-        f"CSRRW(x{check_reg}, frm, x{frm_reg})",
-        write_sigupd(check_reg, test_data),
-        "",
+        test_data.add_testcase(f"csrw_frm_zero_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
+        gen_csr_write_sigupd(check_reg, "frm", test_data),
         f"csrc mstatus, x{clear_mask_reg}",
         f"csrs mstatus, x{set_mask_reg}",
         f"LI(x{check_reg}, -1)",
         test_data.add_testcase(f"csrrs_frm_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
         f"CSRRS(x{check_reg}, frm, x{frm_reg})",
-        write_sigupd(check_reg, test_data),
-        "",
+        gen_csr_read_sigupd(check_reg, ("frm", None), test_data),
         f"csrc mstatus, x{clear_mask_reg}",
         f"csrs mstatus, x{set_mask_reg}",
         f"LI(x{check_reg}, 0)",
         test_data.add_testcase(f"csrrc_frm_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
         f"CSRRC(x{check_reg}, frm, x{frm_reg})",
-        write_sigupd(check_reg, test_data),
+        gen_csr_read_sigupd(check_reg, ("frm", None), test_data),
         "",
         f"LI(x{check_reg}, 0)",
         f"csrc mstatus, x{clear_mask_reg}",
         f"csrs mstatus, x{set_mask_reg}",
         f"LI(x{check_reg}, 0)",
-        test_data.add_testcase(f"csrrw_fflags_zero_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
-        f"CSRRW(x{check_reg}, fflags, x{check_reg})",
-        write_sigupd(check_reg, test_data),
-        "",
+        test_data.add_testcase(f"csrw_fflags_zero_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
+        gen_csr_write_sigupd(check_reg, "fflags", test_data),
         f"csrc mstatus, x{clear_mask_reg}",
         f"csrs mstatus, x{set_mask_reg}",
         f"LI(x{check_reg}, -1)",
         test_data.add_testcase(f"csrrs_fflags_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
         f"CSRRS(x{check_reg}, fflags, x{check_reg})",
-        write_sigupd(check_reg, test_data),
-        "",
+        gen_csr_read_sigupd(check_reg, ("fflags", None), test_data),
         f"csrc mstatus, x{clear_mask_reg}",
         f"csrs mstatus, x{set_mask_reg}",
         f"LI(x{check_reg}, -1)",
         test_data.add_testcase(f"csrrc_fflags_{fs_val}_{coverpoint[2:]}", coverpoint, covergroup),
         f"CSRRC(x{check_reg}, fflags, x{check_reg})",
-        write_sigupd(check_reg, test_data),
+        gen_csr_read_sigupd(check_reg, ("fflags", None), test_data),
     ]
 
     test_data.int_regs.return_register(check_reg)
@@ -362,9 +354,9 @@ def _generate_mstatus_fs_illegal_instr_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-def _generate_mstatus_fs_csr_write_tests(test_data: TestData) -> list[str]:
-    covergroup, coverpoint = "ExceptionsF_cg", "cp_mstatus_fs_csr_write"
-    clear_mask_reg, frm_reg, set_mask_reg = test_data.int_regs.get_registers(3)
+def _generate_mstatus_fs_csr_access_tests(test_data: TestData) -> list[str]:
+    covergroup, coverpoint = "ExceptionsF_cg", "cp_mstatus_fs_csr_access"
+    clear_mask_reg, check_reg, set_mask_reg = test_data.int_regs.get_registers(3)
 
     lines = [
         comment_banner(
@@ -373,11 +365,24 @@ def _generate_mstatus_fs_csr_write_tests(test_data: TestData) -> list[str]:
         ),
         f"LI(x{clear_mask_reg}, 0x6000) # MSTATUS_FS mask",
         f"LI(x{set_mask_reg}, 0) # MSTATUS_FS = Off",
-        f"LI(x{frm_reg}, 0)",
     ]
 
-    lines.extend(add_csr_instructions(clear_mask_reg, set_mask_reg, frm_reg, 0, test_data, coverpoint, covergroup))
-    test_data.int_regs.return_registers([clear_mask_reg, frm_reg, set_mask_reg])
+    for csr in ["fcsr", "frm", "fflags"]:
+        for csr_instr in ["CSRR", "CSRW", "CSRC", "CSRS"]:
+            lines.extend(
+                [
+                    f"csrc mstatus, x{clear_mask_reg}",
+                    f"csrs mstatus, x{set_mask_reg}",
+                    f"LI(x{check_reg}, -1)",
+                    test_data.add_testcase(f"{csr_instr}{csr}00{coverpoint[2:]}", coverpoint, covergroup),
+                ]
+            )
+            if csr_instr == "CSRR":
+                lines.append(f"{csr_instr}(x{check_reg}, {csr})")
+            else:
+                lines.append(f"{csr_instr}({csr}, x{check_reg})")
+
+    test_data.int_regs.return_registers([clear_mask_reg, check_reg, set_mask_reg])
     return lines
 
 
@@ -621,7 +626,7 @@ def make_exceptionsf(test_data: TestData) -> list[str]:
         )
 
     lines.extend(_generate_mstatus_fs_illegal_instr_tests(test_data))
-    lines.extend(_generate_mstatus_fs_csr_write_tests(test_data))
+    lines.extend(_generate_mstatus_fs_csr_access_tests(test_data))
     lines.extend(_generate_mstatus_fs_legal_tests(test_data))
     lines.extend(_generate_load_address_misaligned_tests(test_data))
     lines.extend(_generate_load_access_fault_tests(test_data))

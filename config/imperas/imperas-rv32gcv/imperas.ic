@@ -7,17 +7,11 @@
 --processorvendor riscv.ovpworld.org
 --processorname riscv
 --variant RV32GCV
+--addressbits 34 # Physical address bus width
 # defines printing via write to  0x10010000 and termination at symbol _test_exit
 --extlib iss/cpu0/cc=riscv.ovpworld.org/intercept/customControl/1.0
 --override iss/cpu0/simulateexceptions=T
 --override iss/cpu0/defaultsemihost=F
-
-# Physical address bus width. The ISS harness defaults to a 32-bit address bus,
-# which limits the writable PMP address bits to PA[31:2] (30 bits). CVW/PA_BITS=34
-# implements 34-bit physical addresses, so pmpaddr exposes PA[33:2] (32 writable bits).
-# This is a harness option (not a cpu* parameter); PMP_maskparams cannot widen the
-# field — it only adds read-only bits. See riscvVM.c:riscvVMWritePMPAddr (extBits clamp).
---addressbits 34
 
 # Bit manipulation
 --override cpu*/add_Extensions=B

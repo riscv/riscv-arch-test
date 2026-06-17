@@ -297,7 +297,7 @@ def _generate_wrs_resume_tests(test_data: TestData) -> list[str]:
 #             lines.extend(
 #                 [
 #                     "# Set all 6 interrupts pending",
-#         TODO: mip.SSIP and mip.SEIP are both writable in mip so can do it from there
+#         # TODO: mip.SSIP and mip.SEIP are both writable in mip so can do it from t
 #                     "RVTEST_SET_MEXT_INT",
 #                     "RVTEST_SET_MSW_INT",
 #                     *set_mtimer_int(r_mtime, r_mtimecmp, r_temp, r_temp2),
@@ -310,8 +310,8 @@ def _generate_wrs_resume_tests(test_data: TestData) -> list[str]:
 #                     f"LA(x{r_temp2}, scratch)",
 #                     f"lr.w x{r_temp}, (x{r_temp2})",
 #                     test_data.add_testcase("Interrupt_pending", coverpoint, covergroup),
-#                     "WRS.STO",
-#         TODO: also NTO
+#                     f"{wrs_ops}",
+#         # TODO: also NTO
 #                     "",
 #                 ]
 #             )

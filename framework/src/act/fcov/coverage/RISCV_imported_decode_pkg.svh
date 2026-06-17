@@ -767,7 +767,7 @@
   localparam [31:0] VLM_V              = 32'b000000101011?????000?????0000111;
 
   // The following vector load instructions are currently commented out because they
-  // conflict with the more specific versionds defined in RISCV_decode_pkg.svh.
+  // conflict with the more specific versions defined in RISCV_decode_pkg.svh.
   // UDB generates the more specific versions of these instructions, so once we
   // switch to generating this file from UDB we can drop the two layer approach
   // and use the output as is.

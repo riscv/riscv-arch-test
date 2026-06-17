@@ -3686,7 +3686,7 @@ covergroup Vls8_vloxei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -3940,7 +3940,7 @@ covergroup Vls8_vloxei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -4179,7 +4179,7 @@ covergroup Vls8_vloxei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -4437,7 +4437,7 @@ covergroup Vls8_vloxei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -4626,7 +4626,7 @@ covergroup Vls8_vloxseg2ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -4794,7 +4794,7 @@ covergroup Vls8_vloxseg2ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -4962,7 +4962,7 @@ covergroup Vls8_vloxseg2ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -5153,7 +5153,7 @@ covergroup Vls8_vloxseg2ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -5320,7 +5320,7 @@ covergroup Vls8_vloxseg3ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -5488,7 +5488,7 @@ covergroup Vls8_vloxseg3ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -5656,7 +5656,7 @@ covergroup Vls8_vloxseg3ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -5822,7 +5822,7 @@ covergroup Vls8_vloxseg3ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -6013,7 +6013,7 @@ covergroup Vls8_vloxseg4ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -6206,7 +6206,7 @@ covergroup Vls8_vloxseg4ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -6375,7 +6375,7 @@ covergroup Vls8_vloxseg4ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -6566,7 +6566,7 @@ covergroup Vls8_vloxseg4ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -6734,7 +6734,7 @@ covergroup Vls8_vloxseg5ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -6903,7 +6903,7 @@ covergroup Vls8_vloxseg5ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -7071,7 +7071,7 @@ covergroup Vls8_vloxseg5ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -7235,7 +7235,7 @@ covergroup Vls8_vloxseg5ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -7405,7 +7405,7 @@ covergroup Vls8_vloxseg6ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -7575,7 +7575,7 @@ covergroup Vls8_vloxseg6ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -7744,7 +7744,7 @@ covergroup Vls8_vloxseg6ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -7909,7 +7909,7 @@ covergroup Vls8_vloxseg6ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -8080,7 +8080,7 @@ covergroup Vls8_vloxseg7ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -8251,7 +8251,7 @@ covergroup Vls8_vloxseg7ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -8421,7 +8421,7 @@ covergroup Vls8_vloxseg7ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -8587,7 +8587,7 @@ covergroup Vls8_vloxseg7ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -8783,7 +8783,7 @@ covergroup Vls8_vloxseg8ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -8979,7 +8979,7 @@ covergroup Vls8_vloxseg8ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -9174,7 +9174,7 @@ covergroup Vls8_vloxseg8ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -9365,7 +9365,7 @@ covergroup Vls8_vloxseg8ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -20955,7 +20955,7 @@ covergroup Vls8_vsoxei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -21121,7 +21121,7 @@ covergroup Vls8_vsoxei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -21287,7 +21287,7 @@ covergroup Vls8_vsoxei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -21463,7 +21463,7 @@ covergroup Vls8_vsoxei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -21652,7 +21652,7 @@ covergroup Vls8_vsoxseg2ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -21820,7 +21820,7 @@ covergroup Vls8_vsoxseg2ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -21988,7 +21988,7 @@ covergroup Vls8_vsoxseg2ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -22189,7 +22189,7 @@ covergroup Vls8_vsoxseg2ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -22356,7 +22356,7 @@ covergroup Vls8_vsoxseg3ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -22524,7 +22524,7 @@ covergroup Vls8_vsoxseg3ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -22692,7 +22692,7 @@ covergroup Vls8_vsoxseg3ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -22869,7 +22869,7 @@ covergroup Vls8_vsoxseg3ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -23060,7 +23060,7 @@ covergroup Vls8_vsoxseg4ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -23253,7 +23253,7 @@ covergroup Vls8_vsoxseg4ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -23422,7 +23422,7 @@ covergroup Vls8_vsoxseg4ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -23625,7 +23625,7 @@ covergroup Vls8_vsoxseg4ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -23793,7 +23793,7 @@ covergroup Vls8_vsoxseg5ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -23962,7 +23962,7 @@ covergroup Vls8_vsoxseg5ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -24130,7 +24130,7 @@ covergroup Vls8_vsoxseg5ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -24307,7 +24307,7 @@ covergroup Vls8_vsoxseg5ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -24477,7 +24477,7 @@ covergroup Vls8_vsoxseg6ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -24647,7 +24647,7 @@ covergroup Vls8_vsoxseg6ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -24816,7 +24816,7 @@ covergroup Vls8_vsoxseg6ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -24995,7 +24995,7 @@ covergroup Vls8_vsoxseg6ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -25166,7 +25166,7 @@ covergroup Vls8_vsoxseg7ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -25337,7 +25337,7 @@ covergroup Vls8_vsoxseg7ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -25507,7 +25507,7 @@ covergroup Vls8_vsoxseg7ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -25688,7 +25688,7 @@ covergroup Vls8_vsoxseg7ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -25884,7 +25884,7 @@ covergroup Vls8_vsoxseg8ei16_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -26080,7 +26080,7 @@ covergroup Vls8_vsoxseg8ei32_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -26275,7 +26275,7 @@ covergroup Vls8_vsoxseg8ei64_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }
@@ -26482,7 +26482,7 @@ covergroup Vls8_vsoxseg8ei8_v_cg with function sample(ins_t ins);
 
     // Custom coverpoints for Vector indexed load stores with overlaps in the index register
 
-    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.vs2_val) iff (ins.trap == 0) {
+    index_register_data_overlap: coverpoint data_overlap(ins.hart, ins.issue, ins.current.insn[14:12], ins.current.vs2_val) iff (ins.trap == 0) {
         bins no_overlap = {0};
         bins overlap = {1};
     }

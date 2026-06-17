@@ -632,13 +632,7 @@ function string disassemble (logic [31:0] instrRaw);
     SM3P0: $sformat(decoded, "sm3p0 %s, %s", rd, rs1);
     SM3P1: $sformat(decoded, "sm3p1 %s, %s", rd, rs1);
     // Zca Extension
-    C_ADDI4SPN: begin
-        if (immCIWType != '0) begin
-            $sformat(decoded, "c.addi4spn %s, sp, %0d", rs2p, immCIWType);
-        end else begin
-            C_ILLEGAL: $sformat(decoded, "c.illegal");
-        end
-    end
+    C_ADDI4SPN: if (immCIWType != '0) $sformat(decoded, "c.addi4spn %s, sp, %0d", rs2p, immCIWType);
     C_LW:   $sformat(decoded, "c.lw %s, %0d(%s)", rs2p, immCLSType, rs1p);
     C_SW:   $sformat(decoded, "c.sw %s, %0d(%s)", rs2p, immCLSType, rs1p);
     C_NOP:  if(rdBits == '0) $sformat(decoded, "c.nop %0d", immCIType);

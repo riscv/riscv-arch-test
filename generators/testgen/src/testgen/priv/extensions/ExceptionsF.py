@@ -361,7 +361,7 @@ def _generate_mstatus_fs_illegal_instr_tests(test_data: TestData) -> list[str]:
 
 def _generate_mstatus_fs_csr_access_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "ExceptionsF_cg", "cp_mstatus_fs_csr_access"
-    clear_mask_reg, check_reg, set_mask_reg = test_data.int_regs.get_registers(3)
+    clear_mask_reg, check_reg = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(
@@ -369,7 +369,6 @@ def _generate_mstatus_fs_csr_access_tests(test_data: TestData) -> list[str]:
             "Test that access to floating point CSRs trap when mstatus.fs is set to 0 (Off)",
         ),
         f"LI(x{clear_mask_reg}, 0x6000) # MSTATUS_FS mask",
-        f"LI(x{set_mask_reg}, 0) # MSTATUS_FS = Off",
     ]
 
     for csr in ["fcsr", "frm", "fflags"]:
@@ -377,7 +376,6 @@ def _generate_mstatus_fs_csr_access_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"csrc mstatus, x{clear_mask_reg}",
-                    f"csrs mstatus, x{set_mask_reg}",
                     f"LI(x{check_reg}, -1)",
                     test_data.add_testcase(f"{csr_instr}{csr}00{coverpoint[2:]}", coverpoint, covergroup),
                 ]
@@ -386,8 +384,15 @@ def _generate_mstatus_fs_csr_access_tests(test_data: TestData) -> list[str]:
                 lines.append(f"{csr_instr}(x{check_reg}, {csr})")
             else:
                 lines.append(f"{csr_instr}({csr}, x{check_reg})")
+            lines.extend(
+                [
+                    f"csrs mstatus, x{clear_mask_reg}",
+                    gen_csr_read_sigupd(check_reg, (csr, None), test_data),
+                    f"csrc mstatus, x{clear_mask_reg}",
+                ]
+            )
 
-    test_data.int_regs.return_registers([clear_mask_reg, check_reg, set_mask_reg])
+    test_data.int_regs.return_registers([clear_mask_reg, check_reg])
     return lines
 
 

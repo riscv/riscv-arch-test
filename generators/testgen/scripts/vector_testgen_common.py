@@ -1614,6 +1614,7 @@ def getPrivExtraDefines(sew):
         "#define rvtest_strap_routine",
         "#define RVTEST_PRIV_TEST",
         f"#define SEWMIN {minSEW_MIN}",
+        f"#define SEWMINSIZE e{minSEW_MIN}",
         f"#define ELEN {maxELEN}",
         f"#define SEWSIZE {sewsize}",
         f"#define VLESEWMIN {vle}",

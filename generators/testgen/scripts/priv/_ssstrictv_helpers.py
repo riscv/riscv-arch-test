@@ -237,7 +237,7 @@ def override_registers(instruction_data: list, override_vd: int | None = None, o
 
 
 def issue_simple_test(instruction: str, cp: str, *,
-                       sew: int | None = None, lmul: int = 1, vl: int = 1,
+                       sew: int | None = None, lmul: int | str = 1, vl: int = 1,
                        vstart: int | None = None,
                        maskval: str | None = "v0.t",
                        override_vd: int | None = None,
@@ -259,18 +259,22 @@ def issue_simple_test(instruction: str, cp: str, *,
         eew = common.getInstructionEEW(instruction) or common.minSEW_MIN
         sew = eew
 
+    # Default fractional lmul to take up one register
+    bounded_lmul = lmul if isinstance(lmul, int) else 1
+
     instruction_data = common.randomizeVectorInstructionData(
         instruction, sew, common.getBaseSuiteTestCount(),
         vd_val_pointer="vector_random",
         vs2_val_pointer="vector_random",
         vs1_val_pointer="vector_random",
+        lmul= bounded_lmul,
     )
     override_registers(instruction_data, override_vd, override_vs1, override_vs2, override_vs3, override_rd, override_imm)
     common.remapPrivScalarRegs(instruction_data, instruction)
 
     common.writeLine(f"\n# Testcase {cp}")
     scratch = common.pickPrivScratch(instruction_data[1])
-    emit_vsetivli(scratch, vl=vl, sew=sew, lmul=lmul)
+    emit_vsetivli(scratch, vl=vl, sew=sew, lmul=bounded_lmul)
     init_operand_regs(instruction, instruction_data[0], sew, scratch, regs=init_regs)
     if instruction in common.indexed_ls_ins:
         make_valid_indices(instruction, instruction_data, sew, bounded_lmul, scratch)
@@ -278,7 +282,7 @@ def issue_simple_test(instruction: str, cp: str, *,
     # snapshot used by SAMPLE_BEFORE includes vtype/vl/vstart. The intervening
     # vle*.v ops do not write those CSRs, and the rvvi shim does not carry
     # forward unchanged CSR values (see simulator-issues/005).
-    emit_vsetivli(scratch, vl=vl, sew=sew, lmul=lmul)
+    emit_vsetivli(scratch, vl=vl, sew=sew, lmul=bounded_lmul)
     if vstart is not None:
         common.writeLine(f"li x{scratch}, {vstart}", f"# vstart override = {vstart}")
         common.writeLine(f"csrw vstart, x{scratch}", "# install non-zero vstart")
@@ -286,7 +290,7 @@ def issue_simple_test(instruction: str, cp: str, *,
     testline, vd, rd = build_testline(
         instruction, instruction_data, maskval=maskval,
     )
-    sig_lmul, sig_wr = sig_params(instruction, instruction_data, lmul=lmul)
+    sig_lmul, sig_wr = sig_params(instruction, instruction_data, lmul=bounded_lmul)
     write_lmul = lmul if isinstance(lmul, int) else 1
 
     common.add_testcase_string(cp, instruction)

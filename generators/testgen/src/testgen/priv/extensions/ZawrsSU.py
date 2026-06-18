@@ -301,6 +301,7 @@ def _generate_wrs_resume_tests(test_data: TestData) -> list[str]:
 #                     "RVTEST_SET_MEXT_INT",
 #                     "RVTEST_SET_MSW_INT",
 #                     *set_mtimer_int(r_mtime, r_mtimecmp, r_temp, r_temp2),
+#                     *set_stimer_mmode,
 #                 ]
 #             )
 
@@ -322,6 +323,7 @@ def _generate_wrs_resume_tests(test_data: TestData) -> list[str]:
 #                     "RVTEST_CLR_MEXT_INT",
 #                     "RVTEST_CLR_MSW_INT",
 #                     *clr_mtimer_int(r_temp, r_mtimecmp),
+#             # TODO: Clear all 6
 #                 ]
 #             )
 #             if priv_mode == "S":

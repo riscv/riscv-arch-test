@@ -19,6 +19,7 @@ the test must actually take an illegal-instruction trap.
 
 from __future__ import annotations
 
+import math
 from random import seed as set_seed
 from typing import Iterable
 
@@ -184,6 +185,33 @@ def make_dest_zero_overrides(instruction: str) -> dict:
     return {}
 
 
+def make_valid_indices(instruction: str, instruction_data: list, sew: int, lmul: int, scratch: int):
+    # Logic Taken From loadVecReg. The idea is to stop load access faults on instructions that don't trap
+    vec_data, scalar_data, *_ = instruction_data
+    register = vec_data['vs2']['reg']
+
+    vtypeReg = common.pickPrivScratch(scalar_data, (scratch,))
+    vlmaxReg = common.pickPrivScratch(scalar_data, (scratch, vtypeReg))
+    avlReg = scratch
+
+    if   sew == 8  : sew_aligned = -1#"0x1F"
+    elif sew == 16 : sew_aligned = -2#"0x1E"
+    elif sew == 32 : sew_aligned = -4#"0x1C"
+    elif sew == 64 : sew_aligned = -8#"0x18"
+
+    eew = common.getInstructionEEW(instruction)
+    vs2_emul = math.ceil(lmul * eew / sew)
+
+    common.writeLine(f"csrr x{vtypeReg}, vtype",                                     "# save vtype register for after load")
+    common.writeLine(f"csrr x{avlReg}, vl",                                          "# save vl register for after load")
+    common.writeLine(f"vsetvl x{vlmaxReg}, x0, x{vtypeReg}",                         "# set vl to vlmax")
+    common.writeLine(f"add x{vlmaxReg}, x{vlmaxReg}, x{vlmaxReg}",                   "# save vlmax * 2")
+    common.writeLine(f"vsetvli x0, x{avlReg}, e{eew}, m{common.getLmulFlag(vs2_emul)}, tu, mu", "# setting sew to vs2 eew")
+    # spec zero-extends index elements to XLEN; use unsigned remainder so
+    # offsets stay non-negative in [0, 2*vlmax) and never alias to huge addrs.
+    common.writeLine(f"vremu.vx v{register}, v{register}, x{vlmaxReg}",              "# ensure all values are within [0, 2*vlmax)")
+    common.writeLine(f"vand.vi v{register}, v{register}, {sew_aligned}",             "# sew-aligning elements")
+
 
 def override_registers(instruction_data: list, override_vd: int | None = None, override_vs1: int | None = None,
                        override_vs2: int | None = None, override_vs3: int | None = None, override_rd: int | None = None,
@@ -244,6 +272,8 @@ def issue_simple_test(instruction: str, cp: str, *,
     scratch = common.pickPrivScratch(instruction_data[1])
     emit_vsetivli(scratch, vl=vl, sew=sew, lmul=lmul)
     init_operand_regs(instruction, instruction_data[0], sew, scratch, regs=init_regs)
+    if instruction in common.indexed_ls_ins:
+        make_valid_indices(instruction, instruction_data, sew, bounded_lmul, scratch)
     # Re-emit vsetivli RIGHT BEFORE the test so the previous-instruction CSR
     # snapshot used by SAMPLE_BEFORE includes vtype/vl/vstart. The intervening
     # vle*.v ops do not write those CSRs, and the rvvi shim does not carry

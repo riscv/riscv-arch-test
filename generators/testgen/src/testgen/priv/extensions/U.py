@@ -94,7 +94,7 @@ def _generate_ucsr_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("U", required_extensions=["Sm", "U", "Zicsr"])
+@add_priv_test_generator("U", required_extensions=["U", "Zicsr"])
 def make_u(test_data: TestData) -> list[str]:
     """Generate tests for U user-mode testsuite."""
     lines: list[str] = []

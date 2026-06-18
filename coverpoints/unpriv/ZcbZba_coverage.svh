@@ -12,15 +12,16 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZCBZBA
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
 covergroup ZcbZba_c_zext_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "c.zext.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins zero     = {0};
             bins one      = {32'b00000000000000000000000000000001};
             bins two      = {32'b00000000000000000000000000000010};
@@ -52,16 +53,18 @@ covergroup ZcbZba_c_zext_w_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
 endgroup
 // ---------------------
 `endif
 function void zcbzba_sample(int hart, int issue, ins_t ins);
 
     case (traceDataQ[hart][issue][0].inst_name)
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
         "c.zext.w"     : begin
             ZcbZba_c_zext_w_cg.sample(ins);
         end

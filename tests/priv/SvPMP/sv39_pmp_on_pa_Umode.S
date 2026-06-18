@@ -22,15 +22,13 @@
 # REQUIRED_EXTENSIONS: [I, Sv39, Sm]
 # params:
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv39_pmp_on_pa_Umode.S"
 #define SIGUPD_COUNT 35
 #define TRAP_SIGUPD_COUNT 60
-#define rvtest_mtrap_routine
-#define rvtest_strap_routine
-#define RVTEST_PRIV_TEST
+#define BOOT_TO_MMODE
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"
@@ -103,10 +101,10 @@ main:
   LA (t2, rvtest_data_1)    // Configure test region as NAPOT
   srl t2, t2, PMP_SHIFT
 
-  .if (RVMODEL_PMP_GRAIN <= 3)                    // G=3 -> 32 Bytes (Minimum size of test region)
+  .if (UDB_PMP_GRANULARITY <= 5)                    // G=3 -> 32 Bytes (Minimum size of test region)
       LI (t1, 0x3)                                // Range = 2^(2+3) = 32 Bytes
   .else
-      LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)      // Range = 2^(G+3) Bytes
+      LI (t1, ((1<<(UDB_PMP_GRANULARITY - 2))-1)>>1)      // Range = 2^(G+3) Bytes
   .endif
 
   or t2, t2, t1
@@ -129,7 +127,7 @@ main:
 
   // Save area setup for code region
   csrr a0, mscratch
-  SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code)
+  SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL2)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                               Test Cases Start from here
@@ -279,7 +277,7 @@ RVTEST_DATA_BEGIN
 //---------------------------------------------------------------------------------------------------------------------------------
 // Physical Address region under testing for LEVEL 0, 1 and 2
 .align 12
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 rvtest_data_1:
   nop
   addi a4, a2, 4
@@ -290,7 +288,7 @@ rvtest_data_1:
   nop
   jr ra
 
-.align (RVMODEL_PMP_GRAIN+2)
+.align (UDB_PMP_GRANULARITY)
 //---------------------------------------------------------------------------------------------------------------------------------
 
 // Page Table

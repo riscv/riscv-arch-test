@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zfh', 'D', 'F']
 # params:
 #   MXLEN: 32
-# MARCH: rv32ifd_zicsr_zfh
+# MARCH: rv32ifd_zicsr_zifencei_zfh
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -20,7 +20,7 @@
 #define SIGUPD_COUNT 139
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define RVTEST_FP
+
 
 // Include framework macros
 #include "riscv_arch_test.h"

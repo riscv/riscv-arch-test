@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zknh']
 # params:
 #   MXLEN: 32
-# MARCH: rv32i_zicsr_zknh
+# MARCH: rv32i_zicsr_zifencei_zknh
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -3257,6 +3257,8 @@ Zknh_sha512sig0l_cg_cmp_rd_rs1_rs2_b31:
   sha512sig0l x31, x31, x31 # perform operation
   # Check if x31 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x11, x5, x4, x31, Zknh_sha512sig0l_cg_cmp_rd_rs1_rs2_b31, Zknh_sha512sig0l_cg_cmp_rd_rs1_rs2_b31_str)
+
+  mv x2, x11 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

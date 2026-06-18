@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zbs']
 # params:
 #   MXLEN: 32
-# MARCH: rv32i_zicsr_zbs
+# MARCH: rv32i_zicsr_zifencei_zbs
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -1476,6 +1476,8 @@ Zbs_bclri_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x1f:
   bclri x23, x28, 31 # perform operation
   # Check if x23 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x23, Zbs_bclri_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x1f, Zbs_bclri_cg_cr_rs1_imm_edges_uimm_rs1val_0x55555555_immval_0x1f_str)
+
+  mv x2, x18 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

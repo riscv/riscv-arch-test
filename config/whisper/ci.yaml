@@ -2,7 +2,15 @@
 # Jordan Carlin jcarlin@hmc.edu April 2026
 # CI configuration for Whisper simulator
 
+# SsstrictSm, SsstrictS, SsstrictU excluded because of Sail bugs and not all instructions in whisper-max supported by Sail
+# 1. incorrect decoding of add.uw instruction) Link: https://github.com/riscv/sail-riscv/issues/1711
+# 2. vmv<nr>r.v instructions fail to trap when vill=1 Link: https://github.com/riscv/sail-riscv/issues/1709
+# 3. Add configuration parameter for vsetvli/vsetvl behavior on reserved vtype values Link: https://github.com/riscv/sail-riscv/issues/1699
+# InterruptsSm excluded due to Whisper bug
+# 1. setting mtimecmp equal to mtime using sd does not trigger machine timer interrupt: https://github.com/tenstorrent/whisper/issues/26
+# Smstateen will be added back once issue related srmcfg in whisper is resolved
 ci_enabled: true
-exclude_extensions: "Sm,S,InterruptsSm,InterruptsU,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,SvaduPMP,SvPMP,SvZicbo,SvPMPZicbo,Zalrsc"
+# TODO: Remove SsstrictV when sail SsstrictV is implemented
+exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,ExceptionsZalrsc,ExceptionsZaamo,Svadu,SvaduPMP,Zalrsc,ExceptionsSvZaamo,ExceptionsSvZalrsc,SsstrictV,Smstateen"
 install_script: ".github/scripts/install-whisper.sh"
 apt_packages: "libboost-program-options-dev"

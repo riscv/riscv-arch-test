@@ -18,6 +18,7 @@ covergroup Zifencei_fence_i_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     // Custom coverpoints for fence.i
 
     // the test should do some self-modifying code and then a fence.i and then run the code
@@ -30,6 +31,7 @@ covergroup Zifencei_fence_i_cg with function sample(ins_t ins);
         bins fencei_nonzerord  = {32'h0000108f}; // fence.i with nonzero rd ignores this field
         bins fencei_nonzerof12 = {32'h0010100f}; // fence.i with nonzero funct12 ignores this field
     }
+
 endgroup
 // ---------------------
 function void zifencei_sample(int hart, int issue, ins_t ins);

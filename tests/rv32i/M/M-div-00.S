@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'M']
 # params:
 #   MXLEN: 32
-# MARCH: rv32im_zicsr
+# MARCH: rv32im_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -3270,6 +3270,8 @@ M_div_cg_cmp_rd_rs1_rs2_b31:
   div x31, x31, x31 # perform operation
   # Check if x31 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x11, x5, x4, x31, M_div_cg_cmp_rd_rs1_rs2_b31, M_div_cg_cmp_rd_rs1_rs2_b31_str)
+
+  mv x2, x11 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

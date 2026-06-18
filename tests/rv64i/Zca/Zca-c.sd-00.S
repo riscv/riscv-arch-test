@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zca']
 # params:
 #   MXLEN: 64
-# MARCH: rv64i_zicsr_zca
+# MARCH: rv64i_zicsr_zifencei_zca
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -1389,6 +1389,8 @@ Zca_c_sd_cg_cp_imm_mul_8_b0xf8:
   nop
   nop
 #endif
+
+  mv x2, x10 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

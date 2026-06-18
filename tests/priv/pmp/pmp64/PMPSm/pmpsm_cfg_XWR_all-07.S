@@ -23,20 +23,17 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I']
+# REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_cfg_XWR_all-04.S"
+#define TEST_FILE "pmpsm_cfg_XWR_all-07.S"
 #define SIGUPD_COUNT 400
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 
@@ -51,10 +48,12 @@ RVTEST_BEGIN
     LA (a4, \ADDRESS)
     LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     LA(x1, 1f)                            // Store the return Address in x1
+    \TEST_CASE\()_12:
     jalr ra, 0(a4)
     nop
 1:
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_12, test_12_str)
 
     // Store Access Check
     LA(a5, \ADDRESS)                                         // Address to be verified
@@ -111,14 +110,14 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -134,9 +133,9 @@ main:
 
 #define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
 #define PMPADDRESS            TEST_FOR_EXECUTION                              // Test section address
-#if RVMODEL_PMP_GRAIN != 0
-    #define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
-    #define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)) - 1
+#if UDB_PMP_GRANULARITY != 2
+    #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
+    #define PMP_REGION_SIZE     (1 << (UDB_PMP_GRANULARITY - 3)) - 1
 #else
     #define PMP_MASK            ~0
     #define PMP_REGION_SIZE     0
@@ -153,15 +152,15 @@ main:
     LA(x4, PMPADDRESS)
     srl x4, x4, PMP_SHIFT
 
-.if RVMODEL_PMP_GRAIN != 0
-    li t0, PMP_MASK
+.if UDB_PMP_GRANULARITY != 2
+    LI(t0, PMP_MASK)
     and x4, x4, t0
-    li t0, PMP_REGION_SIZE
+    LI(t0, PMP_REGION_SIZE)
     or x4, x4, t0
 .endif
 
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x4
     .set pmpaddri, pmpaddri+1
     .endr
@@ -250,23 +249,12 @@ main:
 
     j exit                                                        // Verification Complete, exit the test
 
-.align 12
-TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
-    nop
-    .endr
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 exit:
 
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpm_cfg_XWR_all_sb\""
@@ -280,6 +268,24 @@ test_8_str: .string "\"test: 8; cp: pmpm_cfg_XWR_all_lhu\""
 test_9_str: .string "\"test: 9; cp: pmpm_cfg_XWR_all_lw\""
 test_10_str: .string "\"test: 10; cp: pmpm_cfg_XWR_all_lwu\""
 test_11_str: .string "\"test: 11; cp: pmpm_cfg_XWR_all_ld\""
+test_12_str: .string "\"test: 12; cp: pmpm_cfg_XWR_all_jalr\""
+
+.align 12
+.align (UDB_PMP_GRANULARITY)
+TEST_FOR_EXECUTION_0:
+    jr ra
+
+.align (UDB_PMP_GRANULARITY)
+TEST_FOR_EXECUTION:
+    .rept (1<<(UDB_PMP_GRANULARITY))
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
+
 
 RVTEST_DATA_END
 

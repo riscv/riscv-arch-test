@@ -26,20 +26,17 @@
 
 #define SKIP_MEPC
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I']
+# REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv32i_zicsr
+# MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "pmpsm_cfg_tor_all.S"
 #define SIGUPD_COUNT 50
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -62,14 +59,14 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/4
+    .rept UDB_NUM_PMP_ENTRIES/4
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+1
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -176,83 +173,92 @@ main:
     VERIFICATION_RWX    TEST_FOR_EXECUTION_12, test_13
     VERIFICATION_RWX    TEST_FOR_EXECUTION_13, test_14
     VERIFICATION_RWX    TEST_FOR_EXECUTION_14, test_15
+RVTEST_CODE_END
+RVTEST_DATA_BEGIN
+.align 4
 
-    j exit                                                      // Verification Complete, exit the test
+// Test case strings for reporting
+test_1_str: .string "\"test: 1; cp: pmpm_cfg_tor_all_lw\""
 
-.align 13
-.align (RVMODEL_PMP_GRAIN+2)
+
+.align 12
+TEST_FOR_EXECUTION_X:
+    .rept 1024
+    jr ra
+    .endr
+
 TEST_FOR_EXECUTION_0:                       // Adding nops in TOR Region from 0x80001000 to 0x80001000 + g
-    .rept ((1<<(RVMODEL_PMP_GRAIN+2))/4)
+    .rept ((1<<(UDB_PMP_GRANULARITY))/4)
     nop
     .endr
 
 TEST_FOR_EXECUTION_1:                       // Adding nops in TOR Region from 0x80001000 + g to 0x80001000 + 3g
-    .rept (2*((1<<(RVMODEL_PMP_GRAIN+2))/4))
+    .rept (2*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_2:                       // Adding nops in TOR Region from 0x80001000 + 3g to 0x80001000 + 6g
-    .rept (3*((1<<(RVMODEL_PMP_GRAIN+2))/4))
+    .rept (3*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_3:                       // Adding nops in TOR Region from 0x80001000 + 6g to 0x80001000 + 10g
-    .rept (4*((1<<(RVMODEL_PMP_GRAIN+2))/4))
+    .rept (4*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_4:                       // Adding nops in TOR Region from 0x80001000 + 10g to 0x80001000 + 15g
-    .rept (5*((1<<(RVMODEL_PMP_GRAIN+2))/4))
+    .rept (5*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_5:                       // Adding nops in TOR Region from 0x80001000 + 15g to 0x80001000 + 21g
-    .rept (6*((1<<(RVMODEL_PMP_GRAIN+2))/4))
+    .rept (6*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_6:                       // Adding nops in TOR Region from 0x80001000 + 21g to 0x80001000 + 28g
-    .rept (7*((1<<(RVMODEL_PMP_GRAIN+2))/4))
+    .rept (7*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_7:                       // Adding nops in TOR Region from 0x80001000 + 28g to 0x80001000 + 36g
-    .rept (8*((1<<(RVMODEL_PMP_GRAIN+2))/4))
+    .rept (8*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_8:                       // Adding nops in TOR Region from 0x80001000 + 36g to 0x80001000 + 45g
-    .rept (9*((1<<(RVMODEL_PMP_GRAIN+2))/4))
+    .rept (9*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_9:                       // Adding nops in TOR Region from 0x80001000 + 45g to 0x80001000 + 55g
-    .rept (10*((1<<(RVMODEL_PMP_GRAIN+2))/4))
+    .rept (10*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_10:                      // Adding nops in TOR Region from 0x80001000 + 55g to 0x80001000 + 66g
-    .rept (11*((1<<(RVMODEL_PMP_GRAIN+2))/4))
+    .rept (11*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_11:                      // Adding nops in TOR Region from 0x80001000 + 66g to 0x80001000 + 78g
-    .rept (12*((1<<(RVMODEL_PMP_GRAIN+2))/4))
+    .rept (12*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_12:                      // Adding nops in TOR Region from 0x80001000 + 78g to 0x80001000 + 91g
-    .rept (13*((1<<(RVMODEL_PMP_GRAIN+2))/4))
+    .rept (13*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_13:                      // Adding nops in TOR Region from 0x80001000 + 91g to 0x80001000 + 105g
-    .rept (14*((1<<(RVMODEL_PMP_GRAIN+2))/4))
+    .rept (14*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_14:                      // Adding nops in TOR Region from 0x80001000 + 105g to 0x80001000 + 120g
-    .rept (15*((1<<(RVMODEL_PMP_GRAIN+2))/4))
+    .rept (15*((1<<(UDB_PMP_GRANULARITY))/4))
     nop
     .endr
 
@@ -260,15 +266,6 @@ RETURN_INSTRUCTION:
     nop
     nop
     jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
-
-RVTEST_CODE_END
-RVTEST_DATA_BEGIN
-.align 4
-
-// Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: pmpm_cfg_tor_all_lw\""
 
 RVTEST_DATA_END
 

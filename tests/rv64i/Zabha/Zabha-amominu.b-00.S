@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zabha']
 # params:
 #   MXLEN: 64
-# MARCH: rv64i_zicsr_zabha
+# MARCH: rv64i_zicsr_zifencei_zabha
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -3366,6 +3366,8 @@ Zabha_amominu_b_cg_cp_align_byte_b7:
   # Check if x23 contains the expected result. x17 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x17, x8, x7, x23, Zabha_amominu_b_cg_cp_align_byte_b7, Zabha_amominu_b_cg_cp_align_byte_b7_str)
 
+
+  mv x2, x17 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

@@ -29,20 +29,17 @@
 
 #define SKIP_MEPC
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I']
+# REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv32i_zicsr
+# MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "pmpsm_priority.S"
-#define SIGUPD_COUNT 50
+#define SIGUPD_COUNT 200
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -50,7 +47,7 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define g   (1 << (RVMODEL_PMP_GRAIN + 2))
+#define g   (1 << (UDB_PMP_GRANULARITY))
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
@@ -58,12 +55,14 @@ RVTEST_BEGIN
     // Execution Access Check
     LA (a4, \ADDRESS)
     LA(x1, 1f)                          // Store the return Address in x1
+    \TEST_CASE\()_3:
     jalr ra, 0(a4)
     nop
     nop
 1:
     nop
-    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
+
 
    LI(a4, NOP)                                              // Value to write (NOP)
     // Store Access Check
@@ -88,14 +87,14 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/4
+    .rept UDB_NUM_PMP_ENTRIES/4
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+1
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -118,7 +117,8 @@ main:
 
     LA(x4, TEST_FOR_EXECUTION)
     srl x4, x4, PMP_SHIFT
-    addi x5, x0, g
+    LI(t0, g)
+    add x5, x0, t0
 
     // REGIONSTART in even PMPADDR
     .set pmpaddri, CSR_PMPADDR0
@@ -131,7 +131,8 @@ main:
     LA(x5, TEST_FOR_EXECUTION)
     .set pmpaddri, CSR_PMPADDR0+1
     .rept 7
-    addi x5, x5, g
+    LI(t0, g)
+    add x5, x5, t0
     srl x6, x5, PMP_SHIFT
     csrw pmpaddri, x6
     .set pmpaddri, pmpaddri+2
@@ -144,7 +145,8 @@ main:
     csrw pmpcfg1, x5
     LI(x4, (PMPREGION_LXWR_1111|PMPREGION_LXWR_1001))
     csrw pmpcfg2, x4
-    LI(x5, PMPREGION_LXWR_1000)
+//    LI(x5, PMPREGION_LXWR_1000)
+    LI(x5, (PMPREGION_LXWR_1000 | PMP_REGION_GLOBAL))
     csrw pmpcfg3, x5
 
 //                                          Verification Section
@@ -156,12 +158,16 @@ main:
 
     VERIFICATION_RWX   (TEST_FOR_EXECUTION + 2*g - 4), test_2
 
+// For larger UDB_PMP_GRANUMARITY, it is raising
+// relocation truncation error to fit: R_RISCV_JAL
+// Regions get so large, trap handler, RVMODEL macros,
+// and failure macros gets far apart and start raising errors
+#if UDB_PMP_GRANULARITY == 2
 // Test Case: 3 : Accessing at end of region with WR Permissions
 
     VERIFICATION_RWX   (TEST_FOR_EXECUTION + 3*g - 4), test_3
 
 // Test Case: 4 : Accessing at end of region with X Permissions
-
     VERIFICATION_RWX   (TEST_FOR_EXECUTION + 4*g - 4), test_4
 
 // Test Case: 5 : Accessing at end of region with R Permissions
@@ -172,25 +178,10 @@ main:
 
     VERIFICATION_RWX   (TEST_FOR_EXECUTION + 6*g - 4), test_6
 
-// Test Case: 6 : Accessing at end of region with No Permissions
+// Test Case: 7 : Accessing at end of region with No Permissions
 
     VERIFICATION_RWX   (TEST_FOR_EXECUTION + 7*g - 4), test_7
-
-    j exit                                                      // Verification Complete, exit the test
-
-.align 13
-TEST_FOR_EXECUTION:     // Largest Region of size 7*g
-    .rept 7*(1<<(RVMODEL_PMP_GRAIN+2))
-    nop
-    .endr
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
-
+#endif
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
@@ -199,6 +190,32 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpm_priority_sw\""
 test_2_str: .string "\"test: 2; cp: pmpm_priority_lw\""
+test_3_str: .string "\"test: 3; cp: pmpm_priority_jalr\""
+
+
+.align 12
+TEST_FOR_EXECUTION_0:
+    .rept 1024
+    jr ra
+    .endr
+
+TEST_FOR_EXECUTION:
+// For larger UDB_PMP_GRANUMARITY, it is raising
+// relocation truncation error to fit: R_RISCV_JAL
+// Regions get so large, trap handler, RVMODEL macros,
+// and failure macros gets far apart and start raising errors
+#if UDB_PMP_GRANULARITY == 2
+    .rept (8*(1<<(UDB_PMP_GRANULARITY)))
+#else
+    .rept (2*(1<<(UDB_PMP_GRANULARITY)))
+#endif
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

@@ -7,19 +7,18 @@
 
 #define RVMODEL_DATA_SECTION
 
+#define STANDARD_SM_SUPPORTED
+
 ##### STARTUP #####
-/*
- * Perform boot operations.
- * CV32E40P resets mcountinhibit=0xd (all counters inhibited). Clear it so
- * cycle/instret increment as Zicntr tests expect.
- * .option arch, +zicsr is needed because I tests compile with -march=rv32i
- * which does not include Zicsr (binutils >= 2.38).
- */
-#define RVMODEL_BOOT \
-  .option push           ;\
-  .option arch, +zicsr   ;\
-  csrwi mcountinhibit, 0 ;\
-  .option pop            ;
+//#define RVMODEL_BOOT \
+
+// Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
+// if defined.  For most DUTs, the default should work and this macro
+// should not be defined.  If no M-mode or CSRs are implemented, define this
+// macro as blank to bypass the boot process.  If a nonconforming
+// M-mode is implemented, define this macro to set up the necessary
+// state in a fashion similar to RVTEST_BOOT_TO_MMODE.
+//#define RVMODEL_BOOT_TO_MMODE
 
 # Address to use for load/store fault tests that should cause an access fault on the DUT.
 // This DUT does not generate access faults.  Comment out RVMODEL_ACCESS_FAULT_ADDRESS to prevent testing them.
@@ -67,28 +66,34 @@
 #define RVMODEL_INTERRUPT_LATENCY 10
 
 ##### Machine Timer #####
+#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
 
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
-/*
- * NOTE: The following parameters are intentionally left empty.
- *
- * Running 'make CONFIG_FILES=' will include Machine-mode (sm) tests that
- * will FAIL because these platform-level memory-mapped registers are
- * not defined. This is a temporary state.
- *
- * To properly run the suite by excluding these specific tests (the recommended
- * workaround), refer to the instructions here:
- * https://github.com/riscv/riscv-arch-test/issues/1135#issuecomment-4140522435
- */
-#define RVMODEL_MTIME_ADDRESS
-#define RVMODEL_MTIMECMP_ADDRESS
+
+#define RVMODEL_MTIME_ADDRESS     0x0200BFF8
+#define RVMODEL_MTIMECMP_ADDRESS  0x02004000
 
 ##### Machine Interrupts #####
 
-#define RVMODEL_SET_MEXT_INT(_R1, _R2)
-#define RVMODEL_CLR_MEXT_INT(_R1, _R2)
-#define RVMODEL_SET_MSW_INT(_R1, _R2)
-#define RVMODEL_CLR_MSW_INT(_R1, _R2)
+#define RVMODEL_SET_MEXT_INT(_R1, _R2)                                  \
+    li _R1, 0x80000800           ; /* set | MEI (bit 11) */             \
+    li _R2, 0x15000024           ; /* simple_interrupt_generator + 4 */ \
+    sw _R1, 0(_R2)
+
+#define RVMODEL_CLR_MEXT_INT(_R1, _R2)                                  \
+    li _R1, 0x00000800           ; /* clear | MEI (bit 11) */           \
+    li _R2, 0x15000024           ;                                      \
+    sw _R1, 0(_R2)
+
+#define RVMODEL_SET_MSW_INT(_R1, _R2)                                   \
+    li _R1, 0x80000008           ; /* set | MSI (bit 3) */              \
+    li _R2, 0x15000024           ;                                      \
+    sw _R1, 0(_R2)
+
+#define RVMODEL_CLR_MSW_INT(_R1, _R2)                                   \
+    li _R1, 0x00000008           ; /* clear | MSI (bit 3) */            \
+    li _R2, 0x15000024           ;                                      \
+    sw _R1, 0(_R2)
 
 ##### Supervisor Interrupts #####
 

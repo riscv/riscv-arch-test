@@ -36,37 +36,49 @@
     slli _PAR, _PAR, (RISCV_PGLEVEL_BITS * level + RISCV_PGSHIFT) ;\
     LI(_TR0, ((1 << RISCV_PGLEVEL_BITS) - 1))                     ;\
     and _VAR, _VAR, _TR0                                          ;\
-    slli _VAR, _VAR, ((XLEN >> 5)+1)                              ;\
+    slli _VAR, _VAR, ((UDB_MXLEN >> 5)+1)                         ;\
     add _TR1, _TR1, _VAR                                          ;\
     srli _PAR, _PAR, 12                                           ;\
     slli _PAR, _PAR, 10                                           ;\
     or _PAR, _PAR, _PR                                            ;\
     SREG _PAR, 0(_TR1);
 
-// Appends 12-bit page offset from PA to VA, and stores it
-// to S save area; a0 must point to M save area
-#define SAVE_AREA_SETUP(VA, PA_LBL, _REG_NAME)                  ;\
+// Replaces page offset of VA with PA page offset (depending on
+// the PAGE_LEVEL) and stores it to S save area. a0 must
+// point to M save area. t0 and t1 are clobbered
+#define SAVE_AREA_SETUP(VA, PA_LBL, _REG_NAME, PAGE_LEVEL)      ;\
+    .if (__riscv_xlen == 32)                                    ;\
+        .set PAGE_OFFSET_SHIFT, (PAGE_LEVEL*10)+12              ;\
+    .else                                                       ;\
+        .set PAGE_OFFSET_SHIFT, (PAGE_LEVEL*9)+12               ;\
+    .endif                                                      ;\
     LI(  t0, VA)                                                ;\
+    srli t0, t0, PAGE_OFFSET_SHIFT                              ;\
+    slli t0, t0, PAGE_OFFSET_SHIFT                              ;\
     LA(  t1, PA_LBL)                                            ;\
-    srli t0, t0, 12                                             ;\
-    slli t0, t0, 12                                             ;\
-    LI(  t2, 0xFFF)                                             ;\
-    and  t2, t1, t2                                             ;\
-    or   t2, t0, t2                                             ;\
-    SREG t2, _REG_NAME##_bgn_off+1*sv_area_sz(a0)               ;
+    slli t1, t1, __riscv_xlen-PAGE_OFFSET_SHIFT                 ;\
+    srli t1, t1, __riscv_xlen-PAGE_OFFSET_SHIFT                 ;\
+    or   t0, t0, t1                                             ;\
+    SREG t0, _REG_NAME##_bgn_off+1*sv_area_sz(a0)               ;
 
-// Appends 12-bit page offset from PA to VA, and stores it
-// to V save area; a0 must point to M save area
-#define GUEST_SAVE_AREA_SETUP(VA, PA_LBL, _REG_NAME)            ;\
+// Replaces page offset of VA with PA page offset (depending on
+// the PAGE_LEVEL) and stores it to V save area. a0 must
+// point to M save area. t0 and t1 are clobbered
+#define GUEST_SAVE_AREA_SETUP(VA, PA_LBL, _REG_NAME, PAGE_LEVEL);\
+    .if (__riscv_xlen == 32)                                    ;\
+        .set PAGE_OFFSET_SHIFT, (PAGE_LEVEL*10)+12              ;\
+    .else                                                       ;\
+        .set PAGE_OFFSET_SHIFT, (PAGE_LEVEL*9)+12               ;\
+    .endif                                                      ;\
     LI(  t0, VA)                                                ;\
+    srli t0, t0, PAGE_OFFSET_SHIFT                              ;\
+    slli t0, t0, PAGE_OFFSET_SHIFT                              ;\
     LA(  t1, PA_LBL)                                            ;\
-    srli t0, t0, 12                                             ;\
-    slli t0, t0, 12                                             ;\
-    LI(  t2, 0xFFF)                                             ;\
-    and  t2, t1, t2                                             ;\
-    or   t2, t0, t2                                             ;\
+    slli t1, t1, __riscv_xlen-PAGE_OFFSET_SHIFT                 ;\
+    srli t1, t1, __riscv_xlen-PAGE_OFFSET_SHIFT                 ;\
+    or   t0, t0, t1                                             ;\
     addi a0, a0, 2*sv_area_sz                                   ;\
-    SREG t2, _REG_NAME##_bgn_off+1*sv_area_sz(a0)               ;\
+    SREG t0, _REG_NAME##_bgn_off+1*sv_area_sz(a0)               ;\
     addi a0, a0, -2*sv_area_sz                                  ;
 
 #define PTE_SETUP_RV32(_PAR, _PR, _TR0, _TR1, VA, level)        ;\

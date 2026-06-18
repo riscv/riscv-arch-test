@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    Ascii85 (2.0.1)
     activesupport (8.1.3)
       base64
       bigdecimal
@@ -14,14 +15,33 @@ GEM
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
+    addressable (2.9.0)
+      public_suffix (>= 2.0.2, < 8.0)
+    afm (1.0.0)
     asciidoctor (2.0.26)
+    asciidoctor-diagram (3.2.1)
+      asciidoctor (>= 1.5.7, < 3.x)
+      rexml
+    asciidoctor-pdf (2.3.24)
+      asciidoctor (~> 2.0)
+      concurrent-ruby (~> 1.3)
+      matrix (~> 0.4)
+      prawn (~> 2.4.0)
+      prawn-icon (~> 3.0.0)
+      prawn-svg (~> 0.34.0)
+      prawn-table (~> 0.2.0)
+      prawn-templates (~> 0.1.0)
+      treetop (~> 1.6.0)
+      ttfunk (~> 1.7.0)
     awesome_print (1.9.2)
     base64 (0.3.0)
-    bigdecimal (4.1.1)
+    bigdecimal (4.1.2)
     commander (5.0.0)
       highline (~> 3.0.0)
     concurrent-ruby (1.3.6)
     connection_pool (3.0.2)
+    css_parser (1.22.0)
+      addressable
     drb (2.2.3)
     ffi (1.17.4)
     ffi (1.17.4-aarch64-linux-gnu)
@@ -35,41 +55,74 @@ GEM
     ffi (1.17.4-x86_64-linux-gnu)
     ffi (1.17.4-x86_64-linux-musl)
     hana (1.3.7)
+    hashery (2.1.2)
     highline (3.0.1)
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
-    idlc (0.1.2)
+    idlc (0.1.5)
       activesupport
       commander (~> 5)
       pp
       sorbet-runtime
       treetop (= 1.6.12)
       tty-progressbar
-    json (2.19.3)
+    json (2.19.9)
     json_schemer (2.5.0)
       bigdecimal
       hana (~> 1.3)
       regexp_parser (~> 2.0)
       simpleidn (~> 0.2)
     logger (1.7.0)
-    minitest (6.0.3)
+    matrix (0.4.3)
+    minitest (6.0.6)
       drb (~> 2.0)
       prism (~> 1.5)
+    nkf (0.3.0)
     numbers_and_words (1.0.3)
       i18n (<= 2)
     ostruct (0.6.3)
     pastel (0.8.0)
       tty-color (~> 0.5)
+    pdf-core (0.9.0)
+    pdf-reader (2.15.1)
+      Ascii85 (>= 1.0, < 3.0, != 2.0.0)
+      afm (>= 0.2.1, < 2)
+      hashery (~> 2.0)
+      ruby-rc4
+      ttfunk
     polyglot (0.3.5)
     pp (0.6.3)
       prettyprint
+    prawn (2.4.0)
+      pdf-core (~> 0.9.0)
+      ttfunk (~> 1.7)
+    prawn-icon (3.0.0)
+      prawn (>= 1.1.0, < 3.0.0)
+    prawn-svg (0.34.2)
+      css_parser (~> 1.6)
+      matrix (~> 0.4.2)
+      prawn (>= 0.11.1, < 3)
+      rexml (~> 3.2)
+    prawn-table (0.2.2)
+      prawn (>= 1.3.0, < 3.0.0)
+    prawn-templates (0.1.2)
+      pdf-reader (~> 2.0)
+      prawn (~> 2.2)
     prettyprint (0.2.0)
     prism (1.9.0)
+    public_suffix (7.0.5)
+    rake (13.4.2)
     regexp_parser (2.12.0)
-    rubyzip (3.2.2)
+    rexml (3.4.4)
+    ruby-rc4 (0.1.5)
+    rubyzip (3.4.0)
     securerandom (0.4.1)
     simpleidn (0.2.3)
-    sorbet-runtime (0.6.13116)
+    sorbet-runtime (0.6.13297)
+    strings (0.2.1)
+      strings-ansi (~> 0.2)
+      unicode-display_width (>= 1.5, < 3.0)
+      unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
     terminal-table (4.0.0)
       unicode-display_width (>= 1.1.1, < 4)
@@ -77,26 +130,33 @@ GEM
     tilt (2.7.0)
     treetop (1.6.12)
       polyglot (~> 0.3)
+    ttfunk (1.7.0)
     tty-color (0.6.0)
     tty-command (0.10.1)
       pastel (~> 0.8)
     tty-cursor (0.7.1)
+    tty-exit (0.1.0)
     tty-logger (0.6.0)
       pastel (~> 0.8)
+    tty-option (0.3.0)
     tty-progressbar (0.18.3)
       strings-ansi (~> 0.2)
       tty-cursor (~> 0.7)
       tty-screen (~> 0.8)
       unicode-display_width (>= 1.6, < 3.0)
     tty-screen (0.8.2)
+    tty-table (0.12.0)
+      pastel (~> 0.8)
+      strings (~> 0.2.0)
+      tty-screen (~> 0.8)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
-    udb (0.1.9)
+    udb (0.1.13)
       activesupport
       asciidoctor
       awesome_print
       concurrent-ruby
-      idlc
+      idlc (= 0.1.5)
       json_schemer
       numbers_and_words
       ostruct
@@ -109,11 +169,27 @@ GEM
       tty-command
       tty-logger
       tty-progressbar
-      udb_helpers
+      udb_helpers (= 0.1.3)
       z3
-    udb_helpers (0.1.2)
+    udb-gen (0.1.12)
+      asciidoctor
+      asciidoctor-diagram
+      asciidoctor-pdf
+      rake
+      sorbet-runtime
+      tty-exit
+      tty-option
+      tty-progressbar
+      tty-table
+      udb (= 0.1.13)
+      write_xlsx
+    udb_helpers (0.1.3)
     unicode-display_width (2.6.0)
+    unicode_utils (1.4.0)
     uri (1.1.1)
+    write_xlsx (1.15.0)
+      nkf
+      rubyzip (>= 2.4.0, < 4.0)
     z3 (0.0.20251017)
       ffi (~> 1.17)
 
@@ -131,17 +207,27 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
-  udb (~> 0.1.9)
+  idlc (= 0.1.5)
+  udb (= 0.1.13)
+  udb-gen (= 0.1.12)
+  udb_helpers (= 0.1.3)
 
 CHECKSUMS
+  Ascii85 (2.0.1) sha256=15cb5d941808543cbb9e7e6aea3c8ec3877f154c3461e8b3673e97f7ecedbe5a
   activesupport (8.1.3) sha256=21a5e0dfbd4c3ddd9e1317ec6a4d782fa226e7867dc70b0743acda81a1dca20e
+  addressable (2.9.0) sha256=7fdf6ac3660f7f4e867a0838be3f6cf722ace541dd97767fa42bc6cfa980c7af
+  afm (1.0.0) sha256=5bd4d6f6241e7014ef090985ec6f4c3e9745f6de0828ddd58bc1efdd138f4545
   asciidoctor (2.0.26) sha256=16e3accf1fc206bbd6335848649d7fd65f31d2daa60d85af13d47a8ee4b071c1
+  asciidoctor-diagram (3.2.1) sha256=e432d051f2a627f7846a22b7beb1f6c8bb392f49ee07e2cb73be2611242a6684
+  asciidoctor-pdf (2.3.24) sha256=3076e55132d43b21de93cd7c8149a8c1b2e4afc07e79855fb6b795a0ef20b051
   awesome_print (1.9.2) sha256=e99b32b704acff16d768b3468680793ced40bfdc4537eb07e06a4be11133786e
   base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
-  bigdecimal (4.1.1) sha256=1c09efab961da45203c8316b0cdaec0ff391dfadb952dd459584b63ebf8054ca
+  bigdecimal (4.1.2) sha256=53d217666027eab4280346fba98e7d5b66baaae1b9c3c1c0ffe89d48188a3fbd
+  bundler (4.0.13) sha256=19f08be7f27022cf0b89f27da0b044ae075e8270a9ef44ad248a932614e1ca3b
   commander (5.0.0) sha256=22ca42866ce5ed1a7f3e9a9c831a23d03b75b3743c7ad0302c3cbcd9eb5f257d
   concurrent-ruby (1.3.6) sha256=6b56837e1e7e5292f9864f34b69c5a2cbc75c0cf5338f1ce9903d10fa762d5ab
   connection_pool (3.0.2) sha256=33fff5ba71a12d2aa26cb72b1db8bba2a1a01823559fb01d29eb74c286e62e0a
+  css_parser (1.22.0) sha256=f274988a40c6178305530d60e7deb5162f7b5538b701b61b5488fc703e5b40c1
   drb (2.2.3) sha256=0b00d6fdb50995fe4a45dea13663493c841112e4068656854646f418fda13373
   ffi (1.17.4) sha256=bcd1642e06f0d16fc9e09ac6d49c3a7298b9789bcb58127302f934e437d60acf
   ffi (1.17.4-aarch64-linux-gnu) sha256=b208f06f91ffd8f5e1193da3cae3d2ccfc27fc36fba577baf698d26d91c080df
@@ -155,42 +241,67 @@ CHECKSUMS
   ffi (1.17.4-x86_64-linux-gnu) sha256=9d3db14c2eae074b382fa9c083fe95aec6e0a1451da249eab096c34002bc752d
   ffi (1.17.4-x86_64-linux-musl) sha256=3fdf9888483de005f8ef8d1cf2d3b20d86626af206cbf780f6a6a12439a9c49e
   hana (1.3.7) sha256=5425db42d651fea08859811c29d20446f16af196308162894db208cac5ce9b0d
+  hashery (2.1.2) sha256=d239cc2310401903f6b79d458c2bbef5bf74c46f3f974ae9c1061fb74a404862
   highline (3.0.1) sha256=ca18b218fd581b1fae832f89bfeaf2b34d3a93429c44fd4411042ffce286f009
   i18n (1.14.8) sha256=285778639134865c5e0f6269e0b818256017e8cde89993fdfcbfb64d088824a5
-  idlc (0.1.2) sha256=e81b5a9bb918cae6fdda5455c1fe3a89d029aa7738baf4ea531003d487ccb3b2
-  json (2.19.3) sha256=289b0bb53052a1fa8c34ab33cc750b659ba14a5c45f3fcf4b18762dc67c78646
+  idlc (0.1.5) sha256=552e60ad28b7d50aa4e0c2b1582559fe02a46637b61513a9f13cf076ef5957a0
+  json (2.19.9) sha256=9b9025b7cdddafa38d316eca0b2358488e42d417045c1b90d216a9fefe46b79a
   json_schemer (2.5.0) sha256=2f01fb4cce721a4e08dd068fc2030cffd0702a7f333f1ea2be6e8991f00ae396
   logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
-  minitest (6.0.3) sha256=88ac8a1de36c00692420e7cb3cc11a0773bbcb126aee1c249f320160a7d11411
+  matrix (0.4.3) sha256=a0d5ab7ddcc1973ff690ab361b67f359acbb16958d1dc072b8b956a286564c5b
+  minitest (6.0.6) sha256=153ea36d1d987a62942382b61075745042a2b3123b1cd48f4c3675af9cc7d6f1
+  nkf (0.3.0) sha256=357a8dbeba38b727b75930f665146546076a394a1c243faf634ff176e3588895
   numbers_and_words (1.0.3) sha256=957f959f7eb0d6b649dae3da026eec6be1e43e050fee899ec40f95680c8d622a
   ostruct (0.6.3) sha256=95a2ed4a4bd1d190784e666b47b2d3f078e4a9efda2fccf18f84ddc6538ed912
   pastel (0.8.0) sha256=481da9fb7d2f6e6b1a08faf11fa10363172dc40fd47848f096ae21209f805a75
+  pdf-core (0.9.0) sha256=4f368b2f12b57ec979872d4bf4bd1a67e8648e0c81ab89801431d2fc89f4e0bb
+  pdf-reader (2.15.1) sha256=18c6a986a84a3117fa49f4279fc2de51f5d2399b71833df5d2bccd595c7068ce
   polyglot (0.3.5) sha256=59d66ef5e3c166431c39cb8b7c1d02af419051352f27912f6a43981b3def16af
   pp (0.6.3) sha256=2951d514450b93ccfeb1df7d021cae0da16e0a7f95ee1e2273719669d0ab9df6
+  prawn (2.4.0) sha256=82062744f7126c2d77501da253a154271790254dfa8c309b8e52e79bc5de2abd
+  prawn-icon (3.0.0) sha256=dac8d481dee0f60a769c0cab0fd1baec7351b4806bf9ba959cd6c65f6694b6f5
+  prawn-svg (0.34.2) sha256=afff79d332940f6d59604d0b2810f54d46e9335533a2aa4e892fb7d514777a90
+  prawn-table (0.2.2) sha256=336d46e39e003f77bf973337a958af6a68300b941c85cb22288872dc2b36addb
+  prawn-templates (0.1.2) sha256=117aa03db570147cb86fcd7de4fd896994f702eada1d699848a9529a87cd31f1
   prettyprint (0.2.0) sha256=2bc9e15581a94742064a3cc8b0fb9d45aae3d03a1baa6ef80922627a0766f193
   prism (1.9.0) sha256=7b530c6a9f92c24300014919c9dcbc055bf4cdf51ec30aed099b06cd6674ef85
+  public_suffix (7.0.5) sha256=1a8bb08f1bbea19228d3bed6e5ed908d1cb4f7c2726d18bd9cadf60bc676f623
+  rake (13.4.2) sha256=cb825b2bd5f1f8e91ca37bddb4b9aaf345551b4731da62949be002fa89283701
   regexp_parser (2.12.0) sha256=35a916a1d63190ab5c9009457136ae5f3c0c7512d60291d0d1378ba18ce08ebb
-  rubyzip (3.2.2) sha256=c0ed99385f0625415c8f05bcae33fe649ed2952894a95ff8b08f26ca57ea5b3c
+  rexml (3.4.4) sha256=19e0a2c3425dfbf2d4fc1189747bdb2f849b6c5e74180401b15734bc97b5d142
+  ruby-rc4 (0.1.5) sha256=00cc40a39d20b53f5459e7ea006a92cf584e9bc275e2a6f7aa1515510e896c03
+  rubyzip (3.4.0) sha256=6de39bc9eba302b635a476d16c9e16b0872ad24517c2f98f2b3a7ea23caff57b
   securerandom (0.4.1) sha256=cc5193d414a4341b6e225f0cb4446aceca8e50d5e1888743fac16987638ea0b1
   simpleidn (0.2.3) sha256=08ce96f03fa1605286be22651ba0fc9c0b2d6272c9b27a260bc88be05b0d2c29
-  sorbet-runtime (0.6.13116) sha256=0109d1963c05b2f76d63135dc43805c67ed24844aca70c7a2524e0292724389d
+  sorbet-runtime (0.6.13297) sha256=f653ac56cf2ba1ff543aaea876a2434acde1d75782fee7e46b0a0a8ee3991a47
+  strings (0.2.1) sha256=933293b3c95cf85b81eb44b3cf673e3087661ba739bbadfeadf442083158d6fb
   strings-ansi (0.2.0) sha256=90262d760ea4a94cc2ae8d58205277a343409c288cbe7c29416b1826bd511c88
   terminal-table (4.0.0) sha256=f504793203f8251b2ea7c7068333053f0beeea26093ec9962e62ea79f94301d2
   thor (1.5.0) sha256=e3a9e55fe857e44859ce104a84675ab6e8cd59c650a49106a05f55f136425e73
   tilt (2.7.0) sha256=0d5b9ba69f6a36490c64b0eee9f6e9aad517e20dcc848800a06eb116f08c6ab3
   treetop (1.6.12) sha256=ed48add684a2d7a8fd6e3b8b027d8ee5983b50977ae691913131a24f1746ac29
+  ttfunk (1.7.0) sha256=2370ba484b1891c70bdcafd3448cfd82a32dd794802d81d720a64c15d3ef2a96
   tty-color (0.6.0) sha256=6f9c37ca3a4e2367fb2e6d09722762647d6f455c111f05b59f35730eeb24332a
   tty-command (0.10.1) sha256=0c6c471fcb932d55518734eb4e2e07e9efdd2918713cc39bb7393ba862471192
   tty-cursor (0.7.1) sha256=79534185e6a777888d88628b14b6a1fdf5154a603f285f80b1753e1908e0bf48
+  tty-exit (0.1.0) sha256=14773422c484f98e253b8ae00dbab2d777e0c4993a1eec6fe462931b3c326503
   tty-logger (0.6.0) sha256=9352d0e3ebc4f9d59b63135806e38c0d6012adc04c907dde96db33daa64e50eb
+  tty-option (0.3.0) sha256=5a6e329d69ab35dace5fe046aa30d94bf27d6934f01e5cdb79caa1cc16c93105
   tty-progressbar (0.18.3) sha256=6cbb4260e55e74a9180d502143eb6a467d2c8e51bf5f3c9509fb5cacc3d4a5f6
   tty-screen (0.8.2) sha256=c090652115beae764336c28802d633f204fb84da93c6a968aa5d8e319e819b50
+  tty-table (0.12.0) sha256=fdc27a4750835c1a16efe19a0b857e3ced3652cc7aceafe6dca94908965b9939
   tzinfo (2.0.6) sha256=8daf828cc77bcf7d63b0e3bdb6caa47e2272dcfaf4fbfe46f8c3a9df087a829b
-  udb (0.1.9) sha256=b74cddd6cc8cf89ce3707a0f3fe55d3401aea0b20254ce3ce0399920fb9d2f7a
-  udb_helpers (0.1.2) sha256=8e56cd3c9612a098bcf942495689eb60106d702df31d1652ff88eccce68e76b4
+  udb (0.1.13) sha256=d187ada23c6fa37cb1af4351a0970fa70fe820c0a3f626d6111a27981c8ea539
+  udb-gen (0.1.12) sha256=8b05306b08fbc9e263f04345500721f4ffee1857e0aaccdb38b956d0b632d42d
+  udb_helpers (0.1.3) sha256=aecac68e124b4294d134c4ecb5268fdc3fad20b0bb1f1c4aeab8f42785654c48
   unicode-display_width (2.6.0) sha256=12279874bba6d5e4d2728cef814b19197dbb10d7a7837a869bab65da943b7f5a
+  unicode_utils (1.4.0) sha256=b922d0cf2313b6b7136ada6645ce7154ffc86418ca07d53b058efe9eb72f2a40
   uri (1.1.1) sha256=379fa58d27ffb1387eaada68c749d1426738bd0f654d812fcc07e7568f5c57c6
+  write_xlsx (1.15.0) sha256=67cfc1cc7361802e6088cdef5cec02addc8c788a4eb79914545f7032373b439a
   z3 (0.0.20251017) sha256=7a10f6aed89760d347e6ec293a37280eacdf5c0616194bb615538b2358edd1e4
 
+RUBY VERSION
+  ruby 3.4.9
+
 BUNDLED WITH
-  4.0.8
+  4.0.14

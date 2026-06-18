@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['E']
 # params:
 #   MXLEN: 32
-# MARCH: rv32e_zicsr
+# MARCH: rv32e_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -1429,6 +1429,8 @@ E_sw_cg_cp_align_word_b4:
   nop
 #endif
 
+
+  mv x2, x6 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

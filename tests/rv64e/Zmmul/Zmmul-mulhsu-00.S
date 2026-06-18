@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['E', 'Zmmul']
 # params:
 #   MXLEN: 64
-# MARCH: rv64e_zicsr_zmmul
+# MARCH: rv64e_zicsr_zifencei_zmmul
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -3325,6 +3325,8 @@ Zmmul_mulhsu_cg_cmp_rd_rs1_rs2_b15:
   mulhsu x15, x15, x15 # perform operation
   # Check if x15 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x15, Zmmul_mulhsu_cg_cmp_rd_rs1_rs2_b15, Zmmul_mulhsu_cg_cmp_rd_rs1_rs2_b15_str)
+
+  mv x2, x6 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

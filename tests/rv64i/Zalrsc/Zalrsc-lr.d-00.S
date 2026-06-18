@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zalrsc']
 # params:
 #   MXLEN: 64
-# MARCH: rv64i_zicsr_zalrsc
+# MARCH: rv64i_zicsr_zifencei_zalrsc
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -870,6 +870,8 @@ Zalrsc_lr_d_cg_cp_custom_rd_edges_m1:
   # Check if x2 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x24, x5, x4, x2, Zalrsc_lr_d_cg_cp_custom_rd_edges_m1, Zalrsc_lr_d_cg_cp_custom_rd_edges_m1_str)
   addi x15, x15, SIG_STRIDE # increment data_ptr
+
+  mv x2, x24 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

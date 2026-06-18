@@ -24,20 +24,17 @@
 
 #define SKIP_MEPC
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I']
+# REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv32i_zicsr
+# MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "pmpsm_tor_legal_lwxr.S"
 #define SIGUPD_COUNT 100
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -45,9 +42,11 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define g    (1<<(RVMODEL_PMP_GRAIN+2))
+#define g    (1<<(UDB_PMP_GRANULARITY))
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
+
+    RVMODEL_FENCEI
 
     LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     // Execution Access Check
@@ -78,7 +77,10 @@ RVTEST_BEGIN
     nop
     nop
 
-    addi a4, a4, (g-8)                  // REGIONSTART + g - 4
+    LA (a4, \ADDRESS)
+    LI(t0, g)
+    add    a4, a4, t0
+    addi a4, a4, -4                     // REGIONSTART + g - 4
     LA(x1, 4f)                          // Store the return Address in x1
     jalr ra, 0(a4)
     nop
@@ -122,7 +124,10 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
 
-    addi a5, a5, (g-8)                                      // REGIONSTART + g - 4
+    LA (a5, \ADDRESS)
+    LI(t0, g)
+    add    a5, a5, t0
+    addi a5, a5, -4                     // REGIONSTART + g - 4
 
     \TEST_CASE\()_4:
     sw a4, 0(a5)
@@ -162,7 +167,10 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)                                   // Signature update
 
-    addi a5, a5, (g-8)                                      // REGIONSTART + g - 4
+    LA (a5, \ADDRESS)
+    LI(t0, g)
+    add    a5, a5, t0
+    addi a5, a5, -4                     // REGIONSTART + g - 4
 
     \TEST_CASE\()_9:
     lw a4, 0(a5)
@@ -170,7 +178,9 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_9, test_9_str)                                   // Signature update
 
-    addi a5, a5, 4                                          // REGIONSTART + g
+    LA (a5, \ADDRESS)
+    LI(t0, g)
+    add    a5, a5, t0                     // REGIONSTART + g
 
     \TEST_CASE\()_10:
     lw a4, 0(a5)
@@ -183,14 +193,14 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/4
+    .rept UDB_NUM_PMP_ENTRIES/4
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+1
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -204,7 +214,7 @@ main:
 #define PMPREGION_LXWR_1111 ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR  )&0xFF) << PMP1_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
-#define REGIONSTART         TEST_FOR_EXECUTION      // RAM_BASE_ADDR + PROGRAM_SIZE
+#define REGIONSTART         TEST_FOR_EXECUTION
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw    pmpaddr15, x4
@@ -214,7 +224,8 @@ main:
     csrw pmpcfg3, x4
 
     LA(x4, TEST_FOR_EXECUTION)
-    addi x5, x4, g
+    LI(t0, g)
+    add x5, x4, t0
     srl x4, x4, PMP_SHIFT
     srl x5, x5, PMP_SHIFT
 
@@ -229,7 +240,8 @@ main:
 // Test Case: 1 : L -> 1 and No Permissions given to the PMP Region 11
 
     LA(x6, TEST_FOR_EXECUTION)
-    addi x6, x6, g
+    LI(t0, g)
+    add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr11, x6
     LA(x5, TEST_FOR_EXECUTION)
@@ -244,7 +256,8 @@ main:
 // Test Case: 2 : L -> 1 and R Permissions given to the PMP Region 9
 
     LA(x6, TEST_FOR_EXECUTION)
-    addi x6, x6, g
+    LI(t0, g)
+    add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr9, x6
     LA(x5, TEST_FOR_EXECUTION)
@@ -259,7 +272,8 @@ main:
 // Test Case: 3 : L -> 1 and WR Permissions given to the PMP Region 7
 
     LA(x6, TEST_FOR_EXECUTION)
-    addi x6, x6, g
+    LI(t0, g)
+    add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr7, x6
     LA(x5, TEST_FOR_EXECUTION)
@@ -274,7 +288,8 @@ main:
 // Test Case: 4 : L -> 1 and X Permissions given to the PMP Region 5
 
     LA(x6, TEST_FOR_EXECUTION)
-    addi x6, x6, g
+    LI(t0, g)
+    add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr5, x6
     LA(x5, TEST_FOR_EXECUTION)
@@ -289,7 +304,8 @@ main:
 // Test Case: 5 : L -> 1 and No Permissions given to the PMP Region 3
 
     LA(x6, TEST_FOR_EXECUTION)
-    addi x6, x6, g
+    LI(t0, g)
+    add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr3, x6
     LA(x5, TEST_FOR_EXECUTION)
@@ -304,7 +320,8 @@ main:
 // Test Case: 6 : L -> 1 and XWR Permissions given to the PMP Region 1
 
     LA(x6, TEST_FOR_EXECUTION)
-    addi x6, x6, g
+    LI(t0, g)
+    add x6, x6, t0
     srl x6, x6, PMP_SHIFT
     csrw pmpaddr1, x6
     LA(x5, TEST_FOR_EXECUTION)
@@ -315,21 +332,6 @@ main:
     csrw pmpcfg0, x4
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
-
-    j exit                                                      // Verification Complete, exit the test
-
-.align 12
-TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
-    nop
-    .endr
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
 
 RVTEST_CODE_END
 
@@ -348,6 +350,24 @@ test_7_str:  .string "\"test: 7;  cp: pmpm_aligned_lw_address-4\""
 test_8_str:  .string "\"test: 8;  cp: pmpm_aligned_lw_address+4\""
 test_9_str:  .string "\"test: 9;  cp: pmpm_aligned_lw_address+g-4\""
 test_10_str: .string "\"test: 10; cp: pmpm_aligned_lw_address+g\""
+
+.align 12
+.align (UDB_PMP_GRANULARITY)
+TEST_FOR_EXECUTION_0:
+    .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
+    jr ra
+    .endr
+
+.align (UDB_PMP_GRANULARITY)
+TEST_FOR_EXECUTION:
+    .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
+    jr ra
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

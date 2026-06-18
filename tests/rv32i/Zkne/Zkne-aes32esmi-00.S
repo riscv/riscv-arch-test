@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zkne']
 # params:
 #   MXLEN: 32
-# MARCH: rv32i_zicsr_zkne
+# MARCH: rv32i_zicsr_zifencei_zkne
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -5354,6 +5354,8 @@ Zkne_aes32esmi_cg_cp_sbox_b255:
   aes32esmi x18, x15, x19, 1 # perform operation
   # Check if x18 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x17, x5, x4, x18, Zkne_aes32esmi_cg_cp_sbox_b255, Zkne_aes32esmi_cg_cp_sbox_b255_str)
+
+  mv x2, x17 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

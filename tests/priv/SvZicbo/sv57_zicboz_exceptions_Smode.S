@@ -143,17 +143,13 @@
 // Total Expected Faults :: 66
 // --------------------------------------------------------------------------------------------------------------------------------
 
-// Remove NORUN once Sail version 0.11 is released
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Sv57, Zicboz, NORUN]
-# MARCH: rv64i_zicsr_zicboz
+# REQUIRED_EXTENSIONS: [I, Sv57, Zicboz]
+# MARCH: rv64i_zicsr_zifencei_zicboz
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv57_zicboz_exceptions_Smode.S"
 #define SIGUPD_COUNT 75
-#define rvtest_mtrap_routine
-#define rvtest_strap_routine
-#define RVTEST_PRIV_TEST
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"
@@ -234,7 +230,7 @@ main:
 
   // Save area setup for code region
   csrr a0, mscratch
-  SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code)
+  SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL4)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                               Test Cases Start from here

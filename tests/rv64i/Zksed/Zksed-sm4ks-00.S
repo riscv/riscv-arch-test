@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zksed']
 # params:
 #   MXLEN: 64
-# MARCH: rv64i_zicsr_zksed
+# MARCH: rv64i_zicsr_zifencei_zksed
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -6308,6 +6308,8 @@ Zksed_sm4ks_cg_cp_sbox_b255:
   sm4ks x15, x12, x2, 2 # perform operation
   # Check if x15 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x11, x8, x7, x15, Zksed_sm4ks_cg_cp_sbox_b255, Zksed_sm4ks_cg_cp_sbox_b255_str)
+
+  mv x2, x11 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

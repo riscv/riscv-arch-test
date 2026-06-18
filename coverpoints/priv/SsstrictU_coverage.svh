@@ -21,42 +21,42 @@ covergroup SsstrictU_ucsr_cg with function sample(ins_t ins);
         bins nonzero = { [1:$] }; // rd != 0
     }
     csrr: coverpoint ins.current.insn  {
-        wildcard bins csrr = {32'b????????????_00000_010_?????_1110011};
+        wildcard bins csrr = {CSRR};
     }
     csrrw: coverpoint ins.current.insn {
-        wildcard bins csrrw = {32'b????????????_?????_001_?????_1110011};
+        wildcard bins csrrw = {CSRRW};
     }
-    // Similar to SsstrictSm/S, but exercises all CSRs except user custom.
+    // Similar to SsstrictSm/S, but exercises all user CSRs except user custom. Insufficient permission CSRs tested in U_coverage.
     csr: coverpoint ins.current.insn[31:20]  {
         bins user_std0[] = {[12'h000:12'h0FF]};
-        bins super_std0[] = {[12'h100:12'h17F]};
-        bins super_std02[] = {[12'h180:12'h1FF]};
-        bins hyper_std0[] = {[12'h200:12'h2FF]};
-        bins mach_std0[] = {[12'h300:12'h3FF]};
+        ignore_bins super_std0[] = {[12'h100:12'h17F]};
+        ignore_bins super_std02[] = {[12'h180:12'h1FF]};
+        ignore_bins hyper_std0[] = {[12'h200:12'h2FF]};
+        ignore_bins mach_std0[] = {[12'h300:12'h3FF]};
         bins user_std1[] = {[12'h400:12'h4FF]};
-        bins super_std1[] = {[12'h500:12'h5BF]};
-        bins super_custom1 = {[12'h5C0:12'h5FF]};
-        bins hyper_std1[] = {[12'h600:12'h6BF]};
-        bins hyper_custom1 = {[12'h6C0:12'h6FF]};
-        bins mach_std1[] = {[12'h700:12'h7AF]};
-        bins mach_debug[] = {[12'h7A0:12'h7AF]};
-        bins debug_only[] = {[12'h7B0:12'h7BF]};
-        bins mach_custom1[] = {[12'h7C0:12'h7FF]};
+        ignore_bins super_std1[] = {[12'h500:12'h5BF]};
+        ignore_bins super_custom1 = {[12'h5C0:12'h5FF]};
+        ignore_bins hyper_std1[] = {[12'h600:12'h6BF]};
+        ignore_bins hyper_custom1 = {[12'h6C0:12'h6FF]};
+        ignore_bins mach_std1[] = {[12'h700:12'h7AF]};
+        ignore_bins mach_debug[] = {[12'h7A0:12'h7AF]};
+        ignore_bins debug_only[] = {[12'h7B0:12'h7BF]};
+        ignore_bins mach_custom1[] = {[12'h7C0:12'h7FF]};
         ignore_bins user_custom2 = {[12'h800:12'h8FF]};
-        bins super_std2[] = {[12'h900:12'h9BF]};
-        bins super_custom22 = {[12'h9C0:12'h9FF]};
-        bins hyper_std2[] = {[12'hA00:12'hABF]};
-        bins hyper_custom22 = {[12'hAC0:12'hAFF]};
-        bins mach_std2[] = {[12'hB00:12'hBBF]};
-        bins mach_custom2[] = {[12'hBC0:12'hBFF]};
+        ignore_bins super_std2[] = {[12'h900:12'h9BF]};
+        ignore_bins super_custom22 = {[12'h9C0:12'h9FF]};
+        ignore_bins hyper_std2[] = {[12'hA00:12'hABF]};
+        ignore_bins hyper_custom22 = {[12'hAC0:12'hAFF]};
+        ignore_bins mach_std2[] = {[12'hB00:12'hBBF]};
+        ignore_bins mach_custom2[] = {[12'hBC0:12'hBFF]};
         bins user_std3[] = {[12'hC00:12'hCBF]};
         ignore_bins user_custom3 = {[12'hCC0:12'hCFF]};
-        bins super_std3[] = {[12'hD00:12'hDBF]};
-        bins super_custom3 = {[12'hDC0:12'hDFF]};
-        bins hyper_std3[] = {[12'hE00:12'hEBF]};
-        bins hyper_custom3 = {[12'hEC0:12'hEFF]};
-        bins mach_std3[] = {[12'hF00:12'hFBF]};
-        bins mach_custom3[] = {[12'hFC0:12'hFFF]};
+        ignore_bins super_std3[] = {[12'hD00:12'hDBF]};
+        ignore_bins super_custom3 = {[12'hDC0:12'hDFF]};
+        ignore_bins hyper_std3[] = {[12'hE00:12'hEBF]};
+        ignore_bins hyper_custom3 = {[12'hEC0:12'hEFF]};
+        ignore_bins mach_std3[] = {[12'hF00:12'hFBF]};
+        ignore_bins mach_custom3[] = {[12'hFC0:12'hFFF]};
     }
     rs1_ones: coverpoint ins.current.rs1_val {
         bins ones = {'1};
@@ -80,6 +80,7 @@ covergroup SsstrictU_instr_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "RISCV_coverage_instr.svh"
+    `include "priv/RISCV_coverage_vect_instr.svh"
 
     // main coverpoints
     cp_illegal:           cross priv_mode_u, illegal;
@@ -131,7 +132,47 @@ covergroup SsstrictU_instr_cg with function sample(ins_t ins);
     cp_upperreg_fmv_rs1 : cross priv_mode_u, upperreg_fmv_rs1;
     cp_upperreg_fmv_rd :  cross priv_mode_u, upperreg_fmv_rd;
     cp_amocas_odd :       cross priv_mode_u, amocas_odd;
-    cp_reserved_rm :      cross priv_mode_u, reserved_rm;
+
+    // ── Vector coverpoints crossed with priv_mode_u ──────────────────
+    // Definitions are in RISCV_coverage_vect_instr.svh; only the cross
+    // with privilege mode belongs here.
+
+    // vset* reserved encodings
+    cp_v_vsetvl:          cross priv_mode_u, v_vsetvl;
+    cp_v_vsetvli_sew:     cross priv_mode_u, v_vsetvli_sew;
+    cp_v_vsetvli_res:     cross priv_mode_u, v_vsetvli_res;
+    cp_v_vsetivli_sew:    cross priv_mode_u, v_vsetivli_sew;
+    cp_v_vsetivli_res:    cross priv_mode_u, v_vsetivli_res;
+
+    // Vector load/store reserved encodings
+    cp_vl_width:          cross priv_mode_u, vl_width;
+    cp_vl_lumop:          cross priv_mode_u, vl_lumop;
+    cp_vs_width:          cross priv_mode_u, vs_width;
+    cp_vs_sumop:          cross priv_mode_u, vs_sumop;
+
+    // Vector arithmetic funct6 × SEW
+    cp_v_IVV_f6:          cross priv_mode_u, v_IVV_f6, current_vsew;
+    cp_v_FVV_f6:          cross priv_mode_u, v_FVV_f6, current_vsew;
+    cp_v_MVV_f6:          cross priv_mode_u, v_MVV_f6, current_vsew;
+    cp_v_IVI_f6:          cross priv_mode_u, v_IVI_f6, current_vsew;
+    cp_v_IVX_f6:          cross priv_mode_u, v_IVX_f6, current_vsew;
+    cp_v_FVF_f6:          cross priv_mode_u, v_FVF_f6, current_vsew;
+    cp_v_MVX_f6:          cross priv_mode_u, v_MVX_f6, current_vsew;
+
+    // Vector unary instructions
+    cp_v_VWRXUNARY0:      cross priv_mode_u, v_VWRXUNARY0, current_vsew;
+    cp_v_VRXUNARY0:       cross priv_mode_u, v_VRXUNARY0, current_vsew;
+    cp_v_VXUNARY0:        cross priv_mode_u, v_VXUNARY0, current_vsew;
+    cp_v_VMUNARY0:        cross priv_mode_u, v_VMUNARY0, current_vsew;
+    cp_v_VWFUNARY0:       cross priv_mode_u, v_VWFUNARY0, current_vsew;
+    cp_v_VRFUNARY0:       cross priv_mode_u, v_VRFUNARY0, current_vsew;
+    cp_v_VFUNARY0:        cross priv_mode_u, v_VFUNARY0, current_vsew;
+    cp_v_VFUNARY1:        cross priv_mode_u, v_VFUNARY1, current_vsew;
+
+    // Vector crypto
+    cp_vopve:             cross priv_mode_u, v_vopve, current_vsew;
+    cp_v_vaesvv:          cross priv_mode_u, v_vaesvv, current_vsew;
+    cp_v_vaesvs:          cross priv_mode_u, v_vaesvs, current_vsew;
 
 endgroup
 

@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zicbop']
 # params:
 #   MXLEN: 32
-# MARCH: rv32i_zicbop_zicsr
+# MARCH: rv32i_zicbop_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -665,6 +665,8 @@ Zicbop_prefetch_i_cg_cp_custom_prefetch_word_64:
   # Check if x25 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x25, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_64, Zicbop_prefetch_i_cg_cp_custom_prefetch_word_64_str)
 
+
+  mv x2, x6 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

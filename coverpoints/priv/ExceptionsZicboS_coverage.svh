@@ -24,39 +24,38 @@ covergroup ExceptionsZicboS_cg with function sample(ins_t ins);
             wildcard bins cbo_flush = {CBO_FLUSH};
             wildcard bins cbo_clean = {CBO_CLEAN};
         }
-        menvcfg_cbie: coverpoint ins.current.csr[12'h30A][5:4] {
+        menvcfg_cbie: coverpoint ins.current.csr[CSR_MENVCFG][5:4] {
             ignore_bins reserved = {2'b10};
         }
-        menvcfg_cbcfe: coverpoint ins.current.csr[12'h30A][6] {
+        menvcfg_cbcfe: coverpoint ins.current.csr[CSR_MENVCFG][6] {
         }
-        senvcfg_cbie: coverpoint ins.current.csr[12'h10A][5:4] {
+        senvcfg_cbie: coverpoint ins.current.csr[CSR_SENVCFG][5:4] {
             ignore_bins reserved = {2'b10};
         }
-        senvcfg_cbcfe: coverpoint ins.current.csr[12'h10A][6] {
+        senvcfg_cbcfe: coverpoint ins.current.csr[CSR_SENVCFG][6] {
         }
     `endif
     `ifdef ZICBOZ_SUPPORTED
         cbo_zero: coverpoint ins.current.insn {
             wildcard bins cbo_zero = {CBO_ZERO};
         }
-        menvcfg_cbze: coverpoint ins.current.csr[12'h30A][7] {
+        menvcfg_cbze: coverpoint ins.current.csr[CSR_MENVCFG][7] {
         }
-        senvcfg_cbze: coverpoint ins.current.csr[12'h10A][7] {
+        senvcfg_cbze: coverpoint ins.current.csr[CSR_SENVCFG][7] {
         }
     `endif
 
     adr_misaligned: coverpoint ins.current.rs1_val[0]  {
-        bins misaligned = {1};
     }
-    menvcfg_all_enable: coverpoint ins.current.csr[12'h30A][7:4] {
+    menvcfg_all_enable: coverpoint ins.current.csr[CSR_MENVCFG][7:4] {
         bins ones = {4'b1111};
     }
-    senvcfg_all_enable: coverpoint ins.current.csr[12'h10A][7:4] {
+    senvcfg_all_enable: coverpoint ins.current.csr[CSR_SENVCFG][7:4] {
         bins ones = {4'b1111};
     }
     cbo_instrs: coverpoint ins.current.insn {
         `ifdef ZICBOM_SUPPORTED
-            wildcard bins inval = {CBO_INVAL};
+            wildcard bins inval  = {CBO_INVAL};
             wildcard bins clean  = {CBO_CLEAN};
             wildcard bins flush  = {CBO_FLUSH};
         `endif
@@ -80,10 +79,10 @@ covergroup ExceptionsZicboS_cg with function sample(ins_t ins);
 
     // access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-        illegal_address: coverpoint ins.current.rs1_val {
+        illegal_address: coverpoint {ins.current.rs1_val[XLEN-1:1], 1'b0} {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
         }
-        cp_cbo_access_fault:        cross cbo_instrs,     illegal_address, priv_mode_m_s_u, menvcfg_all_enable, senvcfg_all_enable;
+        cp_cbo_access_fault:        cross cbo_instrs,     illegal_address, adr_misaligned, priv_mode_m_s_u, menvcfg_all_enable, senvcfg_all_enable;
     `endif
 
 endgroup

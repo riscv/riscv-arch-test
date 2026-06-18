@@ -7,12 +7,22 @@
 
 #define RVMODEL_DATA_SECTION
 
+#define STANDARD_SM_SUPPORTED
+
 ##### STARTUP #####
 
 # Perform boot operations. Can be empty or left undefined unless needed for
 # DUT-specific behavior such as turning on a memory controller or
 # initializing custom state.
 //#define RVMODEL_BOOT
+
+// Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
+// if defined.  For most DUTs, the default should work and this macro
+// should not be defined.  If no M-mode or CSRs are implemented, define this
+// macro as blank to bypass the boot process.  If a nonconforming
+// M-mode is implemented, define this macro to set up the necessary
+// state in a fashion similar to RVTEST_BOOT_TO_MMODE.
+//#define RVMODEL_BOOT_TO_MMODE
 
 # Address to use for load/store fault tests that should cause an access fault on the DUT.
 // This DUT does not generate access faults.  Comment out RVMODEL_ACCESS_FAULT_ADDRESS to prevent testing them.
@@ -65,37 +75,48 @@
   j 1b                       ; /* Loop */             \
 3:
 
+##### MTVEC Alignment #####
+
 ##### Interrupt Latency #####
 
 #define RVMODEL_INTERRUPT_LATENCY 10
 
 ##### Machine Timer #####
+#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
 
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
-/*
- * NOTE: The following parameters are intentionally left empty.
- *
- * Running 'make CONFIG_FILES=' will include Machine-mode (sm) tests that
- * will FAIL because these platform-level memory-mapped registers are
- * not defined. This is a temporary state.
- *
- * To properly run the suite by excluding these specific tests (the recommended
- * workaround), refer to the instructions here:
- * https://github.com/riscv/riscv-arch-test/issues/1135#issuecomment-4140522435
- */
-#define RVMODEL_MTIME_ADDRESS  /* unimplemented */
-
-#define RVMODEL_MTIMECMP_ADDRESS   /* unimplemented */
+// CLINT machine timer in mm_ram at Sail's CLINT base (matches sail_macros.h).
+#define RVMODEL_MTIME_ADDRESS     0x0200BFF8
+#define RVMODEL_MTIMECMP_ADDRESS  0x02004000
 ##### Machine Interrupts #####
 
-#define RVMODEL_SET_MEXT_INT(_R1, _R2)
+// Drive cv32e20 core irq pins via the cv32e20-dv mm_ram Sail-protocol
+// simple_interrupt_generator at 0x15000020 (DUT testbench peripheral).
+// Per sail-riscv doc/SimpleInterruptGenerator.md v1.0:
+//   base+0: version register (read-only)
+//   base+4: platform register (write set/clear)
+//     bit 31 = 1 (set) / 0 (clear); bit 3 = MSI, bit 11 = MEI
 
-#define RVMODEL_CLR_MEXT_INT(_R1, _R2)
+#define RVMODEL_SET_MEXT_INT(_R1, _R2)                                  \
+    li _R1, 0x80000800           ; /* set | MEI (bit 11) */             \
+    li _R2, 0x15000024           ; /* simple_interrupt_generator + 4 */ \
+    sw _R1, 0(_R2)
 
-#define RVMODEL_SET_MSW_INT(_R1, _R2)
+#define RVMODEL_CLR_MEXT_INT(_R1, _R2)                                  \
+    li _R1, 0x00000800           ; /* clear | MEI (bit 11) */           \
+    li _R2, 0x15000024           ;                                      \
+    sw _R1, 0(_R2)
 
-#define RVMODEL_CLR_MSW_INT(_R1, _R2)
+#define RVMODEL_SET_MSW_INT(_R1, _R2)                                   \
+    li _R1, 0x80000008           ; /* set | MSI (bit 3) */              \
+    li _R2, 0x15000024           ;                                      \
+    sw _R1, 0(_R2)
+
+#define RVMODEL_CLR_MSW_INT(_R1, _R2)                                   \
+    li _R1, 0x00000008           ; /* clear | MSI (bit 3) */            \
+    li _R2, 0x15000024           ;                                      \
+    sw _R1, 0(_R2)
 
 ##### Supervisor Interrupts #####
 

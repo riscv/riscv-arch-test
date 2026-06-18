@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zaamo']
 # params:
 #   MXLEN: 64
-# MARCH: rv64i_zicsr_zaamo
+# MARCH: rv64i_zicsr_zifencei_zaamo
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -3279,6 +3279,8 @@ Zaamo_amoswap_w_cg_cp_align_word_b4:
   # Check if x26 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x14, x5, x4, x26, Zaamo_amoswap_w_cg_cp_align_word_b4, Zaamo_amoswap_w_cg_cp_align_word_b4_str)
 
+
+  mv x2, x14 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

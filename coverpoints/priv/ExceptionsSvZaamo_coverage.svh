@@ -26,11 +26,11 @@ covergroup ExceptionsSvZaamo_cg with function sample(ins_t ins);
         // auto fill valid bit 0/1
     }
     amemops: coverpoint ins.current.insn {
-        wildcard bins amoadd_w = {32'b0000000_?????_?????_010_?????_0101111};
+        wildcard bins amoadd_w = {AMOADD_W};
     }
-    medeleg_walk: coverpoint ins.current.csr[12'h302] {
+    medeleg_walk: coverpoint ins.current.csr[CSR_MEDELEG] {
         bins zeros                    = {16'b0000_0000_0000_0000};
-        `ifndef COVER_ZCA
+        `ifndef ZCA_SUPPORTED
             bins instrmisaligned_enabled  = {16'b0000_0000_0000_0001};
         `endif
         bins instraccessfault_enabled = {16'b0000_0000_0000_0010};
@@ -59,7 +59,7 @@ covergroup ExceptionsSvZaamo_cg with function sample(ins_t ins);
 
     // Access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-        `ifdef XLEN64 // Number of physical address bits is different by XLEN, either 34 or 56
+        `ifdef UDB_MXLEN_64 // Number of physical address bits is different by XLEN, either 34 or 56
             d_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
                 // auto fill 1/0 for the physical address being valid
             }

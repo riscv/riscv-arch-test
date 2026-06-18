@@ -22,20 +22,17 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I']
+# REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv32i_zicsr
+# MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "pmpsm_cfg_A_all.S"
 #define SIGUPD_COUNT 100
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 
@@ -48,7 +45,7 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/4
+    .rept UDB_NUM_PMP_ENTRIES/4
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+1
     .endr
@@ -87,7 +84,7 @@ main:
     # Write x4 to pmpcfg3, read back and check against expected.
     RVTEST_SIGUPD_CSR_WRITE(pmpcfg3, x4, test_4, test_4_str)
 
-.if RVMODEL_NUM_PMPS == 64
+.if UDB_NUM_PMP_ENTRIES == 64
    test_5:
        # Write x4 to pmpcfg4, read back and check against expected.
        RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x4, test_5, test_5_str)
@@ -154,7 +151,7 @@ main:
     # Write x4 to pmpcfg3, read back and check against expected.
     RVTEST_SIGUPD_CSR_WRITE(pmpcfg3, x4, test_20, test_20_str)
 
-.if RVMODEL_NUM_PMPS == 64
+.if UDB_NUM_PMP_ENTRIES == 64
     test_21:
         # Write x4 to pmpcfg4, read back and check against expected.
         RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x4, test_21, test_21_str)
@@ -221,7 +218,7 @@ main:
         # Write x4 to pmpcfg3, read back and check against expected.
         RVTEST_SIGUPD_CSR_WRITE(pmpcfg3, x4, test_36, test_36_str)
 
-.if RVMODEL_NUM_PMPS == 64
+.if UDB_NUM_PMP_ENTRIES == 64
     test_37:
         # Write x4 to pmpcfg4, read back and check against expected.
         RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x4, test_37, test_37_str)
@@ -287,7 +284,7 @@ main:
         # Write zero to pmpcfg3, read back and check against expected.
         RVTEST_SIGUPD_CSR_WRITE(pmpcfg3, zero, test_52, test_52_str)
 
-.if RVMODEL_NUM_PMPS == 64
+.if UDB_NUM_PMP_ENTRIES == 64
     test_53:
         # Write zero to pmpcfg4, read back and check against expected.
         RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, zero, test_53, test_53_str)
@@ -339,17 +336,6 @@ main:
 
 // ---------------------------------------------------------------------------
 
-    j exit                                                      // Verification Complete, exit the test
-
-.align 12
-.align (RVMODEL_PMP_GRAIN+2)
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
@@ -420,6 +406,22 @@ test_61_str: .string "\"test: 61; cp: cp_cfg_A_all_test_61\""
 test_62_str: .string "\"test: 62; cp: cp_cfg_A_all_test_62\""
 test_63_str: .string "\"test: 63; cp: cp_cfg_A_all_test_63\""
 test_64_str: .string "\"test: 64; cp: cp_cfg_A_all_test_64\""
+
+.align 12
+TEST_FOR_EXECUTION_0:
+    .rept 1024
+    jr ra
+    .endr
+
+TEST_FOR_EXECUTION:
+    .rept (1<<(UDB_PMP_GRANULARITY))
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

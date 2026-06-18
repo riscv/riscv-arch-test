@@ -1,0 +1,191 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:best-practices"],
+  "baseBranchPatterns": ["act4"],
+  "timezone": "America/Los_Angeles",
+  "labels": ["dependencies"],
+  "prHourlyLimit": 4,
+  "prConcurrentLimit": 10,
+  "rebaseWhen": "conflicted",
+  "minimumReleaseAge": "7 days",
+  "internalChecksFilter": "strict",
+  "automerge": true,
+  "osvVulnerabilityAlerts": true,
+  "vulnerabilityAlerts": {
+    "labels": ["dependencies", "security"],
+    "minimumReleaseAge": "4 hours"
+  },
+  "git-submodules": {
+    "enabled": true
+  },
+  "pre-commit": {
+    "enabled": true
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on monday"]
+  },
+  "customManagers": [
+    {
+      "description": "QEMU version in install script",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/scripts/install-qemu\\.sh$/"],
+      "matchStrings": ["QEMU_VERSION=\"(?<currentValue>[^\"]+)\""],
+      "depNameTemplate": "qemu/qemu",
+      "datasourceTemplate": "github-tags",
+      "extractVersionTemplate": "^v(?<version>.*)$"
+    },
+    {
+      "description": "Spike commit in install script",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/scripts/install-spike\\.sh$/"],
+      "matchStrings": ["SPIKE_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
+      "depNameTemplate": "riscv/riscv-isa-sim",
+      "datasourceTemplate": "git-refs",
+      "packageNameTemplate": "https://github.com/riscv/riscv-isa-sim",
+      "currentValueTemplate": "master"
+    },
+    {
+      "description": "Whisper commit in install script",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/scripts/install-whisper\\.sh$/"],
+      "matchStrings": ["WHISPER_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
+      "depNameTemplate": "tenstorrent/whisper",
+      "datasourceTemplate": "git-refs",
+      "packageNameTemplate": "https://github.com/tenstorrent/whisper",
+      "currentValueTemplate": "master"
+    },
+    {
+      "description": "CVW commit in install script",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/scripts/install-cvw\\.sh$/"],
+      "matchStrings": ["CVW_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
+      "depNameTemplate": "openhwgroup/cvw",
+      "datasourceTemplate": "git-refs",
+      "packageNameTemplate": "https://github.com/openhwgroup/cvw",
+      "currentValueTemplate": "main"
+    },
+    {
+      "description": "cv32e20-dv (cve2) commit in install script",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/scripts/install-cve2\\.sh$/"],
+      "matchStrings": ["CVE2_DV_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
+      "depNameTemplate": "openhwgroup/cv32e20-dv",
+      "datasourceTemplate": "git-refs",
+      "packageNameTemplate": "https://github.com/openhwgroup/cv32e20-dv",
+      "currentValueTemplate": "main"
+    },
+    {
+      "description": "cv32e40p-dv-review (cve4) commit in install script",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/scripts/install-cve4\\.sh$/"],
+      "matchStrings": ["CVE4_DV_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
+      "depNameTemplate": "openhwgroup/cv32e40p-dv-review",
+      "datasourceTemplate": "git-refs",
+      "packageNameTemplate": "https://github.com/openhwgroup/cv32e40p-dv-review",
+      "currentValueTemplate": "main"
+    },
+    {
+      "description": "cv32e40x-dv (cve4) commit in install script",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/scripts/install-cve4\\.sh$/"],
+      "matchStrings": ["CVE40X_DV_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
+      "depNameTemplate": "openhwgroup/cv32e40x-dv",
+      "datasourceTemplate": "git-refs",
+      "packageNameTemplate": "https://github.com/openhwgroup/cv32e40x-dv",
+      "currentValueTemplate": "main"
+    },
+    {
+      "description": "cv32e40x RTL hash pinned in cve4 install script",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/scripts/install-cve4\\.sh$/"],
+      "matchStrings": ["CVE40X_CORE_HASH=\"(?<currentDigest>[a-f0-9]+)\""],
+      "depNameTemplate": "openhwgroup/cv32e40x",
+      "datasourceTemplate": "git-refs",
+      "packageNameTemplate": "https://github.com/openhwgroup/cv32e40x",
+      "currentValueTemplate": "master"
+    },
+    {
+      "description": "RISC-V GCC toolchain version in CI workflow and Dockerfile",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/regress\\.yml$/",
+        "/^Dockerfile$/"
+      ],
+      "matchStrings": [
+        "RISCV_TOOLCHAIN_VERSION[=:]\\s*\"?(?<currentValue>[\\d.]+)\"?"
+      ],
+      "depNameTemplate": "riscv-collab/riscv-gnu-toolchain",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "loose"
+    },
+    {
+      "description": "LLVM version in CI workflow",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/workflows/regress\\.yml$/"],
+      "matchStrings": ["LLVM_VERSION:\\s*\"(?<currentValue>\\d+)\""],
+      "depNameTemplate": "llvm/llvm-project",
+      "datasourceTemplate": "github-tags",
+      "extractVersionTemplate": "^llvmorg-(?<version>\\d+)\\.\\d+\\.\\d+$"
+    },
+    {
+      "description": "Bundler version recorded in Gemfile.lock (kept in sync with .mise.toml gem:bundler)",
+      "customType": "regex",
+      "managerFilePatterns": ["/^framework/src/act/data/Gemfile\\.lock$/"],
+      "matchStrings": ["BUNDLED WITH\\s+(?<currentValue>[\\d.]+)"],
+      "depNameTemplate": "gem:bundler",
+      "packageNameTemplate": "bundler",
+      "datasourceTemplate": "rubygems"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Always use the latest version of specified packages",
+      "matchDepNames": [
+        "tenstorrent/whisper",
+        "riscv/riscv-isa-sim",
+        "openhwgroup/cvw",
+        "openhwgroup/cv32e20-dv",
+        "openhwgroup/cv32e40p-dv-review",
+        "openhwgroup/cv32e40x-dv",
+        "openhwgroup/cv32e40x",
+        "udb",
+        "udb-gen",
+        "idlc",
+        "udb_helpers"
+      ],
+      "minimumReleaseAge": null
+    },
+    {
+      "description": "Do not update Ruby major versions",
+      "matchDepNames": ["ruby"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
+      "description": "Keep ruff in sync across pyproject.toml dev deps and the pre-commit hook",
+      "matchDepNames": ["ruff", "astral-sh/ruff-pre-commit"],
+      "groupName": "ruff"
+    },
+    {
+      "description": "Keep uv in sync across .mise.toml and the pre-commit hook",
+      "matchDepNames": ["uv", "astral-sh/uv-pre-commit"],
+      "groupName": "uv"
+    },
+    {
+      "description": "Group all GitHub Actions updates into one PR",
+      "matchManagers": ["github-actions"],
+      "groupName": "github-actions"
+    },
+    {
+      "description": "Group remaining pre-commit hook bumps (ruff/uv are grouped with their non-hook counterparts above)",
+      "matchManagers": ["pre-commit"],
+      "matchDepNames": [
+        "!astral-sh/ruff-pre-commit",
+        "!astral-sh/uv-pre-commit"
+      ],
+      "groupName": "pre-commit hooks",
+      "schedule": ["before 6am on monday"]
+    }
+  ]
+}

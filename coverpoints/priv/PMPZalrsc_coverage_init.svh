@@ -8,5 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-PMPZalrsc_cg = new();
-PMPZalrsc_cg.set_inst_name("obj_PMPZalrsc");
+    PMPZalrsc_cg = new();         PMPZalrsc_cg.set_inst_name("obj_PMPZalrsc");

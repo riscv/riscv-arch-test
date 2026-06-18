@@ -11,6 +11,16 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 `define COVER_S
 
+// Software check exceptions are supported for both Zicfilp and Zicfiss
+`ifdef ZICFILP_SUPPORTED
+    `define SOFTWARE_CHECK_SUPPORTED
+`endif
+`ifdef ZICFISS_SUPPORTED
+    `ifndef SOFTWARE_CHECK_SUPPORTED
+        `define SOFTWARE_CHECK_SUPPORTED
+    `endif
+`endif
+
 covergroup S_scause_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -19,15 +29,15 @@ covergroup S_scause_cg with function sample(ins_t ins);
         wildcard bins csrrw = {CSRRW};
     }
     scause: coverpoint ins.current.insn[31:20] {
-        bins mcause = {CSR_SCAUSE};
+        bins scause = {CSR_SCAUSE};
     }
-    scause_interrupt : coverpoint ins.current.rs1_val[XLEN-1] {
+    scause_interrupt : coverpoint ins.current.rs1_val[`UDB_MXLEN-1] {
         bins interrupt = {1};
     }
-    scause_exception : coverpoint ins.current.rs1_val[XLEN-1] {
+    scause_exception : coverpoint ins.current.rs1_val[`UDB_MXLEN-1] {
         bins exception = {0};
     }
-    scause_exception_values: coverpoint ins.current.rs1_val[XLEN-2:0] {
+    scause_exception_values: coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
         // exclude reserved and custom fields
         bins b_0_instruction_address_misaligned = {0};
         bins b_1_instruction_address_fault = {1};
@@ -39,25 +49,31 @@ covergroup S_scause_cg with function sample(ins_t ins);
         bins b_7_store_access_fault = {7};
         bins b_8_ecall_u = {8};
         bins b_9_ecall_s = {9};
-        bins b_10_ecall_vs = {10};
-        bins b_11_ecall_m = {11};
+        `ifdef H_SUPPORTED
+            bins b_10_ecall_vs = {10};
+        `endif
+        // bins b_11_ecall_m = {11}; // never delegated to S mode
         bins b_12_instruction_page_fault = {12};
         bins b_13_load_page_fault = {13};
         //bins b_14_reserved = {14};
         bins b_15_store_page_fault = {15};
-        bins b_16_double_trap = {16};
+        //bins b_16_double_trap = {16}; // never delegated to S mode
         //bins b_17_reserved = {17};
-        bins b_18_software_check = {18};
-        bins b_19_hardware_error = {19};
-        bins b_20_instr_guest_page_fault = {20};
-        bins b_21_load_guest_page_fault = {21};
-        bins b_22_virtual_instruction = {22};
-        bins b_23_store_guest_page_fault = {23};
+        `ifdef SOFTWARE_CHECK_SUPPORTED
+            bins b_18_software_check = {18};
+        `endif
+        // bins b_19_hardware_error = {19}; // unclear how to trigger on all implementations
+        `ifdef H_SUPPORTED
+            bins b_20_instr_guest_page_fault = {20};
+            bins b_21_load_guest_page_fault = {21};
+            bins b_22_virtual_instruction = {22};
+            bins b_23_store_guest_page_fault = {23};
+        `endif
         //bins b_31_24_custom = {[31:24]};
         //bins b_47_32_reserved = {[47:32]};
         //bins b_63_48_custom = {[63:48]};
     }
-    scause_interrupt_values: coverpoint ins.current.rs1_val[XLEN-2:0] {
+    scause_interrupt_values: coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
         // exclude reserved and custom fields
         //bins b_0_reserved = {0};
         bins b_1_supervisor_software = {1};
@@ -80,6 +96,7 @@ covergroup S_scause_cg with function sample(ins_t ins);
     // main coverpoints
     cp_scause_write_exception: cross priv_mode_s, csrrw, scause, scause_exception_values, scause_exception; // CSR write of scause in S mode with interesting values
     cp_scause_write_interrupt: cross priv_mode_s, csrrw, scause, scause_interrupt_values, scause_interrupt; // CSR write of scause in S mode with interesting values
+
 endgroup
 
 
@@ -87,7 +104,7 @@ covergroup S_sstatus_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    cp_sstatus_sd: coverpoint ins.current.rs1_val[XLEN-1]  {
+    cp_sstatus_sd: coverpoint ins.current.rs1_val[`UDB_MXLEN-1]  {
     }
     cp_sstatus_fs: coverpoint ins.current.rs1_val[14:13] {
     }
@@ -99,10 +116,24 @@ covergroup S_sstatus_cg with function sample(ins_t ins);
         wildcard bins csrrw = {CSRRW};
     }
     sstatus: coverpoint ins.current.insn[31:20] {
-        bins mstatus = {CSR_SSTATUS};
+        bins sstatus = {CSR_SSTATUS};
     }
     // main coverpoints
     cp_sstatus_sd_write: cross priv_mode_s, csrrw, sstatus, cp_sstatus_sd, cp_sstatus_fs, cp_sstatus_vs, cp_sstatus_xs;
+
+    `ifdef S1P13P0_SUPPORTED
+        `ifdef UDB_MXLEN_64
+            uxl_write_attempt: coverpoint ins.current.rs1_val[33:32] {
+                bins attempt_1 = {2'b01};
+                bins attempt_2 = {2'b10};
+            }
+            csrop: coverpoint ins.current.insn {
+                wildcard bins csrrw = {CSRRW};
+            }
+             // main coverpoints
+            cp_sxlen_ge_uxlen: cross priv_mode_s, csrop, sstatus, uxl_write_attempt;
+        `endif // UDB_MXLEN_64
+    `endif // S1P13P0_SUPPORTED
 
 endgroup
 
@@ -123,8 +154,6 @@ covergroup S_sprivinst_cg with function sample(ins_t ins);
     sret: coverpoint ins.current.insn  {
         bins sret   = {SRET};
     }
-    // old_mstatus_mprv: coverpoint ins.prev.csr[12'h300][17] {
-    // }
     old_mstatus_tsr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tsr")[0] {
     }
     old_sstatus_spp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0] {
@@ -162,26 +191,26 @@ covergroup S_scsr_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     walking_ones: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
-        bins b_1[] = { [0:`XLEN-1] };
+        bins b_1[] = { [0:`UDB_MXLEN-1] };
     }
 
-    walking_ones_nonmode: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
-        `ifdef XLEN64
-            bins b_1[] = { [0:`XLEN-5] };
-        `else
-            bins b_1[] = { [0:`XLEN-2] };
-        `endif
-    }
+    // walking_ones_nonmode: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+    //     `ifdef UDB_MXLEN_64
+    //         bins b_1[] = { [0:`UDB_MXLEN-5] };
+    //     `else
+    //         bins b_1[] = { [0:`UDB_MXLEN-2] };
+    //     `endif
+    // }
 
 
     csrname : coverpoint ins.current.insn[31:20] {
         bins sstatus       = {CSR_SSTATUS};
         bins sie           = {CSR_SIE};
-        bins stvec         = {CSR_STVEC};
-        bins scounteren    = {CSR_SCOUNTEREN};
+        // bins stvec         = {CSR_STVEC}; // warl field has complex write restrictions and is not easy to test
+        bins  scounteren    = {CSR_SCOUNTEREN};
         bins sscratch      = {CSR_SSCRATCH};
         bins sepc          = {CSR_SEPC};
-        bins scause        = {CSR_SCAUSE};
+        // bins scause        = {CSR_SCAUSE}; // WLRL field; tested with cp_scause_write_*
         bins stval         = {CSR_STVAL};
         bins sip           = {CSR_SIP};
         bins senvcfg       = {CSR_SENVCFG};
@@ -203,9 +232,9 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         `endif
         // counters tested in ZicntrS
     }
-    satp : coverpoint ins.current.insn[31:20] {
-        bins satp          = {CSR_SATP};
-    }
+    // satp : coverpoint ins.current.insn[31:20] {
+    //     bins satp          = {CSR_SATP};
+    // }
 
     csrop: coverpoint ins.current.insn {
         wildcard bins csrrs = {CSRRS};
@@ -222,7 +251,9 @@ covergroup S_scsr_cg with function sample(ins_t ins);
 
     csr_machine: coverpoint ins.current.insn[31:20]  {
         bins machine_0[] = {[12'h300:12'h3FF]};
-        bins machine_1[] = {[12'h700:12'h7FF]};
+        bins machine_1a[] = {[12'h700:12'h7A9]};
+        // ignore mscontext at 0x7aa, which is accessible from S mode
+        bins machine_1b[] = {[12'h7AB:12'h7FF]};
         bins machine_2[] = {[12'hB00:12'hBFF]};
         bins machine_3[] = {[12'hF00:12'hFFF]};
     }
@@ -251,8 +282,8 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         wildcard bins csrw = {CSRW};
     }
     rs1_prev: coverpoint ins.prev.rs1_val {
-        bins zero = { 0  };
-        bins ones = { '1 };
+        bins zero = { 0 };
+        bins nonzero = { [1:$] };
     }
 
     cp_scsr_access:           cross priv_mode_s, csrname, csraccesses;
@@ -260,9 +291,12 @@ covergroup S_scsr_cg with function sample(ins_t ins);
     cp_scsr_from_m:           cross priv_mode_m, csrname, csraccesses;
     cp_ucsr_from_s:           cross priv_mode_s, csruname, csraccesses;
     cp_shadow :               cross priv_mode_m, shadow, csrw_prev, rs1_prev, csrr;
-    cp_csr_satp:              cross priv_mode_s, satp, csrop, walking_ones_nonmode;
     cp_csr_insufficient_priv: cross priv_mode_s, csrr, csr_machine, nonzerord;
     cp_csr_ro:                cross priv_mode_s, csrw, csr_sro;
+
+// waived because behavior of other fields is UNSPECIFIED when satp.MODE=Bare
+//    cp_csr_satp:              cross priv_mode_s, satp, csrop, walking_ones_nonmode;
+
 endgroup
 
 function void s_sample(int hart, int issue, ins_t ins);

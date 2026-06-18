@@ -34,7 +34,7 @@
 
     vl_nonzero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
         //Any value between max and 1
-        bins target = {[`XLEN'h10000:`XLEN'h1]};
+        bins target = {[64'h10000:64'h1]};
     }
 
     mask_enabled: coverpoint ins.current.insn[25] {
@@ -206,7 +206,7 @@
         `ifndef SEW16_SUPPORTED
         `ifndef SEW32_SUPPORTED
         `ifndef SEW64_SUPPORTED
-        bins sew_not_supported  = {111:000};
+        bins sew_not_supported  = {[3'b000:3'b111]};
         `endif
         `endif
         `endif
@@ -220,7 +220,7 @@
 
         // Make sure bin is always hit if the sew isn't supported
         `ifndef SEW8_SUPPORTED
-        bins sew_not_supported  = {111:000};
+        bins sew_not_supported  = {[3'b000:3'b111]};
         `endif
     }
 
@@ -231,7 +231,7 @@
 
         // Make sure bin is always hit if the sew isn't supported
         `ifndef SEW16_SUPPORTED
-        bins sew_not_supported  = {111:000};
+        bins sew_not_supported  = {[3'b000:3'b111]};
         `endif
     }
 
@@ -242,7 +242,7 @@
 
         // Make sure bin is always hit if the sew isn't supported
         `ifndef SEW32_SUPPORTED
-        bins sew_not_supported  = {111:000};
+        bins sew_not_supported  = {[3'b000:3'b111]};
         `endif
     }
 
@@ -252,8 +252,8 @@
         `endif
 
         // Make sure bin is always hit if the sew isn't supported
-        `ifndef SEW64
-        bins sew_not_supported  = {111:000};
+        `ifndef SEW64_SUPPORTED
+        bins sew_not_supported  = {[3'b000:3'b111]};
         `endif
     }
 
@@ -276,7 +276,7 @@
         `ifndef SEW16_SUPPORTED
         `ifndef SEW32_SUPPORTED
         `ifndef SEW64_SUPPORTED
-        bins sew_not_supported  = {111:000};
+        bins sew_not_supported  = {[3'b000:3'b111]};
         `endif
         `endif
         `endif
@@ -508,59 +508,47 @@
     // Vector fp coverpoints
     //////////////////////////////////////////////////////////////////////////////////
 
-    vs2_element0_qNAN : get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_qNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef SEW16_SUPPORTED
-        bins canonicalQNaN          = {16'h7E00};
+        bins canonicalQNaN16          = {16'h7E00};
         `endif
         `ifdef SEW32_SUPPORTED
-        bins canonicalQNaN          = {32'h7FC00000};   // quiet NaN, canonical payload
+        bins canonicalQNaN32          = {32'h7FC00000};   // quiet NaN, canonical payload
         `endif
         `ifdef SEW64_SUPPORTED
-        bins canonicalQNaN          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
+        bins canonicalQNaN64          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
         `endif
     }
 
-    vs2_element0_sNAN : get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef SEW16_SUPPORTED
-        bins sNaN_payload1          = {16'h7D01};                // Signaling NaN with payload 1
+        bins sNaN_payload1_16          = {16'h7D01};                // Signaling NaN with payload 1
         `endif
         `ifdef SEW32_SUPPORTED
-        bins sNaN_payload1          = {32'h7F800001};   // signaling NaN with payload 1
+        bins sNaN_payload1_32          = {32'h7F800001};   // signaling NaN with payload 1
         `endif
         `ifdef SEW64_SUPPORTED
-        bins sNaN_payload1          = {64'h7FF0000000000001};   // signaling NaN with payload 1
+        bins sNaN_payload1_64          = {64'h7FF0000000000001};   // signaling NaN with payload 1
         `endif
     }
 
-    vs2_element0_qNAN : get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef SEW16_SUPPORTED
-        bins canonicalQNaN          = {16'h7E00};
+        bins sNaN_payload1_16          = {16'h7D01};                // Signaling NaN with payload 1
         `endif
         `ifdef SEW32_SUPPORTED
-        bins canonicalQNaN          = {32'h7FC00000};   // quiet NaN, canonical payload
+        bins sNaN_payload1_32          = {32'h7F800001};   // signaling NaN with payload 1
         `endif
         `ifdef SEW64_SUPPORTED
-        bins canonicalQNaN          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
-        `endif
-    }
-
-    vs2_element0_sqNAN : get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        `ifdef SEW16_SUPPORTED
-        bins sNaN_payload1          = {16'h7D01};                // Signaling NaN with payload 1
-        `endif
-        `ifdef SEW32_SUPPORTED
-        bins sNaN_payload1          = {32'h7F800001};   // signaling NaN with payload 1
-        `endif
-        `ifdef SEW64_SUPPORTED
-        bins sNaN_payload1          = {64'h7FF0000000000001};   // signaling NaN with payload 1
+        bins sNaN_payload1_64          = {64'h7FF0000000000001};   // signaling NaN with payload 1
         `endif
         `ifdef SEW16_SUPPORTED
-        bins canonicalQNaN          = {16'h7E00};
+        bins canonicalQNaN16          = {16'h7E00};
         `endif
         `ifdef SEW32_SUPPORTED
-        bins canonicalQNaN          = {32'h7FC00000};   // quiet NaN, canonical payload
+        bins canonicalQNaN32          = {32'h7FC00000};   // quiet NaN, canonical payload
         `endif
         `ifdef SEW64_SUPPORTED
-        bins canonicalQNaN          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
+        bins canonicalQNaN64          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
         `endif
     }

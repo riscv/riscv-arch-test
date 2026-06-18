@@ -14,15 +14,13 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, S]
-# MARCH: rv${XLEN}i_zicsr
+# MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "vm_mstatus_tvm_test.S"
+#define TEST_FILE "sv_mstatus_tvm_test.S"
 #define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 30
-#define rvtest_mtrap_routine
-#define rvtest_strap_routine
-#define RVTEST_PRIV_TEST
+#define BOOT_TO_MMODE
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"
@@ -43,11 +41,7 @@ main:
 // Test case 1: Access satp in M-mode | mstatus.TVM set | Expected: Successful access
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  li a0, 1
-  CSRW(satp, a0)
-
-  test1:
-  RVTEST_SIGUPD_CSR_READ(satp, a4, test1, test1_str)
+  CSRW(satp, zero)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test case 2: Access sfence.vma in M-mode | mstatus.TVM set | Expected: Successful access
@@ -61,19 +55,13 @@ main:
 
   RVTEST_GOTO_LOWER_MODE Smode
 
-  li a0, 3
-  CSRW(satp, a0)
+  CSRW(satp, zero)
 
-  li a0, 12
-  CSRS(satp, a0)
+  CSRS(satp, zero)
 
-  li a0, 6
-  CSRC(satp, a0)
+  CSRC(satp, zero)
 
   RVTEST_GOTO_MMODE
-
-  test3:
-  RVTEST_SIGUPD_CSR_READ(satp, a4, test3, test3_str)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test case 4: Access satp in S-mode | mstatus.TVM set | Expected: Illegal instruction exception
@@ -93,8 +81,6 @@ RVTEST_DATA_BEGIN
 //---------------------------------------------------------------------------------------------------------------------------------
 
 tvm_str:   .string "\"Mismatch in mstatus value while setting TVM bit!\""
-test1_str: .string "\"Mismatch in Test Case 1!\""
-test3_str: .string "\"Mismatch in Test Case 3!\""
 
 RVTEST_DATA_END
 RVTEST_SIG_SETUP

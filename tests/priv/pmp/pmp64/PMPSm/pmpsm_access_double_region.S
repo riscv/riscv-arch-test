@@ -24,20 +24,17 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I']
+# REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zicsr
+# MARCH: rv64i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "pmpsm_access_double_region.S"
 #define SIGUPD_COUNT 50
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 
@@ -47,7 +44,7 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define g   (1 << (RVMODEL_PMP_GRAIN + 2))
+#define g   (1 << (UDB_PMP_GRANULARITY))
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
@@ -68,14 +65,14 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -100,12 +97,14 @@ main:
     csrw pmpaddr0, x4
 
     LA(x4, REGIONSTART)
-    addi x4, x4, g
+    LI(t0, g)
+    add x4, x4, t0
     srl x4, x4, PMP_SHIFT
     csrw pmpaddr1, x4
 
     LA(x4, REGIONSTART)
-    addi x4, x4, 2*g
+    LI(t0, 2*g)
+    add x4, x4, t0
     srl x4, x4, PMP_SHIFT
     csrw pmpaddr2, x4
 
@@ -117,12 +116,23 @@ main:
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
-    j exit                                                        // Verification Complete, exit the test
 
-.align 13
-.align (RVMODEL_PMP_GRAIN+2)
+RVTEST_CODE_END
+RVTEST_DATA_BEGIN
+.align 4
+
+// Test case strings for reporting
+
+test_1_str: .string "\"test: 1; cp: cp_tor_doubleregionfail_sd\""
+test_2_str: .string "\"test: 2; cp: cp_tor_doubleregionfail_ld\""
+
+.align 12
+.align (UDB_PMP_GRANULARITY)
+TEST_FOR_EXECUTION_0:
+    jr ra
+
 TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept (1<<(UDB_PMP_GRANULARITY))
     nop
     .endr
 
@@ -131,15 +141,6 @@ RETURN_INSTRUCTION:
     nop
     jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
-exit:
-
-RVTEST_CODE_END
-RVTEST_DATA_BEGIN
-.align 4
-
-// Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: cp_tor_doubleregionfail_sd\""
-test_2_str: .string "\"test: 2; cp: cp_tor_doubleregionfail_ld\""
 
 RVTEST_DATA_END
 

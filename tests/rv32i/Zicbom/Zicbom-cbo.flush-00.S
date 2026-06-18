@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zicbom']
 # params:
 #   MXLEN: 32
-# MARCH: rv32i_zicbom_zicsr
+# MARCH: rv32i_zicbom_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -1281,6 +1281,8 @@ Zicbom_cbo_flush_cg_cp_custom_cbo_word_64_offset_255:
   # Check if x11 contains the expected result. x6 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x6, x8, x7, x11, Zicbom_cbo_flush_cg_cp_custom_cbo_word_64_offset_255, Zicbom_cbo_flush_cg_cp_custom_cbo_word_64_offset_255_str)
 
+
+  mv x2, x6 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

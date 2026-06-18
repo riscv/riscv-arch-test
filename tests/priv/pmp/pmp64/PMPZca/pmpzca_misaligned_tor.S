@@ -24,20 +24,17 @@
 // ---------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','Zca']
+# REQUIRED_EXTENSIONS:  ['Zca','Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zca_zicsr
+# MARCH: rv64i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "pmpzca_misaligned_tor.S"
 #define SIGUPD_COUNT 50
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 
@@ -47,7 +44,7 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define REGION_SIZE (1<<(RVMODEL_PMP_GRAIN+2))
+#define REGION_SIZE (1<<(UDB_PMP_GRANULARITY))
 
 .macro VERIFICATION_RWX ADDRESS, TEST_CASE
     \TEST_CASE\()_1:
@@ -60,14 +57,14 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept UDB_NUM_PMP_ENTRIES/8
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -79,7 +76,7 @@ main:
 
 #define PMPADDRESS_TOP_GLOBAL           -1                  // All memory region
 
-#define REGIONSTART                     TEST_FOR_EXECUTION_1  // RAM_BASE_ADDR + PROGRAM_SIZE
+#define REGIONSTART                     TEST_FOR_EXECUTION_1
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw    pmpaddr15, x4
@@ -96,7 +93,8 @@ main:
     csrw pmpaddr0, x5
 
     LA(x5, REGIONSTART)
-    addi x5, x5, REGION_SIZE
+    LI(x4, REGION_SIZE)
+    add x5, x5, x4
     srl x5, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_1
     csrw pmpaddr1, x5
 
@@ -104,7 +102,8 @@ main:
     csrw pmpcfg0, x4
 
     LA(x5, REGIONSTART)
-    addi x5, x5, 2*REGION_SIZE
+    LI(x4, 2*REGION_SIZE)
+    add x5, x5, x4
     srl x5, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_2
     csrw pmpaddr2, x5
 
@@ -112,7 +111,8 @@ main:
     csrw pmpcfg0, x4
 
     LA(x5, REGIONSTART)
-    addi x5, x5, 3*REGION_SIZE
+    LI(x4, 3*REGION_SIZE)
+    add x5, x5, x4
     srl x5, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_2
     csrw pmpaddr3, x5
 
@@ -127,32 +127,6 @@ main:
 
     j exit                                                      // Verification Complete, exit the test
 
-.align 13
-TEST_FOR_EXECUTION_1:
-    .rept (((1<<(RVMODEL_PMP_GRAIN+2)) / 2) -1)
-    nop
-    .endr
-
-TEST_FOR_EXECUTION_2:
-    jalr x0, x1, 0                                            // Uncompressed return straddling the start
-
-TEST_FOR_EXECUTION_3:
-    .rept (((1<<(RVMODEL_PMP_GRAIN+2)) / 2) -2)
-    nop
-    .endr
-
-TEST_FOR_EXECUTION_4:
-    jalr x0, x1, 0                                             // Uncompressed return straddling the end
-
-TEST_FOR_EXECUTION_5:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
-    nop
-    .endr
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 exit:
 
@@ -162,6 +136,43 @@ RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpzca_misaligned_tor_start\""
+
+.align 12
+.align (UDB_PMP_GRANULARITY)
+TEST_FOR_EXECUTION_0:
+    jalr x0, x1, 0
+
+.align (UDB_PMP_GRANULARITY)
+TEST_FOR_EXECUTION_1:
+    .rept (((1<<(UDB_PMP_GRANULARITY)) / 2) -1)
+    nop
+    .endr
+
+.align (UDB_PMP_GRANULARITY)
+TEST_FOR_EXECUTION_2:
+    jalr x0, x1, 0                                            // Uncompressed return straddling the start
+
+.align (UDB_PMP_GRANULARITY)
+TEST_FOR_EXECUTION_3:
+    .rept (((1<<(UDB_PMP_GRANULARITY)) / 2) -2)
+    nop
+    .endr
+
+.align (UDB_PMP_GRANULARITY)
+TEST_FOR_EXECUTION_4:
+    jalr x0, x1, 0                                             // Uncompressed return straddling the end
+
+.align (UDB_PMP_GRANULARITY)
+TEST_FOR_EXECUTION_5:
+    .rept (1<<(UDB_PMP_GRANULARITY))
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
+
 
 RVTEST_DATA_END
 

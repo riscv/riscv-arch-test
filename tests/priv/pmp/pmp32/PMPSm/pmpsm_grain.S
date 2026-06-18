@@ -24,20 +24,17 @@
 
 #define SKIP_MEPC
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I']
+# REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv32i_zicsr
+# MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "pmpsm_grain.S"
 #define SIGUPD_COUNT 50
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -48,14 +45,14 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/4
+    .rept UDB_NUM_PMP_ENTRIES/4
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+1
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -66,7 +63,7 @@ main:
 #define PMPREGION_TOR       ((((     PMP_R|PMP_W|PMP_X |PMP_TOR)   &0xFF) << PMP0_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
-#define REGIONSTART         TEST_FOR_EXECUTION      // RAM_BASE_ADDR + PROGRAM_SIZE
+#define REGIONSTART         TEST_FOR_EXECUTION
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw    pmpaddr15, x4
@@ -85,7 +82,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -100,7 +97,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -114,7 +111,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in  TOR
@@ -130,7 +127,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -144,7 +141,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -158,7 +155,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, 0
+    LI(x6, 0)
     csrw pmpaddr0, x6
 
 // Read back in TOR
@@ -174,7 +171,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -188,7 +185,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -202,7 +199,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in TOR
@@ -219,7 +216,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -233,7 +230,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -247,7 +244,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, -1
+    LI(x6, -1)
     csrw pmpaddr0, x6
 
 // Read back in TOR
@@ -263,7 +260,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, 0xAAAAAAAA
+    LI(x6, 0xAAAAAAAA)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -277,7 +274,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, 0xAAAAAAAA
+    LI(x6, 0xAAAAAAAA)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -291,7 +288,7 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    li x6, 0xAAAAAAAA
+    LI(x6, 0xAAAAAAAA)
     csrw pmpaddr0, x6
 
 // Read back in TOR
@@ -308,7 +305,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, 0xAAAAAAAA
+    LI(x6, 0xAAAAAAAA)
     csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -322,7 +319,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, 0xAAAAAAAA
+    LI(x6, 0xAAAAAAAA)
     csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -336,7 +333,7 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    li x6, 0xAAAAAAAA
+    LI(x6, 0xAAAAAAAA)
     csrw pmpaddr0, x6
 
 // Read back in TOR
@@ -347,21 +344,6 @@ main:
     RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_18, test_18_str)
 
     RVTEST_GOTO_MMODE
-
-    j exit                                                      // Verification Complete, exit the test
-
-.align 13
-TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
-    nop
-    .endr
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
@@ -386,6 +368,22 @@ test_15_str: .string "\"test: 15; cp: cp_pmp_grain\""
 test_16_str: .string "\"test: 16; cp: cp_pmp_grain\""
 test_17_str: .string "\"test: 17; cp: cp_pmp_grain\""
 test_18_str: .string "\"test: 18; cp: cp_pmp_grain\""
+
+.align 12
+TEST_FOR_EXECUTION_0:
+    .rept 1024
+    jr ra
+    .endr
+
+TEST_FOR_EXECUTION:
+    .rept (1<<(UDB_PMP_GRANULARITY))
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

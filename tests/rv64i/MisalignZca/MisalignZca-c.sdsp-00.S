@@ -13,7 +13,7 @@
 # params:
 #   MXLEN: 64
 #   MISALIGNED_LDST: true
-# MARCH: rv64i_zicsr_zca
+# MARCH: rv64i_zicsr_zifencei_zca
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -252,6 +252,8 @@ MisalignZca_c_sdsp_cg_cp_misalign_8:
   # Check if x9 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x24, x5, x4, x9, MisalignZca_c_sdsp_cg_cp_misalign_8, MisalignZca_c_sdsp_cg_cp_misalign_8_str)
 
+
+  mv x2, x24 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

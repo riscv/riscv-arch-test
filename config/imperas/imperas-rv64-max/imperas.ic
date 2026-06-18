@@ -7,6 +7,7 @@
 --processorvendor riscv.ovpworld.org
 --processorname riscv
 --variant RVA23S64
+--addressbits 56 # Physical address bus width
 # defines printing via write to  0x10010000 and termination at symbol _test_exit
 --extlib iss/cpu0/cc=riscv.ovpworld.org/intercept/customControl/1.0
 --override iss/cpu0/simulateexceptions=T
@@ -51,6 +52,7 @@
 --override cpu*/ELEN=64 #(Uns32) (default=64) (default) Override ELEN
 --override cpu*/SEW_min=8 #(Uns32) (default=8) (default) Override minimum supported SEW
 --override cpu*/VLEN=0x200 #(Uns32) (default=0x200) (default) Override VLEN
+# These must all be false as otherwise they overwrite our configuration
 --override cpu*/Zve32f=F #(Boolean) (default=F) (default) Specify that Zve32f is implemented
 --override cpu*/Zve32x=F #(Boolean) (default=F) (default) Specify that Zve32x is implemented
 --override cpu*/Zve64d=F #(Boolean) (default=F) (default) Specify that Zve64d is implemented
@@ -59,13 +61,15 @@
 --override cpu*/Zvfbfmin=T #(Boolean) (default=T) (default) Specify that Zvfbfmin is implemented
 --override cpu*/Zvfbfwma=T #(Boolean) (default=T) (default) Specify that Zvfbfwma is implemented
 --override cpu*/Zvfh=T #(Boolean) (default=T) (default) Specify that Zvfh is implemented
---override cpu*/Zvfhmin=T #(Boolean) (default=T) (default) Specify that Zvfhfmin is implemented
+--override cpu*/Zvfhmin=T #(Boolean) (default=T) (default) Specify that Zvfhmin is implemented
+# This is needed to support segmented load/store from the V extension
+--override cpu*/Zvlsseg=T #(Boolean) (default=F) (default) Specify that Zvlsseg is implemented
 --override cpu*/agnostic_mask=F #(Boolean) (default=F) (default) Specify that artifact mask registers holding agnostic bits are present
 --override cpu*/agnostic_ones=F #(Boolean) (default=F) (default) Specify that vector agnostic elements are set to 1
 --override cpu*/align_whole=F #(Boolean) (default=F) (default) Whether whole-register load addresses must be aligned using the encoded EEW
 --override cpu*/mstatus_VS=0 #(Uns32) (default=0) (default) Override default value of mstatus.VS (initial state of vector unit)
 --override cpu*/mstatus_vs_mode=state_update #(Enumeration) (default=state_update) (default) Specify conditions causing update of mstatus.VS to dirty
---override cpu*/unalignedV=F #(Boolean) (default=F) (default) Specify whether the processor supports unaligned memory accesses for vector instructions
+--override cpu*/unalignedV=T #(Boolean) (default=F) (default) Specify whether the processor supports unaligned memory accesses for vector instructions
 --override cpu*/vector_version=1.0-ratified #(Enumeration) (default=1.0-ratified) (default) Specify required Vector Architecture version
 --override cpu*/vill_trap=F #(Boolean) (default=F) (default) Whether illegal vtype values cause trap instead of setting vtype.vill
 --override cpu*/vstart0_ld_st=F #(Boolean) (default=F) (default) Whether CSR vstart must be 0 for load/store vector instructions
@@ -77,6 +81,8 @@
 --override cpu*/Zfa=T
 --override cpu*/Zcb=T
 --override cpu*/Sstc=T
+--override cpu*/Smstateen=T
+--override cpu*/Ssstateen=T
 
 # Misaligned access (Zicclsm) is supported
 --override cpu*/unaligned=T
@@ -86,10 +92,15 @@
 #--override cpu*/TW_time_limit=65536  # *** attempted adding this summer 2025 for interrupt tests, but it breaks WALLY-status-tw-01.elf test and tests/coverage/priv.elf.  Not in rv32gc either
 
 # PMP Configuration
---override cpu*/PMP_registers=16
+--override cpu*/PMP_registers=64
 --override cpu*/PMP_grain=4   # 64-byte grains to match cache line width
 --override cpu*/PMP_decompose=T  # unaligned accesses are decomposed into separate aligned accesses
 --override cpu*/PMP_undefined=T # access to unimplemented PMP registers cause illegal instruction exception
+
+# Pointer Masking
+--override iss/cpu0/Smmpm=48_57 # (Enumeration) (default=none) (default) Specify Smmpm implemented modes
+--override iss/cpu0/Smnpm=48_57 # (Enumeration) (default=48_57) (default) Specify Smnpm implemented modes
+--override iss/cpu0/Ssnpm=48_57 # (Enumeration) (default=48_57) (default) Specify Ssnpm implemented modes
 
 # More extensions
 #--override cpu*/Smdbltrp=T

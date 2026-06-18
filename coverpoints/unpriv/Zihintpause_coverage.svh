@@ -18,6 +18,7 @@ covergroup Zihintpause_pause_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
 endgroup
 // ---------------------
 function void zihintpause_sample(int hart, int issue, ins_t ins);

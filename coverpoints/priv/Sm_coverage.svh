@@ -9,6 +9,17 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_SM
+
+// Software check exceptions are supported for both Zicfilp and Zicfiss
+`ifdef ZICFILP_SUPPORTED
+    `define SOFTWARE_CHECK_SUPPORTED
+`endif
+`ifdef ZICFISS_SUPPORTED
+    `ifndef SOFTWARE_CHECK_SUPPORTED
+        `define SOFTWARE_CHECK_SUPPORTED
+    `endif
+`endif
+
 covergroup Sm_mcause_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -19,13 +30,13 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
     mcause: coverpoint ins.current.insn[31:20] {
         bins mcause = {CSR_MCAUSE};
     }
-    mcause_interrupt : coverpoint ins.current.rs1_val[XLEN-1] {
+    mcause_interrupt : coverpoint ins.current.rs1_val[`UDB_MXLEN-1] {
         bins interrupt = {1};
     }
-    mcause_exception : coverpoint ins.current.rs1_val[XLEN-1] {
+    mcause_exception : coverpoint ins.current.rs1_val[`UDB_MXLEN-1] {
         bins exception = {0};
     }
-    mcause_exception_values: coverpoint ins.current.rs1_val[XLEN-2:0] {
+    mcause_exception_values: coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
         // exclude reserved and custom fields
         bins b_0_instruction_address_misaligned = {0};
         bins b_1_instruction_address_fault = {1};
@@ -35,27 +46,39 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
         bins b_5_load_access_fault = {5};
         bins b_6_store_address_misaligned = {6};
         bins b_7_store_access_fault = {7};
-        bins b_8_ecall_u = {8};
-        bins b_9_ecall_s = {9};
-        bins b_10_ecall_vs = {10};
+        `ifdef U_SUPPORTED
+            bins b_8_ecall_u = {8};
+        `endif
+        `ifdef S_SUPPORTED
+            bins b_9_ecall_s = {9};
+        `endif
+        `ifdef H_SUPPORTED
+            bins b_10_ecall_vs = {10};
+        `endif
         bins b_11_ecall_m = {11};
         bins b_12_instruction_page_fault = {12};
         bins b_13_load_page_fault = {13};
         //bins b_14_reserved = {14};
         bins b_15_store_page_fault = {15};
-        bins b_16_double_trap = {16};
+        `ifdef SMDBLTRP_SUPPORTED
+            bins b_16_double_trap = {16}; // never delegated to S mode
+        `endif
         //bins b_17_reserved = {17};
-        bins b_18_software_check = {18};
-        bins b_19_hardware_error = {19};
-        bins b_20_instr_guest_page_fault = {20};
-        bins b_21_load_guest_page_fault = {21};
-        bins b_22_virtual_instruction = {22};
-        bins b_23_store_guest_page_fault = {23};
+        `ifdef SOFTWARE_CHECK_SUPPORTED
+            bins b_18_software_check = {18};
+        `endif
+        // bins b_19_hardware_error = {19}; // unclear how to trigger on all implementations
+        `ifdef H_SUPPORTED
+            bins b_20_instr_guest_page_fault = {20};
+            bins b_21_load_guest_page_fault = {21};
+            bins b_22_virtual_instruction = {22};
+            bins b_23_store_guest_page_fault = {23};
+        `endif
         //bins b_31_24_custom = {[31:24]};
         //bins b_47_32_reserved = {[47:32]};
         //bins b_63_48_custom = {[63:48]};
     }
-    mcause_interrupt_values: coverpoint ins.current.rs1_val[XLEN-2:0] {
+    mcause_interrupt_values: coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
         // exclude reserved and custom fields
         //bins b_0_reserved = {0};
         bins b_1_supervisor_software = {1};
@@ -79,6 +102,7 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
     // This is Sm machine-mode testing, so all coverpoints are in Machine mode.
     cp_mcause_write_exception: cross priv_mode_m, csrrw, mcause, mcause_exception_values, mcause_exception; // CSR write of mcause in M mode with interesting values
     cp_mcause_write_interrupt: cross priv_mode_m, csrrw, mcause, mcause_interrupt_values, mcause_interrupt; // CSR write of mcause in M mode with interesting values
+
 endgroup
 
 
@@ -88,7 +112,7 @@ covergroup Sm_mstatus_cg with function sample(ins_t ins);
 
     // SD COVERPOINTS
     // Cross-product of trying to write mstatus.SD, .FS, .XS, .VS
-    cp_mstatus_sd: coverpoint ins.current.rs1_val[XLEN-1]  {
+    cp_mstatus_sd: coverpoint ins.current.rs1_val[`UDB_MXLEN-1]  {
     }
     cp_mstatus_fs: coverpoint ins.current.rs1_val[14:13] {
     }
@@ -174,15 +198,14 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     mcsrname : coverpoint ins.current.insn[31:20] { // excludes read-only CSRs
         bins mstatus    = {CSR_MSTATUS};
-        bins misa       = {CSR_MISA};
         bins medeleg    = {CSR_MEDELEG};
         bins mideleg    = {CSR_MIDELEG};
         bins mie        = {CSR_MIE};
-        bins mtvec      = {CSR_MTVEC};
+        // bins mtvec      = {CSR_MTVEC}; // warl field has complex write restrictions and is not easy to test
         bins mcounteren = {CSR_MCOUNTEREN};
         bins mscratch   = {CSR_MSCRATCH};
         bins mepc       = {CSR_MEPC};
-        bins mcause     = {CSR_MCAUSE};
+        // bins mcause     = {CSR_MCAUSE}; // WLRL field; tested with cp_mcause_write_exception and cp_mcause_write_interrupt
         bins mtval      = {CSR_MTVAL};
         bins mip        = {CSR_MIP};
         bins menvcfg    = {CSR_MENVCFG};
@@ -216,15 +239,17 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins mhpmevent29= {CSR_MHPMEVENT29};
         bins mhpmevent30= {CSR_MHPMEVENT30};
         bins mhpmevent31= {CSR_MHPMEVENT31};
-        `ifdef MSECCFG_SUPPORTED // update this in four places when UDB gives a name to this parameter
+        `ifdef MSECCFG_SUPPORTED
             bins mseccfg  = {CSR_MSECCFG};
         `endif
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins mstatush = {CSR_MSTATUSH};
-            // bins medelegh = {12'h312}; // move this to Sm1p13 coverpoints
             bins menvcfgh = {CSR_MENVCFGH};
-            `ifdef MSECCFG_SUPPORTED // update this in four places when UDB gives a name to this parameter
+            `ifdef MSECCFG_SUPPORTED
                 bins mseccfgh = {CSR_MSECCFGH};
+            `endif
+            `ifdef S1P13P0_SUPPORTED
+                bins medelegh = {CSR_MEDELEGH};
             `endif
         `endif
     }
@@ -260,7 +285,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins mhpmcounter29= {CSR_MHPMCOUNTER29};
         bins mhpmcounter30= {CSR_MHPMCOUNTER30};
         bins mhpmcounter31= {CSR_MHPMCOUNTER31};
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             bins mcycleh      = {CSR_MCYCLEH};
             bins minstreth    = {CSR_MINSTRETH};
             bins mhpmcounter3h = {CSR_MHPMCOUNTER3H};
@@ -300,7 +325,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         wildcard bins csrrc = {CSRRC};
     }
     walking_ones: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
-        bins b_1[] = { [0:`XLEN-1] };
+        bins b_1[] = { [0:`UDB_MXLEN-1] };
     }
 
     csr_debug: coverpoint ins.current.insn[31:20]  {
@@ -329,13 +354,13 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     old_mcountinhibit_cy: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "cy") {
         bins zero = {1'b0};
-        `ifdef COUNTINHIBIT_EN_0
+        `ifdef UDB_COUNTINHIBIT_EN_0
             bins one = {1'b1}; // only if counter can be inhibited
         `endif
     }
     old_mcountinhibit_ir: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "ir") {
         bins zero = {1'b0};
-        `ifdef COUNTINHIBIT_EN_2
+        `ifdef UDB_COUNTINHIBIT_EN_2
             bins one = {1'b1}; // only if counter can be inhibited
         `endif
     }
@@ -349,7 +374,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     time_csr: coverpoint ins.current.insn[31:20] {
         bins time_csr = {CSR_TIME};
     }
-    `ifdef XLEN32
+    `ifdef UDB_MXLEN_32
         timeh_csr: coverpoint ins.current.insn[31:20] {
             bins timeh_csr = {CSR_TIMEH};
         }
@@ -361,12 +386,12 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     // only check MISA.MXL.  The other bits are allowed to be 0s even if a feature is implemented.
     // misa.MXL is also allowed to be hardwired to 0 (but should match the reference model)
     misa_mxl_accesses : coverpoint ins.current.insn {
-        wildcard bins csrc_11  = {CSRC} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b11); // clear misa.MXL
-        wildcard bins csrs_11  = {CSRS} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b11); // set misa.MXL = 11
-        wildcard bins csrw_00  = {CSRW} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b00); // write misa.MXL = 00
-        wildcard bins csrw_01  = {CSRW} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b01); // write misa.MXL = 01
-        wildcard bins csrw_10  = {CSRW} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b10); // write misa.MXL = 10
-        wildcard bins csrw_11  = {CSRW} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b11); // write misa.MXL = 11
+        wildcard bins csrc_11  = {CSRC} iff (ins.current.rs1_val[`UDB_MXLEN-1:`UDB_MXLEN-2] == 2'b11); // clear misa.MXL
+        wildcard bins csrs_11  = {CSRS} iff (ins.current.rs1_val[`UDB_MXLEN-1:`UDB_MXLEN-2] == 2'b11); // set misa.MXL = 11
+        wildcard bins csrw_00  = {CSRW} iff (ins.current.rs1_val[`UDB_MXLEN-1:`UDB_MXLEN-2] == 2'b00); // write misa.MXL = 00
+        wildcard bins csrw_01  = {CSRW} iff (ins.current.rs1_val[`UDB_MXLEN-1:`UDB_MXLEN-2] == 2'b01); // write misa.MXL = 01
+        wildcard bins csrw_10  = {CSRW} iff (ins.current.rs1_val[`UDB_MXLEN-1:`UDB_MXLEN-2] == 2'b10); // write misa.MXL = 10
+        wildcard bins csrw_11  = {CSRW} iff (ins.current.rs1_val[`UDB_MXLEN-1:`UDB_MXLEN-2] == 2'b11); // write misa.MXL = 11
         wildcard bins csrr     = {CSRR};                                                   // read misa
     }
 
@@ -407,12 +432,40 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     cp_misa_dependencies :      cross priv_mode_m, csrrw, misa, misa_dependencies;
     cp_misa_clear_c :           cross priv_mode_m, csrc, misa_c_0, pc_1;
 
-    `ifdef TIME_CSR_IMPLEMENTED
+    `ifdef UDB_TIME_CSR_IMPLEMENTED
         cp_mtime_write :        cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written
-        `ifdef XLEN32
+        `ifdef UDB_MXLEN_32
             cp_mtimeh_write :   cross priv_mode_m, csrr,  timeh_csr; // assumes mtimeh has been written
         `endif
     `endif
+
+    `ifdef S1P13P0_SUPPORTED
+        misa_b_bit: coverpoint ins.current.rs1_val[1] {
+            bins b_set   = {1'b1};
+            bins b_clear = {1'b0};
+        }
+        misa_v_bit: coverpoint ins.current.rs1_val[21] {
+            bins v_set   = {1'b1};
+            bins v_clear = {1'b0};
+        }
+
+        cp_misa_b: cross priv_mode_m, misa, csrop, misa_b_bit;
+        cp_misa_v: cross priv_mode_m, misa, csrop, misa_v_bit;
+
+
+        `ifdef RVMODEL_MSIP_ADDRESS
+            msip_address: coverpoint ins.current.rs1_val {
+                bin msip = {`RVMODEL_MSIP_ADDRESS};
+            }
+            msip_val: coverpoint ins.current.rs2_val {
+                bin zero = {0};
+                bin one  = {1};
+            }
+            cp_msip: cross priv_mode_m, sw, msip_address, msip_val;
+        `endif // RVMODEL_MSIP_ADDRESS
+    `endif // S1P13P0_SUPPORTED
+
+
 endgroup
 
 function void sm_sample(int hart, int issue, ins_t ins);

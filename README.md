@@ -68,11 +68,27 @@ mise --version
 >
 > For more details on mise and alternate installation methods, see the [mise getting started guide](https://mise.jdx.dev/getting-started.html).
 >
-> For alternate installation instructions that do not require mise, see Advanced Installation - COMING SOON.
+> If you do not want to install mise, you can install `uv` directly (see the [uv installation guide](https://docs.astral.sh/uv/getting-started/installation/)) or use an existing Python environment as described in [Installing without uv or mise](#installing-without-uv-or-mise).
 
 > [!NOTE]
 >
 > See note on enabling trust in the `.mise.toml` file below.
+
+##### Installing without uv or mise
+
+If you already have your own Python environment, you can install the
+framework packages into it with `pip` instead of using `mise`/`uv`. You are
+responsible for providing Python 3.10+, and Ruby/Bundler must be installed
+separately (see the [UDB repository](https://github.com/riscv/riscv-unified-db)).
+
+Activate your venv, then from the cloned repository run:
+
+```bash
+pip install -e ./framework -e ./generators/testgen -e ./generators/coverage
+```
+
+With the venv active, `make`, `make tests`, `make coverage`, `make spike-*`,
+and the other documented targets work as usual.
 
 #### 3. RISC-V Compiler (GCC or LLVM)
 
@@ -126,19 +142,22 @@ For more information or if you have issues installing the RISC-V toolchain, refe
 
 #### 4. RISC-V Sail Reference Model
 
-The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.10 of the model.
+The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.12 of the model.
 
 To install the sail model:
 
 ```bash
-curl --location https://github.com/riscv/sail-riscv/releases/download/0.10/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
+curl --location https://github.com/riscv/sail-riscv/releases/download/0.12/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
 ```
+
+> [!NOTE]
+> Replace `/path/to/install` with your desired directory location.
+> This is simpler if it matches the directory used for the `riscv-gnu-toolchain` so both tools share the same `bin` folder.
 
 Add `/path/to/install/bin` to your `PATH` if you used a different directory than for the `riscv-gnu-toolchain`.
 
 > [!NOTE]
-> If you don't have `sudo` access, you can extract the Sail model into your home directory by specifying a local path:
-> `curl --location <url> | tar xvz --directory=$HOME/riscv/--strip-components=1`
+> If you don't have sudo access, you can extract the Sail model into your home directory by specifying a local path: `curl --location <url> | tar xvz --directory=$HOME/riscv/ --strip-components=1`
 
 Verify the installation:
 
@@ -233,6 +252,10 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 - `RVMODEL_MTIMECMP_ADDRESS` (can be omitted if MTIMECMP is not implemented)
 - `RVMODEL_TIMER_INT_SOON_DELAY`
 
+**MSIP Macro**: Required only for Sm version 1.13 and above. Can be omitted if machine software interrupts are not supported.
+
+- `RVMODEL_MSIP_ADDRESS` (can be omitted if MSIP is not memory-mapped or not tested)
+
 **Interrupt Macros**: Can be left blank if interrupts are not supported.
 
 - `RVMODEL_SET_MEXT_INT(_R1, _R2)`
@@ -289,16 +312,17 @@ This will create all of the ELFs that apply to your DUT (based on the provided U
 
 The following variables can be set on the command line to customize the build (e.g., `DEBUG=True CONFIG_FILES=path/to/test_config.yaml make --jobs`):
 
-| Variable             | Default                                         | Description                                                                                                                                                      |
-| -------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `CONFIG_FILES`       | Spike rv32/rv64 max configs                     | Space-separated list of `test_config.yaml` paths to build ELFs for.                                                                                              |
-| `WORKDIR`            | `work`                                          | Directory where all build artifacts and ELFs are created.                                                                                                        |
-| `EXTENSIONS`         | _(empty — all extensions)_                      | Comma-separated list of extensions to generate tests for. When empty, generates tests for all extensions in the UDB config.                                      |
-| `EXCLUDE_EXTENSIONS` | _(see below)_                                   | Comma-separated list of extensions to exclude from test generation. Applied as a negative filter after `EXTENSIONS`.                                             |
-| `DEBUG`              | _(empty)_                                       | Set to `True` to enable debug output (signature objdump, trace files, and trap report). Significantly slows down ELF generation. Mutually exclusive with `FAST`. |
-| `VERBOSE`            | _(empty)_                                       | Set to `True` to enable verbose output (prints all commands). Also implies debug mode and serializes all commands (JOBS=1).                                      |
-| `FAST`               | _(empty)_                                       | Set to `True` to skip objdump generation for faster builds. Makes debugging mismatches harder. Mutually exclusive with `DEBUG`.                                  |
-| `JOBS`               | Auto-detected from `make -j` flag, or CPU count | Number of parallel build jobs for test compilation. Set to `1` for debugging test hangs.                                                                         |
+| Variable              | Default                                         | Description                                                                                                                                                                                                                           |
+| --------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CONFIG_FILES`        | Spike rv32/rv64 max configs                     | Space-separated list of `test_config.yaml` paths to build ELFs for.                                                                                                                                                                   |
+| `WORKDIR`             | `work`                                          | Directory where all build artifacts and ELFs are created.                                                                                                                                                                             |
+| `EXTENSIONS`          | _(empty — all extensions)_                      | Comma-separated list of extensions to generate tests for. When empty, generates tests for all extensions in the UDB config.                                                                                                           |
+| `EXCLUDE_EXTENSIONS`  | _(see below)_                                   | Comma-separated list of extensions to exclude from test generation. Applied as a negative filter after `EXTENSIONS`.                                                                                                                  |
+| `DEBUG`               | _(empty)_                                       | Set to `True` to enable debug output (signature objdump, trace files, and trap report). Significantly slows down ELF generation. Mutually exclusive with `FAST`.                                                                      |
+| `VERBOSE`             | _(empty)_                                       | Set to `True` to enable verbose output (prints all commands). Also implies debug mode and serializes all commands (JOBS=1).                                                                                                           |
+| `FAST`                | _(empty)_                                       | Set to `True` to skip objdump generation for faster builds. Makes debugging mismatches harder. Mutually exclusive with `DEBUG`.                                                                                                       |
+| `CLEAN_INTERMEDIATES` | _(empty)_                                       | Set to `True` to delete each config's intermediate `build/` directory (`.sig.elf`/`.sig`/`.results`/logs) after a successful build, keeping only the ELFs. Saves disk space (useful for CI caching). Mutually exclusive with `DEBUG`. |
+| `JOBS`                | Auto-detected from `make -j` flag, or CPU count | Number of parallel build jobs for test compilation. Set to `1` for debugging test hangs.                                                                                                                                              |
 
 By default, both `CONFIG_FILES` and `WORKDIR` are relative to the `riscv-arch-test` directory. Use an absolute path if you need to specify a directory that is out-of-tree.
 
@@ -355,7 +379,7 @@ Contributors are always welcome. There are several ways to contribute:
 
 - [Open issues](https://github.com/riscv/riscv-arch-test/issues/new) with bug reports or feature requests.
 - [Submit PRs](https://github.com/riscv/riscv-arch-test/pulls) that fix open issues, add tests for new extensions, or add a new feature. Before opening a PR, make sure to review the guidelines and helpful tips in [`CONTRIBUTING.md`](./CONTRIBUTING.md)
-- Join the [ACT SIG mailing list](https://lists.riscv.org/g/sig-arch-test) or the biweekly [ACT SIG meetings](https://tech.riscv.org/calendar/). The mailing list and meetings are only open to RISC-V members.
+- Join the [ACT SIG mailing list](https://lists.riscv.org/g/sig-arch-test). The mailing list and meetings are only open to RISC-V members.
 
 ## Licensing
 

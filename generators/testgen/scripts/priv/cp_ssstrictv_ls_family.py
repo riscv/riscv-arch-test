@@ -20,7 +20,7 @@ from random import seed as set_seed
 import vector_testgen_common as common
 from priv_coverpoint_registry import register
 from ._ssstrictv_helpers import (build_testline, init_operand_regs, sig_params,
-                                  SKIP_COVERPOINTS)
+                                  SKIP_COVERPOINTS, override_registers)
 
 
 def _emit_vsetvli_str(scratch: int, vl: int, sew: int, lmul_flag: str) -> None:
@@ -61,9 +61,9 @@ def _ls_test(instruction: str, cp: str, sew: int, lmul_flag: str, *,
     if override_vd is not None:
         overrides["override_vd"] = override_vd
         overrides["override_vs3"] = override_vd
+    override_registers(instruction_data, **overrides)
 
-    testline, vd, rd = build_testline(instruction, instruction_data,
-                                       addr_label=addr_label, **overrides)
+    testline, vd, rd = build_testline(instruction, instruction_data, addr_label=addr_label)
 
     if addr_offset:
         common.writeLine(f"addi x{rs1_reg}, x{rs1_reg}, {addr_offset}",

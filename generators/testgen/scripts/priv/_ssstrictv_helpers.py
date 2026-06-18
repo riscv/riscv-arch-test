@@ -96,35 +96,10 @@ def init_operand_regs(instruction: str, vec_data: dict, sew: int, scratch: int,
 
 def build_testline(instruction: str, instruction_data: list, *,
                    maskval: str | None = None,
-                   override_vd: int | None = None,
-                   override_vs1: int | None = None,
-                   override_vs2: int | None = None,
-                   override_vs3: int | None = None,
-                   override_rs1: int | None = None,
-                   override_rs2: int | None = None,
-                   override_rd: int | None = None,
-                   override_imm: int | None = None,
                    addr_label: str = "random_mask_0") -> tuple[str, int, int]:
     """Build the assembly mnemonic line. Returns (testline, vd_reg, rd_reg)."""
     args = common.getInstructionArguments(instruction)
     vec_data, scalar_data, fp_data, imm_val = instruction_data
-
-    if override_vd is not None:
-        vec_data["vd"]["reg"] = override_vd
-    if override_vs1 is not None and "vs1" in vec_data:
-        vec_data["vs1"]["reg"] = override_vs1
-    if override_vs2 is not None and "vs2" in vec_data:
-        vec_data["vs2"]["reg"] = override_vs2
-    if override_vs3 is not None and "vs3" in vec_data:
-        vec_data["vs3"]["reg"] = override_vs3
-    if override_rs1 is not None and "rs1" in scalar_data:
-        scalar_data["rs1"]["reg"] = override_rs1
-    if override_rs2 is not None and "rs2" in scalar_data:
-        scalar_data["rs2"]["reg"] = override_rs2
-    if override_rd is not None and "rd" in scalar_data:
-        scalar_data["rd"]["reg"] = override_rd
-    if override_imm is not None:
-        imm_val = override_imm
 
     testline = instruction + " "
     for arg in args:
@@ -209,6 +184,30 @@ def make_dest_zero_overrides(instruction: str) -> dict:
     return {}
 
 
+
+def override_registers(instruction_data: list, override_vd: int | None = None, override_vs1: int | None = None,
+                       override_vs2: int | None = None, override_vs3: int | None = None, override_rd: int | None = None,
+                       override_rs1: int | None = None, override_rs2: int | None = None, override_imm: int | None = None):
+    vec_data, scalar_data, _fp_data, _imm_val = instruction_data
+
+    if override_vd is not None:
+        vec_data["vd"]["reg"] = override_vd
+    if override_vs1 is not None and "vs1" in vec_data:
+        vec_data["vs1"]["reg"] = override_vs1
+    if override_vs2 is not None and "vs2" in vec_data:
+        vec_data["vs2"]["reg"] = override_vs2
+    if override_vs3 is not None and "vs3" in vec_data:
+        vec_data["vs3"]["reg"] = override_vs3
+    if override_rs1 is not None and "rs1" in scalar_data:
+        scalar_data["rs1"]["reg"] = override_rs1
+    if override_rs2 is not None and "rs2" in scalar_data:
+        scalar_data["rs2"]["reg"] = override_rs2
+    if override_rd is not None and "rd" in scalar_data:
+        scalar_data["rd"]["reg"] = override_rd
+    if override_imm is not None:
+        instruction_data[3] = override_imm
+
+
 def issue_simple_test(instruction: str, cp: str, *,
                        sew: int | None = None, lmul: int = 1, vl: int = 1,
                        vstart: int | None = None,
@@ -238,6 +237,7 @@ def issue_simple_test(instruction: str, cp: str, *,
         vs2_val_pointer="vector_random",
         vs1_val_pointer="vector_random",
     )
+    override_registers(instruction_data, override_vd, override_vs1, override_vs2, override_vs3, override_rd, override_imm)
     common.remapPrivScalarRegs(instruction_data, instruction)
 
     common.writeLine(f"\n# Testcase {cp}")
@@ -255,9 +255,6 @@ def issue_simple_test(instruction: str, cp: str, *,
 
     testline, vd, rd = build_testline(
         instruction, instruction_data, maskval=maskval,
-        override_vd=override_vd, override_vs1=override_vs1,
-        override_vs2=override_vs2, override_vs3=override_vs3,
-        override_rd=override_rd, override_imm=override_imm,
     )
     sig_lmul, sig_wr = sig_params(instruction, instruction_data, lmul=lmul)
     write_lmul = lmul if isinstance(lmul, int) else 1

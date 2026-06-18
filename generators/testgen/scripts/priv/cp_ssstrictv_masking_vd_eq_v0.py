@@ -41,3 +41,20 @@ def make(instruction: str) -> None:
     issue_simple_test(instruction, CP, sew=sew, lmul=1, maskval=None,
                       override_vd=24, override_vs1=8, override_vs2=8, override_vs3=24,
                       skip_sigupd=True)
+
+
+@register("cp_ssstrictv_masking_vs1_eq_v0")
+def make_vs1(instruction: str) -> None:
+    eew = common.getInstructionEEW(instruction)
+    sews = [eew] if eew else [8, 16, 32, 64]
+    for sew in sews:
+        issue_simple_test(instruction, "cp_ssstrictv_masking_vs1_eq_v0", sew=sew, lmul=1, maskval="v0.t",
+                          skip_sigupd=True, override_vs1=0)
+
+@register("cp_ssstrictv_masking_vs2_eq_v0")
+def make_vs2(instruction: str) -> None:
+    eew = common.getInstructionEEW(instruction)
+    sews = [eew] if eew else [8, 16, 32, 64]
+    for sew in sews:
+        issue_simple_test(instruction, "cp_ssstrictv_masking_vs2_eq_v0", sew=sew, lmul=1, maskval="v0.t",
+                          skip_sigupd=True, override_vs2=0)

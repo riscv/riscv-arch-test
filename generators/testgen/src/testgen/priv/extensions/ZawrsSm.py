@@ -238,7 +238,7 @@ def _generate_wrs_no_mie_tests(test_data: TestData) -> list[str]:
             "# lr.w to set up reservation",
             f"LA(x{r_temp2}, scratch)",
             f"lr.w x{r_temp}, (x{r_temp2})",
-            test_data.add_testcase("Interrupt_pending", coverpoint, covergroup),
+            test_data.add_testcase("wrs_sto", coverpoint, covergroup),
             "WRS.STO",
             "",
         ]

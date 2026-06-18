@@ -112,25 +112,6 @@ covergroup SsstrictV_vaaddu_vv_cg with function sample(ins_t ins);
 
 //// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
 
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_vadc_vsbc_vm1_reserved
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // vadc/vmadc/vsbc/vmsbc with vm=1 (unmasked, reserved for these masked-only forms).
-    // funct6 covers all four (010000=vadc, 010001=vmadc, 010010=vsbc, 010011=vmsbc).
-    funct6_carry_borrow: coverpoint ins.current.insn[31:26] {
-        bins op = {6'b010000, 6'b010001, 6'b010010, 6'b010011};
-    }
-
-    vm_unmasked: coverpoint ins.current.insn[25] {
-        bins unmasked = {1'b1};
-    }
-
-    cp_ssstrictv_vadc_vsbc_vm1_reserved : cross std_trap_vec, funct6_carry_borrow, vm_unmasked;
-
-//// end cp_ssstrictv_vadc_vsbc_vm1_reserved /////////////////////////////////////////////////////////////
-
 endgroup
 // ---------------------
 covergroup SsstrictV_vaaddu_vx_cg with function sample(ins_t ins);
@@ -155,25 +136,6 @@ covergroup SsstrictV_vaaddu_vx_cg with function sample(ins_t ins);
     cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
 
 //// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_vadc_vsbc_vm1_reserved
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // vadc/vmadc/vsbc/vmsbc with vm=1 (unmasked, reserved for these masked-only forms).
-    // funct6 covers all four (010000=vadc, 010001=vmadc, 010010=vsbc, 010011=vmsbc).
-    funct6_carry_borrow: coverpoint ins.current.insn[31:26] {
-        bins op = {6'b010000, 6'b010001, 6'b010010, 6'b010011};
-    }
-
-    vm_unmasked: coverpoint ins.current.insn[25] {
-        bins unmasked = {1'b1};
-    }
-
-    cp_ssstrictv_vadc_vsbc_vm1_reserved : cross std_trap_vec, funct6_carry_borrow, vm_unmasked;
-
-//// end cp_ssstrictv_vadc_vsbc_vm1_reserved /////////////////////////////////////////////////////////////
 
 endgroup
 // ---------------------
@@ -254,6 +216,25 @@ covergroup SsstrictV_vadc_vvm_cg with function sample(ins_t ins);
 
 //// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_vadc_vsbc_vm1_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // vadc/vmadc/vsbc/vmsbc with vm=1 (unmasked, reserved for these masked-only forms).
+    // funct6 covers all four (010000=vadc, 010001=vmadc, 010010=vsbc, 010011=vmsbc).
+    funct6_carry_borrow: coverpoint ins.current.insn[31:26] {
+        bins op = {6'b010000, 6'b010001, 6'b010010, 6'b010011};
+    }
+
+    vm_unmasked: coverpoint ins.current.insn[25] {
+        bins unmasked = {1'b1};
+    }
+
+    cp_ssstrictv_vadc_vsbc_vm1_reserved : cross std_trap_vec, funct6_carry_borrow, vm_unmasked;
+
+//// end cp_ssstrictv_vadc_vsbc_vm1_reserved /////////////////////////////////////////////////////////////
+
 endgroup
 // ---------------------
 covergroup SsstrictV_vadc_vxm_cg with function sample(ins_t ins);
@@ -278,6 +259,25 @@ covergroup SsstrictV_vadc_vxm_cg with function sample(ins_t ins);
     cp_ssstrictv_masking_vs2_eq_v0 : cross std_trap_vec, vtype_lmul_1, vs2_is_v0_meqv0, mask_enabled;
 
 //// end cp_ssstrictv_masking_vs2_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cp_ssstrictv_vadc_vsbc_vm1_reserved
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // vadc/vmadc/vsbc/vmsbc with vm=1 (unmasked, reserved for these masked-only forms).
+    // funct6 covers all four (010000=vadc, 010001=vmadc, 010010=vsbc, 010011=vmsbc).
+    funct6_carry_borrow: coverpoint ins.current.insn[31:26] {
+        bins op = {6'b010000, 6'b010001, 6'b010010, 6'b010011};
+    }
+
+    vm_unmasked: coverpoint ins.current.insn[25] {
+        bins unmasked = {1'b1};
+    }
+
+    cp_ssstrictv_vadc_vsbc_vm1_reserved : cross std_trap_vec, funct6_carry_borrow, vm_unmasked;
+
+//// end cp_ssstrictv_vadc_vsbc_vm1_reserved /////////////////////////////////////////////////////////////
 
 endgroup
 // ---------------------
@@ -580,13 +580,15 @@ covergroup SsstrictV_vcompress_vm_cg with function sample(ins_t ins);
 
 
     // vcompress: destination register group cannot overlap source mask register (v0)
-    cp_ssstrictv_vcompress_vd_v0_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_v0;
+    cp_ssstrictv_vcompress_vd_v0_overlap: cross std_trap_vec, vd_v0;
 
-    cp_ssstrictv_vcompress_vd_v0_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vd_v0;
+    // cp_ssstrictv_vcompress_vd_v0_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_v0;
 
-    cp_ssstrictv_vcompress_vd_v0_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vd_v0;
+    // cp_ssstrictv_vcompress_vd_v0_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vd_v0;
 
-    cp_ssstrictv_vcompress_vd_v0_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vd_v0;
+    // cp_ssstrictv_vcompress_vd_v0_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vd_v0;
+
+    // cp_ssstrictv_vcompress_vd_v0_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vd_v0;
 
 //// end cp_ssstrictv_vcompress_vd_v0_overlap ///////////////////////////////////////////////////////////////
 
@@ -596,13 +598,15 @@ covergroup SsstrictV_vcompress_vm_cg with function sample(ins_t ins);
 
 
     // vcompress: destination register group cannot overlap source register group (vs2)
-    cp_ssstrictv_vcompress_vd_vs2_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs2;
+    cp_ssstrictv_vcompress_vd_vs2_overlap_lmul1: cross std_trap_vec, vd_eq_vs2;
 
-    cp_ssstrictv_vcompress_vd_vs2_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs2_vd_overlap_lmul1;
+    // cp_ssstrictv_vcompress_vd_vs2_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs2;
 
-    cp_ssstrictv_vcompress_vd_vs2_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs2_vd_overlap_lmul2;
+    // cp_ssstrictv_vcompress_vd_vs2_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs2_vd_overlap_lmul1;
 
-    cp_ssstrictv_vcompress_vd_vs2_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs2_vd_overlap_lmul4;
+    // cp_ssstrictv_vcompress_vd_vs2_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs2_vd_overlap_lmul2;
+
+    // cp_ssstrictv_vcompress_vd_vs2_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs2_vd_overlap_lmul4;
 
 //// end cp_ssstrictv_vcompress_vd_vs2_overlap ///////////////////////////////////////////////////////////////
 
@@ -633,16 +637,6 @@ endgroup
 covergroup SsstrictV_vcpop_m_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vs2_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1073,16 +1067,6 @@ endgroup
 covergroup SsstrictV_vfirst_m_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cp_ssstrictv_masking_vd_eq_v0
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Masked instruction with vd=v0 at LMUL=1: vd group overlaps mask v0, reserved
-    vd_is_v0_meqv0 : coverpoint ins.current.insn[11:7] { bins v0 = { 5'b00000 }; }
-    cp_ssstrictv_masking_vd_eq_v0 : cross std_trap_vec, vtype_lmul_1, vd_is_v0_meqv0, mask_enabled;
-
-//// end cp_ssstrictv_masking_vd_eq_v0 //////////////////////////////////////////////////////////////////////////////////////////////
-
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cp_ssstrictv_masking_vs2_eq_v0
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2535,13 +2519,15 @@ covergroup SsstrictV_vfslide1up_vf_cg with function sample(ins_t ins);
 
 
     // vslide1up: destination register group cannot overlap source register group
-    cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs2;
+    cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul1: cross std_trap_vec, vd_eq_vs2;
 
-    cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs2_vd_overlap_lmul1;
+    // cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs2;
 
-    cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs2_vd_overlap_lmul2;
+    // cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs2_vd_overlap_lmul1;
 
-    cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs2_vd_overlap_lmul4;
+    // cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs2_vd_overlap_lmul2;
+
+    // cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs2_vd_overlap_lmul4;
 
 //// end cp_ssstrictv_vslide1up_vd_vs2_overlap ///////////////////////////////////////////////////////////////
 
@@ -3703,7 +3689,8 @@ covergroup SsstrictV_viota_m_cg with function sample(ins_t ins);
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // ExceptionsV: vd overlaps vs2 source register group
-    cp_exceptionsv_vd_vs2_overlap : cross std_trap_vec, vtype_all_lmulge1, vd_eq_vs2;
+    // cp_exceptionsv_vd_vs2_overlap : cross std_trap_vec, vtype_all_lmulge1, vd_eq_vs2;
+    cp_exceptionsv_vd_vs2_overlap : cross std_trap_vec, vd_eq_vs2;
 
 //// end cp_exceptionsv_vd_vs2_overlap //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -22344,7 +22331,8 @@ covergroup SsstrictV_vmsbf_m_cg with function sample(ins_t ins);
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // ExceptionsV: vd overlaps vs2 source register group
-    cp_exceptionsv_vd_vs2_overlap : cross std_trap_vec, vtype_all_lmulge1, vd_eq_vs2;
+    // cp_exceptionsv_vd_vs2_overlap : cross std_trap_vec, vtype_all_lmulge1, vd_eq_vs2;
+    cp_exceptionsv_vd_vs2_overlap : cross std_trap_vec, vd_eq_vs2;
 
 //// end cp_exceptionsv_vd_vs2_overlap //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -22563,7 +22551,8 @@ covergroup SsstrictV_vmsif_m_cg with function sample(ins_t ins);
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // ExceptionsV: vd overlaps vs2 source register group
-    cp_exceptionsv_vd_vs2_overlap : cross std_trap_vec, vtype_all_lmulge1, vd_eq_vs2;
+    // cp_exceptionsv_vd_vs2_overlap : cross std_trap_vec, vtype_all_lmulge1, vd_eq_vs2;
+    cp_exceptionsv_vd_vs2_overlap : cross std_trap_vec, vd_eq_vs2;
 
 //// end cp_exceptionsv_vd_vs2_overlap //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -22972,7 +22961,8 @@ covergroup SsstrictV_vmsof_m_cg with function sample(ins_t ins);
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // ExceptionsV: vd overlaps vs2 source register group
-    cp_exceptionsv_vd_vs2_overlap : cross std_trap_vec, vtype_all_lmulge1, vd_eq_vs2;
+    // cp_exceptionsv_vd_vs2_overlap : cross std_trap_vec, vtype_all_lmulge1, vd_eq_vs2;
+    cp_exceptionsv_vd_vs2_overlap : cross std_trap_vec, vd_eq_vs2;
 
 //// end cp_exceptionsv_vd_vs2_overlap //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -24701,7 +24691,8 @@ covergroup SsstrictV_vrgather_vi_cg with function sample(ins_t ins);
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // vrgather with vd==vs2 reserved (vd source overlap)
-    cp_ssstrictv_vrgather_vd_vs2_eq : cross std_trap_vec, vtype_all_lmulge1, vd_eq_vs2;
+    // cp_ssstrictv_vrgather_vd_vs2_eq : cross std_trap_vec, vtype_all_lmulge1, vd_eq_vs2;
+    cp_ssstrictv_vrgather_vd_vs2_eq : cross std_trap_vec, vd_eq_vs2;
 
 //// end cp_ssstrictv_vrgather_vd_vs2_eq //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -24711,13 +24702,15 @@ covergroup SsstrictV_vrgather_vi_cg with function sample(ins_t ins);
 
 
     // vrgather: destination register group cannot overlap vs2 register group
-    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs2;
+    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul1: cross std_trap_vec, vd_eq_vs2;
 
-    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs2_vd_overlap_lmul1;
+    // cp_ssstrictv_vrgather_vd_vs2_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs2;
 
-    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs2_vd_overlap_lmul2;
+    // cp_ssstrictv_vrgather_vd_vs2_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs2_vd_overlap_lmul1;
 
-    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs2_vd_overlap_lmul4;
+    // cp_ssstrictv_vrgather_vd_vs2_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs2_vd_overlap_lmul2;
+
+    // cp_ssstrictv_vrgather_vd_vs2_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs2_vd_overlap_lmul4;
 
 //// end cp_ssstrictv_vrgather_vd_vs2_overlap ///////////////////////////////////////////////////////////////
 
@@ -24761,7 +24754,8 @@ covergroup SsstrictV_vrgather_vv_cg with function sample(ins_t ins);
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // vrgather with vd==vs1 reserved (vd source overlap)
-    cp_ssstrictv_vrgather_vd_vs1_eq : cross std_trap_vec, vtype_all_lmulge1, vd_eq_vs1;
+    // cp_ssstrictv_vrgather_vd_vs1_eq : cross std_trap_vec, vtype_all_lmulge1, vd_eq_vs1;
+    cp_ssstrictv_vrgather_vd_vs1_eq : cross std_trap_vec, vd_eq_vs1;
 
 //// end cp_ssstrictv_vrgather_vd_vs1_eq //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -24771,13 +24765,15 @@ covergroup SsstrictV_vrgather_vv_cg with function sample(ins_t ins);
 
 
     // vrgather.vv: destination register group cannot overlap vs1 register group
-    cp_ssstrictv_vrgather_vd_vs1_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs1;
+    cp_ssstrictv_vrgather_vd_vs1_overlap_lmul1: cross std_trap_vec, vd_eq_vs1;
 
-    cp_ssstrictv_vrgather_vd_vs1_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs1_vd_overlap_lmul1;
+    // cp_ssstrictv_vrgather_vd_vs1_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs1;
 
-    cp_ssstrictv_vrgather_vd_vs1_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs1_vd_overlap_lmul2;
+    // cp_ssstrictv_vrgather_vd_vs1_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs1_vd_overlap_lmul1;
 
-    cp_ssstrictv_vrgather_vd_vs1_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs1_vd_overlap_lmul4;
+    // cp_ssstrictv_vrgather_vd_vs1_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs1_vd_overlap_lmul2;
+
+    // cp_ssstrictv_vrgather_vd_vs1_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs1_vd_overlap_lmul4;
 
 //// end cp_ssstrictv_vrgather_vd_vs1_overlap ///////////////////////////////////////////////////////////////
 
@@ -24786,7 +24782,8 @@ covergroup SsstrictV_vrgather_vv_cg with function sample(ins_t ins);
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // vrgather with vd==vs2 reserved (vd source overlap)
-    cp_ssstrictv_vrgather_vd_vs2_eq : cross std_trap_vec, vtype_all_lmulge1, vd_eq_vs2;
+    // cp_ssstrictv_vrgather_vd_vs2_eq : cross std_trap_vec, vtype_all_lmulge1, vd_eq_vs2;
+    cp_ssstrictv_vrgather_vd_vs2_eq : cross std_trap_vec, vd_eq_vs2;
 
 //// end cp_ssstrictv_vrgather_vd_vs2_eq //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -24796,13 +24793,15 @@ covergroup SsstrictV_vrgather_vv_cg with function sample(ins_t ins);
 
 
     // vrgather: destination register group cannot overlap vs2 register group
-    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs2;
+    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul1: cross std_trap_vec, vd_eq_vs2;
 
-    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs2_vd_overlap_lmul1;
+    // cp_ssstrictv_vrgather_vd_vs2_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs2;
 
-    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs2_vd_overlap_lmul2;
+    // cp_ssstrictv_vrgather_vd_vs2_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs2_vd_overlap_lmul1;
 
-    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs2_vd_overlap_lmul4;
+    // cp_ssstrictv_vrgather_vd_vs2_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs2_vd_overlap_lmul2;
+
+    // cp_ssstrictv_vrgather_vd_vs2_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs2_vd_overlap_lmul4;
 
 //// end cp_ssstrictv_vrgather_vd_vs2_overlap ///////////////////////////////////////////////////////////////
 
@@ -24836,7 +24835,8 @@ covergroup SsstrictV_vrgather_vx_cg with function sample(ins_t ins);
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // vrgather with vd==vs2 reserved (vd source overlap)
-    cp_ssstrictv_vrgather_vd_vs2_eq : cross std_trap_vec, vtype_all_lmulge1, vd_eq_vs2;
+    // cp_ssstrictv_vrgather_vd_vs2_eq : cross std_trap_vec, vtype_all_lmulge1, vd_eq_vs2;
+    cp_ssstrictv_vrgather_vd_vs2_eq : cross std_trap_vec, vd_eq_vs2;
 
 //// end cp_ssstrictv_vrgather_vd_vs2_eq //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -24846,13 +24846,15 @@ covergroup SsstrictV_vrgather_vx_cg with function sample(ins_t ins);
 
 
     // vrgather: destination register group cannot overlap vs2 register group
-    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs2;
+    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul1: cross std_trap_vec, vd_eq_vs2;
 
-    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs2_vd_overlap_lmul1;
+    // cp_ssstrictv_vrgather_vd_vs2_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs2;
 
-    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs2_vd_overlap_lmul2;
+    // cp_ssstrictv_vrgather_vd_vs2_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs2_vd_overlap_lmul1;
 
-    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs2_vd_overlap_lmul4;
+    // cp_ssstrictv_vrgather_vd_vs2_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs2_vd_overlap_lmul2;
+
+    // cp_ssstrictv_vrgather_vd_vs2_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs2_vd_overlap_lmul4;
 
 //// end cp_ssstrictv_vrgather_vd_vs2_overlap ///////////////////////////////////////////////////////////////
 
@@ -24896,7 +24898,8 @@ covergroup SsstrictV_vrgatherei16_vv_cg with function sample(ins_t ins);
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // vrgather with vd==vs1 reserved (vd source overlap)
-    cp_ssstrictv_vrgather_vd_vs1_eq : cross std_trap_vec, vtype_all_lmulge1, vd_eq_vs1;
+    // cp_ssstrictv_vrgather_vd_vs1_eq : cross std_trap_vec, vtype_all_lmulge1, vd_eq_vs1;
+    cp_ssstrictv_vrgather_vd_vs1_eq : cross std_trap_vec, vd_eq_vs1;
 
 //// end cp_ssstrictv_vrgather_vd_vs1_eq //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -24906,13 +24909,15 @@ covergroup SsstrictV_vrgatherei16_vv_cg with function sample(ins_t ins);
 
 
     // vrgather.vv: destination register group cannot overlap vs1 register group
-    cp_ssstrictv_vrgather_vd_vs1_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs1;
+    cp_ssstrictv_vrgather_vd_vs1_overlap_lmul1: cross std_trap_vec, vd_eq_vs1;
 
-    cp_ssstrictv_vrgather_vd_vs1_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs1_vd_overlap_lmul1;
+    // cp_ssstrictv_vrgather_vd_vs1_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs1;
 
-    cp_ssstrictv_vrgather_vd_vs1_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs1_vd_overlap_lmul2;
+    // cp_ssstrictv_vrgather_vd_vs1_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs1_vd_overlap_lmul1;
 
-    cp_ssstrictv_vrgather_vd_vs1_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs1_vd_overlap_lmul4;
+    // cp_ssstrictv_vrgather_vd_vs1_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs1_vd_overlap_lmul2;
+
+    // cp_ssstrictv_vrgather_vd_vs1_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs1_vd_overlap_lmul4;
 
 //// end cp_ssstrictv_vrgather_vd_vs1_overlap ///////////////////////////////////////////////////////////////
 
@@ -24921,7 +24926,8 @@ covergroup SsstrictV_vrgatherei16_vv_cg with function sample(ins_t ins);
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // vrgather with vd==vs2 reserved (vd source overlap)
-    cp_ssstrictv_vrgather_vd_vs2_eq : cross std_trap_vec, vtype_all_lmulge1, vd_eq_vs2;
+    // cp_ssstrictv_vrgather_vd_vs2_eq : cross std_trap_vec, vtype_all_lmulge1, vd_eq_vs2;
+    cp_ssstrictv_vrgather_vd_vs2_eq : cross std_trap_vec, vd_eq_vs2;
 
 //// end cp_ssstrictv_vrgather_vd_vs2_eq //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -24931,13 +24937,15 @@ covergroup SsstrictV_vrgatherei16_vv_cg with function sample(ins_t ins);
 
 
     // vrgather: destination register group cannot overlap vs2 register group
-    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs2;
+    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul1: cross std_trap_vec, vd_eq_vs2;
 
-    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs2_vd_overlap_lmul1;
+    // cp_ssstrictv_vrgather_vd_vs2_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs2;
 
-    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs2_vd_overlap_lmul2;
+    // cp_ssstrictv_vrgather_vd_vs2_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs2_vd_overlap_lmul1;
 
-    cp_ssstrictv_vrgather_vd_vs2_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs2_vd_overlap_lmul4;
+    // cp_ssstrictv_vrgather_vd_vs2_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs2_vd_overlap_lmul2;
+
+    // cp_ssstrictv_vrgather_vd_vs2_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs2_vd_overlap_lmul4;
 
 //// end cp_ssstrictv_vrgather_vd_vs2_overlap ///////////////////////////////////////////////////////////////
 
@@ -26045,13 +26053,15 @@ covergroup SsstrictV_vslide1up_vx_cg with function sample(ins_t ins);
 
 
     // vslide1up: destination register group cannot overlap source register group
-    cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs2;
+    cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul1: cross std_trap_vec, vd_eq_vs2;
 
-    cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs2_vd_overlap_lmul1;
+    // cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs2;
 
-    cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs2_vd_overlap_lmul2;
+    // cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs2_vd_overlap_lmul1;
 
-    cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs2_vd_overlap_lmul4;
+    // cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs2_vd_overlap_lmul2;
+
+    // cp_ssstrictv_vslide1up_vd_vs2_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs2_vd_overlap_lmul4;
 
 //// end cp_ssstrictv_vslide1up_vd_vs2_overlap ///////////////////////////////////////////////////////////////
 
@@ -26136,13 +26146,15 @@ covergroup SsstrictV_vslideup_vi_cg with function sample(ins_t ins);
 
 
     // vslideup: destination register group cannot overlap source register group
-    cp_ssstrictv_vslideup_vd_vs2_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs2;
+    cp_ssstrictv_vslideup_vd_vs2_overlap: cross std_trap_vec, vd_eq_vs2;
 
-    cp_ssstrictv_vslideup_vd_vs2_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs2_vd_overlap_lmul1;
+    // cp_ssstrictv_vslideup_vd_vs2_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs2;
 
-    cp_ssstrictv_vslideup_vd_vs2_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs2_vd_overlap_lmul2;
+    // cp_ssstrictv_vslideup_vd_vs2_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs2_vd_overlap_lmul1;
 
-    cp_ssstrictv_vslideup_vd_vs2_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs2_vd_overlap_lmul4;
+    // cp_ssstrictv_vslideup_vd_vs2_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs2_vd_overlap_lmul2;
+
+    // cp_ssstrictv_vslideup_vd_vs2_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs2_vd_overlap_lmul4;
 
 //// end cp_ssstrictv_vslideup_vd_vs2_overlap ///////////////////////////////////////////////////////////////
 
@@ -26177,13 +26189,15 @@ covergroup SsstrictV_vslideup_vx_cg with function sample(ins_t ins);
 
 
     // vslideup: destination register group cannot overlap source register group
-    cp_ssstrictv_vslideup_vd_vs2_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs2;
+    cp_ssstrictv_vslideup_vd_vs2_overlap: cross std_trap_vec, vd_eq_vs2;
 
-    cp_ssstrictv_vslideup_vd_vs2_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs2_vd_overlap_lmul1;
+    // cp_ssstrictv_vslideup_vd_vs2_overlap_lmul1: cross std_trap_vec, vtype_lmul_1, vd_eq_vs2;
 
-    cp_ssstrictv_vslideup_vd_vs2_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs2_vd_overlap_lmul2;
+    // cp_ssstrictv_vslideup_vd_vs2_overlap_lmul2: cross std_trap_vec, vtype_lmul_2, vs2_vd_overlap_lmul1;
 
-    cp_ssstrictv_vslideup_vd_vs2_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs2_vd_overlap_lmul4;
+    // cp_ssstrictv_vslideup_vd_vs2_overlap_lmul4: cross std_trap_vec, vtype_lmul_4, vs2_vd_overlap_lmul2;
+
+    // cp_ssstrictv_vslideup_vd_vs2_overlap_lmul8: cross std_trap_vec, vtype_lmul_8, vs2_vd_overlap_lmul4;
 
 //// end cp_ssstrictv_vslideup_vd_vs2_overlap ///////////////////////////////////////////////////////////////
 

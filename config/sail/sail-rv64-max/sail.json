@@ -408,7 +408,7 @@
       // `vlen_exp` and `elen_exp` should be between 3 and 16,
       // inclusive.  If `support_level` is `"Disabled"`, then these
       // should be left as 3 (or any other legal value).
-      "vlen_exp": 8,
+      "vlen_exp": 10,
       "elen_exp": 6,
       "reserved_behavior": {
         // This determines how to handle attempts by vsetvli, vsetivli,

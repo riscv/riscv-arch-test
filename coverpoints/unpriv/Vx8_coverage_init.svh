@@ -143,6 +143,7 @@
     Vx8_vrgather_vi_cg = new(); Vx8_vrgather_vi_cg.set_inst_name("obj_Vx8_vrgather_vi");
     Vx8_vrgather_vv_cg = new(); Vx8_vrgather_vv_cg.set_inst_name("obj_Vx8_vrgather_vv");
     Vx8_vrgather_vx_cg = new(); Vx8_vrgather_vx_cg.set_inst_name("obj_Vx8_vrgather_vx");
+    Vx8_vrgatherei16_vv_cg = new(); Vx8_vrgatherei16_vv_cg.set_inst_name("obj_Vx8_vrgatherei16_vv");
     Vx8_vrsub_vi_cg = new(); Vx8_vrsub_vi_cg.set_inst_name("obj_Vx8_vrsub_vi");
     Vx8_vrsub_vx_cg = new(); Vx8_vrsub_vx_cg.set_inst_name("obj_Vx8_vrsub_vx");
     Vx8_vsadd_vi_cg = new(); Vx8_vsadd_vi_cg.set_inst_name("obj_Vx8_vsadd_vi");

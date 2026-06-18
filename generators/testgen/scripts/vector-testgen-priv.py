@@ -108,6 +108,9 @@ def _eff_sew_for_instruction(instruction: str) -> int:
     eew = _eew_for_instruction(instruction)
     if eew is not None:
         return max(minSEW_MIN, eew)
+    fp_sew = common.getPrivFpSew()
+    if fp_sew is not None:
+        return max(minSEW_MIN, fp_sew)
     return minSEW_MIN
 
 

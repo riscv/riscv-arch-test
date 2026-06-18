@@ -274,7 +274,7 @@ def issue_simple_test(instruction: str, cp: str, *,
 
     common.writeLine(f"\n# Testcase {cp}")
     scratch = common.pickPrivScratch(instruction_data[1])
-    emit_vsetivli(scratch, vl=vl, sew=sew, lmul=bounded_lmul)
+    emit_vsetivli(scratch, vl=vl, sew=sew, lmul=lmul)
     init_operand_regs(instruction, instruction_data[0], sew, scratch, regs=init_regs)
     if instruction in common.indexed_ls_ins:
         make_valid_indices(instruction, instruction_data, sew, bounded_lmul, scratch)
@@ -282,7 +282,7 @@ def issue_simple_test(instruction: str, cp: str, *,
     # snapshot used by SAMPLE_BEFORE includes vtype/vl/vstart. The intervening
     # vle*.v ops do not write those CSRs, and the rvvi shim does not carry
     # forward unchanged CSR values (see simulator-issues/005).
-    emit_vsetivli(scratch, vl=vl, sew=sew, lmul=bounded_lmul)
+    emit_vsetivli(scratch, vl=vl, sew=sew, lmul=lmul)
     if vstart is not None:
         common.writeLine(f"li x{scratch}, {vstart}", f"# vstart override = {vstart}")
         common.writeLine(f"csrw vstart, x{scratch}", "# install non-zero vstart")

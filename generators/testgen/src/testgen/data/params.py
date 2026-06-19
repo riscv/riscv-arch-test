@@ -37,6 +37,7 @@ class InstructionParams:
 
     # Integer register values
     rs1val: int | None = None
+    rs1val_pointer: str | None = None  # Needed for vector load tests
     rs2val: int | None = None
     rs3val: int | None = None
     rdval: int | None = None
@@ -55,6 +56,47 @@ class InstructionParams:
     fs3val: int | None = None
     fdval: int | None = None
     temp_fval: int | None = None
+
+    # Vector registers
+    vs1: int | None = None
+    vs2: int | None = None
+    vs3: int | None = None
+    vd: int | None = None
+
+    # Vector register values & pointers
+    vs1_val: int | None = None
+    vs2_val: int | None = None
+    vs3_val: int | None = None
+    vd_val: int | None = None
+    vs1_val_pointer: str | None = None
+    vs2_val_pointer: str | None = None
+    vs3_val_pointer: str | None = None
+    vd_val_pointer: str | None = None
+
+    # Other Vector Register information
+    vs1_size_multiplier: int | None = None
+    vs1_segments: int | None = None
+    vs1_type: str | None = None
+    vs2_size_multiplier: int | None = None
+    vs2_segments: int | None = None
+    vs2_type: str | None = None
+    vs3_size_multiplier: int | None = None
+    vs3_segments: int | None = None
+    vs3_type: str | None = None
+    vd_size_multiplier: int | None = None
+    vd_segments: int | None = None
+    vd_type: str | None = None
+
+    # Other Vector Information
+    lmul: int | float | None = None
+    sew: int | None = None
+    vl: int | str | None = None
+    vstart: int | None = None
+    vector_suite: Literal["length", "base"] | None = None
+    maskval: str | None = None
+    ta: bool | None = None
+    ma: bool | None = None
+    egs: int | None = None
 
     # Immediate value
     immval: int | None = None
@@ -89,4 +131,9 @@ class InstructionParams:
     def used_float_regs(self) -> list[int]:
         """Return list of all float registers used in this test."""
         regs: list[int] = [reg for reg in [self.fs1, self.fs2, self.fs3, self.fd, self.temp_freg] if reg is not None]
+        return regs
+
+    @property
+    def used_vector_regs(self) -> list[int]:
+        regs: list[int] = [reg for reg in [self.vd, self.vs1, self.vs2, self.vs3] if reg is not None]
         return regs

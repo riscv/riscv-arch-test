@@ -11,7 +11,7 @@ import re
 from typing import Literal
 
 from testgen.data.config import TestConfig
-from testgen.data.registers import FloatRegisterFile, IntegerRegisterFile
+from testgen.data.registers import FloatRegisterFile, IntegerRegisterFile, VectorRegisterFile
 from testgen.data.test_chunk import TestChunk
 
 # Pre-compiled regex patterns for label normalization in add_testcase()
@@ -48,6 +48,7 @@ class TestData:
         self._instr_name = instr_name
         self._int_regs = IntegerRegisterFile(test_config.E_ext)
         self._float_regs = FloatRegisterFile()
+        self._vec_regs = VectorRegisterFile()
         self._test_count = 0
         self._current_testcase_label = ""
         self._fp_load_size: Literal["single", "double", "half", "quad"] | None = None
@@ -98,6 +99,10 @@ class TestData:
     @property
     def float_regs(self) -> FloatRegisterFile:
         return self._float_regs
+
+    @property
+    def vec_regs(self) -> VectorRegisterFile:
+        return self._vec_regs
 
     @property
     def current_testcase_label(self) -> str:

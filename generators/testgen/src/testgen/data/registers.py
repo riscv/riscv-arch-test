@@ -372,3 +372,57 @@ class FloatRegisterFile(RegisterFile):
         if temp_conflict:
             # Restrict link register to specific set
             self._temp_reg = self.get_register(reg_range=list(self.temp_regs))
+
+
+class VectorRegisterFile(RegisterFile):
+    def __init__(self) -> None:
+        # There are always 32 Vector Registers
+        super().__init__(32)
+
+        # The allocations are more involved with the vector registers because of lmul
+        self.allocation_map: dict[int, int] = {}
+
+    def get_registers(
+        self, num_regs: int, *, lmul: int = 1, exclude_regs: list[int] | None = None, reg_range: list[int] | None = None
+    ) -> list[int]:
+        registers_available_to_lmul = set()
+        for register in range(0, 32, lmul):
+            group = set(range(register, register + lmul))
+            if len(self.reg_list & group) == len(group):
+                registers_available_to_lmul.add(register)
+
+        reg_range_set = set(reg_range) if reg_range is not None else self.reg_list
+        reg_range_set &= registers_available_to_lmul
+
+        registers = super().get_registers(num_regs, exclude_regs=exclude_regs, reg_range=list(reg_range_set))
+        for register in registers:
+            self.allocation_map[register] = lmul
+
+        return registers
+
+    def get_register(
+        self, *, lmul: int = 1, exclude_regs: list[int] | None = None, reg_range: list[int] | None = None
+    ) -> int:
+        return self.get_registers(1, lmul=lmul, exclude_regs=exclude_regs, reg_range=reg_range)[0]
+
+    def return_registers(self, regs: list[int]) -> None:
+        reg_groups = []
+        for reg in regs:
+            # assert reg in self.allocation_map, "Deallocating Vector Registers Must go Through the Base Register"
+            if reg in self.allocation_map:
+                reg_groups.extend(range(reg, reg + self.allocation_map[reg]))
+                self.allocation_map.pop(reg)
+            else:
+                reg_groups.append(reg)
+
+        return super().return_registers(reg_groups)
+
+    def return_register(self, reg: int) -> None:
+        return self.return_registers([reg])
+
+    def copy(self) -> VectorRegisterFile:
+        """Create a deep copy of the VectorRegisterFile object."""
+        new_reg_file = VectorRegisterFile()
+        new_reg_file.reg_list = self.reg_list.copy()
+        new_reg_file.allocation_map = self.allocation_map.copy()
+        return new_reg_file

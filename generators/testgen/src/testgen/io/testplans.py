@@ -24,6 +24,45 @@ def get_extensions(testplan_dir: Path) -> list[str]:
     return extensions
 
 
+def get_vector_extensions(testplan_dir: Path, *, priv: bool) -> list[str]:
+    if priv:
+        testplan_dir = testplan_dir / "priv"
+    testplans = []
+    for file in testplan_dir.glob("*"):
+        if file.suffix == ".csv":
+            arch = file.name[: file.name.rfind(".csv")]
+            if priv:
+                is_vector = arch.startswith(("ExceptionsV", "SsstrictV", "MisalignedV", "V", "Zv"))
+            else:
+                is_vector = arch.startswith(("V", "Zv"))
+            if is_vector:
+                if "Vx" in arch and not arch.startswith("Exceptions") and not arch.startswith("Ssstrict"):
+                    for effew in ["8", "16", "32", "64"]:
+                        testplans.append("Vx" + effew)
+                elif arch == "Vls":
+                    for effew in ["8", "16", "32", "64"]:
+                        testplans.append("Vls" + effew)
+                elif arch == "Vf":
+                    for effew in ["16", "32", "64"]:
+                        testplans.append("Vf" + effew)
+                elif arch == "ExceptionsVf":
+                    # Mirror unpriv Vf: expand into per-SEW pseudo-extensions so
+                    # each generated test runs vector-FP at a non-reserved SEW
+                    # (SEW=8 is reserved for FP). The driver filters instructions
+                    # by EFFEW{N} and emits ExceptionsVf{N}_rv{xlen}.S.
+                    for effew in ["16", "32", "64"]:
+                        testplans.append("ExceptionsVf" + effew)
+                elif arch in ["Zvbb", "Zvkb"]:
+                    for effew in ["8", "16", "32", "64"]:
+                        testplans.append(arch + effew)
+                elif arch == "Zvknhb":
+                    for effew in ["32", "64"]:
+                        testplans.append(arch + effew)
+                else:
+                    testplans.append(arch)
+    return testplans
+
+
 @dataclass
 class TestPlanData:
     """Data structure for information on a single instruction parsed from a testplan."""
@@ -32,13 +71,14 @@ class TestPlanData:
     instr_type: str
     rv32: bool
     rv64: bool
+    sews_supported: list[int]
     coverpoints: list[str]
 
 
 def read_testplan(testplan_path: Path) -> list[TestPlanData]:
     """Read a testplan and return a list of instructions and their associated data (type, coverpoints, etc.)."""
     # Columns that are parsed separately and should not be treated as coverpoints
-    non_coverpoint_columns = {"Instruction", "Type", "RV32", "RV64"}
+    non_coverpoint_columns = {"Instruction", "Type", "RV32", "RV64", "EFFEW8", "EFFEW16", "EFFEW32", "EFFEW64"}
 
     instructions: list[TestPlanData] = []
     with testplan_path.open() as csvfile:
@@ -54,6 +94,10 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                 raise
             rv32 = row["RV32"].strip().lower() == "x"
             rv64 = row["RV64"].strip().lower() == "x"
+            sews = []
+            for sew in [8, 16, 32, 64]:
+                if f"EFFEW{sew}" in row and row[f"EFFEW{sew}"].strip().lower() == "x":
+                    sews.append(sew)
             coverpoints: list[str] = []
             for key, value in row.items():
                 if key in non_coverpoint_columns:
@@ -65,6 +109,13 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                         key = key + "_" + value
                     coverpoints.append(key)
             instructions.append(
-                TestPlanData(instr_name=instr, instr_type=instr_type, rv32=rv32, rv64=rv64, coverpoints=coverpoints)
+                TestPlanData(
+                    instr_name=instr,
+                    instr_type=instr_type,
+                    rv32=rv32,
+                    rv64=rv64,
+                    sews_supported=sews,
+                    coverpoints=coverpoints,
+                )
             )
     return instructions

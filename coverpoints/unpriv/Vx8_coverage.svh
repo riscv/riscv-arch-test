@@ -28451,7 +28451,7 @@ covergroup Vx8_vsadd_vi_cg with function sample(ins_t ins);
     // cp_csr_vxsat
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vxsat", "vxsat")  iff (ins.trap == 0)  {
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
         bins zero = {1'b0};
         bins one  = {1'b1};
@@ -28661,7 +28661,7 @@ covergroup Vx8_vsadd_vv_cg with function sample(ins_t ins);
     // cp_csr_vxsat
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vxsat", "vxsat")  iff (ins.trap == 0)  {
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
         bins zero = {1'b0};
         bins one  = {1'b1};
@@ -28857,7 +28857,7 @@ covergroup Vx8_vsadd_vx_cg with function sample(ins_t ins);
     // cp_csr_vxsat
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vxsat", "vxsat")  iff (ins.trap == 0)  {
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
         bins zero = {1'b0};
         bins one  = {1'b1};
@@ -29059,7 +29059,7 @@ covergroup Vx8_vsaddu_vi_cg with function sample(ins_t ins);
     // cp_csr_vxsat
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vxsat", "vxsat")  iff (ins.trap == 0)  {
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
         bins zero = {1'b0};
         bins one  = {1'b1};
@@ -29269,7 +29269,7 @@ covergroup Vx8_vsaddu_vv_cg with function sample(ins_t ins);
     // cp_csr_vxsat
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vxsat", "vxsat")  iff (ins.trap == 0)  {
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
         bins zero = {1'b0};
         bins one  = {1'b1};
@@ -29465,7 +29465,7 @@ covergroup Vx8_vsaddu_vx_cg with function sample(ins_t ins);
     // cp_csr_vxsat
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vxsat", "vxsat")  iff (ins.trap == 0)  {
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
         bins zero = {1'b0};
         bins one  = {1'b1};
@@ -31775,7 +31775,7 @@ covergroup Vx8_vsmul_vv_cg with function sample(ins_t ins);
     // cp_csr_vxsat
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vxsat", "vxsat")  iff (ins.trap == 0)  {
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
         bins zero = {1'b0};
         bins one  = {1'b1};
@@ -31989,7 +31989,7 @@ covergroup Vx8_vsmul_vx_cg with function sample(ins_t ins);
     // cp_csr_vxsat
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vxsat", "vxsat")  iff (ins.trap == 0)  {
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
         bins zero = {1'b0};
         bins one  = {1'b1};
@@ -34783,7 +34783,7 @@ covergroup Vx8_vssub_vv_cg with function sample(ins_t ins);
     // cp_csr_vxsat
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vxsat", "vxsat")  iff (ins.trap == 0)  {
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
         bins zero = {1'b0};
         bins one  = {1'b1};
@@ -34979,7 +34979,7 @@ covergroup Vx8_vssub_vx_cg with function sample(ins_t ins);
     // cp_csr_vxsat
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vxsat", "vxsat")  iff (ins.trap == 0)  {
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
         bins zero = {1'b0};
         bins one  = {1'b1};
@@ -35211,7 +35211,7 @@ covergroup Vx8_vssubu_vv_cg with function sample(ins_t ins);
     // cp_csr_vxsat
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vxsat", "vxsat")  iff (ins.trap == 0)  {
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
         bins zero = {1'b0};
         bins one  = {1'b1};
@@ -35407,7 +35407,7 @@ covergroup Vx8_vssubu_vx_cg with function sample(ins_t ins);
     // cp_csr_vxsat
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vxsat", "vxsat")  iff (ins.trap == 0)  {
+    cp_csr_vxsat : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vcsr", "vxsat")  iff (ins.trap == 0)  {
         // Value of VXSAT.vxsat (vector fixed-point saturation flag)
         bins zero = {1'b0};
         bins one  = {1'b1};

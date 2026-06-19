@@ -1232,7 +1232,7 @@ def genRandomVector(test, sew, vs="vs2", emul=1):
             else:
               vectordata += writeData(f"   .word 0x{word:08x}")
         else:
-          for i in range(num_words),:
+          for i in range(num_words):
               randomElem = getrandbits(32)
               vectordata += writeData(f"    .word 0x{randomElem:08x}")
 

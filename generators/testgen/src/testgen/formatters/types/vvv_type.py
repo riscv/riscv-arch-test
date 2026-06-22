@@ -1,5 +1,5 @@
 ##################################
-# vvvm_type.py
+# vvv_type.py
 #
 # rwolk@hmc.edu June 2026
 # SPDX-License-Identifier: Apache-2.0
@@ -13,24 +13,24 @@ from testgen.formatters.registry import InstructionTypeConfig, add_instruction_f
 vvvm_config = InstructionTypeConfig(required_params={"vd", "vs1", "vs2"})
 
 
-@add_instruction_formatter("VVVM", vvvm_config)
-def format_vvvm_type(
+@add_instruction_formatter("VVV", vvvm_config)
+def format_vvv_type(
     instr_str: str,
     test_data: TestData,
     params: InstructionParams,
 ) -> tuple[list[str], list[str], list[str]]:
     assert params.vs1 is not None and params.vs1_val_pointer is not None, (
-        "vs1 and vs1_val_pointer must be provided for VVVM-type instructions"
+        "vs1 and vs1_val_pointer must be provided for VVV-type instructions"
     )
     assert params.vs2 is not None and params.vs2_val_pointer is not None, (
-        "vs2 and vs2_val_pointer must be provided for VVVM-type instructions"
+        "vs2 and vs2_val_pointer must be provided for VVV-type instructions"
     )
     assert params.vd is not None and params.vd_val_pointer is not None, (
-        "vd and vd_val_pointer must be provided for VVVM-type instructions"
+        "vd and vd_val_pointer must be provided for VVV-type instructions"
     )
-    assert params.temp_reg is not None, "temp_reg must provided for be VVVM-type instructions"
-    assert params.sew is not None, "sew must provided for be VVVM-type instructions"
-    assert params.lmul is not None, "lmul must provided for be VVVM-type instructions"
+    assert params.temp_reg is not None, "temp_reg must provided for be VVV-type instructions"
+    assert params.sew is not None, "sew must provided for be VVV-type instructions"
+    assert params.lmul is not None, "lmul must provided for be VVV-type instructions"
 
     setup = []
     registers = [params.vd, params.vs2, params.vs1]

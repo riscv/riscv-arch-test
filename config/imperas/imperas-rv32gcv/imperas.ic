@@ -7,6 +7,7 @@
 --processorvendor riscv.ovpworld.org
 --processorname riscv
 --variant RV32GCV
+--addressbits 34 # Physical address bus width
 # defines printing via write to  0x10010000 and termination at symbol _test_exit
 --extlib iss/cpu0/cc=riscv.ovpworld.org/intercept/customControl/1.0
 --override iss/cpu0/simulateexceptions=T
@@ -47,6 +48,9 @@
 --override cpu*/Sstc=T
 --override cpu*/Zimop=T
 --override cpu*/Zcmop=T
+--override cpu*/Smstateen=T
+--override cpu*/Ssstateen=T
+
 
 # Misaligned access (Zicclsm)
 --override cpu*/unaligned=T

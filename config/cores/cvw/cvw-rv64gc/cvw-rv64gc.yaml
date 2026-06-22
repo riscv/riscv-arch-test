@@ -43,6 +43,9 @@ implemented_extensions:
   - { name: Zbb, version: "= 1.0.0" }
   - { name: Zbs, version: "= 1.0.0" }
   - { name: Zbc, version: "= 1.0.0" }
+  - { name: Zbkb, version: "= 1.0.0" }
+  - { name: Zbkc, version: "= 1.0.0" }
+  - { name: Zbkx, version: "= 1.0.0" }
   - { name: Zknh, version: "= 1.0.0" }
   - { name: Zknd, version: "= 1.0.0" }
   - { name: Zkne, version: "= 1.0.0" }
@@ -197,7 +200,7 @@ params:
   MTVEC_BASE_ALIGNMENT_VECTORED: 64
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   NUM_PMP_ENTRIES: 16
-  PMP_GRANULARITY: 4
+  PMP_GRANULARITY: 6
   HPM_COUNTER_EN:
     [
       false,

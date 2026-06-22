@@ -27,13 +27,13 @@
 # REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 32
-#   NUM_PMP_ENTRIES: '64'
+#   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "pmpsm_all_entries_check.S"
-#define SIGUPD_COUNT 120
+#define SIGUPD_COUNT 360
 
 
 #define SKIP_MEPC
@@ -121,6 +121,22 @@ main:
 #define PMP_REGION_18       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT
 #define PMP_REGION_17       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT
 #define PMP_REGION_16       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT
+#define PMP_REGION_15       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT
+#define PMP_REGION_14       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT
+#define PMP_REGION_13       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT
+#define PMP_REGION_12       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT
+#define PMP_REGION_11       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT
+#define PMP_REGION_10       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT
+#define PMP_REGION_9       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT
+#define PMP_REGION_8       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT
+#define PMP_REGION_7       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT
+#define PMP_REGION_6       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT
+#define PMP_REGION_5       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT
+#define PMP_REGION_4       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT
+#define PMP_REGION_3       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT
+#define PMP_REGION_2       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT
+#define PMP_REGION_1       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT
+#define PMP_REGION_0       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT
 
 #define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
 #define REGIONSTART         TEST_FOR_EXECUTION      // RAM_BASE_ADDR + PROGRAM_SIZE
@@ -132,19 +148,35 @@ main:
     #define PMP_REGION_SIZE     0
 #endif
 
+    // -----------------------------------------------------------------------
+    // Background (catch-all) region — must be the highest-numbered entry so
+    // that all lower entries take priority over it.
+    //   16-PMP : last entry = pmpaddr15, config byte lives in pmpcfg3[PMP3]
+    //   64-PMP : last entry = pmpaddr63, config byte lives in pmpcfg15[PMP3]
+    // -----------------------------------------------------------------------
+#if UDB_NUM_PMP_ENTRIES == 64
     LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw    pmpaddr63, x4
-
-    //Lock the Background region.
-    LI(x4, (PMP_REGION_GLOBAL))
+    csrw pmpaddr63, x4
+    LI(x4, PMP_REGION_GLOBAL)
     csrw pmpcfg15, x4
+#elif UDB_NUM_PMP_ENTRIES == 16
+    LA(x4, PMPADDRESS_TOP_GLOBAL)
+    csrw pmpaddr15, x4
+    LI(x4, PMP_REGION_GLOBAL)
+    csrw pmpcfg3, x4
+#else
+    #error "Unsupported UDB_NUM_PMP_ENTRIES value; only 16 and 64 are supported."
+#endif
 
+#if UDB_NUM_PMP_ENTRIES == 64
 //                                          Verification Section
 // Test Case: 1 : L -> 1 and XR Permissions given to the PMP Region 62
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr62, x5
     LI(x4, PMP_REGION_62)
     csrw pmpcfg15, x4
@@ -154,8 +186,10 @@ main:
 // Test Case: 2 : L -> 1 and XR Permissions given to the PMP Region 61
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr61, x5
     LI(x4, PMP_REGION_61)
     csrw pmpcfg15, x4
@@ -165,8 +199,10 @@ main:
 // Test Case: 3 : L -> 1 and XR Permissions given to the PMP Region 60
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr60, x5
     LI(x4, PMP_REGION_60)
     csrw pmpcfg15, x4
@@ -176,8 +212,10 @@ main:
 // Test Case: 4 : PMP Region 59
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr59, x5
     LI(x4, PMP_REGION_59)
     csrw pmpcfg14, x4
@@ -187,8 +225,10 @@ main:
 // Test Case: 5 : PMP Region 58
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr58, x5
     LI(x4, PMP_REGION_58)
     csrw pmpcfg14, x4
@@ -198,8 +238,10 @@ main:
 // Test Case: 6 : PMP Region 57
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr57, x5
     LI(x4, PMP_REGION_57)
     csrw pmpcfg14, x4
@@ -209,8 +251,10 @@ main:
 // Test Case: 7 : PMP Region 56
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr56, x5
     LI(x4, PMP_REGION_56)
     csrw pmpcfg14, x4
@@ -220,8 +264,10 @@ main:
 // Test Case: 8 : PMP Region 55
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr55, x5
     LI(x4, PMP_REGION_55)
     csrw pmpcfg13, x4
@@ -231,8 +277,10 @@ main:
 // Test Case: 9 : PMP Region 54
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr54, x5
     LI(x4, PMP_REGION_54)
     csrw pmpcfg13, x4
@@ -242,8 +290,10 @@ main:
 // Test Case: 10 : PMP Region 53
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr53, x5
     LI(x4, PMP_REGION_53)
     csrw pmpcfg13, x4
@@ -253,8 +303,10 @@ main:
 // Test Case: 11 : PMP Region 52
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr52, x5
     LI(x4, PMP_REGION_52)
     csrw pmpcfg13, x4
@@ -264,8 +316,10 @@ main:
 // Test Case: 12 : PMP Region 51
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr51, x5
     LI(x4, PMP_REGION_51)
     csrw pmpcfg12, x4
@@ -275,8 +329,10 @@ main:
 // Test Case: 13 : PMP Region 50
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr50, x5
     LI(x4, PMP_REGION_50)
     csrw pmpcfg12, x4
@@ -286,8 +342,10 @@ main:
 // Test Case: 14 : PMP Region 49
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr49, x5
     LI(x4, PMP_REGION_49)
     csrw pmpcfg12, x4
@@ -297,8 +355,10 @@ main:
 // Test Case: 15 : PMP Region 48
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr48, x5
     LI(x4, PMP_REGION_48)
     csrw pmpcfg12, x4
@@ -308,8 +368,10 @@ main:
 // Test Case: 16 : PMP Region 47
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr47, x5
     LI(x4, PMP_REGION_47)
     csrw pmpcfg11, x4
@@ -319,8 +381,10 @@ main:
 // Test Case: 17 : PMP Region 46
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr46, x5
     LI(x4, PMP_REGION_46)
     csrw pmpcfg11, x4
@@ -330,8 +394,10 @@ main:
 // Test Case: 18 : PMP Region 45
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr45, x5
     LI(x4, PMP_REGION_45)
     csrw pmpcfg11, x4
@@ -341,8 +407,10 @@ main:
 // Test Case: 19 : PMP Region 44
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr44, x5
     LI(x4, PMP_REGION_44)
     csrw pmpcfg11, x4
@@ -352,8 +420,10 @@ main:
 // Test Case: 20 : PMP Region 43
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr43, x5
     LI(x4, PMP_REGION_43)
     csrw pmpcfg10, x4
@@ -363,8 +433,10 @@ main:
 // Test Case: 21 : PMP Region 42
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr42, x5
     LI(x4, PMP_REGION_42)
     csrw pmpcfg10, x4
@@ -374,8 +446,10 @@ main:
 // Test Case: 22 : PMP Region 41
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr41, x5
     LI(x4, PMP_REGION_41)
     csrw pmpcfg10, x4
@@ -385,8 +459,10 @@ main:
 // Test Case: 23 : PMP Region 40
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr40, x5
     LI(x4, PMP_REGION_40)
     csrw pmpcfg10, x4
@@ -396,8 +472,10 @@ main:
 // Test Case: 24 : PMP Region 39
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr39, x5
     LI(x4, PMP_REGION_39)
     csrw pmpcfg9, x4
@@ -407,8 +485,10 @@ main:
 // Test Case: 25 : PMP Region 38
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr38, x5
     LI(x4, PMP_REGION_38)
     csrw pmpcfg9, x4
@@ -418,8 +498,10 @@ main:
 // Test Case: 26 : PMP Region 37
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr37, x5
     LI(x4, PMP_REGION_37)
     csrw pmpcfg9, x4
@@ -429,8 +511,10 @@ main:
 // Test Case: 27 : PMP Region 36
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr36, x5
     LI(x4, PMP_REGION_36)
     csrw pmpcfg9, x4
@@ -440,8 +524,10 @@ main:
 // Test Case: 28 : PMP Region 35
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr35, x5
     LI(x4, PMP_REGION_35)
     csrw pmpcfg8, x4
@@ -451,8 +537,10 @@ main:
 // Test Case: 29 : PMP Region 34
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr34, x5
     LI(x4, PMP_REGION_34)
     csrw pmpcfg8, x4
@@ -462,8 +550,10 @@ main:
 // Test Case: 30 : PMP Region 33
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr33, x5
     LI(x4, PMP_REGION_33)
     csrw pmpcfg8, x4
@@ -473,8 +563,10 @@ main:
 // Test Case: 31 : PMP Region 32
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr32, x5
     LI(x4, PMP_REGION_32)
     csrw pmpcfg8, x4
@@ -484,8 +576,10 @@ main:
 // Test Case: 32 : PMP Region 31
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr31, x5
     LI(x4, PMP_REGION_31)
     csrw pmpcfg7, x4
@@ -495,8 +589,10 @@ main:
 // Test Case: 33 : PMP Region 30
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr30, x5
     LI(x4, PMP_REGION_30)
     csrw pmpcfg7, x4
@@ -506,8 +602,10 @@ main:
 // Test Case: 34 : PMP Region 29
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr29, x5
     LI(x4, PMP_REGION_29)
     csrw pmpcfg7, x4
@@ -517,8 +615,10 @@ main:
 // Test Case: 35 : PMP Region 28
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr28, x5
     LI(x4, PMP_REGION_28)
     csrw pmpcfg7, x4
@@ -528,8 +628,10 @@ main:
 // Test Case: 36 : PMP Region 27
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr27, x5
     LI(x4, PMP_REGION_27)
     csrw pmpcfg6, x4
@@ -539,8 +641,10 @@ main:
 // Test Case: 37 : PMP Region 26
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr26, x5
     LI(x4, PMP_REGION_26)
     csrw pmpcfg6, x4
@@ -550,8 +654,10 @@ main:
 // Test Case: 38 : PMP Region 25
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr25, x5
     LI(x4, PMP_REGION_25)
     csrw pmpcfg6, x4
@@ -561,8 +667,10 @@ main:
 // Test Case: 39 : PMP Region 24
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr24, x5
     LI(x4, PMP_REGION_24)
     csrw pmpcfg6, x4
@@ -572,8 +680,10 @@ main:
 // Test Case: 40 : PMP Region 23
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr23, x5
     LI(x4, PMP_REGION_23)
     csrw pmpcfg5, x4
@@ -583,8 +693,10 @@ main:
 // Test Case: 41 : PMP Region 22
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr22, x5
     LI(x4, PMP_REGION_22)
     csrw pmpcfg5, x4
@@ -594,8 +706,10 @@ main:
 // Test Case: 42 : PMP Region 21
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr21, x5
     LI(x4, PMP_REGION_21)
     csrw pmpcfg5, x4
@@ -605,8 +719,10 @@ main:
 // Test Case: 43 : PMP Region 20
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr20, x5
     LI(x4, PMP_REGION_20)
     csrw pmpcfg5, x4
@@ -616,8 +732,10 @@ main:
 // Test Case: 44 : PMP Region 19
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr19, x5
     LI(x4, PMP_REGION_19)
     csrw pmpcfg4, x4
@@ -627,8 +745,10 @@ main:
 // Test Case: 45 : PMP Region 18
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr18, x5
     LI(x4, PMP_REGION_18)
     csrw pmpcfg4, x4
@@ -638,8 +758,10 @@ main:
 // Test Case: 46 : PMP Region 17
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr17, x5
     LI(x4, PMP_REGION_17)
     csrw pmpcfg4, x4
@@ -649,12 +771,207 @@ main:
 // Test Case: 47 : PMP Region 16
     LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr16, x5
     LI(x4, PMP_REGION_16)
     csrw pmpcfg4, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_47
+
+// Test Case: 48 : PMP Region 15
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
+    csrw pmpaddr15, x5
+    LI(x4, PMP_REGION_15)
+    csrw pmpcfg3, x4
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_48
+#endif
+
+// Test Case: 49 : PMP Region 14
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
+    csrw pmpaddr14, x5
+    LI(x4, PMP_REGION_14)
+    csrw pmpcfg3, x4
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_49
+
+// Test Case: 50 : PMP Region 13
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
+    csrw pmpaddr13, x5
+    LI(x4, PMP_REGION_13)
+    csrw pmpcfg3, x4
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_50
+
+// Test Case: 51 : PMP Region 12
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
+    csrw pmpaddr12, x5
+    LI(x4, PMP_REGION_12)
+    csrw pmpcfg3, x4
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_51
+
+// Test Case: 52 : PMP Region 11
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
+    csrw pmpaddr11, x5
+    LI(x4, PMP_REGION_11)
+    csrw pmpcfg2, x4
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_52
+
+// Test Case: 53 : PMP Region 10
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
+    csrw pmpaddr10, x5
+    LI(x4, PMP_REGION_10)
+    csrw pmpcfg2, x4
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_53
+
+// Test Case: 54 : PMP Region 9
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
+    csrw pmpaddr9, x5
+    LI(x4, PMP_REGION_9)
+    csrw pmpcfg2, x4
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_54
+
+// Test Case: 55 : PMP Region 8
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
+    csrw pmpaddr8, x5
+    LI(x4, PMP_REGION_8)
+    csrw pmpcfg2, x4
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_55
+
+// Test Case: 56 : PMP Region 7
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
+    csrw pmpaddr7, x5
+    LI(x4, PMP_REGION_7)
+    csrw pmpcfg1, x4
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_56
+
+// Test Case: 57 : PMP Region 6
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
+    csrw pmpaddr6, x5
+    LI(x4, PMP_REGION_6)
+    csrw pmpcfg1, x4
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_57
+
+// Test Case: 58 : PMP Region 5
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
+    csrw pmpaddr5, x5
+    LI(x4, PMP_REGION_5)
+    csrw pmpcfg1, x4
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_58
+
+// Test Case: 59 : PMP Region 4
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
+    csrw pmpaddr4, x5
+    LI(x4, PMP_REGION_4)
+    csrw pmpcfg1, x4
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_59
+
+// Test Case: 60 : PMP Region 3
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
+    csrw pmpaddr3, x5
+    LI(x4, PMP_REGION_3)
+    csrw pmpcfg0, x4
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_60
+
+// Test Case: 61 : PMP Region 2
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
+    csrw pmpaddr2, x5
+    LI(x4, PMP_REGION_2)
+    csrw pmpcfg0, x4
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_61
+
+// Test Case: 62 : PMP Region 1
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
+    csrw pmpaddr1, x5
+    LI(x4, PMP_REGION_1)
+    csrw pmpcfg0, x4
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_62
+
+// Test Case: 63 : PMP Region 0
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
+    csrw pmpaddr0, x5
+    LI(x4, PMP_REGION_0)
+    csrw pmpcfg0, x4
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_63
 
 
 
@@ -667,9 +984,13 @@ test_1_str: .string "\"test: 1; cp: cp_pmpm64_sw\""
 test_2_str: .string "\"test: 2; cp: cp_pmpm64_lw\""
 
 .align 12
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept 1024
     jr ra
+    .endr
 
+.align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

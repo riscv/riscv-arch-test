@@ -535,3 +535,28 @@ function logic[7:0] shangmi_round_subbyte(logic[127:0] vd, logic[127:0] vs2, int
   B = x1 ^ x2 ^ x3 ^ rk0;
   return B[idx*8 +: 8];
 endfunction
+
+function int data_overlap(int hart, int issue, bit[2:0] width, `VLEN_BITS val);
+  `XLEN_BITS vl = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vl", "vl");
+  int capped_vl;
+  int index_sew;
+  bit seen[logic[63:0]];
+
+  case (width)
+    3'b000: index_sew = 8;
+    3'b101: index_sew = 16;
+    3'b110: index_sew = 32;
+    3'b111: index_sew = 64;
+    default: return 0;
+  endcase
+
+  capped_vl = (vl < `UDB_VLEN / index_sew) ? vl : `UDB_VLEN / index_sew;
+
+  for (int i = 0; i < capped_vl; i++) begin
+    logic[63:0] slice = (val >> (i * index_sew)) & ((64'b1 << index_sew) - 1);
+    if (seen.exists(slice)) return 1;
+    else seen[slice] = 1;
+  end
+
+  return 0;
+endfunction

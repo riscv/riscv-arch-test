@@ -134,6 +134,6 @@ class InstructionParams:
         return regs
 
     @property
-    def used_vector_regs(self) -> list[int]:
+    def used_vec_regs(self) -> list[int]:
         regs: list[int] = [reg for reg in [self.vd, self.vs1, self.vs2, self.vs3] if reg is not None]
         return regs

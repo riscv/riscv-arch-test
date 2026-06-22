@@ -45,7 +45,7 @@ def _append_sig_reg_reset(test_file_chunks: list[TestChunk]) -> None:
 
 
 def generate_unpriv_extension_tests(
-    xlen: int, E_ext: bool, testsuite: str, testplan_dir: Path, output_test_dir: Path
+    xlen: int, E_ext: bool, testsuite: str, testplan_dir: Path, output_test_dir: Path, is_vector: bool = False
 ) -> None:
     """
     Generate tests for all instructions in a given unprivileged testsuite.
@@ -58,7 +58,17 @@ def generate_unpriv_extension_tests(
         output_test_dir: Directory to output generated tests
     """
     # Read testplan for this testsuite
-    instructions = read_testplan(testplan_dir / f"{testsuite}.csv")
+    if is_vector:
+        match = re.search(r"([^0-9]*)\d*$", testsuite)
+        assert match is not None, f"Unable to Parse Vector Extension {testsuite} into a Testplan and SEW Pair"
+
+        testplan = match.group(1)
+        sew = _detect_sew(testsuite)
+    else:
+        testplan = testsuite
+        sew = None  # Not relevant in non-vector cases
+
+    instructions = read_testplan(testplan_dir / f"{testplan}.csv")
     if testsuite == "I" and E_ext:
         testsuite = "E"
 
@@ -67,12 +77,15 @@ def generate_unpriv_extension_tests(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     flen = get_flen_for_extension(testsuite)
-    test_config = TestConfig(xlen=xlen, flen=flen, testsuite=testsuite, E_ext=E_ext)
+    test_config = TestConfig(xlen=xlen, flen=flen, testsuite=testsuite, E_ext=E_ext, sew=sew)
 
     # Iterate through each instruction in the testsuite; generate separate test files for each
     for instr_data in instructions:
         # Skip instructions not valid for this xlen
         if (xlen == 32 and not instr_data.rv32) or (xlen == 64 and not instr_data.rv64):
+            continue
+
+        if is_vector and sew not in instr_data.sews_supported:
             continue
 
         _generate_unpriv_tests_for_instruction(
@@ -111,52 +124,6 @@ def _detect_sew(testsuite: str) -> int:
             return sew
 
     return 8
-
-
-def generate_unpriv_vector_tests(xlen: int, testsuite: str, testplan_dir: Path, output_test_dir: Path) -> None:
-    """
-    Generate tests for all instructions in a given unprivileged testsuite.
-
-    Args:
-        xlen: Target XLEN (32 or 64)
-        E_ext: Whether to generate RV32E tests
-        testsuite: Testsuite to generate tests for (e.g., 'I', 'M', 'ZcbM', 'MisalignD')
-        testplan_dir: Directory containing testplan CSV files
-        output_test_dir: Directory to output generated tests
-    """
-    # Read testplan for this testsuite
-    match = re.search(r"([^0-9]*)\d*$", testsuite)
-    if match is None:
-        return  # This branch shouldn't be taken ever because we are matching with *s
-    testplan = match.group(1)
-    sew = _detect_sew(testsuite)
-
-    instructions = read_testplan(testplan_dir / f"{testplan}.csv")
-
-    # Create testsuite-wide test configuration
-    output_dir = output_test_dir / f"rv{xlen}i/{testsuite}"
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    flen = get_flen_for_extension(testsuite)
-    test_config = TestConfig(xlen=xlen, flen=flen, testsuite=testsuite, sew=sew)
-
-    # Iterate through each instruction in the testsuite; generate separate test files for each
-    for instr_data in instructions:
-        # Skip instructions not valid for this xlen
-        if (xlen == 32 and not instr_data.rv32) or (xlen == 64 and not instr_data.rv64):
-            continue
-
-        # Skip instructions that are not valid at this sew
-        if sew not in instr_data.sews_supported:
-            continue
-
-        _generate_unpriv_tests_for_instruction(
-            instr_data.instr_name,
-            instr_data.instr_type,
-            instr_data.coverpoints,
-            test_config,
-            output_dir,
-        )
 
 
 def _generate_unpriv_tests_for_instruction(

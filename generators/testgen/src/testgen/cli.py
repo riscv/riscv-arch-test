@@ -31,7 +31,7 @@ from rich.progress import (
 )
 
 from testgen.constants import E_EXTENSION_TESTS
-from testgen.generate import generate_priv_test, generate_unpriv_extension_tests, generate_unpriv_vector_tests
+from testgen.generate import generate_priv_test, generate_unpriv_extension_tests
 from testgen.io.testplans import get_extensions, get_vector_extensions
 from testgen.priv import get_priv_test_extensions
 
@@ -48,16 +48,7 @@ class UnprivTask:
     testsuite: str
     testplan_dir: Path
     output_test_dir: Path
-
-
-@dataclass
-class UnprivVectorTask:
-    """Task for generating unprivileged tests."""
-
-    xlen: int
-    testsuite: str
-    testplan_dir: Path
-    output_test_dir: Path
+    is_vector: bool
 
 
 @dataclass
@@ -132,18 +123,18 @@ def generate_all_tests(
                 priv_ext_list.remove(ext)
 
     # Build list of test generation tasks
-    tasks: list[UnprivTask | UnprivVectorTask | PrivTask] = []
+    tasks: list[UnprivTask | PrivTask] = []
 
     for xlen in [32, 64]:
         for E_ext in [False, True]:
             for testsuite in sorted(unpriv_ext_list):
                 if E_ext and testsuite not in E_EXTENSION_TESTS:
                     continue
-                tasks.append(UnprivTask(xlen, E_ext, testsuite, testplan_dir, output_test_dir))
+                tasks.append(UnprivTask(xlen, E_ext, testsuite, testplan_dir, output_test_dir, False))
 
     for xlen in [32, 64]:
         for testsuite in sorted(vector_unpriv_ext_list):
-            tasks.append(UnprivVectorTask(xlen, testsuite, testplan_dir, output_test_dir))
+            tasks.append(UnprivTask(xlen, False, testsuite, testplan_dir, output_test_dir, True))
 
     tasks.extend(PrivTask(testsuite, output_test_dir) for testsuite in sorted(priv_ext_list))
 
@@ -174,7 +165,7 @@ def _progress(description: str) -> Progress:
     )
 
 
-def _dispatch_test_gen(task: UnprivTask | UnprivVectorTask | PrivTask) -> None:
+def _dispatch_test_gen(task: UnprivTask | PrivTask) -> None:
     """Dispatch test generation based on task type."""
     if isinstance(task, UnprivTask):
         generate_unpriv_extension_tests(
@@ -183,13 +174,7 @@ def _dispatch_test_gen(task: UnprivTask | UnprivVectorTask | PrivTask) -> None:
             testsuite=task.testsuite,
             testplan_dir=task.testplan_dir,
             output_test_dir=task.output_test_dir,
-        )
-    elif isinstance(task, UnprivVectorTask):
-        generate_unpriv_vector_tests(
-            xlen=task.xlen,
-            testsuite=task.testsuite,
-            testplan_dir=task.testplan_dir,
-            output_test_dir=task.output_test_dir,
+            is_vector=task.is_vector,
         )
     elif isinstance(task, PrivTask):
         generate_priv_test(

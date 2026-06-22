@@ -28,38 +28,27 @@ def get_vector_extensions(testplan_dir: Path, *, priv: bool) -> list[str]:
     if priv:
         testplan_dir = testplan_dir / "priv"
     testplans = []
-    for file in testplan_dir.glob("*"):
-        if file.suffix == ".csv":
-            arch = file.name[: file.name.rfind(".csv")]
-            if priv:
-                is_vector = arch.startswith(("ExceptionsV", "SsstrictV", "MisalignedV", "V", "Zv"))
-            else:
-                is_vector = arch.startswith(("V", "Zv"))
-            if is_vector:
-                if "Vx" in arch and not arch.startswith("Exceptions") and not arch.startswith("Ssstrict"):
-                    for effew in ["8", "16", "32", "64"]:
-                        testplans.append("Vx" + effew)
-                elif arch == "Vls":
-                    for effew in ["8", "16", "32", "64"]:
-                        testplans.append("Vls" + effew)
-                elif arch == "Vf":
-                    for effew in ["16", "32", "64"]:
-                        testplans.append("Vf" + effew)
-                elif arch == "ExceptionsVf":
-                    # Mirror unpriv Vf: expand into per-SEW pseudo-extensions so
-                    # each generated test runs vector-FP at a non-reserved SEW
-                    # (SEW=8 is reserved for FP). The driver filters instructions
-                    # by EFFEW{N} and emits ExceptionsVf{N}_rv{xlen}.S.
-                    for effew in ["16", "32", "64"]:
-                        testplans.append("ExceptionsVf" + effew)
-                elif arch in ["Zvbb", "Zvkb"]:
-                    for effew in ["8", "16", "32", "64"]:
-                        testplans.append(arch + effew)
-                elif arch == "Zvknhb":
-                    for effew in ["32", "64"]:
-                        testplans.append(arch + effew)
-                else:
-                    testplans.append(arch)
+    for file in testplan_dir.glob("*.csv"):
+        arch = file.stem
+        if priv:
+            is_vector = arch.startswith(("ExceptionsV", "SsstrictV", "MisalignedV", "V", "Zv"))
+        else:
+            is_vector = arch.startswith(("V", "Zv"))
+
+        if not is_vector:
+            continue
+
+        elif arch in ["Vx", "Vls", "Zvbb", "Zvkb"]:
+            for effew in ["8", "16", "32", "64"]:
+                testplans.append(arch + effew)
+        elif arch in ["ExceptionsVf", "Vf"]:
+            for effew in ["16", "32", "64"]:
+                testplans.append(arch + effew)
+        elif arch == "Zvknhb":
+            for effew in ["32", "64"]:
+                testplans.append(arch + effew)
+        else:
+            testplans.append(arch)
     return testplans
 
 

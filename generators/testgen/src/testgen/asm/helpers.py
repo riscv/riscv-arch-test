@@ -145,20 +145,14 @@ def return_test_regs(test_data: TestData, params: InstructionParams) -> None:
     """
     test_data.int_regs.return_registers(params.used_int_regs)
     test_data.float_regs.return_registers(params.used_float_regs)
-    test_data.vec_regs.return_registers(params.used_vector_regs)
+    test_data.vec_regs.return_registers(params.used_vec_regs)
 
 
 def _lmul_flag(lmul: float) -> str:
-    lmulflag = str(lmul)
-
-    if lmul == 0.5:
-        lmulflag = "f2"
-    elif lmul == 0.25:
-        lmulflag = "f4"
-    elif lmul == 0.125:
-        lmulflag = "f8"
-
-    return lmulflag
+    if lmul < 1:
+        return f"f{int(1 / lmul)}"
+    else:
+        return str(lmul)
 
 
 def load_vec_reg(
@@ -183,7 +177,7 @@ def load_vec_reg(
 
     lines.extend(
         [
-            f"la x{temp_reg}, {val_pointer}",
+            f"LA(x{temp_reg}, {val_pointer})",
             f"vle{sew}.v v{register}, (x{temp_reg})",
         ]
     )

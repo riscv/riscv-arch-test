@@ -55,6 +55,11 @@ class InstructionTypeConfig:
         imm_signed: Whether the immediate value is signed (default: True).
         imm_nonzero: Whether the immediate value must be nonzero (default: False).
         pair_regs: Set of registers that use even register pairs (e.g., {"rd", "rs2"}).
+        vector_overlap_constraints: Set of pairs of vector registers that cannot overlap
+        vector_masked_constraints: Set of pairs of vector register that cannot overlap only when masked
+        vector_role: Broader Vector Instruction Type (e.g. "load" or "store")
+        vector_mask_regs: Set of registers used as mask registers
+        vector_scalar_regs: Set of registers used as scalar registers
     """
 
     required_params: set[str] | None = None
@@ -64,6 +69,11 @@ class InstructionTypeConfig:
     imm_signed: bool = True
     imm_nonzero: bool = False
     pair_regs: set[str] | None = None  # Registers that use register pairs (e.g., {"rd", "rs2"})
+    vector_overlap_constraints: set[tuple[str, str]] | None = None
+    vector_masked_constraints: set[tuple[str, str]] | None = None
+    vector_role: str | None = None
+    vector_mask_regs: set[str] | None = None
+    vector_scalar_regs: set[str] | None = None
 
 
 # Registry: dict mapping instruction type to (instruction_formatter, instruction_type_config)

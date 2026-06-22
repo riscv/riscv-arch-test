@@ -1,5 +1,5 @@
 ##################################
-# vvv_type.py
+# wwv_type.py
 #
 # rwolk@hmc.edu June 2026
 # SPDX-License-Identifier: Apache-2.0
@@ -8,19 +8,12 @@
 from testgen.asm.helpers import load_vec_reg, prep_base_v, write_sigupd_v, write_sigupd_v_len
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
-from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
+from testgen.formatters.registry import InstructionTypeConfig
 
-vvv_config = InstructionTypeConfig(required_params={"vd", "vs1", "vs2"})
-wwv_config = InstructionTypeConfig(required_params={"vd", "vs1", "vs2"}, vector_overlap_constraints={("vd", "vs1")})
-wvv_config = InstructionTypeConfig(
-    required_params={"vd", "vs1", "vs2"}, vector_overlap_constraints={("vd", "vs1"), ("vd", "vs2")}
-)
+wwv_config = InstructionTypeConfig(required_params={"vd", "vs1", "vs2"})
 
 
-@add_instruction_formatter("VVV", vvv_config)
-@add_instruction_formatter("WWV", wwv_config)
-@add_instruction_formatter("WVV", wvv_config)
-def format_vvv_type(
+def format_wwv_type(
     instr_str: str,
     test_data: TestData,
     params: InstructionParams,

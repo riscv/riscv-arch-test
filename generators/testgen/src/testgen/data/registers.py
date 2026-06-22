@@ -405,6 +405,15 @@ class VectorRegisterFile(RegisterFile):
     ) -> int:
         return self.get_registers(1, lmul=lmul, exclude_regs=exclude_regs, reg_range=reg_range)[0]
 
+    def free_registers(self, lmul: int) -> set[int]:
+        registers_available_to_lmul = set()
+        for register in range(0, 32, lmul):
+            group = set(range(register, register + lmul))
+            if len(self.reg_list & group) == len(group):
+                registers_available_to_lmul.add(register)
+
+        return self.reg_list & registers_available_to_lmul
+
     def return_registers(self, regs: list[int]) -> None:
         reg_groups = []
         for reg in regs:

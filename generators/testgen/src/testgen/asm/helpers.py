@@ -173,7 +173,7 @@ def load_vec_reg(
         if vl == "vlmax":
             lines.append(f"vsetvli x{temp_reg}, x0, e{sew}, m{_lmul_flag(lmul)}, tu, mu")
         else:
-            lines.append(f"vsetvli x{temp_reg}, {vl}, e{sew}, m{_lmul_flag(lmul)}, tu, mu")
+            lines.append(f"vsetivli x{temp_reg}, {vl}, e{sew}, m{_lmul_flag(lmul)}, tu, mu")
 
     lines.extend(
         [
@@ -295,6 +295,8 @@ def prep_base_v(test_data: TestData, params: InstructionParams, registers: list[
     elif params.vl == "vlmax":
         lines.extend(["# Load Vl=VLMAX", f"vsetvli x{params.temp_reg}, x0, e{params.sew}, {flags}"])
     else:
+        vl = params.vl if params.vl is not None else 1
+
         lines.extend(
             [
                 "# Set Registers to Deterministic Values (0xD)",
@@ -308,7 +310,7 @@ def prep_base_v(test_data: TestData, params: InstructionParams, registers: list[
         lines.extend(
             [
                 "# Load Desired VL",
-                f"li {params.temp_reg}, {params.vl}",
+                f"li x{params.temp_reg}, {vl}",
                 f"vsetvli x0, x{params.temp_reg}, e{params.sew}, {flags}",
             ]
         )

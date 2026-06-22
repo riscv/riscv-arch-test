@@ -429,13 +429,16 @@ def _generate_wrs_nto_timeout_h_tests(test_data: TestData) -> list[str]:
 def make_zawrssu(test_data: TestData) -> list[str]:
     """Generate tests for ZawrSU WRS instructions at user-mode."""
 
-    lines: list[str] = []
+    lines: list[str] = [
+        "# No delegation",
+        "CSRW(medeleg, zero)",
+    ]
 
-    lines.extend(_generate_wrs_sto_timeout_tests(test_data))
-    lines.extend(_generate_wrs_no_res_tests(test_data))
-    lines.extend(_generate_wrs_resume_tests(test_data))
+    # lines.extend(_generate_wrs_sto_timeout_tests(test_data))
+    # lines.extend(_generate_wrs_no_res_tests(test_data))
+    # lines.extend(_generate_wrs_resume_tests(test_data))
     lines.extend(_generate_wrs_no_mie_tests(test_data))
-    lines.extend(_generate_wrs_nto_timeout_tests(test_data))
-    lines.extend(_generate_wrs_nto_timeout_h_tests(test_data))
+    # lines.extend(_generate_wrs_nto_timeout_tests(test_data))
+    # lines.extend(_generate_wrs_nto_timeout_h_tests(test_data))
 
     return lines

@@ -118,7 +118,7 @@ def generate_instr_adr_misaligned_jalr_tests(test_data: TestData, covergroup: st
                     f"auipc x{addr_reg}, 0 # PC+0 addr_reg = PC",
                     f"addi x{addr_reg}, x{addr_reg}, {base_off} # PC+4 addr_reg[1:0] = rs1_lsb",
                     test_data.add_testcase(f"jalr_rs1_{rs1_lsb}_off_{offset_lsb}", coverpoint, covergroup),
-                    f"jalr x1, {jalr_off}(x{addr_reg})",  # PC+8 jump target is PC + base_off + jalr_off (bit 0 cleared)
+                    f"jalr x1, {jalr_off}(x{addr_reg}) # PC+8 jump target is PC + base_off + jalr_off (bit 0 cleared)",
                     "# JALR target may land on the upper halfword (0x0001) of a padding ADDI, which decodes as a valid c.nop",
                     "# With base_off/jalr_off in {6,7,8,9}, (base_off + jalr_off) spans 12..18 bytes",
                     "# after clearing bit 0 the possible targets are 12/14/16/18, so use two padding instructions",

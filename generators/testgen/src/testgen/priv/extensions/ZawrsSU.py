@@ -434,11 +434,13 @@ def make_zawrssu(test_data: TestData) -> list[str]:
         "CSRW(medeleg, zero)",
     ]
 
-    # lines.extend(_generate_wrs_sto_timeout_tests(test_data))
-    # lines.extend(_generate_wrs_no_res_tests(test_data))
-    # lines.extend(_generate_wrs_resume_tests(test_data))
+    lines.extend(_generate_wrs_sto_timeout_tests(test_data))
+    lines.extend(_generate_wrs_no_res_tests(test_data))
+    lines.extend(_generate_wrs_resume_tests(test_data))
+    lines.extend(_generate_wrs_nto_timeout_tests(test_data))
+    lines.extend(_generate_wrs_nto_timeout_h_tests(test_data))
+    # for the wrs_no_mie_test, spike triggers illegal instruction on WRS.NTO immediately if TW = 1 but sail just treats WRS,NTO as NOP
+    # NTO is_nop = true is set for spike since spike treats WRS.NTO as NOP unless TW = 1
     lines.extend(_generate_wrs_no_mie_tests(test_data))
-    # lines.extend(_generate_wrs_nto_timeout_tests(test_data))
-    # lines.extend(_generate_wrs_nto_timeout_h_tests(test_data))
 
     return lines

@@ -11,6 +11,6 @@
 # Smstateen will be added back once issue related srmcfg in whisper is resolved
 ci_enabled: true
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
-exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,ExceptionsZalrsc,ExceptionsZaamo,Svadu,SvaduPMP,Zalrsc,ExceptionsSvZaamo,ExceptionsSvZalrsc,SsstrictV,Smstateen"
+exclude_extensions: "Sm,SsstrictSm,SsstrictS,SsstrictU,ExceptionsZalrsc,ExceptionsZaamo,Svadu,SvaduPMP,Zalrsc,ExceptionsSvZaamo,ExceptionsSvZalrsc,SsstrictV,Smstateen,ZawrsSU"
 install_script: ".github/scripts/install-whisper.sh"
 apt_packages: "libboost-program-options-dev"

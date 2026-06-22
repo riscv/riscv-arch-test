@@ -539,7 +539,7 @@
       // Zawrs is not supported, these `is_nop` fields need to be
       // present but their boolean values are ignored.
       "nto": {
-        "is_nop": false
+        "is_nop": true
       },
       "sto": {
         "is_nop": false

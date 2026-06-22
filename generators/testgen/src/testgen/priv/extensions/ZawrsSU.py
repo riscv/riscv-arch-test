@@ -113,7 +113,7 @@ def _generate_wrs_sto_timeout_tests(test_data: TestData) -> list[str]:
 def _generate_wrs_no_res_tests(test_data: TestData) -> list[str]:
     """Generate WRS instruction no reservation tests
 
-    mstatus.TW ={0/1}
+    mstatus.TW =0
     mstatus.MIE = 0
     mstatus.SIE = 0
     mie= all 0s to disable interrupts
@@ -138,48 +138,47 @@ def _generate_wrs_no_res_tests(test_data: TestData) -> list[str]:
 
     for priv_mode in ["S", "U"]:
         for wrs_ops in ["WRS.STO", "WRS.NTO"]:
-            for tw_val in [0, 1]:
-                lines.extend(
-                    [
-                        "#### Setup (M mode) ####",
-                        "# Disable all interrupts in mie",
-                        "CSRW mie, zero",
-                        "# mstatus.MPIE = 0",
-                        f"LI(x{r_temp}, 0x80)",
-                        f"CSRC(mstatus, x{r_temp})",
-                        f"# {'Set' if tw_val else 'Clear'} mstatus.TW",
-                        f"LI(x{r_temp}, 0x200000)",
-                        f"{'CSRS' if tw_val else 'CSRC'}(mstatus, x{r_temp})",
-                        "",
-                        "# clear SIE",
-                        "#ifdef S_SUPPORTED",
-                        "csrci mstatus, 2",
-                        "#endif",
-                    ]
-                )
+            lines.extend(
+                [
+                    "#### Setup (M mode) ####",
+                    "# Disable all interrupts in mie",
+                    "CSRW mie, zero",
+                    "# mstatus.MPIE = 0",
+                    f"LI(x{r_temp}, 0x80)",
+                    f"CSRC(mstatus, x{r_temp})",
+                    "# Clear mstatus.TW",
+                    f"LI(x{r_temp}, 0x200000)",
+                    f"CSRC(mstatus, x{r_temp})",
+                    "",
+                    "# clear SIE",
+                    "#ifdef S_SUPPORTED",
+                    "csrci mstatus, 2",
+                    "#endif",
+                ]
+            )
 
-                if priv_mode == "S":
-                    lines.append("#ifdef S_SUPPORTED")
+            if priv_mode == "S":
+                lines.append("#ifdef S_SUPPORTED")
 
-                lines.extend(
-                    [
-                        f"# Go down to {priv_mode} mode to execute the instruction",
-                        f"RVTEST_GOTO_LOWER_MODE {priv_mode}mode",
-                        "# sc.w to clear reservation",
-                        f"LA(x{r_scratch}, scratch)",
-                        f"sc.w x{r_temp}, x{r_temp2}, (x{r_scratch})",
-                        test_data.add_testcase(
-                            f"tw_{tw_val}_{'STO' if wrs_ops == 'WRS.STO' else 'NTO'}_{priv_mode}",
-                            coverpoint,
-                            covergroup,
-                        ),
-                        f"{wrs_ops}",
-                        "",
-                        "RVTEST_GOTO_MMODE",
-                    ]
-                )
-                if priv_mode == "S":
-                    lines.append("#endif")
+            lines.extend(
+                [
+                    f"# Go down to {priv_mode} mode to execute the instruction",
+                    f"RVTEST_GOTO_LOWER_MODE {priv_mode}mode",
+                    "# sc.w to clear reservation",
+                    f"LA(x{r_scratch}, scratch)",
+                    f"sc.w x{r_temp}, x{r_temp2}, (x{r_scratch})",
+                    test_data.add_testcase(
+                        f"tw_0_{'STO' if wrs_ops == 'WRS.STO' else 'NTO'}_{priv_mode}",
+                        coverpoint,
+                        covergroup,
+                    ),
+                    f"{wrs_ops}",
+                    "",
+                    "RVTEST_GOTO_MMODE",
+                ]
+            )
+            if priv_mode == "S":
+                lines.append("#endif")
 
     test_data.int_regs.return_registers([r_scratch, r_temp, r_temp2])
 
@@ -437,10 +436,13 @@ def make_zawrssu(test_data: TestData) -> list[str]:
     lines.extend(_generate_wrs_sto_timeout_tests(test_data))
     lines.extend(_generate_wrs_no_res_tests(test_data))
     lines.extend(_generate_wrs_resume_tests(test_data))
+
+    # This refers to Spike, QEMU and Whisper:
+    # for any coverpoint with TW = 1, the DUTs trigger illegal instruction on WRS.NTO immediately if TW = 1 but sail just treats WRS.NTO as NOP
+    # NTO is_nop = true is set for the DUTs since they all treat WRS.NTO as NOP unless TW = 1
+
     lines.extend(_generate_wrs_nto_timeout_tests(test_data))
     lines.extend(_generate_wrs_nto_timeout_h_tests(test_data))
-    # for the wrs_no_mie_test, spike triggers illegal instruction on WRS.NTO immediately if TW = 1 but sail just treats WRS,NTO as NOP
-    # NTO is_nop = true is set for spike since spike treats WRS.NTO as NOP unless TW = 1
     lines.extend(_generate_wrs_no_mie_tests(test_data))
 
     return lines

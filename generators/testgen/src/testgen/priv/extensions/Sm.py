@@ -964,6 +964,130 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
 
     test_data.int_regs.return_registers([r1, r2])
 
+    # Counter Wraparound Verification
+    r_val, r_val2, r_temp = test_data.int_regs.get_registers(3)
+
+    # Re-enable all counters before trying to wrap them!
+    lines.append(comment_banner("Enable Counters", "Ensure mcountinhibit is 0 so counters can run"))
+    lines.extend(
+        [
+            f"LI(x{r_val}, 0)                      # Load 0 (enable all counters)",
+            f"CSRW(mcountinhibit, x{r_val})        # Clear inhibit register",
+            "nop\nnop\nnop",
+        ]
+    )
+
+    ######################################
+    coverpoint = "cp_mcycle_wraparound"
+    ######################################
+    lines.append(comment_banner(coverpoint, "Write max value to mcycle and verify it wraps around cleanly"))
+
+    lines.extend(
+        [
+            "#if __riscv_xlen == 64",
+            f"LI(x{r_temp}, -1)                    # Load 0xFFFFFFFFFFFFFFFF",
+            test_data.add_testcase("mcycle_wrap_64", coverpoint, covergroup),
+            f"CSRW(mcycle, x{r_temp})              # Set mcycle to max value",
+            "nop                                   # instruction increment to cause wrap",
+            f"CSRR(x{r_val}, mcycle)               # Read wrapped value",
+            f"sub x{r_val}, x{r_val}, x{r_temp}    # Subtract max value to get wrapped value",
+            f"sltiu x{r_val}, x{r_val}, 0xFF       # Signature = 1 if wrapped value < 255",
+            write_sigupd(r_val, test_data),
+            "#else // __riscv_xlen == 32",
+            f"LI(x{r_temp}, -1)                    # Load 0xFFFFFFFF",
+            test_data.add_testcase("mcycle_wrap_32", coverpoint, covergroup),
+            f"CSRW(mcycleh, x{r_temp})             # Set upper bits to max FIRST",
+            f"CSRW(mcycle, x{r_temp})              # Set lower bits to max LAST",
+            "nop                                   # instruction increment to cause wrap",
+            f"CSRR(x{r_val2}, mcycle)              # Read lower bits of wrapped value",
+            f"CSRR(x{r_val}, mcycleh)              # Check if upper bits wrapped to 0",
+            f"sub x{r_val}, x{r_val}, x{r_temp}    # Subtract max value to get wrapped value",
+            f"sltiu x{r_val}, x{r_val}, 2          # Signature = 1 if upper bits wrapped to 0 or 1",
+            write_sigupd(r_val, test_data),
+            "#endif",
+            "",
+        ]
+    )
+
+    ######################################
+    coverpoint = "cp_minstret_wraparound"
+    ######################################
+    lines.append(comment_banner(coverpoint, "Write max value to minstret and verify it wraps around cleanly"))
+
+    lines.extend(
+        [
+            "#if __riscv_xlen == 64",
+            f"LI(x{r_temp}, -1)                    # Load 0xFFFFFFFFFFFFFFFF",
+            test_data.add_testcase("minstret_wrap_64", coverpoint, covergroup),
+            f"CSRW(minstret, x{r_temp})            # Set minstret to max value",
+            "nop                                   # instruction increment to cause wrap",
+            f"CSRR(x{r_val}, minstret)             # Read wrapped value",
+            f"sub x{r_val}, x{r_val}, x{r_temp}    # Subtract max value to get wrapped value",
+            f"sltiu x{r_val}, x{r_val}, 0xFF       # Signature = 1 if wrapped value < 255",
+            write_sigupd(r_val, test_data),
+            "#else // __riscv_xlen == 32",
+            f"LI(x{r_temp}, -1)                    # Load 0xFFFFFFFF",
+            test_data.add_testcase("minstret_wrap_32", coverpoint, covergroup),
+            f"CSRW(minstreth, x{r_temp})           # Set upper bits to max",
+            f"CSRW(minstret, x{r_temp})            # Set lower bits to max",
+            "nop                                   # instruction increment to cause wrap",
+            f"CSRR(x{r_val2}, minstret)            # Read lower bits of wrapped value",
+            f"CSRR(x{r_val}, minstreth)            # Check if upper bits wrapped to 0",
+            f"sub x{r_val}, x{r_val}, x{r_temp}    # Subtract max value to get wrapped value",
+            f"sltiu x{r_val}, x{r_val}, 2          # Signature = 1 if upper bits wrapped to 0 or 1",
+            write_sigupd(r_val, test_data),
+            "#endif",
+            "",
+        ]
+    )
+
+    ######################################
+    coverpoint = "cp_mtime_wraparound"
+    ######################################
+    lines.append(
+        comment_banner(coverpoint, "Write max value to memory-mapped mtime and read wrapped value via time CSR")
+    )
+
+    # Generate unique local assembly labels using the current test count
+    tc_num = test_data.test_count + 1
+    loop_label_64 = f"mtime_wait_64_tc{tc_num}"
+    loop_label_32 = f"mtime_wait_32_tc{tc_num}"
+
+    lines.extend(
+        [
+            "#ifdef RVMODEL_MTIME_ADDRESS",
+            f"LA(x{r_temp}, RVMODEL_MTIME_ADDRESS) # Load base address of mtime",
+            f"LI(x{r_val}, -1)                     # Load max integer pattern",
+            "#if __riscv_xlen == 64",
+            f"SREG x{r_val}, 0(x{r_temp})          # Write 64-bit max value to mtime register",
+            # Loop until the value reads back as small (wrapped) from time CSR
+            f"{loop_label_64}:",
+            f"CSRR(x{r_val}, time)                 # Read shadow CSR time",
+            f"LI(x{r_temp}, 0xFF)                  # Upper bound threshold",
+            f"bgeu x{r_val}, x{r_temp}, {loop_label_64} # If still large, keep waiting",
+            test_data.add_testcase("mtime_wrap_64", coverpoint, covergroup),
+            f"LI(x{r_val}, 1)                      # Write success signature",
+            write_sigupd(r_val, test_data),
+            "#else // __riscv_xlen == 32",
+            f"SREG x{r_val}, 4(x{r_temp})          # Write upper 32-bit max",
+            f"SREG x{r_val}, 0(x{r_temp})          # Write lower 32-bit max",
+            # Loop until timeh wraps to 0 or 1
+            f"{loop_label_32}:",
+            f"CSRR(x{r_val2}, time)                # Read shadow CSR time (lower 32 bits)",
+            f"CSRR(x{r_val}, timeh)                # Read shadow CSR timeh",
+            f"LI(x{r_temp}, 2)",
+            f"bgeu x{r_val}, x{r_temp}, {loop_label_32} # Wait for high bits to clear",
+            test_data.add_testcase("mtime_wrap_32", coverpoint, covergroup),
+            f"LI(x{r_val}, 1)                      # Write success signature",
+            write_sigupd(r_val, test_data),
+            "#endif",
+            "#endif",
+            "",
+        ]
+    )
+
+    test_data.int_regs.return_registers([r_val, r_val2, r_temp])
+
     return lines
 
 

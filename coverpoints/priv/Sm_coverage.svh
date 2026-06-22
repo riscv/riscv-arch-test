@@ -465,6 +465,54 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         `endif // RVMODEL_MSIP_ADDRESS
     `endif // S1P13P0_SUPPORTED
 
+    // Counter Wraparound Coverage
+
+    `ifdef UDB_MXLEN_32
+        cp_mcycle_wraparound : coverpoint get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCYCLE ,"mcycle", "") {
+            bins wrapped = ( [32'hFFFFFF00:32'hFFFFFFFF] => [0:32'hFF] );
+        }
+        cp_mcycleh_wraparound : coverpoint get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCYCLEH ,"mcycleh", "") {
+            bins wrapped =( [32'hFFFFFFF0:32'hFFFFFFFF] => [0:32'h1] );
+        }
+    `else
+        cp_mcycle_wraparound : coverpoint get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCYCLE ,"mcycle", "") {
+            bins wrapped = ( [64'hFFFFFFFFFFFFFF00:64'hFFFFFFFFFFFFFFFF] => [0:64'hFF] );
+        }
+    `endif
+
+    `ifdef UDB_MXLEN_32
+        cp_minstret_wraparound : coverpoint get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MINSTRET ,"minstret", "") {
+            bins wrapped = ( [32'hFFFFFF00:32'hFFFFFFFF] => [0:32'hFF] );
+        }
+        cp_minstreth_wraparound : coverpoint get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MINSTRETH ,"minstreth", "") {
+            bins wrapped =( [32'hFFFFFFF0:32'hFFFFFFFF] => [0:32'h1] );
+        }
+    `else
+        cp_minstret_wraparound : coverpoint get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MINSTRET ,"minstret", "") {
+            bins wrapped =( [64'hFFFFFFFFFFFFFF00:64'hFFFFFFFFFFFFFFFF] => [0:64'hFF] );
+        }
+    `endif
+
+    `ifdef UDB_TIME_CSR_IMPLEMENTED
+    `ifndef UDB_MXLEN_32
+        cp_mtime_wraparound : coverpoint ins.current.rd_val
+            iff ((ins.current.insn & 32'hFFFFF07F) == 32'hC0102073 &&
+                ins.current.rd_val inside {[0:64'hFF]}) {
+            bins wrapped = {[0:64'hFF]};
+        }
+    `else
+        cp_mtime_wraparound : coverpoint ins.current.rd_val
+            iff ((ins.current.insn & 32'hFFFFF07F) == 32'hC0102073 &&
+                ins.current.rd_val inside {[0:32'hF]}) {
+            bins wrapped = {[0:32'hF]};
+        }
+        cp_mtimeh_wraparound : coverpoint ins.current.rd_val
+            iff ((ins.current.insn & 32'hFFFFF07F) == 32'hC8102073 &&
+                ins.current.rd_val inside {[0:32'h1]}) {
+            bins wrapped = {[0:32'h1]};
+        }
+    `endif
+    `endif
 
 endgroup
 

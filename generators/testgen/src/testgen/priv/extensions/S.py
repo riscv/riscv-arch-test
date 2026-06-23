@@ -519,12 +519,12 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     )
 
     for csr in csrs:
-	lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
+        lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
     lines.extend(["", "#ifndef S1P11P0_SUPPORTED"])
-    # senvcfg.CBIE (bits 5:4) and senvcfg.PMM (bits 33:32) are WARL fields with reserved
-    # values 0b10 and 0b01 respectively. Walk iterations that write a reserved value may
-    # legalize to any legal value, so those iterations check that the field is legal
-    # instead of exact-matching the reference model.
+         # senvcfg.CBIE (bits 5:4) and senvcfg.PMM (bits 33:32) are WARL fields with reserved
+         # values 0b10 and 0b01 respectively. Walk iterations that write a reserved value may
+         # legalize to any legal value, so those iterations check that the field is legal
+         # instead of exact-matching the reference model.
     warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
     lines.extend(csr_walk_test(test_data, csr_senvcfg, covergroup, coverpoint, warl_fields=warl_fields))
     lines.extend(["", "#endif"])

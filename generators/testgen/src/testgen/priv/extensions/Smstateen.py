@@ -579,8 +579,10 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
             bit_name="envcfg",
             banner="CSR ops on senvcfg from M/S/U-mode with mstateen0.envcfg (bit 62) enabled and disabled",
             csrs=["senvcfg"],
-     tc.code.append("#endif      // !defined( SM1P11P0_SUPPORTED) ")
-     
+        )
+    )
+
+    tc.code.append("#endif  // !defined(SM1P11P0_SUPPORTED)")
     # cp_imsic — only when IMSIC is present
     tc.code.append("#ifdef IMSIC_SUPPORTED")
     tc.code.extend(
@@ -670,8 +672,7 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
         )
     )
     tc.code.append("#endif  // SCTR_SUPPORTED")
-
-    # cp_fcsr, cp_fcsr_ro_zero, cp_fcsr_lower, cp_fcsr_lower_fp_instrs — only when Zfinx present
+    # cp_fcsr, cp_fcsr_ro_zero, cp_fcsr_lower, cp_fcsr_lower_fp_instrs — only when Zfinx presen
     tc.code.append("#ifdef ZFINX_SUPPORTED")
     tc.code.extend(_generate_fcsr_ro_zero(test_data))
     tc.code.extend(_generate_fcsr(test_data))

@@ -111,12 +111,12 @@ def _generate_trigger_sti_tests(test_data: TestData) -> list[str]:
             lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
             lines.extend(
                 [
-                "#ifndef SM1P11P0_SUPPORTED",
-                *set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce),
-                "#else",
-                f"LI(x{r_scratch}, 0x20)",
-                f"CSRS(mip, x{r_scratch})    # priv 1.11: set mip.STIP directly",
-                "#endif",
+		        "#ifndef SM1P11P0_SUPPORTED",
+		        *set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce),
+		        "#else",
+		        f"LI(x{r_scratch}, 0x20)",
+		        f"CSRS(mip, x{r_scratch})    # priv 1.11: set mip.STIP directly",
+		        "#endif",
                 ]
             )
 
@@ -598,7 +598,7 @@ def _generate_changingtos_sti_tests(test_data: TestData) -> list[str]:
         [
             "#ifndef SM1P11P0_SUPPORTED",
             "# Read STCE",
-            f"csrr x{r_stce}, menvcfg",
+            f"CSRR x{r_stce}, menvcfg",
             "#if __riscv_xlen == 64",
             f"    srli x{r_stce}, x{r_stce}, 63",
             "#else",
@@ -925,7 +925,7 @@ def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
                                 f"    srli x{r_stce}, x{r_stce}, 31",
                                 "#endif",
                                 f"andi x{r_stce}, x{r_stce}, 0x1",
-                                "#endif"
+                                "#endif",
                             ]
                         )
                         lines.extend(
@@ -1092,7 +1092,7 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
                             f"    srli x{r_stce}, x{r_stce}, 31",
                             "#endif",
                             f"andi x{r_stce}, x{r_stce}, 0x1",
-                            "#endif"
+                            "#endif",
                         ]
                     )
                     lines.extend(

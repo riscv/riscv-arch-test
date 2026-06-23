@@ -384,6 +384,10 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     for csr in csrs:
         lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
 
+    lines.append("\n#ifndef SM1P11P0_SUPPORTED")
+    lines.extend(csr_access_test(test_data, csr_menvcfg, covergroup, coverpoint))
+    lines.append("#endif")
+
     lines.append("\n#ifdef MSECCFG_SUPPORTED")
     lines.extend(csr_access_test(test_data, ("mseccfg", None), covergroup, coverpoint))
     lines.append("#endif")
@@ -427,6 +431,10 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     for csr in csrs:
         lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
 
+    lines.append("\n#ifndef SM1P11P0_SUPPORTED")
+    lines.extend(csr_access_test(test_data, csr_menvcfg, covergroup, coverpoint))
+    lines.append("#endif")
+
     lines.extend(
         [
             "// RV32-only h CSRs",
@@ -435,6 +443,8 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     )
     for csr in csrs32:
         lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
+    lines.append("\n#ifndef SM1P11P0_SUPPORTED")
+    lines.extend(csr_access_test(test_data, ("menvcfgh", None), covergroup, coverpoint))
     lines.append("#endif")
 
     ######################################
@@ -454,6 +464,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
                 # Test the write value
                 test_data.add_testcase(f"{csr}", coverpoint, covergroup),
                 f"csrr t0, 0x{csr:03x}    # attempt to read debug-mode CSR {csr:03x}; should get illegal instruction",
+
             ]
         )
 
@@ -480,6 +491,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
 
     ######################################
     coverpoint = "cp_misa_mxl"
+
     ######################################
 
     lines.append(
@@ -682,6 +694,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     ######################################
     coverpoint = "cp_misa_bv"
     ######################################
+
     lines.append(
         comment_banner(
             coverpoint,
@@ -774,6 +787,302 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
             f"RVTEST_IDLE_FOR_INTERRUPT(x{r_msip})",
             test_data.add_testcase("msip_clear", coverpoint, covergroup),
             f"csrr x{r_msip}, mip                     # read mip",
+            f"srli x{r_msip}, x{r_msip}, 3            # shift mip.MSIP (bit 3) to bit 0",
+            f"andi x{r_msip}, x{r_msip}, 1            # isolate mip.MSIP",
+            write_sigupd(r_msip, test_data),
+            "#endif // RVMODEL_MSIP_ADDRESS",
+        ]
+    )
+
+            "Set, clear, write misa.MXL.  Should not change",
+        ),
+    )
+
+    rmisasave, rmsb, rmsb2, rboth, rr = test_data.int_regs.get_registers(5)
+
+    lines.extend(
+        [
+            "# Save misa",
+            f"csrr x{rmisasave}, misa      # save misa",
+            "# Load 1s into msb and msb-1 corresponding to misa.MXL bitfields",
+            f"LI(x{rmsb}, -1)           # all 1s",
+            f"srli x{rmsb}, x{rmsb}, 1  # all 1s except msb = 0",
+            f"not x{rmsb}, x{rmsb}      # 1 in msb (works regardless of XLEN)",
+            f"srli x{rmsb2}, x{rmsb}, 1 # 1s in msb-1",
+            f"or x{rboth}, x{rmsb}, x{rmsb2} # 1s in both msb and msb-1",
+            "",
+            test_data.add_testcase("csrc_11", coverpoint, covergroup),
+            f"csrc misa, x{rboth}       # attempt to clear both MXL bits",
+            f"csrr x{rr}, misa          # read misa to check MXL bits are unchanged",
+            f"and x{rr}, x{rr}, x{rboth} # mask off bits below MXL",
+            write_sigupd(rr, test_data),
+            "",
+            test_data.add_testcase("csrs_11", coverpoint, covergroup),
+            f"csrs misa, x{rboth}       # attempt to set both MXL bits",
+            f"csrr x{rr}, misa          # read misa to check MXL bits are unchanged",
+            f"and x{rr}, x{rr}, x{rboth} # mask off bits below MXL",
+            write_sigupd(rr, test_data),
+            "",
+            test_data.add_testcase("csrw_00", coverpoint, covergroup),
+            "csrw misa, zero           # attempt to write 00 to MXL bits",
+            f"csrr x{rr}, misa          # read misa to check MXL bits are unchanged",
+            f"and x{rr}, x{rr}, x{rboth} # mask off bits below MXL",
+            write_sigupd(rr, test_data),
+            "",
+            test_data.add_testcase("csrw_01", coverpoint, covergroup),
+            f"csrw misa, x{rmsb2}       # attempt to write 01 to MXL bits",
+            f"csrr x{rr}, misa          # read misa to check MXL bits are unchanged",
+            f"and x{rr}, x{rr}, x{rboth} # mask off bits below MXL",
+            write_sigupd(rr, test_data),
+            "",
+            test_data.add_testcase("csrw_10", coverpoint, covergroup),
+            f"csrw misa, x{rmsb}        # attempt to write 10 to MXL bits",
+            f"csrr x{rr}, misa          # read misa to check MXL bits are unchanged",
+            f"and x{rr}, x{rr}, x{rboth} # mask off bits below MXL",
+            write_sigupd(rr, test_data),
+            "",
+            test_data.add_testcase("csrw_11", coverpoint, covergroup),
+            f"csrw misa, x{rboth}       # attempt to write 11 to MXL bits",
+            f"csrr x{rr}, misa          # read misa to check MXL bits are unchanged",
+            f"and x{rr}, x{rr}, x{rboth} # mask off bits below MXL",
+            write_sigupd(rr, test_data),
+            "",
+            f"csrw misa, x{rmisasave}    # restore misa",
+        ]
+    )
+
+    test_data.int_regs.return_registers([rmsb, rmsb2, rboth, rr])
+
+    ######################################
+    coverpoint = "cp_misa_dependencies"
+    ######################################
+
+    lines.append(
+        comment_banner(
+            coverpoint,
+            "Attempt to write incompatible values to misa and check illegal combinations do not occur",
+        ),
+    )
+
+    lines.extend(
+        [
+            _gen_misa_dependencies(
+                "0b00000000000000000100010000",
+                "0b00000000000000000100010000",
+                "i1e1",
+                "I = 1, E = 1",
+                coverpoint,
+                covergroup,
+                test_data,
+            ),
+            _gen_misa_dependencies(
+                "0b00000000000000000000000000",
+                "0b00000000000000000000000000",
+                "i0e0",
+                "I = 0, E = 0",
+                coverpoint,
+                covergroup,
+                test_data,
+            ),
+            _gen_misa_dependencies(
+                "0b00000000000000000000001000",
+                "0b00000000000000000000101000",
+                "f0d1",
+                "F=0, D = 1",
+                coverpoint,
+                covergroup,
+                test_data,
+            ),
+            _gen_misa_dependencies(
+                "0b00000000010000000000100000",
+                "0b00000000010000000000101000",
+                "f1d0q1",
+                "F=1, D = 0, Q = 1",
+                coverpoint,
+                covergroup,
+                test_data,
+            ),
+            _gen_misa_dependencies(
+                "0b00000001000000000000000000",
+                "0b00000101000000000000000000",
+                "s1u0",
+                "S = 1, U = 0",
+                coverpoint,
+                covergroup,
+                test_data,
+            ),
+            _gen_misa_dependencies(
+                "0b00000000000000000010000000",
+                "0b00000001000000000010000000",
+                "h1s0",
+                "H = 1, S = 0",
+                coverpoint,
+                covergroup,
+                test_data,
+            ),
+            _gen_misa_dependencies(
+                "0b00000001000000000010000000",
+                "0b00000101000000000010000000",
+                "h1s1u0",
+                "H = 1, S = 1, U = 0",
+                coverpoint,
+                covergroup,
+                test_data,
+            ),
+            f"csrw misa, x{rmisasave}    # restore misa",
+        ]
+    )
+
+    ######################################
+    coverpoint = "cp_misa_clear_c"
+    ######################################
+
+    lines.append(
+        comment_banner(
+            coverpoint,
+            "Try to clear misa.C.  Should not change if PC is at 2-byte aligned address",
+        ),
+    )
+
+    r1, r2, rc = test_data.int_regs.get_registers(3)
+
+    lines.extend(
+        [
+            f"LI(x{rc}, 0b100)      # bitmask for C extension bit in misa",
+            "",
+            f"csrs misa, x{rc}     # set misa.C if possible",
+            f"csrr x{r1}, misa          # read misa to check if misa.C was set",
+            f"and x{r1}, x{r1}, x{rc} # mask off all but C bit",
+            ".align 2 # 4-byte alignment",
+            test_data.add_testcase("pc_1_0", coverpoint, covergroup),
+            f"csrc misa, x{rc}      # attempt to clear misa.C with misa.C = 1 and PC 4-byte aligned",
+            f"csrr x{r2}, misa          # read misa to check misa.C changed if writable",
+            f"and x{r2}, x{r2}, x{rc} # mask off all but C bit",
+            f"xor x{r2}, x{r2}, x{r1} # check if misa.C differed before and after clear attempt; might be 4 if misa.C is mutable because it is allowed to differ when PC is 4-byte aligned",
+            write_sigupd(r2, test_data),
+            "",
+            "#ifdef ZCA_SUPPORTED",
+            f"csrs misa, x{rc}     # set misa.C if possible",
+            f"csrr x{r1}, misa          # read misa to check if misa.C was set",
+            f"and x{r1}, x{r1}, x{rc} # mask off all but C bit",
+            ".align 2 # 4-byte alignment",
+            ".half 0x0001            # c.nop, can't write that directly because Zca not enabled for Sm",
+            test_data.add_testcase("pc_1_1", coverpoint, covergroup),
+            f"csrc misa, x{rc}      # attempt to clear misa.C with misa.C = 1 and PC 2-byte aligned",
+            f"csrr x{r2}, misa          # read misa to check misa.C didn't change",
+            ".align 2",
+            f"and x{r2}, x{r2}, x{rc} # mask off all but C bit",
+            f"xor x{r2}, x{r2}, x{r1} # check if misa.C differed before and after clear attempt; should be 0 because writing misa.C is not allowed to differ when PC is 2-byte aligned",
+            write_sigupd(r2, test_data),
+            "#endif",
+            f"csrw misa, x{rmisasave}    # restore misa",
+        ]
+    )
+
+    test_data.int_regs.return_registers([r1, r2, rc, rmisasave])
+
+    lines.extend(
+        [
+            "",
+            "#ifdef SM1P13P0_SUPPORTED",
+        ]
+    )
+
+    ######################################
+    coverpoint = "cp_misa_bv"
+    ######################################
+    lines.append(
+        comment_banner(
+            coverpoint,
+            "Sm1p13: misa.B (bit 1) and misa.V (bit 21) correctness.\n"
+            "Read, set, and clear each bit; read back and write to signature.",
+        ),
+    )
+
+    rmisasave3, rb, rv, rr3 = test_data.int_regs.get_registers(4)
+
+    lines.extend(
+        [
+            f"csrr x{rmisasave3}, misa       # save misa before Sm1p13 B/V tests",
+            f"LI(x{rb}, 0x2)                 # bitmask for misa.B (bit 1)",
+            f"LI(x{rv}, 0x200000)            # bitmask for misa.V (bit 21)",
+            "",
+            "# Set misa.B and read back",
+            test_data.add_testcase("set_B", coverpoint, covergroup),
+            f"csrs misa, x{rb}              # attempt to set misa.B",
+            f"csrr x{rr3}, misa             # read back misa",
+            f"and x{rr3}, x{rr3}, x{rb}     # isolate misa.B",
+            write_sigupd(rr3, test_data),
+            "",
+            "# Clear misa.B and read back",
+            test_data.add_testcase("clr_B", coverpoint, covergroup),
+            f"csrc misa, x{rb}              # attempt to clear misa.B",
+            f"csrr x{rr3}, misa             # read back misa",
+            f"and x{rr3}, x{rr3}, x{rb}     # isolate misa.B",
+            write_sigupd(rr3, test_data),
+            "",
+            "# Set misa.V and read back",
+            test_data.add_testcase("set_V", coverpoint, covergroup),
+            f"csrs misa, x{rv}              # attempt to set misa.V",
+            f"csrr x{rr3}, misa             # read back misa",
+            f"and x{rr3}, x{rr3}, x{rv}     # isolate misa.V",
+            write_sigupd(rr3, test_data),
+            "",
+            "# Clear misa.V and read back",
+            test_data.add_testcase("clr_V", coverpoint, covergroup),
+            f"csrc misa, x{rv}              # attempt to clear misa.V",
+            f"csrr x{rr3}, misa             # read back misa",
+            f"and x{rr3}, x{rr3}, x{rv}     # isolate misa.V",
+            write_sigupd(rr3, test_data),
+            "",
+            f"csrw misa, x{rmisasave3}      # restore misa after B/V tests",
+        ]
+    )
+
+    test_data.int_regs.return_registers([rmisasave3, rb, rv, rr3])
+
+    ######################################
+    coverpoint = "cp_msip"
+    ######################################
+    lines.append(
+        comment_banner(
+            coverpoint,
+            "Sm1p13: write all 1s / all 0s to memory-mapped msip register.\n"
+            "Read back msip, wait, then read mip.MSIP; must reflect the written value.",
+        ),
+    )
+
+    r_msip, r_msipaddr = test_data.int_regs.get_registers(2)
+
+    lines.extend(
+        [
+            "#ifdef RVMODEL_MSIP_ADDRESS",
+            f"LI(x{r_msipaddr}, RVMODEL_MSIP_ADDRESS)   # load address of memory-mapped msip register",
+            "",
+            "# Write 1 to msip (set MSIP) and check mip.MSIP is set",
+            f"LI(x{r_msip}, 1)                         # value 1: assert msip",
+            test_data.add_testcase("msip_mmio_1", coverpoint, covergroup),
+            f"SW x{r_msip}, 0(x{r_msipaddr})           # write msip = 1 via memory-mapped I/O",
+            f"LW x{r_msip}, 0(x{r_msipaddr})            # read back memory-mapped msip register",
+            f"andi x{r_msip}, x{r_msip}, 1              # isolate bit 0",
+            write_sigupd(r_msip, test_data),
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{r_msip})",
+            test_data.add_testcase("msip_set", coverpoint, covergroup),
+            f"CSRR(x{r_msip}, mip)                     # read mip",
+            f"srli x{r_msip}, x{r_msip}, 3            # shift mip.MSIP (bit 3) to bit 0",
+            f"andi x{r_msip}, x{r_msip}, 1            # isolate mip.MSIP",
+            write_sigupd(r_msip, test_data),
+            "",
+            "# Write 0 to msip (clear MSIP) and check mip.MSIP is clear",
+            f"LI(x{r_msip}, 0)                         # value 0: deassert msip",
+            test_data.add_testcase("msip_mmio_0", coverpoint, covergroup),
+            f"SW x{r_msip}, 0(x{r_msipaddr})           # write msip = 0 via memory-mapped I/O",
+            f"LW x{r_msip}, 0(x{r_msipaddr})            # read back memory-mapped msip register",
+            f"andi x{r_msip}, x{r_msip}, 1              # isolate bit 0",
+            write_sigupd(r_msip, test_data),
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{r_msip})",
+            test_data.add_testcase("msip_clear", coverpoint, covergroup),
+            f"CSRR(x{r_msip}, mip)                     # read mip",
             f"srli x{r_msip}, x{r_msip}, 3            # shift mip.MSIP (bit 3) to bit 0",
             f"andi x{r_msip}, x{r_msip}, 1            # isolate mip.MSIP",
             write_sigupd(r_msip, test_data),
@@ -899,11 +1208,11 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{r1}, 0b1)        # inhibit mcycle",
-            f"csrw mcountinhibit, x{r1}        # inhibit mcycle",
-            f"csrr x{r1}, mcycle        # read mcycle",
+            f"CSRW(mcountinhibit, x{r1})        # inhibit mcycle",
+            f"CSRR(x{r1}, mcycle)        # read mcycle",
             "nop\nnop\nnop\nnop\nnop\nnop # wait a bit",
             test_data.add_testcase("", coverpoint, covergroup),
-            f"csrr x{r2}, mcycle        # read mcycle again",
+            f"CSRR(x{r2}, mcycle)        # read mcycle again",
             f"sub x{r2}, x{r2}, x{r1}          # difference should be 0",
             write_sigupd(r2, test_data),
         ]
@@ -921,11 +1230,11 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{r1}, 0b100)        # inhibit minstret",
-            f"csrw mcountinhibit, x{r1}        # inhibit minstret",
-            f"csrr x{r1}, minstret        # read minstret",
+            f"CSRW(mcountinhibit, x{r1})        # inhibit minstret",
+            f"CSRR(x{r1}, minstret)        # read minstret",
             "nop\nnop\nnop\nnop\nnop\nnop # wait a bit",
             test_data.add_testcase("", coverpoint, covergroup),
-            f"csrr x{r2}, minstret        # read minstret again",
+            f"CSRR(x{r2}, minstret)        # read minstret again",
             f"sub x{r2}, x{r2}, x{r1}          # difference should be 0",
             write_sigupd(r2, test_data),
         ]
@@ -947,7 +1256,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             f"LA(x{r2}, RVMODEL_MTIME_ADDRESS)        # load address of mtime",
             f"SREG x{r1}, 0(x{r2})        # write mtime = 42 using memory-mapped I/O",
             test_data.add_testcase("", coverpoint, covergroup),
-            f"csrr x{r2}, time        # read time",
+            f"CSRR(x{r2}, time)        # read time",
             f"sub x{r2}, x{r2}, x{r1}          # difference should be small",
             f"slti x{r2}, x{r2}, 10          # signature is 1 if difference < 10",
             write_sigupd(r2, test_data),
@@ -957,7 +1266,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             f"LA(x{r2}, RVMODEL_MTIME_ADDRESS)        # load address of mtimeh",
             f"SREG x{r1}, 4(x{r2})        # write mtimeh = 67 using memory-mapped I/O",
             test_data.add_testcase("h", coverpoint, covergroup),
-            f"csrr x{r2}, timeh        # read timeh",
+            f"CSRR(x{r2}, timeh)        # read timeh",
             f"sub x{r2}, x{r2}, x{r1}          # difference should be zero",
             write_sigupd(r2, test_data),
             "#endif",
@@ -966,6 +1275,21 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     )
 
     test_data.int_regs.return_registers([r1, r2])
+    return lines
+
+
+@add_priv_test_generator("Sm", required_extensions=["Sm"])
+def make_sm(test_data: TestData) -> list[str]:
+    """Generate tests for Sm machine-mode testsuite."""
+    lines: list[str] = []
+
+    lines.extend(_generate_mcause_tests(test_data))
+    lines.extend(_generate_mstatus_sd_tests(test_data))
+    lines.extend(_generate_priv_inst_tests(test_data))
+    lines.extend(_generate_mret_tests(test_data))
+    lines.extend(_generate_sret_tests(test_data))
+    lines.extend(_generate_mcsr_tests(test_data))
+    lines.extend(_generate_mcsr_cntr_tests(test_data))
 
     return lines
 

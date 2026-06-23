@@ -46,9 +46,6 @@ _M_CSR_SKIP: frozenset[int] = frozenset(
     }
 )
 
-<<<<<<< HEAD
-=======
-
 # ── M-mode CSR sweep ─────────────────────────────────────────────────────
 
 
@@ -102,4 +99,10 @@ def _generate_csr_tests_m(test_data: TestData) -> list[str]:
 )
 def make_ssstrictsm(test_data: TestData) -> list[TestChunk]:
     """SsstrictSm — machine-mode strict compliance tests."""
-    return generate_ssstrict_suite(test_data, "SsstrictSm", "M", _M_CSR_SKIP)
+    seed(42)
+    lines: list[str] = []
+    lines.extend(_generate_csr_tests_m(test_data))
+    lines.extend(generate_illegal_instr(test_data, "SsstrictSm_instr_cg"))
+    lines.extend(generate_compressed_instr(test_data, "SsstrictSm_comp_instr_cg"))
+    lines.extend(generate_vector_illegal_instr(test_data, "SsstrictSm_instr_cg"))
+    return lines

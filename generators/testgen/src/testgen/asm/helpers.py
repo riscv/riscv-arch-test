@@ -245,7 +245,7 @@ def write_sigupd_v_len(test_data: TestData, params: InstructionParams, segments:
 
     vs1 = params.vs1 if params.vs1 is not None else 0
     label = test_data.current_testcase_label
-    masked_flag = params.maskval is not None
+    masked_flag = 0 if params.maskval is None else 1
 
     lines = [
         # TODO: VCOMPRESS, SCALAR_DST, MASK_PROD
@@ -319,5 +319,72 @@ def prep_base_v(test_data: TestData, params: InstructionParams, registers: list[
         lines.extend(
             ["# Load Desired Vstart", f"li x{params.temp_reg}, {params.vstart}", f"csrw vstart, x{params.temp_reg}"]
         )
+
+    return lines
+
+
+def prep_mask_v(mask_val: str, test_data: TestData, params: InstructionParams) -> list[str]:
+    assert params.lmul is not None, "LMUL is Required When Setting a Mask Value"
+    lmul_flag = _lmul_flag(params.lmul)
+
+    # We need an lmul aligned register for vid.v
+    vtmp = test_data.vec_regs.get_register(lmul=int(max(params.lmul, 1)))
+
+    lines: list[str] = []
+    if mask_val == "zeros":
+        lines = [
+            f"# Set mask value to zero, x{params.temp_reg} = VLMAX",
+            f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{lmul_flag}, ta, ma",
+            "vmv.v.i v0, 0",
+        ]
+    elif mask_val == "ones":
+        lines = [
+            f"# x{params.temp_reg} = VLMAX",
+            f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{lmul_flag}, ta, ma",
+            f"# v{vtmp} = [0,1,2,...]",
+            f"vid.v v{vtmp}",
+            "# Reset mask value to 0",
+            "vmv.v.i v0, 0",
+            "# v0[i] = (i < VLMAX) ? 1 : 0",
+            f"vmsltu.vx v0, v{vtmp}, x{params.temp_reg}",
+        ]
+    elif mask_val == "vlmaxm1_ones":
+        lines = [
+            f"# x{params.temp_reg} = VLMAX",
+            f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{lmul_flag}, ta, ma",
+            f"# x{params.temp_reg} = VLMAX - 1",
+            f"addi x{params.temp_reg}, x{params.temp_reg}, -1",
+            f"# v{vtmp} = [0,1,2,...]",
+            f"vid.v v{vtmp}",
+            "# Reset mask value to 0",
+            "vmv.v.i v0, 0",
+            "# v0[i] = (i < VLMAX-1) ? 1 : 0",
+            f"vmsltu.vx v0, v{vtmp}, x{params.temp_reg}",
+        ]
+    elif mask_val == "vlmaxd2p1_ones":
+        lines = [
+            f"# x{params.temp_reg} = VLMAX",
+            f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{lmul_flag}, ta, ma",
+            f"# x{params.temp_reg} = VLMAX / 2",
+            f"srli x{params.temp_reg}, x{params.temp_reg}, 1",
+            f"# x{params.temp_reg} = VLMAX / 2 + 1",
+            f"addi x{params.temp_reg}, x{params.temp_reg}, 1",
+            f"# v{vtmp} = [0,1,2,...]",
+            f"vid.v v{vtmp}",
+            "# Reset mask value to 0",
+            "vmv.v.i v0, 0",
+            "# v0[i] = (i < VLMAX/2+1) ? 1 : 0",
+            f"vmsltu.vx v0, v{vtmp}, x{params.temp_reg}",
+        ]
+    else:  # random mask
+        lines = [
+            f"# x{params.temp_reg} = VLMAX",
+            f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{lmul_flag}, ta, ma",
+            f"LA(x{params.temp_reg}, {mask_val})",
+            "# Load mask value into v0",
+            f"vlm.v v0, (x{params.temp_reg})",
+        ]
+
+    test_data.vec_regs.return_register(vtmp)
 
     return lines

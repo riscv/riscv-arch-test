@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import load_vec_reg, prep_base_v, write_sigupd_v, write_sigupd_v_len
+from testgen.asm.helpers import load_vec_reg, prep_base_v, prep_mask_v, write_sigupd_v, write_sigupd_v_len
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -73,8 +73,10 @@ def format_vvv_type(
     )
 
     if params.maskval:
-        raise NotImplementedError("Need to load the mask val")
+        test_data.vec_regs.consume_registers([0])
+        setup.extend(prep_mask_v(params.maskval, test_data, params))
         test = [f"{instr_str} v{params.vd}, v{params.vs2}, v{params.vs1}, v0.t"]
+        test_data.vec_regs.return_register(0)
     else:
         test = [f"{instr_str} v{params.vd}, v{params.vs2}, v{params.vs1}"]
 

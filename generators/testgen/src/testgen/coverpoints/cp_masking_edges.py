@@ -17,7 +17,10 @@ from testgen.formatters.vector_params import generate_random_vector_params
 
 @add_coverpoint_generator("cp_masking_edges")
 def make_mask_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
-    cp_masking_edges_data = ["ones", "zeroes", "vlmaxm1_ones", "vlmaxd2p1_ones", "cp_mask_random"]
+    assert test_data.config.sew is not None, "SEW must be set for vector tests"
+
+    cp_masking_edges_data = ["ones", "zeros", "vlmaxm1_ones", "vlmaxd2p1_ones", "cp_mask_random"]
+    test_data.register_vector_data("cp_mask_random", test_data.config.sew, random_elements=1)
 
     test_chunks = []
     for m in cp_masking_edges_data:

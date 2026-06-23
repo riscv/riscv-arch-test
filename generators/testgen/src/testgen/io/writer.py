@@ -84,7 +84,7 @@ def write_test_file(
     test_file_relative = Path(arch_dir) / testsuite / filename if arch_dir else Path(testsuite) / filename
 
     # Test header
-    header = insert_header_template(test_config, test_file_relative, sigupd_count, extra_defines)
+    header = insert_header_template(test_config, test_file_relative, sigupd_count, extra_defines, instr_name)
 
     # Main test body: banner comment before coverpoint sections, 1 blank line between test chunks
     # Apply indent_asm to each line to ensure consistent indentation

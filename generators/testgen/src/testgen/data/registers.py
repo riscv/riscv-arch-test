@@ -381,38 +381,83 @@ class VectorRegisterFile(RegisterFile):
 
         # The allocations are more involved with the vector registers because of lmul
         self.allocation_map: dict[int, int] = {}
+        self.parameter_map: dict[str, tuple[int, int]] = {}
 
     def get_registers(
-        self, num_regs: int, *, lmul: int = 1, exclude_regs: list[int] | None = None, reg_range: list[int] | None = None
+        self,
+        num_regs: int,
+        *,
+        lmul: int = 1,
+        segments: int = 1,
+        exclude_regs: list[int] | None = None,
+        reg_range: list[int] | None = None,
     ) -> list[int]:
         registers_available_to_lmul = set()
         for register in range(0, 32, lmul):
-            group = set(range(register, register + lmul))
+            group = set(range(register, register + (lmul * segments)))
             if len(self.reg_list & group) == len(group):
                 registers_available_to_lmul.add(register)
 
-        reg_range_set = set(reg_range) if reg_range is not None else self.reg_list
+        reg_range_set = set(reg_range) if reg_range is not None else set(self.reg_list)
         reg_range_set &= registers_available_to_lmul
 
         registers = super().get_registers(num_regs, exclude_regs=exclude_regs, reg_range=list(reg_range_set))
         for register in registers:
-            self.allocation_map[register] = lmul
+            self.allocation_map[register] = lmul * segments
+            self.consume_registers(list(range(register + 1, register + lmul * segments)))
 
         return registers
 
     def get_register(
-        self, *, lmul: int = 1, exclude_regs: list[int] | None = None, reg_range: list[int] | None = None
+        self,
+        *,
+        lmul: int = 1,
+        segments: int = 1,
+        exclude_regs: list[int] | None = None,
+        reg_range: list[int] | None = None,
     ) -> int:
-        return self.get_registers(1, lmul=lmul, exclude_regs=exclude_regs, reg_range=reg_range)[0]
+        return self.get_registers(1, lmul=lmul, segments=segments, exclude_regs=exclude_regs, reg_range=reg_range)[0]
 
-    def free_registers(self, lmul: int) -> set[int]:
+    def free_registers(self, lmul: int, segments: int) -> set[int]:
         registers_available_to_lmul = set()
         for register in range(0, 32, lmul):
-            group = set(range(register, register + lmul))
+            group = set(range(register, register + (lmul * segments)))
             if len(self.reg_list & group) == len(group):
                 registers_available_to_lmul.add(register)
 
         return self.reg_list & registers_available_to_lmul
+
+    def allocate_parameter(self, name: str, register: int, width: int, *, suppress_overlap: bool = False) -> None:
+        for reg in range(register, register + width):
+            if reg in self.reg_list:
+                self.consume_registers([reg])
+            elif not suppress_overlap:
+                raise ValueError(f"Unable to Allocate Registers for Parameter {name}, v{register} with width {width}")
+        self.parameter_map[name] = (register, width)
+
+    def deallocate_parameter(self, name: str) -> None:
+        if not name in self.parameter_map:
+            return
+
+        register, width = self.parameter_map.pop(name)
+
+        for attempt_deallocate in range(register, register + width):
+            # Check for an overlap with anything else currently allocated
+            overlap = False
+            for register2, width2 in self.allocation_map.items():
+                if register2 <= attempt_deallocate < register2 + width2:
+                    overlap = True
+
+            for register2, width2 in self.parameter_map.values():
+                if register2 <= attempt_deallocate < register2 + width2:
+                    overlap = True
+
+            if not overlap:
+                self.return_register(attempt_deallocate)
+
+    def deallocate_parameters(self) -> None:
+        for name in list(self.parameter_map.keys()):
+            self.deallocate_parameter(name)
 
     def return_registers(self, regs: list[int]) -> None:
         reg_groups = []
@@ -434,4 +479,5 @@ class VectorRegisterFile(RegisterFile):
         new_reg_file = VectorRegisterFile()
         new_reg_file.reg_list = self.reg_list.copy()
         new_reg_file.allocation_map = self.allocation_map.copy()
+        new_reg_file.parameter_map = self.parameter_map.copy()
         return new_reg_file

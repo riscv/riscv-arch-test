@@ -21,6 +21,7 @@ from testgen.data.config import TestConfig
 from testgen.data.registers import IntegerRegisterFile
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.formatters.vector_params import extract_instruction_info
 from testgen.io.testplans import read_testplan
 from testgen.io.writer import write_test_file
 
@@ -94,6 +95,7 @@ def generate_unpriv_extension_tests(
             instr_data.coverpoints,
             test_config,
             output_dir,
+            is_vector,
         )
 
 
@@ -132,6 +134,7 @@ def _generate_unpriv_tests_for_instruction(
     coverpoints: list[str],
     test_config: TestConfig,
     output_dir: Path,
+    is_vector: bool = False,
 ) -> None:
     """
     Generate tests for a specific instruction based on its coverpoints.
@@ -149,8 +152,8 @@ def _generate_unpriv_tests_for_instruction(
 
     # Iterate through each coverpoint and generate test chunks
     for coverpoint in coverpoints:
-        # Skip cp_asm_count if mixed with other coverpoints
-        if coverpoint == "cp_asm_count" and len(coverpoints) > 1:
+        # Skip cp_asm_count and std_vec if mixed with other coverpoints
+        if (coverpoint == "cp_asm_count" or coverpoint == "std_vec") and len(coverpoints) > 1:
             continue
 
         all_test_chunks.extend(generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, test_data))
@@ -159,7 +162,20 @@ def _generate_unpriv_tests_for_instruction(
     test_files = _split_test_chunks(all_test_chunks, TESTCASES_PER_FILE)
     for file_idx, test_file_chunks in enumerate(test_files):
         _append_sig_reg_reset(test_file_chunks)
-        write_test_file(test_config, instr_name, test_file_chunks, output_dir, file_idx)
+        if is_vector:
+            assert test_config.sew is not None, "SEW must be set for vector tests"
+            sew = test_config.sew
+            vdsew = sew
+            info = extract_instruction_info(instr_name, instr_type)
+            if info.widen_vd:
+                vdsew *= 2
+            elif info.load_store_eew == 64:
+                vdsew = 64
+            extra_defines = ["#define RVTEST_VECTOR\n", f"#define RVTEST_SEW {sew}\n#define VDSEW {vdsew}\n"]
+        else:
+            extra_defines = []
+
+        write_test_file(test_config, instr_name, test_file_chunks, output_dir, file_idx, extra_defines)
 
     # Clean up (make sure all registers were returned)
     test_data.destroy()

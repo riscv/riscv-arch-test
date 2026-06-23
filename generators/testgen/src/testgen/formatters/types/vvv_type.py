@@ -49,6 +49,11 @@ def format_vvv_type(
 
     setup = []
     registers = [params.vd, params.vs2, params.vs1]
+
+    # Setup Mask
+    if params.maskval:
+        setup.extend(prep_mask_v(params.maskval, test_data, params))
+
     # Preload vd at vlmax
     vd_preloaded = False
     if params.vector_suite == "length":
@@ -73,15 +78,17 @@ def format_vvv_type(
     )
 
     if params.maskval:
-        test_data.vec_regs.consume_registers([0])
-        setup.extend(prep_mask_v(params.maskval, test_data, params))
         test = [f"{instr_str} v{params.vd}, v{params.vs2}, v{params.vs1}, v0.t"]
         test_data.vec_regs.return_register(0)
     else:
         test = [f"{instr_str} v{params.vd}, v{params.vs2}, v{params.vs1}"]
 
+    # Return non-vd registers
+    test_data.vec_regs.deallocate_parameter("vs2")
+    test_data.vec_regs.deallocate_parameter("vs1")
+
     if params.vector_suite == "length":
-        check = [*write_sigupd_v_len(test_data, params, 1, max(int(params.lmul), 1))]
+        check = [*write_sigupd_v_len(test_data, params, 1, params.lmul)]
     else:
         check = [*write_sigupd_v(test_data, params)]
 

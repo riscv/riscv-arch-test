@@ -95,6 +95,9 @@ def randomize_register(
         assert sew is not None, "SEW must be set when randomizing vector registers"
 
         emul = lmul * info.get_size_multiplier(register_name, sew)
+        segments = info.segments
+        if instr_type_config.vector_role and "index" in instr_type_config.vector_role and register_name == "vs2":
+            segments = 1
 
         emul = int(emul)
         if (
@@ -109,9 +112,9 @@ def randomize_register(
 
         # If the assignment was already set, validate it
         if preset is not None:
-            if preset + emul * info.segments > test_data.vec_regs.reg_count:
+            if preset + emul * segments > test_data.vec_regs.reg_count:
                 raise ValueError(
-                    f"Preset {register_name}=v{preset} with NF={info.segments} "
+                    f"Preset {register_name}=v{preset} with NF={segments} "
                     f"EMUL_field={emul} overflows past v{test_data.vec_regs.reg_count - 1}"
                 )
 
@@ -123,7 +126,7 @@ def randomize_register(
         alignment = max(emul, int(lmul)) if int(lmul) >= 1 else emul
 
         # We can't take the registers from the register file yet because we want to randomly generate valid overlaps
-        return random.choice(list(test_data.vec_regs.free_registers(alignment)))
+        return random.choice(list(test_data.vec_regs.free_registers(alignment, segments)))
 
     if preset is not None:
         return preset  # No need to validate r and f registers
@@ -237,7 +240,7 @@ def generate_random_vector_params(
 
     info = extract_instruction_info(instruction, instr_type)
 
-    if instr_type in "whole_register_ls":  # PLACEHOLDER FOR NOW!!! FIXME
+    if instr_type in ["VLR", "VSR"]:
         # whole register load stores ignore lmul and instead use nfields as emul
         lmul = max(1, info.segments)
 
@@ -249,6 +252,7 @@ def generate_random_vector_params(
     randomization_count = 0
     params = InstructionParams()
     preset_params_dict = dataclasses.asdict(preset_params)
+    params_dict = dataclasses.asdict(params)
 
     while register_overlap:
         params = randomize_registers(preset_params, test_data, instr_type_config, info, lmul)
@@ -379,11 +383,24 @@ def generate_random_vector_params(
         # if params.rs1val_pointer is None:
         #     params.rs1val_pointer = f"vd_load_random_{suite}_{test_count:03d}"
 
+    registers = {"vs1", "vs2", "vs3", "vd", "rs1", "rs2", "rd", "fs1", "fd"}
+    if instr_type_config.required_params is not None:
+        registers &= instr_type_config.required_params
+
+    for register in registers:
+        if params_dict[register] != preset_params_dict[register] and register.startswith("v"):
+            segments = info.segments
+            if instr_type_config.vector_role and "index" not in instr_type_config.vector_role and register != "vs2":
+                segments = 1
+
+            width = math.ceil(lmul * info.get_size_multiplier(register, sew)) * segments
+            test_data.vec_regs.allocate_parameter(register, params_dict[register], width, suppress_overlap=True)
+
     # immediate handling
     if params.immval is None and instr_type_config.imm_range:
         params.immval = random.randint(*instr_type_config.imm_range)
 
-    params.temp_reg = test_data.int_regs.get_register()
+    params.temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
     params.sew = sew
     params.lmul = lmul
     params.vector_suite = suite

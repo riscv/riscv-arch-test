@@ -26,7 +26,11 @@ def load_template(template_name: str) -> str:
 
 
 def insert_header_template(
-    test_config: TestConfig, test_file: Path, sigupd_count: int, extra_defines: list[str] | None = None
+    test_config: TestConfig,
+    test_file: Path,
+    sigupd_count: int,
+    extra_defines: list[str] | None = None,
+    instr_name: str | None = None,
 ) -> str:
     """Load testgen header template file and replace placeholders.
 
@@ -39,15 +43,16 @@ def insert_header_template(
     template = load_template("testgen_header.S")
     # Extract extension components
     xlen = test_config.xlen
+    sew = test_config.sew
     testsuite = test_config.testsuite
     E_ext = test_config.E_ext
     required_extensions = test_config.required_extensions
-    ext_components, params = canonicalize_extensions(testsuite, xlen, E_ext, required_extensions)
+    ext_components, params = canonicalize_extensions(testsuite, xlen, E_ext, required_extensions, sew, instr_name)
     if test_config.extra_params:
         params.extend(test_config.extra_params)
     march_extensions = test_config.march_extensions
     if march_extensions is not None:
-        march_ext_components, _ = canonicalize_extensions(testsuite, xlen, E_ext, march_extensions)
+        march_ext_components, _ = canonicalize_extensions(testsuite, xlen, E_ext, march_extensions, sew, instr_name)
         march = generate_march_string(march_ext_components, xlen)
         # combine required_extensions and march_extensions for extra_defines
         all_extensions = list(dict.fromkeys(ext_components + march_ext_components))
@@ -79,7 +84,12 @@ def insert_footer_template(test_data_section: str, test_string_section: str) -> 
 
 
 def canonicalize_extensions(
-    testsuite: str, xlen: int, E_ext: bool, required_extensions: list[str] | None = None
+    testsuite: str,
+    xlen: int,
+    E_ext: bool,
+    required_extensions: list[str] | None = None,
+    sew: int | None = None,
+    instruction: str | None = None,
 ) -> tuple[list[str], list[str]]:
     """Canonicalize extension string.
 
@@ -108,7 +118,77 @@ def canonicalize_extensions(
         ext_components.append("D")  # Add D if Zcd is present
     if any(ext in ext_components for ext in ["Zcf", "D", "Zfh", "Zfhmin", "Zfa", "Zfbfmin"]):
         ext_components.append("F")  # Add F if any floating point extension is present
-    if any(ext in ext_components for ext in ["V", "Zvfh"]):
+
+    # Handle Vector
+    if testsuite.startswith(("V", "Zv")):
+        vector_map = {
+            "Vx8": ["Zve32x"],
+            "Vx16": ["Zve32x"],
+            "Vx32": ["Zve32x"],
+            "Vls8": ["Zve32x"],
+            "Vls16": ["Zve32x"],
+            "Vls32": ["Zve32x"],
+            "Vx64": ["Zve64x"],
+            "Vls64": ["Zve64x"],
+            "Vf16": ["Zvfh"],
+            "Vf32": ["Zve32f"],
+            "Vf64": ["Zve64d"],
+            "Zvbb8": ["Zve32x"],
+            "Zvbb16": ["Zve32x"],
+            "Zvbb32": ["Zve32x"],
+            "Zvbb64": ["Zve64x"],
+            "Zvkb8": ["Zve32x"],
+            "Zvkb16": ["Zve32x"],
+            "Zvkb32": ["Zve32x"],
+            "Zvkb64": ["Zve64x"],
+        }
+
+        for alias, mapped in vector_map.items():
+            if testsuite == alias:
+                for zve_ext in ["Zve64x", "Zve64f", "Zve64d"]:
+                    if instruction is None:
+                        break
+
+                    # All Zve* extensions support all vector load and store instructions (31.1.7. Vector Loads and Stores),
+                    # except Zve64* extensions do not support EEW=64 for index values when XLEN=32.
+                    if zve_ext in mapped and "ei64" in instruction and xlen == 32:
+                        mapped.remove(zve_ext)
+
+                    # All Zve* extensions support all vector integer instructions (31.1.11. Vector Integer Arithmetic
+                    # Instructions), except that the vmulh integer multiply variants that return the high word of the
+                    # product (vmulh.vv, vmulh.vx, vmulhu.vv, vmulhu.vx, vmulhsu.vv, vmulhsu.vx) are not included for
+                    # EEW=64 in Zve64*.
+                    if zve_ext in mapped and instruction.startswith("vmulh") and sew == 64:
+                        mapped.remove(zve_ext)
+
+                    # All Zve* extensions support all vector fixed-point arithmetic instructions (31.1.12. Vector Fixed-Point
+                    # Arithmetic Instructions), except that vsmul.vv and vsmul.vx are not included in EEW=64 in Zve64*.
+                    if zve_ext in mapped and instruction.startswith("vsmul") and sew == 64:
+                        mapped.remove(zve_ext)
+
+                    # All Zve* extensions support all vector permutation instructions (31.1.16. Vector Permutation Instructions),
+                    # except that Zve32x and Zve64x do not include those with floating-point operands, and Zve64f does not include
+                    # those with EEW=64 floating-point operands.
+                    # The first part of this requirement is handled by placing those operands into Vf.
+                    if (
+                        zve_ext in mapped
+                        and instruction in ["vfmv.f.s", "vfmv.s.f", "vfslide1up.vf", "vfslide1down.vf"]
+                        and sew == 64
+                    ):
+                        mapped.remove(zve_ext)
+
+                if mapped == []:
+                    continue
+
+                ext_components.extend(mapped)
+                no_sew_suffix = re.sub(r"\d+$", "", testsuite)
+                if no_sew_suffix in ext_components:
+                    ext_components.remove(no_sew_suffix)
+                break
+        else:
+            # Otherwise a smaller V extension isn't needed
+            ext_components.append("V")
+
         ext_components.append("M")  # Add M if V is present (required for gcc 15)
 
     ext_components = list(dict.fromkeys(ext_components))  # Remove duplicates while preserving order

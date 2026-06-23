@@ -145,14 +145,15 @@ def return_test_regs(test_data: TestData, params: InstructionParams) -> None:
     """
     test_data.int_regs.return_registers(params.used_int_regs)
     test_data.float_regs.return_registers(params.used_float_regs)
-    test_data.vec_regs.return_registers(params.used_vec_regs)
+    test_data.vec_regs.deallocate_parameters()
+    assert len(test_data.vec_regs.reg_list) == 32
 
 
 def _lmul_flag(lmul: float) -> str:
     if lmul < 1:
         return f"f{int(1 / lmul)}"
     else:
-        return str(lmul)
+        return str(int(lmul))
 
 
 def load_vec_reg(
@@ -205,14 +206,14 @@ def write_sigupd_v(test_data: TestData, params: InstructionParams, *, mask_produ
     if mask_producing:
         lines.extend(
             [
-                f"RVTEST_SIGUPD_V(vmxor.mm, x{sig_reg}, x{link_reg}, x{temp_reg}, v{vtmp}, v{mtmp}, 8, v{params.vd}, {label}, {label}_str",
+                f"RVTEST_SIGUPD_V(vmxor.mm, x{sig_reg}, x{link_reg}, x{temp_reg}, v{vtmp}, v{mtmp}, 8, v{params.vd}, {label}, {label}_str)",
                 f"# Check if v{params.vd} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} is a temp reg.",
             ]
         )
     else:
         lines.extend(
             [
-                f"RVTEST_SIGUPD_V(vmsne.vv, x{sig_reg}, x{link_reg}, x{temp_reg}, v{vtmp}, v{mtmp}, 8, v{params.vd}, {label}, {label}_str",
+                f"RVTEST_SIGUPD_V(vmsne.vv, x{sig_reg}, x{link_reg}, x{temp_reg}, v{vtmp}, v{mtmp}, 8, v{params.vd}, {label}, {label}_str)",
                 f"# Check if v{params.vd} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} is a temp reg.",
             ]
         )
@@ -221,7 +222,7 @@ def write_sigupd_v(test_data: TestData, params: InstructionParams, *, mask_produ
     return lines
 
 
-def write_sigupd_v_len(test_data: TestData, params: InstructionParams, segments: int, lmul: int) -> list[str]:
+def write_sigupd_v_len(test_data: TestData, params: InstructionParams, segments: int, lmul: float) -> list[str]:
     assert params.sew is not None
     assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
 
@@ -240,7 +241,7 @@ def write_sigupd_v_len(test_data: TestData, params: InstructionParams, segments:
     temp_reg2, temp_reg3 = test_data.int_regs.get_registers(2)
 
     # We need vtmp (lmul-aligned), mtmp, mtmp2, mtmp3 (mask registers, no overlap, not v0)
-    vtmp = test_data.vec_regs.get_register(lmul=lmul)
+    vtmp = test_data.vec_regs.get_register(lmul=int(max(lmul, 1)))
     mtmp, mtmp2, mtmp3 = test_data.vec_regs.get_registers(3, lmul=1, exclude_regs=[0])
 
     vs1 = params.vs1 if params.vs1 is not None else 0
@@ -249,7 +250,7 @@ def write_sigupd_v_len(test_data: TestData, params: InstructionParams, segments:
 
     lines = [
         # TODO: VCOMPRESS, SCALAR_DST, MASK_PROD
-        f"RVTEST_SIGUPD_V_LEN(x{sig_reg}, x{link_reg}, x{temp_reg}, x{temp_reg2}, x{temp_reg3}, v{vtmp}, v{mtmp3}, v{mtmp2}, v{mtmp}, v{params.vd}, v{vs1}, 0, {masked_flag}, 0, {params.sew}, {lmul}, 0, {label}, {label}_str)",
+        f"RVTEST_SIGUPD_V_LEN(x{sig_reg}, x{link_reg}, x{temp_reg}, x{temp_reg2}, x{temp_reg3}, v{vtmp}, v{mtmp3}, v{mtmp2}, v{mtmp}, v{params.vd}, v{vs1}, 0, {masked_flag}, 0, {params.sew}, {int(max(lmul, 1))}, 0, {label}, {label}_str)",
         f"# Check if v{params.vd} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} is a temp reg.",
     ]
 
@@ -268,10 +269,12 @@ def prep_base_v(test_data: TestData, params: InstructionParams, registers: list[
     lmul_flag = "m" + _lmul_flag(params.lmul)
 
     mask_flags = ""
-    if params.ma is not None:
-        mask_flags += ", ma" if params.ma else ", mu"
     if params.ta is not None:
         mask_flags += ", ta" if params.ta else ", tu"
+    if params.ma is not None:
+        mask_flags += ", ma" if params.ma else ", mu"
+    else:
+        mask_flags = ", ta, ma"
 
     flags = lmul_flag + mask_flags
 
@@ -282,16 +285,18 @@ def prep_base_v(test_data: TestData, params: InstructionParams, registers: list[
         lines.extend(
             [
                 "# Load Vl=Random",
-                f"li {temp_reg}, {randomVl}",
+                f"LI(x{temp_reg}, {randomVl})",
                 f"vsetvli x{vlmax_reg}, x0, e{params.sew}, {flags}",
                 f"remu x{temp_reg}, x{temp_reg}, x{vlmax_reg}",
             ]
         )
 
-        if params.egs != 1:
+        if params.egs != 1 and params.egs is not None:
             raise NotImplementedError("Handle egs != 1 vl=random")
         else:
             lines.append(f"ori x{temp_reg}, x{temp_reg}, 0x2")
+
+        test_data.int_regs.return_registers([temp_reg, vlmax_reg])
     elif params.vl == "vlmax":
         lines.extend(["# Load Vl=VLMAX", f"vsetvli x{params.temp_reg}, x0, e{params.sew}, {flags}"])
     else:
@@ -385,6 +390,10 @@ def prep_mask_v(mask_val: str, test_data: TestData, params: InstructionParams) -
             f"vlm.v v0, (x{params.temp_reg})",
         ]
 
+        assert test_data.test_chunk is not None, "Test chunk must be set to prepare mask asm"
+        test_data.test_chunk.vector_labels.append((mask_val, *test_data.vector_labels[mask_val]))
+
     test_data.vec_regs.return_register(vtmp)
+    test_data.vec_regs.consume_registers([0])  # Ensure that we could actually use the mask register
 
     return lines

@@ -17,12 +17,7 @@ _CG = "ExceptionsH_cg"
 
 
 # def _generate_hedeleg_tests(test_data: TestData) -> list[str]:
-
-# covergroup, coverpoint = _CG, "cp_hedeleg"
-# lines = [
-#     comment_banner(coverpoint, _generate_hedeleg_tests.__doc__),
-# ]
-
+# Based on the test plan, this would have 8 x 5 x 2 x 9 traps, is this going to be too many
 # # WIP
 
 # return lines
@@ -80,7 +75,7 @@ def _generate_ecall_to_hs_tests(test_data: TestData) -> list[str]:
         comment_banner(coverpoint, _generate_ecall_to_hs_tests.__doc__),
     ]
 
-    priv_mode = [("U", 0x100), ("VS", 0x200), ("VU", 0x100)]
+    priv_mode = [("U", 0x100), ("VS", 0x400), ("VU", 0x100)]
 
     for priv, deleg_bit in priv_mode:
         for spvp in [0, 1]:
@@ -145,10 +140,15 @@ def _generate_ecall_to_m_tests(test_data: TestData) -> list[str]:
             [
                 "ecall",
                 "nop",
-                "# Return to M mode",
-                "RVTEST_GOTO_MMODE",
             ]
         )
+        if priv != "M":
+            lines.extend(
+                [
+                    "# Return to M mode",
+                    "RVTEST_GOTO_MMODE",
+                ]
+            )
 
     return lines
 
@@ -184,10 +184,15 @@ def _generate_ebreak_to_m_tests(test_data: TestData) -> list[str]:
             [
                 "ebreak",
                 "nop",
-                "# Return to M mode",
-                "RVTEST_GOTO_MMODE",
             ]
         )
+        if priv != "M":
+            lines.extend(
+                [
+                    "# Return to M mode",
+                    "RVTEST_GOTO_MMODE",
+                ]
+            )
 
     return lines
 
@@ -290,10 +295,15 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
                                 "# Execute the instr based on bins",
                                 f"{hInstr} x{r_temp}, (x{r_address})",
                                 "",
-                                "# Return to M mode",
-                                "RVTEST_GOTO_MMODE",
                             ]
                         )
+                        if priv != "M":
+                            lines.extend(
+                                [
+                                    "# Return to M mode",
+                                    "RVTEST_GOTO_MMODE",
+                                ]
+                            )
 
     test_data.int_regs.return_registers([r_temp, r_address])
     return lines
@@ -455,21 +465,279 @@ def _generate_virtual_instruction_vs_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-# def _generate_virtual_instruction_vu_tests(test_data: TestData) -> list[str]:
-#         # too tired today ima do it next week
-#     return lines
+def _generate_virtual_instruction_vu_tests(test_data: TestData) -> list[str]:
+    """Generate virtual instruction exception test in VU mode
 
-# def _generate_loadstore_priv_tests(test_data: TestData) -> list[str]:
-#     """Generate load/store Hypervisor tests
+    In VU mode:
+    read instret with hcounteren[2] = 0, scounteren[2] = 1, mcounteren[2] = 1
+    read instret with hcounteren[2] = 1, scounteren[2] = 0, mcounteren[2] = 1
+    execute hlv.w, hlvx.wu, hsv.w, hfence.vvma, hfence.gvma
+    read vstval, htval
+    read stval
+    with mstatus.TVM = 0, read satp, vsatp
+    wfi with mstatus.TW=0, no interrupt firing
+    execute sret, sfence.vma
+    RV32 only:
+        read instreth with hcounteren[2] = 0, scounteren[2] = 1, mcounteren[2] = 1
+        read instreth with hcounteren[2] = 1, scounteren[2] = 0, mcounteren[2] = 1
+        read hedelegh
+    """
 
-#     In each privilege mode {M/HS/VS/U/VU} with hstatus.HU={0/1},
-#     attempt {HLV.W, HLVX.W, HSV.W} from scratch memory
-#     """
+    covergroup, coverpoint = _CG, "cp_virtual_instruction_vu"
+    r_temp, r_address = test_data.int_regs.get_registers(2, exclude_regs=[0])
 
-#     priv_mode = ["M", "HS", "U", "VS", "VU"]
-#     instr = ["hlv.w", "hlvx.w", "hsv.w"]
+    lines = [
+        comment_banner(coverpoint, _generate_virtual_instruction_vu_tests.__doc__),
+    ]
 
-#     return lines
+    lines.extend(
+        [
+            "# read instret with hcounteren[2] = 0, scounteren[2] = 1, mcounteren[2] = 1",
+            "# set up in M mode",
+            f"LI(x{r_temp}, 0x2) # IR bit",
+            f"CSRC(hcounteren, x{r_temp})",
+            f"CSRS(scounteren, x{r_temp})",
+            f"CSRS(mcounteren, x{r_temp})",
+            "",
+            test_data.add_testcase("instret_scounteren_1_hcouonteren_0", coverpoint, covergroup),
+            "# Go to VU mode to execute the instruction",
+            "RVTEST_GOTO_LOWER_MODE VUmode",
+            f"csrr x{r_temp}, instret",
+            "#if __riscv_xlen == 32",
+            f"csrr x{r_temp}, instreth",
+            "#endif",
+            "# Return to M mode",
+            "RVTEST_GOTO_MMODE",
+            "",
+            "# read instret with hcounteren[2] = 1, scounteren[2] = 0, mcounteren[2] = 1",
+            "# set up in M mode",
+            f"LI(x{r_temp}, 0x2) # IR bit",
+            f"CSRS(hcounteren, x{r_temp})",
+            f"CSRC(scounteren, x{r_temp})",
+            f"CSRS(mcounteren, x{r_temp})",
+            "",
+            test_data.add_testcase("instret_scounteren_0_hcouonteren_1", coverpoint, covergroup),
+            "# Go to VU mode to execute the instruction",
+            "RVTEST_GOTO_LOWER_MODE VUmode",
+            f"csrr x{r_temp}, instret",
+            "#if __riscv_xlen == 32",
+            f"csrr x{r_temp}, instreth",
+            "#endif",
+            "",
+        ]
+    )
+
+    lines.extend(
+        [
+            "# execute hlv.w, hlvx.wu, hsv.w, hfence.vvma, hfence.gvma",
+            "",
+            f"LA(x{r_address}, scratch)",
+            test_data.add_testcase("hlv", coverpoint, covergroup),
+            f"hlv.w x{r_temp}, (x{r_address})",
+            "",
+            test_data.add_testcase("hlvx", coverpoint, covergroup),
+            f"hlvx.wu x{r_temp}, (x{r_address})",
+            "",
+            test_data.add_testcase("hsv", coverpoint, covergroup),
+            f"LI(x{r_temp}, 0xBAD)",
+            f"hsv.w x{r_temp}, (x{r_address})",
+            "",
+            test_data.add_testcase("hfence_vvma", coverpoint, covergroup),
+            "hfence.vvma",
+            "",
+            test_data.add_testcase("hfence_gvma", coverpoint, covergroup),
+            "hfence.gvma",
+            "",
+        ]
+    )
+
+    lines.extend(
+        [
+            "# read vstval, htval, stval",
+            "",
+            test_data.add_testcase("vstval", coverpoint, covergroup),
+            f"csrr x{r_temp}, vstval",
+            "",
+            test_data.add_testcase("htval", coverpoint, covergroup),
+            f"csrr x{r_temp}, htval",
+            "",
+            test_data.add_testcase("stval", coverpoint, covergroup),
+            f"csrr x{r_temp}, stval",
+            "",
+        ]
+    )
+
+    lines.extend(
+        [
+            "# with mstatus.TVM = 0, read satp, vsatp",
+            "RVTEST_GOTO_MMODE",
+            f"LI(x{r_temp}, 0x100000) # TVM bit",
+            f"CSRC(mstatus, x{r_temp})",
+            "RVTEST_GOTO_LOWER_MODE VUmode",
+            test_data.add_testcase("satp", coverpoint, covergroup),
+            f"csrr x{r_temp}, satp",
+            test_data.add_testcase("vsatp", coverpoint, covergroup),
+            f"csrr x{r_temp}, vsatp",
+            "",
+        ]
+    )
+
+    lines.extend(
+        [
+            "# wfi with mstatus.TW=0",
+            "RVTEST_GOTO_MMODE",
+            f"LI(x{r_temp}, 0x200000) # TW bit",
+            f"CSRC(mstatus, x{r_temp})",
+            "",
+            "RVTEST_GOTO_LOWER_MODE VUmode",
+            test_data.add_testcase("wfi", coverpoint, covergroup),
+            "wfi",
+        ]
+    )
+
+    lines.extend(
+        [
+            "# Execute sret, sfence.vma",
+            test_data.add_testcase("sret", coverpoint, covergroup),
+            "sret",
+            test_data.add_testcase("sfence_vma", coverpoint, covergroup),
+            "sfence.vma",
+        ]
+    )
+    test_data.int_regs.return_registers([r_temp, r_address])
+
+    return lines
+
+
+def _generate_loadstore_priv_tests(test_data: TestData) -> list[str]:
+    """Generate load/store Hypervisor tests
+
+    In each privilege mode {M/HS/VS/U/VU} with hstatus.HU={0/1},
+    attempt {HLV.W, HLVX.W, HSV.W} from scratch memory
+    5 x 2 x 3 bins
+    """
+
+    covergroup, coverpoint = _CG, "cp_loadstore_priv"
+    r_temp, r_address = test_data.int_regs.get_registers(2, exclude_regs=[0])
+
+    lines = [
+        comment_banner(coverpoint, _generate_loadstore_priv_tests.__doc__),
+    ]
+
+    priv_mode = ["M", "HS", "U", "VS", "VU"]
+    instr = ["hlv.w", "hlvx.wu", "hsv.w"]
+
+    for priv in priv_mode:
+        for hu_val in [0, 1]:
+            for hInstr in instr:
+                binname = f"{hInstr}_{priv}_hstatusHU_{hu_val}"
+
+                lines.extend(
+                    [
+                        "# --- M mode setup ---",
+                        "# Clear medeleg and hedeleg",
+                        "CSRW(medeleg, zero)",
+                        "CSRW(hedeleg, zero)",
+                        "# Write to hstatus.HU based on bins",
+                        f"LI(x{r_temp}, 0x200) # HU bit",
+                        f"{'CSRS' if hu_val else 'CSRC'}(hstatus, x{r_temp})",
+                        "",
+                        f"LA(x{r_address}, scratch)",
+                    ]
+                )
+
+                if hInstr == "hsv.w":
+                    lines.extend(["# Set up the value to load", f"LI(x{r_temp}, 0xDEADBEEF)"])
+
+                lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
+                if priv != "M":
+                    lines.append(f"RVTEST_GOTO_LOWER_MODE {priv}mode")
+                lines.extend(
+                    [
+                        "# Execute the instr based on bins",
+                        f"{hInstr} x{r_temp}, (x{r_address})",
+                        "",
+                    ]
+                )
+
+                if priv != "M":
+                    lines.extend(
+                        [
+                            "# Return to M mode",
+                            "RVTEST_GOTO_MMODE",
+                        ]
+                    )
+
+    test_data.int_regs.return_registers([r_temp, r_address])
+    return lines
+
+
+def _generate_hfence_priv_tests(test_data: TestData) -> list[str]:
+    """Generate hfence priv test
+
+    In each privilege mode {M/HS/VS/U/VU} with mstatus.TVM={0/1}, hstatus.VTVM = {0/1},
+    attempt {sfence.vma, hfence.vvma, hfence.gvma}
+    5 x 2 x 2 x 3 bins
+    """
+
+    covergroup, coverpoint = _CG, "cp_hfence_priv"
+    r_temp = test_data.int_regs.get_register(exclude_regs=[])
+
+    lines = [
+        comment_banner(coverpoint, _generate_hfence_priv_tests.__doc__),
+    ]
+
+    priv_mode = ["M", "HS", "U", "VS", "VU"]
+    instr = ["sfence.vma", "hfence.vvma", "hfence.gvma"]
+
+    for priv in priv_mode:
+        for tvm_val in [0, 1]:
+            for vtvm_val in [0, 1]:
+                for fInstr in instr:
+                    binname = f"{fInstr}_{priv}_mstatusTVM_{tvm_val}_hstatusVTVM_{vtvm_val}"
+
+                    lines.extend(
+                        [
+                            "# --- M mode setup ---",
+                            "# Clear medeleg and hedeleg",
+                            "CSRW(medeleg, zero)",
+                            "CSRW(hedeleg, zero)",
+                            "# Write to hstatus.VTVM based on bins",
+                            f"LI(x{r_temp}, 0x100000) # VTVM/TVM bit",
+                            f"{'CSRS' if vtvm_val else 'CSRC'}(hstatus, x{r_temp})",
+                            "",
+                            "# Write to mstatus.TVM based on bins",
+                            f"{'CSRS' if tvm_val else 'CSRC'}(mstatus, x{r_temp})",
+                            "",
+                        ]
+                    )
+
+                    lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
+                    if priv != "M":
+                        lines.append(f"RVTEST_GOTO_LOWER_MODE {priv}mode")
+                    lines.extend(
+                        [
+                            "# Execute the instr based on bins",
+                            f"{fInstr}",
+                            "",
+                        ]
+                    )
+                    if priv != "M":
+                        lines.extend(
+                            [
+                                "# Return to M mode",
+                                "RVTEST_GOTO_MMODE",
+                            ]
+                        )
+    test_data.int_regs.return_register(r_temp)
+
+    return lines
+
+
+# skipped all the identity page table stuff because I am not sure about how to set it up
+
+# the xtinst related test are also not included here as it could be implementation specific
+# there might be a need to revisit the test plan as I do not think xtinst should be tested as it can hold custom values
 
 
 @add_priv_test_generator(
@@ -490,10 +758,12 @@ def make_exceptionss(test_data: TestData) -> list[str]:
     lines.extend(_generate_ecall_to_m_tests(test_data))
     lines.extend(_generate_ebreak_to_m_tests(test_data))
 
-    ### not sure ###
     lines.extend(_generate_vstvec_tests(test_data))
     lines.extend(_generate_priority_tests(test_data))
     lines.extend(_generate_virtual_instruction_vs_tests(test_data))
-    # lines.extend(_generate_virtual_instruction_vu_tests(test_data))
+    lines.extend(_generate_virtual_instruction_vu_tests(test_data))
+
+    lines.extend(_generate_loadstore_priv_tests(test_data))
+    lines.extend(_generate_hfence_priv_tests(test_data))
 
     return lines

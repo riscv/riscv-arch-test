@@ -334,6 +334,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         #        ("mcause", None), # WLRL fields can't be handled with masks.  Use cp_mcause_* instead
         ("mtval", None),
         ("mip", 0xFFFF),  # limit to standard interrupt bits
+        ("menvcfg", None),
         ("mcountinhibit", None),
         ("mhpmevent3", 0),  # mask all bits because they are WARL and can all be ROZ
         ("mhpmevent4", 0),  # mask all bits because they are WARL and can all be ROZ
@@ -366,7 +367,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         ("mhpmevent31", 0),  # mask all bits because they are WARL and can all be ROZ
     ]
     # RV32-only high CSRs
-    csrs32 = [("mstatush", None)]
+    csrs32 = [("mstatush", None), ("menvcfgh", None)]
     # Read-only CSRs
     csrsro = [("mvendorid", None), ("mimpid", None), ("marchid", None), ("mhartid", None), ("mconfigptr", None)]
 
@@ -382,10 +383,6 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
 
     for csr in csrs:
         lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
-    
-    lines.append("\n#ifndef SM1P11P0_SUPPORTED")
-    lines.extend(csr_access_test(test_data, ("menvcfg", None), covergroup, coverpoint))
-    lines.append("#endif")
 
     lines.append("\n#ifdef MSECCFG_SUPPORTED")
     lines.extend(csr_access_test(test_data, ("mseccfg", None), covergroup, coverpoint))
@@ -429,9 +426,6 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
 
     for csr in csrs:
         lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
-    lines.append("\n#ifndef SM1P11P0_SUPPORTED")
-    lines.extend(csr_access_test(test_data, ("menvcfg", None), covergroup, coverpoint))
-    lines.append("#endif")
 
     lines.extend(
         [
@@ -441,10 +435,6 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     )
     for csr in csrs32:
         lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
-    lines.append("\n#ifndef SM1P11P0_SUPPORTED")
-    lines.extend(csr_access_test(test_data, ("menvcfgh", None), covergroup, coverpoint))
-    lines.append("#endif")
-
     lines.append("#endif")
 
     ######################################

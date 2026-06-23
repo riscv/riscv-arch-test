@@ -46,6 +46,46 @@ _M_CSR_SKIP: frozenset[int] = frozenset(
     }
 )
 
+<<<<<<< HEAD
+=======
+
+# ── M-mode CSR sweep ─────────────────────────────────────────────────────
+
+
+def _generate_csr_tests_m(test_data: TestData) -> list[str]:
+    """cp_csrr / cp_csrw_corners / cp_csrcs.
+
+    Registers r1, r2, r3 are always chosen from SAFE_REGS (x7..x31).
+    This prevents the sweep from corrupting framework-reserved registers
+    (sp, gp, tp) or the fast handler's scratch registers (t0, t1).
+    """
+    covergroup = "SsstrictSm_mcsr_cg"
+    lines: list[str] = []
+
+    lines.append(
+        comment_banner(
+            "cp_csrr / cp_csrw_corners / cp_csrcs (M-mode)",
+            "Read, write 0s/1s, set, clear every non-skipped CSR from M-mode.\n"
+            "All scratch registers chosen from x7-x31 only to preserve\n"
+            "framework-reserved regs (x2/sp, x3/gp, x4/tp) and fast-handler\n"
+            "scratch regs (x5/t0, x6/t1).",
+        )
+    )
+
+    lines.extend(
+        [
+            "",
+            "# Lock PMP region 0 (TOR RWX) so PMP CSR reads do not corrupt config",
+            "\tli t2, 0x8F",  # t2=x7, safe
+            "\tcsrw pmpcfg0, t2",
+            "",
+        ]
+    )
+
+    all_csrs = [a for a in range(4096) if a not in _M_CSR_SKIP]
+    lines.extend(generate_csr_sweep_body(test_data, covergroup, all_csrs))
+
+    return lines
 
 # ── Entry point ────────────────────────────────────────────────────────────
 

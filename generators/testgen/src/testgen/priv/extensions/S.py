@@ -456,6 +456,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
         ("stval", None),
         ("sip", None),
     ]
+
     # senvcfg CBIE/PMM reserved values are handled with warl_fields in the walk test below
     csr_senvcfg = ("senvcfg", None)
     # Floating-point CSRs
@@ -484,11 +485,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     for csr in csrs:
         lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
     lines.extend(["", "#ifndef S1P11P0_SUPPORTED"])
-<<<<<<< HEAD
     lines.extend(csr_access_test(test_data, csr_senvcfg, covergroup, coverpoint))
-=======
-    	lines.extend(csr_access_test(test_data, csr_senvcfg, covergroup, coverpoint))
->>>>>>> 92be968b (Update S.py)
     lines.extend(["", "#endif"])
 
     ######################################
@@ -528,13 +525,8 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
          # values 0b10 and 0b01 respectively. Walk iterations that write a reserved value may
          # legalize to any legal value, so those iterations check that the field is legal
          # instead of exact-matching the reference model.
-<<<<<<< HEAD
     warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
     lines.extend(csr_walk_test(test_data, csr_senvcfg, covergroup, coverpoint, warl_fields=warl_fields))
-=======
-         warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
-         lines.extend(csr_walk_test(test_data, csr_senvcfg, covergroup, coverpoint, warl_fields=warl_fields))
->>>>>>> 92be968b (Update S.py)
     lines.extend(["", "#endif"])
 
 
@@ -644,11 +636,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     for csr in csrs:
         lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
     lines.extend(["", "#ifndef S1P11P0_SUPPORTED"])
-<<<<<<< HEAD
     lines.extend(csr_walk_test(test_data, csr_senvcfg, covergroup, coverpoint))
-=======
-       lines.extend(csr_walk_test(test_data, csr_senvcfg, covergroup, coverpoint))
->>>>>>> 92be968b (Update S.py)
     lines.extend(["", "#endif"])
 
     ######################################
@@ -737,3 +725,4 @@ def make_s(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_scsr_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks
+

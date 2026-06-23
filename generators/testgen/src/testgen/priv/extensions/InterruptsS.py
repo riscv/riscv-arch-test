@@ -792,6 +792,7 @@ def _generate_changingtos_sei_tests(test_data: TestData) -> list[str]:
     test_data.int_regs.return_registers([r_scratch])
     return lines
 
+
 def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
     """Generate interrupt tests with walking 1s in mip and mie.
 
@@ -915,7 +916,7 @@ def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
                     lines.append("# Set timer interrupts")
                     if mip_name == "stip":
                         lines.extend(
-                            [              
+                            [
                                 "#ifndef SM1P11P0_SUPPORTED",
                                 f"csrr x{r_stce}, menvcfg",
                                 "#if __riscv_xlen == 64",
@@ -924,7 +925,7 @@ def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
                                 f"    srli x{r_stce}, x{r_stce}, 31",
                                 "#endif",
                                 f"andi x{r_stce}, x{r_stce}, 0x1",
-                                "#endif",
+                                "#endif"
                             ]
                         )
                         lines.extend(
@@ -1082,7 +1083,7 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
             if uses_timer:
                 if int_name == "stip":
                     lines.extend(
-                        [           
+                        [
                             "#ifndef SM1P11P0_SUPPORTED",
                             f"csrr x{r_stce}, menvcfg",
                             "#if __riscv_xlen == 64",
@@ -1091,7 +1092,7 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
                             f"    srli x{r_stce}, x{r_stce}, 31",
                             "#endif",
                             f"andi x{r_stce}, x{r_stce}, 0x1",
-                            "#endif",
+                            "#endif"
                         ]
                     )
                     lines.extend(
@@ -2777,3 +2778,4 @@ def make_interruptss_s(test_data: TestData) -> list[TestChunk]:
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks
+

@@ -50772,7 +50772,7 @@ Sm_mcsr_cg_cp_mtime_write_h:
   LI(x11, -1)                    # Load 0xFFFFFFFFFFFFFFFF
 Sm_mcsr_cg_cp_mcycle_wraparound_mcycle_wrap_64:
   CSRW(mcycle, x11)              # Set mcycle to max value
-  nop                                   # Force an instruction increment
+  nop                                   # instruction increment to cause wrap
   CSRR(x12, mcycle)               # Read wrapped value
   sub x12, x12, x11    # Subtract max value to get wrapped value
   sltiu x12, x12, 0xFF       # Signature = 1 if wrapped value < 255
@@ -50802,7 +50802,7 @@ Sm_mcsr_cg_cp_mcycle_wraparound_mcycle_wrap_32:
   LI(x11, -1)                    # Load 0xFFFFFFFFFFFFFFFF
 Sm_mcsr_cg_cp_minstret_wraparound_minstret_wrap_64:
   CSRW(minstret, x11)            # Set minstret to max value
-  nop                                   # Force an instruction increment
+  nop                                   # instruction increment to cause wrap
   CSRR(x12, minstret)             # Read wrapped value
   sub x12, x12, x11    # Subtract max value to get wrapped value
   sltiu x12, x12, 0xFF       # Signature = 1 if wrapped value < 255
@@ -50813,7 +50813,7 @@ Sm_mcsr_cg_cp_minstret_wraparound_minstret_wrap_64:
 Sm_mcsr_cg_cp_minstret_wraparound_minstret_wrap_32:
   CSRW(minstreth, x11)           # Set upper bits to max
   CSRW(minstret, x11)            # Set lower bits to max
-  nop                                   # Force increment / overflow
+  nop                                   # instruction increment to cause wrap
   CSRR(x14, minstret)            # Read lower bits of wrapped value
   CSRR(x12, minstreth)            # Check if upper bits wrapped to 0
   sub x12, x12, x11    # Subtract max value to get wrapped value

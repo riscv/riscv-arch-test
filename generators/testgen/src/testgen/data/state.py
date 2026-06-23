@@ -11,6 +11,7 @@ import re
 from typing import Literal
 
 from testgen.data.config import TestConfig
+from testgen.data.random import random_int
 from testgen.data.registers import FloatRegisterFile, IntegerRegisterFile, VectorRegisterFile
 from testgen.data.test_chunk import TestChunk
 
@@ -53,6 +54,7 @@ class TestData:
         self._current_testcase_label = ""
         self._fp_load_size: Literal["single", "double", "half", "quad"] | None = None
         self.test_chunk: TestChunk | None = None
+        self._vector_labels: dict[str, tuple[list[int], int]] = {}
 
     def __repr__(self) -> str:
         return f"TestData(config={self._config}, int_regs={self._int_regs}, float_regs={self._float_regs}, test_count={self._test_count})"
@@ -145,6 +147,10 @@ class TestData:
         """Get the current test count."""
         return self._test_count
 
+    @property
+    def vector_labels(self) -> dict[str, tuple[list[int], int]]:
+        return self._vector_labels
+
     def increment_test_count(self) -> None:
         """Increment the test count by 1."""
         self._test_count += 1
@@ -219,3 +225,22 @@ class TestData:
         """Clean up resources used by TestData."""
         self._int_regs.destroy()
         self._float_regs.destroy()
+
+    def register_vector_data(
+        self, label: str, sew: int, *, elements: list[int] | None = None, random_elements: int | None = None
+    ) -> None:
+        assert (elements is None) ^ (random_elements is None), (
+            "Exactly One of Bytes and Random Bytes Must Be Set for register_vector_data"
+        )
+
+        if random_elements is not None:
+            elements = []
+            for _ in range(random_elements):
+                elements.append(random_int(sew))
+
+        assert elements is not None, "Unreachable Case: Bytes is guaranteed to be set at this point"
+
+        if label in self._vector_labels and self._vector_labels[label] != (elements, sew):
+            raise ValueError(f"Cannot Overwrite Data for Label {label}")
+
+        self._vector_labels[label] = (elements, sew)

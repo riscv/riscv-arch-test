@@ -73,20 +73,6 @@ class InstructionParams:
     vs3_val_pointer: str | None = None
     vd_val_pointer: str | None = None
 
-    # Other Vector Register information
-    vs1_size_multiplier: int | None = None
-    vs1_segments: int | None = None
-    vs1_type: str | None = None
-    vs2_size_multiplier: int | None = None
-    vs2_segments: int | None = None
-    vs2_type: str | None = None
-    vs3_size_multiplier: int | None = None
-    vs3_segments: int | None = None
-    vs3_type: str | None = None
-    vd_size_multiplier: int | None = None
-    vd_segments: int | None = None
-    vd_type: str | None = None
-
     # Other Vector Information
     lmul: int | float | None = None
     sew: int | None = None

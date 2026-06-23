@@ -136,6 +136,14 @@ def randomize_register(
     raise ValueError(f"Invalid Register Name Given: {register_name}")
 
 
+def random_vector(suite: Literal["base", "length"], test_data: TestData) -> list[int]:
+    assert test_data.config.sew is not None, "SEW Must be Set"
+
+    element_count = 1 if suite == "base" else test_data.config.vlen_max // test_data.config.sew
+    elements = [random_int(test_data.config.sew) for _ in range(element_count)]
+    return elements
+
+
 def randomize_registers(
     preset_params: InstructionParams,
     test_data: TestData,
@@ -171,6 +179,15 @@ def randomize_registers(
         new_params.rs1 = randomize_register("rs1", test_data, instr_type_config, lmul, info, new_params.rs1)
         if new_params.rs1val_pointer is not None and instr_type_config.vector_role in ["load", "store"]:
             new_params.rs1val_pointer = "vector_ls_random_base"
+
+            assert test_data.config.sew is not None, "SEW must be Set For Vector Register Randomization"
+            test_data.register_vector_data(
+                "vector_ls_random_base",
+                test_data.config.sew,
+                random_elements=test_data.config.vlen_max // test_data.config.sew,
+            )
+        else:
+            new_params.rs1val = random_int(test_data.config.xlen)
     if "rd" in registers:
         new_params.rd = randomize_register("rd", test_data, instr_type_config, lmul, info, new_params.rd)
 
@@ -189,7 +206,7 @@ def generate_random_vector_params(
     instruction: str,
     instr_type: str,
     lmul: float,
-    additional_no_overlap: set[list[str]] | None = None,
+    additional_no_overlap: set[tuple[str, str]] | None = None,
     masked: bool = False,
     suite: Literal["length", "base"] = "base",
     **fixed_params: Any,  # noqa: ANN401
@@ -202,7 +219,7 @@ def generate_random_vector_params(
     preset_params = InstructionParams(**fixed_params)
 
     instr_type_config = get_instr_type_config(instr_type)
-    no_overlap = set()
+    no_overlap: set[tuple[str, str]] = set()
     if instr_type_config.vector_overlap_constraints is not None:
         no_overlap |= instr_type_config.vector_overlap_constraints
     if instr_type_config.vector_masked_constraints is not None and masked:
@@ -294,6 +311,10 @@ def generate_random_vector_params(
                             end_register_no_overlap = (
                                 emul - smallest_emul if bottom_no_overlap and smallest_emul >= 1 else emul
                             )
+
+                        if params_dict[register] is None:
+                            continue
+
                         for i in range(start_no_register_overlap, end_register_no_overlap):
                             registers_occupied.append(params_dict[register] + i)
 
@@ -324,20 +345,39 @@ def generate_random_vector_params(
 
     ####################################################################################
     if test_count is not None and suite is not None:
+        element_count = 1 if suite == "base" else test_data.config.vlen_max // sew
         if params.vs3_val_pointer is None:
             params.vs3_val_pointer = f"vs3_random_{suite}_{test_count:03d}"
+            test_data.register_vector_data(
+                f"vs3_random_{suite}_{test_count:03d}",
+                int(sew * info.get_size_multiplier("vs3", sew)),
+                random_elements=element_count,
+            )
         if params.vd_val_pointer is None:
             params.vd_val_pointer = f"vd_random_{suite}_{test_count:03d}"
+            test_data.register_vector_data(
+                f"vd_random_{suite}_{test_count:03d}",
+                int(sew * info.get_size_multiplier("vd", sew)),
+                random_elements=element_count,
+            )
         if params.vs1_val_pointer is None:
             params.vs1_val_pointer = f"vs1_random_{suite}_{test_count:03d}"
+            test_data.register_vector_data(
+                f"vs1_random_{suite}_{test_count:03d}",
+                int(sew * info.get_size_multiplier("vs1", sew)),
+                random_elements=element_count,
+            )
         if params.vs2_val_pointer is None:
             params.vs2_val_pointer = f"vs2_random_{suite}_{test_count:03d}"
+            test_data.register_vector_data(
+                f"vs2_random_{suite}_{test_count:03d}",
+                int(sew * info.get_size_multiplier("vs2", sew)),
+                random_elements=element_count,
+            )
 
-        # I'm not sure if this is necessary: We will see in VLS (this is set in randomize register)
+        # I'm not sure if this is necessary: We will see in VLS (this is set in randomize_register)
         # if params.rs1val_pointer is None:
         #     params.rs1val_pointer = f"vd_load_random_{suite}_{test_count:03d}"
-
-    # TODO : implement floating point data address
 
     # immediate handling
     if params.immval is None and instr_type_config.imm_range:
@@ -346,5 +386,6 @@ def generate_random_vector_params(
     params.temp_reg = test_data.int_regs.get_register()
     params.sew = sew
     params.lmul = lmul
+    params.vector_suite = suite
 
     return params

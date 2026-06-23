@@ -37,6 +37,7 @@ class TestConfig:
     xlen: int
     flen: int
     testsuite: str
+    vlen_max: int
     E_ext: bool = False
     sew: int | None = None
     required_extensions: list[str] | None = None

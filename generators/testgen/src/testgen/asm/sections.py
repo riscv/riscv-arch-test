@@ -47,3 +47,43 @@ def generate_test_string_section(data_strings: list[str]) -> str:
         Assembly code for the .data section
     """
     return "\n".join(data_strings)
+
+
+def generate_vector_data_section(vector_data_labels: list[tuple[str, list[int], int]]) -> str:
+    """
+    Generate the .data section containing all vector data, aligned to eew
+
+    Args:
+        vector_data_labels: List of triples (label, data, eew) containing the vector data
+        xlen: Target XLEN (32 or 64)
+
+    Returns:
+        Assembly code for the .data section
+    """
+    lines: list[str] = []
+    seen_labels: set[str] = set()
+    bytes_written = 0
+
+    for label, data, eew in vector_data_labels:
+        if label in seen_labels:
+            continue
+        seen_labels.add(label)
+
+        directives = {8: ".byte", 16: ".short", 32: ".word", 64: ".dword"}
+        directive = directives[eew]
+
+        if bytes_written % (eew // 8) != 0:
+            # We need to fix alignment
+            misalignment_offset = (eew // 8) - (bytes_written % (eew // 8))
+            for _ in range(misalignment_offset):
+                lines.append(".byte 0")
+            bytes_written += misalignment_offset
+
+        lines.append(f"{label}:")
+        for value in data:
+            hex_value = to_hex(value, eew)
+            lines.append(f"{directive} {hex_value}")
+
+        bytes_written += eew * len(data)
+
+    return "\n".join(lines)

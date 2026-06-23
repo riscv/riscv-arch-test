@@ -37,6 +37,15 @@ def format_vvv_type(
     assert params.temp_reg is not None, "temp_reg must provided for be VVV-type instructions"
     assert params.sew is not None, "sew must provided for be VVV-type instructions"
     assert params.lmul is not None, "lmul must provided for be VVV-type instructions"
+    assert test_data.test_chunk is not None, "format_vvv_type must be used with an active TestChunk"
+
+    test_data.test_chunk.vector_labels.extend(
+        [
+            (params.vs1_val_pointer, *test_data.vector_labels[params.vs1_val_pointer]),
+            (params.vs2_val_pointer, *test_data.vector_labels[params.vs2_val_pointer]),
+            (params.vd_val_pointer, *test_data.vector_labels[params.vd_val_pointer]),
+        ]
+    )
 
     setup = []
     registers = [params.vd, params.vs2, params.vs1]

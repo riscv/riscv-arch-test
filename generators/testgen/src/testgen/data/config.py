@@ -40,6 +40,8 @@ class TestConfig:
     vlen_max: int
     E_ext: bool = False
     sew: int | None = None
+    sew_min: int = 8
+    elen: int = 64
     required_extensions: list[str] | None = None
     march_extensions: list[str] | None = None
     extra_params: list[str] | None = None

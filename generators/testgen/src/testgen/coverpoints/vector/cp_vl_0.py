@@ -7,6 +7,7 @@
 
 from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.coverpoints.vector.vector_helpers import get_base_lmul
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
@@ -15,11 +16,13 @@ from testgen.formatters.vector_params import generate_random_vector_params
 
 @add_coverpoint_generator("cp_vl_0")
 def make_vl_0(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    assert test_data.config.sew is not None, "SEW must be set for vector tests"
+
     params = generate_random_vector_params(
         test_data,
         instr_name,
         instr_type,
-        lmul=1,
+        lmul=get_base_lmul(instr_name, instr_type, test_data.config.sew),
         suite="length",
         vl=0,
     )

@@ -14,72 +14,13 @@ from __future__ import annotations
 import dataclasses
 import math
 import random
-import re
 from typing import Any, Literal
 
+from testgen.coverpoints.vector.vector_helpers import InstructionInfo, extract_instruction_info
 from testgen.data.params import InstructionParams
 from testgen.data.random import random_int
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, get_instr_type_config
-
-
-@dataclasses.dataclass
-class InstructionInfo:
-    segments: int
-    load_store_eew: int | None
-    index_eew: int | None
-    vext_multiplier: float | None
-    widen_vs2: bool
-    widen_vd: bool
-
-    def get_size_multiplier(self, register: str, sew: int) -> int | float:
-        if self.vext_multiplier and register == "vs2":
-            return self.vext_multiplier
-        elif self.index_eew and register == "vs2":
-            return self.index_eew / sew
-        elif self.load_store_eew and register in ["vs3", "vd"]:  # Either one or the other exists for these instructions
-            return self.load_store_eew / sew
-        elif self.widen_vd and register == "vd" or self.widen_vs2 and register == "vs2":
-            return 2
-        return 1
-
-
-def extract_instruction_info(instruction: str, instruction_type: str) -> InstructionInfo:
-    # Extract Segments
-    # Generally, a segmented load/store looks like: vl___seg<nf>__.v or vl<nf>re_.v
-    segmented_ls_match = re.search(r"v[ls]\w*seg(\d+)\w*.v", instruction)
-    segments = int(segmented_ls_match.group(1)) if segmented_ls_match is not None else 1
-    if segments < 1 or segments > 8:
-        raise ValueError(f"Invalid Number of Segments in Instruction: {instruction}, Parsed {segments} segments")
-
-    # Load/Store EEW: Ends with e<eew>.v, e<eew>ff.v,
-    load_store_eew_match = re.search(r"v[ls]\w*e(\d+)(?:ff)?.v", instruction)
-    load_store_eew = int(load_store_eew_match.group(1)) if load_store_eew_match is not None else None
-    if load_store_eew not in [8, 16, 32, 64, None]:
-        raise ValueError(f"Invalid EEW Parsed from Instruction: {instruction}, Parsed {load_store_eew} EEW")
-
-    # index EEW: Ends with ei<eew>.v (also matches vrgatherei16.v)
-    index_eew_match = re.search(r"v\w*ei(\d+).v", instruction)
-    index_eew = int(index_eew_match.group(1)) if index_eew_match is not None else None
-    if index_eew not in [8, 16, 32, 64, None]:
-        raise ValueError(f"Invalid Index EEW Parsed from Instruction: {instruction}, Parsed {index_eew} EEW")
-
-    vext_multiplier = 1 / int(instruction[-1]) if instruction_type == "VEXT" else None
-
-    vd_widen = vs2_widen = False
-    if instruction_type in ["WVWSR", "FWVWSR", "WWV", "WWX", "FWWF", "VWV", "VWX", "VWI"]:
-        vs2_widen = True
-    if instruction_type in ["WVWSR", "FWVWSR", "WVV", "WVX", "WWV", "WVS", "FWVF", "FWWF", "FWCVT"]:
-        vd_widen = True
-
-    return InstructionInfo(
-        segments=segments,
-        load_store_eew=load_store_eew,
-        index_eew=index_eew,
-        vext_multiplier=vext_multiplier,
-        widen_vd=vd_widen,
-        widen_vs2=vs2_widen,
-    )
 
 
 def randomize_register(
@@ -209,6 +150,7 @@ def generate_random_vector_params(
     instruction: str,
     instr_type: str,
     lmul: float,
+    *,
     additional_no_overlap: set[tuple[str, str]] | None = None,
     masked: bool = False,
     suite: Literal["length", "base"] = "base",

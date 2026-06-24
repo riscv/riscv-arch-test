@@ -7,7 +7,7 @@
 
 from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.coverpoints.vector._corner_helpers import CORNER_NAMES, make_corner_label
+from testgen.coverpoints.vector.vector_helpers import VF_CORNER_NAMES, VX_CORNER_NAMES, get_corner_value
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
@@ -34,11 +34,39 @@ def make_cross_edges(instr_name: str, instr_type: str, coverpoint: str, test_dat
 
     r1_name, r2_name = _parse_cross_regs(coverpoint)
 
+    corners1 = corners2 = VX_CORNER_NAMES
+    suffix1 = suffix2 = "emul1"
+    if coverpoint.endswith("wv"):
+        suffix1 = "emul2"
+    elif coverpoint.endswith("wred"):
+        suffix2 = "emul2"
+    elif coverpoint.endswith("mm"):
+        suffix1 = suffix2 = "eew1"
+    elif coverpoint.endswith("f"):
+        suffix1 = suffix2 = "f"
+        corners1 = corners2 = VF_CORNER_NAMES
+    elif coverpoint.endswith("f_bf16"):
+        suffix1 = suffix2 = "f_bf16"
+        corners1 = corners2 = VF_CORNER_NAMES
+    elif coverpoint.endswith("fwv"):
+        suffix1 = "f_emul2"
+        suffix2 = "f"
+        corners1 = corners2 = VF_CORNER_NAMES
+    elif coverpoint.endswith("fwred"):
+        suffix1 = "f"
+        suffix2 = "f_emul2"
+        corners1 = corners2 = VF_CORNER_NAMES
+    elif coverpoint.endswith("egs"):
+        raise ValueError("Vector Crypto Edges are not yet implemented")
+
     test_chunks = []
-    for c1 in CORNER_NAMES:
-        for c2 in CORNER_NAMES:
-            r1_label = make_corner_label(c1, sew, test_data, suffix=f"_{r1_name}")
-            r2_label = make_corner_label(c2, sew, test_data, suffix=f"_{r2_name}")
+    for c1 in corners1:
+        r1_label = f"{r1_name}_corner_{c1}_{suffix1}"
+        test_data.register_vector_data(r1_label, sew, elements=[get_corner_value(c1, suffix1, sew)])
+
+        for c2 in corners2:
+            r2_label = f"{r2_name}_corner_{c2}_{suffix2}"
+            test_data.register_vector_data(r2_label, sew, elements=[get_corner_value(c2, suffix2, sew)])
 
             params = generate_random_vector_params(
                 test_data,

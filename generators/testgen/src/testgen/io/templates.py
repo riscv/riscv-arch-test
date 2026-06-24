@@ -188,6 +188,9 @@ def canonicalize_extensions(
         else:
             # Otherwise a smaller V extension isn't needed
             ext_components.append("V")
+            no_sew_suffix = re.sub(r"\d+$", "", testsuite)
+            if no_sew_suffix in ext_components:
+                ext_components.remove(no_sew_suffix)
 
         ext_components.append("M")  # Add M if V is present (required for gcc 15)
 

@@ -160,26 +160,30 @@ def load_vec_reg(
     name: str,
     register: int,
     val_pointer: str,
-    temp_reg: int,
-    sew: int,
+    params: InstructionParams,
     *,
     lmul: float | None = None,
-    vl: str | None = None,
+    vl_register_or_imm: str | int | None = None,
 ) -> list[str]:
     lines = []
 
-    assert (lmul is None) == (vl is None), "When Setting Preload Information, both lmul and vl must be set together"
     # Preloads Require Special Handling for V
-    if lmul is not None and vl is not None:
-        if vl == "vlmax":
-            lines.append(f"vsetvli x{temp_reg}, x0, e{sew}, m{_lmul_flag(lmul)}, tu, mu")
+    if lmul is not None and vl_register_or_imm is None:
+        lines.append(f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{_lmul_flag(lmul)}, tu, mu")
+    elif lmul is not None:
+        if isinstance(vl_register_or_imm, str):
+            lines.append(
+                f"vsetvli x{params.temp_reg}, {vl_register_or_imm}, e{params.sew}, m{_lmul_flag(lmul)}, tu, mu"
+            )
         else:
-            lines.append(f"vsetivli x{temp_reg}, {vl}, e{sew}, m{_lmul_flag(lmul)}, tu, mu")
+            lines.append(
+                f"vsetivli x{params.temp_reg}, {vl_register_or_imm}, e{params.sew}, m{_lmul_flag(lmul)}, tu, mu"
+            )
 
     lines.extend(
         [
-            f"LA(x{temp_reg}, {val_pointer})",
-            f"vle{sew}.v v{register}, (x{temp_reg})",
+            f"LA(x{params.temp_reg}, {val_pointer})",
+            f"vle{params.sew}.v v{register}, (x{params.temp_reg})",
         ]
     )
 
@@ -195,6 +199,12 @@ def write_sigupd_v(test_data: TestData, params: InstructionParams, *, mask_produ
     temp_reg = test_data.int_regs.temp_reg
     label = test_data.current_testcase_label
 
+    egs = params.egs if params.egs is not None else 1
+    worst_bytes = params.sew * egs // 8
+    sig_stride = max(test_data.xlen, test_data.flen) // 8 if test_data.flen > 0 else test_data.xlen // 8
+    offset_bytes = (worst_bytes + 4 + 7) & ~7
+    test_data.test_chunk.sigupd_count += max(1, (offset_bytes + sig_stride - 1) // sig_stride)
+
     vtmp, mtmp = test_data.vec_regs.get_registers(2, lmul=1, exclude_regs=[0])
 
     lines = [
@@ -206,14 +216,14 @@ def write_sigupd_v(test_data: TestData, params: InstructionParams, *, mask_produ
     if mask_producing:
         lines.extend(
             [
-                f"RVTEST_SIGUPD_V(vmxor.mm, x{sig_reg}, x{link_reg}, x{temp_reg}, v{vtmp}, v{mtmp}, 8, v{params.vd}, {label}, {label}_str)",
+                f"RVTEST_SIGUPD_V(vmxor.mm, x{sig_reg}, x{link_reg}, x{temp_reg}, v{vtmp}, v{mtmp}, {params.sew}, v{params.vd}, {label}, {label}_str)",
                 f"# Check if v{params.vd} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} is a temp reg.",
             ]
         )
     else:
         lines.extend(
             [
-                f"RVTEST_SIGUPD_V(vmsne.vv, x{sig_reg}, x{link_reg}, x{temp_reg}, v{vtmp}, v{mtmp}, 8, v{params.vd}, {label}, {label}_str)",
+                f"RVTEST_SIGUPD_V(vmsne.vv, x{sig_reg}, x{link_reg}, x{temp_reg}, v{vtmp}, v{mtmp}, {params.sew}, v{params.vd}, {label}, {label}_str)",
                 f"# Check if v{params.vd} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} is a temp reg.",
             ]
         )
@@ -238,7 +248,7 @@ def write_sigupd_v_len(test_data: TestData, params: InstructionParams, segments:
     link_reg = test_data.int_regs.link_reg
     temp_reg = test_data.int_regs.temp_reg
 
-    temp_reg2, temp_reg3 = test_data.int_regs.get_registers(2)
+    temp_reg2, temp_reg3 = test_data.int_regs.get_registers(2, exclude_regs=[0])
 
     # We need vtmp (lmul-aligned), mtmp, mtmp2, mtmp3 (mask registers, no overlap, not v0)
     vtmp = test_data.vec_regs.get_register(lmul=int(max(lmul, 1)))
@@ -249,7 +259,8 @@ def write_sigupd_v_len(test_data: TestData, params: InstructionParams, segments:
     masked_flag = 0 if params.maskval is None else 1
 
     lines = [
-        # TODO: VCOMPRESS, SCALAR_DST, MASK_PROD
+        # TODO: VCOMPRESS, SCALAR_DST, MASK_PROD, SEGMENTS
+        "# RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR, _VS1, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR)",
         f"RVTEST_SIGUPD_V_LEN(x{sig_reg}, x{link_reg}, x{temp_reg}, x{temp_reg2}, x{temp_reg3}, v{vtmp}, v{mtmp3}, v{mtmp2}, v{mtmp}, v{params.vd}, v{vs1}, 0, {masked_flag}, 0, {params.sew}, {int(max(lmul, 1))}, 0, {label}, {label}_str)",
         f"# Check if v{params.vd} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} is a temp reg.",
     ]
@@ -260,9 +271,28 @@ def write_sigupd_v_len(test_data: TestData, params: InstructionParams, segments:
     return lines
 
 
-def prep_base_v(test_data: TestData, params: InstructionParams, registers: list[int]) -> list[str]:
+def reload_vtype(params: InstructionParams, vl_register_or_imm: str | int) -> str:
+    assert params.lmul is not None, "lmul must be set for vector instructions"
+    lmul_flag = "m" + _lmul_flag(params.lmul)
+
+    mask_flags = ""
+    if params.ta is not None:
+        mask_flags += ", ta" if params.ta else ", tu"
+    if params.ma is not None:
+        mask_flags += ", ma" if params.ma else ", mu"
+    else:
+        mask_flags = ", ta, ma"
+    flags = lmul_flag + mask_flags
+
+    if isinstance(vl_register_or_imm, str):
+        return f"vsetvli x{params.temp_reg}, {vl_register_or_imm}, e{params.sew}, {flags}"
+    else:
+        return f"vsetivli x{params.temp_reg}, {vl_register_or_imm}, e{params.sew}, {flags}"
+
+
+def prep_base_v(test_data: TestData, params: InstructionParams, registers: list[int]) -> tuple[list[str], str | int]:
     assert (params.ma is None) == (params.ta is None), "ta and ma must either both be present or absent"
-    assert params.lmul is not None
+    assert params.lmul is not None, "lmul must be set for vector instructions"
 
     lines = []
 
@@ -277,9 +307,10 @@ def prep_base_v(test_data: TestData, params: InstructionParams, registers: list[
         mask_flags = ", ta, ma"
 
     flags = lmul_flag + mask_flags
+    vl_register_or_imm: str | int = 0
 
     if params.vl == "random":
-        temp_reg, vlmax_reg = test_data.int_regs.get_registers(2)
+        temp_reg, vlmax_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
 
         randomVl = random.getrandbits(32)
         lines.extend(
@@ -296,11 +327,16 @@ def prep_base_v(test_data: TestData, params: InstructionParams, registers: list[
         else:
             lines.append(f"ori x{temp_reg}, x{temp_reg}, 0x2")
 
-        test_data.int_regs.return_registers([temp_reg, vlmax_reg])
+        lines.append(f"vsetvli x0, x{temp_reg}, e{params.sew}, {flags}")
+
+        test_data.int_regs.return_registers([vlmax_reg])
+        vl_register_or_imm = f"x{temp_reg}"
     elif params.vl == "vlmax":
         lines.extend(["# Load Vl=VLMAX", f"vsetvli x{params.temp_reg}, x0, e{params.sew}, {flags}"])
+        vl_register_or_imm = "x0"
     else:
         vl = params.vl if params.vl is not None else 1
+        assert isinstance(vl, int), "vl must be an integer if it is not 'vlmax' or 'random'"
 
         lines.extend(
             [
@@ -320,20 +356,41 @@ def prep_base_v(test_data: TestData, params: InstructionParams, registers: list[
             ]
         )
 
+        vl_register_or_imm = vl
+
     if params.vstart is not None:
         lines.extend(
             ["# Load Desired Vstart", f"li x{params.temp_reg}, {params.vstart}", f"csrw vstart, x{params.temp_reg}"]
         )
 
-    return lines
+    return lines, vl_register_or_imm
 
 
-def prep_mask_v(mask_val: str, test_data: TestData, params: InstructionParams) -> list[str]:
+def prep_mask_v(
+    mask_val: str, test_data: TestData, params: InstructionParams, *, clobber_vd: bool = False
+) -> list[str]:
     assert params.lmul is not None, "LMUL is Required When Setting a Mask Value"
     lmul_flag = _lmul_flag(params.lmul)
 
+    test_data.vec_regs.consume_registers([0])  # Ensure that we can actually use the mask register
+
     # We need an lmul aligned register for vid.v
-    vtmp = test_data.vec_regs.get_register(lmul=int(max(params.lmul, 1)))
+    clobbered_vd = False
+    try:
+        vtmp = test_data.vec_regs.get_register(lmul=int(max(params.lmul, 1)))
+    except ValueError:
+        if clobber_vd:
+            assert params.vd is not None, "vd is required for all vector operations"
+            alignment = int(max(params.lmul, 1))
+            if params.vd % alignment == 0:
+                vtmp = params.vd
+                clobbered_vd = True
+            else:
+                raise ValueError("Not Enough Free Registers to Allocate LMUL-Aligned vtmp For Mask Calculation")
+        else:
+            raise ValueError(
+                "Not Enough Free Registers to Allocate LMUL-Aligned vtmp For Mask Calculation. Try passing clobber_vd=True"
+            )
 
     lines: list[str] = []
     if mask_val == "zeros":
@@ -393,7 +450,7 @@ def prep_mask_v(mask_val: str, test_data: TestData, params: InstructionParams) -
         assert test_data.test_chunk is not None, "Test chunk must be set to prepare mask asm"
         test_data.test_chunk.vector_labels.append((mask_val, *test_data.vector_labels[mask_val]))
 
-    test_data.vec_regs.return_register(vtmp)
-    test_data.vec_regs.consume_registers([0])  # Ensure that we could actually use the mask register
+    if not clobbered_vd:
+        test_data.vec_regs.return_register(vtmp)
 
     return lines

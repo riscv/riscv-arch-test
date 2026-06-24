@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import load_vec_reg, prep_base_v, prep_mask_v, write_sigupd_v, write_sigupd_v_len
+from testgen.asm.helpers import load_vec_reg, prep_base_v, prep_mask_v, reload_vtype, write_sigupd_v, write_sigupd_v_len
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -52,34 +52,56 @@ def format_vvv_type(
 
     # Setup Mask
     if params.maskval:
-        setup.extend(prep_mask_v(params.maskval, test_data, params))
+        setup.extend(prep_mask_v(params.maskval, test_data, params, clobber_vd=True))
 
     # Preload vd at vlmax
     vd_preloaded = False
     if params.vector_suite == "length":
         setup.extend(
             load_vec_reg(
-                "vd", params.vd, params.vd_val_pointer, params.temp_reg, lmul=params.lmul, sew=params.sew, vl="vlmax"
+                "vd", params.vd, params.vd_val_pointer, params, lmul=max(params.lmul, 1), vl_register_or_imm="x0"
             )
         )
         vd_preloaded = True
         registers.remove(params.vd)
 
-    setup.extend(prep_base_v(test_data, params, registers))
+    # vl_register_or_imm is useful if we ever overwrite vl as it allows us to easily restore it
+    prep_lines, vl_register_or_imm = prep_base_v(test_data, params, registers)
+    setup.extend(prep_lines)
+
+    lmul_overwrite: int | None = None
+    if params.lmul < 1:
+        lmul_overwrite = 1
+    vl_overwrite: int | None = None
+    if vl_register_or_imm == 0:
+        vl_overwrite = 1
 
     if not vd_preloaded:
-        setup.extend(load_vec_reg("vd", params.vd, params.vd_val_pointer, params.temp_reg, params.sew))
+        setup.extend(
+            load_vec_reg(
+                "vd", params.vd, params.vd_val_pointer, params, lmul=lmul_overwrite, vl_register_or_imm=vl_overwrite
+            )
+        )
 
     setup.extend(
         [
-            *load_vec_reg("vs2", params.vs2, params.vs2_val_pointer, params.temp_reg, params.sew),
-            *load_vec_reg("vs1", params.vs1, params.vs1_val_pointer, params.temp_reg, params.sew),
+            *load_vec_reg(
+                "vs2", params.vs2, params.vs2_val_pointer, params, lmul=lmul_overwrite, vl_register_or_imm=vl_overwrite
+            ),
+            *load_vec_reg(
+                "vs1", params.vs1, params.vs1_val_pointer, params, lmul=lmul_overwrite, vl_register_or_imm=vl_overwrite
+            ),
         ]
     )
 
+    if lmul_overwrite is not None or vl_overwrite is not None:
+        setup.append(reload_vtype(params, vl_register_or_imm))
+
+    if isinstance(vl_register_or_imm, str) and vl_register_or_imm != "x0":
+        test_data.int_regs.return_register(int(vl_register_or_imm[1:]))
+
     if params.maskval:
         test = [f"{instr_str} v{params.vd}, v{params.vs2}, v{params.vs1}, v0.t"]
-        test_data.vec_regs.return_register(0)
     else:
         test = [f"{instr_str} v{params.vd}, v{params.vs2}, v{params.vs1}"]
 
@@ -91,5 +113,9 @@ def format_vvv_type(
         check = [*write_sigupd_v_len(test_data, params, 1, params.lmul)]
     else:
         check = [*write_sigupd_v(test_data, params)]
+
+    # This can only be released after sigupd
+    if params.maskval:
+        test_data.vec_regs.return_register(0)
 
     return (setup, test, check)

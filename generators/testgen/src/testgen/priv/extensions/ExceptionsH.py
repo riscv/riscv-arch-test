@@ -16,11 +16,18 @@ from testgen.priv.registry import add_priv_test_generator
 _CG = "ExceptionsH_cg"
 
 
-# def _generate_hedeleg_tests(test_data: TestData) -> list[str]:
-# Based on the test plan, this would have 8 x 5 x 2 x 9 traps, is this going to be too many
-# # WIP
+def _generate_hedeleg_tests(test_data: TestData) -> list[str]:
+    """Generate hedeleg exceptions test
 
-# return lines
+    Attempt {instruction/load/store access fault, instruction/load/store misaligned fault, illegal instruction, ebreak}
+    crossed with privilege mode M/HS/VS/VU/U
+    crossed with medeleg = {0s/1111_0000_1011_0111_1111_111?}
+    crossed with hedeleg = {0s/ 0000_11?0_1?11_0001_1111_111?/(walking 1s in hedeleg[8:1])}
+    """
+    # Based on the test plan, this would have 8 x 5 x 2 x 9 traps, is this going to be too many
+    lines = []
+
+    return lines
 
 
 def _generate_ecall_to_vs_tests(test_data: TestData) -> list[str]:
@@ -50,8 +57,8 @@ def _generate_ecall_to_vs_tests(test_data: TestData) -> list[str]:
             "RVTEST_GOTO_LOWER_MODE VUmode",
             "ecall",
             "nop",
-            "# Return to M mode",
-            "RVTEST_GOTO_MMODE",
+            "# Return to M mode (ecall is delegated here, so use the illegal-instruction path)",
+            "RVTEST_GOTO_DELEGATED_MMODE",
         ]
     )
 
@@ -99,8 +106,8 @@ def _generate_ecall_to_hs_tests(test_data: TestData) -> list[str]:
                     f"RVTEST_GOTO_LOWER_MODE {priv}mode",
                     "ecall",
                     "nop",
-                    "# Return to M mode",
-                    "RVTEST_GOTO_MMODE",
+                    "# Return to M mode (ecall is delegated here, so use the illegal-instruction path)",
+                    "RVTEST_GOTO_DELEGATED_MMODE",
                 ]
             )
 
@@ -225,8 +232,8 @@ def _generate_vstvec_tests(test_data: TestData) -> list[str]:
             "RVTEST_GOTO_LOWER_MODE VUmode",
             "ecall",
             "nop",
-            "# Return to M mode",
-            "RVTEST_GOTO_MMODE",
+            "# Return to M mode (ecall is delegated here, so use the illegal-instruction path)",
+            "RVTEST_GOTO_DELEGATED_MMODE",
         ]
     )
 
@@ -747,7 +754,9 @@ def _generate_hfence_priv_tests(test_data: TestData) -> list[str]:
 )
 def make_exceptionss(test_data: TestData) -> list[str]:
     """Main entry point for S-mode exception test generation (refactored)."""
-    lines: list[str] = []
+    lines: list[str] = [
+        "CSRW(medeleg, zero)",
+    ]
 
     ### not sure ###
     # lines.extend(_generate_hedeleg_tests(test_data))

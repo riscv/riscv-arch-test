@@ -837,7 +837,9 @@ normative_rule_definitions:
   # The mcycle CSR counts the number of clock cycles executed by the processor core
   # on which the hart is running.
   - name: mcycle_op
-    coverpoint: ["Sm_mcsr_cg/cp_cntr_access/mcycle"]
+    coverpoint: ["Sm_mcsr_cg/cp_cntr_access/mcycle,
+                  Sm_mcsr_cg/cp_mcycle_wraparound,
+                  Sm_mcsr_cg/cp_mcycleh_wraparound"]
 
   # The mcycle and minstret registers have 64-bit precision on all RV32 and RV64
   # harts.
@@ -867,7 +869,9 @@ normative_rule_definitions:
 
   # The minstret CSR counts the number of instructions the hart has retired.
   - name: minstret_op
-    coverpoint: ["Sm_mcsr_cg/cp_cntr_access/minstret"]
+    coverpoint: ["Sm_mcsr_cg/cp_cntr_access/minstret,
+                  Sm_mcsr_cg/cp_minstret_wraparound,
+                  Sm_mcsr_cg/cp_minstreth_wraparound"]
 
   # The mcycle and minstret registers have 64-bit precision on all RV32 and RV64
   # harts.
@@ -1096,7 +1100,7 @@ normative_rule_definitions:
   - names: [time_op, time_rdonly]
     coverpoint:
       [
-        "Zicntr_csrrs_cg/cp_cntr/csr_time, Sm_mcsr_cg/cp_mtime_write, Sm_mcsr_cg/cp_csrw_readonly/time",
+        "Zicntr_csrrs_cg/cp_cntr/csr_time, Sm_mcsr_cg/cp_mtime_write, Sm_mcsr_cg/cp_csrw_readonly/time, Sm_mcsr_cg/cp_mtime_wraparound",
       ]
 
   # when XLEN=32, the cycleh, instreth and hpmcounternh CSRs are read-only shadows
@@ -1120,7 +1124,7 @@ normative_rule_definitions:
   - names: [timeh_op, timeh_rdonly]
     coverpoint:
       [
-        "Zicntr_csrrs_cg/cp_cntr/csr_timeh, Sm_mcsr_cg/cp_mtimeh_write, Sm_mcsr_cg/cp_csrw_readonly",
+        "Zicntr_csrrs_cg/cp_cntr/csr_timeh, Sm_mcsr_cg/cp_mtimeh_write, Sm_mcsr_cg/cp_csrw_readonly, Sm_mcsr_cg/cp_mtimeh_wraparound",
       ]
 
   - name: mcountinhibit_enc
@@ -1303,3 +1307,18 @@ normative_rule_definitions:
   # WARL field.
   - name: Zicsr_warl
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access"]
+
+  # mcycle and minstret are 64-bit and must wrap from all-ones to zero without
+  # saturating or raising an exception (implied by unrestricted modular arithmetic
+  # on WARL counter fields)
+  - name: mcycle_wraparound
+    coverpoint: ["Sm_mcsr_cg/cp_mcycle_wraparound",
+                 "Sm_mcsr_cg/cp_mcycleh_wraparound"]
+
+  - name: minstret_wraparound
+    coverpoint: ["Sm_mcsr_cg/cp_minstret_wraparound",
+                 "Sm_mcsr_cg/cp_minstreth_wraparound"]
+
+  - name: mtime_wraparound
+    coverpoint: ["Sm_mcsr_cg/cp_mtime_wraparound",
+                 "Sm_mcsr_cg/cp_mtimeh_wraparound"]

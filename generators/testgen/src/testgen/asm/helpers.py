@@ -190,7 +190,9 @@ def load_vec_reg(
     return lines
 
 
-def write_sigupd_v(test_data: TestData, params: InstructionParams, *, mask_producing: bool = False) -> list[str]:
+def write_sigupd_v(
+    test_data: TestData, params: InstructionParams, *, mask_producing: bool = False, widen_vd: bool = False
+) -> list[str]:
     assert params.sew is not None
     assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
 
@@ -198,9 +200,10 @@ def write_sigupd_v(test_data: TestData, params: InstructionParams, *, mask_produ
     link_reg = test_data.int_regs.link_reg
     temp_reg = test_data.int_regs.temp_reg
     label = test_data.current_testcase_label
+    vdsew = params.sew * (2 if widen_vd else 1)
 
     egs = params.egs if params.egs is not None else 1
-    worst_bytes = params.sew * egs // 8
+    worst_bytes = vdsew * egs // 8
     sig_stride = max(test_data.xlen, test_data.flen) // 8 if test_data.flen > 0 else test_data.xlen // 8
     offset_bytes = (worst_bytes + 4 + 7) & ~7
     test_data.test_chunk.sigupd_count += max(1, (offset_bytes + sig_stride - 1) // sig_stride)
@@ -208,22 +211,22 @@ def write_sigupd_v(test_data: TestData, params: InstructionParams, *, mask_produ
     vtmp, mtmp = test_data.vec_regs.get_registers(2, lmul=1, exclude_regs=[0])
 
     lines = [
-        f"vsetivli x0, 1, e{params.sew}, m1, tu, mu",
-        f"# set SEW={params.sew}, LMUL=1, VL=1 before signature check",
+        f"vsetivli x0, 1, e{vdsew}, m1, tu, mu",
+        f"# set SEW={vdsew}, LMUL=1, VL=1 before signature check",
         "# RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _VREG, _INST_PTR, _STR_PTR)",
     ]
 
     if mask_producing:
         lines.extend(
             [
-                f"RVTEST_SIGUPD_V(vmxor.mm, x{sig_reg}, x{link_reg}, x{temp_reg}, v{vtmp}, v{mtmp}, {params.sew}, v{params.vd}, {label}, {label}_str)",
+                f"RVTEST_SIGUPD_V(vmxor.mm, x{sig_reg}, x{link_reg}, x{temp_reg}, v{vtmp}, v{mtmp}, {vdsew}, v{params.vd}, {label}, {label}_str)",
                 f"# Check if v{params.vd} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} is a temp reg.",
             ]
         )
     else:
         lines.extend(
             [
-                f"RVTEST_SIGUPD_V(vmsne.vv, x{sig_reg}, x{link_reg}, x{temp_reg}, v{vtmp}, v{mtmp}, {params.sew}, v{params.vd}, {label}, {label}_str)",
+                f"RVTEST_SIGUPD_V(vmsne.vv, x{sig_reg}, x{link_reg}, x{temp_reg}, v{vtmp}, v{mtmp}, {vdsew}, v{params.vd}, {label}, {label}_str)",
                 f"# Check if v{params.vd} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} is a temp reg.",
             ]
         )
@@ -232,15 +235,24 @@ def write_sigupd_v(test_data: TestData, params: InstructionParams, *, mask_produ
     return lines
 
 
-def write_sigupd_v_len(test_data: TestData, params: InstructionParams, segments: int, lmul: float) -> list[str]:
+def write_sigupd_v_len(
+    test_data: TestData,
+    params: InstructionParams,
+    segments: int,
+    lmul: float,
+    *,
+    widen_vd: bool = False,
+    vcompress: bool = False,
+) -> list[str]:
     assert params.sew is not None
     assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
 
     maxVLEN = 1024
+    vdsew = params.sew * (2 if widen_vd else 1)
 
     emul_for_bytes = int(params.lmul) if params.lmul is not None and params.lmul >= 1 else 1
     worst_bytes = maxVLEN * emul_for_bytes // 8
-    sig_stride = max(test_data.xlen, test_data.flen, params.sew) // 8 if test_data.flen > 0 else test_data.xlen // 8
+    sig_stride = max(test_data.xlen, test_data.flen, vdsew) // 8 if test_data.flen > 0 else test_data.xlen // 8
     offset_bytes = (worst_bytes + 4 + 7) & ~7
     test_data.test_chunk.sigupd_count += max(1, (offset_bytes + sig_stride - 1) // sig_stride) * segments
 
@@ -259,9 +271,9 @@ def write_sigupd_v_len(test_data: TestData, params: InstructionParams, segments:
     masked_flag = 0 if params.maskval is None else 1
 
     lines = [
-        # TODO: VCOMPRESS, SCALAR_DST, MASK_PROD, SEGMENTS
+        # TODO: SCALAR_DST, MASK_PROD, SEGMENTS
         "# RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR, _VS1, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR)",
-        f"RVTEST_SIGUPD_V_LEN(x{sig_reg}, x{link_reg}, x{temp_reg}, x{temp_reg2}, x{temp_reg3}, v{vtmp}, v{mtmp3}, v{mtmp2}, v{mtmp}, v{params.vd}, v{vs1}, 0, {masked_flag}, 0, {params.sew}, {int(max(lmul, 1))}, 0, {label}, {label}_str)",
+        f"RVTEST_SIGUPD_V_LEN(x{sig_reg}, x{link_reg}, x{temp_reg}, x{temp_reg2}, x{temp_reg3}, v{vtmp}, v{mtmp3}, v{mtmp2}, v{mtmp}, v{params.vd}, v{vs1}, 0, {masked_flag}, {int(vcompress)}, {vdsew}, {int(max(lmul, 1))}, 0, {label}, {label}_str)",
         f"# Check if v{params.vd} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} is a temp reg.",
     ]
 
@@ -304,7 +316,7 @@ def prep_base_v(test_data: TestData, params: InstructionParams, registers: list[
     if params.ma is not None:
         mask_flags += ", ma" if params.ma else ", mu"
     else:
-        mask_flags = ", ta, ma"
+        mask_flags = ", tu, mu"
 
     flags = lmul_flag + mask_flags
     vl_register_or_imm: str | int = 0
@@ -454,3 +466,13 @@ def prep_mask_v(
         test_data.vec_regs.return_register(vtmp)
 
     return lines
+
+
+def load_vxrm(vxrm: str, temp_reg: int) -> list[str]:
+    vxrm_map = {
+        "rod": "0x6",
+        "rdn": "0x4",
+        "rne": "0x2",
+        "rnu": "0x0",
+    }
+    return [f"csrwi vxrm, {vxrm_map[vxrm]}"]

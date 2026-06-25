@@ -28,6 +28,7 @@ def make_vtype_agnostic(instr_name: str, instr_type: str, coverpoint: str, test_
     eew = None
     max_emul = 8
     egs = 1
+    masked = True
     if coverpoint.startswith("cr_vtype_agnostic_"):
         suffix = coverpoint[len("cr_vtype_agnostic_") :]
 
@@ -45,6 +46,9 @@ def make_vtype_agnostic(instr_name: str, instr_type: str, coverpoint: str, test_
         egs_match = re.search(r"egs(\d)", suffix)
         if egs_match:
             egs = int(egs_match.group(1))
+
+        if "nomask" in suffix:
+            masked = False
 
     # Determine maximum supported lmul
     if eew is None:
@@ -75,9 +79,9 @@ def make_vtype_agnostic(instr_name: str, instr_type: str, coverpoint: str, test_
                 instr_type,
                 lmul,
                 suite="length",
-                masked=True,
+                masked=masked,
                 additional_no_overlap=_NO_OVERLAP_MASKED,
-                maskval="vlmaxm1_ones",
+                maskval="vlmaxm1_ones" if masked else None,
                 vl="random",
                 ta=vta,
                 ma=vma,

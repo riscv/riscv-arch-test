@@ -15,6 +15,7 @@ from testgen.coverpoints.vector.vector_helpers import get_legal_lmuls
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
+from testgen.formatters.registry import get_instr_type_config
 from testgen.formatters.vector_params import generate_random_vector_params
 
 _NO_OVERLAP_MASKED = {("vs1", "v0"), ("vs2", "v0"), ("vd", "v0"), ("vs3", "v0")}
@@ -60,6 +61,8 @@ def make_vl_lmul(instr_name: str, instr_type: str, coverpoint: str, test_data: T
     lmul_exponents = list(range(min_lmul, max_lmul + 1))
     vl_options = ["vlmax", egs, "random"]
 
+    instr_type_config = get_instr_type_config(instr_type)
+
     if egs != 1:
         raise NotImplementedError("EGS If Defs are Not in cr_vl_lmul.py")
 
@@ -69,7 +72,7 @@ def make_vl_lmul(instr_name: str, instr_type: str, coverpoint: str, test_data: T
         for vl in vl_options:
             vta = random.randint(0, 1)
             vma = random.randint(0, 1)
-            masked = random.random() < 0.5
+            masked = random.random() < 0.5 if instr_type_config.maskable else False
             maskval = "vlmaxm1_ones" if masked else None
             no_overlap = _NO_OVERLAP_MASKED if masked else None
 

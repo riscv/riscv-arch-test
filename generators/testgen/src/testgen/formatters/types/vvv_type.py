@@ -5,39 +5,130 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import load_vec_reg, prep_base_v, prep_mask_v, reload_vtype, write_sigupd_v, write_sigupd_v_len
+from testgen.asm.helpers import (
+    load_vec_reg,
+    load_vxrm,
+    prep_base_v,
+    prep_mask_v,
+    reload_vtype,
+    write_sigupd_v,
+    write_sigupd_v_len,
+)
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
 
 vvv_config = InstructionTypeConfig(required_params={"vd", "vs1", "vs2"})
-wwv_config = InstructionTypeConfig(required_params={"vd", "vs1", "vs2"}, vector_overlap_constraints={("vd", "vs1")})
 wvv_config = InstructionTypeConfig(
+    required_params={"vd", "vs1", "vs2"}, vector_overlap_constraints={("vd_bottom", "vs1"), ("vd_bottom", "vs2")}
+)
+vwv_config = InstructionTypeConfig(
+    required_params={"vd", "vs1", "vs2"}, vector_overlap_constraints={("vd", "vs2_top"), ("vs1", "vs2")}
+)
+wwv_config = InstructionTypeConfig(
+    required_params={"vd", "vs1", "vs2"}, vector_overlap_constraints={("vd_bottom", "vs1"), ("vs1", "vs2")}
+)
+vvvm_config = InstructionTypeConfig(
+    required_params={"vd", "vs1", "vs2", "maskval"},
+    vector_overlap_constraints={("vd", "v0"), ("vs1", "v0"), ("vs2", "v0")},
+)
+vvv_sat_config = InstructionTypeConfig(required_params={"vd", "vs1", "vs2"})
+vvvp_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"}, vector_overlap_constraints={("vd", "vs1"), ("vd", "vs2")}
+)
+vcompress_config = InstructionTypeConfig(
+    required_params={"vd", "vs1", "vs2"},
+    vector_overlap_constraints={("vd", "vs1"), ("vd", "vs2"), ("vs1", "vs2")},
+    maskable=False,
 )
 
 
 @add_instruction_formatter("VVV", vvv_config)
+def format_vvv(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    return format_vvv_like_type(instr_str, test_data, params, "VVV")
+
+
 @add_instruction_formatter("WWV", wwv_config)
+def format_wwv(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    return format_vvv_like_type(instr_str, test_data, params, "WWV", widen={"vd", "vs2"})
+
+
 @add_instruction_formatter("WVV", wvv_config)
-def format_vvv_type(
+def format_wvv(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    return format_vvv_like_type(instr_str, test_data, params, "WVV", widen={"vd"})
+
+
+@add_instruction_formatter("VWV", vwv_config)
+def format_vwv(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    return format_vvv_like_type(instr_str, test_data, params, "VWV", widen={"vs2"})
+
+
+@add_instruction_formatter("VVVM", vvvm_config)
+def format_vvvm(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    assert params.maskval is not None, "Masks are required for VVVM-Type Instructions"
+    setup, test, check = format_vvv_like_type(instr_str, test_data, params, "VVVM")
+    test[0] = test[0][:-2]  # Remove the .t from v0
+    return setup, test, check
+
+
+@add_instruction_formatter("VVV_SAT", vvv_sat_config)
+def format_vvv_sat(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    setup, test, check = format_vvv_like_type(instr_str, test_data, params, "VVV_SAT")
+    setup = ["csrwi vxsat, 0"] + setup
+    return setup, test, check
+
+
+@add_instruction_formatter("VVVP", vvvp_config)
+def format_vvvp(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    return format_vvv_like_type(instr_str, test_data, params, "VVVP")
+
+
+@add_instruction_formatter("VCOMPRESS", vcompress_config)
+def format_vcompress(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    assert params.maskval is None, "vcompress cannot be masked"
+    return format_vvv_like_type(instr_str, test_data, params, "VCOMPRESS")
+
+
+def format_vvv_like_type(
     instr_str: str,
     test_data: TestData,
     params: InstructionParams,
+    type_name: str,
+    *,
+    widen: set[str] | None = None,
 ) -> tuple[list[str], list[str], list[str]]:
     assert params.vs1 is not None and params.vs1_val_pointer is not None, (
-        "vs1 and vs1_val_pointer must be provided for VVV-type instructions"
+        f"vs1 and vs1_val_pointer must be provided for {type_name}-type instructions"
     )
     assert params.vs2 is not None and params.vs2_val_pointer is not None, (
-        "vs2 and vs2_val_pointer must be provided for VVV-type instructions"
+        f"vs2 and vs2_val_pointer must be provided for {type_name}-type instructions"
     )
     assert params.vd is not None and params.vd_val_pointer is not None, (
-        "vd and vd_val_pointer must be provided for VVV-type instructions"
+        f"vd and vd_val_pointer must be provided for {type_name}-type instructions"
     )
-    assert params.temp_reg is not None, "temp_reg must provided for be VVV-type instructions"
-    assert params.sew is not None, "sew must provided for be VVV-type instructions"
-    assert params.lmul is not None, "lmul must provided for be VVV-type instructions"
-    assert test_data.test_chunk is not None, "format_vvv_type must be used with an active TestChunk"
+    assert params.temp_reg is not None, f"temp_reg must provided for be {type_name}-type instructions"
+    assert params.sew is not None, f"sew must provided for be {type_name}-type instructions"
+    assert params.lmul is not None, f"lmul must provided for be {type_name}-type instructions"
+    assert test_data.test_chunk is not None, f"format_{type_name.lower()}_type must be used with an active TestChunk"
+
+    if widen is None:
+        widen = set()
 
     test_data.test_chunk.vector_labels.extend(
         [
@@ -54,49 +145,78 @@ def format_vvv_type(
     if params.maskval:
         setup.extend(prep_mask_v(params.maskval, test_data, params, clobber_vd=True))
 
+    # Setup VXRM (if necessary)
+    if params.vxrm is not None:
+        setup.extend(load_vxrm(params.vxrm, params.temp_reg))
+
     # Preload vd at vlmax
     vd_preloaded = False
     if params.vector_suite == "length":
+        vd_lmul = params.lmul * (2 if "vd" in widen else 1)
         setup.extend(
-            load_vec_reg(
-                "vd", params.vd, params.vd_val_pointer, params, lmul=max(params.lmul, 1), vl_register_or_imm="x0"
-            )
+            load_vec_reg("vd", params.vd, params.vd_val_pointer, params, lmul=max(vd_lmul, 1), vl_register_or_imm="x0")
         )
         vd_preloaded = True
         registers.remove(params.vd)
+
+    # Preload vs2 for VVVP
+    vs2_preloaded = False
+    if params.vector_suite == "length" and type_name == "VVVP":
+        setup.extend(
+            load_vec_reg("vs2", params.vs2, params.vs2_val_pointer, params, lmul=params.lmul, vl_register_or_imm="x0")
+        )
+        vs2_preloaded = True
+        registers.remove(params.vs2)
 
     # vl_register_or_imm is useful if we ever overwrite vl as it allows us to easily restore it
     prep_lines, vl_register_or_imm = prep_base_v(test_data, params, registers)
     setup.extend(prep_lines)
 
+    # Load Registers at the Proper LMULs (loading whole registers if necessary, and tracking changes to vtype)
     lmul_overwrite: int | None = None
     if params.lmul < 1:
         lmul_overwrite = 1
+    elif widen:
+        # We need to overwrite LMUL in widening cases
+        lmul_overwrite = int(params.lmul)
+
     vl_overwrite: int | None = None
-    if vl_register_or_imm == 0:
+    if vl_register_or_imm == 0:  # Loads at vl=0 are a no-op
         vl_overwrite = 1
 
     if not vd_preloaded:
+        vd_lmul_overwrite = params.lmul * (2 if "vd" in widen else 1) if "vd" in widen else lmul_overwrite
         setup.extend(
             load_vec_reg(
-                "vd", params.vd, params.vd_val_pointer, params, lmul=lmul_overwrite, vl_register_or_imm=vl_overwrite
+                "vd", params.vd, params.vd_val_pointer, params, lmul=vd_lmul_overwrite, vl_register_or_imm=vl_overwrite
             )
         )
 
-    setup.extend(
-        [
-            *load_vec_reg(
-                "vs2", params.vs2, params.vs2_val_pointer, params, lmul=lmul_overwrite, vl_register_or_imm=vl_overwrite
-            ),
-            *load_vec_reg(
-                "vs1", params.vs1, params.vs1_val_pointer, params, lmul=lmul_overwrite, vl_register_or_imm=vl_overwrite
-            ),
-        ]
-    )
+    if not vs2_preloaded:
+        vs2_lmul_overwrite = params.lmul * (2 if "vs2" in widen else 1) if "vs2" in widen else lmul_overwrite
+        setup.extend(
+            load_vec_reg(
+                "vs2",
+                params.vs2,
+                params.vs2_val_pointer,
+                params,
+                lmul=vs2_lmul_overwrite,
+                vl_register_or_imm=vl_overwrite,
+            )
+        )
 
+    if not (vs2_preloaded and params.vs2 == params.vs1):  # Don't overwrite a preloaded register
+        setup.extend(
+            load_vec_reg(
+                "vs1", params.vs1, params.vs1_val_pointer, params, lmul=lmul_overwrite, vl_register_or_imm=vl_overwrite
+            )
+        )
+
+    # Ensure vtype is correct for the instruction
     if lmul_overwrite is not None or vl_overwrite is not None:
         setup.append(reload_vtype(params, vl_register_or_imm))
 
+    # Now we are done with the clean up register
     if isinstance(vl_register_or_imm, str) and vl_register_or_imm != "x0":
         test_data.int_regs.return_register(int(vl_register_or_imm[1:]))
 
@@ -105,14 +225,15 @@ def format_vvv_type(
     else:
         test = [f"{instr_str} v{params.vd}, v{params.vs2}, v{params.vs1}"]
 
-    # Return non-vd registers
+    # Return non-vd registers, so that we have enough for length-suite sigupd
     test_data.vec_regs.deallocate_parameter("vs2")
     test_data.vec_regs.deallocate_parameter("vs1")
 
     if params.vector_suite == "length":
-        check = [*write_sigupd_v_len(test_data, params, 1, params.lmul)]
+        vcompress = type_name == "VCOMPRESS"
+        check = [*write_sigupd_v_len(test_data, params, 1, params.lmul, widen_vd="vd" in widen, vcompress=vcompress)]
     else:
-        check = [*write_sigupd_v(test_data, params)]
+        check = [*write_sigupd_v(test_data, params, widen_vd="vd" in widen)]
 
     # This can only be released after sigupd
     if params.maskval:

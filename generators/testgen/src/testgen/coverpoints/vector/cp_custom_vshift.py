@@ -21,14 +21,24 @@ def _shift_upper_bits_mask(xlen: int, sew: int) -> int:
     return ((1 << width) - 1) << bottom
 
 
-@add_coverpoint_generator("cp_custom_shift_vv")
-def make_shift_vv(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+def _make_shift_upperbits_test(
+    instr_name: str,
+    instr_type: str,
+    coverpoint: str,
+    test_data: TestData,
+    *,
+    narrow: bool,
+) -> list[TestChunk]:
     sew = test_data.config.sew
     xlen = test_data.config.xlen
     assert sew is not None and xlen is not None
 
-    element_val = _shift_upper_bits_mask(xlen, sew) & ((1 << sew) - 1)
-    label = "vs_corner_shift_upperbits_vs1_ones"
+    # For a narrow shift (VWV), the valid shift-amount bits are log2(2*SEW).
+    # Upper bits above that boundary should be ignored; set them to 1 to verify.
+    effective_sew = 2 * sew if narrow else sew
+    element_val = _shift_upper_bits_mask(xlen, effective_sew) & ((1 << sew) - 1)
+
+    label = f"vs1_shift_upperbits{'n' if narrow else ''}_sew{sew}"
     test_data.register_vector_data(label, sew, elements=[element_val])
 
     params = generate_random_vector_params(
@@ -39,10 +49,22 @@ def make_shift_vv(instr_name: str, instr_type: str, coverpoint: str, test_data: 
         vs1_val_pointer=label,
     )
 
-    desc = "cp_custom_shift_vv (Test vs1 upper shift bits = ones)"
-    bin_name = "cp_custom_shift_vv_upperbits_vs1_ones"
+    suffix = "n" if narrow else ""
+    desc = f"cp_custom_vshift{suffix}_upperbits_vs1_ones (upper shift bits in vs1 = ones)"
+    bin_name = f"cp_custom_vshift{suffix}_upperbits_vs1_ones"
 
     tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-
     return_test_regs(test_data, params)
     return [tc]
+
+
+@add_coverpoint_generator("cp_custom_vshift_upperbits_vs1_ones")
+def make_shift_upperbits_vs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    return _make_shift_upperbits_test(instr_name, instr_type, coverpoint, test_data, narrow=False)
+
+
+@add_coverpoint_generator("cp_custom_vshiftn_upperbits_vs1_ones")
+def make_shiftn_upperbits_vs1(
+    instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
+) -> list[TestChunk]:
+    return _make_shift_upperbits_test(instr_name, instr_type, coverpoint, test_data, narrow=True)

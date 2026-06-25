@@ -167,8 +167,14 @@ def generate_random_vector_params(
     no_overlap: set[tuple[str, str]] = set()
     if instr_type_config.vector_overlap_constraints is not None:
         no_overlap |= instr_type_config.vector_overlap_constraints
-    if instr_type_config.vector_masked_constraints is not None and masked:
-        no_overlap |= instr_type_config.vector_masked_constraints
+    if masked:
+        if instr_type_config.vector_masked_constraints is not None:
+            no_overlap |= instr_type_config.vector_masked_constraints
+        elif instr_type_config.required_params is not None:
+            # Unless otherwise specified, do not overlap v0
+            for reg in instr_type_config.required_params:
+                if reg.startswith("v"):
+                    no_overlap.add(("v0", reg))
     if additional_no_overlap is not None:
         no_overlap |= additional_no_overlap
 
@@ -181,6 +187,23 @@ def generate_random_vector_params(
         scalar_vector_regs = set()
 
     info = extract_instruction_info(instruction, instr_type)
+    if info.index_eew is not None and info.index_eew != sew and instr_type_config.required_params:
+        # vs2 is the index register
+        # Any source overlap with this index register is illegal
+        for source_reg in ["vs1", "vs3"]:
+            if source_reg in instr_type_config.required_params:
+                no_overlap.add(("vs2", source_reg))
+
+        if ("vd", "vs2") not in no_overlap and ("vs2", "vd") not in no_overlap:
+            # If we don't already have an overlap, apply the following rules (b and c)
+            # V-spec §5.2 register-overlap rules between dest and source register groups:
+            #   (a) EEW_dest == EEW_src                -> any overlap legal
+            #   (b) EEW_dest <  EEW_src                -> overlap only at LOWEST part of source group
+            #   (c) EEW_dest >  EEW_src, EMUL_src >= 1 -> overlap only at HIGHEST part of dest group
+            if info.index_eew > sew:
+                no_overlap.add(("vd", "vs2_top"))
+            else:
+                no_overlap.add(("vd_bottom", "vs2"))
 
     if instr_type in ["VLR", "VSR"]:
         # whole register load stores ignore lmul and instead use nfields as emul
@@ -291,7 +314,9 @@ def generate_random_vector_params(
 
     ####################################################################################
     if test_count is not None and suite is not None:
-        element_count = 1 if suite == "base" else test_data.config.vlen_max // sew
+        # TODO: Does this need to take into account segments?
+        lmul = params.lmul if params.lmul is not None else 1
+        element_count = 1 if suite == "base" else math.ceil(test_data.config.vlen_max * lmul / sew)
         if params.vs3_val_pointer is None:
             params.vs3_val_pointer = f"vs3_random_{suite}_{test_count:03d}"
             test_data.register_vector_data(
@@ -341,6 +366,20 @@ def generate_random_vector_params(
     # immediate handling
     if params.immval is None and instr_type_config.imm_range:
         params.immval = random.randint(*instr_type_config.imm_range)
+
+    if (
+        instr_type_config.required_params is not None
+        and "maskval" in instr_type_config.required_params
+        and params.maskval is None
+    ):
+        lmul = params.lmul if params.lmul is not None else 1
+        element_count = 1 if suite == "base" else math.ceil((test_data.config.vlen_max / sew) * lmul / sew)
+        params.maskval = f"maskval_random_{suite}_{test_count:03d}"
+        test_data.register_vector_data(
+            f"maskval_random_{suite}_{test_count:03d}",
+            sew,
+            random_elements=element_count,
+        )
 
     params.temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
     params.sew = sew

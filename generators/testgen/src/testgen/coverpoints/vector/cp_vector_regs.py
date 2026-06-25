@@ -59,8 +59,8 @@ def make_vs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
 
     lower_limit, upper_limit = 0, test_data.vec_regs.reg_count
     emul = 1
-    if coverpoint.startswith("cp_vs2_"):
-        suffix = coverpoint[len("cp_vs2_") :]
+    if coverpoint.startswith("cp_vs1_"):
+        suffix = coverpoint[len("cp_vs1_") :]
 
         if suffix == "nv0":
             lower_limit = 1

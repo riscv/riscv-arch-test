@@ -78,6 +78,7 @@ class InstructionParams:
     sew: int | None = None
     vl: int | str | None = None
     vstart: int | None = None
+    vxrm: str | None = None
     vector_suite: Literal["length", "base"] | None = None
     maskval: str | None = None
     ta: bool | None = None

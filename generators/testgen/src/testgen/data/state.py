@@ -241,6 +241,8 @@ class TestData:
         assert elements is not None, "Unreachable Case: Bytes is guaranteed to be set at this point"
 
         if label in self._vector_labels and self._vector_labels[label] != (elements, sew):
-            raise ValueError(f"Cannot Overwrite Data for Label {label}")
+            raise ValueError(
+                f"Cannot overwrite data for label {label}, previous was {(self._vector_labels[label])}, attempted to write {(elements, sew)}"
+            )
 
         self._vector_labels[label] = (elements, sew)

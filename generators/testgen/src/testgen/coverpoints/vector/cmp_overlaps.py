@@ -89,6 +89,7 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
                 **presets,
             )
         except ValueError:
+            test_data.vec_regs.deallocate_parameters()
             continue
 
         desc = f"cmp_{v1}_{v2} (Test {v1} = {v2} = v{v})"

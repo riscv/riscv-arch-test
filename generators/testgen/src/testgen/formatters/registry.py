@@ -74,6 +74,7 @@ class InstructionTypeConfig:
     vector_role: str | None = None
     vector_mask_regs: set[str] | None = None
     vector_scalar_regs: set[str] | None = None
+    maskable: bool = True
 
 
 # Registry: dict mapping instruction type to (instruction_formatter, instruction_type_config)

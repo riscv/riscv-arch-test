@@ -177,6 +177,10 @@ def canonicalize_extensions(
                     ):
                         mapped.remove(zve_ext)
 
+                if "Zve32x" in mapped and instruction and instruction.startswith("vw") and sew == 32:
+                    mapped.remove("Zve32x")
+                    mapped.append("Zve64x")
+
                 if mapped == []:
                     continue
 

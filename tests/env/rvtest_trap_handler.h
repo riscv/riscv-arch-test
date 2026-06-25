@@ -368,19 +368,24 @@
 //==============================================================================
 
 .macro _XCSR_RENAME_V
-  .set CSR_XSTATUS, CSR_VSSTATUS                // vsstatus — VS-mode status register
-  .set CSR_XIE,     CSR_VSIE                    // vsie — VS-mode interrupt enable
-  .set CSR_XIP,     CSR_VSIP                    // vsip — VS-mode interrupt pending
-  .set CSR_XSATP,   CSR_VSATP                   // vsatp — VS-mode address translation
-  .set CSR_XTVAL,   CSR_VSTVAL                  // vstval — VS-mode trap value
+  // The V handler runs in VS-mode, where the hardware transparently aliases
+  // S-mode CSR accesses to their VS counterparts (sstatus->vsstatus, etc.).
+  // So use the S-mode names here; naming the vs* CSRs explicitly would trap in
+  // VS-mode. The prolog/epilog run in M-mode and gate these back to the
+  // explicit vs* names (see RVTEST_TRAP_PROLOG / RVTEST_TRAP_EPILOG).
+  .set CSR_XSTATUS, CSR_SSTATUS                 // sstatus aliases to vsstatus in VS-mode
+  .set CSR_XIE,     CSR_SIE                     // sie aliases to vsie
+  .set CSR_XIP,     CSR_SIP                     // sip aliases to vsip
+  .set CSR_XSATP,   CSR_SATP                    // satp aliases to vsatp
+  .set CSR_XTVAL,   CSR_STVAL                   // stval aliases to vstval
   .set CSR_XEDELEG, CSR_SEDELEG                 // sedeleg — VS delegates through S-mode
   .set CSR_XIDELEG, CSR_SIDELEG                 // sideleg — VS delegates through S-mode
   .set CSR_XENVCFG, CSR_SENVCFG                 // senvcfg — environment config (shared)
   .set CSR_XCOUNTEREN, CSR_SCOUNTEREN            // scounteren — counter access (shared)
-  .set CSR_XTVEC,   CSR_VSTVEC                  // vstvec — VS-mode trap vector
-  .set CSR_XSCRATCH,CSR_VSSCRATCH               // vsscratch — VS-mode scratch register
-  .set CSR_XEPC,    CSR_VSEPC                   // vsepc — VS-mode exception PC
-  .set CSR_XCAUSE,  CSR_VSCAUSE                 // vscause — VS-mode trap cause
+  .set CSR_XTVEC,   CSR_STVEC                   // stvec aliases to vstvec
+  .set CSR_XSCRATCH,CSR_SSCRATCH                // sscratch aliases to vsscratch
+  .set CSR_XEPC,    CSR_SEPC                    // sepc aliases to vsepc
+  .set CSR_XCAUSE,  CSR_SCAUSE                  // scause aliases to vscause
 #if (UDB_MXLEN==32)
   .set CSR_XEDELEGH, CSR_SEDELEGH               // sedelegh — upper half of sedeleg (RV32 only)
 #endif
@@ -857,7 +862,13 @@
 
 //---------- Initialize xSCRATCH ----------
 init_\__MODE__\()scratch:
+  // The prolog runs in M-mode, so for V it must name vsscratch explicitly
+  // (the VS-mode S-CSR aliasing only applies when executing in VS-mode).
+  .ifc \__MODE__ , V
+        csrrw   T3, CSR_VSSCRATCH, T1   // swap vsscratch with save area ptr (will be used by handler)
+  .else
         csrrw   T3, CSR_XSCRATCH, T1    // swap xscratch with save area ptr (will be used by handler)
+  .endif
         SREG    T3, xscr_save_off(T1)   // save old mscratch in xscratch_save
 //----------------------------------------------------------------------
 
@@ -908,13 +919,24 @@ init_\__MODE__\()satp:
         LI(T3, (SATP64_MODE) & (SATP_MODE_SV57 << 60))  // RV64 SV57
       #endif
         or      T4, T4, T3                        // combine MODE bits with PPN
+  // In M-mode (prolog) V must name vsatp explicitly; S-CSR aliasing is VS-mode only.
+  .ifc \__MODE__ , V
+        csrrw   T4, CSR_VSATP, T4                // write new vsatp, get old value in T4
+  .else
         csrrw   T4, CSR_XSATP, T4                 // write new xSATP, get old value in T4
+  .endif
         SREG    T4, xsatp_sv_off(T1)              // save old xSATP in save area
 .endif
 
 //---------- Save and set xTVEC ----------
+// The prolog runs in M-mode, so for V every xTVEC access below names vstvec
+// explicitly (the VS-mode S-CSR aliasing only applies when executing in VS-mode).
 init_\__MODE__\()tvec:
+  .ifc \__MODE__ , V
+        csrr    T3, CSR_VSTVEC                   // T3 = current vstvec value (address + mode bits)
+  .else
         csrr    T3, CSR_XTVEC                     // T3 = current xTVEC value (address + mode bits)
+  .endif
         SREG    T3, xtvec_sav_off(T1)              // save original xTVEC in save area
         andi    T2, T3, WDBYTMSK                   // T2 = mode bits from original xTVEC (bits 1:0)
 #if defined(UDB_MTVEC_MODES_0)
@@ -941,14 +963,22 @@ init_\__MODE__\()tvec:
   #endif
 #endif
         SREG    T2, xtvec_new_off(T1)              // save new xTVEC value in save area
+  .ifc \__MODE__ , V
+        csrw    CSR_VSTVEC, T2                    // attempt to write trampoline address to vstvec
+        csrr    T5, CSR_VSTVEC                    // read back vstvec to verify it was written
+  .else
         csrw    CSR_XTVEC, T2                      // attempt to write trampoline address to xTVEC
-
         csrr    T5, CSR_XTVEC                      // read back xTVEC to verify it was written
+  .endif
 #ifndef HANDLER_TESTCODE_ONLY
         beq     T5, T2, rvtest_\__MODE__\()prolog_done  // if readback matches, xTVEC is writable. Done!
 #endif
         // xTVEC is NOT fully writable — need to copy trampoline to xTVEC target
+  .ifc \__MODE__ , V
+        csrw    CSR_VSTVEC, T3                    // restore original vstvec (we'll overwrite its target)
+  .else
         csrw    CSR_XTVEC, T3                      // restore original xTVEC (we'll overwrite its target)
+  .endif
         beqz    T3, abort\__MODE__\()test           // if xTVEC was 0 (uninitialized), can't proceed — abort
         SREG    T3, xtvec_new_off(T1)               // update tvec_new with the original (now-in-use) xTVEC
 
@@ -966,7 +996,11 @@ overwt_tt_\__MODE__\()loop:
         lw      T6, 0(T2)                          // read back to verify write succeeded
         bne     T6, T5, endcopy_\__MODE__\()tramp  // if readback failed, target not writable — stop
 #ifdef HANDLER_TESTCODE_ONLY
+  .ifc \__MODE__ , V
+        csrr    T5, CSR_VSSCRATCH                 // test-only: check if we've gone too far
+  .else
         csrr    T5, CSR_XSCRATCH                   // test-only: check if we've gone too far
+  .endif
         addi    T5, T5,256                          // artificial limit for testing
         bgt     T5, T1, endcopy_\__MODE__\()tramp   // pretend it wasn't writable
 #endif
@@ -977,7 +1011,11 @@ overwt_tt_\__MODE__\()loop:
 
 endcopy_\__MODE__\()tramp:
         RVMODEL_FENCEI                              // sync icache: we just wrote code to the xTVEC target
+  .ifc \__MODE__ , V
+        csrr    T1, CSR_VSSCRATCH                  // reload save area ptr from vsscratch (may have been modified)
+  .else
         csrr    T1, CSR_XSCRATCH                    // reload save area ptr from xSCRATCH (may have been modified)
+  .endif
         SREG    T4, tentry_addr_off(T1)              // update common entry point address (may differ if partial copy)
         beq     T3,T2, rvtest_\__MODE__\()prolog_done  // if full copy completed, prolog is done
 abort\__MODE__\()test:
@@ -1092,11 +1130,7 @@ rvtest_\__MODE__\()prolog_done:
 
  trap_\__MODE__\()handler:                       // start of per-cause stub array
   .rept NUM_SPECD_INTCAUSES                      // for each valid cause:
-  .ifc \__MODE__ , V
-        csrrw   sp, CSR_SSCRATCH, sp            //   swap sp with save area ptr from VSSCRATCH
-  .else
         csrrw   sp, CSR_XSCRATCH, sp            //   swap sp with save area ptr from xSCRATCH
-  .endif
         SREG    T6, trap_sv_off+6*REGWIDTH(sp)  //   save T6 (=x11=a1) in handler reg save area
         jal     T6, common_\__MODE__\()handler  //   jump to common handler; T6 = return addr = vector ID
   .endr
@@ -1116,11 +1150,7 @@ rvtest_\__MODE__\()endtest:                      // impossible cause landed here
 
 common_\__MODE__\()handler:                      // entered with T6 = vector addr, sp = save area
         SREG    T5, trap_sv_off+5*REGWIDTH(sp)  // save T5 (=x10=a0=CALLER'S ORIGINAL a0) ***CRITICAL***
-  .ifc \__MODE__ , V
-        csrrw   T5, CSR_SSCRATCH, sp            // T5 = old VSSCRATCH value (= orig sp before swap)
-  .else
         csrrw   T5, CSR_XSCRATCH, sp            // T5 = old xSCRATCH value (= orig sp before swap)
-  .endif
         SREG    T5, trap_sv_off+7*REGWIDTH(sp)  // save original sp in handler reg save area
         LREG    T5, tentry_addr_off(sp)          // T5 = common_Xentry address (from save area)
         jr      T5                                // jump to common entry (handles relocated trampoline case)
@@ -1140,11 +1170,7 @@ common_\__MODE__\()entry:                        // common entry for all traps i
         SREG    T3, trap_sv_off+3*REGWIDTH(sp)  // save T3 (x8)
         SREG    T2, trap_sv_off+2*REGWIDTH(sp)  // save T2 (x7)
         SREG    T1, trap_sv_off+1*REGWIDTH(sp)  // save T1 (x6)
-  .ifc \__MODE__ , V
-        csrr    T5, CSR_SCAUSE                   // T5 = vscause
-  .else
         csrr    T5, CSR_XCAUSE                   // T5 = xcause (OVERWRITES x10/a0 — caller's a0 already saved)
-  .endif
 
 //==============================================================================
 // T-SBI DISPATCH — M-MODE
@@ -1718,32 +1744,20 @@ sv_\__MODE__\()vect:
         bgez    T5, 1f                              // if exception (MSB=0) -> skip IE/IP extraction
         li      T3, 0xf                             // T3 = mask for cause[3:0]
         and     T3, T5, T3                          // T3 = cause number (low 4 bits)
-  .ifc \__MODE__ , V
-        csrr    T4, CSR_SIE                         // T4 = vsie
-  .else
         csrr    T4, CSR_XIE                         // T4 = xIE register
-  .endif
         srl     T4, T4, T3                          // shift xIE so cause bit is at position 0
         andi    T4, T4, 1                           // T4 = xIE[cause] (0 or 1)
         slli    T4, T4, 11                          // position at bit 11
         or      T6, T6, T4                          // merge xIE bit
 
-  .ifc \__MODE__ , V
-        csrr    T4, CSR_SIP                         // T4 = vsip
-  .else
         csrr    T4, CSR_XIP                         // T4 = xIP register
-  .endif
         srl     T4, T4, T3                          // shift xIP so cause bit is at position 0
         andi    T4, T4, 1                           // T4 = xIP[cause] (0 or 1)
         slli    T4, T4, 12                          // position at bit 12
         or      T6, T6, T4                          // merge xIP bit
 
         1:
-  .ifc \__MODE__ , V
-        csrr    T2, CSR_SSTATUS                 // deposit vsstatus(17:0) into [30:13)
-  .else
         csrr    T2, CSR_XSTATUS                 // deposit xstatus(17:0) into [30:13)
-  .endif
         slli    T2, T2, UDB_MXLEN-17
         srli    T2, T2, UDB_MXLEN-17-13
         LI(     T3, 0x219FE5)                   // clear 16:13 (XS,FS) 10:9 (VS) and unused bits 4,2,0
@@ -1787,11 +1801,7 @@ sv_\__MODE__\()cause:
 //==============================================================================
 
 common_\__MODE__\()excpt_handler:
-  .ifc \__MODE__ , V
-        csrr    T3, CSR_SEPC                         // T3 = vsepc
-  .else
         csrr    T3, CSR_XEPC                         // T3 = xEPC (faulting instruction address)
-  .endif
         // Save original xEPC before adj_Mepc advances it past the faulting instruction.
         // failedtest_print_csr_context reads saved_mepc; without this, any word 3+
         // (tval/mtval2/mtinst) mismatch would show the already-adjusted EPC instead.
@@ -1922,49 +1932,29 @@ adj_\__MODE__\()epc:
 
 sv_\__MODE__\()epc:
         TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()epc, sv_\__MODE__\()epc_str) // write word 2: xEPC
-  .ifc \__MODE__ , V
-        csrr    T3, CSR_SEPC                          // re-read VSEPC (T3 was modified by relocation)
-  .else
         csrr    T3, CSR_XEPC                          // re-read xEPC (T3 was modified by relocation)
-  .endif
 
 #ifdef SKIP_MEPC
         LI(     T6, 0xACCE)
         bne     x4, T6, adj_\__MODE__\()epc_rtn
-  .ifc \__MODE__ , V
-        csrr    T2, CSR_SCAUSE                       // VS-mode: scause aliases to vscause
-  .else
         csrr    T2, CSR_XCAUSE
-  .endif
         LI(     T6, CAUSE_FETCH_PAGE_FAULT)
         beq     T2, T6, 1f
         LI(     T6, CAUSE_FETCH_ACCESS)
         beq     T2, T6, 1f
         LI(     T6, CAUSE_FETCH_GUEST_PAGE_FAULT)
         bne     T2, T6, adj_\__MODE__\()epc_rtn
-  .ifc \__MODE__ , V
-1:      csrw    CSR_SEPC, ra                        // VS-mode: sepc aliases to vsepc
-  .else
 1:      csrw    CSR_XEPC, ra
-  .endif
         j skp_adj_\__MODE__\()epc
 #endif
 
 adj_\__MODE__\()epc_rtn:
         andi    T3, T3, ~WDBYTMSK                    // align EPC to 4-byte boundary
         addi    T3, T3,  2*WDBYTSZ                   // advance past trapping instruction (with padding)
-  .ifc \__MODE__ , V
-        csrw    CSR_SEPC, T3                          // Write vsepc
-  .else
         csrw    CSR_XEPC, T3                          // write adjusted EPC (will resume after the faulting instr)
-  .endif
 
 skp_adj_\__MODE__\()epc:
-  .ifc \__MODE__ , V
-        csrr    T3, CSR_STVAL                         // T3 = vstval
-  .else
         csrr    T3, CSR_XTVAL                         // T3 = xtval (trap value: faulting addr or instruction)
-  .endif
 
 sv_\__MODE__\()tval:
         TRAP_SIGUPD(T4, T3, 3, sv_\__MODE__\()tval, sv_\__MODE__\()tval_str) // write word 3: xtval
@@ -2034,13 +2024,8 @@ common_\__MODE__\()int_handler:
         li      T3, 1                               // T3 = 1 (for creating single-bit mask)
         andi    T2, T5, INT_CAUSE_MSK                // T2 = cause[4:0] (interrupt cause index)
         sll     T3, T3, T2                           // T3 = 1 << cause (bit mask for this interrupt)
-  .ifc \__MODE__ , V
-        csrrc   T4, CSR_SIE, T3                      // VS-mode: sie aliases to vsie
-        csrrc   T3, CSR_SIP, T3                      // VS-mode: sip aliases to vsip
-  .else
         csrrc   T4, CSR_XIE, T3                      // read xIE, then clear this interrupt's enable bit
         csrrc   T3, CSR_XIP, T3                      // read xIP, then attempt to clear pending bit
-  .endif
 
 sv_\__MODE__\()ip:
         TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()ip, sv_\__MODE__\()ip_str) // write word 2: xIP
@@ -2537,14 +2522,24 @@ resto_\__MODE__\()satp:
         .endif
 
 // --- Restore xSCRATCH ---
+// The epilog runs in M-mode, so for V name vsscratch/vstvec explicitly
+// (the VS-mode S-CSR aliasing only applies when executing in VS-mode).
 resto_\__MODE__\()scratch:
         LREG    T4, xscr_save_off(T1)             // load saved xscratch
+  .ifc \__MODE__ , V
+        csrw    CSR_VSSCRATCH, T4                 // restore vsscratch
+  .else
         csrw    CSR_XSCRATCH, T4                    // restore xscratch
+  .endif
 
 // --- Restore xTVEC (and original trampoline code if it was overwritten) ---
 resto_\__MODE__\()xtvec:
         LREG    T4, xtvec_sav_off(T1)             // T4 = saved original xtvec
+  .ifc \__MODE__ , V
+        csrrw   T2, CSR_VSTVEC, T4               // restore vstvec, T2 = current vstvec
+  .else
         csrrw   T2, CSR_XTVEC, T4                  // restore xtvec, T2 = current xtvec
+  .endif
         andi    T4, T4, ~WDBYTMSK                  // clear mode bits from saved xtvec
         andi    T2, T2, ~WDBYTMSK                  // clear mode bits from current xtvec
         bne     T4, T2, 1f                          // if saved != current -> trampoline wasn't overwritten, skip

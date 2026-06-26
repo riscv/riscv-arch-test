@@ -468,11 +468,6 @@ def prep_mask_v(
     return lines
 
 
-def load_vxrm(vxrm: str, temp_reg: int) -> list[str]:
-    vxrm_map = {
-        "rod": "0x6",
-        "rdn": "0x4",
-        "rne": "0x2",
-        "rnu": "0x0",
-    }
-    return [f"csrwi vxrm, {vxrm_map[vxrm]}"]
+def load_vxrm(vxrm: str) -> list[str]:
+    vxrm_set_map = {"rod": "0x6", "rdn": "0x4", "rne": "0x2", "rnu": "0x0"}
+    return [f"# Clear vxrm and vcsr, then set vxrm = {vxrm}", "csrci vcsr, 0x6", f"csrsi vcsr, {vxrm_set_map[vxrm]}"]

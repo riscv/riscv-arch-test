@@ -9,6 +9,7 @@ import dataclasses
 import random
 import re
 
+from testgen.constants import ELEN, MIN_SEW_MIN
 from testgen.data.config import TestConfig
 from testgen.data.random import random_int
 
@@ -201,9 +202,31 @@ def _corner_value(corner: str, eew: int) -> int:
     if corner == "walkodd":
         return sum(1 << i for i in range(eew) if i % 2 == 1)
     if corner == "random":
-        return random_int(eew)
+        random_val = 0
+        conflict = True
+        while conflict:
+            random_val = random_int(eew, signed=False)
+            conflict = False
+            for corner2 in VX_CORNER_NAMES:
+                if "random" in corner2:
+                    continue
+                if random_val == _corner_value(corner2, eew) or random_val == 0x81:
+                    conflict = True
+                    break
+        return random_val
     if corner == "random_within_2vlmax":
-        return random.randint(3, 2 ** (eew - 1 - 3))
+        random_val = 0
+        conflict = True
+        while conflict:
+            conflict = False
+            random_val = random.randint(3, 2 ** (eew - 1 - 3))
+            for corner2 in VLS_CORNER_NAMES:
+                if "random" in corner2:
+                    continue
+                if random_val == _corner_value(corner2, eew):
+                    conflict = True
+                    break
+        return random_val
     raise ValueError(f"Unknown corner: {corner}")
 
 
@@ -267,7 +290,7 @@ def extract_instruction_info(instruction: str, instruction_type: str) -> Instruc
 
 
 def get_legal_lmuls(sew: int, test_config: TestConfig) -> list[int]:
-    lmulmin = test_config.sew_min / test_config.elen
+    lmulmin = MIN_SEW_MIN / ELEN
 
     legalvlmuls = [0, 1, 2, 3]
     # A given supported fractional LMUL setting must support SEW settings between SEWMIN and LMUL * ELEN

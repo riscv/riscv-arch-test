@@ -16,6 +16,7 @@ import math
 import random
 from typing import Any, Literal
 
+from testgen.constants import VLEN_MAX
 from testgen.coverpoints.vector.vector_helpers import InstructionInfo, extract_instruction_info
 from testgen.data.params import InstructionParams
 from testgen.data.random import random_int
@@ -83,7 +84,7 @@ def randomize_register(
 def random_vector(suite: Literal["base", "length"], test_data: TestData) -> list[int]:
     assert test_data.config.sew is not None, "SEW Must be Set"
 
-    element_count = 1 if suite == "base" else test_data.config.vlen_max // test_data.config.sew
+    element_count = 1 if suite == "base" else VLEN_MAX // test_data.config.sew
     elements = [random_int(test_data.config.sew) for _ in range(element_count)]
     return elements
 
@@ -128,7 +129,7 @@ def randomize_registers(
             test_data.register_vector_data(
                 "vector_ls_random_base",
                 test_data.config.sew,
-                random_elements=test_data.config.vlen_max // test_data.config.sew,
+                random_elements=VLEN_MAX // test_data.config.sew,
             )
         else:
             new_params.rs1val = random_int(test_data.config.xlen)
@@ -154,11 +155,12 @@ def generate_random_vector_params(
     additional_no_overlap: set[tuple[str, str]] | None = None,
     masked: bool = False,
     suite: Literal["length", "base"] = "base",
+    sew_overwrite: int | None = None,
     **fixed_params: Any,  # noqa: ANN401
 ) -> InstructionParams:
     test_count = test_data.test_count
 
-    sew = test_data.config.sew
+    sew = test_data.config.sew if sew_overwrite is None else sew_overwrite
     assert sew is not None, "SEW must be set for Vector Instructions"
 
     preset_params = InstructionParams(**fixed_params)
@@ -315,8 +317,7 @@ def generate_random_vector_params(
     ####################################################################################
     if test_count is not None and suite is not None:
         # TODO: Does this need to take into account segments?
-        lmul = params.lmul if params.lmul is not None else 1
-        element_count = 1 if suite == "base" else math.ceil(test_data.config.vlen_max * lmul / sew)
+        element_count = 1 if suite == "base" else math.ceil(VLEN_MAX * lmul / sew)
         if params.vs3_val_pointer is None:
             params.vs3_val_pointer = f"vs3_random_{suite}_{test_count:03d}"
             test_data.register_vector_data(
@@ -372,8 +373,7 @@ def generate_random_vector_params(
         and "maskval" in instr_type_config.required_params
         and params.maskval is None
     ):
-        lmul = params.lmul if params.lmul is not None else 1
-        element_count = 1 if suite == "base" else math.ceil((test_data.config.vlen_max / sew) * lmul / sew)
+        element_count = 1 if suite == "base" else math.ceil((VLEN_MAX / sew) * lmul / sew)
         params.maskval = f"maskval_random_{suite}_{test_count:03d}"
         test_data.register_vector_data(
             f"maskval_random_{suite}_{test_count:03d}",

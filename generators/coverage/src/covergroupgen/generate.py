@@ -290,6 +290,7 @@ def _parse_testplan_csv(csv_path: Path) -> dict[tuple[str, str], list[str]]:
                 if not isinstance(value, str) or value == "":
                     continue
                 if key == "Type":
+                    # TODO: Alias sample functions that are the same!
                     cps.append(f"sample_{value}")
                 else:
                     # For special entries, append the value as a suffix

@@ -39,7 +39,6 @@ vvvp_config = InstructionTypeConfig(
 vcompress_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
     vector_overlap_constraints={("vd", "vs1"), ("vd", "vs2"), ("vs1", "vs2")},
-    maskable=False,
 )
 
 
@@ -147,7 +146,7 @@ def format_vvv_like_type(
 
     # Setup VXRM (if necessary)
     if params.vxrm is not None:
-        setup.extend(load_vxrm(params.vxrm, params.temp_reg))
+        setup.extend(load_vxrm(params.vxrm))
 
     # Preload vd at vlmax
     vd_preloaded = False

@@ -71,10 +71,9 @@ class InstructionTypeConfig:
     pair_regs: set[str] | None = None  # Registers that use register pairs (e.g., {"rd", "rs2"})
     vector_overlap_constraints: set[tuple[str, str]] | None = None
     vector_masked_constraints: set[tuple[str, str]] | None = None
-    vector_role: str | None = None
     vector_mask_regs: set[str] | None = None
     vector_scalar_regs: set[str] | None = None
-    maskable: bool = True
+    vector_role: str | None = None  # TODO: Change to instruction_class or something similar (not tied to vector)
 
 
 # Registry: dict mapping instruction type to (instruction_formatter, instruction_type_config)

@@ -8,6 +8,7 @@
 ##################################
 
 from testgen.asm.helpers import return_test_regs
+from testgen.constants import VLEN_MAX
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.coverpoints.vector.vector_helpers import VX_CORNER_NAMES, get_corner_value
 from testgen.data.state import TestData
@@ -25,7 +26,7 @@ def make_vindex_ge_vlmax(instr_name: str, instr_type: str, coverpoint: str, test
     # -1 as an unsigned SEW-wide value is the maximum index, always >= VLMAX.
     label = f"vs1_index_allones_sew{sew}"
     if label not in test_data.vector_labels:
-        element_count = test_data.config.vlen_max // sew
+        element_count = VLEN_MAX // sew
         test_data.register_vector_data(label, sew, elements=[(1 << sew) - 1] * element_count)
 
     params = generate_random_vector_params(
@@ -57,7 +58,7 @@ def make_vindex_gt_vl_lt_vlmax(
     # beyond active elements but still within VLMAX.
     label = f"vs1_index_two_sew{sew}"
     if label not in test_data.vector_labels:
-        element_count = test_data.config.vlen_max // sew
+        element_count = VLEN_MAX // sew
         test_data.register_vector_data(label, sew, elements=[2] * element_count)
 
     params = generate_random_vector_params(
@@ -92,7 +93,7 @@ def make_vindex_corners(instr_name: str, instr_type: str, coverpoint: str, test_
     for corner in corners:
         label = f"vs1_vindex_corner_{corner}_sew{sew}"
         if label not in test_data.vector_labels:
-            element_count = test_data.config.vlen_max // sew
+            element_count = VLEN_MAX // sew
             val = get_corner_value(corner, "emul1", sew)
             test_data.register_vector_data(label, sew, elements=[val] * element_count)
 

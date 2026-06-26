@@ -367,30 +367,6 @@
 // (vstvec, vsepc, vscause, etc.)
 //==============================================================================
 
-.macro _XCSR_RENAME_V
-  // The V handler runs in VS-mode, where the hardware transparently aliases
-  // S-mode CSR accesses to their VS counterparts (sstatus->vsstatus, etc.).
-  // So use the S-mode names here; naming the vs* CSRs explicitly would trap in
-  // VS-mode. The prolog/epilog run in M-mode and gate these back to the
-  // explicit vs* names (see RVTEST_TRAP_PROLOG / RVTEST_TRAP_EPILOG).
-  .set CSR_XSTATUS, CSR_SSTATUS                 // sstatus aliases to vsstatus in VS-mode
-  .set CSR_XIE,     CSR_SIE                     // sie aliases to vsie
-  .set CSR_XIP,     CSR_SIP                     // sip aliases to vsip
-  .set CSR_XSATP,   CSR_SATP                    // satp aliases to vsatp
-  .set CSR_XTVAL,   CSR_STVAL                   // stval aliases to vstval
-  .set CSR_XEDELEG, CSR_SEDELEG                 // sedeleg — VS delegates through S-mode
-  .set CSR_XIDELEG, CSR_SIDELEG                 // sideleg — VS delegates through S-mode
-  .set CSR_XENVCFG, CSR_SENVCFG                 // senvcfg — environment config (shared)
-  .set CSR_XCOUNTEREN, CSR_SCOUNTEREN            // scounteren — counter access (shared)
-  .set CSR_XTVEC,   CSR_STVEC                   // stvec aliases to vstvec
-  .set CSR_XSCRATCH,CSR_SSCRATCH                // sscratch aliases to vsscratch
-  .set CSR_XEPC,    CSR_SEPC                    // sepc aliases to vsepc
-  .set CSR_XCAUSE,  CSR_SCAUSE                  // scause aliases to vscause
-#if (UDB_MXLEN==32)
-  .set CSR_XEDELEGH, CSR_SEDELEGH               // sedelegh — upper half of sedeleg (RV32 only)
-#endif
-.endm
-
 .macro _XCSR_RENAME_S
   .set CSR_XSTATUS, CSR_SSTATUS                 // sstatus — S-mode status register
   .set CSR_XIE,     CSR_SIE                     // sie — S-mode interrupt enable
@@ -408,6 +384,15 @@
 #if (UDB_MXLEN==32)
   .set CSR_XEDELEGH, CSR_SEDELEGH               // sedelegh — upper half (RV32 only)
 #endif
+.endm
+
+.macro _XCSR_RENAME_V
+  // The V handler runs in VS-mode, where the hardware transparently aliases
+  // S-mode CSR accesses to their VS counterparts (sstatus->vsstatus, etc.).
+  // So use the S-mode names here; naming the vs* CSRs explicitly would trap in
+  // VS-mode. The prolog/epilog run in M-mode and gate these back to the
+  // explicit vs* names (see RVTEST_TRAP_PROLOG / RVTEST_TRAP_EPILOG).
+  _XCSR_RENAME_S
 .endm
 
 .macro _XCSR_RENAME_H

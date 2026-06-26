@@ -19,7 +19,7 @@ from typing import Any, Literal
 from testgen.constants import VLEN_MAX
 from testgen.coverpoints.vector.vector_helpers import InstructionInfo, extract_instruction_info
 from testgen.data.params import InstructionParams
-from testgen.data.random import random_int
+from testgen.data.random import random_int, random_range
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, get_instr_type_config
 
@@ -82,6 +82,7 @@ def randomize_register(
 
 
 def random_vector(suite: Literal["base", "length"], test_data: TestData) -> list[int]:
+    # TODO: Don't use config.sew here
     assert test_data.config.sew is not None, "SEW Must be Set"
 
     element_count = 1 if suite == "base" else VLEN_MAX // test_data.config.sew
@@ -131,7 +132,7 @@ def randomize_registers(
                 test_data.config.sew,
                 random_elements=VLEN_MAX // test_data.config.sew,
             )
-        else:
+        elif new_params.rs1val is None:
             new_params.rs1val = random_int(test_data.config.xlen)
     if "rd" in registers:
         new_params.rd = randomize_register("rd", test_data, instr_type_config, lmul, info, new_params.rd)
@@ -365,8 +366,22 @@ def generate_random_vector_params(
             test_data.vec_regs.allocate_parameter(register, params_dict[register], width, suppress_overlap=True)
 
     # immediate handling
-    if params.immval is None and instr_type_config.imm_range:
-        params.immval = random.randint(*instr_type_config.imm_range)
+    if instr_type_config.required_params and params.immval is None and "immval" in instr_type_config.required_params:
+        if instr_type_config.imm_range is not None:
+            min_val, max_val = instr_type_config.imm_range
+            params.immval = random_range(min_val, max_val, nonzero=instr_type_config.imm_nonzero)
+        elif instr_type_config.imm_bits is not None:
+            imm_bits = instr_type_config.imm_bits
+            if isinstance(imm_bits, int):
+                params.immval = random_int(
+                    imm_bits, signed=instr_type_config.imm_signed, nonzero=instr_type_config.imm_nonzero
+                )
+            else:
+                raise NotImplementedError("Vector random parameter generation only supports integer values of imm_bits")
+        else:
+            raise ValueError(
+                f"Instruction type '{instr_type}' requires immval but has no imm_bits or imm_range configured"
+            )
 
     if (
         instr_type_config.required_params is not None

@@ -66,6 +66,12 @@ class IMMEDIATE_EDGES:
     # Unsigned immediate for doubleword operations
     imm_uimm = (*imm_uimmw, 32, 33, 45, 62, 63)
 
+    # 5-bit Signed Immediates (Vector Instructions)
+    imm_5bit = (0, 1, 2, 14, 15, -1, -2, -15, -16)
+
+    # 5-bit Unsigned Immediates (Vector Instructions)
+    imm_5bit_u = (0, 1, 2, 15, 16, 30, 31)
+
 
 # ==============================================================================
 # Integer Register Values

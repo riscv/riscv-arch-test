@@ -276,7 +276,7 @@ def extract_instruction_info(instruction: str, instruction_type: str) -> Instruc
     vd_widen = vs2_widen = False
     if instruction_type in ["WVWSR", "FWVWSR", "WWV", "WWX", "FWWF", "VWV", "VWX", "VWI"]:
         vs2_widen = True
-    if instruction_type in ["WVWSR", "FWVWSR", "WVV", "WVX", "WWV", "WVS", "FWVF", "FWWF", "FWCVT"]:
+    if instruction_type in ["WVWSR", "FWVWSR", "WVV", "WVX", "WWV", "WWX", "WVS", "FWVF", "FWWF", "FWCVT"]:
         vd_widen = True
 
     return InstructionInfo(

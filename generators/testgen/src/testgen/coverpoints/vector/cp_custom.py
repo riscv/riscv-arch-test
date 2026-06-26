@@ -84,6 +84,74 @@ def dispatch_shift_wv(instr_name: str, instr_type: str, coverpoint: str, test_da
     return chunks
 
 
+@registry.add_coverpoint_generator("cp_custom_wvx")
+def dispatch_wvx(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    chunks = []
+    for sub_cp in [
+        "cp_custom_vdOverlapTopVs2_vd_vs2_lmul1",
+        "cp_custom_vdOverlapTopVs2_vd_vs2_lmul2",
+        "cp_custom_vdOverlapTopVs2_vd_vs2_lmul4",
+    ]:
+        chunks.extend(registry.generate_tests_for_coverpoint(instr_name, instr_type, sub_cp, test_data))
+    return chunks
+
+
+@registry.add_coverpoint_generator("cp_custom_wvx_all")
+def dispatch_wvx_all(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    chunks = []
+    for sub_cp in [
+        "cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1",
+        "cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2",
+        "cp_custom_allVdOverlapTopVs2_vd_vs2_lmul4",
+    ]:
+        chunks.extend(registry.generate_tests_for_coverpoint(instr_name, instr_type, sub_cp, test_data))
+    return chunks
+
+
+@registry.add_coverpoint_generator("cp_custom_shift_vx")
+def dispatch_shift_vx(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    return registry.generate_tests_for_coverpoint(
+        instr_name, instr_type, "cp_custom_vshift_upperbits_rs1_ones", test_data
+    )
+
+
+@registry.add_coverpoint_generator("cp_custom_shift_wx")
+def dispatch_shift_wx(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    chunks = []
+    for sub_cp in [
+        "cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1",
+        "cp_custom_vdOverlapBtmVs2_vd_vs2_lmul2",
+        "cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4",
+        "cp_custom_vshiftn_upperbits_rs1_ones",
+    ]:
+        chunks.extend(registry.generate_tests_for_coverpoint(instr_name, instr_type, sub_cp, test_data))
+    return chunks
+
+
+@registry.add_coverpoint_generator("cp_custom_shift_wi")
+def dispatch_shift_wi(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    chunks = []
+    for sub_cp in [
+        "cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1",
+        "cp_custom_vdOverlapBtmVs2_vd_vs2_lmul2",
+        "cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4",
+    ]:
+        chunks.extend(registry.generate_tests_for_coverpoint(instr_name, instr_type, sub_cp, test_data))
+    return chunks
+
+
+@registry.add_coverpoint_generator("cp_custom_shift_wi_all")
+def dispatch_shift_wi_all(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    chunks = []
+    for sub_cp in [
+        "cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul1",
+        "cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul2",
+        "cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul4",
+    ]:
+        chunks.extend(registry.generate_tests_for_coverpoint(instr_name, instr_type, sub_cp, test_data))
+    return chunks
+
+
 @registry.add_coverpoint_generator("cp_custom_vindexVV")
 def dispatch_vindexVV(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     chunks = []
@@ -93,3 +161,9 @@ def dispatch_vindexVV(instr_name: str, instr_type: str, coverpoint: str, test_da
     ]:
         chunks.extend(registry.generate_tests_for_coverpoint(instr_name, instr_type, sub_cp, test_data))
     return chunks
+
+
+@registry.add_coverpoint_generator("cp_custom_vindexVX")
+def dispatch_vindexVX(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    # Edge cases for VX-type gather/slide are covered by cp_rs1_edges.
+    return []

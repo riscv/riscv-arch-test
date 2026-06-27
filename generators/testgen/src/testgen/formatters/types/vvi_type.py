@@ -1,5 +1,5 @@
 ##################################
-# vvx_type.py
+# vvi_type.py
 #
 # rwolk@hmc.edu June 2026
 # SPDX-License-Identifier: Apache-2.0

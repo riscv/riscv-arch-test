@@ -167,3 +167,63 @@ def dispatch_vindexVV(instr_name: str, instr_type: str, coverpoint: str, test_da
 def dispatch_vindexVX(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     # Edge cases for VX-type gather/slide are covered by cp_rs1_edges.
     return []
+
+
+@registry.add_coverpoint_generator("cp_custom_maskwrite_masked")
+def dispatch_maskwrite_masked(
+    instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
+) -> list[TestChunk]:
+    chunks = []
+    for sub_cp in [
+        "cp_custom_vmask_write_lmulge1",
+        "cp_custom_vmask_write_v0_masked",
+    ]:
+        chunks.extend(registry.generate_tests_for_coverpoint(instr_name, instr_type, sub_cp, test_data))
+    return chunks
+
+
+@registry.add_coverpoint_generator("cp_custom_maskwrite_unmasked")
+def dispatch_maskwrite_unmasked(
+    instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
+) -> list[TestChunk]:
+    return registry.generate_tests_for_coverpoint(instr_name, instr_type, "cp_custom_vmask_write_lmulge1", test_data)
+
+
+@registry.add_coverpoint_generator("cp_custom_red")
+def dispatch_red(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    chunks = []
+    for sub_cp in [
+        "cp_custom_element0Masked",
+        "cp_custom_vmask_write_v0_masked",
+        "cp_custom_voffgroup_vd_lmul2",
+        "cp_custom_voffgroup_vd_lmul4",
+        "cp_custom_voffgroup_vd_lmul8",
+        "cp_custom_voffgroup_vs1_lmul2",
+        "cp_custom_voffgroup_vs1_lmul4",
+        "cp_custom_voffgroup_vs1_lmul8",
+    ]:
+        chunks.extend(registry.generate_tests_for_coverpoint(instr_name, instr_type, sub_cp, test_data))
+    return chunks
+
+
+@registry.add_coverpoint_generator("cp_custom_wred")
+def dispatch_wred(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    chunks = []
+    for sub_cp in [
+        "cp_custom_element0Masked",
+        "cp_custom_vmask_write_v0_masked",
+        # "cp_custom_vreductionw_vd_vs1_emul_16",
+        "cp_custom_voffgroup_vd_lmul2",
+        "cp_custom_voffgroup_vd_lmul4",
+        "cp_custom_voffgroup_vs1_lmul2",
+        "cp_custom_voffgroup_vs1_lmul4",
+    ]:
+        chunks.extend(registry.generate_tests_for_coverpoint(instr_name, instr_type, sub_cp, test_data))
+    return chunks
+
+
+@registry.add_coverpoint_generator("cp_custom_vreductionw")
+def dispatch_vreductionw(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    return registry.generate_tests_for_coverpoint(
+        instr_name, instr_type, "cp_custom_vreductionw_vd_vs1_emul_16", test_data
+    )

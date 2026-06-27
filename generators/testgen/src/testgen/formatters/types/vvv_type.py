@@ -32,6 +32,10 @@ vvvm_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2", "maskval"},
     vector_overlap_constraints={("vd", "v0"), ("vs1", "v0"), ("vs2", "v0")},
 )
+vvv_acc_config = InstructionTypeConfig(required_params={"vd", "vs1", "vs2"})
+wvv_acc_config = InstructionTypeConfig(
+    required_params={"vd", "vs1", "vs2"}, vector_overlap_constraints={("vd", "vs2"), ("vd", "vs1")}
+)
 vvv_sat_config = InstructionTypeConfig(required_params={"vd", "vs1", "vs2"})
 vvvp_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"}, vector_overlap_constraints={("vd", "vs1"), ("vd", "vs2")}
@@ -76,7 +80,34 @@ def format_vvvm(
 ) -> tuple[list[str], list[str], list[str]]:
     assert params.maskval is not None, "Masks are required for VVVM-Type Instructions"
     setup, test, check = format_vvv_like_type(instr_str, test_data, params, "VVVM")
-    test[0] = test[0][:-2]  # Remove the .t from v0
+    # Overwrite the test, as otherwise it generates with v0.t
+    test = [f"{instr_str} v{params.vd}, v{params.vs2}, v{params.vs1}, v0"]
+    return setup, test, check
+
+
+@add_instruction_formatter("VVV_ACC", vvv_acc_config)
+def format_vvv_acc(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    setup, test, check = format_vvv_like_type(instr_str, test_data, params, "VVV_ACC")
+    # Overwrite the test, as otherwise it generates in the wrong order
+    if params.maskval:
+        test = [f"{instr_str} v{params.vd}, v{params.vs1}, v{params.vs2}, v0.t"]
+    else:
+        test = [f"{instr_str} v{params.vd}, v{params.vs1}, v{params.vs2}"]
+    return setup, test, check
+
+
+@add_instruction_formatter("WVV_ACC", wvv_acc_config)
+def format_wvv_acc(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    setup, test, check = format_vvv_like_type(instr_str, test_data, params, "WVV_ACC", widen={"vd"})
+    # Overwrite the test, as otherwise it generates in the wrong order
+    if params.maskval:
+        test = [f"{instr_str} v{params.vd}, v{params.vs1}, v{params.vs2}, v0.t"]
+    else:
+        test = [f"{instr_str} v{params.vd}, v{params.vs1}, v{params.vs2}"]
     return setup, test, check
 
 
@@ -207,9 +238,15 @@ def format_vvv_like_type(
         )
 
     if not (vs2_preloaded and params.vs2 == params.vs1):  # Don't overwrite a preloaded register
+        vs1_lmul_overwrite = params.lmul * (2 if "vs1" in widen else 1) if "vs1" in widen else lmul_overwrite
         setup.extend(
             load_vec_reg(
-                "vs1", params.vs1, params.vs1_val_pointer, params, lmul=lmul_overwrite, vl_register_or_imm=vl_overwrite
+                "vs1",
+                params.vs1,
+                params.vs1_val_pointer,
+                params,
+                lmul=vs1_lmul_overwrite,
+                vl_register_or_imm=vl_overwrite,
             )
         )
 

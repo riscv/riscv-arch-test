@@ -24,6 +24,21 @@ from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, get_instr_type_config
 
 
+def get_register_emul(
+    register_name: str, lmul: float, sew: int, instr_type_config: InstructionTypeConfig, info: InstructionInfo
+) -> int | float:
+    emul = lmul * info.get_size_multiplier(register_name, sew)
+
+    if (
+        (instr_type_config.vector_mask_regs is not None and register_name in instr_type_config.vector_mask_regs)
+        or (instr_type_config.vector_scalar_regs is not None and register_name in instr_type_config.vector_scalar_regs)
+        or emul < 1
+    ):
+        emul = 1
+
+    return emul
+
+
 def randomize_register(
     register_name: str,
     test_data: TestData,
@@ -36,21 +51,11 @@ def randomize_register(
         sew = test_data.config.sew
         assert sew is not None, "SEW must be set when randomizing vector registers"
 
-        emul = lmul * info.get_size_multiplier(register_name, sew)
         segments = info.segments
         if instr_type_config.vector_role and "index" in instr_type_config.vector_role and register_name == "vs2":
             segments = 1
 
-        emul = int(emul)
-        if (
-            (instr_type_config.vector_mask_regs is not None and register_name in instr_type_config.vector_mask_regs)
-            or (
-                instr_type_config.vector_scalar_regs is not None
-                and register_name in instr_type_config.vector_scalar_regs
-            )
-            or emul < 1
-        ):
-            emul = 1
+        emul = int(get_register_emul(register_name, lmul, sew, instr_type_config, info))
 
         # If the assignment was already set, validate it
         if preset is not None:
@@ -362,7 +367,7 @@ def generate_random_vector_params(
             if instr_type_config.vector_role and "index" not in instr_type_config.vector_role and register != "vs2":
                 segments = 1
 
-            width = math.ceil(lmul * info.get_size_multiplier(register, sew)) * segments
+            width = math.ceil(get_register_emul(register, lmul, sew, instr_type_config, info)) * segments
             test_data.vec_regs.allocate_parameter(register, params_dict[register], width, suppress_overlap=True)
 
     # immediate handling

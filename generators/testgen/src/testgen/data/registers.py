@@ -431,7 +431,7 @@ class VectorRegisterFile(RegisterFile):
         for reg in range(register, register + width):
             if reg in self.reg_list:
                 self.consume_registers([reg])
-            elif not suppress_overlap:
+            elif not suppress_overlap or reg >= self.reg_count:
                 raise ValueError(f"Unable to Allocate Registers for Parameter {name}, v{register} with width {width}")
         self.parameter_map[name] = (register, width)
 

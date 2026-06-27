@@ -237,6 +237,7 @@ class InstructionInfo:
     index_eew: int | None
     vext_multiplier: float | None
     widen_vs2: bool
+    widen_vs1: bool
     widen_vd: bool
 
     def get_size_multiplier(self, register: str, sew: int) -> int | float:
@@ -246,7 +247,11 @@ class InstructionInfo:
             return self.index_eew / sew
         elif self.load_store_eew and register in ["vs3", "vd"]:  # Either one or the other exists for these instructions
             return self.load_store_eew / sew
-        elif self.widen_vd and register == "vd" or self.widen_vs2 and register == "vs2":
+        elif (
+            (self.widen_vd and register == "vd")
+            or (self.widen_vs2 and register == "vs2")
+            or (self.widen_vs1 and register == "vs1")
+        ):
             return 2
         return 1
 
@@ -273,11 +278,27 @@ def extract_instruction_info(instruction: str, instruction_type: str) -> Instruc
 
     vext_multiplier = 1 / int(instruction[-1]) if instruction_type == "VEXT" else None
 
-    vd_widen = vs2_widen = False
-    if instruction_type in ["WVWSR", "FWVWSR", "WWV", "WWX", "FWWF", "VWV", "VWX", "VWI"]:
+    vd_widen = vs2_widen = vs1_widen = False
+    # TODO: Move to InstructionTypeConfig
+    if instruction_type in ["WWV", "WWX", "FWWF", "VWV", "VWX", "VWI"]:
         vs2_widen = True
-    if instruction_type in ["WVWSR", "FWVWSR", "WVV", "WVX", "WWV", "WWX", "WVS", "FWVF", "FWWF", "FWCVT"]:
+    if instruction_type in [
+        "WVWSR",
+        "FWVWSR",
+        "WVV",
+        "WVX",
+        "WWV",
+        "WWX",
+        "WVS",
+        "FWVF",
+        "FWWF",
+        "FWCVT",
+        "WVX_ACC",
+        "WVV_ACC",
+    ]:
         vd_widen = True
+    if instruction_type in ["WVWSR", "FWVWSR"]:
+        vs1_widen = True
 
     return InstructionInfo(
         segments=segments,
@@ -285,6 +306,7 @@ def extract_instruction_info(instruction: str, instruction_type: str) -> Instruc
         index_eew=index_eew,
         vext_multiplier=vext_multiplier,
         widen_vd=vd_widen,
+        widen_vs1=vs1_widen,
         widen_vs2=vs2_widen,
     )
 

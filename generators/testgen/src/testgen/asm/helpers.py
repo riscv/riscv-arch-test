@@ -13,7 +13,7 @@ from __future__ import annotations
 import random
 from typing import Literal
 
-from testgen.constants import INDENT
+from testgen.constants import INDENT, VLEN_MAX
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 
@@ -146,7 +146,9 @@ def return_test_regs(test_data: TestData, params: InstructionParams) -> None:
     test_data.int_regs.return_registers(params.used_int_regs)
     test_data.float_regs.return_registers(params.used_float_regs)
     test_data.vec_regs.deallocate_parameters()
-    assert len(test_data.vec_regs.reg_list) == 32
+    assert len(test_data.vec_regs.reg_list) == 32, (
+        f"Not all vector registers returned: {len(test_data.vec_regs.reg_list)} remaining, they are {test_data.vec_regs.reg_list}"
+    )
 
 
 def _lmul_flag(lmul: float) -> str:
@@ -243,15 +245,17 @@ def write_sigupd_v_len(
     *,
     widen_vd: bool = False,
     vcompress: bool = False,
+    mask_producing: bool = False,
+    scalar_dest: bool = False,
+    mask_reg: int = 0,
 ) -> list[str]:
     assert params.sew is not None
     assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
 
-    maxVLEN = 1024
     vdsew = params.sew * (2 if widen_vd else 1)
 
     emul_for_bytes = int(params.lmul) if params.lmul is not None and params.lmul >= 1 else 1
-    worst_bytes = maxVLEN * emul_for_bytes // 8
+    worst_bytes = VLEN_MAX * emul_for_bytes // 8
     sig_stride = max(test_data.xlen, test_data.flen, vdsew) // 8 if test_data.flen > 0 else test_data.xlen // 8
     offset_bytes = (worst_bytes + 4 + 7) & ~7
     test_data.test_chunk.sigupd_count += max(1, (offset_bytes + sig_stride - 1) // sig_stride) * segments
@@ -268,12 +272,15 @@ def write_sigupd_v_len(
 
     vs1 = params.vs1 if params.vs1 is not None else 0
     label = test_data.current_testcase_label
-    masked_flag = 0 if params.maskval is None else 1
+    masked_flag = 0 if params.maskval is None or scalar_dest else 1
+    maskprod_flag = 1 if mask_producing else 0
+    vcompress_flag = 1 if vcompress else 0
+    scalar_dst_flag = 1 if scalar_dest else 0
 
     lines = [
-        # TODO: SCALAR_DST, MASK_PROD, SEGMENTS
-        "# RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR, _VS1, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR)",
-        f"RVTEST_SIGUPD_V_LEN(x{sig_reg}, x{link_reg}, x{temp_reg}, x{temp_reg2}, x{temp_reg3}, v{vtmp}, v{mtmp3}, v{mtmp2}, v{mtmp}, v{params.vd}, v{vs1}, 0, {masked_flag}, {int(vcompress)}, {vdsew}, {int(max(lmul, 1))}, 0, {label}, {label}_str)",
+        # TODO: SEGMENTS
+        "# RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR, _VS1, _MASK_REG, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR)",
+        f"RVTEST_SIGUPD_V_LEN(x{sig_reg}, x{link_reg}, x{temp_reg}, x{temp_reg2}, x{temp_reg3}, v{vtmp}, v{mtmp3}, v{mtmp2}, v{mtmp}, v{params.vd}, v{vs1}, v{mask_reg}, {maskprod_flag}, {masked_flag}, {vcompress_flag}, {vdsew}, {int(max(lmul, 1))}, {scalar_dst_flag}, {label}, {label}_str)",
         f"# Check if v{params.vd} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} is a temp reg.",
     ]
 
@@ -281,6 +288,31 @@ def write_sigupd_v_len(
     test_data.vec_regs.return_registers([vtmp, mtmp, mtmp2, mtmp3])
 
     return lines
+
+
+def write_sigupd_v_mask_prod(
+    test_data: TestData,
+    params: InstructionParams,
+) -> list[str]:
+    assert params.sew is not None, "SEW must be set for vector tests"
+    assert params.lmul is not None, "LMUL must be set for vector tests"
+    assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
+
+    # Unfortunately, I think this is still required, as the same macro as length suite is used to advance sigupd
+    emul_for_bytes = int(params.lmul) if params.lmul is not None and params.lmul >= 1 else 1
+    worst_bytes = VLEN_MAX * emul_for_bytes // 8
+    sig_stride = max(test_data.xlen, test_data.flen, params.sew) // 8 if test_data.flen > 0 else test_data.xlen // 8
+    offset_bytes = (worst_bytes + 4 + 7) & ~7
+    test_data.test_chunk.sigupd_count += max(1, (offset_bytes + sig_stride - 1) // sig_stride)
+
+    sig_reg = test_data.int_regs.sig_reg
+    link_reg = test_data.int_regs.link_reg
+    temp_reg = test_data.int_regs.temp_reg
+
+    return [
+        "# RVTEST_SIGUPD_VLMAX_MASK_PROD(_SIG_PTR, _LINK_REG, _TEMP_REG, _VR, _VD_EEW, _LMUL)",
+        f"RVTEST_SIGUPD_VLMAX_MASK_PROD(x{sig_reg}, x{link_reg}, x{temp_reg}, v{params.vd}, {params.sew}, 1)",
+    ]
 
 
 def reload_vtype(params: InstructionParams, vl_register_or_imm: str | int) -> str:
@@ -379,12 +411,13 @@ def prep_base_v(test_data: TestData, params: InstructionParams, registers: list[
 
 
 def prep_mask_v(
-    mask_val: str, test_data: TestData, params: InstructionParams, *, clobber_vd: bool = False
+    mask_val: str, test_data: TestData, params: InstructionParams, *, clobber_vd: bool = False, vd_v0: bool = False
 ) -> list[str]:
     assert params.lmul is not None, "LMUL is Required When Setting a Mask Value"
     lmul_flag = _lmul_flag(params.lmul)
 
-    test_data.vec_regs.consume_registers([0])  # Ensure that we can actually use the mask register
+    if not vd_v0:
+        test_data.vec_regs.consume_registers([0])  # Ensure that we can actually use the mask register
 
     # We need an lmul aligned register for vid.v
     clobbered_vd = False

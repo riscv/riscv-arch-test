@@ -26,6 +26,8 @@ vvxm_config = InstructionTypeConfig(
     required_params={"vd", "rs1", "vs2", "maskval"},
     vector_overlap_constraints={("vd", "v0"), ("vs2", "v0")},
 )
+vvx_acc_config = InstructionTypeConfig(required_params={"vd", "rs1", "vs2"})
+wvx_acc_config = InstructionTypeConfig(required_params={"vd", "rs1", "vs2"}, vector_overlap_constraints={("vd", "vs2")})
 vvx_sat_config = InstructionTypeConfig(required_params={"vd", "rs1", "vs2"})
 vvxp_config = InstructionTypeConfig(required_params={"vd", "rs1", "vs2"}, vector_overlap_constraints={("vd", "vs2")})
 vvxp_down_config = InstructionTypeConfig(required_params={"vd", "rs1", "vs2"})
@@ -65,7 +67,34 @@ def format_vvxm(
 ) -> tuple[list[str], list[str], list[str]]:
     assert params.maskval is not None, "Masks are required for VVXM-Type Instructions"
     setup, test, check = format_vvx_like_type(instr_str, test_data, params, "VVXM")
-    test[0] = test[0][:-2]  # Remove the .t from v0
+    # Overwrite the test, as otherwise it generates with v0.t
+    test = [f"{instr_str} v{params.vd}, v{params.vs2}, x{params.rs1}, v0"]
+    return setup, test, check
+
+
+@add_instruction_formatter("VVX_ACC", vvx_acc_config)
+def format_vvx_acc(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    setup, test, check = format_vvx_like_type(instr_str, test_data, params, "VVX_ACC")
+    # Overwrite the test, as otherwise it generates in the wrong order
+    if params.maskval:
+        test = [f"{instr_str} v{params.vd}, x{params.rs1}, v{params.vs2}, v0.t"]
+    else:
+        test = [f"{instr_str} v{params.vd}, x{params.rs1}, v{params.vs2}"]
+    return setup, test, check
+
+
+@add_instruction_formatter("WVX_ACC", wvx_acc_config)
+def format_wvx_acc(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    setup, test, check = format_vvx_like_type(instr_str, test_data, params, "WVX_ACC", widen={"vd"})
+    # Overwrite the test, as otherwise it generates in the wrong order
+    if params.maskval:
+        test = [f"{instr_str} v{params.vd}, x{params.rs1}, v{params.vs2}, v0.t"]
+    else:
+        test = [f"{instr_str} v{params.vd}, x{params.rs1}, v{params.vs2}"]
     return setup, test, check
 
 

@@ -432,8 +432,17 @@
         add x6, DEFAULT_TEMP_REG, x6      # address of sigptr register
         LREG x6, 0(x6)      # get sigptr register value
         add x6, x6, x7      # sigptr + offset = address of expected value
-        LREG x6, 0(x6)      # load expected value
+        # Validate pointer before dereferencing: skip if null or misaligned
+        # (sentinel values like 0xBAAAAAADBAAAAD10 or 0xDEADBEEF are misaligned)
+        beqz x6, 1f                        # null pointer -> skip
+        andi x8, x6, (REGWIDTH-1)          # check alignment
+        bnez x8, 1f                        # misaligned -> skip
+        LREG x6, 0(x6)      # load expected value (pointer validated)
         SREG x6, 280(DEFAULT_TEMP_REG)    # record expected value
+        j failedtest_saveresults_common
+    1:
+        # Pointer invalid (null or misaligned sentinel) — record 0 as expected value
+        SREG x0, 280(DEFAULT_TEMP_REG)
         j failedtest_saveresults_common
 
   #if defined(F_SUPPORTED) || defined(ZFINX_SUPPORTED)

@@ -62,6 +62,13 @@ mvim_config = InstructionTypeConfig(
     vector_overlap_constraints={("vs2", "v0")},
     imm_bits=5,
 )
+# Mask = unary-op(Mask)
+mm_config = InstructionTypeConfig(
+    required_params={"vd", "vs2"},
+    vector_mask_regs={"vd", "vs2"},
+    vector_overlap_constraints={("vd", "vs2")},
+    vector_masked_constraints=set(),
+)
 
 
 @add_instruction_formatter("MMM", mmm_config)
@@ -90,7 +97,7 @@ def format_mvx(
 def format_mvi(
     instr_str: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
-    return format_mask_producing_type(instr_str, test_data, params, "MVI", {"vd", "vs2"}, {"vd"})
+    return format_mask_producing_type(instr_str, test_data, params, "MVI", {"vd", "vs2", "immval"}, {"vd"})
 
 
 @add_instruction_formatter("MVVC", mvvc_config)
@@ -114,7 +121,7 @@ def format_mvic(
     instr_str: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
     assert params.maskval is None, "MVIC-type instructions are not maskable"
-    return format_mask_producing_type(instr_str, test_data, params, "MVIC", {"vd", "vs2"}, {"vd"})
+    return format_mask_producing_type(instr_str, test_data, params, "MVIC", {"vd", "vs2", "immval"}, {"vd"})
 
 
 @add_instruction_formatter("MVVM", mvvm_config)
@@ -138,7 +145,14 @@ def format_mvim(
     instr_str: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
     assert params.maskval is not None, "Masks are required for MVIM-type instructions"
-    return format_mask_producing_type(instr_str, test_data, params, "MVIM", {"vd", "vs2"}, {"vd"}, no_dot_t=True)
+    return format_mask_producing_type(
+        instr_str, test_data, params, "MVIM", {"vd", "vs2", "immval"}, {"vd"}, no_dot_t=True
+    )
+
+
+@add_instruction_formatter("MM", mm_config)
+def format_mm(instr_str: str, test_data: TestData, params: InstructionParams) -> tuple[list[str], list[str], list[str]]:
+    return format_mask_producing_type(instr_str, test_data, params, "MM", {"vd", "vs2"}, {"vd", "vs2"})
 
 
 def format_mask_producing_type(
@@ -209,7 +223,7 @@ def format_mask_producing_type(
                 f"vmand.mm v{mask_copy_reg}, v0, v0",
             ]
         )
-    testline += f"v{params.vd}, "
+    testline += f"v{params.vd}"
 
     ##############
     # Load vs2, and respect it if it is used as a mask
@@ -233,7 +247,7 @@ def format_mask_producing_type(
     test_data.test_chunk.vector_labels.append(
         (params.vs2_val_pointer, *test_data.vector_labels[params.vs2_val_pointer]),
     )
-    testline += f"v{params.vs2}, "
+    testline += f", v{params.vs2}"
 
     ###############
     # Load the third operand (rs1 or vs1)
@@ -250,16 +264,17 @@ def format_mask_producing_type(
         test_data.test_chunk.vector_labels.append(
             (params.vs1_val_pointer, *test_data.vector_labels[params.vs1_val_pointer]),
         )
-        testline += f"v{params.vs1}"
+        testline += f", v{params.vs1}"
     elif "rs1" in registers:
         assert params.rs1 is not None and params.rs1val is not None, (
             f"rs1 and rs1val must be provided for {type_name}-type instructions"
         )
         setup.append(f"LI (x{params.rs1}, {params.rs1val})")
-        testline += f"x{params.rs1}"
-    else:
+        testline += f", x{params.rs1}"
+    elif "immval" in registers:
         assert params.immval is not None, f"immval must be provided for {type_name}-type instructions"
-        testline += f"{params.immval}"
+        testline += f", {params.immval}"
+    # MM operations don't have a third operand
 
     # Ensure vtype is correct for the instruction
     setup.append(reload_vtype(params, vl_register_or_imm))

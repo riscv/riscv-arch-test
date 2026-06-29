@@ -126,3 +126,23 @@ def make_voffgroup_vs1(instr_name: str, instr_type: str, coverpoint: str, test_d
         test_chunks.append(tc)
         return_test_regs(test_data, params)
     return test_chunks
+
+
+@add_coverpoint_generator("cp_custom_voffgroup_vs2_lmul")
+def make_voffgroup_vs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    # coverpoint ends with "lmul{N}", e.g. "cp_custom_voffgroup_vs2_lmul4"
+    lmul = int(coverpoint.split("lmul")[1])
+    test_chunks = []
+    for v in range(_VREG_COUNT):
+        if v % lmul == 0:
+            continue
+        test_data.vec_regs.allocate_parameter("vs2", v, 1)
+        params = generate_random_vector_params(
+            test_data, instr_name, instr_type, lmul=lmul, suite="length", vl="vlmax", vs2=v
+        )
+        desc = f"cp_custom_voffgroup_vs2_lmul{lmul} (lmul={lmul}, vs2=v{v})"
+        bin_name = f"cp_custom_voffgroup_vs2_lmul{lmul}_b{v}"
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+        test_chunks.append(tc)
+        return_test_regs(test_data, params)
+    return test_chunks

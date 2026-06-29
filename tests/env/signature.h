@@ -647,9 +647,11 @@
             LI          (_LINK_REG, (1 << _VD_EEW))         ; \
             bge         _TEMP_REG, _LINK_REG, 4f ; \
         .endif; \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
+        .if (_MASKPROD_FLAG == 0) ; /* This does not work in the mask producing case because we don't get the right lmul */ \
+            nop                                  ;                                                                      \
+            nop                                  ;                                                                      \
+            nop                                  ;                                                                      \
+        .endif ; \
     4: /* Comments provided for context into where we are relative to the self-checking macro */ \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \

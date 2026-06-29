@@ -213,9 +213,13 @@ def generate_random_vector_params(
             else:
                 no_overlap.add(("vd_bottom", "vs2"))
 
+    preset_params.lmul = lmul
+    # These are effective lmuls for the operation, but we still must respect the callers choice of lmul
     if instr_type in ["VLR", "VSR"]:
         # whole register load stores ignore lmul and instead use nfields as emul
         lmul = max(1, info.segments)
+    elif instr_type == "VMVR":
+        lmul = int(instruction[3])
 
     ####################################################################################
     # check and resolve and register overlap
@@ -403,7 +407,6 @@ def generate_random_vector_params(
 
     params.temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
     params.sew = sew
-    params.lmul = lmul
     params.vector_suite = suite
 
     return params

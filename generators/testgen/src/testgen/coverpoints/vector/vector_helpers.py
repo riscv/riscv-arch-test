@@ -171,11 +171,14 @@ def get_corner_value(corner: str, suffix: str, sew: int) -> int:
     if suffix == "eew1":
         return _corner_value(corner, 8)
 
-    emul = 1
-    if suffix.startswith("emul"):
+    emul: int | float = 1
+    if suffix.startswith("emulf"):
+        # Fractional emul (e.g. vext cases)
+        emul = 1 / int(suffix[len("emulf") :])
+    elif suffix.startswith("emul"):
         emul = int(suffix[len("emul") :])
 
-    return _corner_value(corner, sew * emul)
+    return _corner_value(corner, int(sew * emul))
 
 
 def _corner_value(corner: str, eew: int) -> int:
@@ -232,6 +235,7 @@ def _corner_value(corner: str, eew: int) -> int:
 
 @dataclasses.dataclass
 class InstructionInfo:
+    # TODO: Document fields
     segments: int
     load_store_eew: int | None
     index_eew: int | None
@@ -257,6 +261,7 @@ class InstructionInfo:
 
 
 def extract_instruction_info(instruction: str, instruction_type: str) -> InstructionInfo:
+    """TODO: docstrings everywhere"""
     # Extract Segments
     # Generally, a segmented load/store looks like: vl___seg<nf>__.v or vl<nf>re_.v
     segmented_ls_match = re.search(r"v[ls]\w*seg(\d+)\w*.v", instruction)

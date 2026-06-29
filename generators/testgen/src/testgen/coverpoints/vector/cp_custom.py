@@ -227,3 +227,56 @@ def dispatch_vreductionw(instr_name: str, instr_type: str, coverpoint: str, test
     return registry.generate_tests_for_coverpoint(
         instr_name, instr_type, "cp_custom_vreductionw_vd_vs1_emul_16", test_data
     )
+
+
+@registry.add_coverpoint_generator("cp_custom_vext2")
+def dispatch_vext2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    return registry.generate_tests_for_coverpoint(
+        instr_name, instr_type, "cp_custom_vext2_overlapping_vd_vs2", test_data
+    )
+
+
+@registry.add_coverpoint_generator("cp_custom_vext4")
+def dispatch_vext4(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    return registry.generate_tests_for_coverpoint(
+        instr_name, instr_type, "cp_custom_vext4_overlapping_vd_vs2", test_data
+    )
+
+
+@registry.add_coverpoint_generator("cp_custom_vext8")
+def dispatch_vext8(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    return registry.generate_tests_for_coverpoint(
+        instr_name, instr_type, "cp_custom_vext8_overlapping_vd_vs2", test_data
+    )
+
+
+@registry.add_coverpoint_generator("cp_custom_gprwrite")
+def dispatch_gprwrite(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    return registry.generate_tests_for_coverpoint(
+        instr_name, instr_type, "cp_custom_gprWriting_vstart_eq_vl", test_data
+    )
+
+
+@registry.add_coverpoint_generator("cp_custom_vmv_s_x")
+def dispatch_vmv_s_x(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    chunks = []
+    for sub_cp in [
+        "cp_custom_voffgroup_vd_lmul2",
+        "cp_custom_voffgroup_vd_lmul4",
+        "cp_custom_voffgroup_vd_lmul8",
+    ]:
+        chunks.extend(registry.generate_tests_for_coverpoint(instr_name, instr_type, sub_cp, test_data))
+    return chunks
+
+
+@registry.add_coverpoint_generator("cp_custom_vmv_x_s")
+def dispatch_vmv_x_s(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    chunks = []
+    for sub_cp in [
+        "cp_custom_gprWriting_vstart_eq_vl",
+        "cp_custom_voffgroup_vs2_lmul2",
+        "cp_custom_voffgroup_vs2_lmul4",
+        "cp_custom_voffgroup_vs2_lmul8",
+    ]:
+        chunks.extend(registry.generate_tests_for_coverpoint(instr_name, instr_type, sub_cp, test_data))
+    return chunks

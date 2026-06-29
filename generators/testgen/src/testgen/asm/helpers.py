@@ -254,7 +254,7 @@ def write_sigupd_v_len(
 
     vdsew = params.sew * (2 if widen_vd else 1)
 
-    emul_for_bytes = int(params.lmul) if params.lmul is not None and params.lmul >= 1 else 1
+    emul_for_bytes = int(lmul) if lmul is not None and lmul >= 1 else 1
     worst_bytes = VLEN_MAX * emul_for_bytes // 8
     sig_stride = max(test_data.xlen, test_data.flen, vdsew) // 8 if test_data.flen > 0 else test_data.xlen // 8
     offset_bytes = (worst_bytes + 4 + 7) & ~7
@@ -334,13 +334,19 @@ def reload_vtype(params: InstructionParams, vl_register_or_imm: str | int) -> st
         return f"vsetivli x{params.temp_reg}, {vl_register_or_imm}, e{params.sew}, {flags}"
 
 
-def prep_base_v(test_data: TestData, params: InstructionParams, registers: list[int]) -> tuple[list[str], str | int]:
+def prep_base_v(
+    test_data: TestData, params: InstructionParams, registers: list[int], lmul_override: float | None = None
+) -> tuple[list[str], str | int]:
     assert (params.ma is None) == (params.ta is None), "ta and ma must either both be present or absent"
-    assert params.lmul is not None, "lmul must be set for vector instructions"
+    assert params.lmul is not None or lmul_override is not None, "lmul must be set for vector instructions"
 
     lines = []
 
-    lmul_flag = "m" + _lmul_flag(params.lmul)
+    if lmul_override is None:
+        assert params.lmul is not None
+        lmul_flag = "m" + _lmul_flag(params.lmul)
+    else:
+        lmul_flag = "m" + _lmul_flag(lmul_override)
 
     mask_flags = ""
     if params.ta is not None:

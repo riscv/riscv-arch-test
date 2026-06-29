@@ -62,7 +62,6 @@ def generate_vector_data_section(vector_data_labels: list[tuple[str, list[int], 
     """
     lines: list[str] = []
     seen_labels: set[str] = set()
-    bytes_written = 0
 
     for label, data, eew in vector_data_labels:
         if label in seen_labels:
@@ -72,18 +71,10 @@ def generate_vector_data_section(vector_data_labels: list[tuple[str, list[int], 
         directives = {8: ".byte", 16: ".short", 32: ".word", 64: ".dword"}
         directive = directives[eew]
 
-        if bytes_written % (eew // 8) != 0:
-            # We need to fix alignment
-            misalignment_offset = (eew // 8) - (bytes_written % (eew // 8))
-            for _ in range(misalignment_offset):
-                lines.append(".byte 0")
-            bytes_written += misalignment_offset
-
+        lines.append(f".balign {eew // 8}")
         lines.append(f"{label}:")
         for value in data:
             hex_value = to_hex(value, eew)
             lines.append(f"{directive} {hex_value}")
-
-        bytes_written += eew * len(data)
 
     return "\n".join(lines)

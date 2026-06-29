@@ -51,7 +51,7 @@ repos:
 
   # Ensure uv lock file is up to date
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.11.22
+    rev: 0.11.23
     hooks:
       - id: uv-lock
 
@@ -83,7 +83,7 @@ repos:
 
   # Validate Renovate configuration
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 43.224.0
+    rev: 43.235.0
     hooks:
       - id: renovate-config-validator
 

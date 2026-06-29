@@ -24,9 +24,139 @@ def _generate_hedeleg_tests(test_data: TestData) -> list[str]:
     crossed with medeleg = {0s/1111_0000_1011_0111_1111_111?}
     crossed with hedeleg = {0s/ 0000_11?0_1?11_0001_1111_111?/(walking 1s in hedeleg[8:1])}
     """
-    # Based on the test plan, this would have 8 x 5 x 2 x 9 traps, is this going to be too many
-    lines = []
 
+    covergroup, coverpoint = _CG, "cp_hedeleg"
+
+    lines = [
+        comment_banner(coverpoint, _generate_hedeleg_tests.__doc__),
+    ]
+
+    r_temp = test_data.int_regs.get_register(exclude_regs=[])
+
+    priv_mode = ["M", "HS", "U", "VS", "VU"]
+    hval_list = ["all", "zero", 1, 2, 3, 4, 5, 6, 7, 8]
+
+    for priv in priv_mode:
+        for medeleg_val in [0, 1]:
+            for hedeleg_val in hval_list:
+                lines.extend(
+                    [
+                        "# Setup in M mode",
+                    ]
+                )
+                if medeleg_val == 0:
+                    lines.extend(
+                        [
+                            "# Clear medeleg",
+                            "CSRW(medeleg, zero)",
+                        ]
+                    )
+                else:
+                    lines.extend(
+                        [
+                            "# medeleg: Delegate all delegatable exceptions to HS mode",
+                            f"LI(x{r_temp}, 0xF0D7FE)",
+                            f"CSRS(medeleg, x{r_temp})",
+                        ]
+                    )
+                if hedeleg_val == "zero":
+                    lines.extend(
+                        [
+                            "# Clear hedeleg",
+                            "CSRW(hedeleg, zero)",
+                        ]
+                    )
+                elif hedeleg_val == "all":
+                    lines.extend(
+                        [
+                            "# hedeleg: Delegate all delegatable exceptions to VS mode",
+                            f"LI(x{r_temp}, 0x0CD1FE)",
+                            f"CSRS(hedeleg, x{r_temp})",
+                        ]
+                    )
+                else:
+                    lines.extend(
+                        [
+                            "# Clear hedeleg first",
+                            "CSRW(hedeleg, zero)",
+                            "# set hedeleg bit based on bins",
+                            f"LI(x{r_temp}, 1<<{hedeleg_val})",
+                            f"CSRS(hedeleg, x{r_temp})",
+                        ]
+                    )
+                if priv != "M":
+                    lines.append(f"RVTEST_GOTO_LOWER_MODE {priv}mode")
+                bin_name = f"mode_{priv}_medeleg_{medeleg_val}_hedeleg_{hedeleg_val}"
+                lines.extend(
+                    [
+                        "# perform instruction access fault",
+                        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+                        f"LA(x{r_temp}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+                        "LI(x4, 0xACCE)",  # trap handler checks x4 and returns via x1 (ra) instead of mepc
+                        test_data.add_testcase(f"{bin_name}_instr_access_fault", coverpoint, covergroup),
+                        f"jalr x1, 0(x{r_temp})",
+                        "nop",
+                        "#endif",
+                        "",
+                        "# perform load access fault",
+                        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+                        f"LA(x{r_temp}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+                        test_data.add_testcase(f"{bin_name}_load_access_fault", coverpoint, covergroup),
+                        f"lw x{r_temp}, 0(x{r_temp})",
+                        "nop",
+                        "#endif",
+                        "",
+                        "# perform store access fault",
+                        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+                        f"LA(x{r_temp}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+                        test_data.add_testcase(f"{bin_name}_store_access_fault", coverpoint, covergroup),
+                        f"sw x{r_temp}, 0(x{r_temp})",
+                        "nop",
+                        "#endif",
+                        "",
+                        "# perform instruction adr misaligned exception",
+                        test_data.add_testcase(f"{bin_name}_instr_misaligned", coverpoint, covergroup),
+                        "jal x0, .+6",
+                        "# jal by 6 lands in the upper half of the next instruction (0x0001 -> c.nop)",
+                        "addi x0, x2, 0",
+                        "nop",
+                        "",
+                        "# perform load address misaligned exception",
+                        f"LA(x{r_temp}, scratch)",
+                        f"addi x{r_temp}, x{r_temp}, 1",
+                        test_data.add_testcase(f"{bin_name}_load_misaligned", coverpoint, covergroup),
+                        f"lw x{r_temp}, 0(x{r_temp})",
+                        "nop",
+                        "",
+                        "# perform store address misaligned exception",
+                        f"LA(x{r_temp}, scratch)",
+                        f"addi x{r_temp}, x{r_temp}, 1",
+                        test_data.add_testcase(f"{bin_name}_store_misaligned", coverpoint, covergroup),
+                        f"sw x{r_temp}, 0(x{r_temp})",
+                        "nop",
+                        "",
+                        "# perform illegal instruction exception",
+                        ".align 2",
+                        test_data.add_testcase(f"{bin_name}_illegal", coverpoint, covergroup),
+                        ".word 0x00000000",
+                        "nop",
+                        "",
+                        "# Trigger ebreak exception",
+                        test_data.add_testcase(f"{bin_name}_ebreak", coverpoint, covergroup),
+                        "ebreak",
+                        "nop",
+                        "",
+                    ]
+                )
+                if priv != "M":
+                    lines.extend(
+                        [
+                            "# Return to M mode",
+                            "RVTEST_GOTO_MMODE",
+                        ]
+                    )
+
+    test_data.int_regs.return_register(r_temp)
     return lines
 
 
@@ -742,9 +872,509 @@ def _generate_hfence_priv_tests(test_data: TestData) -> list[str]:
 
 
 # skipped all the identity page table stuff because I am not sure about how to set it up
+# set virtual address to map to the same place as physical address
 
-# the xtinst related test are also not included here as it could be implementation specific
-# there might be a need to revisit the test plan as I do not think xtinst should be tested as it can hold custom values
+
+# would it be better to condence all the following into one coverpoint
+
+
+def _generate_xtinst_instr_misaligned_tests(test_data: TestData) -> list[str]:
+    """Generate xtinst instruction misaligned tests
+
+    From VS mode with medeleg = {0s/1s}, hedeleg = 0,
+    0xDEADBEEF written to mtinst and mtval2, jump to misaligned address.
+    2 bins
+    """
+    covergroup, coverpoint = _CG, "cp_xtinst_instr_misaligned"
+    r_temp = test_data.int_regs.get_register(exclude_regs=[])
+
+    lines = [
+        comment_banner(coverpoint, _generate_xtinst_instr_misaligned_tests.__doc__),
+    ]
+
+    for medeleg_val in [0, 1]:
+        lines.extend(
+            [
+                "# Setup in M mode",
+                "# Initialize mtinst, mtval2, and htinst",
+                f"LI(x{r_temp}, 0xDEADBEEF)",
+                f"CSRW(mtinst, x{r_temp})",
+                f"CSRW(htinst, x{r_temp})",
+                f"CSRW(mtval2, x{r_temp})",
+                "",
+                "# Clear hedeleg",
+                "CSRW(hedeleg, zero)",
+                "",
+                "# Write to medeleg based on bins",
+                f"LI(x{r_temp}, -1)",
+                f"{'CSRS' if medeleg_val else 'CSRC'}(medeleg, x{r_temp})",
+                "RVTEST_GOTO_LOWER_MODE VSmode",
+            ]
+        )
+
+        lines.extend(
+            [
+                "# perform instruction adr misaligned exception",
+                test_data.add_testcase(f"medeleg{medeleg_val}", coverpoint, covergroup),
+                "jal x0, .+6",
+                "# jal by 6 lands in the upper half of the next instruction (0x0001 -> c.nop)",
+                "addi x0, x2, 0",
+                "nop",
+                "",
+                "RVTEST_GOTO_MMODE",
+            ]
+        )
+    test_data.int_regs.return_register(r_temp)
+
+    return lines
+
+
+def _generate_xtinst_instr_access_tests(test_data: TestData) -> list[str]:
+    """Generate xtinst instruction access tests
+
+    From VS mode with medeleg = {0/1}, hedeleg = 0,
+    0xDEADBEEF written to mtinst and mtval2, jump to access fault address
+    2 bins
+    """
+    covergroup, coverpoint = _CG, "cp_xtinst_instr_access"
+    r_temp = test_data.int_regs.get_register(exclude_regs=[])
+
+    lines = [
+        comment_banner(coverpoint, _generate_xtinst_instr_access_tests.__doc__),
+    ]
+
+    for medeleg_val in [0, 1]:
+        lines.extend(
+            [
+                "# Setup in M mode",
+                "# Initialize mtinst, mtval2, and htinst",
+                f"LI(x{r_temp}, 0xDEADBEEF)",
+                f"CSRW(mtinst, x{r_temp})",
+                f"CSRW(htinst, x{r_temp})",
+                f"CSRW(mtval2, x{r_temp})",
+                "",
+                "# Clear hedeleg",
+                "CSRW(hedeleg, zero)",
+                "",
+                "# Write to medeleg based on bins",
+                f"LI(x{r_temp}, -1)",
+                f"{'CSRS' if medeleg_val else 'CSRC'}(medeleg, x{r_temp})",
+                "RVTEST_GOTO_LOWER_MODE VSmode",
+            ]
+        )
+
+        lines.extend(
+            [
+                "# perform instruction access fault",
+                "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+                f"LA(x{r_temp}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+                "LI(x4, 0xACCE)",  # trap handler checks x4 and returns via x1 (ra) instead of mepc
+                test_data.add_testcase(f"medeleg{medeleg_val}", coverpoint, covergroup),
+                f"jalr x1, 0(x{r_temp})",
+                "nop",
+                "#endif",
+                "",
+                "RVTEST_GOTO_MMODE",
+            ]
+        )
+    test_data.int_regs.return_register(r_temp)
+
+    return lines
+
+
+def _generate_xtinst_illegal_instr_tests(test_data: TestData) -> list[str]:
+    """Generate xtinst illegal instruction tests
+
+    From VS mode with medeleg = {0/1}, hedeleg = 0, execute illegal instruction all 0s
+    2 bins
+    """
+    covergroup, coverpoint = _CG, "cp_xtinst_illegal_instr"
+    r_temp = test_data.int_regs.get_register(exclude_regs=[])
+
+    lines = [
+        comment_banner(coverpoint, _generate_xtinst_illegal_instr_tests.__doc__),
+    ]
+
+    for medeleg_val in [0, 1]:
+        lines.extend(
+            [
+                "# Setup in M mode",
+                "# Initialize mtinst, mtval2, and htinst",
+                f"LI(x{r_temp}, 0xDEADBEEF)",
+                f"CSRW(mtinst, x{r_temp})",
+                f"CSRW(htinst, x{r_temp})",
+                f"CSRW(mtval2, x{r_temp})",
+                "",
+                "# Clear hedeleg",
+                "CSRW(hedeleg, zero)",
+                "",
+                "# Write to medeleg based on bins",
+                f"LI(x{r_temp}, -1)",
+                f"{'CSRS' if medeleg_val else 'CSRC'}(medeleg, x{r_temp})",
+                "RVTEST_GOTO_LOWER_MODE VSmode",
+            ]
+        )
+
+        lines.extend(
+            [
+                "# perform illegal instruction exception",
+                ".align 2",
+                test_data.add_testcase(f"medeleg{medeleg_val}", coverpoint, covergroup),
+                ".word 0x00000000",
+                "nop",
+                "",
+                "RVTEST_GOTO_MMODE",
+            ]
+        )
+    test_data.int_regs.return_register(r_temp)
+
+    return lines
+
+
+def _generate_xtinst_breakpoint_tests(test_data: TestData) -> list[str]:
+    """Generate xtinst breakpoint tests
+
+    From VS mode with medeleg = {0/1}, hedeleg = 0, execute ebreak
+    2 bins
+    """
+    covergroup, coverpoint = _CG, "cp_xtinst_breakpoint"
+    r_temp = test_data.int_regs.get_register(exclude_regs=[])
+
+    lines = [
+        comment_banner(coverpoint, _generate_xtinst_breakpoint_tests.__doc__),
+    ]
+
+    for medeleg_val in [0, 1]:
+        lines.extend(
+            [
+                "# Setup in M mode",
+                "# Initialize mtinst, mtval2, and htinst",
+                f"LI(x{r_temp}, 0xDEADBEEF)",
+                f"CSRW(mtinst, x{r_temp})",
+                f"CSRW(htinst, x{r_temp})",
+                f"CSRW(mtval2, x{r_temp})",
+                "",
+                "# Clear hedeleg",
+                "CSRW(hedeleg, zero)",
+                "",
+                "# Write to medeleg based on bins",
+                f"LI(x{r_temp}, -1)",
+                f"{'CSRS' if medeleg_val else 'CSRC'}(medeleg, x{r_temp})",
+                "RVTEST_GOTO_LOWER_MODE VSmode",
+            ]
+        )
+
+        lines.extend(
+            [
+                "# Trigger ebreak exception",
+                test_data.add_testcase(f"medeleg{medeleg_val}", coverpoint, covergroup),
+                "ebreak",
+                "nop",
+                "",
+                "RVTEST_GOTO_MMODE",
+            ]
+        )
+    test_data.int_regs.return_register(r_temp)
+
+    return lines
+
+
+def _generate_xtinst_virt_instr_tests(test_data: TestData) -> list[str]:
+    """Generate xtinst virtual instruction exception tests
+
+    From VS mode with medeleg = {0/1}, hedeleg = 0, csrr vstval
+    2 bins
+    """
+    covergroup, coverpoint = _CG, "cp_xtinst_virt_instr"
+    r_temp = test_data.int_regs.get_register(exclude_regs=[])
+
+    lines = [
+        comment_banner(coverpoint, _generate_xtinst_virt_instr_tests.__doc__),
+    ]
+
+    for medeleg_val in [0, 1]:
+        lines.extend(
+            [
+                "# Setup in M mode",
+                "# Initialize mtinst, mtval2, and htinst",
+                f"LI(x{r_temp}, 0xDEADBEEF)",
+                f"CSRW(mtinst, x{r_temp})",
+                f"CSRW(htinst, x{r_temp})",
+                f"CSRW(mtval2, x{r_temp})",
+                "",
+                "# Clear hedeleg",
+                "CSRW(hedeleg, zero)",
+                "",
+                "# Write to medeleg based on bins",
+                f"LI(x{r_temp}, -1)",
+                f"{'CSRS' if medeleg_val else 'CSRC'}(medeleg, x{r_temp})",
+                "RVTEST_GOTO_LOWER_MODE VSmode",
+            ]
+        )
+
+        lines.extend(
+            [
+                "# Trigger virtual instruction exception",
+                test_data.add_testcase(f"medeleg{medeleg_val}", coverpoint, covergroup),
+                f"csrr x{r_temp}, vstval",
+                "nop",
+                "",
+                "RVTEST_GOTO_MMODE",
+            ]
+        )
+    test_data.int_regs.return_register(r_temp)
+
+    return lines
+
+
+def _generate_xtinst_load_misaligned_tests(test_data: TestData) -> list[str]:
+    """Generate xtinst load misaligned exception tests
+
+    From VS mode with medeleg = {0/1}, hedeleg = 0, execute misaligned load
+    2 bins
+    """
+    covergroup, coverpoint = _CG, "cp_xtinst_load_misaligned"
+    r_temp = test_data.int_regs.get_register(exclude_regs=[])
+
+    lines = [
+        comment_banner(coverpoint, _generate_xtinst_load_misaligned_tests.__doc__),
+    ]
+
+    for medeleg_val in [0, 1]:
+        lines.extend(
+            [
+                "# Setup in M mode",
+                "# Initialize mtinst, mtval2, and htinst",
+                f"LI(x{r_temp}, 0xDEADBEEF)",
+                f"CSRW(mtinst, x{r_temp})",
+                f"CSRW(htinst, x{r_temp})",
+                f"CSRW(mtval2, x{r_temp})",
+                "",
+                "# Clear hedeleg",
+                "CSRW(hedeleg, zero)",
+                "",
+                "# Write to medeleg based on bins",
+                f"LI(x{r_temp}, -1)",
+                f"{'CSRS' if medeleg_val else 'CSRC'}(medeleg, x{r_temp})",
+                "RVTEST_GOTO_LOWER_MODE VSmode",
+            ]
+        )
+
+        lines.extend(
+            [
+                "# perform load address misaligned exception",
+                f"LA(x{r_temp}, scratch)",
+                f"addi x{r_temp}, x{r_temp}, 1",
+                test_data.add_testcase(f"medeleg{medeleg_val}", coverpoint, covergroup),
+                f"lw x{r_temp}, 0(x{r_temp})",
+                "nop",
+                "",
+                "RVTEST_GOTO_MMODE",
+            ]
+        )
+    test_data.int_regs.return_register(r_temp)
+
+    return lines
+
+
+def _generate_xtinst_load_access_tests(test_data: TestData) -> list[str]:
+    """Generate xtinst load access fault tests
+
+    From VS mode with medeleg = {0/1}, hedeleg = 0, execute load access fault
+    2 bins
+    """
+    covergroup, coverpoint = _CG, "cp_xtinst_load_access"
+    r_temp = test_data.int_regs.get_register(exclude_regs=[])
+
+    lines = [
+        comment_banner(coverpoint, _generate_xtinst_load_access_tests.__doc__),
+    ]
+
+    for medeleg_val in [0, 1]:
+        lines.extend(
+            [
+                "# Setup in M mode",
+                "# Initialize mtinst, mtval2, and htinst",
+                f"LI(x{r_temp}, 0xDEADBEEF)",
+                f"CSRW(mtinst, x{r_temp})",
+                f"CSRW(htinst, x{r_temp})",
+                f"CSRW(mtval2, x{r_temp})",
+                "",
+                "# Clear hedeleg",
+                "CSRW(hedeleg, zero)",
+                "",
+                "# Write to medeleg based on bins",
+                f"LI(x{r_temp}, -1)",
+                f"{'CSRS' if medeleg_val else 'CSRC'}(medeleg, x{r_temp})",
+                "RVTEST_GOTO_LOWER_MODE VSmode",
+            ]
+        )
+
+        lines.extend(
+            [
+                "# perform load access fault",
+                "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+                f"LA(x{r_temp}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+                test_data.add_testcase(f"medeleg{medeleg_val}", coverpoint, covergroup),
+                f"lw x{r_temp}, 0(x{r_temp})",
+                "nop",
+                "#endif",
+                "",
+                "RVTEST_GOTO_MMODE",
+            ]
+        )
+    test_data.int_regs.return_register(r_temp)
+
+    return lines
+
+
+def _generate_xtinst_store_misaligned_tests(test_data: TestData) -> list[str]:
+    """Generate xtinst store misaligned exceptions tests
+
+    From VS mode with medeleg = {0/1}, hedeleg = 0, execute misaligned store
+    2 bins
+    """
+    covergroup, coverpoint = _CG, "cp_xtinst_store_misaligned"
+    r_temp = test_data.int_regs.get_register(exclude_regs=[])
+
+    lines = [
+        comment_banner(coverpoint, _generate_xtinst_store_misaligned_tests.__doc__),
+    ]
+
+    for medeleg_val in [0, 1]:
+        lines.extend(
+            [
+                "# Setup in M mode",
+                "# Initialize mtinst, mtval2, and htinst",
+                f"LI(x{r_temp}, 0xDEADBEEF)",
+                f"CSRW(mtinst, x{r_temp})",
+                f"CSRW(htinst, x{r_temp})",
+                f"CSRW(mtval2, x{r_temp})",
+                "",
+                "# Clear hedeleg",
+                "CSRW(hedeleg, zero)",
+                "",
+                "# Write to medeleg based on bins",
+                f"LI(x{r_temp}, -1)",
+                f"{'CSRS' if medeleg_val else 'CSRC'}(medeleg, x{r_temp})",
+                "RVTEST_GOTO_LOWER_MODE VSmode",
+            ]
+        )
+
+        lines.extend(
+            [
+                "# perform store address misaligned exception",
+                f"LA(x{r_temp}, scratch)",
+                f"addi x{r_temp}, x{r_temp}, 1",
+                test_data.add_testcase(f"medeleg{medeleg_val}", coverpoint, covergroup),
+                f"sw x{r_temp}, 0(x{r_temp})",
+                "nop",
+                "",
+                "RVTEST_GOTO_MMODE",
+            ]
+        )
+    test_data.int_regs.return_register(r_temp)
+
+    return lines
+
+
+def _generate_xtinst_store_access_tests(test_data: TestData) -> list[str]:
+    """Generate xtinst store access fault tests
+
+    From VS mode with medeleg = {0/1}, hedeleg = 0, execute store access fault
+    2 bins
+    """
+    covergroup, coverpoint = _CG, "cp_xtinst_store_access"
+    r_temp = test_data.int_regs.get_register(exclude_regs=[])
+
+    lines = [
+        comment_banner(coverpoint, _generate_xtinst_store_access_tests.__doc__),
+    ]
+
+    for medeleg_val in [0, 1]:
+        lines.extend(
+            [
+                "# Setup in M mode",
+                "# Initialize mtinst, mtval2, and htinst",
+                f"LI(x{r_temp}, 0xDEADBEEF)",
+                f"CSRW(mtinst, x{r_temp})",
+                f"CSRW(htinst, x{r_temp})",
+                f"CSRW(mtval2, x{r_temp})",
+                "",
+                "# Clear hedeleg",
+                "CSRW(hedeleg, zero)",
+                "",
+                "# Write to medeleg based on bins",
+                f"LI(x{r_temp}, -1)",
+                f"{'CSRS' if medeleg_val else 'CSRC'}(medeleg, x{r_temp})",
+                "RVTEST_GOTO_LOWER_MODE VSmode",
+            ]
+        )
+
+        lines.extend(
+            [
+                "# perform store access fault",
+                "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+                f"LA(x{r_temp}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+                test_data.add_testcase(f"medeleg{medeleg_val}", coverpoint, covergroup),
+                f"sw x{r_temp}, 0(x{r_temp})",
+                "nop",
+                "#endif",
+                "",
+                "RVTEST_GOTO_MMODE",
+            ]
+        )
+    test_data.int_regs.return_register(r_temp)
+
+    return lines
+
+
+def _generate_xtinst_ecall_tests(test_data: TestData) -> list[str]:
+    """Generate xtinst ecall tests
+
+    From VS mode with medeleg = {0/1}, hedeleg = 0, execute ecall
+    2 bins
+    """
+    covergroup, coverpoint = _CG, "cp_xtinst_ecall"
+    r_temp = test_data.int_regs.get_register(exclude_regs=[])
+
+    lines = [
+        comment_banner(coverpoint, _generate_xtinst_ecall_tests.__doc__),
+    ]
+
+    for medeleg_val in [0, 1]:
+        lines.extend(
+            [
+                "# Setup in M mode",
+                "# Initialize mtinst, mtval2, and htinst",
+                f"LI(x{r_temp}, 0xDEADBEEF)",
+                f"CSRW(mtinst, x{r_temp})",
+                f"CSRW(htinst, x{r_temp})",
+                f"CSRW(mtval2, x{r_temp})",
+                "",
+                "# Clear hedeleg",
+                "CSRW(hedeleg, zero)",
+                "",
+                "# Write to medeleg based on bins",
+                f"LI(x{r_temp}, -1)",
+                f"{'CSRS' if medeleg_val else 'CSRC'}(medeleg, x{r_temp})",
+                "RVTEST_GOTO_LOWER_MODE VSmode",
+            ]
+        )
+
+        lines.extend(
+            [
+                "# execute ecall",
+                test_data.add_testcase(f"medeleg{medeleg_val}", coverpoint, covergroup),
+                "ecall",
+                "nop",
+                "",
+                "RVTEST_GOTO_MMODE",
+            ]
+        )
+    test_data.int_regs.return_register(r_temp)
+
+    return lines
 
 
 @add_priv_test_generator(
@@ -752,16 +1382,13 @@ def _generate_hfence_priv_tests(test_data: TestData) -> list[str]:
     required_extensions=["S", "H"],
     march_extensions=["H", "Svinval"],
 )
-def make_exceptionss(test_data: TestData) -> list[str]:
-    """Main entry point for S-mode exception test generation (refactored)."""
+def make_exceptionsh(test_data: TestData) -> list[str]:
+    """Main entry point for Hypervisor extension exception test generation (refactored)."""
     lines: list[str] = [
         "CSRW(medeleg, zero)",
     ]
 
-    ### not sure ###
-    # lines.extend(_generate_hedeleg_tests(test_data))
-
-    ### written ###
+    lines.extend(_generate_hedeleg_tests(test_data))
     lines.extend(_generate_ecall_to_vs_tests(test_data))
     lines.extend(_generate_ecall_to_hs_tests(test_data))
     lines.extend(_generate_ecall_to_m_tests(test_data))
@@ -774,5 +1401,16 @@ def make_exceptionss(test_data: TestData) -> list[str]:
 
     lines.extend(_generate_loadstore_priv_tests(test_data))
     lines.extend(_generate_hfence_priv_tests(test_data))
+
+    lines.extend(_generate_xtinst_instr_misaligned_tests(test_data))
+    lines.extend(_generate_xtinst_instr_access_tests(test_data))
+    lines.extend(_generate_xtinst_illegal_instr_tests(test_data))
+    lines.extend(_generate_xtinst_breakpoint_tests(test_data))
+    lines.extend(_generate_xtinst_virt_instr_tests(test_data))
+    lines.extend(_generate_xtinst_load_misaligned_tests(test_data))
+    lines.extend(_generate_xtinst_load_access_tests(test_data))
+    lines.extend(_generate_xtinst_store_misaligned_tests(test_data))
+    lines.extend(_generate_xtinst_store_access_tests(test_data))
+    lines.extend(_generate_xtinst_ecall_tests(test_data))
 
     return lines

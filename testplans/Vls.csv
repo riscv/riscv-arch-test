@@ -1,8 +1,8 @@
 Instruction,Type,RV32,RV64,EFFEW8,EFFEW16,EFFEW32,EFFEW64,cp_asm_count,cp_vd,cp_vs3,cp_vs2,cp_vs2_edges,cmp_vd_vs2,cmp_vs3_vs2,cp_rs1,cp_rs2,cp_rs2_edges,cp_masking_edges,cr_vl_lmul,cr_vtype_agnostic,cp_vl_0,std_vec,cp_custom_vwholeRegLS_vill,cp_custom_vwholeRegLS_lmul,cp_custom_maskLS,cp_custom_ls_indexed,cp_custom_ffLS_update_vl,cp_custom_indexed_emul_data_only,cp_custom_ffLS,cp_custom_indexed_overlap,cp_custom_ordered_index_overlap
-vle8.v,VLS,x,x,x,x,x,x,x,x,,,,,,nx0,,,x,e8,e8,x,x,,,,,,,,,
-vle16.v,VLS,x,x,x,x,x,x,x,x,,,,,,nx0,,,x,e16,e16,x,x,,,,,,,,,
-vle32.v,VLS,x,x,x,x,x,x,x,x,,,,,,nx0,,,x,e32,e32,x,x,,,,,,,,,
-vle64.v,VLS,x,x,x,x,x,x,x,x,,,,,,nx0,,,x,e64,e64,x,x,,,,,,,,,
+vle8.v,VLUS,x,x,x,x,x,x,x,x,,,,,,nx0,,,x,e8,e8,x,x,,,,,,,,,
+vle16.v,VLUS,x,x,x,x,x,x,x,x,,,,,,nx0,,,x,e16,e16,x,x,,,,,,,,,
+vle32.v,VLUS,x,x,x,x,x,x,x,x,,,,,,nx0,,,x,e32,e32,x,x,,,,,,,,,
+vle64.v,VLUS,x,x,x,x,x,x,x,x,,,,,,nx0,,,x,e64,e64,x,x,,,,,,,,,
 vlseg2e8.v,VLSEG,x,x,x,x,x,x,x,lte30,,,,,,nx0,,,x,e8_emul4max,e8_emul4max,x,x,,,,,,,,,
 vlseg2e16.v,VLSEG,x,x,x,x,x,x,x,lte30,,,,,,nx0,,,x,e16_emul4max,e16_emul4max,x,x,,,,,,,,,
 vlseg2e32.v,VLSEG,x,x,x,x,x,x,x,lte30,,,,,,nx0,,,x,e32_emul4max,e32_emul4max,x,x,,,,,,,,,
@@ -159,10 +159,10 @@ vloxseg8ei8.v,VLOXSEG,x,x,x,x,x,x,x,lte24,,x,ls,,,nx0,,,x,e8_emul1max,e8_emul1ma
 vloxseg8ei16.v,VLOXSEG,x,x,x,x,x,x,x,lte24,,x,ls,,,nx0,,,x,e16_emul1max,e16_emul1max,x,x,,,,x,,x,,,x
 vloxseg8ei32.v,VLOXSEG,x,x,x,x,x,x,x,lte24,,x,ls,,,nx0,,,x,e32_emul1max,e32_emul1max,x,x,,,,x,,x,,,x
 vloxseg8ei64.v,VLOXSEG,x,x,x,x,x,x,x,lte24,,x,ls,,,nx0,,,x,e64_emul1max,e64_emul1max,x,x,,,,x,,x,,,x
-vse8.v,VSS,x,x,x,x,x,x,x,,x,,,,,nx0,,,x,e8,e8,x,x,,,,,,,,,
-vse16.v,VSS,x,x,x,x,x,x,x,,x,,,,,nx0,,,x,e16,e16,x,x,,,,,,,,,
-vse32.v,VSS,x,x,x,x,x,x,x,,x,,,,,nx0,,,x,e32,e32,x,x,,,,,,,,,
-vse64.v,VSS,x,x,x,x,x,x,x,,x,,,,,nx0,,,x,e64,e64,x,x,,,,,,,,,
+vse8.v,VSUS,x,x,x,x,x,x,x,,x,,,,,nx0,,,x,e8,e8,x,x,,,,,,,,,
+vse16.v,VSUS,x,x,x,x,x,x,x,,x,,,,,nx0,,,x,e16,e16,x,x,,,,,,,,,
+vse32.v,VSUS,x,x,x,x,x,x,x,,x,,,,,nx0,,,x,e32,e32,x,x,,,,,,,,,
+vse64.v,VSUS,x,x,x,x,x,x,x,,x,,,,,nx0,,,x,e64,e64,x,x,,,,,,,,,
 vsseg2e8.v,VSSEG,x,x,x,x,x,x,x,,lte30,,,,,nx0,,,x,e8_emul4max,e8_emul4max,x,x,,,,,,,,,
 vsseg2e16.v,VSSEG,x,x,x,x,x,x,x,,lte30,,,,,nx0,,,x,e16_emul4max,e16_emul4max,x,x,,,,,,,,,
 vsseg2e32.v,VSSEG,x,x,x,x,x,x,x,,lte30,,,,,nx0,,,x,e32_emul4max,e32_emul4max,x,x,,,,,,,,,

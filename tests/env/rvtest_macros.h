@@ -61,26 +61,6 @@
     or   t0, t0, t1                                             ;\
     SREG t0, _REG_NAME##_bgn_off+1*sv_area_sz(a0)               ;
 
-// Replaces page offset of VA with PA page offset (depending on
-// the PAGE_LEVEL) and stores it to V save area. a0 must
-// point to M save area. t0 and t1 are clobbered
-#define GUEST_SAVE_AREA_SETUP(VA, PA_LBL, _REG_NAME, PAGE_LEVEL);\
-    .if (__riscv_xlen == 32)                                    ;\
-        .set PAGE_OFFSET_SHIFT, (PAGE_LEVEL*10)+12              ;\
-    .else                                                       ;\
-        .set PAGE_OFFSET_SHIFT, (PAGE_LEVEL*9)+12               ;\
-    .endif                                                      ;\
-    LI(  t0, VA)                                                ;\
-    srli t0, t0, PAGE_OFFSET_SHIFT                              ;\
-    slli t0, t0, PAGE_OFFSET_SHIFT                              ;\
-    LA(  t1, PA_LBL)                                            ;\
-    slli t1, t1, __riscv_xlen-PAGE_OFFSET_SHIFT                 ;\
-    srli t1, t1, __riscv_xlen-PAGE_OFFSET_SHIFT                 ;\
-    or   t0, t0, t1                                             ;\
-    addi a0, a0, 2*sv_area_sz                                   ;\
-    SREG t0, _REG_NAME##_bgn_off+1*sv_area_sz(a0)               ;\
-    addi a0, a0, -2*sv_area_sz                                  ;
-
 #define PTE_SETUP_RV32(_PAR, _PR, _TR0, _TR1, VA, level)        ;\
     srli _PAR, _PAR, 12                                         ;\
     slli _PAR, _PAR, 10                                         ;\

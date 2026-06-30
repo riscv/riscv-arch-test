@@ -49,6 +49,10 @@ def get_vector_extensions(testplan_dir: Path, *, priv: bool) -> list[str]:
                 testplans.append(arch + effew)
         else:
             testplans.append(arch)
+
+    # Only allow currently implemented testplans to run in ACT4
+    testplans = [testplan for testplan in testplans if testplan.startswith("Vx")]
+
     return testplans
 
 

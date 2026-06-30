@@ -50,9 +50,7 @@ def format_vmvvv_type(
     vd_preloaded = False
     if params.vector_suite == "length":
         setup.extend(
-            load_vec_reg(
-                "vd", params.vd, params.vd_val_pointer, params, lmul=max(params.lmul, 1), vl_register_or_imm="x0"
-            )
+            load_vec_reg(params.vd, params.vd_val_pointer, params, lmul=max(params.lmul, 1), vl_register_or_imm="x0")
         )
         vd_preloaded = True
         registers.remove(params.vd)
@@ -61,11 +59,10 @@ def format_vmvvv_type(
     setup.extend(prep_lines)
 
     if not vd_preloaded:
-        setup.extend(load_vec_reg("vd", params.vd, params.vd_val_pointer, params))
+        setup.extend(load_vec_reg(params.vd, params.vd_val_pointer, params))
 
     setup.extend(
         load_vec_reg(
-            "vs1",
             params.vs1,
             params.vs1_val_pointer,
             params,

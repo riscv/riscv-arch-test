@@ -162,11 +162,11 @@ def _lmul_flag(lmul: float) -> str:
 
 
 def load_vec_reg(
-    name: str,
     register: int,
     val_pointer: str,
     params: InstructionParams,
     *,
+    sew_override: int | None = None,
     lmul: float | None = None,
     vl_register_or_imm: str | int | None = None,
 ) -> list[str]:
@@ -174,7 +174,6 @@ def load_vec_reg(
     Load a vector register.
 
     Args:
-        name: Name of the register (e.g vs1, vd, etc) (TODO: Remove)
         register: The number register to load
         val_pointer: A string that points to a label where the load data exists
         params: The InstructionParams generated for this instruction. Gives data about default sew and lmul
@@ -185,26 +184,23 @@ def load_vec_reg(
         vl_register_or_imm: Either a register containing vl or vl as an immediate. Used to specify what vl to use
             when lmul changes or other special cases.
     """
-    # FIXME: More accurate to pass sew here so that widening things are loaded at the correct sew too!
     lines = []
+
+    sew = params.sew if sew_override is None else sew_override
 
     # Preloads Require Special Handling for V
     if lmul is not None and vl_register_or_imm is None:
-        lines.append(f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{_lmul_flag(lmul)}, tu, mu")
+        lines.append(f"vsetvli x{params.temp_reg}, x0, e{sew}, m{_lmul_flag(lmul)}, tu, mu")
     elif lmul is not None:
         if isinstance(vl_register_or_imm, str):
-            lines.append(
-                f"vsetvli x{params.temp_reg}, {vl_register_or_imm}, e{params.sew}, m{_lmul_flag(lmul)}, tu, mu"
-            )
+            lines.append(f"vsetvli x{params.temp_reg}, {vl_register_or_imm}, e{sew}, m{_lmul_flag(lmul)}, tu, mu")
         else:
-            lines.append(
-                f"vsetivli x{params.temp_reg}, {vl_register_or_imm}, e{params.sew}, m{_lmul_flag(lmul)}, tu, mu"
-            )
+            lines.append(f"vsetivli x{params.temp_reg}, {vl_register_or_imm}, e{sew}, m{_lmul_flag(lmul)}, tu, mu")
 
     lines.extend(
         [
             f"LA(x{params.temp_reg}, {val_pointer})",
-            f"vle{params.sew}.v v{register}, (x{params.temp_reg})",
+            f"vle{sew}.v v{register}, (x{params.temp_reg})",
         ]
     )
 

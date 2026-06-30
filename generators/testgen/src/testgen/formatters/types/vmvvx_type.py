@@ -65,9 +65,7 @@ def format_vmvvx_like_type(
     lmul = params.lmul if not scalar_vd else 1
     vd_preloaded = False
     if params.vector_suite == "length":
-        setup.extend(
-            load_vec_reg("vd", params.vd, params.vd_val_pointer, params, lmul=max(lmul, 1), vl_register_or_imm="x0")
-        )
+        setup.extend(load_vec_reg(params.vd, params.vd_val_pointer, params, lmul=max(lmul, 1), vl_register_or_imm="x0"))
         vd_preloaded = True
         registers.remove(params.vd)
 
@@ -77,7 +75,7 @@ def format_vmvvx_like_type(
     if not vd_preloaded:
         # This is set if we need to load at a different lmul (e.g. we have a scalar operand)
         lmul_override = lmul if lmul != params.lmul else None
-        setup.extend(load_vec_reg("vd", params.vd, params.vd_val_pointer, params, lmul=lmul_override))
+        setup.extend(load_vec_reg(params.vd, params.vd_val_pointer, params, lmul=lmul_override))
         if lmul_override is not None:
             setup.append(reload_vtype(params, vl_register_or_imm))
 

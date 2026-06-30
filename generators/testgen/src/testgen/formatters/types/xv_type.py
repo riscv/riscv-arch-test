@@ -64,7 +64,7 @@ def format_xv_like_type(
     setup.extend(prep_lines)
 
     lmul_override = 1 if scalar_vs2 else None
-    setup.extend(load_vec_reg("vs2", params.vs2, params.vs2_val_pointer, params, lmul=lmul_override))
+    setup.extend(load_vec_reg(params.vs2, params.vs2_val_pointer, params, lmul=lmul_override))
 
     if lmul_override is not None:
         setup.append(reload_vtype(params, vl_register_or_imm))

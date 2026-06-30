@@ -220,7 +220,6 @@ def format_mask_producing_type(
         assert "vd" in mask_registers, f"vd must be a mask register for {type_name}-type instructions"
         setup.extend(
             load_vec_reg(
-                "vd",
                 params.vd,
                 params.vd_val_pointer,
                 params,
@@ -253,7 +252,6 @@ def format_mask_producing_type(
     vs2_vl = "x0" if "vs2" in mask_registers else vl_register_or_imm
     setup.extend(
         load_vec_reg(
-            "vs2",
             params.vs2,
             params.vs2_val_pointer,
             params,
@@ -275,9 +273,7 @@ def format_mask_producing_type(
         )
         vs1_lmul = 1 if "vs1" in mask_registers else max(params.lmul, 1)
         vs1_vl = "x0" if "vs1" in mask_registers else vl_register_or_imm
-        setup.extend(
-            load_vec_reg("vs1", params.vs1, params.vs1_val_pointer, params, lmul=vs1_lmul, vl_register_or_imm=vs1_vl)
-        )
+        setup.extend(load_vec_reg(params.vs1, params.vs1_val_pointer, params, lmul=vs1_lmul, vl_register_or_imm=vs1_vl))
         test_data.test_chunk.vector_labels.append(
             (params.vs1_val_pointer, *test_data.vector_labels[params.vs1_val_pointer]),
         )

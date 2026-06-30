@@ -90,7 +90,10 @@ def format_vvsr_like_type(
     # We need to have a special case for vd being the mask, as the initial value of vd doesn't matter
     # while the mask value does matter.
     if params.vector_suite == "length" and not (params.vd == 0 and params.maskval):
-        setup.extend(load_vec_reg("vd", params.vd, params.vd_val_pointer, params, lmul=1, vl_register_or_imm="x0"))
+        vd_sew = params.sew * (2 if "vd" in widen else 1)
+        setup.extend(
+            load_vec_reg(params.vd, params.vd_val_pointer, params, sew_override=vd_sew, lmul=1, vl_register_or_imm="x0")
+        )
         test_data.test_chunk.vector_labels.append(
             (params.vd_val_pointer, *test_data.vector_labels[params.vd_val_pointer])
         )
@@ -117,14 +120,22 @@ def format_vvsr_like_type(
     # Load Registers at the Proper LMULs (loading whole registers if necessary, and tracking changes to vtype)
     lmul_overwrite: int = int(max(params.lmul, 1))
 
-    vl_overwrite: int | None = None
-    if vl_register_or_imm == 0:  # Loads at vl=0 are a no-op
+    vl_overwrite: int | str = vl_register_or_imm
+    if vl_overwrite == 0:  # Loads at vl=0 are a no-op
         vl_overwrite = 1
 
     if not vd_preloaded:
         vd_vl_overwrite = vl_overwrite if "vd" not in widen else 2
+        vd_sew = params.sew * (2 if "vd" in widen else 1)
         setup.extend(
-            load_vec_reg("vd", params.vd, params.vd_val_pointer, params, lmul=1, vl_register_or_imm=vd_vl_overwrite)
+            load_vec_reg(
+                params.vd,
+                params.vd_val_pointer,
+                params,
+                sew_override=vd_sew,
+                lmul=1,
+                vl_register_or_imm=vd_vl_overwrite,
+            )
         )
         test_data.test_chunk.vector_labels.append(
             (params.vd_val_pointer, *test_data.vector_labels[params.vd_val_pointer])
@@ -132,7 +143,6 @@ def format_vvsr_like_type(
 
     setup.extend(
         load_vec_reg(
-            "vs2",
             params.vs2,
             params.vs2_val_pointer,
             params,
@@ -141,9 +151,17 @@ def format_vvsr_like_type(
         )
     )
 
-    vs1_vl_overwrite = vl_overwrite if "vs1" not in widen else 2
+    vs1_vl_overwrite = 1 if "vs1" not in widen else 2
+    vs1_sew = params.sew * (2 if "vs1" in widen else 1)
     setup.extend(
-        load_vec_reg("vs1", params.vs1, params.vs1_val_pointer, params, lmul=1, vl_register_or_imm=vs1_vl_overwrite)
+        load_vec_reg(
+            params.vs1,
+            params.vs1_val_pointer,
+            params,
+            sew_override=vs1_sew,
+            lmul=1,
+            vl_register_or_imm=vs1_vl_overwrite,
+        )
     )
 
     # Ensure vtype is correct for the instruction. We overwrite lmul to 1, so this is necessary

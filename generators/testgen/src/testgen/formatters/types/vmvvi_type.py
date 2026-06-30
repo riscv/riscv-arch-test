@@ -48,9 +48,7 @@ def format_vmvvi(
     vd_preloaded = False
     if params.vector_suite == "length":
         setup.extend(
-            load_vec_reg(
-                "vd", params.vd, params.vd_val_pointer, params, lmul=max(params.lmul, 1), vl_register_or_imm="x0"
-            )
+            load_vec_reg(params.vd, params.vd_val_pointer, params, lmul=max(params.lmul, 1), vl_register_or_imm="x0")
         )
         vd_preloaded = True
         registers.remove(params.vd)
@@ -59,7 +57,7 @@ def format_vmvvi(
     setup.extend(prep_lines)
 
     if not vd_preloaded:
-        setup.extend(load_vec_reg("vd", params.vd, params.vd_val_pointer, params))
+        setup.extend(load_vec_reg(params.vd, params.vd_val_pointer, params))
 
     # No need to reset vtype as there is one vector operand
     if isinstance(vl_register_or_imm, str) and vl_register_or_imm != "x0":

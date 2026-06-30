@@ -103,9 +103,7 @@ def format_vv_like_type(
     # Preload vd at vlmax
     vd_preloaded = False
     if params.vector_suite == "length":
-        setup.extend(
-            load_vec_reg("vd", params.vd, params.vd_val_pointer, params, lmul=max(lmul, 1), vl_register_or_imm="x0")
-        )
+        setup.extend(load_vec_reg(params.vd, params.vd_val_pointer, params, lmul=max(lmul, 1), vl_register_or_imm="x0"))
         vd_preloaded = True
         registers.remove(params.vd)
 
@@ -113,7 +111,7 @@ def format_vv_like_type(
     vs2_preloaded = False
     if params.vector_suite == "length" and preload_vs2:
         setup.extend(
-            load_vec_reg("vs2", params.vs2, params.vs2_val_pointer, params, lmul=max(lmul, 1), vl_register_or_imm="x0")
+            load_vec_reg(params.vs2, params.vs2_val_pointer, params, lmul=max(lmul, 1), vl_register_or_imm="x0")
         )
         vs2_preloaded = True
         registers.remove(params.vs2)
@@ -122,19 +120,20 @@ def format_vv_like_type(
     setup.extend(prep_lines)
 
     if not vd_preloaded:
-        setup.extend(load_vec_reg("vd", params.vd, params.vd_val_pointer, params, lmul=lmul_override))
+        setup.extend(load_vec_reg(params.vd, params.vd_val_pointer, params, lmul=lmul_override))
 
     vs2_lmul = max(lmul * vs2_lmul_multiplier, 1) if not vs2_mask else 1
     if vs2_lmul == lmul or vs2_preloaded:
         vs2_lmul = None  # Don't override anything
+    vs2_sew = int(params.sew * vs2_lmul_multiplier)
 
     if not vs2_preloaded:
         setup.extend(
             load_vec_reg(
-                "vs2",
                 params.vs2,
                 params.vs2_val_pointer,
                 params,
+                sew_override=vs2_sew,
                 lmul=vs2_lmul,
             )
         )

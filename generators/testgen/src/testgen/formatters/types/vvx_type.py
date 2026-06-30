@@ -182,8 +182,16 @@ def format_vvx_like_type(
     vd_preloaded = False
     if params.vector_suite == "length":
         vd_lmul = params.lmul * (2 if "vd" in widen else 1)
+        vd_sew = params.sew * (2 if "vd" in widen else 1)
         setup.extend(
-            load_vec_reg("vd", params.vd, params.vd_val_pointer, params, lmul=max(vd_lmul, 1), vl_register_or_imm="x0")
+            load_vec_reg(
+                params.vd,
+                params.vd_val_pointer,
+                params,
+                sew_override=vd_sew,
+                lmul=max(vd_lmul, 1),
+                vl_register_or_imm="x0",
+            )
         )
         vd_preloaded = True
         registers.remove(params.vd)
@@ -192,7 +200,7 @@ def format_vvx_like_type(
     vs2_preloaded = False
     if params.vector_suite == "length" and enable_vs2_preload:
         setup.extend(
-            load_vec_reg("vs2", params.vs2, params.vs2_val_pointer, params, lmul=params.lmul, vl_register_or_imm="x0")
+            load_vec_reg(params.vs2, params.vs2_val_pointer, params, lmul=params.lmul, vl_register_or_imm="x0")
         )
         vs2_preloaded = True
         registers.remove(params.vs2)
@@ -214,21 +222,28 @@ def format_vvx_like_type(
         vl_overwrite = 1
 
     if not vd_preloaded:
-        vd_lmul_overwrite = params.lmul * (2 if "vd" in widen else 1) if "vd" in widen else lmul_overwrite
+        vd_lmul_overwrite = params.lmul * 2 if "vd" in widen else lmul_overwrite
+        vd_sew = params.sew * (2 if "vd" in widen else 1)
         setup.extend(
             load_vec_reg(
-                "vd", params.vd, params.vd_val_pointer, params, lmul=vd_lmul_overwrite, vl_register_or_imm=vl_overwrite
+                params.vd,
+                params.vd_val_pointer,
+                params,
+                sew_override=vd_sew,
+                lmul=vd_lmul_overwrite,
+                vl_register_or_imm=vl_overwrite,
             )
         )
 
     if not vs2_preloaded:
-        vs2_lmul_overwrite = params.lmul * (2 if "vs2" in widen else 1) if "vs2" in widen else lmul_overwrite
+        vs2_lmul_overwrite = params.lmul * 2 if "vs2" in widen else lmul_overwrite
+        vs2_sew = params.sew * (2 if "vs2" in widen else 1)
         setup.extend(
             load_vec_reg(
-                "vs2",
                 params.vs2,
                 params.vs2_val_pointer,
                 params,
+                sew_override=vs2_sew,
                 lmul=vs2_lmul_overwrite,
                 vl_register_or_imm=vl_overwrite,
             )

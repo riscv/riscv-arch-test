@@ -35,7 +35,7 @@ def make_vs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
 
     test_chunks = []
     for v in range(lower_limit, upper_limit, emul):
-        test_data.vec_regs.allocate_parameter("vs2", v, int(max(lmul, 1)))
+        test_data.vec_regs.allocate_operand("vs2", v, int(max(lmul, 1)))
         params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, vs2=v)
 
         desc = f"cp_vs2 (Test source vs2 = v{v})"
@@ -70,7 +70,7 @@ def make_vs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
 
     test_chunks = []
     for v in range(lower_limit, upper_limit, emul):
-        test_data.vec_regs.allocate_parameter("vs1", v, int(max(lmul, 1)))
+        test_data.vec_regs.allocate_operand("vs1", v, int(max(lmul, 1)))
         params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, vs1=v)
 
         desc = f"cp_vs1 (Test source vs1 = v{v})"
@@ -103,7 +103,7 @@ def make_vs3(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
 
     test_chunks = []
     for v in range(lower_limit, upper_limit, emul):
-        test_data.vec_regs.allocate_parameter("vs3", v, int(max(lmul, 1)))
+        test_data.vec_regs.allocate_operand("vs3", v, int(max(lmul, 1)))
         params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, vs3=v)
 
         desc = "cp_vd (Test destination vs3 = v" + str(v) + ")"
@@ -140,7 +140,7 @@ def make_vd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
 
     test_chunks = []
     for v in range(lower_limit, upper_limit, emul):
-        test_data.vec_regs.allocate_parameter("vd", v, int(max(lmul, 1)))
+        test_data.vec_regs.allocate_operand("vd", v, int(max(lmul, 1)))
         params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, vd=v)
 
         desc = "cp_vd (Test destination vd = v" + str(v) + ")"

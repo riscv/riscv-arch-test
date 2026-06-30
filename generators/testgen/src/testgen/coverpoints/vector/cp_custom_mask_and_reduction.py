@@ -35,7 +35,7 @@ def make_vmask_write_v0_masked(
     # Force vd=0: exercises the case where the mask-producing result is written to v0.
     # maskval="ones" causes mask-capable types (VVSR, WVWSR) to emit v0.t.
     # For MVVM/MVXM the formatter skips mask setup when vd==0 (carry-in is the mask, not a gate).
-    test_data.vec_regs.allocate_parameter("vd", 0, 1)
+    test_data.vec_regs.allocate_operand("vd", 0, 1)
     params = generate_random_vector_params(
         test_data,
         instr_name,
@@ -96,7 +96,7 @@ def make_voffgroup_vd(instr_name: str, instr_type: str, coverpoint: str, test_da
     for v in range(_VREG_COUNT):
         if v % lmul == 0:
             continue
-        test_data.vec_regs.allocate_parameter("vd", v, 1)
+        test_data.vec_regs.allocate_operand("vd", v, 1)
         params = generate_random_vector_params(
             test_data, instr_name, instr_type, lmul=lmul, suite="length", vl="vlmax", vd=v
         )
@@ -116,7 +116,7 @@ def make_voffgroup_vs1(instr_name: str, instr_type: str, coverpoint: str, test_d
     for v in range(_VREG_COUNT):
         if v % lmul == 0:
             continue
-        test_data.vec_regs.allocate_parameter("vs1", v, 1)
+        test_data.vec_regs.allocate_operand("vs1", v, 1)
         params = generate_random_vector_params(
             test_data, instr_name, instr_type, lmul=lmul, suite="length", vl="vlmax", vs1=v
         )
@@ -136,7 +136,7 @@ def make_voffgroup_vs2(instr_name: str, instr_type: str, coverpoint: str, test_d
     for v in range(_VREG_COUNT):
         if v % lmul == 0:
             continue
-        test_data.vec_regs.allocate_parameter("vs2", v, 1)
+        test_data.vec_regs.allocate_operand("vs2", v, 1)
         params = generate_random_vector_params(
             test_data, instr_name, instr_type, lmul=lmul, suite="length", vl="vlmax", vs2=v
         )

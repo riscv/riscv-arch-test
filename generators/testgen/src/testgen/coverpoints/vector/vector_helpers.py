@@ -10,7 +10,6 @@ import random
 import re
 
 from testgen.constants import ELEN, MIN_SEW_MIN
-from testgen.data.config import TestConfig
 from testgen.data.random import random_int
 
 VX_CORNER_NAMES = [
@@ -235,7 +234,24 @@ def _corner_value(corner: str, eew: int) -> int:
 
 @dataclasses.dataclass
 class InstructionInfo:
-    # TODO: Document fields
+    """
+    Information about individual vector instructions.
+
+    This information can be derived from the instruction name alone, and is general information
+    necessary for randomization and test generation. This includes the number of segments in a
+    segmented load/store or the eew of an index register.
+
+    Attributes
+        segments: The number of segments that this instruction uses (e.g. 5 for vlseg5e8.v)
+        load_store_eew: The eew of the data for this instruction (e.g. 8 for vle8.v)
+        index_eew: The eew of the index register (e.g. 16 for vrgatherei16.vv)
+        vext_multiplier: The fractional value that a vext instruction uses to calculate its eew
+            (e.g. 0.125 for vzext.vf8)
+        widen_vs2: Boolean for whether or not vs2 is widened
+        widen_vs1: Boolean for whether or not vs1 is widened
+        widen_vd: Boolean for whether or not vd is widened
+    """
+
     segments: int
     load_store_eew: int | None
     index_eew: int | None
@@ -245,6 +261,14 @@ class InstructionInfo:
     widen_vd: bool
 
     def get_size_multiplier(self, register: str, sew: int) -> int | float:
+        """
+        Get the size multiplier for a given register relative to the sew.
+            e.g. the index register for vrgatherei16 has a size_multiplier of 1/2 at SEW=32
+
+        Args:
+            register: String containing which register it is (vs1, vs2, etc.)
+            sew: Integer SEW for the test (should 8, 16, 32, or 64)
+        """
         if self.vext_multiplier and register == "vs2":
             return self.vext_multiplier
         elif self.index_eew and register == "vs2":
@@ -261,7 +285,13 @@ class InstructionInfo:
 
 
 def extract_instruction_info(instruction: str, instruction_type: str) -> InstructionInfo:
-    """TODO: docstrings everywhere"""
+    """
+    Construct and InstructionInfo object for a given instruction, given its type
+
+    Args:
+        instruction: The name of the instruction under test
+        instruction_type: The type of the instruction under test. This should be the correct type
+    """
     # Extract Segments
     # Generally, a segmented load/store looks like: vl___seg<nf>__.v or vl<nf>re_.v
     segmented_ls_match = re.search(r"v[ls]\w*seg(\d+)\w*.v", instruction)
@@ -316,7 +346,13 @@ def extract_instruction_info(instruction: str, instruction_type: str) -> Instruc
     )
 
 
-def get_legal_lmuls(sew: int, test_config: TestConfig) -> list[int]:
+def get_legal_lmuls(sew: int) -> list[int]:
+    """
+    Get all of the LMUL values guaranteed to be allowed at a given SEW.
+
+    Args:
+        sew: The SEW used to determine what LMULs are available. (e.g. often 2 is available at SEW=32, but not SEW=64)
+    """
     lmulmin = MIN_SEW_MIN / ELEN
 
     legalvlmuls = [0, 1, 2, 3]
@@ -335,6 +371,11 @@ def get_base_lmul(instruction: str, instr_type: str, sew: int) -> float | int:
     """
     Gives an LMUL that ensures a whole register move is aligned, and keeps an indexed operation
     from having an index register with lmul greater than one.
+
+    Args:
+        instruction: Name of the instruction under test
+        instr_type: Type of the instruction under test (these should match)
+        sew: The SEW currently being tested. This is necessary for certain indexed operations
     """
 
     if instr_type == "VMVR":

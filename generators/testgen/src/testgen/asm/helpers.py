@@ -145,13 +145,16 @@ def return_test_regs(test_data: TestData, params: InstructionParams) -> None:
     """
     test_data.int_regs.return_registers(params.used_int_regs)
     test_data.float_regs.return_registers(params.used_float_regs)
-    test_data.vec_regs.deallocate_parameters()
+    test_data.vec_regs.deallocate_operands()
     assert len(test_data.vec_regs.reg_list) == 32, (
         f"Not all vector registers returned: {len(test_data.vec_regs.reg_list)} remaining, they are {test_data.vec_regs.reg_list}"
     )
 
 
 def _lmul_flag(lmul: float) -> str:
+    """
+    Simple Helper to Make an LMUL flag for a vset(i)vl(i) instruction.
+    """
     if lmul < 1:
         return f"f{int(1 / lmul)}"
     else:
@@ -167,6 +170,22 @@ def load_vec_reg(
     lmul: float | None = None,
     vl_register_or_imm: str | int | None = None,
 ) -> list[str]:
+    """
+    Load a vector register.
+
+    Args:
+        name: Name of the register (e.g vs1, vd, etc) (TODO: Remove)
+        register: The number register to load
+        val_pointer: A string that points to a label where the load data exists
+        params: The InstructionParams generated for this instruction. Gives data about default sew and lmul
+
+    Optional Args:
+        lmul: If the load lmul is not the default lmul, it is provided here and an additional vsetvli will be
+            generated so the load happens at the appropriate lmul
+        vl_register_or_imm: Either a register containing vl or vl as an immediate. Used to specify what vl to use
+            when lmul changes or other special cases.
+    """
+    # FIXME: More accurate to pass sew here so that widening things are loaded at the correct sew too!
     lines = []
 
     # Preloads Require Special Handling for V
@@ -195,6 +214,10 @@ def load_vec_reg(
 def write_sigupd_v(
     test_data: TestData, params: InstructionParams, *, mask_producing: bool = False, widen_vd: bool = False
 ) -> list[str]:
+    """
+    Write a base suite SIGUPD macro, correctly handling the use of a different check instruction for mask producing
+    instructions and handles the widening of vd in base suite.
+    """
     assert params.sew is not None
     assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
 
@@ -249,6 +272,23 @@ def write_sigupd_v_len(
     scalar_dest: bool = False,
     mask_reg: int = 0,
 ) -> list[str]:
+    """
+    Write a length-suite vector SIGUPD macro.
+
+    Args:
+        test_data: TestData for the instruction under test
+        params: Parameters for the instruction under test (used to extract SEW)
+        segments: The number of segments used in the instruction. When there are multiple, the sigupd
+            macro may have to be emitted multiple times. (TODO: make this an optional arg)
+        lmul: The lmul that this sigupd should check. Note that this can be different from the test lmul
+
+    Optional Args:
+        widen_vd: When active, SIGUPD will run with 2*SEW as the element width
+        vcompress: Active when the instruction under test is vcompress because vcompress needs special handling
+        scalar_dest: Active when vd only contains one element and needs different handling.
+        mask_reg: Set to the value where the mask register lies (0 by default). Used when the mask is overwritten
+            by the instruction under test.
+    """
     assert params.sew is not None
     assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
 
@@ -294,6 +334,11 @@ def write_sigupd_v_mask_prod(
     test_data: TestData,
     params: InstructionParams,
 ) -> list[str]:
+    """
+    Variant of SIGUPD for mask producing operations that nops in self-check and puts an additional value
+    in the signature in non-self checking mode. This ensures that we can test both the behavior at vlmax
+    and at the test vl, as a valid implementation can do either.
+    """
     assert params.sew is not None, "SEW must be set for vector tests"
     assert params.lmul is not None, "LMUL must be set for vector tests"
     assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
@@ -316,6 +361,9 @@ def write_sigupd_v_mask_prod(
 
 
 def reload_vtype(params: InstructionParams, vl_register_or_imm: str | int) -> str:
+    """
+    Resets the vtype to the state that prep_base_v left it.
+    """
     assert params.lmul is not None, "lmul must be set for vector instructions"
     lmul_flag = "m" + _lmul_flag(params.lmul)
 
@@ -337,6 +385,10 @@ def reload_vtype(params: InstructionParams, vl_register_or_imm: str | int) -> st
 def prep_base_v(
     test_data: TestData, params: InstructionParams, registers: list[int], lmul_override: float | None = None
 ) -> tuple[list[str], str | int]:
+    """
+    Prepares the vector registers for the test by setting vl appropriately, setting up vtype, and when necessary
+    places deterministic values in the tails of vector registers.
+    """
     assert (params.ma is None) == (params.ta is None), "ta and ma must either both be present or absent"
     assert params.lmul is not None or lmul_override is not None, "lmul must be set for vector instructions"
 
@@ -419,6 +471,20 @@ def prep_base_v(
 def prep_mask_v(
     mask_val: str, test_data: TestData, params: InstructionParams, *, clobber_vd: bool = False, vd_v0: bool = False
 ) -> list[str]:
+    """
+    Prepares the mask value for an instruction under test.
+
+    Args:
+        mask_val: Either a label that has the value for the mask, or one of ones, zeros, vlmaxm1_ones, or vlmax2dp1_ones.
+            These values are computed at run time, and this generates code for it.
+        test_data: Relevant test data, and contains the register files so that we have access to temporary registers.
+        params: Gives access to lmul for VLMAX calculation
+
+    Optional Args:
+        clobber_vd: When there are not enough registers, this gives the option to use vd as an lmul-aligned temp register.
+        vd_v0: When vd = v0, v0 is already taken from the register file, so when this flag is active, we overwrite the value in
+            v0 and do not claim it from the register file.
+    """
     assert params.lmul is not None, "LMUL is Required When Setting a Mask Value"
     lmul_flag = _lmul_flag(params.lmul)
 
@@ -508,5 +574,8 @@ def prep_mask_v(
 
 
 def load_vxrm(vxrm: str) -> list[str]:
+    """
+    Generates the instructions to load an individual vxrm.
+    """
     vxrm_set_map = {"rod": "0x6", "rdn": "0x4", "rne": "0x2", "rnu": "0x0"}
     return [f"# Clear vxrm and vcsr, then set vxrm = {vxrm}", "csrci vcsr, 0x6", f"csrsi vcsr, {vxrm_set_map[vxrm]}"]

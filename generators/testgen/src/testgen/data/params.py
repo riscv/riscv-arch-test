@@ -63,11 +63,7 @@ class InstructionParams:
     vs3: int | None = None
     vd: int | None = None
 
-    # Vector register values & pointers
-    vs1_val: int | None = None
-    vs2_val: int | None = None
-    vs3_val: int | None = None
-    vd_val: int | None = None
+    # Vector register pointers
     vs1_val_pointer: str | None = None
     vs2_val_pointer: str | None = None
     vs3_val_pointer: str | None = None
@@ -78,12 +74,12 @@ class InstructionParams:
     sew: int | None = None
     vl: int | str | None = None
     vstart: int | None = None
-    vxrm: str | None = None
     vector_suite: Literal["length", "base"] | None = None
     maskval: str | None = None
-    ta: bool | None = None
-    ma: bool | None = None
-    egs: int | None = None
+    vxrm: str | None = None  # Vector Fixed Point Rounding Mode
+    ta: bool | None = None  # Tail Agnostic
+    ma: bool | None = None  # Mask Agnostic
+    egs: int | None = None  # Element Group Size
 
     # Immediate value
     immval: int | None = None

@@ -59,7 +59,7 @@ def make_vl_lmul(instr_name: str, instr_type: str, coverpoint: str, test_data: T
         max_lmul = max_emul
 
     max_lmul = int(math.log2(max_lmul))
-    min_lmul = min(get_legal_lmuls(sew, test_data.config))
+    min_lmul = min(get_legal_lmuls(sew))
 
     lmul_exponents = list(range(min_lmul, max_lmul + 1))
     vl_options = ["vlmax", egs, "random"]

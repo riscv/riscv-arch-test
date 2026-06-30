@@ -39,6 +39,7 @@ def insert_header_template(
         test_file: Path to the test file (for header comments).
         sigupd_count: Number of signature updates in the test.
         extra_defines: (optional) Additional #define statements for the test.
+        instr_name: (optional) Needed for vector tests to canonicalize extension names.
     """
     template = load_template("testgen_header.S")
     # Extract extension components
@@ -98,6 +99,8 @@ def canonicalize_extensions(
         xlen: XLEN value.
         E_ext: Whether the E extension is enabled.
         required_extensions: If provided, use these extensions instead of parsing from testsuite.
+        sew: Optional. Used in vector suites to determine the base extension
+        instruction: Optional. Used in vector suites to determine whether or not an instruction is part of a base extension
     """
     # Use required_extensions if provided, otherwise parse from testsuite name
     ext_components = required_extensions.copy() if required_extensions else re.findall(r"[A-Z][a-z]*", testsuite)

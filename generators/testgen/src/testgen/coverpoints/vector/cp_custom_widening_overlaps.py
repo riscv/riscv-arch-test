@@ -53,7 +53,7 @@ def _make_overlap_test(
 ) -> TestChunk:
     """VVV-like types: vd, vs2, vs1 are all vector registers.
 
-    allocate_parameter(suppress_overlap=True) bypasses the overlap checker so
+    allocate_operand(suppress_overlap=True) bypasses the overlap checker so
     the intentional overlap is accepted.
     """
     sew = test_data.config.sew
@@ -69,9 +69,9 @@ def _make_overlap_test(
 
     temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
 
-    test_data.vec_regs.allocate_parameter("vd", vd, vd_width, suppress_overlap=True)
-    test_data.vec_regs.allocate_parameter("vs2", vs2, vs2_width, suppress_overlap=True)
-    test_data.vec_regs.allocate_parameter("vs1", vs1, vs1_width, suppress_overlap=True)
+    test_data.vec_regs.allocate_operand("vd", vd, vd_width, suppress_overlap=True)
+    test_data.vec_regs.allocate_operand("vs2", vs2, vs2_width, suppress_overlap=True)
+    test_data.vec_regs.allocate_operand("vs1", vs1, vs1_width, suppress_overlap=True)
 
     params = InstructionParams(
         vd=vd,
@@ -118,8 +118,8 @@ def _make_vvx_overlap_test(
     rs1val = random_int(test_data.xlen)
     temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
 
-    test_data.vec_regs.allocate_parameter("vd", vd, vd_width, suppress_overlap=True)
-    test_data.vec_regs.allocate_parameter("vs2", vs2, vs2_width, suppress_overlap=True)
+    test_data.vec_regs.allocate_operand("vd", vd, vd_width, suppress_overlap=True)
+    test_data.vec_regs.allocate_operand("vs2", vs2, vs2_width, suppress_overlap=True)
 
     params = InstructionParams(
         vd=vd,
@@ -164,8 +164,8 @@ def _make_vvi_overlap_test(
 
     temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
 
-    test_data.vec_regs.allocate_parameter("vd", vd, vd_width, suppress_overlap=True)
-    test_data.vec_regs.allocate_parameter("vs2", vs2, vs2_width, suppress_overlap=True)
+    test_data.vec_regs.allocate_operand("vd", vd, vd_width, suppress_overlap=True)
+    test_data.vec_regs.allocate_operand("vs2", vs2, vs2_width, suppress_overlap=True)
 
     instr_config = get_instr_type_config(instr_type)
     imm_bits = instr_config.imm_bits
@@ -196,9 +196,9 @@ def _make_vvi_overlap_test(
 
 def _probe_free_registers(test_data: TestData, vd: int, emul: int, alignment: int) -> list[int]:
     """Temporarily allocate vd to find registers that do not overlap with it."""
-    test_data.vec_regs.allocate_parameter("_vd_probe", vd, emul, suppress_overlap=True)
+    test_data.vec_regs.allocate_operand("_vd_probe", vd, emul, suppress_overlap=True)
     candidates = list(test_data.vec_regs.free_registers(alignment, 1))
-    test_data.vec_regs.deallocate_parameter("_vd_probe")
+    test_data.vec_regs.deallocate_operand("_vd_probe")
     return candidates
 
 
@@ -339,11 +339,11 @@ def make_vd_overlap_btm_vs2(instr_name: str, instr_type: str, coverpoint: str, t
 
     if "vs1" in required:
         # VWV: consume the full vs2 range during probing so vs1 excludes it.
-        test_data.vec_regs.allocate_parameter("_vd_probe", vd, lmul, suppress_overlap=True)
-        test_data.vec_regs.allocate_parameter("_vs2_probe", vs2, emul, suppress_overlap=True)
+        test_data.vec_regs.allocate_operand("_vd_probe", vd, lmul, suppress_overlap=True)
+        test_data.vec_regs.allocate_operand("_vs2_probe", vs2, emul, suppress_overlap=True)
         vs1_candidates = list(test_data.vec_regs.free_registers(lmul, 1))
-        test_data.vec_regs.deallocate_parameter("_vd_probe")
-        test_data.vec_regs.deallocate_parameter("_vs2_probe")
+        test_data.vec_regs.deallocate_operand("_vd_probe")
+        test_data.vec_regs.deallocate_operand("_vs2_probe")
         vs1 = random.choice(vs1_candidates)
         return [
             _make_overlap_test(
@@ -380,11 +380,11 @@ def make_all_vd_overlap_btm_vs2(
         bin_name = f"cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul{lmul}_vd_v{vd}_vs2_v{vs2}"
 
         if "vs1" in required:
-            test_data.vec_regs.allocate_parameter("_vd_probe", vd, lmul, suppress_overlap=True)
-            test_data.vec_regs.allocate_parameter("_vs2_probe", vs2, emul, suppress_overlap=True)
+            test_data.vec_regs.allocate_operand("_vd_probe", vd, lmul, suppress_overlap=True)
+            test_data.vec_regs.allocate_operand("_vs2_probe", vs2, emul, suppress_overlap=True)
             vs1_candidates = list(test_data.vec_regs.free_registers(lmul, 1))
-            test_data.vec_regs.deallocate_parameter("_vd_probe")
-            test_data.vec_regs.deallocate_parameter("_vs2_probe")
+            test_data.vec_regs.deallocate_operand("_vd_probe")
+            test_data.vec_regs.deallocate_operand("_vs2_probe")
             vs1 = random.choice(vs1_candidates)
             chunks.append(
                 _make_overlap_test(

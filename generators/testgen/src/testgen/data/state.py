@@ -229,6 +229,14 @@ class TestData:
     def register_vector_data(
         self, label: str, sew: int, *, elements: list[int] | None = None, random_elements: int | None = None
     ) -> None:
+        """
+        Registers a label and sew pair to be emitted in the data section. Used in vector tests to not be wasteful
+        by incrementing the data pointer in every test.
+
+        Exactly one of two optional arguments must be passed:
+            elements: List of SEW-wide elements to be emitted in that order in the data section
+            random_elements: Integer number of random elements to be emitted in the data section
+        """
         assert (elements is None) ^ (random_elements is None), (
             "Exactly One of Bytes and Random Bytes Must Be Set for register_vector_data"
         )

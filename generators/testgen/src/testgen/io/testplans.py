@@ -25,6 +25,7 @@ def get_extensions(testplan_dir: Path) -> list[str]:
 
 
 def get_vector_extensions(testplan_dir: Path, *, priv: bool) -> list[str]:
+    """Get the list of vector extensions from the testplan directory, appending any necessary SEW suffixes."""
     if priv:
         testplan_dir = testplan_dir / "priv"
     testplans = []

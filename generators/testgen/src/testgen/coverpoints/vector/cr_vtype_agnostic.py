@@ -59,7 +59,7 @@ def make_vtype_agnostic(instr_name: str, instr_type: str, coverpoint: str, test_
         max_lmul = max_emul
 
     max_lmul = int(math.log2(max_lmul))
-    min_lmul = min(get_legal_lmuls(sew, test_data.config))
+    min_lmul = min(get_legal_lmuls(sew))
 
     if egs != 1:
         # The minlmul for a crypto instruction must assume SEW=32, so lmul >= egs

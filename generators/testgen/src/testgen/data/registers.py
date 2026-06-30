@@ -375,13 +375,16 @@ class FloatRegisterFile(RegisterFile):
 
 
 class VectorRegisterFile(RegisterFile):
+    """Class to represent a vector register file"""
+
     def __init__(self) -> None:
         # There are always 32 Vector Registers
         super().__init__(32)
 
-        # The allocations are more involved with the vector registers because of lmul
+        # The allocations are more involved with the vector registers because of lmul and potential overlaps,
+        # so these values are both necessary to have
         self.allocation_map: dict[int, int] = {}
-        self.parameter_map: dict[str, tuple[int, int]] = {}
+        self.operand_map: dict[str, tuple[int, int]] = {}
 
     def get_registers(
         self,
@@ -392,6 +395,20 @@ class VectorRegisterFile(RegisterFile):
         exclude_regs: list[int] | None = None,
         reg_range: list[int] | None = None,
     ) -> list[int]:
+        """
+        Gets num_regs free registers from the register file, taking into account the desired lmul, number of segments,
+        register exclusions, and a list of desired registers.
+
+        Args:
+            num_regs: The number of registers (not accounting for lmul) to be taken from the register file
+
+        Optional Args:
+            lmul: The lmul that the registers must be aligned to
+            segments: The number of segments to allocate in one allocation. (e.g. with lmul = 2, and segments = 3, this
+                allocates 6 registers at a time, aligned to multiples of 2)
+            exclude_regs: A list of registers not to use
+            reg_range: A list of registers specifically to use
+        """
         registers_available_to_lmul = set()
         for register in range(0, 32, lmul):
             group = set(range(register, register + (lmul * segments)))
@@ -416,9 +433,22 @@ class VectorRegisterFile(RegisterFile):
         exclude_regs: list[int] | None = None,
         reg_range: list[int] | None = None,
     ) -> int:
+        """
+        Gets a single register from the register file (accounting for lmul)
+
+        Optional Args:
+            lmul: The lmul that the registers must be aligned to
+            segments: The number of segments to allocate in one allocation. (e.g. with lmul = 2, and segments = 3, this
+                allocates 6 registers at a time, aligned to multiples of 2)
+            exclude_regs: A list of registers not to use
+            reg_range: A list of registers specifically to use
+        """
         return self.get_registers(1, lmul=lmul, segments=segments, exclude_regs=exclude_regs, reg_range=reg_range)[0]
 
     def free_registers(self, lmul: int, segments: int) -> set[int]:
+        """
+        Returns a set of free registers available to a given lmul and number of segments.
+        """
         registers_available_to_lmul = set()
         for register in range(0, 32, lmul):
             group = set(range(register, register + (lmul * segments)))
@@ -427,19 +457,36 @@ class VectorRegisterFile(RegisterFile):
 
         return self.reg_list & registers_available_to_lmul
 
-    def allocate_parameter(self, name: str, register: int, width: int, *, suppress_overlap: bool = False) -> None:
+    def allocate_operand(self, name: str, register: int, width: int, *, suppress_overlap: bool = False) -> None:
+        """
+        Make a register allocation tied to the name of an operand. This means that an operand can be safely returned
+        to the register file (through deallocate_operand) even if it has an overlap.
+
+        Args:
+            name: The name of the operand (e.g. vd, vs1, vs2)
+            register: The number register to be used (satisfactory registers can be found through free_registers)
+            width: The number of registers in this group (normally lmul * segments)
+
+        Optional Args:
+            suppress_overlap: If the allocation would result in double allocation of a register, this normally throws an
+                error, but when this argument is set no errors are thrown on overlaps.
+        """
         for reg in range(register, register + width):
             if reg in self.reg_list:
                 self.consume_registers([reg])
             elif not suppress_overlap or reg >= self.reg_count:
-                raise ValueError(f"Unable to Allocate Registers for Parameter {name}, v{register} with width {width}")
-        self.parameter_map[name] = (register, width)
+                raise ValueError(f"Unable to Allocate Registers for Operand {name}, v{register} with width {width}")
+        self.operand_map[name] = (register, width)
 
-    def deallocate_parameter(self, name: str) -> None:
-        if not name in self.parameter_map:
+    def deallocate_operand(self, name: str) -> None:
+        """
+        Deallocate an operand allocated through allocate_operand. This respects the other known active allocations and does
+        not return registers that are otherwise still in use.
+        """
+        if not name in self.operand_map:
             return
 
-        register, width = self.parameter_map.pop(name)
+        register, width = self.operand_map.pop(name)
 
         for attempt_deallocate in range(register, register + width):
             # Check for an overlap with anything else currently allocated
@@ -448,18 +495,22 @@ class VectorRegisterFile(RegisterFile):
                 if register2 <= attempt_deallocate < register2 + width2:
                     overlap = True
 
-            for register2, width2 in self.parameter_map.values():
+            for register2, width2 in self.operand_map.values():
                 if register2 <= attempt_deallocate < register2 + width2:
                     overlap = True
 
             if not overlap:
                 self.return_register(attempt_deallocate)
 
-    def deallocate_parameters(self) -> None:
-        for name in list(self.parameter_map.keys()):
-            self.deallocate_parameter(name)
+    def deallocate_operands(self) -> None:
+        """
+        Deallocates all operands.
+        """
+        for name in list(self.operand_map.keys()):
+            self.deallocate_operand(name)
 
     def return_registers(self, regs: list[int]) -> None:
+        """Return all registers in a list to the register file, accounting for the lmul that they were allocated at"""
         reg_groups = []
         for reg in regs:
             # assert reg in self.allocation_map, "Deallocating Vector Registers Must go Through the Base Register"
@@ -472,6 +523,7 @@ class VectorRegisterFile(RegisterFile):
         return super().return_registers(reg_groups)
 
     def return_register(self, reg: int) -> None:
+        """Return a register to the register file, accounting for the lmul it was allocated at"""
         return self.return_registers([reg])
 
     def copy(self) -> VectorRegisterFile:
@@ -479,5 +531,5 @@ class VectorRegisterFile(RegisterFile):
         new_reg_file = VectorRegisterFile()
         new_reg_file.reg_list = self.reg_list.copy()
         new_reg_file.allocation_map = self.allocation_map.copy()
-        new_reg_file.parameter_map = self.parameter_map.copy()
+        new_reg_file.operand_map = self.operand_map.copy()
         return new_reg_file

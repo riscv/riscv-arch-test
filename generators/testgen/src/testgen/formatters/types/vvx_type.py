@@ -237,8 +237,8 @@ def format_vvx_like_type(
         test = [f"{instr_str} v{params.vd}, v{params.vs2}, x{params.rs1}"]
 
     # Return non-vd registers, so that we have enough for length-suite sigupd
-    test_data.vec_regs.deallocate_parameter("vs2")
-    test_data.vec_regs.deallocate_parameter("vs1")
+    test_data.vec_regs.deallocate_operand("vs2")
+    test_data.vec_regs.deallocate_operand("vs1")
 
     if params.vector_suite == "length":
         check = [*write_sigupd_v_len(test_data, params, 1, params.lmul, widen_vd="vd" in widen)]

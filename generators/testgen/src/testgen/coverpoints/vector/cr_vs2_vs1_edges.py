@@ -90,7 +90,6 @@ def make_cross_edges(instr_name: str, instr_type: str, coverpoint: str, test_dat
                 additional_no_overlap={(r1_name, r2_name)},
                 masked=False,
                 suite="base",
-                sew_overwrite=None,
                 **{f"{r1_name}_val_pointer": r1_label, f"{r2_name}_val_pointer": r2_label},
             )
 

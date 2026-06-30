@@ -264,8 +264,8 @@ def format_vvv_like_type(
         test = [f"{instr_str} v{params.vd}, v{params.vs2}, v{params.vs1}"]
 
     # Return non-vd registers, so that we have enough for length-suite sigupd
-    test_data.vec_regs.deallocate_parameter("vs2")
-    test_data.vec_regs.deallocate_parameter("vs1")
+    test_data.vec_regs.deallocate_operand("vs2")
+    test_data.vec_regs.deallocate_operand("vs1")
 
     if params.vector_suite == "length":
         vcompress = type_name == "VCOMPRESS"

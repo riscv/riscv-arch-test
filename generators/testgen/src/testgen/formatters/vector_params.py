@@ -27,6 +27,11 @@ from testgen.formatters.registry import InstructionTypeConfig, get_instr_type_co
 def get_register_emul(
     register_name: str, lmul: float, sew: int, instr_type_config: InstructionTypeConfig, info: InstructionInfo
 ) -> int | float:
+    """
+    Helper function to calculate the emul of a specific register, given the register_name, lmul, sew,
+    type info and instruction info
+    """
+
     emul = lmul * info.get_size_multiplier(register_name, sew)
 
     if (
@@ -47,6 +52,20 @@ def randomize_register(
     info: InstructionInfo,
     preset: int | None = None,
 ) -> int:
+    """
+    Sets a register to a random number (aligned to its emul), or validates a preset vector register.
+
+    Args:
+        register_name: Name of the register (vs2, rs1, etc.)
+        test_data: TestData object. Gives information like sew, and access to the register files.
+        instr_type_config: Type config used to derive emul
+        lmul: lmul value used to derive emul
+        info: InstructionInfo object used to derive emul
+
+    Optional Args:
+        preset: If a preset was passed for this register to generate_random_vector_params, it is validated here.
+    """
+
     if register_name.startswith("v"):
         sew = test_data.config.sew
         assert sew is not None, "SEW must be set when randomizing vector registers"
@@ -86,15 +105,6 @@ def randomize_register(
     raise ValueError(f"Invalid Register Name Given: {register_name}")
 
 
-def random_vector(suite: Literal["base", "length"], test_data: TestData) -> list[int]:
-    # TODO: Don't use config.sew here
-    assert test_data.config.sew is not None, "SEW Must be Set"
-
-    element_count = 1 if suite == "base" else VLEN_MAX // test_data.config.sew
-    elements = [random_int(test_data.config.sew) for _ in range(element_count)]
-    return elements
-
-
 def randomize_registers(
     preset_params: InstructionParams,
     test_data: TestData,
@@ -102,6 +112,16 @@ def randomize_registers(
     info: InstructionInfo,
     lmul: float,
 ) -> InstructionParams:
+    """
+    Randomize all registers used in an operation, and give the non-vector register random values.
+
+    Args:
+        preset_params: InstructionParams object containing the values that must be in the final params object.
+        test_data: TestData object needed for register files
+        instr_type_config: InstructionTypeConfig objecting giving information like the required registers
+        info: InstructionInfo object that will aid emul calculation when picking a random registers
+        lmul: lmul value for the test. Passed to ensure proper alignment of all registers
+    """
     new_params = dataclasses.replace(preset_params)  # Copies preset_params
 
     if instr_type_config.required_params is None:
@@ -161,12 +181,30 @@ def generate_random_vector_params(
     additional_no_overlap: set[tuple[str, str]] | None = None,
     masked: bool = False,
     suite: Literal["length", "base"] = "base",
-    sew_overwrite: int | None = None,
     **fixed_params: Any,  # noqa: ANN401
 ) -> InstructionParams:
+    """
+    Randomize an InstructionParams object, respecting the instruction type's overlap constraints and
+    register alignment constraints.
+
+    Args:
+        test_data: TestData object containing register files and global sew
+        instruction: Instruction under test, required as some EEW and EMUL information is stored in the
+            name of instruction (e.g. index EEWs like in vloxei32)
+        instr_type: Instruction type string that gives overlap requirements, and required registers
+        lmul: The lmul that the test will be run at. Required for proper alignment
+
+    Optional Args:
+        additional_no_overlap: Set of pairs of registers that cannot overlap. Used in case where the tests
+            need to be stricter than the spec, like when multiple edge values are needed at the same time.
+        masked: Boolean that tells the generate whether or not to generate a mask value and to use mask constraints.
+        suite: Sets whether the test is base suite or length suite. Base by default.
+        fixed_params: kwargs argument that sets any default value for the resulting InstructionParams object
+    """
+
     test_count = test_data.test_count
 
-    sew = test_data.config.sew if sew_overwrite is None else sew_overwrite
+    sew = test_data.config.sew
     assert sew is not None, "SEW must be set for Vector Instructions"
 
     preset_params = InstructionParams(**fixed_params)
@@ -372,7 +410,7 @@ def generate_random_vector_params(
                 segments = 1
 
             width = math.ceil(get_register_emul(register, lmul, sew, instr_type_config, info)) * segments
-            test_data.vec_regs.allocate_parameter(register, params_dict[register], width, suppress_overlap=True)
+            test_data.vec_regs.allocate_operand(register, params_dict[register], width, suppress_overlap=True)
 
     # immediate handling
     if instr_type_config.required_params and params.immval is None and "immval" in instr_type_config.required_params:

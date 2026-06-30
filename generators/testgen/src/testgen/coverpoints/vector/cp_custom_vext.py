@@ -45,8 +45,8 @@ def _make_vext_overlap_test(
 
     temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
 
-    test_data.vec_regs.allocate_parameter("vd", vd, vd_emul, suppress_overlap=True)
-    test_data.vec_regs.allocate_parameter("vs2", vs2, vs2_emul, suppress_overlap=True)
+    test_data.vec_regs.allocate_operand("vd", vd, vd_emul, suppress_overlap=True)
+    test_data.vec_regs.allocate_operand("vs2", vs2, vs2_emul, suppress_overlap=True)
 
     params = InstructionParams(
         vd=vd,

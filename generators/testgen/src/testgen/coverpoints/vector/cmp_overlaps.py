@@ -76,8 +76,8 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
     for v in range(lower_bound, upper_bound, emul):
         try:
             presets = {v1: v, v2: v}
-            test_data.vec_regs.allocate_parameter(v1, v, int(max(lmul, 1)))
-            test_data.vec_regs.allocate_parameter(v2, v, int(max(lmul, 1)), suppress_overlap=True)
+            test_data.vec_regs.allocate_operand(v1, v, int(max(lmul, 1)))
+            test_data.vec_regs.allocate_operand(v2, v, int(max(lmul, 1)), suppress_overlap=True)
             params = generate_random_vector_params(
                 test_data,
                 instr_name,
@@ -89,7 +89,7 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
                 **presets,
             )
         except ValueError:
-            test_data.vec_regs.deallocate_parameters()
+            test_data.vec_regs.deallocate_operands()
             continue
 
         desc = f"cmp_{v1}_{v2} (Test {v1} = {v2} = v{v})"
@@ -127,9 +127,9 @@ def make_three_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_d
     for v in range(lower_bound, upper_bound, emul):
         try:
             presets = {v1: v, v2: v, v3: v}
-            test_data.vec_regs.allocate_parameter(v1, v, int(max(lmul, 1)))
-            test_data.vec_regs.allocate_parameter(v2, v, int(max(lmul, 1)), suppress_overlap=True)
-            test_data.vec_regs.allocate_parameter(v3, v, int(max(lmul, 1)), suppress_overlap=True)
+            test_data.vec_regs.allocate_operand(v1, v, int(max(lmul, 1)))
+            test_data.vec_regs.allocate_operand(v2, v, int(max(lmul, 1)), suppress_overlap=True)
+            test_data.vec_regs.allocate_operand(v3, v, int(max(lmul, 1)), suppress_overlap=True)
             params = generate_random_vector_params(
                 test_data,
                 instr_name,

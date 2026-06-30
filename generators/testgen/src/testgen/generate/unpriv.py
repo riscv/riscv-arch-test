@@ -57,6 +57,7 @@ def generate_unpriv_extension_tests(
         testsuite: Testsuite to generate tests for (e.g., 'I', 'M', 'ZcbM', 'MisalignD')
         testplan_dir: Directory containing testplan CSV files
         output_test_dir: Directory to output generated tests
+        is_vector: Set in vector test suites
     """
     # Read testplan for this testsuite
     if is_vector:
@@ -100,6 +101,11 @@ def generate_unpriv_extension_tests(
 
 
 def _detect_sew(testsuite: str) -> int:
+    """
+    Extracts the SEW from a testsuite name
+        e.g. _detect_sew("Vx64") = 64
+    """
+
     for pattern in [
         r"Vx(\d+)$",
         r"Vls(\d+)$",
@@ -146,6 +152,7 @@ def _generate_unpriv_tests_for_instruction(
         coverpoints: List of coverpoints to generate
         test_config: Test configuration
         output_dir: Directory to output generated tests
+        is_vector: Set in vector test suites
     """
     test_data = TestData(test_config, instr_name)
     all_test_chunks: list[TestChunk] = []

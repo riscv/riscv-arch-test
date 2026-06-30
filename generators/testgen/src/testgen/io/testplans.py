@@ -18,7 +18,6 @@ def get_extensions(testplan_dir: Path) -> list[str]:
     extensions: list[str] = []
     for testplan in testplan_dir.glob("*.csv"):
         extension = testplan.stem
-        # TODO: Remove once vector testgen is merged
         if ("V" not in extension and "Zv" not in extension) or extension == "ZfaZvfh":
             extensions.append(extension)
     return extensions

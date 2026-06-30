@@ -21,15 +21,21 @@ from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig,
 vvv_config = InstructionTypeConfig(required_params={"vd", "vs1", "vs2"}, vector_data=VectorTypeConfig())
 wvv_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
-    vector_data=VectorTypeConfig(overlap_constraints={("vd_bottom", "vs1"), ("vd_bottom", "vs2")}),
+    vector_data=VectorTypeConfig(overlap_constraints={("vd_bottom", "vs1"), ("vd_bottom", "vs2")}, widened_regs={"vd"}),
 )
 vwv_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
-    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2_top"), ("vs1", "vs2")}),
+    vector_data=VectorTypeConfig(
+        overlap_constraints={("vd", "vs2_top"), ("vs1", "vs2")},
+        widened_regs={"vs2"},
+    ),
 )
 wwv_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
-    vector_data=VectorTypeConfig(overlap_constraints={("vd_bottom", "vs1"), ("vs1", "vs2")}),
+    vector_data=VectorTypeConfig(
+        overlap_constraints={("vd_bottom", "vs1"), ("vs1", "vs2")},
+        widened_regs={"vd", "vs2"},
+    ),
 )
 vvvm_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2", "maskval"},
@@ -40,7 +46,7 @@ vvvm_config = InstructionTypeConfig(
 vvv_acc_config = InstructionTypeConfig(required_params={"vd", "vs1", "vs2"}, vector_data=VectorTypeConfig())
 wvv_acc_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
-    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2"), ("vd", "vs1")}),
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2"), ("vd", "vs1")}, widened_regs={"vd"}),
 )
 vvv_sat_config = InstructionTypeConfig(required_params={"vd", "vs1", "vs2"}, vector_data=VectorTypeConfig())
 vvvp_config = InstructionTypeConfig(
@@ -168,7 +174,6 @@ def format_vvv_like_type(
     if widen is None:
         widen = set()
 
-    # TODO: constants.py change test split limit and ensure everything works
     test_data.test_chunk.vector_labels.extend(
         [
             (params.vs1_val_pointer, *test_data.vector_labels[params.vs1_val_pointer]),

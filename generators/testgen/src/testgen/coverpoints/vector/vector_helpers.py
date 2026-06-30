@@ -11,6 +11,7 @@ import re
 
 from testgen.constants import ELEN, MIN_SEW_MIN
 from testgen.data.random import random_int
+from testgen.formatters.registry import get_instr_type_config
 
 VX_CORNER_NAMES = [
     "zero",
@@ -72,8 +73,8 @@ fedges = {
     "min_subnorm": 0x00000001,  # smallest positive subnorm
     "canonicalQNaN": 0x7FC00000,  # canonical quiet NaN
     "negNoncanonicalQNaN": 0xFFFFFFFF,  # noncanonical quiet NaN
-    "sNaN_payload1": 0x7F800001,
-}  # signaling NaN with lsb set
+    "sNaN_payload1": 0x7F800001,  # signaling NaN with lsb set
+}
 
 fedgesD = {
     "pos0": 0x0000000000000000,  # 0
@@ -95,8 +96,8 @@ fedgesD = {
     "min_subnorm": 0x0000000000000001,  # smallest positive subnorm
     "canonicalQNaN": 0x7FF8000000000000,  # canonical quiet NaN
     "negNoncanonicalQNaN": 0xFFFFFFFFFFFFFFFF,  # noncanonical quiet NaN
-    "sNaN_payload1": 0x7FF0000000000001,
-}  # signaling NaN with lsb set
+    "sNaN_payload1": 0x7FF0000000000001,  # signaling NaN with lsb set
+}
 
 fedgesH = {
     "pos0": 0x0000,  # 0
@@ -118,8 +119,8 @@ fedgesH = {
     "min_subnorm": 0x0001,  # smallest positive subnorm
     "canonicalQNaN": 0x7E00,  # canonical quiet NaN
     "negNoncanonicalQNaN": 0xFFFF,  # noncanonical quiet NaN
-    "sNaN_payload1": 0x7D01,
-}  # signaling NaN with lsb set
+    "sNaN_payload1": 0x7D01,  # signaling NaN with lsb set
+}
 
 fedgesBF16 = {
     "pos0": 0x0000,  # 0
@@ -141,8 +142,8 @@ fedgesBF16 = {
     "min_subnorm": 0x0001,  # smallest positive subnorm
     "canonicalQNaN": 0x7FC0,  # canonical quiet NaN
     "negNoncanonicalQNaN": 0xFFFF,  # noncanonical quiet NaN
-    "sNaN_payload1": 0x7F81,
-}  # signaling NaN with lsb set
+    "sNaN_payload1": 0x7F81,  # signaling NaN with lsb set
+}
 
 
 def get_corner_value(corner: str, suffix: str, sew: int) -> int:
@@ -256,9 +257,7 @@ class InstructionInfo:
     load_store_eew: int | None
     index_eew: int | None
     vext_multiplier: float | None
-    widen_vs2: bool
-    widen_vs1: bool
-    widen_vd: bool
+    widened_regs: set[str]
 
     def get_size_multiplier(self, register: str, sew: int) -> int | float:
         """
@@ -275,11 +274,7 @@ class InstructionInfo:
             return self.index_eew / sew
         elif self.load_store_eew and register in ["vs3", "vd"]:  # Either one or the other exists for these instructions
             return self.load_store_eew / sew
-        elif (
-            (self.widen_vd and register == "vd")
-            or (self.widen_vs2 and register == "vs2")
-            or (self.widen_vs1 and register == "vs1")
-        ):
+        elif register in self.widened_regs:
             return 2
         return 1
 
@@ -313,36 +308,17 @@ def extract_instruction_info(instruction: str, instruction_type: str) -> Instruc
 
     vext_multiplier = 1 / int(instruction[-1]) if instruction_type == "VEXT" else None
 
-    vd_widen = vs2_widen = vs1_widen = False
-    # TODO: Move to InstructionTypeConfig
-    if instruction_type in ["WWV", "WWX", "FWWF", "VWV", "VWX", "VWI"]:
-        vs2_widen = True
-    if instruction_type in [
-        "WVWSR",
-        "FWVWSR",
-        "WVV",
-        "WVX",
-        "WWV",
-        "WWX",
-        "WVS",
-        "FWVF",
-        "FWWF",
-        "FWCVT",
-        "WVX_ACC",
-        "WVV_ACC",
-    ]:
-        vd_widen = True
-    if instruction_type in ["WVWSR", "FWVWSR"]:
-        vs1_widen = True
+    instr_type_config = get_instr_type_config(instruction_type)
+    assert instr_type_config.vector_data is not None, "vector_data must be provided for a vector instruction type"
+
+    widened_regs = instr_type_config.vector_data.widened_regs
 
     return InstructionInfo(
         segments=segments,
         load_store_eew=load_store_eew,
         index_eew=index_eew,
         vext_multiplier=vext_multiplier,
-        widen_vd=vd_widen,
-        widen_vs1=vs1_widen,
-        widen_vs2=vs2_widen,
+        widened_regs=widened_regs,
     )
 
 

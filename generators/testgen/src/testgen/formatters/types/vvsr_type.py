@@ -24,8 +24,7 @@ vvsr_config = InstructionTypeConfig(
 wvwsr_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
     vector_data=VectorTypeConfig(
-        overlap_constraints={("vs2", "vs1")},
-        scalar_regs={"vd", "vs1"},
+        overlap_constraints={("vs2", "vs1")}, scalar_regs={"vd", "vs1"}, widened_regs={"vd", "vs1"}
     ),
 )
 

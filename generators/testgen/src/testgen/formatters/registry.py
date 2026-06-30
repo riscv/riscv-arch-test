@@ -51,12 +51,14 @@ class VectorTypeConfig:
         masked_constraints: Set of pairs of vector register that cannot overlap only when masked
         mask_regs: Set of registers used as mask registers
         scalar_regs: Set of registers used as scalar registers
+        widened_regs: Set of registers that are widened
     """
 
     overlap_constraints: set[tuple[str, str]] = field(default_factory=set)
     masked_constraints: set[tuple[str, str]] = field(default_factory=set)
     mask_regs: set[str] = field(default_factory=set)
     scalar_regs: set[str] = field(default_factory=set)
+    widened_regs: set[str] = field(default_factory=set)
 
 
 @dataclass

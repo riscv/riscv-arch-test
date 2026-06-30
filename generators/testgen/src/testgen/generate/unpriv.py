@@ -174,7 +174,7 @@ def _generate_unpriv_tests_for_instruction(
             sew = test_config.sew
             vdsew = sew
             info = extract_instruction_info(instr_name, instr_type)
-            if info.widen_vd:
+            if "vd" in info.widened_regs:
                 vdsew *= 2
             elif info.load_store_eew == 64:
                 vdsew = 64

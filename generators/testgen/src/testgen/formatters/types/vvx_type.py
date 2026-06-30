@@ -20,19 +20,24 @@ from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig,
 
 vvx_config = InstructionTypeConfig(required_params={"vd", "rs1", "vs2"}, vector_data=VectorTypeConfig())
 wvx_config = InstructionTypeConfig(
-    required_params={"vd", "rs1", "vs2"}, vector_data=VectorTypeConfig(overlap_constraints={("vd_bottom", "vs2")})
+    required_params={"vd", "rs1", "vs2"},
+    vector_data=VectorTypeConfig(overlap_constraints={("vd_bottom", "vs2")}, widened_regs={"vd"}),
 )
 vwx_config = InstructionTypeConfig(
-    required_params={"vd", "rs1", "vs2"}, vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2_top")})
+    required_params={"vd", "rs1", "vs2"},
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2_top")}, widened_regs={"vs2"}),
 )
-wwx_config = InstructionTypeConfig(required_params={"vd", "rs1", "vs2"}, vector_data=VectorTypeConfig())
+wwx_config = InstructionTypeConfig(
+    required_params={"vd", "rs1", "vs2"}, vector_data=VectorTypeConfig(widened_regs={"vd", "vs2"})
+)
 vvxm_config = InstructionTypeConfig(
     required_params={"vd", "rs1", "vs2", "maskval"},
     vector_data=VectorTypeConfig(overlap_constraints={("vd", "v0"), ("vs2", "v0")}),
 )
 vvx_acc_config = InstructionTypeConfig(required_params={"vd", "rs1", "vs2"}, vector_data=VectorTypeConfig())
 wvx_acc_config = InstructionTypeConfig(
-    required_params={"vd", "rs1", "vs2"}, vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")})
+    required_params={"vd", "rs1", "vs2"},
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}, widened_regs={"vd"}),
 )
 vvx_sat_config = InstructionTypeConfig(required_params={"vd", "rs1", "vs2"}, vector_data=VectorTypeConfig())
 vvxp_config = InstructionTypeConfig(

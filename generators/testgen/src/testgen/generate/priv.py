@@ -132,7 +132,6 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
         flen=64,
         testsuite=testsuite,
         E_ext=False,
-        vlen_max=1024,
         # config_dependent=True,
         required_extensions=get_priv_test_required_extensions(testsuite),
         march_extensions=get_priv_test_march_extensions(testsuite),

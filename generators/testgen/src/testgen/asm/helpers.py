@@ -453,7 +453,7 @@ def prep_base_v(
         lines.extend(
             [
                 "# Load Desired VL",
-                f"li x{params.temp_reg}, {vl}",
+                f"LI (x{params.temp_reg}, {vl})",
                 f"vsetvli x0, x{params.temp_reg}, e{params.sew}, {flags}",
             ]
         )
@@ -462,7 +462,7 @@ def prep_base_v(
 
     if params.vstart is not None:
         lines.extend(
-            ["# Load Desired Vstart", f"li x{params.temp_reg}, {params.vstart}", f"csrw vstart, x{params.temp_reg}"]
+            ["# Load Desired Vstart", f"LI (x{params.temp_reg}, {params.vstart})", f"csrw vstart, x{params.temp_reg}"]
         )
 
     return lines, vl_register_or_imm

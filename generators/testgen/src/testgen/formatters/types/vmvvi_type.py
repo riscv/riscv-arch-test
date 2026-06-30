@@ -14,9 +14,9 @@ from testgen.asm.helpers import (
 )
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
-from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
+from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
 
-vmvvi_config = InstructionTypeConfig(required_params={"vd", "immval"}, imm_bits=5)
+vmvvi_config = InstructionTypeConfig(required_params={"vd", "immval"}, imm_bits=5, vector_data=VectorTypeConfig())
 
 
 @add_instruction_formatter("VMVVI", vmvvi_config)

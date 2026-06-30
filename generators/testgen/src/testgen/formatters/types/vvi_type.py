@@ -16,23 +16,35 @@ from testgen.asm.helpers import (
 )
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
-from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
+from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
 
-vvi_config = InstructionTypeConfig(required_params={"vd", "immval", "vs2"}, imm_bits=5)
-vviu_config = InstructionTypeConfig(required_params={"vd", "immval", "vs2"}, imm_bits=5, imm_signed=False)
+vvi_config = InstructionTypeConfig(required_params={"vd", "immval", "vs2"}, imm_bits=5, vector_data=VectorTypeConfig())
+vviu_config = InstructionTypeConfig(
+    required_params={"vd", "immval", "vs2"}, imm_bits=5, imm_signed=False, vector_data=VectorTypeConfig()
+)
 vwi_config = InstructionTypeConfig(
-    required_params={"vd", "immval", "vs2"}, vector_overlap_constraints={("vd", "vs2")}, imm_bits=5, imm_signed=False
+    required_params={"vd", "immval", "vs2"},
+    imm_bits=5,
+    imm_signed=False,
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}),
 )
 vvim_config = InstructionTypeConfig(
     required_params={"vd", "immval", "vs2", "maskval"},
-    vector_overlap_constraints={("vd", "v0"), ("vs2", "v0")},
     imm_bits=5,
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "v0"), ("vs2", "v0")}),
 )
-vvi_sat_config = InstructionTypeConfig(required_params={"vd", "immval", "vs2"}, imm_bits=5)
+vvi_sat_config = InstructionTypeConfig(
+    required_params={"vd", "immval", "vs2"}, imm_bits=5, vector_data=VectorTypeConfig()
+)
 vvip_config = InstructionTypeConfig(
-    required_params={"vd", "immval", "vs2"}, vector_overlap_constraints={("vd", "vs2")}, imm_bits=5, imm_signed=False
+    required_params={"vd", "immval", "vs2"},
+    imm_bits=5,
+    imm_signed=False,
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}),
 )
-vvip_down_config = InstructionTypeConfig(required_params={"vd", "immval", "vs2"}, imm_bits=5, imm_signed=False)
+vvip_down_config = InstructionTypeConfig(
+    required_params={"vd", "immval", "vs2"}, imm_bits=5, imm_signed=False, vector_data=VectorTypeConfig()
+)
 
 
 @add_instruction_formatter("VVI", vvi_config)

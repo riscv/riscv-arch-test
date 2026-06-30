@@ -15,16 +15,18 @@ from testgen.asm.helpers import (
 )
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
-from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
+from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
 
 vvsr_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
-    vector_scalar_regs={"vd", "vs1"},
+    vector_data=VectorTypeConfig(scalar_regs={"vd", "vs1"}),
 )
 wvwsr_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
-    vector_overlap_constraints={("vs2", "vs1")},
-    vector_scalar_regs={"vd", "vs1"},
+    vector_data=VectorTypeConfig(
+        overlap_constraints={("vs2", "vs1")},
+        scalar_regs={"vd", "vs1"},
+    ),
 )
 
 

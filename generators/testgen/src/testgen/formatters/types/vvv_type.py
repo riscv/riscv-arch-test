@@ -16,33 +16,40 @@ from testgen.asm.helpers import (
 )
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
-from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
+from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
 
-vvv_config = InstructionTypeConfig(required_params={"vd", "vs1", "vs2"})
+vvv_config = InstructionTypeConfig(required_params={"vd", "vs1", "vs2"}, vector_data=VectorTypeConfig())
 wvv_config = InstructionTypeConfig(
-    required_params={"vd", "vs1", "vs2"}, vector_overlap_constraints={("vd_bottom", "vs1"), ("vd_bottom", "vs2")}
+    required_params={"vd", "vs1", "vs2"},
+    vector_data=VectorTypeConfig(overlap_constraints={("vd_bottom", "vs1"), ("vd_bottom", "vs2")}),
 )
 vwv_config = InstructionTypeConfig(
-    required_params={"vd", "vs1", "vs2"}, vector_overlap_constraints={("vd", "vs2_top"), ("vs1", "vs2")}
+    required_params={"vd", "vs1", "vs2"},
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2_top"), ("vs1", "vs2")}),
 )
 wwv_config = InstructionTypeConfig(
-    required_params={"vd", "vs1", "vs2"}, vector_overlap_constraints={("vd_bottom", "vs1"), ("vs1", "vs2")}
+    required_params={"vd", "vs1", "vs2"},
+    vector_data=VectorTypeConfig(overlap_constraints={("vd_bottom", "vs1"), ("vs1", "vs2")}),
 )
 vvvm_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2", "maskval"},
-    vector_overlap_constraints={("vd", "v0"), ("vs1", "v0"), ("vs2", "v0")},
+    vector_data=VectorTypeConfig(
+        overlap_constraints={("vd", "v0"), ("vs1", "v0"), ("vs2", "v0")},
+    ),
 )
-vvv_acc_config = InstructionTypeConfig(required_params={"vd", "vs1", "vs2"})
+vvv_acc_config = InstructionTypeConfig(required_params={"vd", "vs1", "vs2"}, vector_data=VectorTypeConfig())
 wvv_acc_config = InstructionTypeConfig(
-    required_params={"vd", "vs1", "vs2"}, vector_overlap_constraints={("vd", "vs2"), ("vd", "vs1")}
+    required_params={"vd", "vs1", "vs2"},
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2"), ("vd", "vs1")}),
 )
-vvv_sat_config = InstructionTypeConfig(required_params={"vd", "vs1", "vs2"})
+vvv_sat_config = InstructionTypeConfig(required_params={"vd", "vs1", "vs2"}, vector_data=VectorTypeConfig())
 vvvp_config = InstructionTypeConfig(
-    required_params={"vd", "vs1", "vs2"}, vector_overlap_constraints={("vd", "vs1"), ("vd", "vs2")}
+    required_params={"vd", "vs1", "vs2"},
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs1"), ("vd", "vs2")}),
 )
 vcompress_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
-    vector_overlap_constraints={("vd", "vs1"), ("vd", "vs2"), ("vs1", "vs2")},
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs1"), ("vd", "vs2"), ("vs1", "vs2")}),
 )
 
 

@@ -21,11 +21,11 @@ from testgen.coverpoints.vector.vector_helpers import InstructionInfo, extract_i
 from testgen.data.params import InstructionParams
 from testgen.data.random import random_int, random_range
 from testgen.data.state import TestData
-from testgen.formatters.registry import InstructionTypeConfig, get_instr_type_config
+from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, get_instr_type_config
 
 
 def get_register_emul(
-    register_name: str, lmul: float, sew: int, instr_type_config: InstructionTypeConfig, info: InstructionInfo
+    register_name: str, lmul: float, sew: int, vector_type_config: VectorTypeConfig, info: InstructionInfo
 ) -> int | float:
     """
     Helper function to calculate the emul of a specific register, given the register_name, lmul, sew,
@@ -35,8 +35,8 @@ def get_register_emul(
     emul = lmul * info.get_size_multiplier(register_name, sew)
 
     if (
-        (instr_type_config.vector_mask_regs is not None and register_name in instr_type_config.vector_mask_regs)
-        or (instr_type_config.vector_scalar_regs is not None and register_name in instr_type_config.vector_scalar_regs)
+        (vector_type_config.mask_regs is not None and register_name in vector_type_config.mask_regs)
+        or (vector_type_config.scalar_regs is not None and register_name in vector_type_config.scalar_regs)
         or emul < 1
     ):
         emul = 1
@@ -71,10 +71,15 @@ def randomize_register(
         assert sew is not None, "SEW must be set when randomizing vector registers"
 
         segments = info.segments
-        if instr_type_config.vector_role and "index" in instr_type_config.vector_role and register_name == "vs2":
+        if (
+            instr_type_config.instruction_class
+            and "index" in instr_type_config.instruction_class
+            and register_name == "vs2"
+        ):
             segments = 1
 
-        emul = int(get_register_emul(register_name, lmul, sew, instr_type_config, info))
+        assert instr_type_config.vector_data is not None, "Vector Data must be provided for vector instruction types"
+        emul = int(get_register_emul(register_name, lmul, sew, instr_type_config.vector_data, info))
 
         # If the assignment was already set, validate it
         if preset is not None:
@@ -148,7 +153,7 @@ def randomize_registers(
                 new_params.rs2val = random_int(test_data.config.xlen)
     if "rs1" in registers:
         new_params.rs1 = randomize_register("rs1", test_data, instr_type_config, lmul, info, new_params.rs1)
-        if new_params.rs1val_pointer is not None and instr_type_config.vector_role in ["load", "store"]:
+        if new_params.rs1val_pointer is not None and instr_type_config.instruction_class in ["load", "store"]:
             new_params.rs1val_pointer = "vector_ls_random_base"
 
             assert test_data.config.sew is not None, "SEW must be Set For Vector Register Randomization"
@@ -180,14 +185,14 @@ def get_overlap_constraints(instr_type_config: InstructionTypeConfig, masked: bo
     no_overlap: set[tuple[str, str]] = set()
 
     # Normal constrains
-    if instr_type_config.vector_overlap_constraints is not None:
-        no_overlap |= instr_type_config.vector_overlap_constraints
+    assert instr_type_config.vector_data is not None, "vector_data must be provided for vector instruction types"
+    no_overlap |= instr_type_config.vector_data.overlap_constraints
 
     # Specific Masked Constraints
     if masked:
         # Either use the overrides, or assume that there is no overlap with v0 in the masked case
-        if instr_type_config.vector_masked_constraints is not None:
-            no_overlap |= instr_type_config.vector_masked_constraints
+        if instr_type_config.vector_data.masked_constraints is not None:
+            no_overlap |= instr_type_config.vector_data.masked_constraints
         elif instr_type_config.required_params is not None:
             # Unless otherwise specified, do not overlap v0
             for reg in instr_type_config.required_params:
@@ -345,15 +350,19 @@ def generate_random_vector_params(
     preset_params = InstructionParams(**fixed_params)
 
     instr_type_config = get_instr_type_config(instr_type)
+    assert instr_type_config.vector_data is not None, (
+        f"Vector Data must be provided for vector instruction type {instr_type}"
+    )
+
     no_overlap = get_overlap_constraints(instr_type_config, masked)
     if additional_no_overlap is not None:
         no_overlap |= additional_no_overlap
 
-    mask_vector_regs = instr_type_config.vector_mask_regs
+    mask_vector_regs = instr_type_config.vector_data.mask_regs
     if mask_vector_regs is None:
         mask_vector_regs = set()
 
-    scalar_vector_regs = instr_type_config.vector_scalar_regs
+    scalar_vector_regs = instr_type_config.vector_data.scalar_regs
     if scalar_vector_regs is None:
         scalar_vector_regs = set()
 
@@ -432,10 +441,14 @@ def generate_random_vector_params(
     for register in registers:
         if params_dict[register] != preset_params_dict[register] and register.startswith("v"):
             segments = info.segments
-            if instr_type_config.vector_role and "index" not in instr_type_config.vector_role and register != "vs2":
+            if (
+                instr_type_config.instruction_class
+                and "index" not in instr_type_config.instruction_class
+                and register != "vs2"
+            ):
                 segments = 1
 
-            width = math.ceil(get_register_emul(register, lmul, sew, instr_type_config, info)) * segments
+            width = math.ceil(get_register_emul(register, lmul, sew, instr_type_config.vector_data, info)) * segments
             test_data.vec_regs.allocate_operand(register, params_dict[register], width, suppress_overlap=True)
 
         if register.startswith("v") and params_dict[f"{register}_val_pointer"] is None:

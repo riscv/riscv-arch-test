@@ -16,58 +16,75 @@ from testgen.asm.helpers import (
 )
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
-from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
+from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
 
 # Mask = Mask op Mask
-mmm_config = InstructionTypeConfig(required_params={"vd", "vs1", "vs2"}, vector_mask_regs={"vd", "vs1", "vs2"})
+mmm_config = InstructionTypeConfig(
+    required_params={"vd", "vs1", "vs2"}, vector_data=VectorTypeConfig(mask_regs={"vd", "vs1", "vs2"})
+)
 # Mask = Vector op Vector
 mvv_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
-    vector_mask_regs={"vd"},
-    vector_masked_constraints={("vs1", "v0"), ("vs2", "v0")},
+    vector_data=VectorTypeConfig(
+        mask_regs={"vd"},
+        masked_constraints={("vs1", "v0"), ("vs2", "v0")},
+    ),
 )
 # Mask = Vector op Integer
 mvx_config = InstructionTypeConfig(
-    required_params={"vd", "rs1", "vs2"}, vector_mask_regs={"vd"}, vector_masked_constraints={("vs2", "v0")}
+    required_params={"vd", "rs1", "vs2"},
+    vector_data=VectorTypeConfig(mask_regs={"vd"}, masked_constraints={("vs2", "v0")}),
 )
 # Mask = Vector op Immediate
 mvi_config = InstructionTypeConfig(
     required_params={"vd", "vs2", "immval"},
-    vector_mask_regs={"vd"},
-    vector_masked_constraints={("vs2", "v0")},
     imm_bits=5,
+    vector_data=VectorTypeConfig(mask_regs={"vd"}, masked_constraints={("vs2", "v0")}),
 )
 # Mask = Vector op Vector (carry variant, so not maskable)
-mvvc_config = InstructionTypeConfig(required_params={"vd", "vs1", "vs2"}, vector_mask_regs={"vd"})
+mvvc_config = InstructionTypeConfig(
+    required_params={"vd", "vs1", "vs2"}, vector_data=VectorTypeConfig(mask_regs={"vd"})
+)
 # Mask = Vector op Integer (carry variant, so not maskable)
-mvxc_config = InstructionTypeConfig(required_params={"vd", "rs1", "vs2"}, vector_mask_regs={"vd"})
+mvxc_config = InstructionTypeConfig(
+    required_params={"vd", "rs1", "vs2"}, vector_data=VectorTypeConfig(mask_regs={"vd"})
+)
 # Mask = Vector op Immediate (carry variant, so not maskable)
-mvic_config = InstructionTypeConfig(required_params={"vd", "vs2", "immval"}, vector_mask_regs={"vd"}, imm_bits=5)
+mvic_config = InstructionTypeConfig(
+    required_params={"vd", "vs2", "immval"}, imm_bits=5, vector_data=VectorTypeConfig(mask_regs={"vd"})
+)
 # Mask = Vector op Vector op Mask
 mvvm_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2", "maskval"},
-    vector_mask_regs={"vd"},
-    vector_overlap_constraints={("vs2", "v0"), ("vs1", "v0")},
+    vector_data=VectorTypeConfig(
+        mask_regs={"vd"},
+        overlap_constraints={("vs2", "v0"), ("vs1", "v0")},
+    ),
 )
 # Mask = Vector op Integer op Mask
 mvxm_config = InstructionTypeConfig(
     required_params={"vd", "rs1", "vs2", "maskval"},
-    vector_mask_regs={"vd"},
-    vector_overlap_constraints={("vs2", "v0")},
+    vector_data=VectorTypeConfig(
+        mask_regs={"vd"},
+        overlap_constraints={("vs2", "v0")},
+    ),
 )
 # Mask = Vector op Immediate op Mask
 mvim_config = InstructionTypeConfig(
     required_params={"vd", "immval", "vs2", "maskval"},
-    vector_mask_regs={"vd"},
-    vector_overlap_constraints={("vs2", "v0")},
     imm_bits=5,
+    vector_data=VectorTypeConfig(
+        mask_regs={"vd"},
+        overlap_constraints={("vs2", "v0")},
+    ),
 )
 # Mask = unary-op(Mask)
 mm_config = InstructionTypeConfig(
     required_params={"vd", "vs2"},
-    vector_mask_regs={"vd", "vs2"},
-    vector_overlap_constraints={("vd", "vs2")},
-    vector_masked_constraints=set(),
+    vector_data=VectorTypeConfig(
+        mask_regs={"vd", "vs2"},
+        overlap_constraints={("vd", "vs2")},
+    ),
 )
 
 

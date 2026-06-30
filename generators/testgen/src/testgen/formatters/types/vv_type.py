@@ -16,15 +16,20 @@ from testgen.asm.helpers import (
 from testgen.coverpoints.vector.vector_helpers import extract_instruction_info
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
-from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
+from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
 
-vmvr_config = InstructionTypeConfig(required_params={"vd", "vs2"})
-vext_config = InstructionTypeConfig(required_params={"vd", "vs2"}, vector_overlap_constraints={("vd_bottom", "vs2")})
+vmvr_config = InstructionTypeConfig(required_params={"vd", "vs2"}, vector_data=VectorTypeConfig())
+vext_config = InstructionTypeConfig(
+    required_params={"vd", "vs2"},
+    vector_data=VectorTypeConfig(overlap_constraints={("vd_bottom", "vs2")}),
+)
 vm_config = InstructionTypeConfig(
     required_params={"vd", "vs2"},
-    vector_mask_regs={"vs2"},
-    vector_overlap_constraints={("vd", "vs2")},
-    vector_masked_constraints={("vd", "v0")},
+    vector_data=VectorTypeConfig(
+        mask_regs={"vs2"},
+        overlap_constraints={("vd", "vs2")},
+        masked_constraints={("vd", "v0")},
+    ),
 )
 
 

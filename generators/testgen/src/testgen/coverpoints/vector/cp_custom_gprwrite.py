@@ -22,6 +22,10 @@ from testgen.formatters.vector_params import generate_random_vector_params
 def make_gpr_writing_vstart_eq_vl(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
+    """
+    Generates a test for instructions writing to GPRs, ensure that at even vl = 0 (where vstart = vl), the
+    instruction still executes correctly.
+    """
     params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=1, suite="length", vl=0, vstart=0)
     desc = "cp_custom_gprWriting_vstart_eq_vl (vstart=vl=0)"
     bin_name = "cp_custom_gprWriting_vstart_eq_vl"

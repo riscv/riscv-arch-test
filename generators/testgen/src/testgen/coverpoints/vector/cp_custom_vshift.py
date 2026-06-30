@@ -16,6 +16,9 @@ from testgen.formatters.vector_params import generate_random_vector_params
 
 
 def _shift_upper_bits_mask(xlen: int, sew: int) -> int:
+    """
+    Helper function to get a mask for the bits above the bottom log2(SEW) bits
+    """
     bottom = int(math.log2(sew))
     width = xlen - bottom
     return ((1 << width) - 1) << bottom
@@ -29,9 +32,14 @@ def _make_shift_upperbits_test(
     *,
     narrow: bool,
 ) -> list[TestChunk]:
+    """
+    Generate a test ensuring that only the bottom log2(SEW) bits are used to control the shift amount
+    """
+
     sew = test_data.config.sew
+    assert sew is not None, "SEW must be set for vector tests"
+
     xlen = test_data.config.xlen
-    assert sew is not None and xlen is not None
 
     # For a narrow shift (VWV), the valid shift-amount bits are log2(2*SEW).
     # Upper bits above that boundary should be ignored; set them to 1 to verify.
@@ -60,6 +68,9 @@ def _make_shift_upperbits_test(
 
 @add_coverpoint_generator("cp_custom_vshift_upperbits_vs1_ones")
 def make_shift_upperbits_vs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    """
+    Generate a test ensuring that only the bottom (log2(SEW)) bits are used to control the shift amount (not narrowing variant)
+    """
     return _make_shift_upperbits_test(instr_name, instr_type, coverpoint, test_data, narrow=False)
 
 
@@ -67,6 +78,9 @@ def make_shift_upperbits_vs1(instr_name: str, instr_type: str, coverpoint: str, 
 def make_shiftn_upperbits_vs1(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
+    """
+    Generate a test ensuring that only the bottom (log2(SEW)) bits are used to control the shift amount (narrowing variant)
+    """
     return _make_shift_upperbits_test(instr_name, instr_type, coverpoint, test_data, narrow=True)
 
 
@@ -78,9 +92,13 @@ def _make_shift_upperbits_rs1_test(
     *,
     narrow: bool,
 ) -> list[TestChunk]:
+    """
+    Generate a test ensuring that only the bottom log2(SEW) bits control the shift amount.
+    """
     sew = test_data.config.sew
+    assert sew is not None, "SEW must be provided for vector tests"
+
     xlen = test_data.config.xlen
-    assert sew is not None and xlen is not None
 
     effective_sew = 2 * sew if narrow else sew
     rs1val = _shift_upper_bits_mask(xlen, effective_sew)
@@ -90,9 +108,8 @@ def _make_shift_upperbits_rs1_test(
         instr_name,
         instr_type,
         lmul=1,
+        rs1val=rs1val,
     )
-    # Override the randomized rs1val with the specific upper-bits mask.
-    params.rs1val = rs1val
 
     suffix = "n" if narrow else ""
     desc = f"cp_custom_vshift{suffix}_upperbits_rs1_ones (upper shift bits in rs1 = ones)"
@@ -105,6 +122,9 @@ def _make_shift_upperbits_rs1_test(
 
 @add_coverpoint_generator("cp_custom_vshift_upperbits_rs1_ones")
 def make_shift_upperbits_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    """
+    Generate a test ensuring that only the bottom log2(SEW) bits control the shift amount. (not narrowing variant)
+    """
     return _make_shift_upperbits_rs1_test(instr_name, instr_type, coverpoint, test_data, narrow=False)
 
 
@@ -112,4 +132,7 @@ def make_shift_upperbits_rs1(instr_name: str, instr_type: str, coverpoint: str, 
 def make_shiftn_upperbits_rs1(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
+    """
+    Generate a test ensuring that only the bottom log2(SEW) bits control the shift amount. (narrowing variant)
+    """
     return _make_shift_upperbits_rs1_test(instr_name, instr_type, coverpoint, test_data, narrow=True)

@@ -1,5 +1,7 @@
 ##################################
-# cr_vxrm_vs2_vs1_edges.py
+# cr_vxrm_vs_reg_edges.py
+#
+# Generators for tests crossing the fixed point rounding mode and edge values.
 #
 # rwolk@hmc.edu June 2026
 # SPDX-License-Identifier: Apache-2.0
@@ -20,6 +22,10 @@ _VXRM_MODES = ["rnu", "rne", "rdn", "rod"]
 
 @add_coverpoint_generator("cr_vxrm_vs2_vs1_edges")
 def make_vxrm_vs2_vs1_cross(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    """
+    Generates tests crossing the fixed point rounding mode, and integer edge values for vs2 and vs1.
+    """
+
     sew = test_data.config.sew
     assert sew is not None
 
@@ -66,6 +72,10 @@ def make_vxrm_vs2_vs1_cross(instr_name: str, instr_type: str, coverpoint: str, t
 
 @add_coverpoint_generator("cr_vxrm_vs2_rs1_edges")
 def make_vxrm_vs2_rs1_cross(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    """
+    Generates tests crossing the fixed point rounding mode, and integer edge values for vs2 and rs1.
+    """
+
     sew = test_data.config.sew
     assert sew is not None
 
@@ -105,6 +115,10 @@ def make_vxrm_vs2_rs1_cross(instr_name: str, instr_type: str, coverpoint: str, t
 
 @add_coverpoint_generator("cr_vxrm_vs2_imm_edges")
 def make_vxrm_vs2_imm_cross(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    """
+    Generates tests crossing the fixed point rounding mode, and integer edge values for vs2 and an immediate.
+    """
+
     sew = test_data.config.sew
     assert sew is not None
 

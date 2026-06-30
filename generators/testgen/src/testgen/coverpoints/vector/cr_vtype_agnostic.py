@@ -22,6 +22,9 @@ _NO_OVERLAP_MASKED = {("vs1", "v0"), ("vs2", "v0"), ("vd", "v0"), ("vs3", "v0")}
 
 @add_coverpoint_generator("cr_vtype_agnostic")
 def make_vtype_agnostic(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    """
+    Generate length-suite tests crossing all tail and mask agnostic/undisturbed policies.
+    """
     sew = test_data.config.sew
     assert sew is not None
 

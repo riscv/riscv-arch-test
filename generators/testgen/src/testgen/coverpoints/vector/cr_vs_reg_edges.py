@@ -1,5 +1,7 @@
 ##################################
-# cr_vs2_vs1_edges.py
+# cr_vs_reg_edges.py
+#
+# Generates all tests crossing vector edge values.
 #
 # rwolk@hmc.edu June 2026
 # SPDX-License-Identifier: Apache-2.0
@@ -37,6 +39,10 @@ def _parse_cross_regs(coverpoint: str) -> tuple[str, str]:
 
 @add_coverpoint_generator("cr_vs2_vs1_edges", "cr_vs2_vd_edges", "cr_vs1_vd_edges")
 def make_cross_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    """
+    Generate tests crossing edge values for any two vector registers. Supports integer and floating point crosses.
+    """
+
     sew = test_data.config.sew
     assert sew is not None
 
@@ -106,6 +112,10 @@ def make_cross_edges(instr_name: str, instr_type: str, coverpoint: str, test_dat
 
 @add_coverpoint_generator("cr_vs2_rs1_edges")
 def make_vs2_rs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    """
+    Generate tests crossing edge values for vs2 and rs1. Supports only integer crosses, as rs1 is an integer register.
+    """
+
     sew = test_data.config.sew
     assert sew is not None, "SEW must be set for vector tests"
 
@@ -138,6 +148,10 @@ def make_vs2_rs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_d
 
 @add_coverpoint_generator("cr_vs2_imm_edges")
 def make_vs2_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    """
+    Generate tests crossing edge values for vs2 and an immediate value. Supports only integer crosses.
+    """
+
     sew = test_data.config.sew
     assert sew is not None, "SEW must be set for vector tests"
 

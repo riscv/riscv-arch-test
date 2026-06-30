@@ -17,6 +17,11 @@ _VREG_COUNT = 32
 
 @add_coverpoint_generator("cp_custom_vmask_write_lmulge1")
 def make_vmask_write_lmulge1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    """
+    Generates a test ensuring that only the first register in the group is modified.
+    TODO: Generate a better SIGUPD for this test, as a mask producing SIGUPD only checks one register. This case is not being
+        properly exercised.
+    """
     test_chunks = []
     for lmul in [1, 2, 4, 8]:
         params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, suite="length", vl="vlmax")
@@ -32,9 +37,9 @@ def make_vmask_write_lmulge1(instr_name: str, instr_type: str, coverpoint: str, 
 def make_vmask_write_v0_masked(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
-    # Force vd=0: exercises the case where the mask-producing result is written to v0.
-    # maskval="ones" causes mask-capable types (VVSR, WVWSR) to emit v0.t.
-    # For MVVM/MVXM the formatter skips mask setup when vd==0 (carry-in is the mask, not a gate).
+    """
+    Generate a test where vd = v0 for mask producing operation.
+    """
     test_data.vec_regs.allocate_operand("vd", 0, 1)
     params = generate_random_vector_params(
         test_data,
@@ -56,8 +61,12 @@ def make_vmask_write_v0_masked(
 
 @add_coverpoint_generator("cp_custom_element0Masked")
 def make_element0Masked(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
-    # Reduction instructions write their result to vd[0]. Test with mask=ones (all elements
-    # active) at vlmax. Prevent vd/vs1/vs2 from aliasing v0 so the mask and operands are distinct.
+    """
+    Generates a test confirming that the scalar element is not impacted by the mask.
+
+    TODO: Verify correctness here: Coverage says we need ones, but this test seems like it would make more sense with
+        zeros in the mask.
+    """
     params = generate_random_vector_params(
         test_data,
         instr_name,
@@ -79,7 +88,11 @@ def make_element0Masked(instr_name: str, instr_type: str, coverpoint: str, test_
 def make_vreductionw_vd_vs1_emul_16(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
-    # Widening reduction at lmul=8: vs2 occupies 8 registers (maximum emul for the source vector).
+    """
+    Generates a test performing a widening reduction at lmul = 8. Normal widening instructions would imply
+    an emul of 16, but because this is a test for reductions, which use scalar registers, the instruction
+    is valid.
+    """
     params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=8, suite="length")
     desc = "cp_custom_vreductionw_vd_vs1_emul_16 (lmul=8)"
     bin_name = "cp_custom_vreductionw_vd_vs1_emul_16"
@@ -90,7 +103,10 @@ def make_vreductionw_vd_vs1_emul_16(
 
 @add_coverpoint_generator("cp_custom_voffgroup_vd_lmul")
 def make_voffgroup_vd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
-    # coverpoint ends with "lmul{N}", e.g. "cp_custom_voffgroup_vd_lmul4"
+    """
+    Generates a test that ensures that scalar destination registers can be accessed off group, with lmul > 1 because
+    they have an emul of 1 for reductions.
+    """
     lmul = int(coverpoint.split("lmul")[1])
     test_chunks = []
     for v in range(_VREG_COUNT):
@@ -110,7 +126,10 @@ def make_voffgroup_vd(instr_name: str, instr_type: str, coverpoint: str, test_da
 
 @add_coverpoint_generator("cp_custom_voffgroup_vs1_lmul")
 def make_voffgroup_vs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
-    # coverpoint ends with "lmul{N}", e.g. "cp_custom_voffgroup_vs1_lmul4"
+    """
+    Generates a test that ensures that scalar vs1 registers can be accessed off group, with lmul > 1 because
+    they have an emul of 1 for reductions.
+    """
     lmul = int(coverpoint.split("lmul")[1])
     test_chunks = []
     for v in range(_VREG_COUNT):
@@ -130,7 +149,10 @@ def make_voffgroup_vs1(instr_name: str, instr_type: str, coverpoint: str, test_d
 
 @add_coverpoint_generator("cp_custom_voffgroup_vs2_lmul")
 def make_voffgroup_vs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
-    # coverpoint ends with "lmul{N}", e.g. "cp_custom_voffgroup_vs2_lmul4"
+    """
+    Generates a test that ensures that scalar vs2 registers can be accessed off group, with lmul > 1 because
+    they have an emul of 1 for reductions.
+    """
     lmul = int(coverpoint.split("lmul")[1])
     test_chunks = []
     for v in range(_VREG_COUNT):

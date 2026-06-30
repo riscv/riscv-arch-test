@@ -16,6 +16,10 @@ from testgen.formatters.vector_params import generate_random_vector_params
 
 @add_coverpoint_generator("cp_vl_0")
 def make_vl_0(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    """
+    Generate length-suite tests where vl = 0.
+    """
+
     assert test_data.config.sew is not None, "SEW must be set for vector tests"
 
     params = generate_random_vector_params(
@@ -26,7 +30,6 @@ def make_vl_0(instr_name: str, instr_type: str, coverpoint: str, test_data: Test
         suite="length",
         vl=0,
     )
-    assert params.temp_reg != 0
 
     desc = "cp_vl_0 (Test vl = 0)"
     bin_name = "cp_vl_0"

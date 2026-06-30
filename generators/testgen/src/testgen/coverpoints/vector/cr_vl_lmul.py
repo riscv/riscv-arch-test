@@ -22,6 +22,9 @@ _NO_OVERLAP_MASKED = {("vs1", "v0"), ("vs2", "v0"), ("vd", "v0"), ("vs3", "v0")}
 
 @add_coverpoint_generator("cr_vl_lmul")
 def make_vl_lmul(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    """
+    Generate tests crossing all valid lmuls with vls chosen from VLMAX, 1 (or EGS), and a random vl.
+    """
     assert test_data.config.sew is not None, "SEW must be set for vector tests"
     sew = test_data.config.sew
 

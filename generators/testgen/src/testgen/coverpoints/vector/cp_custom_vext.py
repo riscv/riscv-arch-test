@@ -13,10 +13,10 @@ import random
 
 from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
+from testgen.formatters.vector_params import generate_random_vector_params
 
 _VREG_COUNT = 32
 
@@ -34,28 +34,24 @@ def _make_vext_overlap_test(
     bin_name: str,
     coverpoint: str,
 ) -> TestChunk:
+    """
+    Generate a test with vd and vs2 having the given preset values and random val_pointers.
+    """
+
     sew = test_data.config.sew
-    assert sew is not None
-    count = test_data.test_count
-
-    vs2_label = f"vs2_vext_{count:03d}"
-    vd_label = f"vd_vext_{count:03d}"
-    test_data.register_vector_data(vs2_label, sew, random_elements=1)
-    test_data.register_vector_data(vd_label, sew, random_elements=1)
-
-    temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
+    assert sew is not None, "SEW must be set for vector tests"
 
     test_data.vec_regs.allocate_operand("vd", vd, vd_emul, suppress_overlap=True)
     test_data.vec_regs.allocate_operand("vs2", vs2, vs2_emul, suppress_overlap=True)
 
-    params = InstructionParams(
+    params = generate_random_vector_params(
+        test_data,
+        instr_name,
+        instr_type,
+        lmul,
         vd=vd,
-        vd_val_pointer=vd_label,
         vs2=vs2,
-        vs2_val_pointer=vs2_label,
-        temp_reg=temp_reg,
         sew=sew,
-        lmul=lmul,
         vector_suite="base",
     )
 
@@ -72,7 +68,9 @@ def _make_vext_overlaps(
     vext_factor: int,
     lmul_list: list,
 ) -> list[TestChunk]:
-    """One test per lmul: vs2 placed at top of vd's register group (legal overlap)."""
+    """
+    Generate tests where the vext instruction has a valid overlap: vs2 is placed on top of vd's register group.
+    """
     test_chunks = []
     for lmul in lmul_list:
         vs2_emul = max(1, lmul // vext_factor)

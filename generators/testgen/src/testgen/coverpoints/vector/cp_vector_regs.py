@@ -17,8 +17,10 @@ from testgen.formatters.vector_params import generate_random_vector_params
 @add_coverpoint_generator("cp_vs2")
 def make_vs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """
-    TODO: EGS
+    Generate tests for all valid registers for vs2.
     """
+
+    # TODO: EGS
 
     assert test_data.config.sew is not None, "SEW Must be set for vector instruction"
 
@@ -52,9 +54,10 @@ def make_vs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
 @add_coverpoint_generator("cp_vs1")
 def make_vs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """
-    TODO: EGS
+    Generate tests for all valid registers for vs1.
     """
 
+    # TODO: EGS
     assert test_data.config.sew is not None, "SEW Must be set for vector instruction"
 
     lower_limit, upper_limit = 0, test_data.vec_regs.reg_count
@@ -86,6 +89,10 @@ def make_vs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
 
 @add_coverpoint_generator("cp_vs3")
 def make_vs3(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    """
+    Generate tests for all valid registers for vs3.
+    """
+
     assert test_data.config.sew is not None, "SEW Must be set for vector instruction"
 
     lower_limit, upper_limit = 0, test_data.vec_regs.reg_count
@@ -120,8 +127,10 @@ def make_vs3(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
 @add_coverpoint_generator("cp_vd")
 def make_vd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """
-    TODO: EGS4 Handling
+    Generate tests for all valid registers for vd.
     """
+
+    # TODO: EGS4 Handling
 
     assert test_data.config.sew is not None, "SEW Must be set for vector instruction"
 

@@ -21,6 +21,11 @@ from testgen.formatters.vector_params import generate_random_vector_params
 @add_coverpoint_generator("cmp_vs1_vs2")
 @add_coverpoint_generator("cmp_vs3_vs2")
 def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    """
+    Test generator for all cmp_vX_vX coverpoints.
+
+    Generates tests where the two given registers are the same register for all valid values.
+    """
     assert test_data.config.sew is not None, "SEW must be set for vector tests"
 
     cmp, v1, v2, *suffixes = coverpoint.split("_")
@@ -105,6 +110,9 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
 
 @add_coverpoint_generator("cmp_vd_vs1_vs2")
 def make_three_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    """
+    Generates tests where all three vector source operands are the same register
+    """
     assert test_data.config.sew is not None, "SEW must be set for vector tests"
 
     cmp, v1, v2, v3, *suffixes = coverpoint.split("_")

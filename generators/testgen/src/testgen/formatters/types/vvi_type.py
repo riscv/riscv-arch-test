@@ -26,7 +26,7 @@ vwi_config = InstructionTypeConfig(
     required_params={"vd", "immval", "vs2"},
     imm_bits=5,
     imm_signed=False,
-    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}),
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2_top")}),
 )
 vvim_config = InstructionTypeConfig(
     required_params={"vd", "immval", "vs2", "maskval"},

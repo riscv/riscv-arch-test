@@ -15,7 +15,11 @@ from testgen.formatters.vector_params import generate_random_vector_params
 
 
 @add_coverpoint_generator("cp_imm_5bit")
-def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+def make_imm_5bit(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    """
+    Generate tests covering all values of the 5-bit immediate in a vector instruction.
+    """
+
     imm_vals = range(32) if coverpoint.endswith("_u") else range(-16, 16)
 
     # TODO: These should depend on egs

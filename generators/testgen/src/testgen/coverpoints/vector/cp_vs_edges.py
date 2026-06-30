@@ -25,7 +25,13 @@ from testgen.formatters.vector_params import generate_random_vector_params
 @add_coverpoint_generator("cp_vs1_edges")
 @add_coverpoint_generator("cp_vd_edges")
 def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
-    assert test_data.config.sew is not None, "SEW must ve set for vector tests"
+    """
+    Generate edge values in any vector register. Supports integer, load-store, and fp edges.
+    """
+
+    # TODO: EGS4
+
+    assert test_data.config.sew is not None, "SEW must be set for vector tests"
     sew = test_data.config.sew
 
     corners = VX_CORNER_NAMES

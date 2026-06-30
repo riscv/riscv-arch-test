@@ -124,77 +124,13 @@ def canonicalize_extensions(
 
     # Handle Vector
     if testsuite.startswith(("V", "Zv")):
-        vector_map = {
-            "Vx8": ["Zve32x"],
-            "Vx16": ["Zve32x"],
-            "Vx32": ["Zve32x"],
-            "Vls8": ["Zve32x"],
-            "Vls16": ["Zve32x"],
-            "Vls32": ["Zve32x"],
-            "Vx64": ["Zve64x"],
-            "Vls64": ["Zve64x"],
-            "Vf16": ["Zvfh"],
-            "Vf32": ["Zve32f"],
-            "Vf64": ["Zve64d"],
-            "Zvbb8": ["Zve32x"],
-            "Zvbb16": ["Zve32x"],
-            "Zvbb32": ["Zve32x"],
-            "Zvbb64": ["Zve64x"],
-            "Zvkb8": ["Zve32x"],
-            "Zvkb16": ["Zve32x"],
-            "Zvkb32": ["Zve32x"],
-            "Zvkb64": ["Zve64x"],
-        }
+        assert sew is not None, "SEW must be set for all unpriv vector tests"
+        assert instruction is not None, "Passing an instruction is required for all vector extensions"
 
-        for alias, mapped in vector_map.items():
-            if testsuite == alias:
-                for zve_ext in ["Zve64x", "Zve64f", "Zve64d"]:
-                    if instruction is None:
-                        break
-
-                    # All Zve* extensions support all vector load and store instructions (31.1.7. Vector Loads and Stores),
-                    # except Zve64* extensions do not support EEW=64 for index values when XLEN=32.
-                    if zve_ext in mapped and "ei64" in instruction and xlen == 32:
-                        mapped.remove(zve_ext)
-
-                    # All Zve* extensions support all vector integer instructions (31.1.11. Vector Integer Arithmetic
-                    # Instructions), except that the vmulh integer multiply variants that return the high word of the
-                    # product (vmulh.vv, vmulh.vx, vmulhu.vv, vmulhu.vx, vmulhsu.vv, vmulhsu.vx) are not included for
-                    # EEW=64 in Zve64*.
-                    if zve_ext in mapped and instruction.startswith("vmulh") and sew == 64:
-                        mapped.remove(zve_ext)
-
-                    # All Zve* extensions support all vector fixed-point arithmetic instructions (31.1.12. Vector Fixed-Point
-                    # Arithmetic Instructions), except that vsmul.vv and vsmul.vx are not included in EEW=64 in Zve64*.
-                    if zve_ext in mapped and instruction.startswith("vsmul") and sew == 64:
-                        mapped.remove(zve_ext)
-
-                    # All Zve* extensions support all vector permutation instructions (31.1.16. Vector Permutation Instructions),
-                    # except that Zve32x and Zve64x do not include those with floating-point operands, and Zve64f does not include
-                    # those with EEW=64 floating-point operands.
-                    # The first part of this requirement is handled by placing those operands into Vf.
-                    if (
-                        zve_ext in mapped
-                        and instruction in ["vfmv.f.s", "vfmv.s.f", "vfslide1up.vf", "vfslide1down.vf"]
-                        and sew == 64
-                    ):
-                        mapped.remove(zve_ext)
-
-                if "Zve32x" in mapped and instruction and instruction.startswith("vw") and sew == 32:
-                    mapped.remove("Zve32x")
-                    mapped.append("Zve64x")
-
-                if mapped == []:
-                    continue
-
-                ext_components.extend(mapped)
-                no_sew_suffix = re.sub(r"\d+$", "", testsuite)
-                if no_sew_suffix in ext_components:
-                    ext_components.remove(no_sew_suffix)
-                break
-        else:
-            # Otherwise a smaller V extension isn't needed
-            ext_components.append("V")
+        # Get the most minimal V subextension for Vx, Vls, and Vf (e.g. Zve32f for Vf32)
+        maybe_mapped = get_vector_base_extension(testsuite, instruction, xlen, sew)
+        if maybe_mapped is not None:
+            ext_components.extend(maybe_mapped)
             no_sew_suffix = re.sub(r"\d+$", "", testsuite)
             if no_sew_suffix in ext_components:
                 ext_components.remove(no_sew_suffix)
@@ -204,6 +140,71 @@ def canonicalize_extensions(
     ext_components = list(dict.fromkeys(ext_components))  # Remove duplicates while preserving order
 
     return ext_components, params
+
+
+def get_vector_base_extension(testsuite: str, instruction: str, xlen: int, sew: int) -> list[str] | None:
+    """
+    Helper function to derive the smallest possible V extension containing an instruction. This is necessary because
+    Vx, Vls, and Vf are not RISCV extensions. This maps each Vx, Vls, and Vf extension to one of Zve32(x|f), Zve64(x|f|d),
+    Zvfh, or V. The requirements to be in one of these extensions can depend on xlen or sew, so these arguments contain
+    necessary information.
+    """
+    vector_map = {
+        "Vx8": ["Zve32x"],
+        "Vx16": ["Zve32x"],
+        "Vx32": ["Zve32x"],
+        "Vls8": ["Zve32x"],
+        "Vls16": ["Zve32x"],
+        "Vls32": ["Zve32x"],
+        "Vx64": ["Zve64x"],
+        "Vls64": ["Zve64x"],
+        "Vf16": ["Zvfh"],
+        "Vf32": ["Zve32f"],
+        "Vf64": ["Zve64d"],
+    }
+
+    if testsuite not in vector_map:
+        return
+
+    mapped = vector_map[testsuite]
+
+    for zve_ext in ["Zve64x", "Zve64f", "Zve64d"]:
+        # All Zve* extensions support all vector load and store instructions (31.1.7. Vector Loads and Stores),
+        # except Zve64* extensions do not support EEW=64 for index values when XLEN=32.
+        if zve_ext in mapped and "ei64" in instruction and xlen == 32:
+            mapped.remove(zve_ext)
+
+        # All Zve* extensions support all vector integer instructions (31.1.11. Vector Integer Arithmetic
+        # Instructions), except that the vmulh integer multiply variants that return the high word of the
+        # product (vmulh.vv, vmulh.vx, vmulhu.vv, vmulhu.vx, vmulhsu.vv, vmulhsu.vx) are not included for
+        # EEW=64 in Zve64*.
+        if zve_ext in mapped and instruction.startswith("vmulh") and sew == 64:
+            mapped.remove(zve_ext)
+
+        # All Zve* extensions support all vector fixed-point arithmetic instructions (31.1.12. Vector Fixed-Point
+        # Arithmetic Instructions), except that vsmul.vv and vsmul.vx are not included in EEW=64 in Zve64*.
+        if zve_ext in mapped and instruction.startswith("vsmul") and sew == 64:
+            mapped.remove(zve_ext)
+
+        # All Zve* extensions support all vector permutation instructions (31.1.16. Vector Permutation Instructions),
+        # except that Zve32x and Zve64x do not include those with floating-point operands, and Zve64f does not include
+        # those with EEW=64 floating-point operands.
+        # The first part of this requirement is handled by placing those operands into Vf.
+        if (
+            zve_ext in mapped
+            and instruction in ["vfmv.f.s", "vfmv.s.f", "vfslide1up.vf", "vfslide1down.vf"]
+            and sew == 64
+        ):
+            mapped.remove(zve_ext)
+
+    if "Zve32x" in mapped and instruction and instruction.startswith("vw") and sew == 32:
+        mapped.remove("Zve32x")
+        mapped.append("Zve64x")
+
+    if mapped == []:
+        return ["V"]
+
+    return mapped
 
 
 # Canonical order from RISC-V ISA spec

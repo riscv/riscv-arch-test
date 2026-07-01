@@ -3,7 +3,7 @@
 [tools]
 prek = "0.4.5"
 ruby = "3.4.9"
-uv = "0.11.23"
+uv = "0.11.24"
 "gem:bundler" = "4.0.14"
 
 [settings.ruby]

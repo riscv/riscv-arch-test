@@ -1604,10 +1604,10 @@ def myhash(s):
     h = (h * 31 + ord(c)) & 0xFFFFFFFF
   return h
 
-def getPrivExtraDefines():
+def getPrivExtraDefines(sew):
     """Extra defines needed by vector privileged tests."""
     sew_to_suffix = {8: "e8", 16: "e16", 32: "e32", 64: "e64"}
-    sewsize = sew_to_suffix[minSEW_MIN]
+    sewsize = sew_to_suffix[minSEW_MIN] if sew == 0 else sew_to_suffix[sew]
     vle = f"vle{minSEW_MIN}.v"
     return "\n".join([
         "#define rvtest_mtrap_routine",
@@ -1764,7 +1764,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
         .replace("@EXTRA_DEFINES@", (f"#define RVTEST_VECTOR\n"
                                      f"#define RVTEST_SEW {sew}\n"
                                      f"#define VDSEW {vdsew}\n"
-                                     + (f"\n{getPrivExtraDefines()}" if priv else "")
+                                     + (f"\n{getPrivExtraDefines(sew)}" if priv else "")
                                      + ("\n#define TRAP_SIGUPD_COUNT 50000" if test.startswith("SsstrictV") else "")))
 
 
@@ -2661,7 +2661,7 @@ def prepMaskV(maskval, sew, tempReg, lmul):
     writeLine(f"la x{tempReg}, {maskval}")
     writeLine(f"vlm.v v0, (x{tempReg})",                      "# Load mask value into v0")
 
-def prepVstart(vstartval, lmul = 1, scratch = 8, scratch2 = 28):
+def prepVstart(vstartval, lmul = 1, scratch = 8, scratch2 = 28, sew=8):
   # `scratch` and `scratch2` must be picked via pickPrivScratch (which excludes
   # sigReg, framework-reserved regs, and the test's operand regs). Hardcoding
   # x8 / t3 (x28) here previously clobbered sigReg whenever resolveScalarSigConflict
@@ -2671,14 +2671,14 @@ def prepVstart(vstartval, lmul = 1, scratch = 8, scratch2 = 28):
   if   (vstartval == "one"):
     writeLine(f"li x{vstart_reg}, 1",                                    f"# Load x{vstart_reg} = 1 for vstart")
   elif (vstartval == "vlmaxm1"):
-    writeLine(f"vsetvli x{vstart_reg}, x0, SEWSIZE, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
+    writeLine(f"vsetvli x{vstart_reg}, x0, e{sew}, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
     writeLine(f"addi x{vstart_reg}, x{vstart_reg}, -1",                  f"# x{vstart_reg} = VLMAX - 1")
   elif (vstartval == "vlmaxd2"):
-    writeLine(f"vsetvli x{vstart_reg}, x0, SEWSIZE, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
+    writeLine(f"vsetvli x{vstart_reg}, x0, e{sew}, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
     writeLine(f"srli x{vstart_reg}, x{vstart_reg}, 1",                   f"# x{vstart_reg} = VLMAX / 2")
   else: # random vstart
     randvstart = randint(3, maxVLEN)  # TODO: check logic for this
-    writeLine(f"vsetvli x{vstart_reg}, x0, SEWSIZE, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
+    writeLine(f"vsetvli x{vstart_reg}, x0, e{sew}, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
     writeLine(f"li x{scratch2}, {randvstart}")
     writeLine(f"remu x{scratch2}, x{scratch2}, x{vstart_reg}",           f"# x{scratch2} = randvstart % VLMAX (< VLMAX)")
     vstart_reg = scratch2  # randomized vstart value lives in scratch2 from here on

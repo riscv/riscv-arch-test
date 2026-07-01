@@ -79,12 +79,7 @@ unexpected_trap:
     LA      t0, c_unexpected_trap
     li      t1, 1
     sw      t1, 0(t0)
-
-    // advance mepc by 4 to avoid re-trapping forever and mret out
-    csrr    t0, mepc
-    addi    t0, t0, 4
-    csrw    mepc, t0
-    mret
+    j       rvmodel_halt_fail
 
 c_done:
     RVTEST_CODE_END

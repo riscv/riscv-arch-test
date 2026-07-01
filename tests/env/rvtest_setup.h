@@ -828,11 +828,11 @@
 // restores the test's real march. Supersets are harmless: only the init instructions
 // are emitted inside the block. See rv..imafdcv (V implies zve64d->d->f->m).
 #if __riscv_xlen == 64
-  #define RVTEST_FP_INIT_ARCH  rv64ifd
-  #define RVTEST_VEC_INIT_ARCH rv64imafdcv
+  #define RVTEST_FP_INIT_ARCH  rv64if
+  #define RVTEST_VEC_INIT_ARCH rv64imfv
 #else
-  #define RVTEST_FP_INIT_ARCH  rv32ifd
-  #define RVTEST_VEC_INIT_ARCH rv32imafdcv
+  #define RVTEST_FP_INIT_ARCH  rv32if
+  #define RVTEST_VEC_INIT_ARCH rv32imfv
 #endif
 
 .macro RVTEST_INIT_REGS
@@ -880,38 +880,38 @@
   #ifdef F_SUPPORTED
     .option push
     .option arch, RVTEST_FP_INIT_ARCH
-    fcvt.s.w f0, x1 // x1 instead of x0 to avoid initializing f0 with zero value
-    fcvt.s.w f1, x1
-    fcvt.s.w f2, x2
-    fcvt.s.w f3, x3
-    fcvt.s.w f4, x4
-    fcvt.s.w f5, x5
-    fcvt.s.w f6, x6
-    fcvt.s.w f7, x7
-    fcvt.s.w f8, x8
-    fcvt.s.w f9, x9
-    fcvt.s.w f10, x10
-    fcvt.s.w f11, x11
-    fcvt.s.w f12, x12
-    fcvt.s.w f13, x13
-    fcvt.s.w f14, x14
-    fcvt.s.w f15, x15
-    fcvt.s.w f16, x0 // what the heck, make this zero :)
-    fcvt.s.w f17, x1
-    fcvt.s.w f18, x2
-    fcvt.s.w f19, x3
-    fcvt.s.w f20, x4
-    fcvt.s.w f21, x5
-    fcvt.s.w f22, x6
-    fcvt.s.w f23, x7
-    fcvt.s.w f24, x8
-    fcvt.s.w f25, x9
-    fcvt.s.w f26, x10
-    fcvt.s.w f27, x11
-    fcvt.s.w f28, x12
-    fcvt.s.w f29, x13
-    fcvt.s.w f30, x14
-    fcvt.s.w f31, x15
+    fmv.w.x f0, x1 // x1 instead of x0 to avoid initializing f0 with zero value
+    fmv.w.x f1, x1
+    fmv.w.x f2, x2
+    fmv.w.x f3, x3
+    fmv.w.x f4, x4
+    fmv.w.x f5, x5
+    fmv.w.x f6, x6
+    fmv.w.x f7, x7
+    fmv.w.x f8, x8
+    fmv.w.x f9, x9
+    fmv.w.x f10, x10
+    fmv.w.x f11, x11
+    fmv.w.x f12, x12
+    fmv.w.x f13, x13
+    fmv.w.x f14, x14
+    fmv.w.x f15, x15
+    fmv.w.x f16, x0 // what the heck, make this zero :)
+    fmv.w.x f17, x1
+    fmv.w.x f18, x2
+    fmv.w.x f19, x3
+    fmv.w.x f20, x4
+    fmv.w.x f21, x5
+    fmv.w.x f22, x6
+    fmv.w.x f23, x7
+    fmv.w.x f24, x8
+    fmv.w.x f25, x9
+    fmv.w.x f26, x10
+    fmv.w.x f27, x11
+    fmv.w.x f28, x12
+    fmv.w.x f29, x13
+    fmv.w.x f30, x14
+    fmv.w.x f31, x15
     .option pop
   #endif
 

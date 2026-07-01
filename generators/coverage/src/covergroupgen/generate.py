@@ -13,57 +13,71 @@ import csv
 import importlib.resources
 import math
 import re
+from dataclasses import dataclass
 from difflib import get_close_matches
 from pathlib import Path
 from types import ModuleType
 
 from rich import print as rprint
-from rich.progress import track
+from rich.progress import (
+    BarColumn,
+    MofNCompleteColumn,
+    Progress,
+    SpinnerColumn,
+    TaskProgressColumn,
+    TextColumn,
+    TimeElapsedColumn,
+)
 
 
-def _load_ssstrictv_skip_combinations() -> dict[str, set[str]]:
-    """Load the SsstrictV (column, instruction) skip table.
+def _progress(description: str) -> Progress:
+    """Construct the standard project progress display."""
+    return Progress(
+        SpinnerColumn(),
+        TextColumn(f"[cyan]{description}"),
+        BarColumn(),
+        MofNCompleteColumn(),
+        TaskProgressColumn(),
+        TextColumn("elapsed:"),
+        TimeElapsedColumn(),
+        transient=True,
+    )
 
-    Single source of truth lives in
-    ``generators/testgen/scripts/ssstrictv_skip_combinations.py``. The testgen
-    scripts dir is not a Python package, so load it by file path via
-    ``importlib``. Returns ``{csv_column: set(instructions)}``.
+
+def _load_testgen_script(filename: str) -> ModuleType:
+    """Load a module from ``generators/testgen/scripts/`` by file path.
+
+    That directory is not a Python package, so its helpers (the single source
+    of truth for several vector rules) must be imported by path. These modules
+    are large, so they are loaded once into module-level globals rather than
+    per use.
     """
     import importlib.util
 
     repo_root = Path(__file__).resolve().parents[4]
-    skip_path = repo_root / "generators" / "testgen" / "scripts" / "ssstrictv_skip_combinations.py"
-    if not skip_path.exists():
-        return {}
-    spec = importlib.util.spec_from_file_location("ssstrictv_skip_combinations", skip_path)
+    mod_path = repo_root / "generators" / "testgen" / "scripts" / filename
+    if not mod_path.exists():
+        raise FileNotFoundError(f"Required testgen script not found: {mod_path}")
+    spec = importlib.util.spec_from_file_location(mod_path.stem, mod_path)
     if spec is None or spec.loader is None:
-        return {}
+        raise ImportError(f"Could not create import spec for {mod_path}")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    raw = getattr(module, "SKIP_COMBINATIONS", {})
+    return module
+
+
+def _load_ssstrictv_skip_combinations() -> dict[str, set[str]]:
+    """Load the SsstrictV (column, instruction) skip table as ``{column: {instrs}}``."""
+    module = _load_testgen_script("ssstrictv_skip_combinations.py")
+    raw: dict[str, list[str]] = module.SKIP_COMBINATIONS
     return {col: set(instrs) for col, instrs in raw.items()}
 
 
+# Loaded once at import; both are large testgen modules consulted per instruction.
+_VECTOR_TESTGEN_COMMON = _load_testgen_script("vector_testgen_common.py")
+
+
 SSSTRICTV_SKIP_COMBINATIONS = _load_ssstrictv_skip_combinations()
-
-
-def _load_vector_testgen_common() -> ModuleType | None:
-    """Lazy-load the testgen ``vector_testgen_common`` module by file path."""
-    import importlib.util
-
-    repo_root = Path(__file__).resolve().parents[4]
-    mod_path = repo_root / "generators" / "testgen" / "scripts" / "vector_testgen_common.py"
-    if not mod_path.exists():
-        return None
-    spec = importlib.util.spec_from_file_location("vector_testgen_common", mod_path)
-    if spec is None or spec.loader is None:
-        return None
-    module = importlib.util.module_from_spec(spec)
-    try:
-        spec.loader.exec_module(module)
-    except Exception:  # noqa: BLE001
-        return None
-    return module
 
 
 # Coverpoints whose template name depends on the SEW (element width).
@@ -94,6 +108,21 @@ PRIV_VECTOR_PREFIXES = ("ExceptionsV", "SsstrictV", "MisalignedV")
 
 # Subset of vector prefixes that support widening instructions.
 VECTOR_WIDEN_PREFIXES = ("Vx", "Vls", "Vf", "Zvfhmin", "Zvfbfmin", "Zvfbfwma")
+
+
+def _sew_variants_for(arch: str) -> list[str] | None:
+    """Return the SEW suffixes *arch* expands into (e.g. Vx → 8/16/32/64), or None.
+
+    A vector testplan is duplicated into one variant per returned SEW, replacing
+    the base entry.
+    """
+    if any(prefix in arch for prefix in ("Vx", "Vls", "Zvbb", "Zvkb")):
+        return ["8", "16", "32", "64"]
+    if "Vf" in arch:
+        return ["16", "32", "64"]  # SEW 8 is not supported for vector floating point
+    if "Zvknhb" in arch:
+        return ["32", "64"]
+    return None
 
 
 # Map instruction Type code → (has_vd_reg_group, has_vs1_reg_group, has_vs2_reg_group).
@@ -151,17 +180,15 @@ def _max_legal_lmul_for_instruction(instr: str) -> int:
       capping LMUL at 4.
     * Otherwise LMUL ≤ 8.
     """
-    _c = _load_vector_testgen_common()
-    if _c is None:
-        return 8
-    nf = _c.getInstructionSegments(instr) if hasattr(_c, "getInstructionSegments") else 1
+    _c = _VECTOR_TESTGEN_COMMON
+    nf = _c.getInstructionSegments(instr)
     if nf and nf > 1:
         cap = 8 // nf
         for m in (8, 4, 2, 1):
             if m <= cap:
                 return m
         return 1
-    if instr in getattr(_c, "vd_widen_ins", ()) or instr in getattr(_c, "vs2_widen_ins", ()):
+    if instr in _c.vd_widen_ins or instr in _c.vs2_widen_ins:
         return 4
     return 8
 
@@ -169,7 +196,7 @@ def _max_legal_lmul_for_instruction(instr: str) -> int:
 _LMUL_CROSS_RE = re.compile(r"cp_ssstrictv_lmul(\d+)_(vd|vs1|vs2)_off_group")
 
 
-def _filter_per_operand_crosses(rendered: str, instr_type: str, instr: str = "") -> str:
+def _filter_per_operand_crosses(rendered: str, has_vd: bool, has_vs1: bool, has_vs2: bool, max_lmul: int) -> str:
     """Drop cross lines tied to operands the instruction's Type does not encode.
 
     The ``cp_ssstrictv_lmulgt1_off_group`` template emits one cross per (lmul,
@@ -179,8 +206,6 @@ def _filter_per_operand_crosses(rendered: str, instr_type: str, instr: str = "")
     * The (LMUL, instruction) combination is illegal — e.g. widening ops cap at
       LMUL=4 because vd has EEW=2*SEW, and segment LS caps at LMUL=8/NF.
     """
-    has_vd, has_vs1, has_vs2 = _operand_presence(instr_type)
-    max_lmul = _max_legal_lmul_for_instruction(instr) if instr else 8
     if has_vd and has_vs1 and has_vs2 and max_lmul >= 8:
         return rendered
     out_lines: list[str] = []
@@ -251,8 +276,8 @@ def read_testplans(testplan_dir: Path) -> dict[str, dict[tuple[str, str], list[s
     Each CSV file produces one testplan entry keyed by the file's stem (e.g. "I", "Zba").
     Some extensions are expanded:
       - "I" is duplicated as "E"
-      - Vector extensions (Vx, Vls, Zvkb) are expanded to per-SEW variants (Vx8, Vx16, ...)
-      - Floating-point vector extensions (Vf) are expanded to SEW 16/32/64
+      - Vector extensions are expanded into per-SEW variants (e.g. Vx → Vx8/16/32/64);
+        see _sew_variants_for for the exact prefix → SEW mapping.
     """
     testplans: dict[str, dict[tuple[str, str], list[str]]] = {}
 
@@ -266,13 +291,7 @@ def read_testplans(testplan_dir: Path) -> dict[str, dict[tuple[str, str], list[s
             testplans["E"] = tp
 
         # Expand vector extensions into per-SEW variants, replacing the base entry
-        sew_variants: list[str] | None = None
-        if any(prefix in arch for prefix in ("Vx", "Vls", "Zvbb", "Zvkb")):
-            sew_variants = ["8", "16", "32", "64"]
-        elif "Vf" in arch:
-            sew_variants = ["16", "32", "64"]  # SEW of 8 is not supported for vector floating point
-        elif "Zvknhb" in arch:
-            sew_variants = ["32", "64"]
+        sew_variants = _sew_variants_for(arch)
         if sew_variants is not None:
             for sew in sew_variants:
                 testplans[f"{arch}{sew}"] = tp
@@ -444,7 +463,7 @@ def _should_gate_maxindexeew(arch: str, instr: str) -> tuple[int, str] | None:
         return None
     if arch in _VLS_PER_SEW_ARCHES:
         return (eew, "MAXINDEXEEW_GE")
-    if arch == "MisalignedV" or arch == "ExceptionsVls":
+    if arch in ("MisalignedV", "ExceptionsVls"):
         # XLEN16 macro does not exist; XLEN is always >= 32, so only gate eew=64.
         if eew >= 64:
             return (eew, "XLEN")
@@ -473,6 +492,56 @@ def _ffLS_feasible(instr: str, sew: int) -> bool:
 ##################################
 # Content generation
 ##################################
+
+
+def _resolve_coverpoint(cp: str, arch: str, instr: str) -> str | None:
+    """Resolve a raw testplan coverpoint to its final template name, or None to skip it.
+
+    Applies, in order: metadata-column skips, the SsstrictV skip table, the
+    cp_custom_ffLS feasibility gate, and the SEW-conditional suffix rules
+    (_sew_ge{N}, the SEW-dependent suffix, _eew_eq_sew, _sew_lte_{N}).
+    """
+    # Skip metadata columns (sample_*, RV32/RV64, EFFEW*, cp_ibm).
+    if cp.startswith(("sample_", "EFFEW", "cp_ibm")) or cp in {"RV32", "RV64"}:
+        return None
+
+    # SsstrictV: honor the curated (column, instruction) skip table that records
+    # simulator-failure / unimplemented combinations. Skipping here removes the
+    # bins from the covergroup so they do not count as missing coverage.
+    if arch.startswith("SsstrictV") and instr in SSSTRICTV_SKIP_COMBINATIONS.get(cp, ()):
+        return None
+
+    # cp_custom_ffLS requires LMUL=2; skip where that is infeasible at this SEW.
+    if cp == "cp_custom_ffLS" and _is_vector(arch) and not _ffLS_feasible(instr, int(_get_effew(arch))):
+        return None
+
+    # _sew_ge{N}: only applies when arch SEW >= N; strip the suffix when it does.
+    ge_match = re.search(r"_sew_ge(\d+)$", cp)
+    if ge_match:
+        if not _is_vector(arch) or int(_get_effew(arch)) < int(ge_match.group(1)):
+            return None
+        cp = re.sub(r"_sew_ge\d+$", "", cp)
+
+    # Append SEW suffix for SEW-dependent coverpoints.
+    if any(sew_cp in cp for sew_cp in SEW_DEPENDENT_CPS):
+        cp = cp + "_sew" + _get_effew(arch)
+
+    # _eew_eq_sew[_lte{N}]: only emit when the indexed-LS EEW equals the arch SEW.
+    if re.search(r"_eew_eq_sew(?:_lte\d+)?$", cp):
+        eew = _indexed_ls_eew(instr)
+        if eew is not None and _is_vector(arch) and int(_get_effew(arch)) != eew:
+            return None
+
+    # _sew_lte_{N}: only emit when arch SEW <= N; strip the suffix when it does.
+    # Exclude `_eew_eq_sew_lte{N}` which is a vs3-range variant, not a SEW gate.
+    if re.search(r"_sew_lte_?\d+$", cp) and not re.search(r"_eew_eq_sew_lte\d+$", cp):
+        digits = re.search(r"(\d+)$", cp)
+        if digits:
+            if int(_get_effew(arch)) > int(digits.group(1)):
+                return None
+            cp = re.sub(r"_sew_lte_\d+", "", cp)
+
+    return cp
 
 
 def _gen_instrs(
@@ -537,58 +606,16 @@ def _gen_instrs(
         # cp_frm_* declarations first, then regular coverpoints, then explicit cross templates.
         frm_coverpoints = {"cp_frm_2", "cp_frm_3", "cp_frm_4"}
         ordered_cps = sorted(cps, key=lambda cp: (0 if cp in frm_coverpoints else 2 if cp.startswith("cr_") else 1, cp))
+        # Per-operand cross filtering depends only on the instruction, so resolve
+        # its operand presence and max LMUL once rather than per coverpoint.
+        has_vd, has_vs1, has_vs2 = _operand_presence(_instr_type)
+        max_lmul = _max_legal_lmul_for_instruction(instr)
         for cp in ordered_cps:
-            if cp.startswith(("sample_", "EFFEW", "cp_ibm")) or cp in {"RV32", "RV64"}:
+            resolved = _resolve_coverpoint(cp, arch, instr)
+            if resolved is None:
                 continue
-
-            # SsstrictV: honor the curated (column, instruction) skip table that
-            # records simulator-failure / unimplemented combinations. Skipping
-            # here removes the corresponding bins from the covergroup so they
-            # do not count as missing coverage.
-            if arch.startswith("SsstrictV") and instr in SSSTRICTV_SKIP_COMBINATIONS.get(cp, ()):
-                continue
-
-            # Skip cp_custom_ffLS for instructions where LMUL=2 is infeasible at this SEW
-            if cp == "cp_custom_ffLS" and _is_vector(arch):
-                sew = int(_get_effew(arch))
-                if not _ffLS_feasible(instr, sew):
-                    continue
-
-            # Handle per-SEW minimum: cp suffixed with _sew_ge{N} only applies when arch SEW >= N
-            ge_match = re.search(r"_sew_ge(\d+)$", cp)
-            if ge_match:
-                min_sew = int(ge_match.group(1))
-                if not _is_vector(arch) or int(_get_effew(arch)) < min_sew:
-                    continue
-                cp = re.sub(r"_sew_ge\d+$", "", cp)
-
-            # Append SEW suffix for SEW-dependent coverpoints
-            if any(sew_cp in cp for sew_cp in SEW_DEPENDENT_CPS):
-                cp = cp + "_sew" + _get_effew(arch)
-
-            # Handle eew_eq_sew variants: only emit when indexed-LS EEW == arch SEW.
-            # Accepts plain `_eew_eq_sew` and `_eew_eq_sew_lte<N>` (vs3<=N variant).
-            if re.search(r"_eew_eq_sew(?:_lte\d+)?$", cp):
-                eew = _indexed_ls_eew(instr)
-                if eew is not None and _is_vector(arch) and int(_get_effew(arch)) != eew:
-                    continue
-
-            # Handle conditional SEW inclusion (canonical token `_sew_lte_<N>`).
-            # Exclude `_eew_eq_sew_lte<N>` which is a vs3-range variant, not a SEW gate.
-            if re.search(r"_sew_lte_?\d+$", cp) and not re.search(r"_eew_eq_sew_lte\d+$", cp):
-                effew = _get_effew(arch)
-                match = re.search(r"(\d+)$", cp)
-                if match:
-                    max_sew = int(match.group(1))
-                    if int(effew) <= max_sew:
-                        cp = re.sub(r"_sew_lte_\d+", "", cp)
-                        rendered = customize_template(templates, cp, arch, instr) + "\n"
-                        rendered = _filter_per_operand_crosses(rendered, _instr_type, instr)
-                        covergroup_lines.append(rendered)
-            else:
-                rendered = customize_template(templates, cp, arch, instr) + "\n"
-                rendered = _filter_per_operand_crosses(rendered, _instr_type, instr)
-                covergroup_lines.append(rendered)
+            rendered = customize_template(templates, resolved, arch, instr) + "\n"
+            covergroup_lines.append(_filter_per_operand_crosses(rendered, has_vd, has_vs1, has_vs2, max_lmul))
 
         # Instruction footer
         if vectorwiden:
@@ -675,14 +702,15 @@ def _write_extension_files(
     an EFFEW substitution is made available in the header, and the instruction
     key list is filtered to the matching SEW.
     """
+    per_sew = vector or _has_effew_suffix(arch)
     effew = ""
-    if vector or _has_effew_suffix(arch):
+    if per_sew:
         try:
             effew = _get_effew(arch)
         except ValueError:
             # Priv vector archs (SsstrictV, ExceptionsV*, MisalignedV) have no SEW expansion or EFFEW.
             effew = ""
-    instr_keys = _get_sorted_instr_keys(tp, arch) if (vector or _has_effew_suffix(arch)) else sorted(tp.keys())
+    instr_keys = _get_sorted_instr_keys(tp, arch) if per_sew else sorted(tp.keys())
 
     header_tmpl = "header_vector" if vector else "header"
     # Priv vector archs (SsstrictV, ExceptionsV*) don't expand per-SEW so the
@@ -721,17 +749,24 @@ def _write_extension_files(
     _write_if_changed(output_dir / f"{arch}_coverage_init.svh", "".join(init_lines))
 
 
-def write_covergroups(
+@dataclass
+class _CovergroupJob:
+    """One per-extension covergroup file pair to write."""
+
+    arch: str
+    tp: dict[tuple[str, str], list[str]]
+    output_dir: Path
+    vector: bool
+
+
+def _plan_unpriv_jobs(
     test_plans: dict[str, dict[tuple[str, str], list[str]]],
-    templates: dict[str, str],
     output_dir: Path,
-) -> None:
-    """Generate and write per-extension _coverage.svh and _coverage_init.svh files."""
+) -> list[_CovergroupJob]:
+    """Collect the unpriv per-extension covergroup jobs (writes go in output_dir/unpriv)."""
     unpriv_dir = output_dir / "unpriv"
     unpriv_dir.mkdir(parents=True, exist_ok=True)
-
-    for arch, tp in track(test_plans.items(), description="[cyan]Generating covergroups...", total=len(test_plans)):
-        _write_extension_files(arch, tp, templates, unpriv_dir, vector=_is_vector(arch))
+    return [_CovergroupJob(arch, tp, unpriv_dir, _is_vector(arch)) for arch, tp in test_plans.items()]
 
 
 def write_coverage_headers(
@@ -822,22 +857,21 @@ def write_instruction_sample_file(
     _write_if_changed(coverage_dir / "RISCV_instruction_sample.svh", "".join(lines))
 
 
-def write_priv_covergroups(
+def _plan_priv_jobs(
     testplan_dir: Path,
-    templates: dict[str, str],
     output_dir: Path,
     extensions: str = "all",
     exclude: str = "",
-) -> None:
-    """Generate per-instruction priv coverage files from testplans/priv/*.csv.
+) -> list[_CovergroupJob]:
+    """Collect the priv per-instruction covergroup jobs from testplans/priv/*.csv.
 
-    Reads CSVs from testplan_dir / "priv" and generates _coverage.svh
-    and _coverage_init.svh files in output_dir / "priv".
-    Skips extensions that already have handwritten coverage files.
+    Reads CSVs from testplan_dir / "priv"; writes go in output_dir / "priv".
+    Extensions with handwritten coverage files are skipped. Returns [] when
+    there is no priv testplan directory.
     """
     priv_plan_dir = testplan_dir / "priv"
     if not priv_plan_dir.exists():
-        return
+        return []
 
     priv_output_dir = output_dir / "priv"
     priv_output_dir.mkdir(parents=True, exist_ok=True)
@@ -858,10 +892,7 @@ def write_priv_covergroups(
     if extensions != "all" or exclude != "":
         priv_plans = _filter_testplans(priv_plans, extensions, exclude)
 
-    for arch, tp in track(
-        priv_plans.items(), description="[cyan]Generating priv covergroups...", total=len(priv_plans)
-    ):
-        _write_extension_files(arch, tp, templates, priv_output_dir, vector=_is_priv_vector(arch))
+    return [_CovergroupJob(arch, tp, priv_output_dir, _is_priv_vector(arch)) for arch, tp in priv_plans.items()]
 
 
 ##################################
@@ -878,8 +909,15 @@ def generate_covergroups(testplan_dir: Path, output_dir: Path, extensions: str =
         test_plans = all_test_plans
 
     templates = read_covergroup_templates()
-    write_covergroups(test_plans, templates, output_dir)
-    write_priv_covergroups(testplan_dir, templates, output_dir, extensions, exclude)
+
+    jobs = _plan_unpriv_jobs(test_plans, output_dir)
+    jobs += _plan_priv_jobs(testplan_dir, output_dir, extensions, exclude)
+    with _progress("Generating covergroups...") as progress:
+        task_id = progress.add_task("covergroups", total=len(jobs))
+        for job in jobs:
+            _write_extension_files(job.arch, job.tp, templates, job.output_dir, vector=job.vector)
+            progress.advance(task_id)
+
     write_coverage_headers(all_test_plans, output_dir, templates)
     write_instruction_sample_file(all_test_plans, templates, output_dir)
     rprint(f"[bold green]✓ Generated covergroups for {len(test_plans)} extension(s)[/]")

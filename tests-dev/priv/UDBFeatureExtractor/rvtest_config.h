@@ -14,6 +14,12 @@
 #define UDB_MXLEN XLEN
 #endif
 
+#if UDB_MXLEN == 64
+#define UDB_MXLEN_64
+#elif UDB_MXLEN == 32
+#define UDB_MXLEN_32
+#endif
+
 // Trap on unimplemented instructions (needed by rvtest_trap_handler.h)
 #define UDB_TRAP_ON_UNIMPLEMENTED_INSTRUCTION
 

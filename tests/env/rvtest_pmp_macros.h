@@ -5,8 +5,8 @@
 // Shared, centralized versions of the per-test PMP_VERIFICATION_* macros. Each macro
 // probes how a PMP-protected region responds to execute / store / load accesses and
 // records the outcome with RVTEST_SIGUPD. Defined here (instead of redefined in every
-// test) so cross-cutting fixes — e.g. inserting RVMODEL_FENCEI to sync the I-cache
-// after writing executable code — are made in one place. RVMODEL_FENCEI is
+// test) so cross-cutting fixes — e.g. inserting RVTEST_FENCEI to sync the I-cache
+// after writing executable code — are made in one place. RVTEST_FENCEI is
 // self-disabling: fence.i only when Zifencei is supported, otherwise nop.
 //
 // Included from riscv_arch_test.h after rvtest_config.h / utils.h / signature.h, so
@@ -21,20 +21,9 @@
 // local .macro of the same name (GAS errors on macro redefinition).
 //==============================================================================
 
-// rvtest_pmp_macros.h is included before rvtest_trap_handler.h (where RVMODEL_FENCEI is
-// normally defined), so define it here too. The #ifndef guard makes the later
-// definition in rvtest_trap_handler.h a no-op; ZIFENCEI_SUPPORTED comes from the
-// already-included derived_config.h. Keep this in sync with rvtest_trap_handler.h.
-#ifndef   RVMODEL_FENCEI
-  #ifndef ZIFENCEI_SUPPORTED
-       #define RVMODEL_FENCEI nop                // no Zifencei: assume coherent I-cache
-  #else
-       #define RVMODEL_FENCEI fence.i            // Zifencei available: use fence.i
-  #endif
-#endif
 // PMP_VERIFICATION_X_C: compressed execute-only check.
 // Jumps (c.jalr) to ADDRESS and records whether execution was permitted.
-// No store occurs, so no RVMODEL_FENCEI is required.
+// No store occurs, so no RVTEST_FENCEI is required.
 //   ADDRESS   - region label to execute from
 //   TEST_CASE - prefix for the local result label (TEST_CASE_1)
 .macro PMP_VERIFICATION_X_C ADDRESS, TEST_CASE
@@ -47,7 +36,7 @@
 
 // PMP_VERIFICATION_CBO: cache-block-operation permission check (the Zicbo cbo_wr family).
 // Runs cbo.zero/clean/flush/inval on ADDRESS and records each outcome. No jump and no
-// ordinary store, so no RVMODEL_FENCEI is required.
+// ordinary store, so no RVTEST_FENCEI is required.
 //   ADDRESS   - cache-block-aligned region label
 //   TEST_CASE - prefix for the local result labels (TEST_CASE_1 .. _4)
 .macro PMP_VERIFICATION_CBO ADDRESS, TEST_CASE
@@ -76,7 +65,7 @@
 .endm
 
 // PMP_VERIFICATION_RWX: basic word-width R/W/X check (cfg_A_off / mprv family).
-// Execute-first: jalr to the region, one word store, one word load. RVMODEL_FENCEI syncs
+// Execute-first: jalr to the region, one word store, one word load. RVTEST_FENCEI syncs
 // the I-cache before the jump. The only XLEN difference is the written sentinel value
 // (RV32: NOP, RV64: DOUBLE_NOP), selected with .if below. Needs test_1_str..test_3_str.
 //   ADDRESS   - region label to probe
@@ -85,10 +74,10 @@
     // Execution Access Check
     LA (a4, \ADDRESS)
     LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
-    LA(x1, 1f)                            // Store the return Address in x1
-    RVMODEL_FENCEI                              // sync I-cache: a prior store may have updated this executable region
+    LA(ra, 1f)                           // ra: where the trap handler resumes on a fetch fault (and the region's ret target)
+    RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
     \TEST_CASE\()_1:
-    jalr ra, 0(a4)
+    jalr x0, 0(a4)
     nop
 1:
     nop
@@ -115,22 +104,23 @@
 
 // PMP_VERIFICATION_RWX_LEGAL: full boundary R/W/X check (the *_legal_lxwr/lwxr family).
 // Probes execute, then store, then load at five offsets relative to the region:
-// start, start-4, start+4, start+g-4, start+g (g = PMP granule). Execute is done first
-// for all five offsets (results recorded as TEST_CASE_11..15), then the five stores
-// (_1.._5) and five loads (_6.._10). RVMODEL_FENCEI at the top syncs the I-cache so a
-// prior invocation's store can't leave a stale instruction. Needs `g` defined and test_1_str..test_15_str.
+// start, start-4, start+4, start+g-4, start+g, where g = (1<<UDB_PMP_GRANULARITY) is the
+// PMP granule size in bytes. Execute is done first for all five offsets (results recorded
+// as TEST_CASE_11..15), then the five stores (_1.._5) and five loads (_6.._10).
+// RVTEST_FENCEI at the top syncs the I-cache so a prior invocation's store can't leave a
+// stale instruction. Needs test_1_str..test_15_str.
 //   ADDRESS   - region label to probe
 //   TEST_CASE - prefix for the local result labels
 .macro PMP_VERIFICATION_RWX_LEGAL ADDRESS, TEST_CASE
 
-    RVMODEL_FENCEI
+    RVTEST_FENCEI
 
     LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     // Execution Access Check
     LA (a4, \ADDRESS)
-    LA(x1, 1f)                          // Store the return Address in x1
+    LA(ra, 1f)         // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_11:
-    jalr ra, 0(a4)
+    jalr x0, 0(a4)
     nop
     nop
 1:
@@ -140,9 +130,9 @@
 
     LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     addi a4, a4, -4                     // REGIONSTART - 4
-    LA(x1, 2f)                          // Store the return Address in x1
+    LA(ra, 2f)         // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_12:
-    jalr ra, 0(a4)
+    jalr x0, 0(a4)
     nop
     nop
 2:
@@ -152,9 +142,9 @@
 
     LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     addi a4, a4, 8                      // REGIONSTART + 4
-    LA(x1, 3f)                          // Store the return Address in x1
+    LA(ra, 3f)         // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_13:
-    jalr ra, 0(a4)
+    jalr x0, 0(a4)
     nop
     nop
 3:
@@ -162,11 +152,11 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_13, test_13_str)
 
-    li t0, ((1<<(UDB_PMP_GRANULARITY))-8)   // g-8, where g = PMP granule
+    li t0, ((1<<(UDB_PMP_GRANULARITY))-8)   // g - 8, where g = (1<<UDB_PMP_GRANULARITY) is the granule size in bytes
     add a4, a4, t0                  // REGIONSTART + g - 4
-    LA(x1, 4f)                          // Store the return Address in x1
+    LA(ra, 4f)         // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_14:
-    jalr ra, 0(a4)
+    jalr x0, 0(a4)
     nop
     nop
 4:
@@ -176,8 +166,8 @@
 
     addi a4, a4, 4                      // REGIONSTART + g
     \TEST_CASE\()_15:
-    LA(x1, 5f)                          // Store the return Address in x1
-    jalr ra, 0(a4)
+    LA(ra, 5f)         // ra: resume target on a fetch fault (and the region's ret target)
+    jalr x0, 0(a4)
     nop
     nop
 5:
@@ -211,7 +201,7 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
 
-    li t0, ((1<<(UDB_PMP_GRANULARITY))-8)   // g-8, where g = PMP granule
+    li t0, ((1<<(UDB_PMP_GRANULARITY))-8)   // g - 8, where g = (1<<UDB_PMP_GRANULARITY) is the granule size in bytes
     add a5, a5, t0                                      // REGIONSTART + g - 4
 
     \TEST_CASE\()_4:
@@ -252,7 +242,7 @@
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)                                   // Signature update
 
-    li t0, ((1<<(UDB_PMP_GRANULARITY))-8)   // g-8, where g = PMP granule
+    li t0, ((1<<(UDB_PMP_GRANULARITY))-8)   // g - 8, where g = (1<<UDB_PMP_GRANULARITY) is the granule size in bytes
     add a5, a5, t0                                      // REGIONSTART + g - 4
 
     \TEST_CASE\()_9:
@@ -272,7 +262,7 @@
 
 // PMP_VERIFICATION_RWX_ALL: all-access-width R/W/X check (the cfg_XWR_all family).
 // Execute-first: probe execution, then every store width, then every load width,
-// recording each outcome. RVMODEL_FENCEI syncs the I-cache before the jump in case a
+// recording each outcome. RVTEST_FENCEI syncs the I-cache before the jump in case a
 // prior invocation's store updated this executable region. RV64 additionally exercises
 // doubleword accesses (sd/lwu/ld) and uses DOUBLE_NOP; RV32 uses NOP — selected with .if.
 // Each referenced test_<n>_str must be defined, and SIGUPD_COUNT sized accordingly
@@ -283,14 +273,14 @@
     // Execution Access Check
     LA (a4, \ADDRESS)
     LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
-    LA(x1, 1f)                            // Store the return Address in x1
-    RVMODEL_FENCEI                              // sync I-cache: a prior store may have updated this executable region
+    LA(ra, 1f)                           // ra: where the trap handler resumes on a fetch fault (and the region's ret target)
+    RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
   .if (UDB_MXLEN == 64)
     \TEST_CASE\()_12:
   .else
     \TEST_CASE\()_9:
   .endif
-    jalr ra, 0(a4)
+    jalr x0, 0(a4)
     nop
 1:
     nop
@@ -380,7 +370,12 @@
   .endif
 .endm
 
-// PMP_VERIFICATION_X_ZCD: centralized body for the zcd_legal_lxwr.S
+// PMP_VERIFICATION_X_ZCD: compressed double-precision FP access check (Zcd).
+// Loads 1.0 into f8, then stores/loads it at ADDRESS with c.fsd/c.fld (recorded as
+// TEST_CASE_1/_2) and again through sp with c.fsdsp/c.fldsp, recording whether the PMP
+// region permits the access. No jump, so no RVTEST_FENCEI is required.
+//   ADDRESS   - region label to probe
+//   TEST_CASE - prefix for the local result labels (TEST_CASE_1 .. _2)
 .macro PMP_VERIFICATION_X_ZCD ADDRESS, TEST_CASE
 
     li    x15, 0x3f800000               // bit pattern for 1.0f (IEEE-754 single)
@@ -420,7 +415,12 @@
 
 .endm
 
-// PMP_VERIFICATION_X_ZCB: centralized body for the zcb_legal_lxwr.S family
+// PMP_VERIFICATION_X_ZCB: compressed byte/half access check (Zcb).
+// Runs the compressed loads/stores c.sb/c.lbu/c.sh/c.lhu/c.lh at ADDRESS and records each
+// outcome (TEST_CASE_1 .. _6), verifying how the PMP region responds. No jump, so no
+// RVTEST_FENCEI is required.
+//   ADDRESS   - region label to probe
+//   TEST_CASE - prefix for the local result labels (TEST_CASE_1 .. _6)
 .macro PMP_VERIFICATION_X_ZCB ADDRESS, TEST_CASE
 
     LI(x15, NOP)                                              // Value to write (NOP)
@@ -470,35 +470,41 @@
 
 .endm
 
-// PMP_VERIFICATION_RWX_NA4_RV32: centralized body for the na4_legal_lxwr.S family
+// PMP_VERIFICATION_RWX_NA4_RV32: boundary R/W/X check for a 4-byte NA4 region (RV32).
+// Probes execute at start, start-4, start+4 (recorded _1.._3), then stores and loads a
+// word at start, start-4, start+4 (recorded _4.._9). RVTEST_FENCEI at the top syncs the
+// I-cache so a prior invocation's store can't leave a stale instruction.
+// Needs test_1_str..test_9_str.
+//   ADDRESS   - region label to probe
+//   TEST_CASE - prefix for the local result labels
 .macro PMP_VERIFICATION_RWX_NA4_RV32 ADDRESS, TEST_CASE
 
-    RVMODEL_FENCEI
+    RVTEST_FENCEI
 
     LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     // Execution Access Check
     LA (a4, \ADDRESS)
-    LA(x1, 1f)                            // Store the return Address in x1
+    LA(ra, 1f)                           // ra: where the trap handler resumes on a fetch fault (and the region's ret target)
     \TEST_CASE\()_1:
-    jalr ra, 0(a4)
+    jalr x0, 0(a4)
     nop
 1:
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
 
     addi a4, a4, -4                     // REGIONSTART - 4
-    LA(x1, 2f)                            // Store the return Address in x1
+    LA(ra, 2f)           // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_2:
-    jalr ra, 0(a4)
+    jalr x0, 0(a4)
     nop
 2:
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
 
     addi a4, a4, 8                      // REGIONSTART + 4
-    LA(x1, 3f)                            // Store the return Address in x1
+    LA(ra, 3f)           // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_3:
-    jalr ra, 0(a4)
+    jalr x0, 0(a4)
     nop
 3:
     nop
@@ -551,14 +557,14 @@
 //   TEST_CASE - prefix for the local result labels
 .macro PMP_VERIFICATION_RWX_NAPOT ADDRESS, TEST_CASE
 
-    RVMODEL_FENCEI
+    RVTEST_FENCEI
 
     LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     // Execution Access Check
     LA (a4, \ADDRESS)
-    LA(x1, 1f)                          // Store the return Address in x1
+    LA(ra, 1f)         // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_17:
-    jalr ra, 0(a4)
+    jalr x0, 0(a4)
     nop
     nop
 1:
@@ -568,9 +574,9 @@
 
     LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     addi a4, a4, -4                     // REGIONSTART - 4
-    LA(x1, 2f)                          // Store the return Address in x1
+    LA(ra, 2f)         // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_18:
-    jalr ra, 0(a4)
+    jalr x0, 0(a4)
     nop
     nop
 2:
@@ -580,9 +586,9 @@
 
     LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     addi a4, a4, 8                      // REGIONSTART + 4
-    LA(x1, 3f)                          // Store the return Address in x1
+    LA(ra, 3f)         // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_19:
-    jalr ra, 0(a4)
+    jalr x0, 0(a4)
     nop
     nop
 3:
@@ -592,9 +598,9 @@
 
     li t0, ((1<<(UDB_PMP_GRANULARITY))-8)
     add a4, a4, t0                  // REGIONSTART + (1<<(UDB_PMP_GRANULARITY)) - 4
-    LA(x1, 4f)                          // Store the return Address in x1
+    LA(ra, 4f)         // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_20:
-    jalr ra, 0(a4)
+    jalr x0, 0(a4)
     nop
     nop
 4:
@@ -603,9 +609,9 @@
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_20, test_20_str)
 
     addi a4, a4, 4                      // REGIONSTART + (1<<(UDB_PMP_GRANULARITY))
-    LA(x1, 5f)                          // Store the return Address in x1
+    LA(ra, 5f)         // ra: resume target on a fetch fault (and the region's ret target)
     \TEST_CASE\()_21:
-    jalr ra, 0(a4)
+    jalr x0, 0(a4)
     nop
     nop
 5:
@@ -761,47 +767,71 @@
   .endif
 .endm
 
-// PMP_VERIFICATION_RWX_NAPOT_SM_RV64: centralized body for the napot_legal_lxwr-01.S family
+// PMP_VERIFICATION_RWX_NAPOT_SM_RV64: boundary R/W/X check for a NAPOT region (RV64,
+// Smepmp napot_legal family). Executes from start, start-4, start+4, start+g-4, start+g
+// (g = (1<<UDB_PMP_GRANULARITY) bytes) to exercise the fetch path, then records every
+// store width (sb/sh/sw/sd, _1.._4) plus boundary word stores (_5.._8) and every load
+// width (lb/lbu/lh/lhu/lw/lwu/ld, _9.._15) plus boundary word loads (_16.._19). The five
+// execute probes are recorded as _20.._24. RVTEST_FENCEI before the first jump syncs the
+// I-cache after a prior store. Needs test_1_str..test_24_str.
+//   ADDRESS   - region label to probe
+//   TEST_CASE - prefix for the local result labels
 .macro PMP_VERIFICATION_RWX_NAPOT_SM_RV64 ADDRESS, TEST_CASE
 
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
-    // Execution Access Check
+    // Execution Access Check — probe start, start-4, start+4, start+g-4, start+g and
+    // record each outcome (_20.._24). The sentinel x4=0xACCE is reloaded before every
+    // probe because RVTEST_SIGUPD clobbers x4 (the temp reg) in selfcheck mode.
+    LI(x4, 0xACCE)                        // sentinel checked by the trap handler on a fetch fault
     LA (a4, \ADDRESS)
-    LA(x1, 1f)                            // Store the return Address in x1
-    RVMODEL_FENCEI                              // sync I-cache: a prior store may have updated this executable region
-    jalr ra, 0(a4)
+    LA(ra, 1f)                            // ra: resume target on a fetch fault (and the region's ret target)
+    RVTEST_FENCEI                         // sync I-cache: a prior store may have updated this executable region
+    \TEST_CASE\()_20:
+    jalr x0, 0(a4)
     nop
 1:
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_20, test_20_str)
 
+    LI(x4, 0xACCE)                        // reload sentinel (RVTEST_SIGUPD clobbered x4 in selfcheck mode)
     addi a4, a4, -4                       // REGIONSTART - 4
-    LA(x1, 2f)                            // Store the return Address in x1
-    jalr ra, 0(a4)
+    LA(ra, 2f)                            // ra: resume target on a fetch fault (and the region's ret target)
+    \TEST_CASE\()_21:
+    jalr x0, 0(a4)
     nop
 2:
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_21, test_21_str)
 
+    LI(x4, 0xACCE)
     addi a4, a4, 8                        // REGIONSTART + 4
-    LA(x1, 3f)                            // Store the return Address in x1
-    jalr ra, 0(a4)
+    LA(ra, 3f)                            // ra: resume target on a fetch fault (and the region's ret target)
+    \TEST_CASE\()_22:
+    jalr x0, 0(a4)
     nop
 3:
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_22, test_22_str)
 
+    LI(x4, 0xACCE)
     LI(t0, (1<<(UDB_PMP_GRANULARITY))-8)
     add a4, a4, t0                        // REGIONSTART + (1<<(UDB_PMP_GRANULARITY)) - 4
-    LA(x1, 4f)                            // Store the return Address in x1
-    jalr ra, 0(a4)
+    LA(ra, 4f)                            // ra: resume target on a fetch fault (and the region's ret target)
+    \TEST_CASE\()_23:
+    jalr x0, 0(a4)
     nop
 4:
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_23, test_23_str)
 
+    LI(x4, 0xACCE)
     addi a4, a4, 4                        // REGIONSTART + (1<<(UDB_PMP_GRANULARITY))
-    LA(x1, 5f)                            // Store the return Address in x1
-    jalr ra, 0(a4)
+    LA(ra, 5f)                            // ra: resume target on a fetch fault (and the region's ret target)
+    \TEST_CASE\()_24:
+    jalr x0, 0(a4)
     nop
 5:
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_24, test_24_str)
 
     LI(a4, DOUBLE_NOP)                                       // Value to write (DOUBLE_NOP)
 

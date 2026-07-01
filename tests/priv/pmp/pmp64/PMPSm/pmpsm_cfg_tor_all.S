@@ -192,7 +192,9 @@ test_1_str: .string "\"test: 1; cp: pmpm_cfg_tor_all_lw\""
 
 .align 12
 TEST_FOR_EXECUTION_X:
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of return-instruction fillers: places the region on the next granule boundary (= PMP_REGION_START at coverage grain 2), grain-aligned at larger grains
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION_0:                        // Adding nops in TOR Region from 0x80001000 to 0x80001000 + g
     .rept (1<<(UDB_PMP_GRANULARITY))

@@ -59,7 +59,7 @@ RVTEST_BEGIN
     // Execution Access Check
     LA (a4, \ADDRESS)
     LA(x1, 1f)                          // Store the return Address in x1
-    RVMODEL_FENCEI                              // sync I-cache: a prior store may have updated this executable region
+    RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
     jalr ra, 0(a4)
     nop
     nop
@@ -397,7 +397,7 @@ test_16_str: .string "\"test: 16; cp: pmpm_aligned_lw_address+g\""
 .align (UDB_PMP_GRANULARITY)
 
 TEST_FOR_EXECUTION_0:
-    .rept 1024
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of fillers: puts TEST_FOR_EXECUTION on the next granule boundary (= PMP_REGION_START at coverage grain 2), while staying naturally aligned for NAPOT at larger grains
     nop
     .endr
 

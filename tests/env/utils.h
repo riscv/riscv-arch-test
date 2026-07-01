@@ -43,6 +43,22 @@
     #define LREG lq
 #endif
 
+// RVTEST_FENCEI: instruction that synchronizes the instruction stream after code
+// has been written to memory (relocating the trampoline, writing a dynamic
+// instruction to scratch, or storing into an executable PMP region before jumping
+// into it). It is fence.i when the DUT supports Zifencei, otherwise nop (coherent
+// I-cache assumed). A DUT needing a custom mechanism may predefine it as a JAL to a
+// sync routine. Must stay a single instruction (or a JAL) so code size is constant.
+// Defined here so it is available to every consumer (rvtest_pmp_macros.h,
+// rvtest_trap_handler.h, ...); ZIFENCEI_SUPPORTED comes from derived_config.h.
+#ifndef   RVTEST_FENCEI
+  #ifndef ZIFENCEI_SUPPORTED
+       #define RVTEST_FENCEI nop                // no Zifencei: assume coherent I-cache
+  #else
+       #define RVTEST_FENCEI fence.i            // Zifencei available: use fence.i
+  #endif
+#endif
+
 // FLEN specific macros
 // ============================================================================
 // Tests are written assuming a certain FLEN. For most tests, the test will only

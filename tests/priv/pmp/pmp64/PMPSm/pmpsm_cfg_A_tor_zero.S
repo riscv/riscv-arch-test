@@ -91,7 +91,7 @@ RVTEST_BEGIN
     LI(x4, 0xACCE)
     LA (a4, (\ADDRESS))
     LA(x1, 1f)                                                // Store the return Address in x1
-    RVMODEL_FENCEI                              // sync I-cache: a prior store may have updated this executable region
+    RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
     jalr ra, 0(a4)
     nop
 1:
@@ -169,7 +169,9 @@ test_4_str: .string "\"test: 4; cp: pmpm_cfg_A_tor_zero_load_access_at_pmpaddr0-
 .align 12
 .align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of return-instruction fillers: places the region on the next granule boundary (= PMP_REGION_START at coverage grain 2), grain-aligned at larger grains
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

@@ -166,10 +166,18 @@ test_17_str: .string "\"test: 17; cp: cp_cfg_A_napot_lw_address+4\""
 test_18_str: .string "\"test: 18; cp: cp_cfg_A_napot_lw_address+g-4\""
 test_19_str: .string "\"test: 19; cp: cp_cfg_A_napot_lw_address+g\""
 
+test_20_str: .string "\"test: 20; cp: cp_cfg_A_napot_x_address\""
+test_21_str: .string "\"test: 21; cp: cp_cfg_A_napot_x_address-4\""
+test_22_str: .string "\"test: 22; cp: cp_cfg_A_napot_x_address+4\""
+test_23_str: .string "\"test: 23; cp: cp_cfg_A_napot_x_address+g-4\""
+test_24_str: .string "\"test: 24; cp: cp_cfg_A_napot_x_address+g\""
+
 .align 12
 .align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of return-instruction fillers: places the region on the next granule boundary (= PMP_REGION_START at coverage grain 2), grain-aligned at larger grains
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

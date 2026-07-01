@@ -1838,7 +1838,7 @@ common_\__MODE__\()excpt_handler:
  // extract and test vsatp.MODE!=bare; if so, VA, skip reloc
         csrr    T2, CSR_VSATP
         srli    T2, T2, MODE_LSB
-        LI(     T4, 2*sv_area_sz)
+        LI(     T4, 1*sv_area_sz)
         add     T4, T4, sp
         bnez    T2, sv_\__MODE__\()epc               // VS VA -> skip
 .endif
@@ -1928,10 +1928,8 @@ skp_\__MODE__\()tval:
         csrr    T3, CSR_MISA            // skip mtval2, mtinst save if hypervisor is enabled (misa[7] (H)-1)
         slli    T3, T3, UDB_MXLEN-7-1
         bgez    T3, 1f
-  .endif
-  .ifnc \__MODE__ , S
-    .ifnc \__MODE__ , V
-      #ifdef H_SUPPORTED
+
+        #ifdef H_SUPPORTED
         sv_\__MODE__\()Mtval2:
         csrr    T3, CSR_MTVAL2
         TRAP_SIGUPD(T4, T3, 4, sv_\__MODE__\()Mtval2, sv_Mtval2_str) // write word 4: mtval2
@@ -1939,7 +1937,6 @@ skp_\__MODE__\()tval:
         csrr    T3, CSR_MTINST
         TRAP_SIGUPD(T4, T3, 5, sv_\__MODE__\()Mtinst, sv_Mtinst_str) // write word 5: mtinst
       #endif
-    .endif
   .endif
 
 1:

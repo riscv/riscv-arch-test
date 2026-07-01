@@ -34,6 +34,9 @@ RVTEST_BEGIN
     LREG    t1, 0(t0)
     csrw    mtvec, t1
 
+    // Treat non-zero main() return as test failure (RVTEST_CODE_END otherwise halts pass).
+    bnez    a0, abort_test
+
     j       c_done
 
 

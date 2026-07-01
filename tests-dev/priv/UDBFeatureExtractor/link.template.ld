@@ -12,6 +12,7 @@ SECTIONS {
     }
 
     .bss (NOLOAD) : {
+        . = ALIGN(8);
         __bss_start = .;
         *(.bss .bss.*)
         *(COMMON)

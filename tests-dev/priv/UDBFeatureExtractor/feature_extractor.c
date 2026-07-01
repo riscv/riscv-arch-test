@@ -2,7 +2,7 @@
 // Copyright (c) 2026 RISC-V International
 
 // C version of FeatureExtractor.
-// Detects whether M is supported by executing encoded DIV.
+// Detects whether M is supported by executing a DIV probe instruction.
 
 #include <stdint.h>
 #include <stdbool.h>

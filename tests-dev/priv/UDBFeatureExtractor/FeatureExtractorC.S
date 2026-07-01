@@ -91,7 +91,11 @@ RVTEST_DATA_BEGIN
 
 .align 3
 saved_mtvec:
+#if __riscv_xlen == 64
     .dword 0
+#else
+    .word 0
+#endif
 
 .globl c_trap_flag
 .align 2

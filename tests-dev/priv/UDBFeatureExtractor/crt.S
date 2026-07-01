@@ -29,7 +29,9 @@ _crt_start:
     la      gp, __global_pointer$
     .option pop
 
-    // Zero .bss
+    // This minimal runtime clears .bss only. It assumes the target/linker setup
+    // loads .data at its runtime address. If a future target uses separate
+    // LMA/VMA for .data, add a .data copy loop here.
     la      t0, __bss_start
     la      t1, __bss_end
 1:

@@ -433,7 +433,9 @@ def generate_misaligned_priority_load_tests(
     addr_reg, temp_reg, check_reg = test_data.int_regs.get_registers(3)
 
     lines = ["#ifdef RVMODEL_ACCESS_FAULT_ADDRESS", comment_banner(coverpoint, "Misaligned Priority Load")]
-    load_ops_base = ["lh", "lhu", "lw", "lb", "lbu"]
+    # Only ops where misalignment is possible (lb/lbu excluded: alignment=1)
+    _ALIGN = {"lh": 2, "lhu": 2, "lw": 4, "lwu": 4, "ld": 8}
+    load_ops_base = ["lh", "lhu", "lw"]
     load_ops_64 = ["lwu", "ld"]
 
     lines.append(f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)")
@@ -442,9 +444,11 @@ def generate_misaligned_priority_load_tests(
         lines.append(f"addi x{temp_reg}, x{addr_reg}, {offset}")
 
         for op in load_ops_base:
+            if (offset % _ALIGN[op]) == 0:
+                continue  # aligned access cannot be misaligned
             lines.extend(
                 [
-                    f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b}) - Access fault Misaligned",
+                    f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b}) - Access fault + Misaligned priority",
                     test_data.add_testcase(f"{op}{name_infix}off{offset}_priority", coverpoint, covergroup),
                     f"{op} x{check_reg}, 0(x{temp_reg})",
                     "nop",
@@ -453,9 +457,11 @@ def generate_misaligned_priority_load_tests(
 
         lines.append("\n#if __riscv_xlen == 64")
         for op in load_ops_64:
+            if (offset % _ALIGN[op]) == 0:
+                continue  # aligned access cannot be misaligned
             lines.extend(
                 [
-                    f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b}) - Access fault Misaligned",
+                    f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b}) - Access fault + Misaligned priority",
                     test_data.add_testcase(f"{op}{name_infix}off{offset}_priority", coverpoint, covergroup),
                     f"{op} x{check_reg}, 0(x{temp_reg})",
                     "nop",

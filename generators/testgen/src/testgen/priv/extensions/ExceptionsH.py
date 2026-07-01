@@ -11,6 +11,10 @@
 
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
+from testgen.priv.extensions.ExceptionsCommon import (
+    add_load_misaligned_test,
+    add_store_misaligned_test,
+)
 from testgen.priv.registry import add_priv_test_generator
 
 _CG = "ExceptionsH_cg"
@@ -873,6 +877,187 @@ def _generate_hfence_priv_tests(test_data: TestData) -> list[str]:
 
 # skipped all the identity page table stuff because I am not sure about how to set it up
 # set virtual address to map to the same place as physical address
+
+
+def _generate_hlv_address_misaligned_tests(test_data: TestData) -> list[str]:
+    """Generate M mode hlv address misaligned test
+
+    In M mode with identity page tables set up and XR permission,
+    attempt hlv.{b, bu, h, hu, w} and hlvx.{hu, wu} on address with every combination of three lsbs:000-111.
+    RV64:
+    also hlv.d and hlv.wu
+
+    RV32: 7 instr x 8 lsb
+    RV64: 9 instr x 8 lsb
+    """
+
+    covergroup, coverpoint = _CG, "cp_hlv_address_misaligned"
+
+    lines = [
+        comment_banner(coverpoint, _generate_hlv_address_misaligned_tests.__doc__),
+    ]
+
+    ######### USE MACRO HERE TO SET UP IDENTITY PAGE TABLE #########
+    # TODO
+
+    ################# NOW TEST THE INSTRUCTIONS #####################
+    load_ops = ["hlv.b", "hlv.bu", "hlv.h", "hlv.hu", "hlv.w", "hlvx.hu", "hlvx.wu"]
+
+    for offset in range(8):
+        for op in load_ops:
+            lines.append(f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b})")
+            lines.extend(add_load_misaligned_test(op, offset, test_data, coverpoint, covergroup))
+
+        lines.append("#if __riscv_xlen == 64")
+        for op in ["hlv.d", "hlv.wu"]:
+            lines.append(f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b})")
+            lines.extend(add_load_misaligned_test(op, offset, test_data, coverpoint, covergroup))
+        lines.append("#endif")
+
+    return lines
+
+
+def _generate_hlv_access_fault_tests(test_data: TestData) -> list[str]:
+    """Generate M mode hlv access fault test
+
+    In M mode with identity page tables set up and XR permission,
+    attempt hlv.{b, bu, h, hu, w} and hlvx.{hu, wu} from illegal address (parameterized).
+    RV64:
+    also hlv.d and hlv.wu
+
+    RV32: 7 instr
+    RV64: 9 instr
+    """
+
+    covergroup, coverpoint = _CG, "cp_hlv_access_fault"
+    r_temp, r_address = test_data.int_regs.get_registers(2, exclude_regs=[0])
+
+    lines = [
+        comment_banner(coverpoint, _generate_hlv_access_fault_tests.__doc__),
+    ]
+
+    ######### USE MACRO HERE TO SET UP IDENTITY PAGE TABLE #########
+    # TODO
+
+    ################# NOW TEST THE INSTRUCTIONS #####################
+    load_ops = ["hlv.b", "hlv.bu", "hlv.h", "hlv.hu", "hlv.w", "hlvx.hu", "hlvx.wu"]
+
+    for op in load_ops:
+        lines.append(f"\n# Testcase: {op} access fault")
+        lines.append(f"LA(x{r_address}, RVMODEL_ACCESS_FAULT_ADDRESS)")
+        lines.extend(
+            [
+                test_data.add_testcase(f"{op}_fault", coverpoint, covergroup),
+                f"{op} x{r_temp}, 0(x{r_address})",
+                "nop",
+            ]
+        )
+    lines.extend(["", "#if __riscv_xlen == 64"])
+    for op in ["hlv.d", "hlv.wu"]:
+        lines.append(f"\n# Testcase: {op} access fault")
+        lines.append(f"LA(x{r_address}, RVMODEL_ACCESS_FAULT_ADDRESS)")
+        lines.extend(
+            [
+                test_data.add_testcase(f"{op}_fault", coverpoint, covergroup),
+                f"{op} x{r_temp}, 0(x{r_address})",
+                "nop",
+            ]
+        )
+    test_data.int_regs.return_registers([r_temp, r_address])
+    return lines
+
+
+def _generate_hsv_address_misaligned_tests(test_data: TestData) -> list[str]:
+    """Generate M mode hsv address misaligned test
+
+    In M mode with identity page tables set up and WR permission,
+    attempt hsv.{b, h, w} on address with every combination of three lsbs:000-111.
+    For RV64, also hsv.d.
+
+    RV32: 3 instr x 8 lsb
+    RV64: 4 instr x 8 lsb
+    """
+
+    covergroup, coverpoint = _CG, "cp_hsv_address_misaligned"
+
+    lines = [
+        comment_banner(coverpoint, _generate_hsv_address_misaligned_tests.__doc__),
+    ]
+
+    ######### USE MACRO HERE TO SET UP IDENTITY PAGE TABLE #########
+    # TODO
+
+    ################# NOW TEST THE INSTRUCTIONS #####################
+    store_ops = ["hsv.b", "hsv.h", "hsv.w"]
+
+    for offset in range(8):
+        for op in store_ops:
+            lines.append(f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b})")
+            lines.extend(add_store_misaligned_test(op, offset, test_data, coverpoint, covergroup))
+
+        lines.append("#if __riscv_xlen == 64")
+        lines.append(f"\n# Testcase: hsv.d with offset {offset} (LSBs: {offset:03b})")
+        lines.extend(add_store_misaligned_test("hsv.d", offset, test_data, coverpoint, covergroup))
+        lines.append("#endif")
+
+    return lines
+
+
+def _generate_hsv_access_fault_tests(test_data: TestData) -> list[str]:
+    """Generate M mode hsv access fault test
+
+    In M mode with identity page tables set up and WR permission,
+    attempt hsv.{b, h, w} from an illegal address (parameterized).
+    For RV64, also hsv.d.
+
+    RV32: 3 instr
+    RV64: 4 instr
+    """
+
+    covergroup, coverpoint = _CG, "cp_hsv_access_fault"
+    r_temp, r_address = test_data.int_regs.get_registers(2, exclude_regs=[0])
+
+    lines = [
+        comment_banner(coverpoint, _generate_hsv_access_fault_tests.__doc__),
+    ]
+
+    ######### USE MACRO HERE TO SET UP IDENTITY PAGE TABLE #########
+    # TODO
+
+    ################# NOW TEST THE INSTRUCTIONS #####################
+    store_ops = ["hsv.b", "hsv.h", "hsv.w"]
+    test_values = {"hsv.b": "0xAB", "hsv.h": "0xBEAD", "hsv.w": "0xADDEDCAB", "hsv.d": "0xADDEDCABADDEDCAB"}
+
+    for op in store_ops:
+        lines.extend(
+            [
+                f"\n# Testcase: {op} access fault",
+                f"LI(x{r_address}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+                f"LI(x{r_temp}, {test_values[op]})",
+                test_data.add_testcase(f"{op}_fault", coverpoint, covergroup),
+                f"{op} x{r_temp}, 0(x{r_address})",
+                "nop",
+            ]
+        )
+
+    lines.extend(
+        [
+            "",
+            "#if __riscv_xlen == 64",
+            "\n# Testcase: hsv.d access fault",
+            f"LI(x{r_address}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"LI(x{r_temp}, {test_values['hsv.d']})",
+            test_data.add_testcase("hsv.d_fault", coverpoint, covergroup),
+            f"sd x{r_temp}, 0(x{r_address})",
+            "nop",
+            "",
+            "#endif",
+            "#endif",
+        ]
+    )
+
+    test_data.int_regs.return_registers([r_address, r_temp])
+    return lines
 
 
 # would it be better to condence all the following into one coverpoint

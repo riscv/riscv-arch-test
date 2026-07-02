@@ -252,7 +252,7 @@ Zca_c_jalr_cg_cp_offset_c_jr_neg:
 Zca_c_jalr_cg_cp_offset_lsbs_00:
   c.jalr x4 # jump
   addi x11, x11, -4  # should not execute; branch not taken
-  .align 2
+  .p2align 2
 jalrlsb_0:
   addi x11, x11, 2 # should execute; branch taken
   # check jump taken
@@ -271,7 +271,7 @@ jalrlsb_0:
 Zca_c_jalr_cg_cp_offset_lsbs_01:
   c.jalr x4 # jump
   addi x6, x6, -4  # should not execute; branch not taken
-  .align 2
+  .p2align 2
 jalrlsb_1:
   addi x6, x6, 2 # should execute; branch taken
   # check jump taken
@@ -290,7 +290,7 @@ jalrlsb_1:
 Zca_c_jalr_cg_cp_offset_lsbs_10:
   c.jalr x1 # jump
   addi x15, x15, -4  # should not execute; branch not taken
-  .align 2
+  .p2align 2
 jalrlsb_2: c.nop
   addi x15, x15, 2 # should execute; branch taken
   # check jump taken
@@ -309,7 +309,7 @@ jalrlsb_2: c.nop
 Zca_c_jalr_cg_cp_offset_lsbs_11:
   c.jalr x2 # jump
   addi x13, x13, -4  # should not execute; branch not taken
-  .align 2
+  .p2align 2
 jalrlsb_3: c.nop
   addi x13, x13, 2 # should execute; branch taken
   # check jump taken

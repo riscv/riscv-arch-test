@@ -371,8 +371,8 @@ test_16_str: .string "\"test: 16; cp: cp_pmp_grain\""
 test_17_str: .string "\"test: 17; cp: cp_pmp_grain\""
 test_18_str: .string "\"test: 18; cp: cp_pmp_grain\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jr ra
 

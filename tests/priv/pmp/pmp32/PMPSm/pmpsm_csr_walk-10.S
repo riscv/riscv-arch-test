@@ -70,7 +70,7 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_64\""
 
-.align 12
+.p2align 12
 TEST_FOR_EXECUTION_0:
     .rept 1024
     jr ra

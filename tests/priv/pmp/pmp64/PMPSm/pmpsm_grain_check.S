@@ -97,8 +97,8 @@ RVTEST_DATA_BEGIN
 test_1_str: .string "\"test: 1; cp: cp_pmp_grain_check_1\""
 test_2_str: .string "\"test: 1; cp: cp_pmp_grain_check_2\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jr ra
 

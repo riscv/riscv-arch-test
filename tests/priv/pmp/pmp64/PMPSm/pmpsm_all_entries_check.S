@@ -546,17 +546,17 @@ exit:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 test_1_str: .string "\"test: 1; cp: cp_pmpm64_lw\""
 test_2_str: .string "\"test: 2; cp: cp_pmpm64_sw\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jr ra
 
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

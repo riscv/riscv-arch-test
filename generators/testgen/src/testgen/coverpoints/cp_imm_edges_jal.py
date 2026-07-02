@@ -62,13 +62,13 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
                 f"{li_instr} x{params.temp_reg}, 1 # success code"
                 if not skip_check
                 else f"{INDENT}# offset too small, skipping self-check",
-                f".align {align}",
+                f".p2align {align}",
                 test_data.add_testcase(f"b_{align}", coverpoint),
                 f"{instr_name} {f'x{params.rd},' if instr_name == 'jal' else ''} {coverpoint}_fwd_{bin_name}",
                 f"{li_instr} x{params.temp_reg}, 7 # failure code"
                 if not skip_check
                 else f"{INDENT}# offset too small, skipping self-check",
-                f".align {align}",
+                f".p2align {align}",
                 f"{coverpoint}_fwd_{bin_name}:",
                 f"{INDENT}# Check jump taken/not-taken",
                 write_sigupd(params.temp_reg, test_data)
@@ -92,19 +92,19 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
                 f"{li_instr} x{params.temp_reg}, 1 # success code"
                 if not skip_check
                 else f"{INDENT}# offset too small, skipping self-check",
-                f".align {align + 1}",
+                f".p2align {align + 1}",
                 # Jump over the target
                 test_data.add_testcase(f"b_m{align}", coverpoint),
                 f"{instr_name} {f'x{params.rd},' if instr_name == 'jal' else ''} {coverpoint}_skip_{bin_name}",
                 # Align target to 2^align boundary
-                f".align {align}",
+                f".p2align {align}",
                 f"{coverpoint}_bwd_{bin_name}:",
                 # Target label (when backward jump lands here, escape forward to done)
                 f"{instr_name} {f'x{params.rd},' if instr_name == 'jal' else ''} {coverpoint}_done_{bin_name}",
                 # Skip point
                 f"{coverpoint}_skip_{bin_name}:",
                 # Align source to 2^(align+1) boundary for backward jump
-                f".align {align + 1}",
+                f".p2align {align + 1}",
             ]
         )
 

@@ -128,14 +128,14 @@ test_2_str:  .string "\"test: 2;  cp: pmpzicbo_cbo_clean\""
 test_3_str:  .string "\"test: 3;  cp: pmpzicbo_cbo_flush\""
 test_4_str:  .string "\"test: 4;  cp: pmpzicbo_cbo_inval\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:
     .rept 1024
     nop
     .endr
 
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_2:
     .rept 1024
     nop

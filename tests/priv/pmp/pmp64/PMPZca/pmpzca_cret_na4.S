@@ -106,12 +106,12 @@ main:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpzca_cret_napot_execute\""
 
-.align 10
+.p2align 10
 .skip (0x802)
 TEST_FOR_EXECUTION_0:
     ret                                                         // Compressed return just before the start of region

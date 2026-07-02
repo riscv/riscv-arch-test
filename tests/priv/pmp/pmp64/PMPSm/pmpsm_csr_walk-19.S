@@ -89,8 +89,8 @@ RVTEST_DATA_BEGIN
 test_119_str: .string "\"test: 119; cp: cp_csr_walk_119\""
 test_120_str: .string "\"test: 120; cp: cp_csr_walk_120\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jr ra
 

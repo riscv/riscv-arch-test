@@ -335,7 +335,7 @@ exit:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 
@@ -361,14 +361,14 @@ test_19_str: .string "\"test: 14; cp: pmps_napot_legal_lwxr_jalr_address+4\""
 test_20_str: .string "\"test: 15; cp: pmps_napot_legal_lwxr_jalr_address+g-4\""
 test_21_str: .string "\"test: 16; cp: pmps_napot_legal_lwxr_jalr_address+g\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     .rept (g>>2)
     jr ra
     .endr
 
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (g>>2)
     jr ra

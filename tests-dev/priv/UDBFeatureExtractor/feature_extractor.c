@@ -11,7 +11,6 @@ extern int printf(const char *fmt, ...);
 
 /* Defined by the ACT trap-signature setup. */
 extern volatile uint32_t c_trap_flag;
-extern volatile uint32_t c_unexpected_trap;
 
 static inline uint32_t read_trap_flag(void)
 {
@@ -22,12 +21,6 @@ static inline void reset_trap_flag(void)
 {
     c_trap_flag = 0;
 }
-
-static inline uint32_t read_unexpected_trap(void)
-{
-    return c_unexpected_trap;
-}
-
 
 /*
  * check_i_supported() - probe for the I (base integer) extension.
@@ -73,10 +66,10 @@ static bool check_m_supported(void)
     reset_trap_flag();
     /*
     * The inline assembly executes one candidate instruction and then C checks
-    * whether the local trap counter changed.
+    * whether the local trap flag was set.
     *
     * "memory" prevents the compiler from reordering memory accesses across the
-    * probe, which matters because the trap counter is updated asynchronously by
+    * probe, which matters because the trap flag is updated asynchronously by
     * the trap handler.
     *
     * a0/a1/a2 are clobbered by the probe operands/result.
@@ -105,11 +98,6 @@ int main(void)
 {
     bool i_supported = check_i_supported();
     bool m_supported = check_m_supported();
-
-    if (read_unexpected_trap() != 0) {
-        printf("error: unexpected trap occurred\n");
-        return 1;
-    }
 
     printf("implemented_extensions:\n");
 

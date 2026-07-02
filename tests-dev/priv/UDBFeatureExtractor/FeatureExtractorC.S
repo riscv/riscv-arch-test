@@ -3,7 +3,7 @@
 
 // FeatureExtractorC.S
 // ACT wrapper for the C version.
-// Sets up local trap counting, enters crt.S, and provides IO/trap helpers.
+// Sets up a local trap flag, enters crt.S, and provides IO/trap helpers.
 
 #define TEST_FILE "FeatureExtractorC.S"
 #define SIGUPD_COUNT 64
@@ -21,7 +21,7 @@ RVTEST_BEGIN
     LA      t0, c_feature_trap_handler
     csrw    mtvec, t0
 
-    // Clear trap counter before entering C.
+    // Clear trap flag before entering C.
     LA      t0, c_trap_flag
     sw      zero, 0(t0)
 
@@ -62,7 +62,7 @@ c_feature_trap_handler:
     li      t1, 2
     bne     t0, t1, unexpected_trap
 
-    // Count the trap.
+    // Set the trap flag.
     LA      t0, c_trap_flag
     li      t1, 1
     sw      t1, 0(t0)

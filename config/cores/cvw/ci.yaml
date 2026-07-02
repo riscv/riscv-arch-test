@@ -15,5 +15,5 @@ setup_script: ".github/scripts/setup-cvw.sh"
 # in a single job, so paying the extra runner cost there isn't worth it.
 shards: 1
 config_shards:
-  cvw-rv32gc: 3
-  cvw-rv64gc: 3
+  cvw-rv32gc: 5
+  cvw-rv64gc: 5

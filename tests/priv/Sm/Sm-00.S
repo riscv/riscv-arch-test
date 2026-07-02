@@ -50755,113 +50755,71 @@ Sm_mcsr_cg_cp_mtime_write_h:
 
 /////////////////////////////////
 // cp_minstret_insn
-//   Read minstret before and after each instruction, log the raw delta. Sail simulates the same sequence and produces the same raw delta.
+//   Read minstret before/after each retiring instruction, log the delta
 /////////////////////////////////
 
-
-
-/////////////////////////////////
-// add
-//   Baseline retiring instruction — minstret must increment.
-/////////////////////////////////
-  CSRR(x12, minstret)                                  # read minstret before instruction
-  add x11, x12, zero                             # instruction under test
-Sm_minstret_cg_cp_minstret_insn_add:
-  CSRR(x14, minstret)                                   # read minstret after instruction
-  sub x11, x14, x12                       # raw delta (should be 1)
+  CSRR(x12, minstret)
+  add x11, x12, zero  # instruction under test
+Sm_mcsr_cg_cp_minstret_insn_add:
+  CSRR(x14, minstret)
+  sub x11, x14, x12
   # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x11, Sm_minstret_cg_cp_minstret_insn_add, Sm_minstret_cg_cp_minstret_insn_add_str)
+  RVTEST_SIGUPD(x2, x5, x4, x11, Sm_mcsr_cg_cp_minstret_insn_add, Sm_mcsr_cg_cp_minstret_insn_add_str)
 
-
-
-/////////////////////////////////
-// ecall
-//   Retires then traps (mcause=11). Delta = ecall + handler.
-/////////////////////////////////
-  CSRR(x12, minstret)                                  # read minstret before instruction
-  ecall                                                         # instruction under test
-Sm_minstret_cg_cp_minstret_insn_ecall:
-  CSRR(x14, minstret)                                   # read minstret after instruction
-  sub x11, x14, x12                       # raw delta (should be 1)
+  CSRR(x12, minstret)
+  ecall                         # traps, retires first
+Sm_mcsr_cg_cp_minstret_insn_ecall:
+  CSRR(x14, minstret)
+  sub x11, x14, x12
   # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x11, Sm_minstret_cg_cp_minstret_insn_ecall, Sm_minstret_cg_cp_minstret_insn_ecall_str)
+  RVTEST_SIGUPD(x2, x5, x4, x11, Sm_mcsr_cg_cp_minstret_insn_ecall, Sm_mcsr_cg_cp_minstret_insn_ecall_str)
 
-
-
-/////////////////////////////////
-// ebreak
-//   Retires then traps (mcause=3). Delta = ebreak + handler.
-/////////////////////////////////
-  CSRR(x12, minstret)                                  # read minstret before instruction
-  ebreak                                                        # instruction under test
-Sm_minstret_cg_cp_minstret_insn_ebreak:
-  CSRR(x14, minstret)                                   # read minstret after instruction
-  sub x11, x14, x12                       # raw delta (should be 1)
+  CSRR(x12, minstret)
+  ebreak                        # traps, retires first
+Sm_mcsr_cg_cp_minstret_insn_ebreak:
+  CSRR(x14, minstret)
+  sub x11, x14, x12
   # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x11, Sm_minstret_cg_cp_minstret_insn_ebreak, Sm_minstret_cg_cp_minstret_insn_ebreak_str)
+  RVTEST_SIGUPD(x2, x5, x4, x11, Sm_mcsr_cg_cp_minstret_insn_ebreak, Sm_mcsr_cg_cp_minstret_insn_ebreak_str)
 
-
-
-/////////////////////////////////
-// mret
-//   Trap return — retires and jumps to mepc (label 1f).
-/////////////////////////////////
-  LA(x13, 1f)                                             # load address of label 1f into temporary register
-  CSRW(mepc, x13)                                         # set mepc to label 1f
-  CSRR(x12, minstret)                                  # read minstret before instruction
-  mret                                                          # instruction under test
-Sm_minstret_cg_cp_minstret_insn_mret:
-  addi x14, zero, -1                                    # SENTINEL: must not execute
-1:                                                            # label 1f: mepc target
-  CSRR(x14, minstret)                                   # read minstret after instruction
-  sub x11, x14, x12                       # raw delta (should be 1)
+  LA(x13, 1f)
+  CSRW(mepc, x13)
+  CSRR(x12, minstret)
+  mret
+Sm_mcsr_cg_cp_minstret_insn_mret:
+  addi x14, zero, -1     # must not execute
+1:
+  CSRR(x14, minstret)
+  sub x11, x14, x12
   # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x11, Sm_minstret_cg_cp_minstret_insn_mret, Sm_minstret_cg_cp_minstret_insn_mret_str)
+  RVTEST_SIGUPD(x2, x5, x4, x11, Sm_mcsr_cg_cp_minstret_insn_mret, Sm_mcsr_cg_cp_minstret_insn_mret_str)
 
-
-
-/////////////////////////////////
-// wfi
-//   Hint instruction — retires when hart continues. TW=0 to avoid trap.
-/////////////////////////////////
-  RVTEST_GOTO_MMODE                                             # ensure hart is in M-mode to avoid trap on wfi
-  CSRR(x12, minstret)                                  # read minstret before instruction
-  wfi                                                           # instruction under test
-Sm_minstret_cg_cp_minstret_insn_wfi:
-  CSRR(x14, minstret)                                   # read minstret after instruction
-  sub x11, x14, x12                       # raw delta (should be 1)
+  RVTEST_GOTO_MMODE             # ensure M-mode so wfi doesn't trap
+  CSRR(x12, minstret)
+  wfi
+Sm_mcsr_cg_cp_minstret_insn_wfi:
+  CSRR(x14, minstret)
+  sub x11, x14, x12
   # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x11, Sm_minstret_cg_cp_minstret_insn_wfi, Sm_minstret_cg_cp_minstret_insn_wfi_str)
+  RVTEST_SIGUPD(x2, x5, x4, x11, Sm_mcsr_cg_cp_minstret_insn_wfi, Sm_mcsr_cg_cp_minstret_insn_wfi_str)
 
 #ifdef ZAWRS_SUPPORTED
-
-
-/////////////////////////////////
-// wrs.nto
-//   Zawrs: retires when reservation cleared. Encoded as .word (no assembler dep).
-/////////////////////////////////
-  CSRR(x12, minstret)                                  # read minstret before instruction
-  .word 0x00D00073                                              # wrs.nto encoding
-Sm_minstret_cg_cp_minstret_insn_wrs_nto:
-  CSRR(x14, minstret)                                   # read minstret after instruction
-  sub x11, x14, x12                       # raw delta (should be 1)
+  CSRR(x12, minstret)
+  .word 0x00D00073              # wrs.nto (no assembler support)
+Sm_mcsr_cg_cp_minstret_wrs_wrs_nto:
+  CSRR(x14, minstret)
+  sub x11, x14, x12
   # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x11, Sm_minstret_cg_cp_minstret_insn_wrs_nto, Sm_minstret_cg_cp_minstret_insn_wrs_nto_str)
+  RVTEST_SIGUPD(x2, x5, x4, x11, Sm_mcsr_cg_cp_minstret_wrs_wrs_nto, Sm_mcsr_cg_cp_minstret_wrs_wrs_nto_str)
 #endif // ZAWRS_SUPPORTED
 
-
-
-/////////////////////////////////
-// illegal
-//   Does NOT retire (traps before). Delta = handler only, not illegal itself.
-/////////////////////////////////
-  CSRR(x12, minstret)                                  # read minstret before instruction
-  .word 0x00000000                                              # instruction under test (illegal encoding)
-Sm_minstret_cg_cp_minstret_insn_illegal:
-  CSRR(x14, minstret)                                   # read minstret after instruction
-  sub x11, x14, x12                       # raw delta (should be 0)
+  CSRR(x12, minstret)
+  .word 0x00000000              # illegal instruction, traps before retiring
+Sm_mcsr_cg_cp_minstret_illegal_illegal:
+  CSRR(x14, minstret)
+  sub x11, x14, x12
   # Check if x11 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x11, Sm_minstret_cg_cp_minstret_insn_illegal, Sm_minstret_cg_cp_minstret_insn_illegal_str)
+  RVTEST_SIGUPD(x2, x5, x4, x11, Sm_mcsr_cg_cp_minstret_illegal_illegal, Sm_mcsr_cg_cp_minstret_illegal_illegal_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -58139,13 +58097,13 @@ Sm_mcsr_cg_cp_inhibit_mcycle_str: .string "\"test: 7263; cg: Sm_mcsr_cg; cp: cp_
 Sm_mcsr_cg_cp_inhibit_minstret_str: .string "\"test: 7264; cg: Sm_mcsr_cg; cp: cp_inhibit_minstret; bin: \""
 Sm_mcsr_cg_cp_mtime_write_str: .string "\"test: 7265; cg: Sm_mcsr_cg; cp: cp_mtime_write; bin: \""
 Sm_mcsr_cg_cp_mtime_write_h_str: .string "\"test: 7266; cg: Sm_mcsr_cg; cp: cp_mtime_write; bin: h\""
-Sm_minstret_cg_cp_minstret_insn_add_str: .string "\"test: 7267; cg: Sm_minstret_cg; cp: cp_minstret_insn; bin: add\""
-Sm_minstret_cg_cp_minstret_insn_ecall_str: .string "\"test: 7268; cg: Sm_minstret_cg; cp: cp_minstret_insn; bin: ecall\""
-Sm_minstret_cg_cp_minstret_insn_ebreak_str: .string "\"test: 7269; cg: Sm_minstret_cg; cp: cp_minstret_insn; bin: ebreak\""
-Sm_minstret_cg_cp_minstret_insn_mret_str: .string "\"test: 7270; cg: Sm_minstret_cg; cp: cp_minstret_insn; bin: mret\""
-Sm_minstret_cg_cp_minstret_insn_wfi_str: .string "\"test: 7271; cg: Sm_minstret_cg; cp: cp_minstret_insn; bin: wfi\""
-Sm_minstret_cg_cp_minstret_insn_wrs_nto_str: .string "\"test: 7272; cg: Sm_minstret_cg; cp: cp_minstret_insn; bin: wrs_nto\""
-Sm_minstret_cg_cp_minstret_insn_illegal_str: .string "\"test: 7273; cg: Sm_minstret_cg; cp: cp_minstret_insn; bin: illegal\""
+Sm_mcsr_cg_cp_minstret_insn_add_str: .string "\"test: 7267; cg: Sm_mcsr_cg; cp: cp_minstret_insn; bin: add\""
+Sm_mcsr_cg_cp_minstret_insn_ecall_str: .string "\"test: 7268; cg: Sm_mcsr_cg; cp: cp_minstret_insn; bin: ecall\""
+Sm_mcsr_cg_cp_minstret_insn_ebreak_str: .string "\"test: 7269; cg: Sm_mcsr_cg; cp: cp_minstret_insn; bin: ebreak\""
+Sm_mcsr_cg_cp_minstret_insn_mret_str: .string "\"test: 7270; cg: Sm_mcsr_cg; cp: cp_minstret_insn; bin: mret\""
+Sm_mcsr_cg_cp_minstret_insn_wfi_str: .string "\"test: 7271; cg: Sm_mcsr_cg; cp: cp_minstret_insn; bin: wfi\""
+Sm_mcsr_cg_cp_minstret_wrs_wrs_nto_str: .string "\"test: 7272; cg: Sm_mcsr_cg; cp: cp_minstret_wrs; bin: wrs_nto\""
+Sm_mcsr_cg_cp_minstret_illegal_illegal_str: .string "\"test: 7273; cg: Sm_mcsr_cg; cp: cp_minstret_illegal; bin: illegal\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

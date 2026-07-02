@@ -311,7 +311,7 @@ exit:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str:  .string "\"test: 1;  cp: pmpzaamo_cfg_wr_amoadd_w\""
@@ -341,8 +341,8 @@ test_16_str: .string "\"test: 16; cp: pmpzaamo_cfg_wr_amominu_d\""
 test_17_str: .string "\"test: 17; cp: pmpzaamo_cfg_wr_amoswap_w\""
 test_18_str: .string "\"test: 18; cp: pmpzaamo_cfg_wr_amoswap_d\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 //TEST_FOR_EXECUTION_0:
 //    jr ra
 

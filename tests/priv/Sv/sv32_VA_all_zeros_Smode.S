@@ -129,7 +129,7 @@ RVTEST_DATA_BEGIN
 //                                            PHYSICAL ADDRESS REGIONS FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 // This region will be used to Store and then Load back from the first word
-.align 12
+.p2align 12
 rvtest_data_1_l0_rw:
   .word 0xbeefcaf1          // Random word
   .word 0xbeefcaf2          // Random word
@@ -137,7 +137,7 @@ rvtest_data_1_l0_rw:
   .word 0xbeefcaf3
 
 // This region will be used to execute its first instruction
-.align 12
+.p2align 12
 rvtest_data_1_l0_x:
   nop
   addi a4, a2, REGWIDTH
@@ -151,7 +151,7 @@ rvtest_data_1_l0_x:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 // Page Table
-.align 12
+.p2align 12
 rvtest_slvl0_pg_tbl:
     .skip(4096)
 

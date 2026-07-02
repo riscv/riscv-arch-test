@@ -2030,7 +2030,7 @@ spcl_\__MODE__\()dispatch:
 //   even nonzero: address of handler routine -> jump to it
 //==============================================================================
 
-        .align 3                                     // dword-align the dispatch table
+        .p2align 3                                     // dword-align the dispatch table
 
 clrint_\__MODE__\()tbl:
 #if defined(H_SUPPORTED)

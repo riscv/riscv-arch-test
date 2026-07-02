@@ -125,8 +125,8 @@ test_87_str: .string "\"test: 87; cp: cp_csr_walk_test_87\""
 test_88_str: .string "\"test: 88; cp: cp_csr_walk_test_88\""
 
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jr ra
 

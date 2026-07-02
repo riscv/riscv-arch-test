@@ -274,8 +274,8 @@ test_2_str: .string "\"test: 2; cp: pmpm_cfg_na4_all_address-4\""
 test_3_str: .string "\"test: 3; cp: pmpm_cfg_na4_all_address+4\""
 
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     .rept 1024
     jr ra

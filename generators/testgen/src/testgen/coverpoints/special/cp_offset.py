@@ -171,7 +171,7 @@ def make_offset_lsbs(instr_name: str, instr_type: str, test_data: TestData) -> l
                     test_data.add_testcase(f"{rs1_lsbs:02b}", "cp_offset_lsbs"),
                     f"{instr_name} x{params.rs1} # jump",
                     f"addi x{params.temp_reg}, x{params.temp_reg}, -4  # should not execute; branch not taken",
-                    ".align 2",
+                    ".p2align 2",
                     f"{label}:{' c.nop' if rs1_lsbs >= 2 else ''}",
                     f"addi x{params.temp_reg}, x{params.temp_reg}, 2 # should execute; branch taken",
                     f"{INDENT}# check jump taken",

@@ -239,7 +239,7 @@ exit:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmps_cfg_XWR.S_jalr\""
@@ -252,12 +252,12 @@ test_7_str: .string "\"test: 7; cp: pmps_cfg_XWR.S_lh\""
 test_8_str: .string "\"test: 8; cp: pmps_cfg_XWR.S_lhu\""
 test_9_str: .string "\"test: 9; cp: pmps_cfg_XWR.S_lw\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jr ra
 
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

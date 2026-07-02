@@ -967,6 +967,117 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
 
     return lines
 
+def _generate_minstret_tests(test_data: TestData) -> list[str]:
+    """
+    Generate minstret retirement counting tests. For each instruction, read minstret before and after, and log the raw delta.
+    """
+    covergroup = "Sm_minstret_cg"
+    coverpoint = "cp_minstret_insn"
+
+    r_before, r_after, r_diff, r_tmp = test_data.int_regs.get_registers(4)
+
+    lines = [
+        comment_banner(
+            coverpoint,
+            "Read minstret before and after each instruction, log the raw delta. "
+            "Sail simulates the same sequence and produces the same raw delta. "
+        ),
+    ]
+
+    # add: baseline instruction that must increment minstret
+    lines.extend([
+        "",
+        comment_banner("add", "Baseline retiring instruction — minstret must increment."),
+        f"CSRR(x{r_before}, minstret)                                  # read minstret before instruction",
+        f"add x{r_diff}, x{r_before}, zero                             # instruction under test",
+        test_data.add_testcase("add", coverpoint, covergroup), 
+        f"CSRR(x{r_after}, minstret)                                   # read minstret after instruction",          
+        f"sub x{r_diff}, x{r_after}, x{r_before}                       # raw delta (should be 1)",                     
+        write_sigupd(r_diff, test_data),                               
+    ])    
+
+    # ecall: retires before trapping, handler runs, mret returns
+    lines.extend([
+        "",
+        comment_banner("ecall", "Retires then traps (mcause=11). Delta = ecall + handler."),
+        f"CSRR(x{r_before}, minstret)                                  # read minstret before instruction",
+        "ecall                                                         # instruction under test",
+        test_data.add_testcase("ecall", coverpoint, covergroup),
+        f"CSRR(x{r_after}, minstret)                                   # read minstret after instruction",
+        f"sub x{r_diff}, x{r_after}, x{r_before}                       # raw delta (should be 1)",
+        write_sigupd(r_diff, test_data),
+    ])
+
+    # ebreak: same retirement semantics as ecall but mcause=3
+    lines.extend([
+        "",
+        comment_banner("ebreak", "Retires then traps (mcause=3). Delta = ebreak + handler."),
+        f"CSRR(x{r_before}, minstret)                                  # read minstret before instruction",
+        "ebreak                                                        # instruction under test",
+        test_data.add_testcase("ebreak", coverpoint, covergroup),
+        f"CSRR(x{r_after}, minstret)                                   # read minstret after instruction",
+        f"sub x{r_diff}, x{r_after}, x{r_before}                       # raw delta (should be 1)",
+        write_sigupd(r_diff, test_data),
+    ])
+
+    # mret: trap return, retires normally; mepc must point past sentinel
+    lines.extend([
+        "",
+        comment_banner("mret", "Trap return — retires and jumps to mepc (label 1f)."),
+        f"LA(x{r_tmp}, 1f)                                             # load address of label 1f into temporary register",
+        f"CSRW(mepc, x{r_tmp})                                         # set mepc to label 1f",
+        f"CSRR(x{r_before}, minstret)                                  # read minstret before instruction",
+        "mret                                                          # instruction under test",
+        test_data.add_testcase("mret", coverpoint, covergroup),
+        f"addi x{r_after}, zero, -1                                    # SENTINEL: must not execute",
+        "1:                                                            # label 1f: mepc target",
+        f"CSRR(x{r_after}, minstret)                                   # read minstret after instruction",
+        f"sub x{r_diff}, x{r_after}, x{r_before}                       # raw delta (should be 1)",
+        write_sigupd(r_diff, test_data),
+    ])    
+
+    # wfi: hint instruction, retires when hart continues; TW must be 0 to avoid trap
+    lines.extend([
+        "",
+        comment_banner("wfi", "Hint instruction — retires when hart continues. TW=0 to avoid trap."),
+        "RVTEST_GOTO_MMODE                                             # ensure hart is in M-mode to avoid trap on wfi",
+        f"CSRR(x{r_before}, minstret)                                  # read minstret before instruction",
+        "wfi                                                           # instruction under test",
+        test_data.add_testcase("wfi", coverpoint, covergroup),
+        f"CSRR(x{r_after}, minstret)                                   # read minstret after instruction",
+        f"sub x{r_diff}, x{r_after}, x{r_before}                       # raw delta (should be 1)",
+        write_sigupd(r_diff, test_data),
+    ])
+
+    # wrs.nto: Zawrs extension, same retirement semantics as wfi
+    lines.extend([
+        "",
+        "#ifdef ZAWRS_SUPPORTED",
+        comment_banner("wrs.nto", "Zawrs: retires when reservation cleared. Encoded as .word (no assembler dep)."),
+        f"CSRR(x{r_before}, minstret)                                  # read minstret before instruction",
+        ".word 0x00D00073                                              # wrs.nto encoding",
+        test_data.add_testcase("wrs_nto", coverpoint, covergroup),
+        f"CSRR(x{r_after}, minstret)                                   # read minstret after instruction",
+        f"sub x{r_diff}, x{r_after}, x{r_before}                       # raw delta (should be 1)",
+        write_sigupd(r_diff, test_data),
+        "#endif // ZAWRS_SUPPORTED",
+    ])
+
+    # illegal: traps BEFORE retiring — minstret must NOT increment for it
+    # 0x00000000 is always illegal; delta = handler only (same as Sail)
+    lines.extend([
+        "",
+        comment_banner("illegal", "Does NOT retire (traps before). Delta = handler only, not illegal itself."),
+        f"CSRR(x{r_before}, minstret)                                  # read minstret before instruction",
+        ".word 0x00000000                                              # instruction under test (illegal encoding)",
+        test_data.add_testcase("illegal", coverpoint, covergroup),
+        f"CSRR(x{r_after}, minstret)                                   # read minstret after instruction",
+        f"sub x{r_diff}, x{r_after}, x{r_before}                       # raw delta (should be 0)",
+        write_sigupd(r_diff, test_data),
+    ])
+
+    test_data.int_regs.return_registers([r_before, r_after, r_diff, r_tmp])
+    return lines
 
 @add_priv_test_generator("Sm", required_extensions=["Sm"])
 def make_sm(test_data: TestData) -> list[TestChunk]:

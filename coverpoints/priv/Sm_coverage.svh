@@ -468,11 +468,77 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
 endgroup
 
+covergroup Sm_minstret_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    // ------------------------------------------------------------------
+    // Coverpoint: which instruction was the one under test?
+    // Fires when add/ecall/ebreak/mret/wfi execute in M-mode.
+    // These are all instructions that SHOULD retire (minstret += 1).
+    // ------------------------------------------------------------------
+    retiring_insns: coverpoint ins.current.insn {
+        wildcard bins add_insn    = {ADD};    // normal retiring instruction
+        wildcard bins ecall_insn  = {ECALL};  // retires then traps (cause 11)
+        wildcard bins ebreak_insn = {EBREAK}; // retires then traps (cause 3)
+        wildcard bins mret_insn   = {MRET};   // trap return, retires
+        wildcard bins wfi_insn    = {WFI};    // hint, retires when done
+    }
+
+    // ------------------------------------------------------------------
+    // Coverpoint: wrs.nto (Zawrs) — conditional on extension support
+    // Separate coverpoint because it is conditionally compiled.
+    // ------------------------------------------------------------------
+    `ifdef ZAWRS_SUPPORTED
+    wrs_nto_insn: coverpoint ins.current.insn {
+        bins wrs_nto = {32'h00D00073};  // wrs.nto raw encoding
+    }
+    `endif
+
+    // ------------------------------------------------------------------
+    // Coverpoint: illegal instruction — detected via mcause = 2
+    // An illegal instruction traps before retiring, so we cannot match
+    // on the instruction encoding (it's unknown/arbitrary). Instead we
+    // match on what the trap handler recorded in mcause right before
+    // we read minstret back.
+    // ------------------------------------------------------------------
+    illegal_trap: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcause", "int") {
+        bins illegal_insn = {64'd2};   // mcause = 2: illegal instruction exception
+    }
+
+    // We read minstret back with csrr after each instruction under test.
+    // This coverpoint confirms the minstret read happened.
+    minstret_csr: coverpoint ins.current.insn[31:20] {
+        bins minstret = {CSR_MINSTRET};
+    }
+    csrr_op: coverpoint ins.current.insn {
+        wildcard bins csrr = {CSRR};
+    }
+
+    // ------------------------------------------------------------------
+    // Main coverpoints (following the cross pattern of the rest of this file)
+    // ------------------------------------------------------------------
+
+    // Did we test each retiring instruction type in M-mode?
+    cp_minstret_insn: cross priv_mode_m, retiring_insns;
+
+    // Did we test wrs.nto if Zawrs supported?
+    `ifdef ZAWRS_SUPPORTED
+    cp_minstret_wrs: cross priv_mode_m, wrs_nto_insn;
+    `endif
+
+    // Did we read minstret in M-mode after an illegal instruction trap?
+    // This cross fires on the csrr minstret that follows the illegal handler.
+    cp_minstret_illegal: cross priv_mode_m, csrr_op, minstret_csr, illegal_trap;
+
+endgroup
+
 function void sm_sample(int hart, int issue, ins_t ins);
     Sm_mcause_cg.sample(ins);
     Sm_mstatus_cg.sample(ins);
     Sm_mprivinst_cg.sample(ins);
     Sm_mcsr_cg.sample(ins);
+    Sm_minstret_cg.sample(ins);
     //$display("Sm_sample: PC = %h (%s) misa %b rs1 %b, misa_c0 %b, pc_1 %b",
     //    ins.current.pc_rdata, ins.current.disass, ins.current.insn[31:20] == CSR_MISA, ins.current.rs1_val[25:0],
     //    ins.current.rs1_val[2], ins.current.pc_rdata[1]);

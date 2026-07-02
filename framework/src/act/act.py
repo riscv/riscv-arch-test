@@ -20,15 +20,10 @@ from rich import print as rprint
 from act.build import build, prune_empty_dirs
 from act.build_plan import generate_build_plan
 from act.build_types import BuildTask
-from act.config import Config, CoverageSimulator, load_config
+from act.config import CoverageSimulator
 from act.coverreport import print_coverage_summary
 from act.parse_test_constraints import TestYamlHeaderError, generate_test_dict
-from act.parse_udb_config import (
-    get_config_params,
-    get_implemented_extensions,
-    prepare_dut_outputs,
-)
-from act.select_tests import select_tests
+from act.select_tests import prepare_configs_and_select_tests
 
 # CLI interface setup
 act_app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
@@ -111,25 +106,12 @@ def run_act(
     config_names: list[str] = []
     tasks: list[BuildTask] = []
 
-    # Load all configs first so a single top-level UDB call can prepare every
-    # DUT's generated files (extensions.txt, rvtest_config.{h,svh}, and
-    # rvmodel_macros.svh) in parallel under a unified progress display.
-    loaded_configs: list[tuple[Config, Path]] = []
-    for config_file in config_files:
-        config = load_config(config_file)
-        config_dir = workdir / config.name
-        loaded_configs.append((config, config_dir))
-
-    prepare_dut_outputs([cfg for cfg, _ in loaded_configs], workdir, jobs, verbose)
-
-    for config, config_dir in loaded_configs:
-        implemented_extensions = get_implemented_extensions(config_dir / "extensions.txt")
-        config_params = get_config_params(config.udb_config)
-
-        # Select tests for config
-        selected_tests = select_tests(
-            full_test_dict, implemented_extensions, config_params, include_priv_tests=config.include_priv_tests
-        )
+    # Load all configs and prepare every DUT's generated files
+    # (extensions.txt, rvtest_config.{h,svh}, and rvmodel_macros.svh) in
+    # one parallel UDB pass, then select tests per config.
+    for config, config_params, selected_tests in prepare_configs_and_select_tests(
+        config_files, full_test_dict, workdir, jobs=jobs, verbose=verbose
+    ):
         mxlen = config_params["MXLEN"]
         if not isinstance(mxlen, int):
             raise TypeError(f"MXLEN must be an integer, got {type(mxlen)}: {mxlen!r}")

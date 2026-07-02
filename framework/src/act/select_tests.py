@@ -10,16 +10,12 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Sequence
 from pathlib import Path
 
 from act.config import Config, load_config
-from act.parse_test_constraints import TestMetadata, generate_test_dict
-from act.parse_udb_config import (
-    get_config_implemented_extensions,
-    get_config_params,
-    get_implemented_extensions,
-    prepare_dut_outputs,
-)
+from act.parse_test_constraints import TestMetadata
+from act.parse_udb_config import get_config_params, get_implemented_extensions, prepare_dut_outputs
 
 PRIV_EXTENSIONS = {"Sm", "S", "U"}
 
@@ -91,59 +87,41 @@ def select_tests(
     return selected_tests
 
 
-def select_tests_for_config_data(
-    config_file: Path,
+def prepare_configs_and_select_tests(
+    config_files: Sequence[Path],
     full_test_dict: dict[str, TestMetadata],
     workdir: Path,
     *,
+    jobs: int = 1,
+    verbose: bool = False,
     validate_tools: bool = True,
-    generate_udb: bool = True,
-) -> tuple[Config, dict[str, ConfigParamValue], dict[str, TestMetadata]]:
-    """Return config data and tests selected by the ACT framework for a single config.
+) -> list[tuple[Config, dict[str, ConfigParamValue], dict[str, TestMetadata]]]:
+    """Load configs, generate their UDB outputs, and select tests for each.
+
+    Loads each config, prepares all DUT-derived files (including
+    extensions.txt) in one parallel UDB pass, then runs select_tests per
+    config. Returns a (config, config_params, selected_tests) tuple per
+    config file, in input order.
 
     Args:
-        config_file: ACT test config file to load.
+        config_files: ACT test config files to load.
         full_test_dict: Candidate tests, usually from ``generate_test_dict``.
-        workdir: Directory used for generated UDB outputs when ``generate_udb`` is true.
-        validate_tools: Validate configured compiler and simulator executables when true.
-            CI discovery sets this false because it runs before those tools are installed.
-        generate_udb: Generate and read ``extensions.txt`` via UDB when true. CI discovery
-            sets this false and reads ``implemented_extensions`` directly from fully
-            configured UDB yaml instead.
+        workdir: Directory for generated UDB outputs (one subdir per config).
+        jobs: Parallelism for DUT output generation.
+        verbose: Verbose output during DUT output generation.
+        validate_tools: Validate configured compiler and simulator executables
+            when true. Set false for callers that only need test selection and
+            may run before those tools are installed.
     """
-    config = load_config(config_file, validate_tools=validate_tools)
-    config_dir = workdir / config.name
-    config_dir.mkdir(parents=True, exist_ok=True)
+    configs = [load_config(config_file, validate_tools=validate_tools) for config_file in config_files]
+    prepare_dut_outputs(configs, workdir, jobs, verbose)
 
-    if generate_udb:
-        prepare_dut_outputs([config], workdir, jobs=1, verbose=False)
-        implemented_extensions = get_implemented_extensions(config_dir / "extensions.txt")
-    else:
-        implemented_extensions = get_config_implemented_extensions(config.udb_config)
-    config_params = get_config_params(config.udb_config)
-
-    selected_tests = select_tests(
-        full_test_dict, implemented_extensions, config_params, include_priv_tests=config.include_priv_tests
-    )
-    return config, config_params, selected_tests
-
-
-def select_tests_for_config(
-    config_file: Path,
-    test_dir: Path,
-    workdir: Path,
-    extensions: str = "all",
-    exclude: str = "",
-) -> dict[str, TestMetadata]:
-    """Return tests selected by the ACT framework for a single config.
-
-    This is the reusable framework-level selection path shared by CI matrix
-    discovery. It intentionally skips simulator and compiler executable
-    validation so lightweight discovery jobs can compute the same selected
-    test set without installing those tools first.
-    """
-    full_test_dict = generate_test_dict(test_dir, extensions, exclude)
-    _, _, selected_tests = select_tests_for_config_data(
-        config_file, full_test_dict, workdir, validate_tools=False, generate_udb=False
-    )
-    return selected_tests
+    results: list[tuple[Config, dict[str, ConfigParamValue], dict[str, TestMetadata]]] = []
+    for config in configs:
+        implemented_extensions = get_implemented_extensions(workdir / config.name / "extensions.txt")
+        config_params = get_config_params(config.udb_config)
+        selected_tests = select_tests(
+            full_test_dict, implemented_extensions, config_params, include_priv_tests=config.include_priv_tests
+        )
+        results.append((config, config_params, selected_tests))
+    return results

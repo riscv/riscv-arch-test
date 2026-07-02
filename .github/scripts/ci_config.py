@@ -34,21 +34,33 @@ import heapq
 import json
 import sys
 from collections.abc import Mapping
+from contextlib import redirect_stdout
 from functools import cache
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "framework" / "src"))
 
-from act.select_tests import select_tests_for_config
+from act.parse_test_constraints import TestMetadata, generate_test_dict
+from act.select_tests import prepare_configs_and_select_tests
 from ruamel.yaml import YAML
 
 _DEFAULT_SUITE_WEIGHT = 1  # for suites that have no checked-in .S files yet
 
 
 @cache
+def _full_test_dict(exclude: str) -> dict[str, TestMetadata]:
+    """Return the candidate test dict, cached per exclusion list."""
+    return generate_test_dict(REPO_ROOT / "tests", "all", exclude)
+
+
+@cache
 def _selected_suite_weights(config_file: Path, exclude: str, workdir: Path) -> tuple[tuple[str, int], ...]:
     """Return selected suite weights for a config using ACT's selection path.
+
+    Uses the same selection pipeline as the act CLI (prepare_configs_and_select_tests).
+    Tool validation is skipped because discovery runs before the compiler
+    and simulators are installed.
 
     The cache key includes ``exclude`` because ACT applies exclusions before
     test selection; the same config can legitimately produce different
@@ -56,7 +68,9 @@ def _selected_suite_weights(config_file: Path, exclude: str, workdir: Path) -> t
     set is small enough that per-file ``stat`` calls are cheap, and this
     keeps the weighting tied exactly to ACT's selected tests.
     """
-    selected_tests = select_tests_for_config(config_file, REPO_ROOT / "tests", workdir, exclude=exclude)
+    ((_, _, selected_tests),) = prepare_configs_and_select_tests(
+        [config_file], _full_test_dict(exclude), workdir, validate_tools=False
+    )
     weights: dict[str, int] = {}
     for test_name in selected_tests:
         test_parts = Path(test_name).parts
@@ -220,7 +234,10 @@ def main() -> int:
         print("Error: config/ directory not found. Run from repo root.", file=sys.stderr)
         return 1
 
-    entries = discover_configs(config_dir)
+    # prepare_dut_outputs prints progress to stdout, but the workflow captures
+    # stdout as the JSON matrix — route everything else to stderr.
+    with redirect_stdout(sys.stderr):
+        entries = discover_configs(config_dir)
 
     matrix = {"include": entries}
     print(json.dumps(matrix, separators=(",", ":")))

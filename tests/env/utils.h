@@ -47,10 +47,9 @@
 // has been written to memory (relocating the trampoline, writing a dynamic
 // instruction to scratch, or storing into an executable PMP region before jumping
 // into it). It is fence.i when the DUT supports Zifencei, otherwise nop (coherent
-// I-cache assumed). A DUT needing a custom mechanism may predefine it as a JAL to a
-// sync routine. Must stay a single instruction (or a JAL) so code size is constant.
-// Defined here so it is available to every consumer (rvtest_pmp_macros.h,
-// rvtest_trap_handler.h, ...); ZIFENCEI_SUPPORTED comes from derived_config.h.
+// I-cache assumed). A DUT that needs a custom mechanism may predefine RVMODEL_FENCEI
+// (e.g. a JAL to a sync routine) and it is used as-is. Must stay a single instruction
+// (or a JAL) so code size is constant.
 #ifdef   RVMODEL_FENCEI
   #define RVTEST_FENCEI RVMODEL_FENCEI
 #else

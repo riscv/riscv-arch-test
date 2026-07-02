@@ -197,9 +197,6 @@
 
 #define TSBI_RESERVED_RET   (-1)                 // return value for unrecognized operations
 
-// RVTEST_FENCEI (used below to sync the instruction stream after writing code to
-// memory) is defined in utils.h, which is included before this header.
-
 #ifndef _VA_SZ_
   #if UDB_MXLEN==32
     #define _VA_SZ_ 32                           // RV32: 32-bit virtual address

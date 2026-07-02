@@ -21,7 +21,7 @@ EXCLUDE_EXTENSIONS ?= Sm
 # DEBUG enables debug output (signature objdump, trace files, and trap report). This will slow down ELF generation significantly.
 # FAST disables objdump generation for faster builds. This speeds up ELF generation significantly, but makes debugging mismatches harder.
 # VERBOSE implies DEBUG, serializes all commands (JOBS=1), and prints each command as it is issued.
-# CLEAN_INTERMEDIATES deletes each config's intermediate build/ dir after a successful build to save disk space (only final ELFs/objdumps are kept). Forces a full rebuild next run.
+# CLEAN_INTERMEDIATES deletes each config's intermediate build/ dir after a successful build to save disk space (only final ELFs/objdumps are kept).
 DEBUG       ?=
 FAST        ?=
 VERBOSE     ?=

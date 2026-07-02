@@ -437,11 +437,11 @@
           // Whether vector arithmetic instructions raise an illegal instruction
           // exception when `vstart` is non-zero. This also governs instructions
           // from the Zvbb, Zvbc, Zvabd, Zvfbfmin, and Zvfbfwma extensions.
-          "arith": true,
+          "arith": false,
           // Whether the vector scalar move instructions (vmv.x.s, vmv.s.x,
           // vfmv.f.s and vfmv.s.f) raise an illegal instruction exception when
           // `vstart` is non-zero.
-          "scalar_move": true
+          "scalar_move": false
         }
       }
     },

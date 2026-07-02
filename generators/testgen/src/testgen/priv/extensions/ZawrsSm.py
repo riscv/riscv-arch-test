@@ -9,10 +9,37 @@
 
 """ZawrsSm privileged extension test generator for machine-mode."""
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.interrupts import clr_mtimer_int, set_mtimer_int, set_mtimer_int_soon
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
+
+
+def _zawrs_resume_trap_handler_m(test_data: TestData, r_cause: int, r_temp: int, r_mtimecmp: int) -> list[str]:
+    """Trap handler for the M-mode wrs.nto resume-on-interrupt test (mie=1 bin).
+
+    SIGUPD mcause and clears timer interrupt, then return to the test
+
+    Inline code: the `j 4f` guard skips it in
+    straight-line flow, and `.align 2` keeps it 4-byte aligned so mtvec can
+    address it in direct mode (MODE=0).
+    """
+    return [
+        "# ---- Local trap handler for WRS.NTO resume, mie=1 (direct mode) ----",
+        "j 4f                             # skip handler in straight-line code",
+        ".option push",
+        ".option norvc",
+        ".align 2                         # direct-mode mtvec target must be 4-byte aligned",
+        "zawrs_resume_trap_handler:",
+        f"csrr x{r_cause}, mcause          # mcause: nonzero => trap fired (loop sentinel) + SIGUPD value",
+        write_sigupd(r_cause, test_data),
+        *clr_mtimer_int(r_temp, r_mtimecmp),
+        "mret                             # return to instruction after WRS.NTO",
+        ".option pop",
+        "4:",
+        "",
+    ]
 
 
 def _generate_wrs_sto_timeout_tests(test_data: TestData) -> list[str]:
@@ -142,7 +169,7 @@ def _generate_wrs_resume_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_wrs_resume"
     ######################################
 
-    r_mtime, r_mtimecmp, r_temp, r_temp2, r_temp3, r_scratch = test_data.int_regs.get_registers(6)
+    r_mtime, r_mtimecmp, r_temp, r_temp2, r_temp3, r_scratch, r_cause = test_data.int_regs.get_registers(7)
 
     lines = [
         comment_banner(
@@ -165,23 +192,50 @@ def _generate_wrs_resume_tests(test_data: TestData) -> list[str]:
                 "# Clear mstatus.TW",
                 f"LI(x{r_temp}, 0x200000)",
                 f"CSRC(mstatus, x{r_temp})",
+                "",
+                f"# Install local trap handler in mtvec (direct mode); save old mtvec in x{r_scratch}",
+                f"LA(x{r_temp}, zawrs_resume_trap_handler)",
+                f"csrrw x{r_scratch}, mtvec, x{r_temp}",
             ]
         )
 
         lines.extend(
             [
-                *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_temp, r_temp2, r_temp3, r_scratch),
+                # r_cause is a safe scratch here (reset to sentinel below before it is read).
+                *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_temp, r_temp2, r_temp3, r_cause),
                 "",
-                "# lr.w to set up reservation",
-                f"LA(x{r_scratch}, scratch)",
-                f"lr.w x{r_temp}, (x{r_scratch})",
+                "",
                 test_data.add_testcase(f"mie_{mie_val}", coverpoint, covergroup),
+                ".option push",
+                ".option norvc",
+                f"li x{r_cause}, 0                 # sentinel: nonzero means the trap was taken",
+                "# lr.w to set up reservation",
+                f"LA(x{r_temp}, scratch)",
+                f"lr.w x{r_temp2}, (x{r_temp})",
+                "1:",
                 "WRS.NTO",
-                "",
+                f"bnez x{r_cause}, 2f              # MIE=1: handler recorded mcause -> done",
+                "# Only moves on if MIE = 0 and mip.MTIP = 1, expect no interrupt should be taken",
+                f"csrr x{r_temp}, mip",
+                f"andi x{r_temp}, x{r_temp}, 0x80  # Extract mip.MTIP",
+                f"csrr x{r_temp2}, mstatus",
+                f"andi x{r_temp2}, x{r_temp2}, 0x8  # Extract mstatus.MIE",
+                f"bnez x{r_temp2}, 1b              # MIE = 1 -> retry",
+                f"beqz x{r_temp}, 1b              # No interrupt pending -> retry",
+                "2:",
+                ".option pop",
+                "# Restore the framework trap handler",
+                f"csrw mtvec, x{r_scratch}",
                 *clr_mtimer_int(r_temp, r_mtimecmp),
+                "",
             ]
         )
-    test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_temp, r_temp2, r_temp3, r_scratch])
+    # Emit the shared local trap handler AFTER the loop: write_sigupd is evaluated
+    # here (generation time), so it binds to the last testcase label, mie_1. Both
+    # mie bins point mtvec at this label via a forward reference.
+    lines.extend(_zawrs_resume_trap_handler_m(test_data, r_cause, r_temp, r_mtimecmp))
+
+    test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_temp, r_temp2, r_temp3, r_scratch, r_cause])
     return lines
 
 
@@ -257,14 +311,16 @@ def _generate_wrs_no_mie_tests(test_data: TestData) -> list[str]:
 
 
 @add_priv_test_generator("ZawrsSm", required_extensions=["Sm", "Zawrs", "Zalrsc"])
-def make_zawrssm(test_data: TestData) -> list[str]:
+def make_zawrssm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZawrSm WRS instructions at machine-mode."""
 
-    lines: list[str] = []
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
 
-    lines.extend(_generate_wrs_sto_timeout_tests(test_data))
-    lines.extend(_generate_wrs_no_res_tests(test_data))
-    lines.extend(_generate_wrs_resume_tests(test_data))
-    lines.extend(_generate_wrs_no_mie_tests(test_data))
+    tc.code.extend(_generate_wrs_sto_timeout_tests(test_data))
+    tc.code.extend(_generate_wrs_no_res_tests(test_data))
+    tc.code.extend(_generate_wrs_resume_tests(test_data))
+    tc.code.extend(_generate_wrs_no_mie_tests(test_data))
 
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

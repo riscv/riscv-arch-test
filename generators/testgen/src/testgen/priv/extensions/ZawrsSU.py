@@ -17,6 +17,7 @@ from testgen.asm.interrupts import (
     set_stimer_mmode,
 )
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -425,24 +426,30 @@ def _generate_wrs_nto_timeout_h_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "ZawrsSU", required_extensions=["U", "Zawrs", "Zalrsc"], march_extensions=["H", "S", "Zawrs", "Zalrsc"]
 )
-def make_zawrssu(test_data: TestData) -> list[str]:
+def make_zawrssu(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZawrSU WRS instructions at user-mode."""
 
-    lines: list[str] = [
-        "# No delegation",
-        "CSRW(medeleg, zero)",
-    ]
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
 
-    lines.extend(_generate_wrs_sto_timeout_tests(test_data))
-    lines.extend(_generate_wrs_no_res_tests(test_data))
-    lines.extend(_generate_wrs_resume_tests(test_data))
+    tc.code.extend(
+        [
+            "# No delegation",
+            "CSRW(medeleg, zero)",
+        ]
+    )
+
+    tc.code.extend(_generate_wrs_sto_timeout_tests(test_data))
+    tc.code.extend(_generate_wrs_no_res_tests(test_data))
+    tc.code.extend(_generate_wrs_resume_tests(test_data))
 
     # This refers to Spike, QEMU and Whisper:
     # for any coverpoint with TW = 1, the DUTs trigger illegal instruction on WRS.NTO immediately if TW = 1 but sail just treats WRS.NTO as NOP
     # NTO is_nop = true is set for the DUTs since they all treat WRS.NTO as NOP unless TW = 1
 
-    lines.extend(_generate_wrs_nto_timeout_tests(test_data))
-    lines.extend(_generate_wrs_nto_timeout_h_tests(test_data))
-    lines.extend(_generate_wrs_no_mie_tests(test_data))
+    tc.code.extend(_generate_wrs_nto_timeout_tests(test_data))
+    tc.code.extend(_generate_wrs_nto_timeout_h_tests(test_data))
+    tc.code.extend(_generate_wrs_no_mie_tests(test_data))
 
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

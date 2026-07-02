@@ -92,3 +92,14 @@ repos:
   #   rev: "v19.1.7"
   #   hooks:
   #     - id: clang-format
+
+  # Forbid the ambiguous `.align` assembler directive (its meaning is
+  # target-dependent); require the explicit `.p2align` (power-of-two
+  # exponent) or `.balign` (byte count) instead.
+  - repo: local
+    hooks:
+      - id: forbid-align-directive
+        name: forbid ambiguous .align directive
+        language: script
+        entry: .github/scripts/check-align-directive.sh
+        files: \.(S|s|h|py)$

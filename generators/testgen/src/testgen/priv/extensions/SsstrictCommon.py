@@ -215,7 +215,11 @@ def _emit_raw_words(
     directive = ".word" if length == 32 else ".hword"
     # Reserve one register as the scratch base; the rest of the pool stays
     # available for the encodings and per-chunk setup.
-    scratch_base = test_data.int_regs.get_register()
+    # Exclude x12-x15: partially-fixed rd fields (011RR/011RE) land there, and a
+    # legal lr/sc/amocas writing its own base register turns later legal memory
+    # encodings into access faults, whose slow-handler +8 mepc adjustment skips
+    # the following sweep word entirely (lost coverage on RV64).
+    scratch_base = test_data.int_regs.get_register(exclude_regs=[12, 13, 14, 15])
     encodings = _gen_encodings(test_data.int_regs, scratch_base, template, length, exclusion)
     if not encodings:
         test_data.int_regs.return_register(scratch_base)
@@ -414,7 +418,14 @@ def _generate_illegal_instr(
             RawSweep("cp_jalr3", "RRRRRRRRRRRRRRRRR110RRRRR1100111"),
         ],
         [
-            RawSweep("cp_privileged_f3", "00000000000100000EEE000001110011"),
+            RawSweep(
+                "cp_privileged_f3",
+                "00000000000100000EEE000001110011",
+                # funct3=000 is ebreak: legal, traps as breakpoint (cause 3), and the
+                # slow handler's +8 sepc adjustment would skip the funct3=001 word.
+                # The funct3=000 cross bin is amply covered by the privileged_000 sweep.
+                exclusion=("00000000000100000000000001110011",),
+            ),
             RawSweep(
                 "cp_privileged_000",
                 "EEEEEEEEEEEE00000000000001110011",

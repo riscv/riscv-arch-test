@@ -37,7 +37,7 @@ Additional details on what each section contains and why each section is needed 
 | -------------------- | -------------------------------------------------------------------------------------------------------- |
 | `rvtest_entry_point` | Entry point. Calls `rvmodel_boot` (in the `.text.rvmodel` section) then falls through to `.text.rvtest`. |
 
-`.text.init` is intentionally kept in a separate output section so that `.align` directives in test code do not increase `.text.init`'s alignment and shift `rvtest_entry_point` to an unexpected address. For example, [CV32E20](../config/cores/cve2/cv32e20/link.ld) has a reset vector of 0x4000 (`. = 0x00004000` in the linker script). Some tests (e.g. `I-jal-00`) have large `.align` directives (`.align 14`). Output sections are aligned to the maximum internal alignment of all input sections, so if the test code was in the same section as the entry point, then the entry point would need to be aligned to 16K and the CV32E20 reset vector would not line up.
+`.text.init` is intentionally kept in a separate output section so that `.{b/p2}align` directives in test code do not increase `.text.init`'s alignment and shift `rvtest_entry_point` to an unexpected address. For example, [CV32E20](../config/cores/cve2/cv32e20/link.ld) has a reset vector of 0x4000 (`. = 0x00004000` in the linker script). Some tests (e.g. `I-jal-00`) have large `.{b/p2}align` directives (`.p2align 14`). Output sections are aligned to the maximum internal alignment of all input sections, so if the test code was in the same section as the entry point, then the entry point would need to be aligned to 16K and the CV32E20 reset vector would not line up.
 
 ## `.text.rvtest` Section Layout
 

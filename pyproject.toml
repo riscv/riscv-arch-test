@@ -10,7 +10,7 @@ exclude-newer = "7 days"
 members = ["framework", "generators/testgen", "generators/coverage"]
 
 [dependency-groups]
-dev = ["pyright==1.1.410", "ruff==0.15.19"]
+dev = ["pyright==1.1.411", "ruff==0.15.19"]
 
 ###### RUFF CONFIG #####
 [tool.ruff]

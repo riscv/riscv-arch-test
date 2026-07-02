@@ -20,8 +20,9 @@ simulator's ``shards`` default, optionally overridden per-config via the
 leave ``imc`` variants un-sharded). The EXTENSIONS list for each shard is
 computed here via weighted Longest-Processing-Time bin-packing over the
 testsuites that the config actually implements. Suite weights are the
-summed byte size of the tracked ``.S`` files under each suite, which is a
-much better proxy for runtime than a raw file count.
+summed byte size of the ``.S`` files under each suite, which is a much
+better proxy for runtime than a raw file count. Run ``make tests`` first
+so generated (not checked-in) tests exist and are weighted correctly.
 
 Usage:
     .github/scripts/ci_config.py    # JSON matrix for GitHub Actions
@@ -45,7 +46,7 @@ from act.parse_test_constraints import TestMetadata, generate_test_dict
 from act.select_tests import prepare_configs_and_select_tests
 from ruamel.yaml import YAML
 
-_DEFAULT_SUITE_WEIGHT = 1  # for suites that have no checked-in .S files yet
+_DEFAULT_SUITE_WEIGHT = 1  # fallback when a selected test file is missing on disk (run `make tests` first)
 
 
 @cache
@@ -81,6 +82,7 @@ def _selected_suite_weights(config_file: Path, exclude: str, workdir: Path) -> t
         try:
             weight = test_path.stat().st_size
         except FileNotFoundError:
+            print(f"Warning: selected test {test_name} not on disk; run 'make tests' first", file=sys.stderr)
             weight = _DEFAULT_SUITE_WEIGHT
         weights[suite] = weights.get(suite, 0) + weight
 

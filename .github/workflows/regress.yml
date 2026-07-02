@@ -26,8 +26,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
-      - name: Set up mise
-        uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
+      - name: Set up tools
+        uses: ./.github/actions/setup-tools
 
       - name: Run prek
         uses: j178/prek-action@bdca6f102f98e2b4c7029491a53dfd366469e33d # v2.0.4
@@ -42,28 +42,14 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.discover.outputs.matrix }}
-    env:
-      # Install UDB gems into a dedicated directory so they can be cached
-      # independently of the mise-managed Ruby installation.
-      BUNDLE_PATH: ${{ github.workspace }}/.bundle-gems
     steps:
       - name: Checkout code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
-      - name: Set up mise
-        uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
-
-      - name: Cache UDB gems
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+      - name: Set up tools
+        uses: ./.github/actions/setup-tools
         with:
-          path: .bundle-gems
-          key: udb-gems-${{ runner.os }}-${{ hashFiles('.mise.toml', 'framework/src/act/data/Gemfile.lock') }}
-
-      - name: Cache uv packages
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-        with:
-          path: ~/.cache/uv
-          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          udb-gems: "true"
 
       # The act build cache is content-hash based and self-validating, so a
       # stale restore is safe: only configs whose UDB yaml changed rebuild.
@@ -77,6 +63,11 @@ jobs:
           key: ci-config-udb-${{ hashFiles('framework/src/act/data/Gemfile.lock') }}-${{ hashFiles('config/**/*.yaml') }}
           restore-keys: |
             ci-config-udb-${{ hashFiles('framework/src/act/data/Gemfile.lock') }}-
+
+      # Generated tests (e.g. priv) are not checked in but count toward the
+      # suite weights used for shard bin-packing, so generate them first.
+      - name: Generate tests
+        run: make tests --jobs $(nproc)
 
       - name: Discover CI configs
         id: discover
@@ -93,8 +84,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
-      - name: Set up mise
-        uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
+      - name: Set up tools
+        uses: ./.github/actions/setup-tools
+        with:
+          udb-gems: "true"
 
       - name: Report shard assignment
         run: |
@@ -216,8 +209,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
-      - name: Set up mise
-        uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
+      - name: Set up tools
+        uses: ./.github/actions/setup-tools
 
       - name: Generate vector tests
         run: make vector-tests --jobs $(nproc)
@@ -228,8 +221,8 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
-      - name: Set up mise
-        uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
+      - name: Set up tools
+        uses: ./.github/actions/setup-tools
 
       - run: git submodule update --init docs/docs-resources
 
@@ -255,8 +248,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
-      - name: Set up mise
-        uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
+      - name: Set up tools
+        uses: ./.github/actions/setup-tools
 
       - name: Regenerate tests and coverpoints
         run: make clean-tests tests
@@ -289,8 +282,10 @@ jobs:
       - name: Pin Python version for this job
         run: echo "${{ matrix.python-version }}" > .python-version
 
-      - name: Set up mise
-        uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
+      - name: Set up tools
+        uses: ./.github/actions/setup-tools
+        with:
+          udb-gems: "true"
 
       - name: Verify Python version
         run: uv run python --version

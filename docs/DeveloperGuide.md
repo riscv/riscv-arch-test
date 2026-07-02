@@ -372,7 +372,7 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{rd}", coverpoint)
         # If consume_registers returned setup code (register moves), prepend it to the TestChunk
         if asm_setup:
-            tc.code = asm_setup + "\n" + tc.code
+            tc.code.insert(0, asm_setup)
         test_chunks.append(tc)
         # Once registers are no longer in use, they need to be marked as available again
         # so that the register allocator knows that they can be reused.
@@ -403,9 +403,8 @@ to wrap their inline assembly in a single `TestChunk`. The typical pattern is:
 
 ```py
 tc = test_data.begin_test_chunk()
-test_lines: list[str] = []
-# ... build assembly lines, call test_data.add_testcase(), load_int_reg(), write_sigupd(), etc. ...
-tc.code = "\n".join(test_lines)
+# ... build assembly lines directly on tc.code (a list[str]) via tc.code.append()/tc.code.extend(),
+# call test_data.add_testcase(), load_int_reg(), write_sigupd(), etc. ...
 return [test_data.end_test_chunk()]
 ```
 

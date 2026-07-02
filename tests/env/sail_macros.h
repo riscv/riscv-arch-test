@@ -17,8 +17,8 @@
 #undef RVMODEL_DATA_SECTION
 #define RVMODEL_DATA_SECTION \
         .pushsection .tohost,"aw",@progbits;                \
-        .align 8; .global tohost; tohost: .dword 0;         \
-        .align 8; .global fromhost; fromhost: .dword 0;     \
+        .balign 8; .global tohost; tohost: .dword 0;         \
+        .balign 8; .global fromhost; fromhost: .dword 0;     \
         .popsection
 
 ##### STARTUP #####

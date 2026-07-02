@@ -196,7 +196,7 @@ RVTEST_DATA_BEGIN
 //                                            PHYSICAL ADDRESS REGIONS FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 // Physical Address region under testing (Aligned to 64KiB)
-.align 16
+.p2align 16
 rvtest_data_1:
   nop
   addi a4, a2, 4
@@ -210,7 +210,7 @@ rvtest_data_1:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 // Page Tables
-.align 12
+.p2align 12
 rvtest_slvl0_pg_tbl:
     .skip(4096)
 rvtest_slvl1_pg_tbl:

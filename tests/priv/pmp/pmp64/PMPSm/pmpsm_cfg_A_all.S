@@ -155,7 +155,7 @@ main:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str:  .string "\"test: 1; cp: cp_cfg_A_all_test_1\""
@@ -191,10 +191,12 @@ test_30_str: .string "\"test: 30; cp: cp_cfg_A_all_test_30\""
 test_31_str: .string "\"test: 31; cp: cp_cfg_A_all_test_31\""
 test_32_str: .string "\"test: 32; cp: cp_cfg_A_all_test_32\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of return-instruction fillers: places the region on the next granule boundary (= PMP_REGION_START at coverage grain 2), grain-aligned at larger grains
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))

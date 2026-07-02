@@ -967,6 +967,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
 
     return lines
 
+
 def _generate_mcsr_minstret_tests(test_data: TestData) -> list[str]:
     """
     Generate minstret retirement counting tests. For each instruction, read minstret before and after, and log the raw delta.
@@ -1038,6 +1039,7 @@ def _generate_mcsr_minstret_tests(test_data: TestData) -> list[str]:
 
     test_data.int_regs.return_registers([r_before, r_after, r_diff, r_tmp])
     return lines
+
 
 @add_priv_test_generator("Sm", required_extensions=["Sm"])
 def make_sm(test_data: TestData) -> list[TestChunk]:

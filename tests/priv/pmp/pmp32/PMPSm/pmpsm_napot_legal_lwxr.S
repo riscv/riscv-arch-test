@@ -397,7 +397,7 @@ test_16_str: .string "\"test: 16; cp: pmpm_aligned_lw_address+g\""
 .p2align (UDB_PMP_GRANULARITY)
 
 TEST_FOR_EXECUTION_0:
-    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of fillers: puts TEST_FOR_EXECUTION on the next granule boundary (= PMP_REGION_START at coverage grain 2), while staying naturally aligned for NAPOT at larger grains
+    .rept (g>>2)                                         // NAPOT region must be 8-byte aligned at grain 2 -> region at 0x80005008 (pmpaddr=STANDARD_REGION). A 4-byte pad (0x80005004) yields a 16-byte NAPOT covering the pad -> hang.
     nop
     .endr
 

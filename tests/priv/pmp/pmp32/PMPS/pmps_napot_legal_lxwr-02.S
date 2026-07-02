@@ -179,7 +179,7 @@ test_21_str: .string "\"test: 16; cp: pmps_napot_legal_lwxr_jalr_address+g\""
 
 .p2align 12
 .p2align (UDB_PMP_GRANULARITY)
-    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of jr-ra fillers: places the region at PMP_REGION_START (0x80005004) at coverage grain 2, grain-aligned at larger grains
+    .rept (g>>2)
     jr ra
     .endr
 

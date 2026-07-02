@@ -21,7 +21,6 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
     """Generate tests covering immediate-edge bins for jal / c.j / c.jal."""
 
     tc = test_data.begin_test_chunk()
-    test_lines: list[str] = []
 
     # Generate parameters specific to instruction
     if instr_name == "c.jal":
@@ -57,7 +56,7 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
         # For small offsets the inline self-check doesn't fit.
         skip_check = (instr_size == 2 and align <= 1) or (instr_size == 4 and align <= 2)
 
-        test_lines.extend(
+        tc.code.extend(
             [
                 f"# {coverpoint}: forward jump by {1 << align}",
                 f"{li_instr} x{params.temp_reg}, 1 # success code"
@@ -87,7 +86,7 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
         # For small offsets the inline self-check doesn't fit.
         skip_check = (instr_size == 2 and align <= 1) or (instr_size == 4 and align <= 2)
 
-        test_lines.extend(
+        tc.code.extend(
             [
                 f"# {coverpoint}: backward jump by {1 << align}",
                 f"{li_instr} x{params.temp_reg}, 1 # success code"
@@ -113,27 +112,25 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
         if align == 10 and coverpoint == "cp_imm_edges_c_jal":
             # Workaround for GCC expanding c.j/c.jal to full jal for -1024 offset
             if instr_name == "c.j":
-                test_lines.append(".insn 0xB101 # backward c.j by -1024; GCC expands to jal")
+                tc.code.append(".insn 0xB101 # backward c.j by -1024; GCC expands to jal")
             else:  # c.jal
-                test_lines.append(".insn 0x3101 # backward c.jal by -1024; GCC expands to jal")
+                tc.code.append(".insn 0x3101 # backward c.jal by -1024; GCC expands to jal")
         elif align == 11 and coverpoint == "cp_imm_edges_c_jal":
             # Workaround for GCC bug with -2048 offset
             # https://github.com/riscv-collab/riscv-gnu-toolchain/issues/1647
             if instr_name == "c.j":
-                test_lines.append(
-                    ".insn 0xB001 # backward c.j by -2048; GCC doesn't generate compressed branch properly"
-                )
+                tc.code.append(".insn 0xB001 # backward c.j by -2048; GCC doesn't generate compressed branch properly")
             else:  # c.jal
-                test_lines.append(
+                tc.code.append(
                     ".insn 0x3001 # backward c.jal by -2048; GCC doesn't generate compressed branch properly"
                 )
         else:
-            test_lines.append(
+            tc.code.append(
                 f"{instr_name} {f'x{params.rd},' if instr_name == 'jal' else ''} {coverpoint}_bwd_{bin_name}"
             )
 
         # Fall-through failure case and done label
-        test_lines.extend(
+        tc.code.extend(
             [
                 f"{li_instr} x{params.temp_reg}, 7 # failure code"
                 if not skip_check
@@ -150,5 +147,4 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
         )
 
     return_test_regs(test_data, params)
-    tc.code = "\n".join(test_lines)
     return [test_data.end_test_chunk()]

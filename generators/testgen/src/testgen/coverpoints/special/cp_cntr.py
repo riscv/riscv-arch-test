@@ -17,13 +17,12 @@ from testgen.data.test_chunk import TestChunk
 def make_cntr(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for counter coverpoints."""
     tc = test_data.begin_test_chunk()
-    test_lines: list[str] = []
 
     # Allocate some registers for testing.
     r1, r2, r3 = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
     if coverpoint == "cp_cntr":
-        test_lines.extend(
+        tc.code.extend(
             [
                 gen_cntr_test(instr_name, "cycle", r1, r2, r3, test_data),
                 "#ifdef UDB_TIME_CSR_IMPLEMENTED\n",
@@ -41,17 +40,16 @@ def make_cntr(instr_name: str, instr_type: str, coverpoint: str, test_data: Test
         )
     elif coverpoint == "cp_cntr_hpm":
         # hpmcounter3 through hpmcounter31
-        test_lines.extend(gen_cntr_test(instr_name, f"hpmcounter{hpm}", r1, r2, r3, test_data) for hpm in range(3, 32))
-        test_lines.append("#if __riscv_xlen == 32\n")
+        tc.code.extend(gen_cntr_test(instr_name, f"hpmcounter{hpm}", r1, r2, r3, test_data) for hpm in range(3, 32))
+        tc.code.append("#if __riscv_xlen == 32\n")
         # hpmcounter3h through hpmcounter31h
-        test_lines.extend(gen_cntr_test(instr_name, f"hpmcounter{hpm}h", r1, r2, r3, test_data) for hpm in range(3, 32))
-        test_lines.append("#endif\n")
+        tc.code.extend(gen_cntr_test(instr_name, f"hpmcounter{hpm}h", r1, r2, r3, test_data) for hpm in range(3, 32))
+        tc.code.append("#endif\n")
     else:
         raise ValueError(f"Unknown cp_cntr coverpoint variant: {coverpoint} for {instr_name}")
 
     test_data.int_regs.return_registers([r1, r2, r3])
 
-    tc.code = "\n".join(test_lines)
     return [test_data.end_test_chunk()]
 
 

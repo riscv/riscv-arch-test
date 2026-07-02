@@ -72,19 +72,19 @@ def csr_range_set(*ranges: range) -> set[int]:
 # ── Global exclusion lists ────────────────────────────────────────────────
 
 # Privileged/SYSTEM instruction exclusions shared by all modes.
-PRIVILEGED_000_EXCLUSIONS: list[str] = [
+PRIVILEGED_000_EXCLUSIONS: tuple[str, ...] = (
     "1XXX11XXXXXX00000000000001110011",  # custom system
     "00X10000001000000000000001110011",  # mret/sret
     "00000000000000000000000001110011",  # ecall
     "00010000010100000000000001110011",  # wfi
     "01110000001000000000000001110011",  # MNRET (Smrnmi)
-]
+)
 
 
 # ── Encoding helpers ──────────────────────────────────────────────────────
 
 
-def _excluded(encoding: str, patterns: list[str]) -> bool:
+def _excluded(encoding: str, patterns: Sequence[str]) -> bool:
     """True if `encoding` matches any pattern, where 'X' in a pattern is a wildcard."""
     return any(all(p in ("X", c) for p, c in zip(pattern, encoding)) for pattern in patterns)
 
@@ -94,7 +94,7 @@ def _gen_encodings(
     scratch_base: int,
     template: str,
     length: int = 32,
-    exclusion: list[str] | None = None,
+    exclusion: Sequence[str] | None = None,
 ) -> list[str]:
     """Expand a template string into every matching instruction encoding (MSB-first).
 
@@ -109,7 +109,7 @@ def _gen_encodings(
     scratch base is reserved out of the pool, so no field can collide with it.
     Encodings matching any `exclusion` pattern are dropped.
     """
-    exclusion = exclusion or []
+    exclusion = exclusion or ()
     # Fill the rs1 base field, if present, before enumerating (it is constant).
     template = template.replace("BBBBB", f"{scratch_base:05b}")
 
@@ -134,11 +134,13 @@ def _gen_encodings(
     return results
 
 
-def _emit_reg_init(lines: list[str], scratch_base: int) -> None:
-    """Point the scratch base register at the scratch region.
+def _scratch_setup(lines: list[str], test_data: TestData, scratch_base: int) -> None:
+    """Per-chunk setup: point the scratch base register at the scratch region.
 
-    Memory templates use this register as rs1, so it is the only one that must
-    hold a valid mapped address before the encodings run.
+    Each chunk may begin a fresh split file, so it must re-establish the scratch
+    base. Memory templates use this register as rs1, so it is the only one that
+    must hold a valid mapped address before the encodings run. FP/vector state
+    (mstatus.FS/VS) is already enabled by RVTEST_BEGIN in every file.
     """
     lines += [
         "",
@@ -148,19 +150,6 @@ def _emit_reg_init(lines: list[str], scratch_base: int) -> None:
         f"\tla x{scratch_base}, scratch",
         "",
     ]
-
-
-def _emit_vector_init(lines: list[str], test_data: TestData, scratch_base: int) -> None:
-    """Re-initialize the scratch base and enable vector extension state (mstatus.VS)."""
-    _emit_reg_init(lines, scratch_base)
-    temp_reg = test_data.int_regs.get_register()
-    lines.append("\t# Enable vector extension: mstatus.VS = 11 (Initial/Dirty)")
-    lines.append(f"\tli x{temp_reg}, 0x00000600  # VS field bitmask [14:13]")
-    lines.append(f"\tcsrs mstatus, x{temp_reg}")
-    lines.append("\t# Set vl=0 so valid vector loads/stores are no-ops")
-    lines.append("\tvsetivli x0, 0, e8, m1, ta, ma")
-    lines.append("")
-    test_data.int_regs.return_register(temp_reg)
 
 
 def _finalize_chunk(test_data: TestData, lines: list[str], test_chunks: list[TestChunk]) -> None:
@@ -177,29 +166,13 @@ def _finalize_chunk(test_data: TestData, lines: list[str], test_chunks: list[Tes
     test_chunks.append(test_data.end_test_chunk())
 
 
-def _scalar_setup(lines: list[str], test_data: TestData, scratch_base: int) -> None:
-    """Per-chunk setup for scalar illegal-instruction blocks: reload scratch + enable FP.
-
-    Each chunk may begin a fresh split file, so it must re-establish the scratch
-    base register and enable mstatus.FS (so FP encodings trap as
-    illegal-instruction rather than FP-disabled).
-    """
-    _emit_reg_init(lines, scratch_base)
-    temp, mask = test_data.int_regs.get_registers(2)
-    lines.append("\t# Enable FP (mstatus.FS=01)")
-    lines.append(f"\tli x{temp}, 1")
-    lines.append(f"\tslli x{mask}, x{temp}, 13")
-    lines.append(f"\tcsrs mstatus, x{mask}")
-    test_data.int_regs.return_registers([temp, mask])
-
-
 def _emit_raw_words(
     test_data: TestData,
     test_chunks: list[TestChunk],
     comment: str,
     template: str,
     length: int = 32,
-    exclusion: list[str] | None = None,
+    exclusion: Sequence[str] | None = None,
     setup: SetupFn | None = None,
     label: tuple[str, str, str] | None = None,
     section_header: str | None = None,
@@ -267,7 +240,7 @@ def _emit_raw_sweeps(
             sweep.comment,
             sweep.template,
             length=sweep.length,
-            exclusion=list(sweep.exclusion) or None,
+            exclusion=sweep.exclusion or None,
             setup=setup,
             label=next_label,
             section_header=next_header,
@@ -340,8 +313,8 @@ def _generate_illegal_instr(
 ) -> list[TestChunk]:
     """cp_illegal_instruction — reserved/illegal 32-bit encoding sweep.
 
-    Each encoding block becomes a self-contained chunk that re-runs _scalar_setup
-    (reload the scratch base + enable FP) so it is valid in any split file.
+    Each encoding block becomes a self-contained chunk that re-runs
+    _scratch_setup (reload the scratch base) so it is valid in any split file.
     """
     coverpoint = "cp_illegal_instruction"
     test_chunks: list[TestChunk] = []
@@ -429,17 +402,17 @@ def _generate_illegal_instr(
             RawSweep(
                 "cp_privileged_000",
                 "EEEEEEEEEEEE00000000000001110011",
-                exclusion=tuple(PRIVILEGED_000_EXCLUSIONS),
+                exclusion=PRIVILEGED_000_EXCLUSIONS,
             ),
             RawSweep(
                 "cp_privileged_rd",
                 "00000000000000000000EEEEE1110011",
-                exclusion=tuple(PRIVILEGED_000_EXCLUSIONS),
+                exclusion=PRIVILEGED_000_EXCLUSIONS,
             ),
             RawSweep(
                 "cp_privileged_rd",
                 "RRRRRRRRRRRR00000000EEEEE1110011",
-                exclusion=tuple(PRIVILEGED_000_EXCLUSIONS),
+                exclusion=PRIVILEGED_000_EXCLUSIONS,
             ),
             RawSweep(
                 "cp_privileged_rs2", "000000000000EEEEE000000001110011", exclusion=("00000000000000000000000001110011",)
@@ -461,7 +434,7 @@ def _generate_illegal_instr(
             test_data,
             test_chunks,
             sweep_group,
-            setup=_scalar_setup,
+            setup=_scratch_setup,
             label=label,
             section_header=section_header,
         )
@@ -492,7 +465,7 @@ def _generate_illegal_instr(
             RawSweep("cp_upperreg_fmv_w_x_rs1", "1111000000001EEEE000011101010011"),
             RawSweep("cp_upperreg_fmv_w_x_rd", "111100000000000010001EEEE1010011"),
         ],
-        setup=_scalar_setup,
+        setup=_scratch_setup,
         section_header=upperreg_header,
     )
 
@@ -502,17 +475,17 @@ def _generate_illegal_instr(
 # ── Vector illegal instruction sweep ─────────────────────────────────────
 
 
-def _vector_setup(lines: list[str], test_data: TestData, scratch_base: int) -> None:
-    """Per-chunk setup for vector blocks at default SEW (e8, vl=0)."""
-    _emit_vector_init(lines, test_data, scratch_base)
+def _vector_setup(sew: str = "8", avl: int = 0) -> SetupFn:
+    """Per-chunk setup factory for vector blocks: reload scratch base + set vl/vtype.
 
-
-def _vector_sew_setup(sew: str) -> SetupFn:
-    """Per-chunk setup for vector arithmetic blocks at a specific SEW."""
+    mstatus.VS is already enabled by RVTEST_BEGIN; only vl/vtype must be set so
+    any legal vector load/store among the swept encodings behaves predictably
+    (avl=0 makes them no-ops).
+    """
 
     def setup(lines: list[str], test_data: TestData, scratch_base: int) -> None:
-        _emit_vector_init(lines, test_data, scratch_base)
-        lines.append(f"\tvsetivli x0, 1, e{sew}, m1, ta, ma")
+        _scratch_setup(lines, test_data, scratch_base)
+        lines.append(f"\tvsetivli x0, {avl}, e{sew}, m1, ta, ma")
         lines.append("")
 
     return setup
@@ -525,8 +498,8 @@ def _generate_vector_illegal_instr(
     """cp_illegal_vector_instruction — reserved/illegal vector encoding sweep.
 
     Each encoding block becomes a self-contained chunk that re-runs the vector
-    setup (reload the scratch base + enable mstatus.VS + set vl, plus the right
-    vsetivli for the per-SEW arithmetic blocks) so it is valid in any split file.
+    setup (reload the scratch base + the right vsetivli for the block) so it is
+    valid in any split file.
     """
     coverpoint = "cp_illegal_vector_instruction"
     test_chunks: list[TestChunk] = []
@@ -548,7 +521,7 @@ def _generate_vector_illegal_instr(
             RawSweep("cp_v_vsetivli_sew", "1100RR1EERRRRRRRR111RRRRR1010111"),
             RawSweep("cp_v_vsetivli_res", "11EERR0RRRRRRRRRR111RRRRR1010111"),
         ],
-        setup=_vector_setup,
+        setup=_vector_setup(),
         label=label,
         section_header=vset_header,
     )
@@ -566,7 +539,7 @@ def _generate_vector_illegal_instr(
             RawSweep("cp_vl_lumop_32", "RRR000REEEEEBBBBB110011RR0000111"),
             RawSweep("cp_vl_lumop_64", "RRR000REEEEEBBBBB111011RR0000111"),
         ],
-        setup=_vector_setup,
+        setup=_vector_setup(),
         section_header=comment_banner("Vector load reserved encodings", "Reserved mew/width/lumop for vector loads"),
     )
 
@@ -581,13 +554,12 @@ def _generate_vector_illegal_instr(
             RawSweep("cp_vl_sumop_32", "RRR000REEEEEBBBBB110011RR0100111"),
             RawSweep("cp_vl_sumop_64", "RRR000REEEEEBBBBB111011RR0100111"),
         ],
-        setup=_vector_setup,
+        setup=_vector_setup(),
         section_header=comment_banner("Vector store reserved encodings", "Reserved mew/width/lumop for vector stores"),
     )
 
     # ── Vector arithmetic per-SEW sweeps ──────────────────────────────
     for sew in ["8", "16", "32", "64"]:
-        sew_setup = _vector_sew_setup(sew)
         sew_header: str | None = comment_banner(f"Vector arithmetic SEW={sew}", f"funct6 sweeps with e{sew}")
         _emit_raw_sweeps(
             test_data,
@@ -612,7 +584,7 @@ def _generate_vector_illegal_instr(
                 RawSweep(f"cp_MVV_vaesvv_e{sew}", "101000ERRRRREEEEE010RRRRR1110111"),
                 RawSweep(f"cp_MVV_vaesvs_e{sew}", "101001ERRRRREEEEE010RRRRR1110111"),
             ],
-            setup=sew_setup,
+            setup=_vector_setup(sew, avl=1),
             section_header=sew_header,
         )
 

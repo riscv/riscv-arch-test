@@ -2009,7 +2009,7 @@
     // Exception table: cause 0..23 (NUM_SPECD_EXCPTCAUSES)
     // Interrupt table: cause 0..15
     //==========================================================================
-    .p2align REGWIDTH
+    .balign REGWIDTH
 
     trap_excpt_name_tbl:
         RVTEST_WORD_PTR trap_excpt_name_0

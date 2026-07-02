@@ -13,23 +13,21 @@
 
 set -euo pipefail
 
-pattern='\.align\b'
+pattern='(^|[[:space:];:"'"'"'])\.align([[:space:]]|$)'
 
 if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then
   red=$'\033[31m'
   bold=$'\033[1m'
   reset=$'\033[0m'
-  grep_color=always
 else
   red=''
   bold=''
   reset=''
-  grep_color=never
 fi
 
 found=0
 for f in "$@"; do
-  matches=$(grep -nP --color="$grep_color" "$pattern" "$f" || true)
+  matches=$(grep -nE "$pattern" "$f" || true)
   if [ -n "$matches" ]; then
     found=1
     while IFS= read -r line; do

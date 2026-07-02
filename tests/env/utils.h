@@ -51,11 +51,13 @@
 // sync routine. Must stay a single instruction (or a JAL) so code size is constant.
 // Defined here so it is available to every consumer (rvtest_pmp_macros.h,
 // rvtest_trap_handler.h, ...); ZIFENCEI_SUPPORTED comes from derived_config.h.
-#ifndef   RVTEST_FENCEI
-  #ifndef ZIFENCEI_SUPPORTED
-       #define RVTEST_FENCEI nop                // no Zifencei: assume coherent I-cache
+#ifdef   RVMODEL_FENCEI
+  #define RVTEST_FENCEI RVMODEL_FENCEI
+#else
+  #ifdef ZIFENCEI_SUPPORTED
+    #define RVTEST_FENCEI fence.i
   #else
-       #define RVTEST_FENCEI fence.i            // Zifencei available: use fence.i
+    #define RVTEST_FENCEI nop
   #endif
 #endif
 

@@ -8,9 +8,9 @@
 
 #define RVMODEL_DATA_SECTION \
         .pushsection .data,"aw",@progbits;                             \
-        .align 3; .global _semihost_exit_pass;                          \
+        .p2align 3; .global _semihost_exit_pass;                          \
         _semihost_exit_pass: .dword 0x20026; .dword 0;                  \
-        .align 3; .global _semihost_exit_fail;                          \
+        .p2align 3; .global _semihost_exit_fail;                          \
         _semihost_exit_fail: .dword 0x20023; .dword 1;                  \
         .popsection
 

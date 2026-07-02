@@ -171,6 +171,14 @@
       #endif
     #endif
 
+    // Temporary workaround to boot to correct mode in Ssstrict tests until
+    // full boot flow with mode selection is working. TODO: Remove this
+    #ifdef RVTEST_TEMP_BOOT_TO_S
+      RVTEST_GOTO_LOWER_MODE Smode
+    #elif defined(RVTEST_TEMP_BOOT_TO_U)
+      RVTEST_GOTO_LOWER_MODE Umode
+    #endif
+
     #ifdef S_SUPPORTED
       rvtest_identity_map:
         // Identity maps rvtest_data_begin, forming an aligned Sv32 megapage,

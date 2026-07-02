@@ -60,7 +60,7 @@ _U_CSR_SKIP: frozenset[int] = frozenset(
         "V",
         "Zicsr",
     ],
-    extra_defines=["#define RVTEST_USE_FAST_TRAP_HANDLER"],
+    extra_defines=["#define RVTEST_USE_FAST_TRAP_HANDLER", "#define RVTEST_TEMP_BOOT_TO_U"],
 )
 def make_ssstrictu(test_data: TestData) -> list[TestChunk]:
     """SsstrictU — user-mode strict compliance tests."""

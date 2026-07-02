@@ -57,18 +57,7 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
             `endif
         `endif
     }
-    csr_instrs: coverpoint ins.current.insn {
-        wildcard bins csrrw_fcsr   = {32'b000000000011_?????_001_?????_1110011};
-        wildcard bins csrrw_frm    = {32'b000000000010_?????_001_?????_1110011};
-        wildcard bins csrrw_fflags = {32'b000000000001_?????_001_?????_1110011};
-        wildcard bins csrrs_fcsr   = {32'b000000000011_?????_010_?????_1110011};
-        wildcard bins csrrs_frm    = {32'b000000000010_?????_010_?????_1110011};
-        wildcard bins csrrs_fflags = {32'b000000000001_?????_010_?????_1110011};
-        wildcard bins csrrc_fcsr   = {32'b000000000011_?????_011_?????_1110011};
-        wildcard bins csrrc_frm    = {32'b000000000010_?????_011_?????_1110011};
-        wildcard bins csrrc_fflags = {32'b000000000001_?????_011_?????_1110011};
-    }
-    csr_writes: coverpoint ins.current.insn {
+    csr_accesses: coverpoint ins.current.insn {
         wildcard bins csrrw_fcsr   = {32'b000000000011_?????_001_?????_1110011};
         wildcard bins csrrw_frm    = {32'b000000000010_?????_001_?????_1110011};
         wildcard bins csrrw_fflags = {32'b000000000001_?????_001_?????_1110011};
@@ -110,7 +99,7 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
 
     // main coverpoints
     cp_mstatus_fs_illegal_instr: cross instrs, mstatus_FS_zero;
-    cp_mstatus_fs_csr_write:     cross csr_writes, mstatus_FS_zero;
+    cp_mstatus_fs_csr_access:    cross csr_accesses, mstatus_FS_zero;
     cp_mstatus_fs_legal:         cross instrs, mstatus_FS_status, frm_legal;
     cp_load_address_misaligned:  cross loadops, adr_LSBs;
     cp_store_address_misaligned: cross storeops, adr_LSBs;

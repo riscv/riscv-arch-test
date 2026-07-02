@@ -61,18 +61,17 @@ def generate_cmp_testcase(
 
     # Begin testcase
     tc = test_data.begin_test_chunk()
-    lines = [f"# Testcase {desc}"]
+    tc.code.append(f"# Testcase {desc}")
     label_line = test_data.add_testcase(bin_name, coverpoint)
 
     if load_rd and not is_pair:
-        lines.append(load_int_reg("rd compare value", rd, rd_val, test_data))
+        tc.code.append(load_int_reg("rd compare value", rd, rd_val, test_data))
 
-    # Generate instruction, setup, test, and check lines
+    # Generate instruction, setup, test, and check tc.code
     setup, test, check = format_instruction(instr_name, instr_type, test_data, params)
-    lines += [setup, label_line, test, check]
+    tc.code.extend([setup, label_line, test, check])
 
     # Assign code and end testcase
-    tc.code = "\n".join(lines)
     tc = test_data.end_test_chunk()
 
     # Cleanup temporary allocations

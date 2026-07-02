@@ -10,6 +10,7 @@ from testgen.asm.csr import csr_walk_test
 from testgen.asm.helpers import comment_banner
 from testgen.constants import INDENT
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 # ---------------------------------------------------------------------------
@@ -438,25 +439,27 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
     required_extensions=["S", "Zicsr", "Smstateen", "Ssstateen"],
     march_extensions=["Ssstateen", "Smstateen", "Zicsr", "Zcmt", "Zfinx"],
 )
-def make_ssstateen(test_data: TestData) -> list[str]:
+def make_ssstateen(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Ssstateen state-enable extension testsuite."""
-    lines: list[str] = []
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
 
     # Unconditional coverpoints — required by all Ssstateen targets
-    lines.extend(_generate_se0_controls_sstateen0(test_data, se0=0))
-    lines.extend(_generate_se0_controls_sstateen0(test_data, se0=1))
-    lines.extend(_generate_csr_illegal_accesses(test_data))
-    lines.extend(_generate_walking_ones(test_data))
+    tc.code.extend(_generate_se0_controls_sstateen0(test_data, se0=0))
+    tc.code.extend(_generate_se0_controls_sstateen0(test_data, se0=1))
+    tc.code.extend(_generate_csr_illegal_accesses(test_data))
+    tc.code.extend(_generate_walking_ones(test_data))
 
     # cp_fcsr_lower, cp_fcsr_fp_instrs — only when Zfinx is supported
-    lines.append("#ifdef ZFINX_SUPPORTED")
-    lines.extend(_generate_fcsr_lower(test_data))
-    lines.extend(_generate_fcsr_lower_fp_instrs(test_data))
-    lines.append("#endif  // ZFINX_SUPPORTED")
+    tc.code.append("#ifdef ZFINX_SUPPORTED")
+    tc.code.extend(_generate_fcsr_lower(test_data))
+    tc.code.extend(_generate_fcsr_lower_fp_instrs(test_data))
+    tc.code.append("#endif  // ZFINX_SUPPORTED")
 
     # cp_jvt — only when Zcmt is supported (covers both S-mode and U-mode)
-    lines.append("#ifdef ZCMT_SUPPORTED")
-    lines.extend(_generate_jvt(test_data))
-    lines.append("#endif  // ZCMT_SUPPORTED")
+    tc.code.append("#ifdef ZCMT_SUPPORTED")
+    tc.code.extend(_generate_jvt(test_data))
+    tc.code.append("#endif  // ZCMT_SUPPORTED")
 
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

@@ -164,7 +164,7 @@ main:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str:  .string "\"test: 1; cp: cp_cfg_L_modify_test_1\""
@@ -182,7 +182,7 @@ test_12_str: .string "\"test: 12; cp: cp_cfg_L_modify_test_12\""
 test_13_str: .string "\"test: 13; cp: cp_cfg_L_modify_test_13\""
 test_14_str: .string "\"test: 14; cp: cp_cfg_L_modify_test_14\""
 
-.align 12
+.p2align 12
 TEST_FOR_EXECUTION_0:
     .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of jr-ra fillers: puts TEST_FOR_EXECUTION on the next granule boundary (= PMP_REGION_START at coverage grain 2), while staying naturally aligned for NAPOT at larger grains
     jr ra

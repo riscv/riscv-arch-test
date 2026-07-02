@@ -163,7 +163,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         lines.extend(
             [
                 test_data.add_testcase(f"illegalinstr_zeros_{tag}", coverpoint, covergroup),
-                ".align 2",
+                ".p2align 2",
                 ".word 0x00000000",
                 "nop",
             ]
@@ -173,7 +173,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
         lines.extend(
             [
                 test_data.add_testcase(f"illegalinstr_ones_{tag}", coverpoint, covergroup),
-                ".align 2",
+                ".p2align 2",
                 ".word 0xFFFFFFFF",
                 "nop",
             ]

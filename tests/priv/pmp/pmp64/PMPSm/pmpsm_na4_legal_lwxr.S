@@ -229,7 +229,7 @@ main:
     VERIFICATION_RWX    TEST_FOR_EXECUTION,test_6
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: cp_cfg_A_na4_sw_address\""
@@ -241,8 +241,8 @@ test_4_str: .string "\"test: 4; cp: cp_cfg_A_na4_lw_address-4\""
 test_5_str: .string "\"test: 5; cp: cp_cfg_A_na4_sw_address+4\""
 test_6_str: .string "\"test: 6; cp: cp_cfg_A_na4_lw_address+4\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of return-instruction fillers: places the region on the next granule boundary (= PMP_REGION_START at coverage grain 2), grain-aligned at larger grains
     jr ra

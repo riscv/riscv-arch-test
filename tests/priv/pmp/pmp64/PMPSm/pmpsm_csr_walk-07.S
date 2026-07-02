@@ -139,8 +139,8 @@ test_47_str: .string "\"test: 47; cp: cp_csr_walk_test_47\""
 test_48_str: .string "\"test: 48; cp: cp_csr_walk_test_48\""
 test_49_str: .string "\"test: 49; cp: cp_csr_walk_test_49\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of return-instruction fillers: places the region on the next granule boundary (= PMP_REGION_START at coverage grain 2), grain-aligned at larger grains
     jr ra

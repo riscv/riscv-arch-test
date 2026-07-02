@@ -422,7 +422,7 @@ def _generate_illegal_instruction_tests(test_data: TestData) -> list[str]:
     lines = [
         comment_banner(coverpoint, "Illegal Instruction"),
         # Align to ensure proper instruction fetch and trap handling"
-        ".align 2",  # Add alignment
+        ".p2align 2",  # Add alignment
         test_data.add_testcase("illegal0", coverpoint, covergroup),
         ".insn 0x00",  # use two byte for instruction alignment when trapping
         f"{INDENT}# Illegal instruction will throw a trap and the trap handler skips over the next 4 bytes. Two c.nops are used to get 4 bytes of instructions",

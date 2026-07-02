@@ -175,13 +175,13 @@ main:
     VERIFICATION_RWX    TEST_FOR_EXECUTION_14, test_15
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpm_cfg_tor_all_lw\""
 
 
-.align 12
+.p2align 12
 TEST_FOR_EXECUTION_X:
     .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of jr-ra fillers: puts TEST_FOR_EXECUTION on the next granule boundary (= PMP_REGION_START at coverage grain 2), while staying naturally aligned for NAPOT at larger grains
     jr ra

@@ -370,7 +370,7 @@ main:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 10
+.p2align 10
 
 // Test case strings for reporting
 test_1_str:  .string "\"test: 1;  cp: pmpm_aligned_sb_address\""
@@ -393,15 +393,15 @@ test_14_str: .string "\"test: 14; cp: pmpm_aligned_lw_address+4\""
 test_15_str: .string "\"test: 15; cp: pmpm_aligned_lw_address+g-4\""
 test_16_str: .string "\"test: 16; cp: pmpm_aligned_lw_address+g\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 
 TEST_FOR_EXECUTION_0:
     .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of fillers: puts TEST_FOR_EXECUTION on the next granule boundary (= PMP_REGION_START at coverage grain 2), while staying naturally aligned for NAPOT at larger grains
     nop
     .endr
 
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

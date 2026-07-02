@@ -197,29 +197,6 @@
 
 #define TSBI_RESERVED_RET   (-1)                 // return value for unrecognized operations
 
-//==============================================================================
-// SECTION 4: FENCE INSTRUCTION CONFIGURATION
-//
-// RVMODEL_FENCEI: instruction used to synchronize the instruction stream after
-// writing code to memory (e.g., when the trampoline is relocated, or when
-// CSR_ACCESS writes a dynamic instruction to scratch memory).
-//
-// If the DUT supports Zifencei, this should be fence.i.
-// If the DUT has a coherent I-cache (no explicit sync needed), this can be nop.
-// If the DUT requires a custom mechanism, RVMODEL_FENCEI can be defined as a
-// JAL to a routine in rvmodel_boot that performs the sync.
-//
-// CONSTRAINT: Must be a single instruction OR a JAL to keep code size constant.
-//==============================================================================
-
-#ifndef   RVMODEL_FENCEI
-  #ifndef ZIFENCEI_SUPPORTED
-       #define RVMODEL_FENCEI nop                // no Zifencei: assume coherent I-cache
-  #else
-       #define RVMODEL_FENCEI fence.i            // Zifencei available: use fence.i
-  #endif
-#endif
-
 #ifndef _VA_SZ_
   #if UDB_MXLEN==32
     #define _VA_SZ_ 32                           // RV32: 32-bit virtual address
@@ -976,7 +953,7 @@ overwt_tt_\__MODE__\()loop:
         bne     T3, T2, overwt_tt_\__MODE__\()loop  // loop until end of trampoline
 
 endcopy_\__MODE__\()tramp:
-        RVMODEL_FENCEI                              // sync icache: we just wrote code to the xTVEC target
+        RVTEST_FENCEI                              // sync icache: we just wrote code to the xTVEC target
         csrr    T1, CSR_XSCRATCH                    // reload save area ptr from xSCRATCH (may have been modified)
         SREG    T4, tentry_addr_off(T1)              // update common entry point address (may differ if partial copy)
         beq     T3,T2, rvtest_\__MODE__\()prolog_done  // if full copy completed, prolog is done
@@ -1416,7 +1393,7 @@ tsbi_\__MODE__\()csr_access:
         LI(     T3, 0x00008067)                    // T3 = encoding of "ret" (jalr x0, ra, 0)
         sw      T3, 4(T2)                          // write ret instruction to scratch[4:7]
 
-        RVMODEL_FENCEI                              // sync icache: we just wrote executable code to data memory
+        RVTEST_FENCEI                              // sync icache: we just wrote executable code to data memory
 
         // Restore caller's a1 from save area before executing the CSR instruction.
         // The CSR encoding may use rs1=a1, so a1 must contain the caller's argument.
@@ -1581,7 +1558,7 @@ tsbi_\__MODE__\()csr_access:
         sw      T4, 0(T2)                          // write CSR instruction to scratch[0:3]
         LI(     T3, 0x00008067)                    // T3 = "ret" encoding (jalr x0, ra, 0)
         sw      T3, 4(T2)                          // write ret instruction to scratch[4:7]
-        RVMODEL_FENCEI                              // sync icache after writing code to data memory
+        RVTEST_FENCEI                              // sync icache after writing code to data memory
         LREG    a1, trap_sv_off+6*REGWIDTH(sp)     // restore caller's a1 (may be rs1 for the CSR instruction)
         jalr    ra, T2, 0                          // execute CSR instruction + ret (result in a0 if rd=a0)
         csrr    T3, CSR_XEPC                        // T3 = sepc
@@ -2503,7 +2480,7 @@ resto_\__MODE__\()loop:
         addi    T4, T4, WDBYTSZ                    // advance source pointer
         blt     T2, T3, resto_\__MODE__\()loop     // continue until end of trampoline
   1:
-        RVMODEL_FENCEI                              // sync icache after restoring code
+        RVTEST_FENCEI                              // sync icache after restoring code
 
 .global rvtest_\__MODE__\()end                     // make end label globally visible
 rvtest_\__MODE__\()end:                            // epilog is done for this mode

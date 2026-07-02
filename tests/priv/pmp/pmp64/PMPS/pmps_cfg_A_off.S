@@ -38,33 +38,6 @@
 
 RVTEST_BEGIN
 
-.macro VERIFICATION_RWX ADDRESS TEST_CASE      // {jalr, sw, lw} at start of region
-    // Execution Access Check
-    LA (a4, \ADDRESS)
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
-    LA(x1, 1f)                            // Store the return Address in x1
-    \TEST_CASE\()_1:
-    jalr ra, 0(a4)
-    nop
-1:
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-
-    // Store Access Check
-    LA(a5, \ADDRESS)                                         // Address to be verified
-    LI(a4, DOUBLE_NOP)                                              // Value to write (DOUBLE_NOP)
-    \TEST_CASE\()_2:
-    sw a4, 0(a5)                                             // Word store test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
-
-    // Load Access Check
-    \TEST_CASE\()_3:
-    lw a4, 0(a5)                                             // Word load test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
-
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
@@ -104,7 +77,7 @@ main:
     csrw pmpcfg0, x0        // pmp0cfg0.L = 0, pmp0cfg0.A = OFF and pmp0cfg0.WXR = 000
 
     RVTEST_GOTO_LOWER_MODE    Smode        // SWITCH TO S-mode
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
+    PMP_VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
     RVTEST_GOTO_MMODE
 
     j exit                                                        // Verification Complete, exit the test
@@ -123,7 +96,9 @@ test_3_str: .string "\"test: 3; cp: pmpm_cfg_A_off_all_lw\""
 .p2align 12
 .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of return-instruction fillers: places the region on the next granule boundary (= PMP_REGION_START at coverage grain 2), grain-aligned at larger grains
     jr ra
+    .endr
 
 .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:

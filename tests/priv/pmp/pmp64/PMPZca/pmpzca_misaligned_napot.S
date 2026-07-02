@@ -49,13 +49,6 @@ RVTEST_BEGIN
     #define REGION_SIZE 8
 #endif
 
-.macro VERIFICATION_RWX ADDRESS, TEST_CASE
-    \TEST_CASE\()_1:
-    LA(x15, \ADDRESS)               // Address to be verified
-    c.jalr x15
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
@@ -135,10 +128,10 @@ main:
     csrw pmpcfg0, x4
 
     // Test Case 1: Uncompressed return straddling the start of 2nd region
-    VERIFICATION_RWX TEST_FOR_EXECUTION_2, test_1
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_2, test_1
 
     // Test Case 2: Uncompressed return straddling the end of 2nd region
-    VERIFICATION_RWX TEST_FOR_EXECUTION_4, test_2
+    PMP_VERIFICATION_X_C TEST_FOR_EXECUTION_4, test_2
 
     j exit                                                      // Verification Complete, exit the test
 

@@ -130,7 +130,7 @@ test_7_str: .string "\"test: 7; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_21\"
 
 .p2align 12
 TEST_FOR_EXECUTION_0:
-    .rept 1024
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of jr-ra fillers: puts TEST_FOR_EXECUTION on the next granule boundary (= PMP_REGION_START at coverage grain 2), while staying naturally aligned for NAPOT at larger grains
     jr ra
     .endr
 

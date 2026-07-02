@@ -44,57 +44,6 @@
 RVTEST_BEGIN
 
 
-.macro VERIFICATION_RWX ADDRESS, TEST_CASE
-    // Execution Access Check
-    LA (a4, \ADDRESS)
-    LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
-    LA(x1, 1f)                            // Store the return Address in x1
-    \TEST_CASE\()_9:
-    jalr ra, 0(a4)
-    nop
-1:
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_9, test_9_str)
-
-    // Store Access Check
-    LA(a5, \ADDRESS)                                         // Address to be verified
-    LI(a4, NOP)                                              // Value to write (NOP)
-    \TEST_CASE\()_1:
-    sb a4, 0(a5)                                             // Byte-level store test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-    \TEST_CASE\()_2:
-    sh a4, 0(a5)                                             // Half-word store test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
-    \TEST_CASE\()_3:
-    sw a4, 0(a5)                                             // Word store test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
-
-    // Load Access Check
-    \TEST_CASE\()_4:
-    lb a4, 0(a5)                                             // Byte-level load test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)                                   // Signature update
-    \TEST_CASE\()_5:
-    lbu a4, 0(a5)                                             // Byte-level load test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_5, test_5_str)                                  // Signature update
-    \TEST_CASE\()_6:
-    lh a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_6, test_6_str)                                   // Signature update
-    \TEST_CASE\()_7:
-    lhu a4, 0(a5)
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_7, test_7_str)                                  // Signature update
-    \TEST_CASE\()_8:
-    lw a4, 0(a5)                                             // Word load test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)                                   // Signature update
-
-.endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
@@ -160,105 +109,105 @@ main:
     LI(x4, (PMPREGION_XWR_001 << PMP2_CFG_SHIFT))
     csrw pmpcfg3, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_16
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_16
 
 // Test Case: 17 -- X Permissions given to the PMP Region 13
 
     LI(x4, (PMPREGION_XWR_100 << PMP1_CFG_SHIFT))
     csrw pmpcfg3, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_17
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_17
 
 // Test Case: 18 -- No Permissions given to the PMP Region 12
 
     LI(x4, (PMPREGION_XWR_000 << PMP0_CFG_SHIFT))
     csrw pmpcfg3, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_18
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_18
 
 // Test Case: 19 -- XWR Permissions given to the PMP Region 11
 
     LI(x4, (PMPREGION_XWR_111 << PMP3_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_19
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_19
 
 // Test Case: 20 -- R Permissions given to the PMP Region 10
 
     LI(x4, (PMPREGION_XWR_001 << PMP2_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_20
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_20
 
 // Test Case: 21 -- XR Permissions given to the PMP Region 9
 
     LI(x4, (PMPREGION_XWR_101 << PMP1_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_21
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_21
 
 // Test Case: 22 -- R Permissions given to the PMP Region 8
 
     LI(x4, (PMPREGION_XWR_001 << PMP0_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_22
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_22
 
 // Test Case: 23 -- X Permissions given to the PMP Region 7
 
     LI(x4, (PMPREGION_XWR_100 << PMP3_CFG_SHIFT))
     csrw pmpcfg1, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_23
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_23
 
 // Test Case: 24 -- No Permissions given to the PMP Region 6
 
     LI(x4, (PMPREGION_XWR_000 << PMP2_CFG_SHIFT))
     csrw pmpcfg1, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_24
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_24
 
 // Test Case: 25 -- XWR Permissions given to the PMP Region 5
 
     LI(x4, (PMPREGION_XWR_111 << PMP1_CFG_SHIFT))
     csrw pmpcfg1, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_25
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_25
 
 // Test Case: 26 -- WR Permissions given to the PMP Region 4
 
     LI(x4, (PMPREGION_XWR_011 << PMP0_CFG_SHIFT))
     csrw pmpcfg1, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_26
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_26
 
 // Test Case: 27 -- XR Permissions given to the PMP Region 3
 
     LI(x4, (PMPREGION_XWR_101 << PMP3_CFG_SHIFT))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_27
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_27
 
 // Test Case: 28 -- R Permissions given to the PMP Region 2
 
     LI(x4, (PMPREGION_XWR_001 << PMP2_CFG_SHIFT))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_28
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_28
 
 // Test Case: 29 -- X Permissions given to the PMP Region 1
 
     LI(x4, (PMPREGION_XWR_100 << PMP1_CFG_SHIFT))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_29
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_29
 
 // Test Case: 30 -- No Permissions given to the PMP Region 0
 
     LI(x4, (PMPREGION_XWR_000 << PMP0_CFG_SHIFT))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_30
+    PMP_VERIFICATION_RWX_ALL    TEST_FOR_EXECUTION, test_30
 
 
 RVTEST_CODE_END
@@ -280,7 +229,7 @@ test_9_str: .string "\"test: 9; cp: pmpm_cfg_XWR_all_jalr\""
 .p2align 12
 .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
-    .rept 1024
+    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of jr-ra fillers: puts TEST_FOR_EXECUTION on the next granule boundary (= PMP_REGION_START at coverage grain 2), while staying naturally aligned for NAPOT at larger grains
     jr ra
     .endr
 

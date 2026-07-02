@@ -101,7 +101,7 @@ RVTEST_BEGIN
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)
 
-   RVMODEL_FENCEI
+   RVTEST_FENCEI
 
     LA (a4, (\ADDRESS-4))
     LI(x4, 0xACCE)                                            // Store a value which is to be checked in trap handler

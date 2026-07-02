@@ -348,8 +348,8 @@ test_1_str: .string "\"test: 1; cp: pmpm_cfg_napot_all_lw_address\""
 test_2_str: .string "\"test: 2; cp: pmpm_cfg_napot_all_address-4\""
 test_3_str: .string "\"test: 3; cp: pmpm_cfg_napot_all_address+4\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jr ra
 

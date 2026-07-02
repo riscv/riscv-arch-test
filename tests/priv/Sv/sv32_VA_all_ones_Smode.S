@@ -130,7 +130,7 @@ RVTEST_DATA_BEGIN
 //                                            PHYSICAL ADDRESS REGIONS FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 // This region will be used to Store and then Load from the last byte
-.align 12
+.p2align 12
 rvtest_data_1_l0_rw:
   nop
   addi a4, a2, REGWIDTH
@@ -142,7 +142,7 @@ rvtest_data_1_l0_rw:
   .word 0xbeefcaf3
 
 // This region will be used to execute the last instruction at (4KB - 4)
-.align 12
+.p2align 12
 rvtest_data_1_l0_x:
   nop
   addi a4, a2, REGWIDTH
@@ -156,7 +156,7 @@ rvtest_data_1_l0_x:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 // Page Table
-.align 12
+.p2align 12
 rvtest_slvl0_pg_tbl:
     .skip(4096)
 

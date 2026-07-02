@@ -123,8 +123,8 @@ test_104_str: .string "\"test: 104; cp: cp_csr_walk_test_104\""
 test_105_str: .string "\"test: 105; cp: cp_csr_walk_test_105\""
 test_106_str: .string "\"test: 106; cp: cp_csr_walk_test_106\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jr ra
 

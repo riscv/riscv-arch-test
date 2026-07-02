@@ -278,7 +278,7 @@ exit:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpzca_legal_lxwr_sw\""
@@ -287,12 +287,12 @@ test_3_str: .string "\"test: 3; cp: pmpzca_legal_lxwr_c.jalr\""
 test_4_str: .string "\"test: 4; cp: pmpzca_legal_lxwr_sd\""
 test_5_str: .string "\"test: 5; cp: pmpzca_legal_lxwr_ld\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jalr x0, x1, 0
 
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<UDB_PMP_GRANULARITY)
     c.nop

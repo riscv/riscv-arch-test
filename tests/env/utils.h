@@ -363,10 +363,10 @@
   .ifnc(reg, X0)    ;\
     .option push    ;\
     .option rvc     ;\
-    .align UNROLLSZ ;\
+    .p2align UNROLLSZ ;\
     .option norvc   ;\
     la reg,val      ;\
-    .align UNROLLSZ ;\
+    .p2align UNROLLSZ ;\
     .option pop     ;\
   .endif
 

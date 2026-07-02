@@ -110,7 +110,7 @@ test_4_str: .string "\"test: 4; cp: cp_csr_walk\""
 test_5_str: .string "\"test: 5; cp: cp_csr_walk\""
 test_6_str: .string "\"test: 6; cp: cp_csr_walk\""
 
-.align 12
+.p2align 12
 TEST_FOR_EXECUTION_0:
     .rept 1024
     jr ra

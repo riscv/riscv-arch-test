@@ -183,8 +183,8 @@ test_8_str: .string "\"test: 7; cp: cp_csr_walk_test_8\""
 test_9_str: .string "\"test: 7; cp: cp_csr_walk_test_9\""
 test_10_str: .string "\"test: 7; cp: cp_csr_walk_test_10\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jr ra
 

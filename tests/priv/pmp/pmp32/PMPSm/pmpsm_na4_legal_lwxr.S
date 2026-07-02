@@ -225,7 +225,7 @@ main:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpm_aligned_sw_address\""
@@ -237,13 +237,13 @@ test_4_str: .string "\"test: 4; cp: pmpm_aligned_lw_address-4\""
 test_5_str: .string "\"test: 5; cp: pmpm_aligned_sw_address+4\""
 test_6_str: .string "\"test: 6; cp: pmpm_aligned_lw_address+4\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     .rept 1024
     jr ra
     .endr
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

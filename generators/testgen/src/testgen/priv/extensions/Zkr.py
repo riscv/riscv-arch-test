@@ -10,6 +10,7 @@
 
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -219,11 +220,13 @@ def _generate_seed_illegal_csr_op_tests(test_data: TestData) -> list[str]:
         "#endif",
     ],
 )
-def make_zkr(test_data: TestData) -> list[str]:
+def make_zkr(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Zkr"""
-    lines: list[str] = []
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
 
-    lines.extend(_generate_seed_csrrw_tests(test_data))
-    lines.extend(_generate_seed_illegal_csr_op_tests(test_data))
+    tc.code.extend(_generate_seed_csrrw_tests(test_data))
+    tc.code.extend(_generate_seed_illegal_csr_op_tests(test_data))
 
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

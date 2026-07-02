@@ -31,7 +31,7 @@ covergroup Svbare_cg with function sample(ins_t ins);
         bins set = {1};
     }
 
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         satp_bare: coverpoint ins.current.csr[CSR_SATP][63:60] {
             bins bare = {4'b0000};
         }

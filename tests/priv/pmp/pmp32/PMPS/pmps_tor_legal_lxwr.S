@@ -26,7 +26,7 @@
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv32i_zicsr
+# MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "pmps_tor_legal_lxwr.S"
@@ -40,9 +40,11 @@
 
 RVTEST_BEGIN
 
-#define g    (1<<(RVMODEL_PMP_GRAIN+2))
+#define g    (1<<(UDB_PMP_GRANULARITY))
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
+
+    RVMODEL_FENCEI
 
     LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     // Execution Access Check
@@ -193,14 +195,14 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/4
+    .rept UDB_NUM_PMP_ENTRIES/4
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+1
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -335,7 +337,7 @@ exit:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str:  .string "\"test: 1;  cp: cp_cfg_A_tor_sw_address\""
@@ -356,15 +358,18 @@ test_13_str: .string "\"test: 13; cp: cp_cfg_A_tor_jalr_address+4\""
 test_14_str: .string "\"test: 14; cp: cp_cfg_A_tor_jalr_address+g-4\""
 test_15_str: .string "\"test: 15; cp: cp_cfg_A_tor_jalr_address+g\""
 
-.align 12
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
     jr ra
-
-TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
-    nop
     .endr
 
+.p2align (UDB_PMP_GRANULARITY)
+TEST_FOR_EXECUTION:
+    .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
+    jr ra
+    .endr
 
 RETURN_INSTRUCTION:
     nop

@@ -17,7 +17,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv48, Zicbop]
-# MARCH: rv64i_zicsr_zicbop
+# MARCH: rv64i_zicsr_zifencei_zicbop
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv48_zicbop_Umode.S"
@@ -82,7 +82,7 @@ main:
 
   // Save area setup for code region
   csrr a0, mscratch
-  SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code)
+  SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL3)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                               Test Cases Start from here
@@ -161,7 +161,7 @@ RVTEST_DATA_BEGIN
 //                                            PHYSICAL ADDRESS REGION FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 // Physical Address region under testing for LEVEL 0, 1, 2 and 3
-.align 12
+.p2align 12
 rvtest_data_1:
   nop
   addi a4, a2, 4
@@ -175,7 +175,7 @@ rvtest_data_1:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 // Page Tables
-.align 12
+.p2align 12
 rvtest_slvl0_pg_tbl:
     .skip(4096)
 rvtest_slvl1_pg_tbl:

@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I']
 # params:
 #   MXLEN: 32
-# MARCH: rv32i_zicsr
+# MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -4333,21 +4333,21 @@ I_bltu_cg_cp_imm_edges_branch_all:
   addi x9, x9, 16 # should happen
 
 # branch forward by 2048
-  .align 11 # align to 2048 bytes
+  .p2align 11 # align to 2048 bytes
   bltu x29, x23, 4f
   addi x9, x9, -32 # shouldn't happen
   j 19f # shouldn't happen
-  .align 11 # align to 2048 bytes
+  .p2align 11 # align to 2048 bytes
 4:
   addi x9, x9, 64 # should happen
 
 # branch forward by 4092
-  .align 12 # align to 4096 bytes
+  .p2align 12 # align to 4096 bytes
   nop # use up 4 bytes
   bltu x29, x23, 5f
   addi x9, x9, -128 # shouldn't happen
   j 19f # shouldn't happen
-  .align 12 # align to 4096 bytes
+  .p2align 12 # align to 4096 bytes
 5:
   addi x9, x9, 256 # should happen
 
@@ -4371,11 +4371,11 @@ I_bltu_cg_cp_imm_edges_branch_all:
   j 19f # shouldn't happen
 
 # backward branch by 4096
-  .align 12 # align to 4096 bytes
+  .p2align 12 # align to 4096 bytes
 10:
   addi x9, x9, 1 # should happen
   j 20f # backward branch succeeded
-  .align 12 # align to 4096 bytes
+  .p2align 12 # align to 4096 bytes
 11:
   .insn 0x817ee063 # bltu x29, x23, -4096; GCC is turning this into a small branch and a jump
   addi x9, x9, 300 # shouldn't happen

@@ -28,7 +28,7 @@
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv32i_zicsr
+# MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "pmpsm_csr_walk-08.S"
@@ -48,62 +48,50 @@ main:
     RVTEST_GOTO_MMODE
 
     // -----------------------------------------------------------------------
-    // Walking ones through even pmpcfg registers (pmpcfg0, pmpcfg2, ...).
-    //
-    // The original test writes walking ones only to even-numbered pmpcfg
-    // registers (pmpcfg0, pmpcfg2, and — for 64-PMP systems — pmpcfg4 through
-    // pmpcfg14).  Odd registers (pmpcfg1, pmpcfg3, ...) are RV32 aliases and
-    // are intentionally left out, matching original behaviour.
-    //
-    // RVMODEL_NUM_PMPS/8 gives the count of even cfg registers:
+    // UDB_NUM_PMP_ENTRIES/8 gives the count of even cfg registers:
     //   16 PMPs → 2 even regs (pmpcfg0, pmpcfg2)
     //   64 PMPs → 8 even regs (pmpcfg0 .. pmpcfg14, step 2)
     // -----------------------------------------------------------------------
 
     // --- pmpcfg even walking ones, bit 17 ---
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
-1:  li t2, (1 << 17)
-    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_1_str)
-    .set pmpcfgi, pmpcfgi+2
-    .endr
+    // Skipped, R=0,W=1 is reserved
 
     // --- pmpcfg even walking ones, bit 18 ---
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
-1:  li t2, (1 << 18)
+    .rept UDB_NUM_PMP_ENTRIES/8
+1:  LI(t2, 1 << 18)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_2_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 19 ---
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
-1:  li t2, (1 << 19)
+    .rept UDB_NUM_PMP_ENTRIES/8
+1:  LI(t2, 1 << 19)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_3_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 21 ---
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
-1:  li t2, (1 << 21)
+    .rept UDB_NUM_PMP_ENTRIES/8
+1:  LI(t2, 1 << 21)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_4_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 22 ---
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
-1:  li t2, (1 << 22)
+    .rept UDB_NUM_PMP_ENTRIES/8
+1:  LI(t2, 1 << 22)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_5_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 23 ---
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
-1:  li t2, (1 << 23)
+    .rept UDB_NUM_PMP_ENTRIES/8
+1:  LI(t2, 1 << 23)
     RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_6_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
@@ -121,12 +109,14 @@ test_4_str: .string "\"test: 4; cp: cp_csr_walk\""
 test_5_str: .string "\"test: 5; cp: cp_csr_walk\""
 test_6_str: .string "\"test: 6; cp: cp_csr_walk\""
 
-.align 12
+.p2align 12
 TEST_FOR_EXECUTION_0:
+    .rept 1024
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept (1<<(UDB_PMP_GRANULARITY))
     nop
     .endr
 

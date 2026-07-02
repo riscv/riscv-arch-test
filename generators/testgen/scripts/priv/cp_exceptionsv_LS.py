@@ -34,11 +34,13 @@ def _build_testline(instruction: str, instruction_data: list, maskval: str | Non
             testline += f"v{vec_data[arg]['reg']}"
         elif arg[0] == "r":
             if arg == "rs1" and instruction in common.vector_ls_ins:
-                # Use random_mask_0 as valid address (vector_ls_random_base
+                # Use random_mask_x as valid address (vector_ls_random_base
                 # isn't available in priv tests). The randomly chosen rs1
-                # holds the address.
+                # holds the address. Stores can overwrite this value, so
+                # we separate the values used for loads and stores
+                rs1_val_ptr = "random_mask_1" if instruction in common.vector_stores else "random_mask_0"
                 reg = scalar_data[arg]["reg"]
-                common.writeLine(f"la x{reg}, random_mask_0", "# rs1 = valid memory address")
+                common.writeLine(f"la x{reg}, {rs1_val_ptr}", "# rs1 = valid memory address")
                 testline += f"(x{reg})"
             else:
                 common.loadScalarReg(arg, scalar_data)
@@ -100,20 +102,24 @@ def _emit_setup(instruction: str, instruction_data: list, sew: int) -> int:
     # garbage — otherwise the signature differs from the generator's expected value.
     vs1_sew = sew * 2 if instruction in common.wvsins else sew
     common.writeLine(f"la x{scratch}, random_mask_0", "# valid data address")
+    scratch2 = common.pickPrivScratch(scalar_data, exclude=(scratch,))
     if "vd" in args:
-        common.writeLine(f"vsetivli x0, 1, e{vd_sew}, m1, tu, mu", "# init vd at vd EEW")
-        common.writeLine(f"vle{vd_sew}.v v{vd_reg}, (x{scratch})", f"# initialize vd (v{vd_reg})")
+        common.writeLine(f"vsetvli x{scratch2}, x0, e{vd_sew}, m1, tu, mu", "# init vd at vd EEW")
+        # for segment in range(vec_data['vd']['segments']):
+        for segment in range(common.getInstructionSegments(instruction)):
+            common.writeLine(f"vle{vd_sew}.v v{vd_reg + segment}, (x{scratch})", f"# initialize vd (v{vd_reg})")
     if "vs2" in args:
-        common.writeLine(f"vsetivli x0, 1, e{vs2_sew}, m1, tu, mu", "# init vs2 at vs2 EEW")
+        common.writeLine(f"vsetvli x{scratch2}, x0, e{vs2_sew}, m1, tu, mu", "# init vs2 at vs2 EEW")
         common.writeLine(f"vle{vs2_sew}.v v{vs2_reg}, (x{scratch})", f"# initialize vs2 (v{vs2_reg})")
     if "vs1" in args and vs1_reg is not None and vs1_sew != sew:
-        common.writeLine(f"vsetivli x0, 1, e{vs1_sew}, m1, tu, mu", "# init vs1 at vs1 EEW")
+        common.writeLine(f"vsetvli x{scratch2}, x0, e{vs1_sew}, m1, tu, mu", "# init vs1 at vs1 EEW")
         common.writeLine(f"vle{vs1_sew}.v v{vs1_reg}, (x{scratch})", f"# initialize vs1 (v{vs1_reg})")
-    common.writeLine(f"vsetivli x0, 1, e{sew}, m1, tu, mu", "# vill=0, vstart=0, vl=1")
+    common.writeLine(f"vsetvli x{scratch2}, x0, e{sew}, m1, tu, mu", "# vill=0, vstart=0, vl=VLMAX")
     if "vs3" in args:
         common.writeLine(f"vle{sew}.v v{vs3_reg}, (x{scratch})", f"# initialize vs3 (v{vs3_reg})")
     if "vs1" in args and vs1_reg is not None and vs1_sew == sew:
         common.writeLine(f"vle{sew}.v v{vs1_reg}, (x{scratch})", f"# initialize vs1 (v{vs1_reg})")
+    common.writeLine(f"vsetivli x0, 1, e{sew}, m1, tu, mu", "# vill=0, vstart=0, vl=1")
     # Indexed LS: vs2 holds byte offsets from rs1 (random_mask_0). The vle above
     # left vs2 holding random data, which produces huge byte offsets that land
     # outside mapped memory and trap as load/store access fault. Replace vs2[0]
@@ -140,9 +146,13 @@ def _emit_setup(instruction: str, instruction_data: list, sew: int) -> int:
         if scalar_data.get(k) and scalar_data[k].get("reg") is not None
     ]
     reserved_for_fp = list(common.PRIV_RESERVED_SCALAR_REGS) + operand_regs
+    # FP scalar precision comes from the priv suite's FP SEW (e.g. ExceptionsVf16=16),
+    # not the vector SEW: arithmetic FP instructions have no eew_ins entry, so the
+    # caller's `sew` falls back to minSEW_MIN=8, which has no flh/flw/fld mapping.
+    fp_sew = common.getPrivFpSew() or sew
     for fp_arg in ("fs1", "fs2", "fs3"):
         if fp_arg in args and fp_arg in fp_data and fp_data[fp_arg].get("reg") is not None:
-            common.loadFloatReg(sew, fp_arg, fp_data, *reserved_for_fp)
+            common.loadFloatReg(fp_sew, fp_arg, fp_data, *reserved_for_fp)
     return scratch
 
 

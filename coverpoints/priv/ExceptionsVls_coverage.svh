@@ -12,6 +12,13 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_EXCEPTIONSVLS
+`define COVER_EXCEPTIONSVLSCUSTOMEFFEW
+`ifdef UDB_ELEN_EFFEW
+    `define SEW_EFFEW_EQ_ELEN
+`endif
+`ifdef UDB_ELEN_TWOEFFEW
+    `define SEW_EFFEW_EQ_ELEN_DIV_2
+`endif
 covergroup ExceptionsVls_vl1re16_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -36,7 +43,7 @@ covergroup ExceptionsVls_vl1re16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -44,7 +51,7 @@ covergroup ExceptionsVls_vl1re16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -66,7 +73,7 @@ covergroup ExceptionsVls_vl1re16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -130,7 +137,7 @@ covergroup ExceptionsVls_vl1re32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -138,7 +145,7 @@ covergroup ExceptionsVls_vl1re32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -160,7 +167,7 @@ covergroup ExceptionsVls_vl1re32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -224,7 +231,7 @@ covergroup ExceptionsVls_vl1re64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -232,7 +239,7 @@ covergroup ExceptionsVls_vl1re64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -254,7 +261,7 @@ covergroup ExceptionsVls_vl1re64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -318,7 +325,7 @@ covergroup ExceptionsVls_vl1re8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -326,7 +333,7 @@ covergroup ExceptionsVls_vl1re8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -348,7 +355,7 @@ covergroup ExceptionsVls_vl1re8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -412,7 +419,7 @@ covergroup ExceptionsVls_vl2re16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -420,7 +427,7 @@ covergroup ExceptionsVls_vl2re16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -442,7 +449,7 @@ covergroup ExceptionsVls_vl2re16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -506,7 +513,7 @@ covergroup ExceptionsVls_vl2re32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -514,7 +521,7 @@ covergroup ExceptionsVls_vl2re32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -536,7 +543,7 @@ covergroup ExceptionsVls_vl2re32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -600,7 +607,7 @@ covergroup ExceptionsVls_vl2re64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -608,7 +615,7 @@ covergroup ExceptionsVls_vl2re64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -630,7 +637,7 @@ covergroup ExceptionsVls_vl2re64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -694,7 +701,7 @@ covergroup ExceptionsVls_vl2re8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -702,7 +709,7 @@ covergroup ExceptionsVls_vl2re8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -724,7 +731,7 @@ covergroup ExceptionsVls_vl2re8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -788,7 +795,7 @@ covergroup ExceptionsVls_vl4re16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -796,7 +803,7 @@ covergroup ExceptionsVls_vl4re16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -818,7 +825,7 @@ covergroup ExceptionsVls_vl4re16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -882,7 +889,7 @@ covergroup ExceptionsVls_vl4re32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -890,7 +897,7 @@ covergroup ExceptionsVls_vl4re32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -912,7 +919,7 @@ covergroup ExceptionsVls_vl4re32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -976,7 +983,7 @@ covergroup ExceptionsVls_vl4re64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -984,7 +991,7 @@ covergroup ExceptionsVls_vl4re64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -1006,7 +1013,7 @@ covergroup ExceptionsVls_vl4re64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -1070,7 +1077,7 @@ covergroup ExceptionsVls_vl4re8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -1078,7 +1085,7 @@ covergroup ExceptionsVls_vl4re8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -1100,7 +1107,7 @@ covergroup ExceptionsVls_vl4re8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -1164,7 +1171,7 @@ covergroup ExceptionsVls_vl8re16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -1172,7 +1179,7 @@ covergroup ExceptionsVls_vl8re16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -1194,7 +1201,7 @@ covergroup ExceptionsVls_vl8re16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -1258,7 +1265,7 @@ covergroup ExceptionsVls_vl8re32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -1266,7 +1273,7 @@ covergroup ExceptionsVls_vl8re32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -1288,7 +1295,7 @@ covergroup ExceptionsVls_vl8re32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -1352,7 +1359,7 @@ covergroup ExceptionsVls_vl8re64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -1360,7 +1367,7 @@ covergroup ExceptionsVls_vl8re64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -1382,7 +1389,7 @@ covergroup ExceptionsVls_vl8re64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -1446,7 +1453,7 @@ covergroup ExceptionsVls_vl8re8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -1454,7 +1461,7 @@ covergroup ExceptionsVls_vl8re8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -1476,7 +1483,7 @@ covergroup ExceptionsVls_vl8re8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -1540,7 +1547,7 @@ covergroup ExceptionsVls_vle16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -1548,7 +1555,7 @@ covergroup ExceptionsVls_vle16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -1570,7 +1577,7 @@ covergroup ExceptionsVls_vle16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -1634,7 +1641,7 @@ covergroup ExceptionsVls_vle16ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -1642,7 +1649,7 @@ covergroup ExceptionsVls_vle16ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -1664,7 +1671,7 @@ covergroup ExceptionsVls_vle16ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -1747,7 +1754,7 @@ covergroup ExceptionsVls_vle32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -1755,7 +1762,7 @@ covergroup ExceptionsVls_vle32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -1777,7 +1784,7 @@ covergroup ExceptionsVls_vle32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -1841,7 +1848,7 @@ covergroup ExceptionsVls_vle32ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -1849,7 +1856,7 @@ covergroup ExceptionsVls_vle32ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -1871,7 +1878,7 @@ covergroup ExceptionsVls_vle32ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -1954,7 +1961,7 @@ covergroup ExceptionsVls_vle64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -1962,7 +1969,7 @@ covergroup ExceptionsVls_vle64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -1984,7 +1991,7 @@ covergroup ExceptionsVls_vle64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -2048,7 +2055,7 @@ covergroup ExceptionsVls_vle64ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -2056,7 +2063,7 @@ covergroup ExceptionsVls_vle64ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -2078,7 +2085,7 @@ covergroup ExceptionsVls_vle64ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -2161,7 +2168,7 @@ covergroup ExceptionsVls_vle8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -2169,7 +2176,7 @@ covergroup ExceptionsVls_vle8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -2191,7 +2198,7 @@ covergroup ExceptionsVls_vle8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -2255,7 +2262,7 @@ covergroup ExceptionsVls_vle8ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -2263,7 +2270,7 @@ covergroup ExceptionsVls_vle8ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -2285,7 +2292,7 @@ covergroup ExceptionsVls_vle8ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -2368,7 +2375,7 @@ covergroup ExceptionsVls_vlm_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -2376,7 +2383,7 @@ covergroup ExceptionsVls_vlm_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -2398,7 +2405,7 @@ covergroup ExceptionsVls_vlm_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -2462,7 +2469,7 @@ covergroup ExceptionsVls_vloxei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -2470,7 +2477,7 @@ covergroup ExceptionsVls_vloxei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -2492,7 +2499,7 @@ covergroup ExceptionsVls_vloxei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -2596,7 +2603,7 @@ covergroup ExceptionsVls_vloxei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -2604,7 +2611,7 @@ covergroup ExceptionsVls_vloxei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -2626,7 +2633,7 @@ covergroup ExceptionsVls_vloxei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -2706,6 +2713,7 @@ covergroup ExceptionsVls_vloxei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vloxei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -2730,7 +2738,7 @@ covergroup ExceptionsVls_vloxei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -2738,7 +2746,7 @@ covergroup ExceptionsVls_vloxei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -2760,7 +2768,7 @@ covergroup ExceptionsVls_vloxei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -2840,6 +2848,7 @@ covergroup ExceptionsVls_vloxei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vloxei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -2864,7 +2873,7 @@ covergroup ExceptionsVls_vloxei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -2872,7 +2881,7 @@ covergroup ExceptionsVls_vloxei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -2894,7 +2903,7 @@ covergroup ExceptionsVls_vloxei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -2980,7 +2989,7 @@ covergroup ExceptionsVls_vloxseg2ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -2988,7 +2997,7 @@ covergroup ExceptionsVls_vloxseg2ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -3010,7 +3019,7 @@ covergroup ExceptionsVls_vloxseg2ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -3114,7 +3123,7 @@ covergroup ExceptionsVls_vloxseg2ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -3122,7 +3131,7 @@ covergroup ExceptionsVls_vloxseg2ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -3144,7 +3153,7 @@ covergroup ExceptionsVls_vloxseg2ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -3224,6 +3233,7 @@ covergroup ExceptionsVls_vloxseg2ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vloxseg2ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -3248,7 +3258,7 @@ covergroup ExceptionsVls_vloxseg2ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -3256,7 +3266,7 @@ covergroup ExceptionsVls_vloxseg2ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -3278,7 +3288,7 @@ covergroup ExceptionsVls_vloxseg2ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -3358,6 +3368,7 @@ covergroup ExceptionsVls_vloxseg2ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vloxseg2ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -3382,7 +3393,7 @@ covergroup ExceptionsVls_vloxseg2ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -3390,7 +3401,7 @@ covergroup ExceptionsVls_vloxseg2ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -3412,7 +3423,7 @@ covergroup ExceptionsVls_vloxseg2ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -3498,7 +3509,7 @@ covergroup ExceptionsVls_vloxseg3ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -3506,7 +3517,7 @@ covergroup ExceptionsVls_vloxseg3ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -3528,7 +3539,7 @@ covergroup ExceptionsVls_vloxseg3ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -3632,7 +3643,7 @@ covergroup ExceptionsVls_vloxseg3ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -3640,7 +3651,7 @@ covergroup ExceptionsVls_vloxseg3ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -3662,7 +3673,7 @@ covergroup ExceptionsVls_vloxseg3ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -3742,6 +3753,7 @@ covergroup ExceptionsVls_vloxseg3ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vloxseg3ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -3766,7 +3778,7 @@ covergroup ExceptionsVls_vloxseg3ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -3774,7 +3786,7 @@ covergroup ExceptionsVls_vloxseg3ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -3796,7 +3808,7 @@ covergroup ExceptionsVls_vloxseg3ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -3876,6 +3888,7 @@ covergroup ExceptionsVls_vloxseg3ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vloxseg3ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -3900,7 +3913,7 @@ covergroup ExceptionsVls_vloxseg3ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -3908,7 +3921,7 @@ covergroup ExceptionsVls_vloxseg3ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -3930,7 +3943,7 @@ covergroup ExceptionsVls_vloxseg3ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -4016,7 +4029,7 @@ covergroup ExceptionsVls_vloxseg4ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -4024,7 +4037,7 @@ covergroup ExceptionsVls_vloxseg4ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -4046,7 +4059,7 @@ covergroup ExceptionsVls_vloxseg4ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -4150,7 +4163,7 @@ covergroup ExceptionsVls_vloxseg4ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -4158,7 +4171,7 @@ covergroup ExceptionsVls_vloxseg4ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -4180,7 +4193,7 @@ covergroup ExceptionsVls_vloxseg4ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -4260,6 +4273,7 @@ covergroup ExceptionsVls_vloxseg4ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vloxseg4ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -4284,7 +4298,7 @@ covergroup ExceptionsVls_vloxseg4ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -4292,7 +4306,7 @@ covergroup ExceptionsVls_vloxseg4ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -4314,7 +4328,7 @@ covergroup ExceptionsVls_vloxseg4ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -4394,6 +4408,7 @@ covergroup ExceptionsVls_vloxseg4ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vloxseg4ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -4418,7 +4433,7 @@ covergroup ExceptionsVls_vloxseg4ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -4426,7 +4441,7 @@ covergroup ExceptionsVls_vloxseg4ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -4448,7 +4463,7 @@ covergroup ExceptionsVls_vloxseg4ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -4534,7 +4549,7 @@ covergroup ExceptionsVls_vloxseg5ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -4542,7 +4557,7 @@ covergroup ExceptionsVls_vloxseg5ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -4564,7 +4579,7 @@ covergroup ExceptionsVls_vloxseg5ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -4668,7 +4683,7 @@ covergroup ExceptionsVls_vloxseg5ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -4676,7 +4691,7 @@ covergroup ExceptionsVls_vloxseg5ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -4698,7 +4713,7 @@ covergroup ExceptionsVls_vloxseg5ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -4778,6 +4793,7 @@ covergroup ExceptionsVls_vloxseg5ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vloxseg5ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -4802,7 +4818,7 @@ covergroup ExceptionsVls_vloxseg5ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -4810,7 +4826,7 @@ covergroup ExceptionsVls_vloxseg5ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -4832,7 +4848,7 @@ covergroup ExceptionsVls_vloxseg5ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -4912,6 +4928,7 @@ covergroup ExceptionsVls_vloxseg5ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vloxseg5ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -4936,7 +4953,7 @@ covergroup ExceptionsVls_vloxseg5ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -4944,7 +4961,7 @@ covergroup ExceptionsVls_vloxseg5ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -4966,7 +4983,7 @@ covergroup ExceptionsVls_vloxseg5ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -5052,7 +5069,7 @@ covergroup ExceptionsVls_vloxseg6ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -5060,7 +5077,7 @@ covergroup ExceptionsVls_vloxseg6ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -5082,7 +5099,7 @@ covergroup ExceptionsVls_vloxseg6ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -5186,7 +5203,7 @@ covergroup ExceptionsVls_vloxseg6ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -5194,7 +5211,7 @@ covergroup ExceptionsVls_vloxseg6ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -5216,7 +5233,7 @@ covergroup ExceptionsVls_vloxseg6ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -5296,6 +5313,7 @@ covergroup ExceptionsVls_vloxseg6ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vloxseg6ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -5320,7 +5338,7 @@ covergroup ExceptionsVls_vloxseg6ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -5328,7 +5346,7 @@ covergroup ExceptionsVls_vloxseg6ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -5350,7 +5368,7 @@ covergroup ExceptionsVls_vloxseg6ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -5430,6 +5448,7 @@ covergroup ExceptionsVls_vloxseg6ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vloxseg6ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -5454,7 +5473,7 @@ covergroup ExceptionsVls_vloxseg6ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -5462,7 +5481,7 @@ covergroup ExceptionsVls_vloxseg6ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -5484,7 +5503,7 @@ covergroup ExceptionsVls_vloxseg6ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -5570,7 +5589,7 @@ covergroup ExceptionsVls_vloxseg7ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -5578,7 +5597,7 @@ covergroup ExceptionsVls_vloxseg7ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -5600,7 +5619,7 @@ covergroup ExceptionsVls_vloxseg7ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -5704,7 +5723,7 @@ covergroup ExceptionsVls_vloxseg7ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -5712,7 +5731,7 @@ covergroup ExceptionsVls_vloxseg7ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -5734,7 +5753,7 @@ covergroup ExceptionsVls_vloxseg7ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -5814,6 +5833,7 @@ covergroup ExceptionsVls_vloxseg7ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vloxseg7ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -5838,7 +5858,7 @@ covergroup ExceptionsVls_vloxseg7ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -5846,7 +5866,7 @@ covergroup ExceptionsVls_vloxseg7ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -5868,7 +5888,7 @@ covergroup ExceptionsVls_vloxseg7ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -5948,6 +5968,7 @@ covergroup ExceptionsVls_vloxseg7ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vloxseg7ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -5972,7 +5993,7 @@ covergroup ExceptionsVls_vloxseg7ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -5980,7 +6001,7 @@ covergroup ExceptionsVls_vloxseg7ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -6002,7 +6023,7 @@ covergroup ExceptionsVls_vloxseg7ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -6088,7 +6109,7 @@ covergroup ExceptionsVls_vloxseg8ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -6096,7 +6117,7 @@ covergroup ExceptionsVls_vloxseg8ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -6118,7 +6139,7 @@ covergroup ExceptionsVls_vloxseg8ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -6222,7 +6243,7 @@ covergroup ExceptionsVls_vloxseg8ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -6230,7 +6251,7 @@ covergroup ExceptionsVls_vloxseg8ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -6252,7 +6273,7 @@ covergroup ExceptionsVls_vloxseg8ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -6332,6 +6353,7 @@ covergroup ExceptionsVls_vloxseg8ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vloxseg8ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -6356,7 +6378,7 @@ covergroup ExceptionsVls_vloxseg8ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -6364,7 +6386,7 @@ covergroup ExceptionsVls_vloxseg8ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -6386,7 +6408,7 @@ covergroup ExceptionsVls_vloxseg8ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -6466,6 +6488,7 @@ covergroup ExceptionsVls_vloxseg8ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vloxseg8ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -6490,7 +6513,7 @@ covergroup ExceptionsVls_vloxseg8ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -6498,7 +6521,7 @@ covergroup ExceptionsVls_vloxseg8ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -6520,7 +6543,7 @@ covergroup ExceptionsVls_vloxseg8ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -6606,7 +6629,7 @@ covergroup ExceptionsVls_vlse16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -6614,7 +6637,7 @@ covergroup ExceptionsVls_vlse16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -6636,7 +6659,7 @@ covergroup ExceptionsVls_vlse16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -6700,7 +6723,7 @@ covergroup ExceptionsVls_vlse32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -6708,7 +6731,7 @@ covergroup ExceptionsVls_vlse32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -6730,7 +6753,7 @@ covergroup ExceptionsVls_vlse32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -6794,7 +6817,7 @@ covergroup ExceptionsVls_vlse64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -6802,7 +6825,7 @@ covergroup ExceptionsVls_vlse64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -6824,7 +6847,7 @@ covergroup ExceptionsVls_vlse64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -6888,7 +6911,7 @@ covergroup ExceptionsVls_vlse8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -6896,7 +6919,7 @@ covergroup ExceptionsVls_vlse8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -6918,7 +6941,7 @@ covergroup ExceptionsVls_vlse8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -6982,7 +7005,7 @@ covergroup ExceptionsVls_vlseg2e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -6990,7 +7013,7 @@ covergroup ExceptionsVls_vlseg2e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -7012,7 +7035,7 @@ covergroup ExceptionsVls_vlseg2e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -7076,7 +7099,7 @@ covergroup ExceptionsVls_vlseg2e16ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -7084,7 +7107,7 @@ covergroup ExceptionsVls_vlseg2e16ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -7106,7 +7129,7 @@ covergroup ExceptionsVls_vlseg2e16ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -7189,7 +7212,7 @@ covergroup ExceptionsVls_vlseg2e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -7197,7 +7220,7 @@ covergroup ExceptionsVls_vlseg2e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -7219,7 +7242,7 @@ covergroup ExceptionsVls_vlseg2e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -7283,7 +7306,7 @@ covergroup ExceptionsVls_vlseg2e32ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -7291,7 +7314,7 @@ covergroup ExceptionsVls_vlseg2e32ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -7313,7 +7336,7 @@ covergroup ExceptionsVls_vlseg2e32ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -7396,7 +7419,7 @@ covergroup ExceptionsVls_vlseg2e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -7404,7 +7427,7 @@ covergroup ExceptionsVls_vlseg2e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -7426,7 +7449,7 @@ covergroup ExceptionsVls_vlseg2e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -7490,7 +7513,7 @@ covergroup ExceptionsVls_vlseg2e64ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -7498,7 +7521,7 @@ covergroup ExceptionsVls_vlseg2e64ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -7520,7 +7543,7 @@ covergroup ExceptionsVls_vlseg2e64ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -7603,7 +7626,7 @@ covergroup ExceptionsVls_vlseg2e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -7611,7 +7634,7 @@ covergroup ExceptionsVls_vlseg2e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -7633,7 +7656,7 @@ covergroup ExceptionsVls_vlseg2e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -7697,7 +7720,7 @@ covergroup ExceptionsVls_vlseg2e8ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -7705,7 +7728,7 @@ covergroup ExceptionsVls_vlseg2e8ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -7727,7 +7750,7 @@ covergroup ExceptionsVls_vlseg2e8ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -7810,7 +7833,7 @@ covergroup ExceptionsVls_vlseg3e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -7818,7 +7841,7 @@ covergroup ExceptionsVls_vlseg3e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -7840,7 +7863,7 @@ covergroup ExceptionsVls_vlseg3e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -7904,7 +7927,7 @@ covergroup ExceptionsVls_vlseg3e16ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -7912,7 +7935,7 @@ covergroup ExceptionsVls_vlseg3e16ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -7934,7 +7957,7 @@ covergroup ExceptionsVls_vlseg3e16ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -8017,7 +8040,7 @@ covergroup ExceptionsVls_vlseg3e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -8025,7 +8048,7 @@ covergroup ExceptionsVls_vlseg3e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -8047,7 +8070,7 @@ covergroup ExceptionsVls_vlseg3e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -8111,7 +8134,7 @@ covergroup ExceptionsVls_vlseg3e32ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -8119,7 +8142,7 @@ covergroup ExceptionsVls_vlseg3e32ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -8141,7 +8164,7 @@ covergroup ExceptionsVls_vlseg3e32ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -8224,7 +8247,7 @@ covergroup ExceptionsVls_vlseg3e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -8232,7 +8255,7 @@ covergroup ExceptionsVls_vlseg3e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -8254,7 +8277,7 @@ covergroup ExceptionsVls_vlseg3e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -8318,7 +8341,7 @@ covergroup ExceptionsVls_vlseg3e64ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -8326,7 +8349,7 @@ covergroup ExceptionsVls_vlseg3e64ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -8348,7 +8371,7 @@ covergroup ExceptionsVls_vlseg3e64ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -8431,7 +8454,7 @@ covergroup ExceptionsVls_vlseg3e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -8439,7 +8462,7 @@ covergroup ExceptionsVls_vlseg3e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -8461,7 +8484,7 @@ covergroup ExceptionsVls_vlseg3e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -8525,7 +8548,7 @@ covergroup ExceptionsVls_vlseg3e8ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -8533,7 +8556,7 @@ covergroup ExceptionsVls_vlseg3e8ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -8555,7 +8578,7 @@ covergroup ExceptionsVls_vlseg3e8ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -8638,7 +8661,7 @@ covergroup ExceptionsVls_vlseg4e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -8646,7 +8669,7 @@ covergroup ExceptionsVls_vlseg4e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -8668,7 +8691,7 @@ covergroup ExceptionsVls_vlseg4e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -8732,7 +8755,7 @@ covergroup ExceptionsVls_vlseg4e16ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -8740,7 +8763,7 @@ covergroup ExceptionsVls_vlseg4e16ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -8762,7 +8785,7 @@ covergroup ExceptionsVls_vlseg4e16ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -8845,7 +8868,7 @@ covergroup ExceptionsVls_vlseg4e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -8853,7 +8876,7 @@ covergroup ExceptionsVls_vlseg4e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -8875,7 +8898,7 @@ covergroup ExceptionsVls_vlseg4e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -8939,7 +8962,7 @@ covergroup ExceptionsVls_vlseg4e32ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -8947,7 +8970,7 @@ covergroup ExceptionsVls_vlseg4e32ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -8969,7 +8992,7 @@ covergroup ExceptionsVls_vlseg4e32ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -9052,7 +9075,7 @@ covergroup ExceptionsVls_vlseg4e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -9060,7 +9083,7 @@ covergroup ExceptionsVls_vlseg4e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -9082,7 +9105,7 @@ covergroup ExceptionsVls_vlseg4e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -9146,7 +9169,7 @@ covergroup ExceptionsVls_vlseg4e64ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -9154,7 +9177,7 @@ covergroup ExceptionsVls_vlseg4e64ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -9176,7 +9199,7 @@ covergroup ExceptionsVls_vlseg4e64ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -9259,7 +9282,7 @@ covergroup ExceptionsVls_vlseg4e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -9267,7 +9290,7 @@ covergroup ExceptionsVls_vlseg4e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -9289,7 +9312,7 @@ covergroup ExceptionsVls_vlseg4e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -9353,7 +9376,7 @@ covergroup ExceptionsVls_vlseg4e8ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -9361,7 +9384,7 @@ covergroup ExceptionsVls_vlseg4e8ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -9383,7 +9406,7 @@ covergroup ExceptionsVls_vlseg4e8ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -9466,7 +9489,7 @@ covergroup ExceptionsVls_vlseg5e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -9474,7 +9497,7 @@ covergroup ExceptionsVls_vlseg5e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -9496,7 +9519,7 @@ covergroup ExceptionsVls_vlseg5e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -9560,7 +9583,7 @@ covergroup ExceptionsVls_vlseg5e16ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -9568,7 +9591,7 @@ covergroup ExceptionsVls_vlseg5e16ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -9590,7 +9613,7 @@ covergroup ExceptionsVls_vlseg5e16ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -9673,7 +9696,7 @@ covergroup ExceptionsVls_vlseg5e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -9681,7 +9704,7 @@ covergroup ExceptionsVls_vlseg5e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -9703,7 +9726,7 @@ covergroup ExceptionsVls_vlseg5e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -9767,7 +9790,7 @@ covergroup ExceptionsVls_vlseg5e32ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -9775,7 +9798,7 @@ covergroup ExceptionsVls_vlseg5e32ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -9797,7 +9820,7 @@ covergroup ExceptionsVls_vlseg5e32ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -9880,7 +9903,7 @@ covergroup ExceptionsVls_vlseg5e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -9888,7 +9911,7 @@ covergroup ExceptionsVls_vlseg5e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -9910,7 +9933,7 @@ covergroup ExceptionsVls_vlseg5e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -9974,7 +9997,7 @@ covergroup ExceptionsVls_vlseg5e64ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -9982,7 +10005,7 @@ covergroup ExceptionsVls_vlseg5e64ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -10004,7 +10027,7 @@ covergroup ExceptionsVls_vlseg5e64ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -10087,7 +10110,7 @@ covergroup ExceptionsVls_vlseg5e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -10095,7 +10118,7 @@ covergroup ExceptionsVls_vlseg5e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -10117,7 +10140,7 @@ covergroup ExceptionsVls_vlseg5e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -10181,7 +10204,7 @@ covergroup ExceptionsVls_vlseg5e8ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -10189,7 +10212,7 @@ covergroup ExceptionsVls_vlseg5e8ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -10211,7 +10234,7 @@ covergroup ExceptionsVls_vlseg5e8ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -10294,7 +10317,7 @@ covergroup ExceptionsVls_vlseg6e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -10302,7 +10325,7 @@ covergroup ExceptionsVls_vlseg6e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -10324,7 +10347,7 @@ covergroup ExceptionsVls_vlseg6e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -10388,7 +10411,7 @@ covergroup ExceptionsVls_vlseg6e16ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -10396,7 +10419,7 @@ covergroup ExceptionsVls_vlseg6e16ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -10418,7 +10441,7 @@ covergroup ExceptionsVls_vlseg6e16ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -10501,7 +10524,7 @@ covergroup ExceptionsVls_vlseg6e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -10509,7 +10532,7 @@ covergroup ExceptionsVls_vlseg6e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -10531,7 +10554,7 @@ covergroup ExceptionsVls_vlseg6e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -10595,7 +10618,7 @@ covergroup ExceptionsVls_vlseg6e32ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -10603,7 +10626,7 @@ covergroup ExceptionsVls_vlseg6e32ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -10625,7 +10648,7 @@ covergroup ExceptionsVls_vlseg6e32ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -10708,7 +10731,7 @@ covergroup ExceptionsVls_vlseg6e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -10716,7 +10739,7 @@ covergroup ExceptionsVls_vlseg6e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -10738,7 +10761,7 @@ covergroup ExceptionsVls_vlseg6e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -10802,7 +10825,7 @@ covergroup ExceptionsVls_vlseg6e64ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -10810,7 +10833,7 @@ covergroup ExceptionsVls_vlseg6e64ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -10832,7 +10855,7 @@ covergroup ExceptionsVls_vlseg6e64ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -10915,7 +10938,7 @@ covergroup ExceptionsVls_vlseg6e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -10923,7 +10946,7 @@ covergroup ExceptionsVls_vlseg6e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -10945,7 +10968,7 @@ covergroup ExceptionsVls_vlseg6e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -11009,7 +11032,7 @@ covergroup ExceptionsVls_vlseg6e8ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -11017,7 +11040,7 @@ covergroup ExceptionsVls_vlseg6e8ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -11039,7 +11062,7 @@ covergroup ExceptionsVls_vlseg6e8ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -11122,7 +11145,7 @@ covergroup ExceptionsVls_vlseg7e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -11130,7 +11153,7 @@ covergroup ExceptionsVls_vlseg7e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -11152,7 +11175,7 @@ covergroup ExceptionsVls_vlseg7e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -11216,7 +11239,7 @@ covergroup ExceptionsVls_vlseg7e16ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -11224,7 +11247,7 @@ covergroup ExceptionsVls_vlseg7e16ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -11246,7 +11269,7 @@ covergroup ExceptionsVls_vlseg7e16ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -11329,7 +11352,7 @@ covergroup ExceptionsVls_vlseg7e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -11337,7 +11360,7 @@ covergroup ExceptionsVls_vlseg7e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -11359,7 +11382,7 @@ covergroup ExceptionsVls_vlseg7e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -11423,7 +11446,7 @@ covergroup ExceptionsVls_vlseg7e32ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -11431,7 +11454,7 @@ covergroup ExceptionsVls_vlseg7e32ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -11453,7 +11476,7 @@ covergroup ExceptionsVls_vlseg7e32ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -11536,7 +11559,7 @@ covergroup ExceptionsVls_vlseg7e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -11544,7 +11567,7 @@ covergroup ExceptionsVls_vlseg7e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -11566,7 +11589,7 @@ covergroup ExceptionsVls_vlseg7e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -11630,7 +11653,7 @@ covergroup ExceptionsVls_vlseg7e64ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -11638,7 +11661,7 @@ covergroup ExceptionsVls_vlseg7e64ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -11660,7 +11683,7 @@ covergroup ExceptionsVls_vlseg7e64ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -11743,7 +11766,7 @@ covergroup ExceptionsVls_vlseg7e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -11751,7 +11774,7 @@ covergroup ExceptionsVls_vlseg7e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -11773,7 +11796,7 @@ covergroup ExceptionsVls_vlseg7e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -11837,7 +11860,7 @@ covergroup ExceptionsVls_vlseg7e8ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -11845,7 +11868,7 @@ covergroup ExceptionsVls_vlseg7e8ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -11867,7 +11890,7 @@ covergroup ExceptionsVls_vlseg7e8ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -11950,7 +11973,7 @@ covergroup ExceptionsVls_vlseg8e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -11958,7 +11981,7 @@ covergroup ExceptionsVls_vlseg8e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -11980,7 +12003,7 @@ covergroup ExceptionsVls_vlseg8e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -12044,7 +12067,7 @@ covergroup ExceptionsVls_vlseg8e16ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -12052,7 +12075,7 @@ covergroup ExceptionsVls_vlseg8e16ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -12074,7 +12097,7 @@ covergroup ExceptionsVls_vlseg8e16ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -12157,7 +12180,7 @@ covergroup ExceptionsVls_vlseg8e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -12165,7 +12188,7 @@ covergroup ExceptionsVls_vlseg8e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -12187,7 +12210,7 @@ covergroup ExceptionsVls_vlseg8e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -12251,7 +12274,7 @@ covergroup ExceptionsVls_vlseg8e32ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -12259,7 +12282,7 @@ covergroup ExceptionsVls_vlseg8e32ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -12281,7 +12304,7 @@ covergroup ExceptionsVls_vlseg8e32ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -12364,7 +12387,7 @@ covergroup ExceptionsVls_vlseg8e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -12372,7 +12395,7 @@ covergroup ExceptionsVls_vlseg8e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -12394,7 +12417,7 @@ covergroup ExceptionsVls_vlseg8e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -12458,7 +12481,7 @@ covergroup ExceptionsVls_vlseg8e64ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -12466,7 +12489,7 @@ covergroup ExceptionsVls_vlseg8e64ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -12488,7 +12511,7 @@ covergroup ExceptionsVls_vlseg8e64ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -12571,7 +12594,7 @@ covergroup ExceptionsVls_vlseg8e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -12579,7 +12602,7 @@ covergroup ExceptionsVls_vlseg8e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -12601,7 +12624,7 @@ covergroup ExceptionsVls_vlseg8e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -12665,7 +12688,7 @@ covergroup ExceptionsVls_vlseg8e8ff_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -12673,7 +12696,7 @@ covergroup ExceptionsVls_vlseg8e8ff_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -12695,7 +12718,7 @@ covergroup ExceptionsVls_vlseg8e8ff_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -12778,7 +12801,7 @@ covergroup ExceptionsVls_vlsseg2e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -12786,7 +12809,7 @@ covergroup ExceptionsVls_vlsseg2e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -12808,7 +12831,7 @@ covergroup ExceptionsVls_vlsseg2e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -12872,7 +12895,7 @@ covergroup ExceptionsVls_vlsseg2e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -12880,7 +12903,7 @@ covergroup ExceptionsVls_vlsseg2e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -12902,7 +12925,7 @@ covergroup ExceptionsVls_vlsseg2e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -12966,7 +12989,7 @@ covergroup ExceptionsVls_vlsseg2e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -12974,7 +12997,7 @@ covergroup ExceptionsVls_vlsseg2e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -12996,7 +13019,7 @@ covergroup ExceptionsVls_vlsseg2e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -13060,7 +13083,7 @@ covergroup ExceptionsVls_vlsseg2e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -13068,7 +13091,7 @@ covergroup ExceptionsVls_vlsseg2e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -13090,7 +13113,7 @@ covergroup ExceptionsVls_vlsseg2e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -13154,7 +13177,7 @@ covergroup ExceptionsVls_vlsseg3e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -13162,7 +13185,7 @@ covergroup ExceptionsVls_vlsseg3e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -13184,7 +13207,7 @@ covergroup ExceptionsVls_vlsseg3e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -13248,7 +13271,7 @@ covergroup ExceptionsVls_vlsseg3e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -13256,7 +13279,7 @@ covergroup ExceptionsVls_vlsseg3e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -13278,7 +13301,7 @@ covergroup ExceptionsVls_vlsseg3e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -13342,7 +13365,7 @@ covergroup ExceptionsVls_vlsseg3e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -13350,7 +13373,7 @@ covergroup ExceptionsVls_vlsseg3e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -13372,7 +13395,7 @@ covergroup ExceptionsVls_vlsseg3e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -13436,7 +13459,7 @@ covergroup ExceptionsVls_vlsseg3e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -13444,7 +13467,7 @@ covergroup ExceptionsVls_vlsseg3e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -13466,7 +13489,7 @@ covergroup ExceptionsVls_vlsseg3e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -13530,7 +13553,7 @@ covergroup ExceptionsVls_vlsseg4e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -13538,7 +13561,7 @@ covergroup ExceptionsVls_vlsseg4e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -13560,7 +13583,7 @@ covergroup ExceptionsVls_vlsseg4e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -13624,7 +13647,7 @@ covergroup ExceptionsVls_vlsseg4e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -13632,7 +13655,7 @@ covergroup ExceptionsVls_vlsseg4e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -13654,7 +13677,7 @@ covergroup ExceptionsVls_vlsseg4e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -13718,7 +13741,7 @@ covergroup ExceptionsVls_vlsseg4e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -13726,7 +13749,7 @@ covergroup ExceptionsVls_vlsseg4e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -13748,7 +13771,7 @@ covergroup ExceptionsVls_vlsseg4e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -13812,7 +13835,7 @@ covergroup ExceptionsVls_vlsseg4e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -13820,7 +13843,7 @@ covergroup ExceptionsVls_vlsseg4e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -13842,7 +13865,7 @@ covergroup ExceptionsVls_vlsseg4e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -13906,7 +13929,7 @@ covergroup ExceptionsVls_vlsseg5e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -13914,7 +13937,7 @@ covergroup ExceptionsVls_vlsseg5e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -13936,7 +13959,7 @@ covergroup ExceptionsVls_vlsseg5e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -14000,7 +14023,7 @@ covergroup ExceptionsVls_vlsseg5e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -14008,7 +14031,7 @@ covergroup ExceptionsVls_vlsseg5e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -14030,7 +14053,7 @@ covergroup ExceptionsVls_vlsseg5e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -14094,7 +14117,7 @@ covergroup ExceptionsVls_vlsseg5e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -14102,7 +14125,7 @@ covergroup ExceptionsVls_vlsseg5e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -14124,7 +14147,7 @@ covergroup ExceptionsVls_vlsseg5e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -14188,7 +14211,7 @@ covergroup ExceptionsVls_vlsseg5e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -14196,7 +14219,7 @@ covergroup ExceptionsVls_vlsseg5e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -14218,7 +14241,7 @@ covergroup ExceptionsVls_vlsseg5e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -14282,7 +14305,7 @@ covergroup ExceptionsVls_vlsseg6e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -14290,7 +14313,7 @@ covergroup ExceptionsVls_vlsseg6e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -14312,7 +14335,7 @@ covergroup ExceptionsVls_vlsseg6e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -14376,7 +14399,7 @@ covergroup ExceptionsVls_vlsseg6e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -14384,7 +14407,7 @@ covergroup ExceptionsVls_vlsseg6e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -14406,7 +14429,7 @@ covergroup ExceptionsVls_vlsseg6e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -14470,7 +14493,7 @@ covergroup ExceptionsVls_vlsseg6e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -14478,7 +14501,7 @@ covergroup ExceptionsVls_vlsseg6e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -14500,7 +14523,7 @@ covergroup ExceptionsVls_vlsseg6e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -14564,7 +14587,7 @@ covergroup ExceptionsVls_vlsseg6e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -14572,7 +14595,7 @@ covergroup ExceptionsVls_vlsseg6e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -14594,7 +14617,7 @@ covergroup ExceptionsVls_vlsseg6e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -14658,7 +14681,7 @@ covergroup ExceptionsVls_vlsseg7e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -14666,7 +14689,7 @@ covergroup ExceptionsVls_vlsseg7e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -14688,7 +14711,7 @@ covergroup ExceptionsVls_vlsseg7e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -14752,7 +14775,7 @@ covergroup ExceptionsVls_vlsseg7e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -14760,7 +14783,7 @@ covergroup ExceptionsVls_vlsseg7e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -14782,7 +14805,7 @@ covergroup ExceptionsVls_vlsseg7e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -14846,7 +14869,7 @@ covergroup ExceptionsVls_vlsseg7e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -14854,7 +14877,7 @@ covergroup ExceptionsVls_vlsseg7e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -14876,7 +14899,7 @@ covergroup ExceptionsVls_vlsseg7e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -14940,7 +14963,7 @@ covergroup ExceptionsVls_vlsseg7e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -14948,7 +14971,7 @@ covergroup ExceptionsVls_vlsseg7e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -14970,7 +14993,7 @@ covergroup ExceptionsVls_vlsseg7e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -15034,7 +15057,7 @@ covergroup ExceptionsVls_vlsseg8e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -15042,7 +15065,7 @@ covergroup ExceptionsVls_vlsseg8e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -15064,7 +15087,7 @@ covergroup ExceptionsVls_vlsseg8e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -15128,7 +15151,7 @@ covergroup ExceptionsVls_vlsseg8e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -15136,7 +15159,7 @@ covergroup ExceptionsVls_vlsseg8e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -15158,7 +15181,7 @@ covergroup ExceptionsVls_vlsseg8e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -15222,7 +15245,7 @@ covergroup ExceptionsVls_vlsseg8e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -15230,7 +15253,7 @@ covergroup ExceptionsVls_vlsseg8e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -15252,7 +15275,7 @@ covergroup ExceptionsVls_vlsseg8e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -15316,7 +15339,7 @@ covergroup ExceptionsVls_vlsseg8e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -15324,7 +15347,7 @@ covergroup ExceptionsVls_vlsseg8e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -15346,7 +15369,7 @@ covergroup ExceptionsVls_vlsseg8e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -15410,7 +15433,7 @@ covergroup ExceptionsVls_vluxei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -15418,7 +15441,7 @@ covergroup ExceptionsVls_vluxei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -15440,7 +15463,7 @@ covergroup ExceptionsVls_vluxei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -15544,7 +15567,7 @@ covergroup ExceptionsVls_vluxei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -15552,7 +15575,7 @@ covergroup ExceptionsVls_vluxei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -15574,7 +15597,7 @@ covergroup ExceptionsVls_vluxei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -15654,6 +15677,7 @@ covergroup ExceptionsVls_vluxei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vluxei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -15678,7 +15702,7 @@ covergroup ExceptionsVls_vluxei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -15686,7 +15710,7 @@ covergroup ExceptionsVls_vluxei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -15708,7 +15732,7 @@ covergroup ExceptionsVls_vluxei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -15788,6 +15812,7 @@ covergroup ExceptionsVls_vluxei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vluxei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -15812,7 +15837,7 @@ covergroup ExceptionsVls_vluxei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -15820,7 +15845,7 @@ covergroup ExceptionsVls_vluxei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -15842,7 +15867,7 @@ covergroup ExceptionsVls_vluxei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -15928,7 +15953,7 @@ covergroup ExceptionsVls_vluxseg2ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -15936,7 +15961,7 @@ covergroup ExceptionsVls_vluxseg2ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -15958,7 +15983,7 @@ covergroup ExceptionsVls_vluxseg2ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -16062,7 +16087,7 @@ covergroup ExceptionsVls_vluxseg2ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -16070,7 +16095,7 @@ covergroup ExceptionsVls_vluxseg2ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -16092,7 +16117,7 @@ covergroup ExceptionsVls_vluxseg2ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -16172,6 +16197,7 @@ covergroup ExceptionsVls_vluxseg2ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vluxseg2ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -16196,7 +16222,7 @@ covergroup ExceptionsVls_vluxseg2ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -16204,7 +16230,7 @@ covergroup ExceptionsVls_vluxseg2ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -16226,7 +16252,7 @@ covergroup ExceptionsVls_vluxseg2ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -16306,6 +16332,7 @@ covergroup ExceptionsVls_vluxseg2ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vluxseg2ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -16330,7 +16357,7 @@ covergroup ExceptionsVls_vluxseg2ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -16338,7 +16365,7 @@ covergroup ExceptionsVls_vluxseg2ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -16360,7 +16387,7 @@ covergroup ExceptionsVls_vluxseg2ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -16446,7 +16473,7 @@ covergroup ExceptionsVls_vluxseg3ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -16454,7 +16481,7 @@ covergroup ExceptionsVls_vluxseg3ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -16476,7 +16503,7 @@ covergroup ExceptionsVls_vluxseg3ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -16580,7 +16607,7 @@ covergroup ExceptionsVls_vluxseg3ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -16588,7 +16615,7 @@ covergroup ExceptionsVls_vluxseg3ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -16610,7 +16637,7 @@ covergroup ExceptionsVls_vluxseg3ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -16690,6 +16717,7 @@ covergroup ExceptionsVls_vluxseg3ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vluxseg3ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -16714,7 +16742,7 @@ covergroup ExceptionsVls_vluxseg3ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -16722,7 +16750,7 @@ covergroup ExceptionsVls_vluxseg3ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -16744,7 +16772,7 @@ covergroup ExceptionsVls_vluxseg3ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -16824,6 +16852,7 @@ covergroup ExceptionsVls_vluxseg3ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vluxseg3ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -16848,7 +16877,7 @@ covergroup ExceptionsVls_vluxseg3ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -16856,7 +16885,7 @@ covergroup ExceptionsVls_vluxseg3ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -16878,7 +16907,7 @@ covergroup ExceptionsVls_vluxseg3ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -16964,7 +16993,7 @@ covergroup ExceptionsVls_vluxseg4ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -16972,7 +17001,7 @@ covergroup ExceptionsVls_vluxseg4ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -16994,7 +17023,7 @@ covergroup ExceptionsVls_vluxseg4ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -17098,7 +17127,7 @@ covergroup ExceptionsVls_vluxseg4ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -17106,7 +17135,7 @@ covergroup ExceptionsVls_vluxseg4ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -17128,7 +17157,7 @@ covergroup ExceptionsVls_vluxseg4ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -17208,6 +17237,7 @@ covergroup ExceptionsVls_vluxseg4ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vluxseg4ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -17232,7 +17262,7 @@ covergroup ExceptionsVls_vluxseg4ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -17240,7 +17270,7 @@ covergroup ExceptionsVls_vluxseg4ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -17262,7 +17292,7 @@ covergroup ExceptionsVls_vluxseg4ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -17342,6 +17372,7 @@ covergroup ExceptionsVls_vluxseg4ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vluxseg4ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -17366,7 +17397,7 @@ covergroup ExceptionsVls_vluxseg4ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -17374,7 +17405,7 @@ covergroup ExceptionsVls_vluxseg4ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -17396,7 +17427,7 @@ covergroup ExceptionsVls_vluxseg4ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -17482,7 +17513,7 @@ covergroup ExceptionsVls_vluxseg5ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -17490,7 +17521,7 @@ covergroup ExceptionsVls_vluxseg5ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -17512,7 +17543,7 @@ covergroup ExceptionsVls_vluxseg5ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -17616,7 +17647,7 @@ covergroup ExceptionsVls_vluxseg5ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -17624,7 +17655,7 @@ covergroup ExceptionsVls_vluxseg5ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -17646,7 +17677,7 @@ covergroup ExceptionsVls_vluxseg5ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -17726,6 +17757,7 @@ covergroup ExceptionsVls_vluxseg5ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vluxseg5ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -17750,7 +17782,7 @@ covergroup ExceptionsVls_vluxseg5ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -17758,7 +17790,7 @@ covergroup ExceptionsVls_vluxseg5ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -17780,7 +17812,7 @@ covergroup ExceptionsVls_vluxseg5ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -17860,6 +17892,7 @@ covergroup ExceptionsVls_vluxseg5ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vluxseg5ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -17884,7 +17917,7 @@ covergroup ExceptionsVls_vluxseg5ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -17892,7 +17925,7 @@ covergroup ExceptionsVls_vluxseg5ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -17914,7 +17947,7 @@ covergroup ExceptionsVls_vluxseg5ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -18000,7 +18033,7 @@ covergroup ExceptionsVls_vluxseg6ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -18008,7 +18041,7 @@ covergroup ExceptionsVls_vluxseg6ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -18030,7 +18063,7 @@ covergroup ExceptionsVls_vluxseg6ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -18134,7 +18167,7 @@ covergroup ExceptionsVls_vluxseg6ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -18142,7 +18175,7 @@ covergroup ExceptionsVls_vluxseg6ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -18164,7 +18197,7 @@ covergroup ExceptionsVls_vluxseg6ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -18244,6 +18277,7 @@ covergroup ExceptionsVls_vluxseg6ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vluxseg6ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -18268,7 +18302,7 @@ covergroup ExceptionsVls_vluxseg6ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -18276,7 +18310,7 @@ covergroup ExceptionsVls_vluxseg6ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -18298,7 +18332,7 @@ covergroup ExceptionsVls_vluxseg6ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -18378,6 +18412,7 @@ covergroup ExceptionsVls_vluxseg6ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vluxseg6ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -18402,7 +18437,7 @@ covergroup ExceptionsVls_vluxseg6ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -18410,7 +18445,7 @@ covergroup ExceptionsVls_vluxseg6ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -18432,7 +18467,7 @@ covergroup ExceptionsVls_vluxseg6ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -18518,7 +18553,7 @@ covergroup ExceptionsVls_vluxseg7ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -18526,7 +18561,7 @@ covergroup ExceptionsVls_vluxseg7ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -18548,7 +18583,7 @@ covergroup ExceptionsVls_vluxseg7ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -18652,7 +18687,7 @@ covergroup ExceptionsVls_vluxseg7ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -18660,7 +18695,7 @@ covergroup ExceptionsVls_vluxseg7ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -18682,7 +18717,7 @@ covergroup ExceptionsVls_vluxseg7ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -18762,6 +18797,7 @@ covergroup ExceptionsVls_vluxseg7ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vluxseg7ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -18786,7 +18822,7 @@ covergroup ExceptionsVls_vluxseg7ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -18794,7 +18830,7 @@ covergroup ExceptionsVls_vluxseg7ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -18816,7 +18852,7 @@ covergroup ExceptionsVls_vluxseg7ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -18896,6 +18932,7 @@ covergroup ExceptionsVls_vluxseg7ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vluxseg7ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -18920,7 +18957,7 @@ covergroup ExceptionsVls_vluxseg7ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -18928,7 +18965,7 @@ covergroup ExceptionsVls_vluxseg7ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -18950,7 +18987,7 @@ covergroup ExceptionsVls_vluxseg7ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -19036,7 +19073,7 @@ covergroup ExceptionsVls_vluxseg8ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -19044,7 +19081,7 @@ covergroup ExceptionsVls_vluxseg8ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -19066,7 +19103,7 @@ covergroup ExceptionsVls_vluxseg8ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -19170,7 +19207,7 @@ covergroup ExceptionsVls_vluxseg8ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -19178,7 +19215,7 @@ covergroup ExceptionsVls_vluxseg8ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -19200,7 +19237,7 @@ covergroup ExceptionsVls_vluxseg8ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -19280,6 +19317,7 @@ covergroup ExceptionsVls_vluxseg8ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vluxseg8ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -19304,7 +19342,7 @@ covergroup ExceptionsVls_vluxseg8ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -19312,7 +19350,7 @@ covergroup ExceptionsVls_vluxseg8ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -19334,7 +19372,7 @@ covergroup ExceptionsVls_vluxseg8ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -19414,6 +19452,7 @@ covergroup ExceptionsVls_vluxseg8ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vluxseg8ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -19438,7 +19477,7 @@ covergroup ExceptionsVls_vluxseg8ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -19446,7 +19485,7 @@ covergroup ExceptionsVls_vluxseg8ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -19468,7 +19507,7 @@ covergroup ExceptionsVls_vluxseg8ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -19554,7 +19593,7 @@ covergroup ExceptionsVls_vs1r_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -19562,7 +19601,7 @@ covergroup ExceptionsVls_vs1r_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -19584,7 +19623,7 @@ covergroup ExceptionsVls_vs1r_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -19648,7 +19687,7 @@ covergroup ExceptionsVls_vs2r_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -19656,7 +19695,7 @@ covergroup ExceptionsVls_vs2r_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -19678,7 +19717,7 @@ covergroup ExceptionsVls_vs2r_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -19742,7 +19781,7 @@ covergroup ExceptionsVls_vs4r_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -19750,7 +19789,7 @@ covergroup ExceptionsVls_vs4r_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -19772,7 +19811,7 @@ covergroup ExceptionsVls_vs4r_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -19836,7 +19875,7 @@ covergroup ExceptionsVls_vs8r_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -19844,7 +19883,7 @@ covergroup ExceptionsVls_vs8r_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -19866,7 +19905,7 @@ covergroup ExceptionsVls_vs8r_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -19930,7 +19969,7 @@ covergroup ExceptionsVls_vse16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -19938,7 +19977,7 @@ covergroup ExceptionsVls_vse16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -19960,7 +19999,7 @@ covergroup ExceptionsVls_vse16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -20024,7 +20063,7 @@ covergroup ExceptionsVls_vse32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -20032,7 +20071,7 @@ covergroup ExceptionsVls_vse32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -20054,7 +20093,7 @@ covergroup ExceptionsVls_vse32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -20118,7 +20157,7 @@ covergroup ExceptionsVls_vse64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -20126,7 +20165,7 @@ covergroup ExceptionsVls_vse64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -20148,7 +20187,7 @@ covergroup ExceptionsVls_vse64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -20212,7 +20251,7 @@ covergroup ExceptionsVls_vse8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -20220,7 +20259,7 @@ covergroup ExceptionsVls_vse8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -20242,7 +20281,7 @@ covergroup ExceptionsVls_vse8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -20306,7 +20345,7 @@ covergroup ExceptionsVls_vsm_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -20314,7 +20353,7 @@ covergroup ExceptionsVls_vsm_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -20336,7 +20375,7 @@ covergroup ExceptionsVls_vsm_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -20400,7 +20439,7 @@ covergroup ExceptionsVls_vsoxei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -20408,7 +20447,7 @@ covergroup ExceptionsVls_vsoxei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -20430,7 +20469,7 @@ covergroup ExceptionsVls_vsoxei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -20534,7 +20573,7 @@ covergroup ExceptionsVls_vsoxei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -20542,7 +20581,7 @@ covergroup ExceptionsVls_vsoxei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -20564,7 +20603,7 @@ covergroup ExceptionsVls_vsoxei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -20644,6 +20683,7 @@ covergroup ExceptionsVls_vsoxei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vsoxei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -20668,7 +20708,7 @@ covergroup ExceptionsVls_vsoxei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -20676,7 +20716,7 @@ covergroup ExceptionsVls_vsoxei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -20698,7 +20738,7 @@ covergroup ExceptionsVls_vsoxei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -20778,6 +20818,7 @@ covergroup ExceptionsVls_vsoxei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vsoxei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -20802,7 +20843,7 @@ covergroup ExceptionsVls_vsoxei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -20810,7 +20851,7 @@ covergroup ExceptionsVls_vsoxei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -20832,7 +20873,7 @@ covergroup ExceptionsVls_vsoxei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -20918,7 +20959,7 @@ covergroup ExceptionsVls_vsoxseg2ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -20926,7 +20967,7 @@ covergroup ExceptionsVls_vsoxseg2ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -20948,7 +20989,7 @@ covergroup ExceptionsVls_vsoxseg2ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -21052,7 +21093,7 @@ covergroup ExceptionsVls_vsoxseg2ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -21060,7 +21101,7 @@ covergroup ExceptionsVls_vsoxseg2ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -21082,7 +21123,7 @@ covergroup ExceptionsVls_vsoxseg2ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -21162,6 +21203,7 @@ covergroup ExceptionsVls_vsoxseg2ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vsoxseg2ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -21186,7 +21228,7 @@ covergroup ExceptionsVls_vsoxseg2ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -21194,7 +21236,7 @@ covergroup ExceptionsVls_vsoxseg2ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -21216,7 +21258,7 @@ covergroup ExceptionsVls_vsoxseg2ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -21296,6 +21338,7 @@ covergroup ExceptionsVls_vsoxseg2ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vsoxseg2ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -21320,7 +21363,7 @@ covergroup ExceptionsVls_vsoxseg2ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -21328,7 +21371,7 @@ covergroup ExceptionsVls_vsoxseg2ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -21350,7 +21393,7 @@ covergroup ExceptionsVls_vsoxseg2ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -21436,7 +21479,7 @@ covergroup ExceptionsVls_vsoxseg3ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -21444,7 +21487,7 @@ covergroup ExceptionsVls_vsoxseg3ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -21466,7 +21509,7 @@ covergroup ExceptionsVls_vsoxseg3ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -21570,7 +21613,7 @@ covergroup ExceptionsVls_vsoxseg3ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -21578,7 +21621,7 @@ covergroup ExceptionsVls_vsoxseg3ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -21600,7 +21643,7 @@ covergroup ExceptionsVls_vsoxseg3ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -21680,6 +21723,7 @@ covergroup ExceptionsVls_vsoxseg3ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vsoxseg3ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -21704,7 +21748,7 @@ covergroup ExceptionsVls_vsoxseg3ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -21712,7 +21756,7 @@ covergroup ExceptionsVls_vsoxseg3ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -21734,7 +21778,7 @@ covergroup ExceptionsVls_vsoxseg3ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -21814,6 +21858,7 @@ covergroup ExceptionsVls_vsoxseg3ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vsoxseg3ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -21838,7 +21883,7 @@ covergroup ExceptionsVls_vsoxseg3ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -21846,7 +21891,7 @@ covergroup ExceptionsVls_vsoxseg3ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -21868,7 +21913,7 @@ covergroup ExceptionsVls_vsoxseg3ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -21954,7 +21999,7 @@ covergroup ExceptionsVls_vsoxseg4ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -21962,7 +22007,7 @@ covergroup ExceptionsVls_vsoxseg4ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -21984,7 +22029,7 @@ covergroup ExceptionsVls_vsoxseg4ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -22088,7 +22133,7 @@ covergroup ExceptionsVls_vsoxseg4ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -22096,7 +22141,7 @@ covergroup ExceptionsVls_vsoxseg4ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -22118,7 +22163,7 @@ covergroup ExceptionsVls_vsoxseg4ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -22198,6 +22243,7 @@ covergroup ExceptionsVls_vsoxseg4ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vsoxseg4ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -22222,7 +22268,7 @@ covergroup ExceptionsVls_vsoxseg4ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -22230,7 +22276,7 @@ covergroup ExceptionsVls_vsoxseg4ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -22252,7 +22298,7 @@ covergroup ExceptionsVls_vsoxseg4ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -22332,6 +22378,7 @@ covergroup ExceptionsVls_vsoxseg4ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vsoxseg4ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -22356,7 +22403,7 @@ covergroup ExceptionsVls_vsoxseg4ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -22364,7 +22411,7 @@ covergroup ExceptionsVls_vsoxseg4ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -22386,7 +22433,7 @@ covergroup ExceptionsVls_vsoxseg4ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -22472,7 +22519,7 @@ covergroup ExceptionsVls_vsoxseg5ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -22480,7 +22527,7 @@ covergroup ExceptionsVls_vsoxseg5ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -22502,7 +22549,7 @@ covergroup ExceptionsVls_vsoxseg5ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -22606,7 +22653,7 @@ covergroup ExceptionsVls_vsoxseg5ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -22614,7 +22661,7 @@ covergroup ExceptionsVls_vsoxseg5ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -22636,7 +22683,7 @@ covergroup ExceptionsVls_vsoxseg5ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -22716,6 +22763,7 @@ covergroup ExceptionsVls_vsoxseg5ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vsoxseg5ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -22740,7 +22788,7 @@ covergroup ExceptionsVls_vsoxseg5ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -22748,7 +22796,7 @@ covergroup ExceptionsVls_vsoxseg5ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -22770,7 +22818,7 @@ covergroup ExceptionsVls_vsoxseg5ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -22850,6 +22898,7 @@ covergroup ExceptionsVls_vsoxseg5ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vsoxseg5ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -22874,7 +22923,7 @@ covergroup ExceptionsVls_vsoxseg5ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -22882,7 +22931,7 @@ covergroup ExceptionsVls_vsoxseg5ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -22904,7 +22953,7 @@ covergroup ExceptionsVls_vsoxseg5ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -22990,7 +23039,7 @@ covergroup ExceptionsVls_vsoxseg6ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -22998,7 +23047,7 @@ covergroup ExceptionsVls_vsoxseg6ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -23020,7 +23069,7 @@ covergroup ExceptionsVls_vsoxseg6ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -23124,7 +23173,7 @@ covergroup ExceptionsVls_vsoxseg6ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -23132,7 +23181,7 @@ covergroup ExceptionsVls_vsoxseg6ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -23154,7 +23203,7 @@ covergroup ExceptionsVls_vsoxseg6ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -23234,6 +23283,7 @@ covergroup ExceptionsVls_vsoxseg6ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vsoxseg6ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -23258,7 +23308,7 @@ covergroup ExceptionsVls_vsoxseg6ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -23266,7 +23316,7 @@ covergroup ExceptionsVls_vsoxseg6ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -23288,7 +23338,7 @@ covergroup ExceptionsVls_vsoxseg6ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -23368,6 +23418,7 @@ covergroup ExceptionsVls_vsoxseg6ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vsoxseg6ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -23392,7 +23443,7 @@ covergroup ExceptionsVls_vsoxseg6ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -23400,7 +23451,7 @@ covergroup ExceptionsVls_vsoxseg6ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -23422,7 +23473,7 @@ covergroup ExceptionsVls_vsoxseg6ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -23508,7 +23559,7 @@ covergroup ExceptionsVls_vsoxseg7ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -23516,7 +23567,7 @@ covergroup ExceptionsVls_vsoxseg7ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -23538,7 +23589,7 @@ covergroup ExceptionsVls_vsoxseg7ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -23642,7 +23693,7 @@ covergroup ExceptionsVls_vsoxseg7ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -23650,7 +23701,7 @@ covergroup ExceptionsVls_vsoxseg7ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -23672,7 +23723,7 @@ covergroup ExceptionsVls_vsoxseg7ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -23752,6 +23803,7 @@ covergroup ExceptionsVls_vsoxseg7ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vsoxseg7ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -23776,7 +23828,7 @@ covergroup ExceptionsVls_vsoxseg7ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -23784,7 +23836,7 @@ covergroup ExceptionsVls_vsoxseg7ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -23806,7 +23858,7 @@ covergroup ExceptionsVls_vsoxseg7ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -23886,6 +23938,7 @@ covergroup ExceptionsVls_vsoxseg7ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vsoxseg7ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -23910,7 +23963,7 @@ covergroup ExceptionsVls_vsoxseg7ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -23918,7 +23971,7 @@ covergroup ExceptionsVls_vsoxseg7ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -23940,7 +23993,7 @@ covergroup ExceptionsVls_vsoxseg7ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -24026,7 +24079,7 @@ covergroup ExceptionsVls_vsoxseg8ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -24034,7 +24087,7 @@ covergroup ExceptionsVls_vsoxseg8ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -24056,7 +24109,7 @@ covergroup ExceptionsVls_vsoxseg8ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -24160,7 +24213,7 @@ covergroup ExceptionsVls_vsoxseg8ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -24168,7 +24221,7 @@ covergroup ExceptionsVls_vsoxseg8ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -24190,7 +24243,7 @@ covergroup ExceptionsVls_vsoxseg8ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -24270,6 +24323,7 @@ covergroup ExceptionsVls_vsoxseg8ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vsoxseg8ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -24294,7 +24348,7 @@ covergroup ExceptionsVls_vsoxseg8ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -24302,7 +24356,7 @@ covergroup ExceptionsVls_vsoxseg8ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -24324,7 +24378,7 @@ covergroup ExceptionsVls_vsoxseg8ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -24404,6 +24458,7 @@ covergroup ExceptionsVls_vsoxseg8ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vsoxseg8ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -24428,7 +24483,7 @@ covergroup ExceptionsVls_vsoxseg8ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -24436,7 +24491,7 @@ covergroup ExceptionsVls_vsoxseg8ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -24458,7 +24513,7 @@ covergroup ExceptionsVls_vsoxseg8ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -24544,7 +24599,7 @@ covergroup ExceptionsVls_vsse16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -24552,7 +24607,7 @@ covergroup ExceptionsVls_vsse16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -24574,7 +24629,7 @@ covergroup ExceptionsVls_vsse16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -24638,7 +24693,7 @@ covergroup ExceptionsVls_vsse32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -24646,7 +24701,7 @@ covergroup ExceptionsVls_vsse32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -24668,7 +24723,7 @@ covergroup ExceptionsVls_vsse32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -24732,7 +24787,7 @@ covergroup ExceptionsVls_vsse64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -24740,7 +24795,7 @@ covergroup ExceptionsVls_vsse64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -24762,7 +24817,7 @@ covergroup ExceptionsVls_vsse64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -24826,7 +24881,7 @@ covergroup ExceptionsVls_vsse8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -24834,7 +24889,7 @@ covergroup ExceptionsVls_vsse8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -24856,7 +24911,7 @@ covergroup ExceptionsVls_vsse8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -24920,7 +24975,7 @@ covergroup ExceptionsVls_vsseg2e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -24928,7 +24983,7 @@ covergroup ExceptionsVls_vsseg2e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -24950,7 +25005,7 @@ covergroup ExceptionsVls_vsseg2e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -25014,7 +25069,7 @@ covergroup ExceptionsVls_vsseg2e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -25022,7 +25077,7 @@ covergroup ExceptionsVls_vsseg2e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -25044,7 +25099,7 @@ covergroup ExceptionsVls_vsseg2e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -25108,7 +25163,7 @@ covergroup ExceptionsVls_vsseg2e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -25116,7 +25171,7 @@ covergroup ExceptionsVls_vsseg2e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -25138,7 +25193,7 @@ covergroup ExceptionsVls_vsseg2e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -25202,7 +25257,7 @@ covergroup ExceptionsVls_vsseg2e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -25210,7 +25265,7 @@ covergroup ExceptionsVls_vsseg2e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -25232,7 +25287,7 @@ covergroup ExceptionsVls_vsseg2e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -25296,7 +25351,7 @@ covergroup ExceptionsVls_vsseg3e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -25304,7 +25359,7 @@ covergroup ExceptionsVls_vsseg3e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -25326,7 +25381,7 @@ covergroup ExceptionsVls_vsseg3e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -25390,7 +25445,7 @@ covergroup ExceptionsVls_vsseg3e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -25398,7 +25453,7 @@ covergroup ExceptionsVls_vsseg3e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -25420,7 +25475,7 @@ covergroup ExceptionsVls_vsseg3e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -25484,7 +25539,7 @@ covergroup ExceptionsVls_vsseg3e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -25492,7 +25547,7 @@ covergroup ExceptionsVls_vsseg3e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -25514,7 +25569,7 @@ covergroup ExceptionsVls_vsseg3e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -25578,7 +25633,7 @@ covergroup ExceptionsVls_vsseg3e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -25586,7 +25641,7 @@ covergroup ExceptionsVls_vsseg3e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -25608,7 +25663,7 @@ covergroup ExceptionsVls_vsseg3e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -25672,7 +25727,7 @@ covergroup ExceptionsVls_vsseg4e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -25680,7 +25735,7 @@ covergroup ExceptionsVls_vsseg4e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -25702,7 +25757,7 @@ covergroup ExceptionsVls_vsseg4e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -25766,7 +25821,7 @@ covergroup ExceptionsVls_vsseg4e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -25774,7 +25829,7 @@ covergroup ExceptionsVls_vsseg4e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -25796,7 +25851,7 @@ covergroup ExceptionsVls_vsseg4e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -25860,7 +25915,7 @@ covergroup ExceptionsVls_vsseg4e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -25868,7 +25923,7 @@ covergroup ExceptionsVls_vsseg4e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -25890,7 +25945,7 @@ covergroup ExceptionsVls_vsseg4e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -25954,7 +26009,7 @@ covergroup ExceptionsVls_vsseg4e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -25962,7 +26017,7 @@ covergroup ExceptionsVls_vsseg4e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -25984,7 +26039,7 @@ covergroup ExceptionsVls_vsseg4e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -26048,7 +26103,7 @@ covergroup ExceptionsVls_vsseg5e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -26056,7 +26111,7 @@ covergroup ExceptionsVls_vsseg5e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -26078,7 +26133,7 @@ covergroup ExceptionsVls_vsseg5e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -26142,7 +26197,7 @@ covergroup ExceptionsVls_vsseg5e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -26150,7 +26205,7 @@ covergroup ExceptionsVls_vsseg5e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -26172,7 +26227,7 @@ covergroup ExceptionsVls_vsseg5e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -26236,7 +26291,7 @@ covergroup ExceptionsVls_vsseg5e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -26244,7 +26299,7 @@ covergroup ExceptionsVls_vsseg5e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -26266,7 +26321,7 @@ covergroup ExceptionsVls_vsseg5e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -26330,7 +26385,7 @@ covergroup ExceptionsVls_vsseg5e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -26338,7 +26393,7 @@ covergroup ExceptionsVls_vsseg5e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -26360,7 +26415,7 @@ covergroup ExceptionsVls_vsseg5e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -26424,7 +26479,7 @@ covergroup ExceptionsVls_vsseg6e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -26432,7 +26487,7 @@ covergroup ExceptionsVls_vsseg6e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -26454,7 +26509,7 @@ covergroup ExceptionsVls_vsseg6e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -26518,7 +26573,7 @@ covergroup ExceptionsVls_vsseg6e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -26526,7 +26581,7 @@ covergroup ExceptionsVls_vsseg6e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -26548,7 +26603,7 @@ covergroup ExceptionsVls_vsseg6e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -26612,7 +26667,7 @@ covergroup ExceptionsVls_vsseg6e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -26620,7 +26675,7 @@ covergroup ExceptionsVls_vsseg6e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -26642,7 +26697,7 @@ covergroup ExceptionsVls_vsseg6e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -26706,7 +26761,7 @@ covergroup ExceptionsVls_vsseg6e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -26714,7 +26769,7 @@ covergroup ExceptionsVls_vsseg6e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -26736,7 +26791,7 @@ covergroup ExceptionsVls_vsseg6e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -26800,7 +26855,7 @@ covergroup ExceptionsVls_vsseg7e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -26808,7 +26863,7 @@ covergroup ExceptionsVls_vsseg7e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -26830,7 +26885,7 @@ covergroup ExceptionsVls_vsseg7e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -26894,7 +26949,7 @@ covergroup ExceptionsVls_vsseg7e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -26902,7 +26957,7 @@ covergroup ExceptionsVls_vsseg7e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -26924,7 +26979,7 @@ covergroup ExceptionsVls_vsseg7e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -26988,7 +27043,7 @@ covergroup ExceptionsVls_vsseg7e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -26996,7 +27051,7 @@ covergroup ExceptionsVls_vsseg7e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -27018,7 +27073,7 @@ covergroup ExceptionsVls_vsseg7e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -27082,7 +27137,7 @@ covergroup ExceptionsVls_vsseg7e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -27090,7 +27145,7 @@ covergroup ExceptionsVls_vsseg7e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -27112,7 +27167,7 @@ covergroup ExceptionsVls_vsseg7e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -27176,7 +27231,7 @@ covergroup ExceptionsVls_vsseg8e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -27184,7 +27239,7 @@ covergroup ExceptionsVls_vsseg8e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -27206,7 +27261,7 @@ covergroup ExceptionsVls_vsseg8e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -27270,7 +27325,7 @@ covergroup ExceptionsVls_vsseg8e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -27278,7 +27333,7 @@ covergroup ExceptionsVls_vsseg8e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -27300,7 +27355,7 @@ covergroup ExceptionsVls_vsseg8e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -27364,7 +27419,7 @@ covergroup ExceptionsVls_vsseg8e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -27372,7 +27427,7 @@ covergroup ExceptionsVls_vsseg8e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -27394,7 +27449,7 @@ covergroup ExceptionsVls_vsseg8e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -27458,7 +27513,7 @@ covergroup ExceptionsVls_vsseg8e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -27466,7 +27521,7 @@ covergroup ExceptionsVls_vsseg8e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -27488,7 +27543,7 @@ covergroup ExceptionsVls_vsseg8e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -27552,7 +27607,7 @@ covergroup ExceptionsVls_vssseg2e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -27560,7 +27615,7 @@ covergroup ExceptionsVls_vssseg2e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -27582,7 +27637,7 @@ covergroup ExceptionsVls_vssseg2e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -27646,7 +27701,7 @@ covergroup ExceptionsVls_vssseg2e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -27654,7 +27709,7 @@ covergroup ExceptionsVls_vssseg2e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -27676,7 +27731,7 @@ covergroup ExceptionsVls_vssseg2e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -27740,7 +27795,7 @@ covergroup ExceptionsVls_vssseg2e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -27748,7 +27803,7 @@ covergroup ExceptionsVls_vssseg2e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -27770,7 +27825,7 @@ covergroup ExceptionsVls_vssseg2e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -27834,7 +27889,7 @@ covergroup ExceptionsVls_vssseg2e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -27842,7 +27897,7 @@ covergroup ExceptionsVls_vssseg2e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -27864,7 +27919,7 @@ covergroup ExceptionsVls_vssseg2e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -27928,7 +27983,7 @@ covergroup ExceptionsVls_vssseg3e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -27936,7 +27991,7 @@ covergroup ExceptionsVls_vssseg3e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -27958,7 +28013,7 @@ covergroup ExceptionsVls_vssseg3e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -28022,7 +28077,7 @@ covergroup ExceptionsVls_vssseg3e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -28030,7 +28085,7 @@ covergroup ExceptionsVls_vssseg3e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -28052,7 +28107,7 @@ covergroup ExceptionsVls_vssseg3e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -28116,7 +28171,7 @@ covergroup ExceptionsVls_vssseg3e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -28124,7 +28179,7 @@ covergroup ExceptionsVls_vssseg3e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -28146,7 +28201,7 @@ covergroup ExceptionsVls_vssseg3e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -28210,7 +28265,7 @@ covergroup ExceptionsVls_vssseg3e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -28218,7 +28273,7 @@ covergroup ExceptionsVls_vssseg3e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -28240,7 +28295,7 @@ covergroup ExceptionsVls_vssseg3e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -28304,7 +28359,7 @@ covergroup ExceptionsVls_vssseg4e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -28312,7 +28367,7 @@ covergroup ExceptionsVls_vssseg4e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -28334,7 +28389,7 @@ covergroup ExceptionsVls_vssseg4e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -28398,7 +28453,7 @@ covergroup ExceptionsVls_vssseg4e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -28406,7 +28461,7 @@ covergroup ExceptionsVls_vssseg4e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -28428,7 +28483,7 @@ covergroup ExceptionsVls_vssseg4e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -28492,7 +28547,7 @@ covergroup ExceptionsVls_vssseg4e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -28500,7 +28555,7 @@ covergroup ExceptionsVls_vssseg4e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -28522,7 +28577,7 @@ covergroup ExceptionsVls_vssseg4e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -28586,7 +28641,7 @@ covergroup ExceptionsVls_vssseg4e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -28594,7 +28649,7 @@ covergroup ExceptionsVls_vssseg4e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -28616,7 +28671,7 @@ covergroup ExceptionsVls_vssseg4e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -28680,7 +28735,7 @@ covergroup ExceptionsVls_vssseg5e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -28688,7 +28743,7 @@ covergroup ExceptionsVls_vssseg5e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -28710,7 +28765,7 @@ covergroup ExceptionsVls_vssseg5e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -28774,7 +28829,7 @@ covergroup ExceptionsVls_vssseg5e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -28782,7 +28837,7 @@ covergroup ExceptionsVls_vssseg5e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -28804,7 +28859,7 @@ covergroup ExceptionsVls_vssseg5e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -28868,7 +28923,7 @@ covergroup ExceptionsVls_vssseg5e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -28876,7 +28931,7 @@ covergroup ExceptionsVls_vssseg5e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -28898,7 +28953,7 @@ covergroup ExceptionsVls_vssseg5e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -28962,7 +29017,7 @@ covergroup ExceptionsVls_vssseg5e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -28970,7 +29025,7 @@ covergroup ExceptionsVls_vssseg5e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -28992,7 +29047,7 @@ covergroup ExceptionsVls_vssseg5e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -29056,7 +29111,7 @@ covergroup ExceptionsVls_vssseg6e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -29064,7 +29119,7 @@ covergroup ExceptionsVls_vssseg6e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -29086,7 +29141,7 @@ covergroup ExceptionsVls_vssseg6e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -29150,7 +29205,7 @@ covergroup ExceptionsVls_vssseg6e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -29158,7 +29213,7 @@ covergroup ExceptionsVls_vssseg6e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -29180,7 +29235,7 @@ covergroup ExceptionsVls_vssseg6e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -29244,7 +29299,7 @@ covergroup ExceptionsVls_vssseg6e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -29252,7 +29307,7 @@ covergroup ExceptionsVls_vssseg6e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -29274,7 +29329,7 @@ covergroup ExceptionsVls_vssseg6e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -29338,7 +29393,7 @@ covergroup ExceptionsVls_vssseg6e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -29346,7 +29401,7 @@ covergroup ExceptionsVls_vssseg6e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -29368,7 +29423,7 @@ covergroup ExceptionsVls_vssseg6e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -29432,7 +29487,7 @@ covergroup ExceptionsVls_vssseg7e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -29440,7 +29495,7 @@ covergroup ExceptionsVls_vssseg7e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -29462,7 +29517,7 @@ covergroup ExceptionsVls_vssseg7e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -29526,7 +29581,7 @@ covergroup ExceptionsVls_vssseg7e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -29534,7 +29589,7 @@ covergroup ExceptionsVls_vssseg7e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -29556,7 +29611,7 @@ covergroup ExceptionsVls_vssseg7e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -29620,7 +29675,7 @@ covergroup ExceptionsVls_vssseg7e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -29628,7 +29683,7 @@ covergroup ExceptionsVls_vssseg7e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -29650,7 +29705,7 @@ covergroup ExceptionsVls_vssseg7e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -29714,7 +29769,7 @@ covergroup ExceptionsVls_vssseg7e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -29722,7 +29777,7 @@ covergroup ExceptionsVls_vssseg7e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -29744,7 +29799,7 @@ covergroup ExceptionsVls_vssseg7e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -29808,7 +29863,7 @@ covergroup ExceptionsVls_vssseg8e16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -29816,7 +29871,7 @@ covergroup ExceptionsVls_vssseg8e16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -29838,7 +29893,7 @@ covergroup ExceptionsVls_vssseg8e16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -29902,7 +29957,7 @@ covergroup ExceptionsVls_vssseg8e32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -29910,7 +29965,7 @@ covergroup ExceptionsVls_vssseg8e32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -29932,7 +29987,7 @@ covergroup ExceptionsVls_vssseg8e32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -29996,7 +30051,7 @@ covergroup ExceptionsVls_vssseg8e64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -30004,7 +30059,7 @@ covergroup ExceptionsVls_vssseg8e64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -30026,7 +30081,7 @@ covergroup ExceptionsVls_vssseg8e64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -30090,7 +30145,7 @@ covergroup ExceptionsVls_vssseg8e8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -30098,7 +30153,7 @@ covergroup ExceptionsVls_vssseg8e8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -30120,7 +30175,7 @@ covergroup ExceptionsVls_vssseg8e8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -30184,7 +30239,7 @@ covergroup ExceptionsVls_vsuxei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -30192,7 +30247,7 @@ covergroup ExceptionsVls_vsuxei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -30214,7 +30269,7 @@ covergroup ExceptionsVls_vsuxei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -30318,7 +30373,7 @@ covergroup ExceptionsVls_vsuxei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -30326,7 +30381,7 @@ covergroup ExceptionsVls_vsuxei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -30348,7 +30403,7 @@ covergroup ExceptionsVls_vsuxei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -30428,6 +30483,7 @@ covergroup ExceptionsVls_vsuxei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vsuxei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -30452,7 +30508,7 @@ covergroup ExceptionsVls_vsuxei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -30460,7 +30516,7 @@ covergroup ExceptionsVls_vsuxei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -30482,7 +30538,7 @@ covergroup ExceptionsVls_vsuxei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -30562,6 +30618,7 @@ covergroup ExceptionsVls_vsuxei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vsuxei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -30586,7 +30643,7 @@ covergroup ExceptionsVls_vsuxei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -30594,7 +30651,7 @@ covergroup ExceptionsVls_vsuxei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -30616,7 +30673,7 @@ covergroup ExceptionsVls_vsuxei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -30702,7 +30759,7 @@ covergroup ExceptionsVls_vsuxseg2ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -30710,7 +30767,7 @@ covergroup ExceptionsVls_vsuxseg2ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -30732,7 +30789,7 @@ covergroup ExceptionsVls_vsuxseg2ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -30836,7 +30893,7 @@ covergroup ExceptionsVls_vsuxseg2ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -30844,7 +30901,7 @@ covergroup ExceptionsVls_vsuxseg2ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -30866,7 +30923,7 @@ covergroup ExceptionsVls_vsuxseg2ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -30946,6 +31003,7 @@ covergroup ExceptionsVls_vsuxseg2ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vsuxseg2ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -30970,7 +31028,7 @@ covergroup ExceptionsVls_vsuxseg2ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -30978,7 +31036,7 @@ covergroup ExceptionsVls_vsuxseg2ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -31000,7 +31058,7 @@ covergroup ExceptionsVls_vsuxseg2ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -31080,6 +31138,7 @@ covergroup ExceptionsVls_vsuxseg2ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vsuxseg2ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -31104,7 +31163,7 @@ covergroup ExceptionsVls_vsuxseg2ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -31112,7 +31171,7 @@ covergroup ExceptionsVls_vsuxseg2ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -31134,7 +31193,7 @@ covergroup ExceptionsVls_vsuxseg2ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -31220,7 +31279,7 @@ covergroup ExceptionsVls_vsuxseg3ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -31228,7 +31287,7 @@ covergroup ExceptionsVls_vsuxseg3ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -31250,7 +31309,7 @@ covergroup ExceptionsVls_vsuxseg3ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -31354,7 +31413,7 @@ covergroup ExceptionsVls_vsuxseg3ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -31362,7 +31421,7 @@ covergroup ExceptionsVls_vsuxseg3ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -31384,7 +31443,7 @@ covergroup ExceptionsVls_vsuxseg3ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -31464,6 +31523,7 @@ covergroup ExceptionsVls_vsuxseg3ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vsuxseg3ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -31488,7 +31548,7 @@ covergroup ExceptionsVls_vsuxseg3ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -31496,7 +31556,7 @@ covergroup ExceptionsVls_vsuxseg3ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -31518,7 +31578,7 @@ covergroup ExceptionsVls_vsuxseg3ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -31598,6 +31658,7 @@ covergroup ExceptionsVls_vsuxseg3ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vsuxseg3ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -31622,7 +31683,7 @@ covergroup ExceptionsVls_vsuxseg3ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -31630,7 +31691,7 @@ covergroup ExceptionsVls_vsuxseg3ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -31652,7 +31713,7 @@ covergroup ExceptionsVls_vsuxseg3ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -31738,7 +31799,7 @@ covergroup ExceptionsVls_vsuxseg4ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -31746,7 +31807,7 @@ covergroup ExceptionsVls_vsuxseg4ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -31768,7 +31829,7 @@ covergroup ExceptionsVls_vsuxseg4ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -31872,7 +31933,7 @@ covergroup ExceptionsVls_vsuxseg4ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -31880,7 +31941,7 @@ covergroup ExceptionsVls_vsuxseg4ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -31902,7 +31963,7 @@ covergroup ExceptionsVls_vsuxseg4ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -31982,6 +32043,7 @@ covergroup ExceptionsVls_vsuxseg4ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vsuxseg4ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -32006,7 +32068,7 @@ covergroup ExceptionsVls_vsuxseg4ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -32014,7 +32076,7 @@ covergroup ExceptionsVls_vsuxseg4ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -32036,7 +32098,7 @@ covergroup ExceptionsVls_vsuxseg4ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -32116,6 +32178,7 @@ covergroup ExceptionsVls_vsuxseg4ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vsuxseg4ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -32140,7 +32203,7 @@ covergroup ExceptionsVls_vsuxseg4ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -32148,7 +32211,7 @@ covergroup ExceptionsVls_vsuxseg4ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -32170,7 +32233,7 @@ covergroup ExceptionsVls_vsuxseg4ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -32256,7 +32319,7 @@ covergroup ExceptionsVls_vsuxseg5ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -32264,7 +32327,7 @@ covergroup ExceptionsVls_vsuxseg5ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -32286,7 +32349,7 @@ covergroup ExceptionsVls_vsuxseg5ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -32390,7 +32453,7 @@ covergroup ExceptionsVls_vsuxseg5ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -32398,7 +32461,7 @@ covergroup ExceptionsVls_vsuxseg5ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -32420,7 +32483,7 @@ covergroup ExceptionsVls_vsuxseg5ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -32500,6 +32563,7 @@ covergroup ExceptionsVls_vsuxseg5ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vsuxseg5ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -32524,7 +32588,7 @@ covergroup ExceptionsVls_vsuxseg5ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -32532,7 +32596,7 @@ covergroup ExceptionsVls_vsuxseg5ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -32554,7 +32618,7 @@ covergroup ExceptionsVls_vsuxseg5ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -32634,6 +32698,7 @@ covergroup ExceptionsVls_vsuxseg5ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vsuxseg5ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -32658,7 +32723,7 @@ covergroup ExceptionsVls_vsuxseg5ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -32666,7 +32731,7 @@ covergroup ExceptionsVls_vsuxseg5ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -32688,7 +32753,7 @@ covergroup ExceptionsVls_vsuxseg5ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -32774,7 +32839,7 @@ covergroup ExceptionsVls_vsuxseg6ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -32782,7 +32847,7 @@ covergroup ExceptionsVls_vsuxseg6ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -32804,7 +32869,7 @@ covergroup ExceptionsVls_vsuxseg6ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -32908,7 +32973,7 @@ covergroup ExceptionsVls_vsuxseg6ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -32916,7 +32981,7 @@ covergroup ExceptionsVls_vsuxseg6ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -32938,7 +33003,7 @@ covergroup ExceptionsVls_vsuxseg6ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -33018,6 +33083,7 @@ covergroup ExceptionsVls_vsuxseg6ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vsuxseg6ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -33042,7 +33108,7 @@ covergroup ExceptionsVls_vsuxseg6ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -33050,7 +33116,7 @@ covergroup ExceptionsVls_vsuxseg6ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -33072,7 +33138,7 @@ covergroup ExceptionsVls_vsuxseg6ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -33152,6 +33218,7 @@ covergroup ExceptionsVls_vsuxseg6ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vsuxseg6ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -33176,7 +33243,7 @@ covergroup ExceptionsVls_vsuxseg6ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -33184,7 +33251,7 @@ covergroup ExceptionsVls_vsuxseg6ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -33206,7 +33273,7 @@ covergroup ExceptionsVls_vsuxseg6ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -33292,7 +33359,7 @@ covergroup ExceptionsVls_vsuxseg7ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -33300,7 +33367,7 @@ covergroup ExceptionsVls_vsuxseg7ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -33322,7 +33389,7 @@ covergroup ExceptionsVls_vsuxseg7ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -33426,7 +33493,7 @@ covergroup ExceptionsVls_vsuxseg7ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -33434,7 +33501,7 @@ covergroup ExceptionsVls_vsuxseg7ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -33456,7 +33523,7 @@ covergroup ExceptionsVls_vsuxseg7ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -33536,6 +33603,7 @@ covergroup ExceptionsVls_vsuxseg7ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vsuxseg7ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -33560,7 +33628,7 @@ covergroup ExceptionsVls_vsuxseg7ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -33568,7 +33636,7 @@ covergroup ExceptionsVls_vsuxseg7ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -33590,7 +33658,7 @@ covergroup ExceptionsVls_vsuxseg7ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -33670,6 +33738,7 @@ covergroup ExceptionsVls_vsuxseg7ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vsuxseg7ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -33694,7 +33763,7 @@ covergroup ExceptionsVls_vsuxseg7ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -33702,7 +33771,7 @@ covergroup ExceptionsVls_vsuxseg7ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -33724,7 +33793,7 @@ covergroup ExceptionsVls_vsuxseg7ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -33810,7 +33879,7 @@ covergroup ExceptionsVls_vsuxseg8ei16_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -33818,7 +33887,7 @@ covergroup ExceptionsVls_vsuxseg8ei16_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -33840,7 +33909,7 @@ covergroup ExceptionsVls_vsuxseg8ei16_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -33944,7 +34013,7 @@ covergroup ExceptionsVls_vsuxseg8ei32_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -33952,7 +34021,7 @@ covergroup ExceptionsVls_vsuxseg8ei32_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -33974,7 +34043,7 @@ covergroup ExceptionsVls_vsuxseg8ei32_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -34054,6 +34123,7 @@ covergroup ExceptionsVls_vsuxseg8ei32_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef XLEN64
 covergroup ExceptionsVls_vsuxseg8ei64_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -34078,7 +34148,7 @@ covergroup ExceptionsVls_vsuxseg8ei64_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -34086,7 +34156,7 @@ covergroup ExceptionsVls_vsuxseg8ei64_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -34108,7 +34178,7 @@ covergroup ExceptionsVls_vsuxseg8ei64_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -34188,6 +34258,7 @@ covergroup ExceptionsVls_vsuxseg8ei64_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`endif
 covergroup ExceptionsVls_vsuxseg8ei8_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -34212,7 +34283,7 @@ covergroup ExceptionsVls_vsuxseg8ei8_v_cg with function sample(ins_t ins);
     // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Helper: valid vector type (vill=0)
-    vtype_valid: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
+    vtype_valid_20000f: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") {
         bins valid = {1'b0};
     }
 
@@ -34220,7 +34291,7 @@ covergroup ExceptionsVls_vsuxseg8ei8_v_cg with function sample(ins_t ins);
     // For indexed instructions with unsupported EEW (exceeds MAXINDEXEEW), the instruction
     // traps at decode with illegal instruction (mcause=2), not during memory access.
     // Accept mcause=2 for these cases. mop field insn[27:26]: 01=indexed-unordered, 11=indexed-ordered.
-    trap_occurred: coverpoint (
+    trap_occurred_20000f: coverpoint (
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
@@ -34242,7 +34313,7 @@ covergroup ExceptionsVls_vsuxseg8ei8_v_cg with function sample(ins_t ins);
     }
 
     // Cross: valid vtype AND trap occurred
-    cp_exceptionsv_address_fault: cross vtype_valid, trap_occurred;
+    cp_exceptionsv_address_fault: cross vtype_valid_20000f, trap_occurred_20000f;
 
 //// end cp_exceptionsv_address_fault ///////////////////////////////////////////////////////////////////////////
 
@@ -34388,9 +34459,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vloxei32.v"     : begin
             ExceptionsVls_vloxei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vloxei64.v"     : begin
             ExceptionsVls_vloxei64_v_cg.sample(ins);
         end
+`endif
         "vloxei8.v"     : begin
             ExceptionsVls_vloxei8_v_cg.sample(ins);
         end
@@ -34400,9 +34473,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vloxseg2ei32.v"     : begin
             ExceptionsVls_vloxseg2ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vloxseg2ei64.v"     : begin
             ExceptionsVls_vloxseg2ei64_v_cg.sample(ins);
         end
+`endif
         "vloxseg2ei8.v"     : begin
             ExceptionsVls_vloxseg2ei8_v_cg.sample(ins);
         end
@@ -34412,9 +34487,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vloxseg3ei32.v"     : begin
             ExceptionsVls_vloxseg3ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vloxseg3ei64.v"     : begin
             ExceptionsVls_vloxseg3ei64_v_cg.sample(ins);
         end
+`endif
         "vloxseg3ei8.v"     : begin
             ExceptionsVls_vloxseg3ei8_v_cg.sample(ins);
         end
@@ -34424,9 +34501,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vloxseg4ei32.v"     : begin
             ExceptionsVls_vloxseg4ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vloxseg4ei64.v"     : begin
             ExceptionsVls_vloxseg4ei64_v_cg.sample(ins);
         end
+`endif
         "vloxseg4ei8.v"     : begin
             ExceptionsVls_vloxseg4ei8_v_cg.sample(ins);
         end
@@ -34436,9 +34515,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vloxseg5ei32.v"     : begin
             ExceptionsVls_vloxseg5ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vloxseg5ei64.v"     : begin
             ExceptionsVls_vloxseg5ei64_v_cg.sample(ins);
         end
+`endif
         "vloxseg5ei8.v"     : begin
             ExceptionsVls_vloxseg5ei8_v_cg.sample(ins);
         end
@@ -34448,9 +34529,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vloxseg6ei32.v"     : begin
             ExceptionsVls_vloxseg6ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vloxseg6ei64.v"     : begin
             ExceptionsVls_vloxseg6ei64_v_cg.sample(ins);
         end
+`endif
         "vloxseg6ei8.v"     : begin
             ExceptionsVls_vloxseg6ei8_v_cg.sample(ins);
         end
@@ -34460,9 +34543,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vloxseg7ei32.v"     : begin
             ExceptionsVls_vloxseg7ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vloxseg7ei64.v"     : begin
             ExceptionsVls_vloxseg7ei64_v_cg.sample(ins);
         end
+`endif
         "vloxseg7ei8.v"     : begin
             ExceptionsVls_vloxseg7ei8_v_cg.sample(ins);
         end
@@ -34472,9 +34557,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vloxseg8ei32.v"     : begin
             ExceptionsVls_vloxseg8ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vloxseg8ei64.v"     : begin
             ExceptionsVls_vloxseg8ei64_v_cg.sample(ins);
         end
+`endif
         "vloxseg8ei8.v"     : begin
             ExceptionsVls_vloxseg8ei8_v_cg.sample(ins);
         end
@@ -34748,9 +34835,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vluxei32.v"     : begin
             ExceptionsVls_vluxei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vluxei64.v"     : begin
             ExceptionsVls_vluxei64_v_cg.sample(ins);
         end
+`endif
         "vluxei8.v"     : begin
             ExceptionsVls_vluxei8_v_cg.sample(ins);
         end
@@ -34760,9 +34849,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vluxseg2ei32.v"     : begin
             ExceptionsVls_vluxseg2ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vluxseg2ei64.v"     : begin
             ExceptionsVls_vluxseg2ei64_v_cg.sample(ins);
         end
+`endif
         "vluxseg2ei8.v"     : begin
             ExceptionsVls_vluxseg2ei8_v_cg.sample(ins);
         end
@@ -34772,9 +34863,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vluxseg3ei32.v"     : begin
             ExceptionsVls_vluxseg3ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vluxseg3ei64.v"     : begin
             ExceptionsVls_vluxseg3ei64_v_cg.sample(ins);
         end
+`endif
         "vluxseg3ei8.v"     : begin
             ExceptionsVls_vluxseg3ei8_v_cg.sample(ins);
         end
@@ -34784,9 +34877,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vluxseg4ei32.v"     : begin
             ExceptionsVls_vluxseg4ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vluxseg4ei64.v"     : begin
             ExceptionsVls_vluxseg4ei64_v_cg.sample(ins);
         end
+`endif
         "vluxseg4ei8.v"     : begin
             ExceptionsVls_vluxseg4ei8_v_cg.sample(ins);
         end
@@ -34796,9 +34891,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vluxseg5ei32.v"     : begin
             ExceptionsVls_vluxseg5ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vluxseg5ei64.v"     : begin
             ExceptionsVls_vluxseg5ei64_v_cg.sample(ins);
         end
+`endif
         "vluxseg5ei8.v"     : begin
             ExceptionsVls_vluxseg5ei8_v_cg.sample(ins);
         end
@@ -34808,9 +34905,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vluxseg6ei32.v"     : begin
             ExceptionsVls_vluxseg6ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vluxseg6ei64.v"     : begin
             ExceptionsVls_vluxseg6ei64_v_cg.sample(ins);
         end
+`endif
         "vluxseg6ei8.v"     : begin
             ExceptionsVls_vluxseg6ei8_v_cg.sample(ins);
         end
@@ -34820,9 +34919,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vluxseg7ei32.v"     : begin
             ExceptionsVls_vluxseg7ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vluxseg7ei64.v"     : begin
             ExceptionsVls_vluxseg7ei64_v_cg.sample(ins);
         end
+`endif
         "vluxseg7ei8.v"     : begin
             ExceptionsVls_vluxseg7ei8_v_cg.sample(ins);
         end
@@ -34832,9 +34933,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vluxseg8ei32.v"     : begin
             ExceptionsVls_vluxseg8ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vluxseg8ei64.v"     : begin
             ExceptionsVls_vluxseg8ei64_v_cg.sample(ins);
         end
+`endif
         "vluxseg8ei8.v"     : begin
             ExceptionsVls_vluxseg8ei8_v_cg.sample(ins);
         end
@@ -34871,9 +34974,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vsoxei32.v"     : begin
             ExceptionsVls_vsoxei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsoxei64.v"     : begin
             ExceptionsVls_vsoxei64_v_cg.sample(ins);
         end
+`endif
         "vsoxei8.v"     : begin
             ExceptionsVls_vsoxei8_v_cg.sample(ins);
         end
@@ -34883,9 +34988,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vsoxseg2ei32.v"     : begin
             ExceptionsVls_vsoxseg2ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsoxseg2ei64.v"     : begin
             ExceptionsVls_vsoxseg2ei64_v_cg.sample(ins);
         end
+`endif
         "vsoxseg2ei8.v"     : begin
             ExceptionsVls_vsoxseg2ei8_v_cg.sample(ins);
         end
@@ -34895,9 +35002,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vsoxseg3ei32.v"     : begin
             ExceptionsVls_vsoxseg3ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsoxseg3ei64.v"     : begin
             ExceptionsVls_vsoxseg3ei64_v_cg.sample(ins);
         end
+`endif
         "vsoxseg3ei8.v"     : begin
             ExceptionsVls_vsoxseg3ei8_v_cg.sample(ins);
         end
@@ -34907,9 +35016,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vsoxseg4ei32.v"     : begin
             ExceptionsVls_vsoxseg4ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsoxseg4ei64.v"     : begin
             ExceptionsVls_vsoxseg4ei64_v_cg.sample(ins);
         end
+`endif
         "vsoxseg4ei8.v"     : begin
             ExceptionsVls_vsoxseg4ei8_v_cg.sample(ins);
         end
@@ -34919,9 +35030,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vsoxseg5ei32.v"     : begin
             ExceptionsVls_vsoxseg5ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsoxseg5ei64.v"     : begin
             ExceptionsVls_vsoxseg5ei64_v_cg.sample(ins);
         end
+`endif
         "vsoxseg5ei8.v"     : begin
             ExceptionsVls_vsoxseg5ei8_v_cg.sample(ins);
         end
@@ -34931,9 +35044,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vsoxseg6ei32.v"     : begin
             ExceptionsVls_vsoxseg6ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsoxseg6ei64.v"     : begin
             ExceptionsVls_vsoxseg6ei64_v_cg.sample(ins);
         end
+`endif
         "vsoxseg6ei8.v"     : begin
             ExceptionsVls_vsoxseg6ei8_v_cg.sample(ins);
         end
@@ -34943,9 +35058,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vsoxseg7ei32.v"     : begin
             ExceptionsVls_vsoxseg7ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsoxseg7ei64.v"     : begin
             ExceptionsVls_vsoxseg7ei64_v_cg.sample(ins);
         end
+`endif
         "vsoxseg7ei8.v"     : begin
             ExceptionsVls_vsoxseg7ei8_v_cg.sample(ins);
         end
@@ -34955,9 +35072,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vsoxseg8ei32.v"     : begin
             ExceptionsVls_vsoxseg8ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsoxseg8ei64.v"     : begin
             ExceptionsVls_vsoxseg8ei64_v_cg.sample(ins);
         end
+`endif
         "vsoxseg8ei8.v"     : begin
             ExceptionsVls_vsoxseg8ei8_v_cg.sample(ins);
         end
@@ -35147,9 +35266,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vsuxei32.v"     : begin
             ExceptionsVls_vsuxei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsuxei64.v"     : begin
             ExceptionsVls_vsuxei64_v_cg.sample(ins);
         end
+`endif
         "vsuxei8.v"     : begin
             ExceptionsVls_vsuxei8_v_cg.sample(ins);
         end
@@ -35159,9 +35280,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vsuxseg2ei32.v"     : begin
             ExceptionsVls_vsuxseg2ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsuxseg2ei64.v"     : begin
             ExceptionsVls_vsuxseg2ei64_v_cg.sample(ins);
         end
+`endif
         "vsuxseg2ei8.v"     : begin
             ExceptionsVls_vsuxseg2ei8_v_cg.sample(ins);
         end
@@ -35171,9 +35294,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vsuxseg3ei32.v"     : begin
             ExceptionsVls_vsuxseg3ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsuxseg3ei64.v"     : begin
             ExceptionsVls_vsuxseg3ei64_v_cg.sample(ins);
         end
+`endif
         "vsuxseg3ei8.v"     : begin
             ExceptionsVls_vsuxseg3ei8_v_cg.sample(ins);
         end
@@ -35183,9 +35308,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vsuxseg4ei32.v"     : begin
             ExceptionsVls_vsuxseg4ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsuxseg4ei64.v"     : begin
             ExceptionsVls_vsuxseg4ei64_v_cg.sample(ins);
         end
+`endif
         "vsuxseg4ei8.v"     : begin
             ExceptionsVls_vsuxseg4ei8_v_cg.sample(ins);
         end
@@ -35195,9 +35322,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vsuxseg5ei32.v"     : begin
             ExceptionsVls_vsuxseg5ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsuxseg5ei64.v"     : begin
             ExceptionsVls_vsuxseg5ei64_v_cg.sample(ins);
         end
+`endif
         "vsuxseg5ei8.v"     : begin
             ExceptionsVls_vsuxseg5ei8_v_cg.sample(ins);
         end
@@ -35207,9 +35336,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vsuxseg6ei32.v"     : begin
             ExceptionsVls_vsuxseg6ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsuxseg6ei64.v"     : begin
             ExceptionsVls_vsuxseg6ei64_v_cg.sample(ins);
         end
+`endif
         "vsuxseg6ei8.v"     : begin
             ExceptionsVls_vsuxseg6ei8_v_cg.sample(ins);
         end
@@ -35219,9 +35350,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vsuxseg7ei32.v"     : begin
             ExceptionsVls_vsuxseg7ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsuxseg7ei64.v"     : begin
             ExceptionsVls_vsuxseg7ei64_v_cg.sample(ins);
         end
+`endif
         "vsuxseg7ei8.v"     : begin
             ExceptionsVls_vsuxseg7ei8_v_cg.sample(ins);
         end
@@ -35231,9 +35364,11 @@ function void exceptionsvls_sample(int hart, int issue, ins_t ins);
         "vsuxseg8ei32.v"     : begin
             ExceptionsVls_vsuxseg8ei32_v_cg.sample(ins);
         end
+`ifdef XLEN64
         "vsuxseg8ei64.v"     : begin
             ExceptionsVls_vsuxseg8ei64_v_cg.sample(ins);
         end
+`endif
         "vsuxseg8ei8.v"     : begin
             ExceptionsVls_vsuxseg8ei8_v_cg.sample(ins);
         end

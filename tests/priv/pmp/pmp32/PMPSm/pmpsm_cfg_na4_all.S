@@ -25,8 +25,9 @@
 # REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 32
+#   PMP_GRANULARITY: 2
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv32i_zicsr
+# MARCH: rv32i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -70,14 +71,14 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/4
+    .rept UDB_NUM_PMP_ENTRIES/4
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+1
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -97,7 +98,6 @@ main:
     //Lock the Background region.
     LI(x4, (PMP_REGION_GLOBAL << PMP3_CFG_SHIFT))
     csrw pmpcfg3, x4
-
 //                                          Verification Section
 // Test Case: 1 : L -> 1 and No Permissions given to the PMP Region 14
 
@@ -263,8 +263,6 @@ main:
     csrw pmpcfg0, x4
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
-
-
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
@@ -276,13 +274,15 @@ test_2_str: .string "\"test: 2; cp: pmpm_cfg_na4_all_address-4\""
 test_3_str: .string "\"test: 3; cp: pmpm_cfg_na4_all_address+4\""
 
 
-.align 12
-.align (RVMODEL_PMP_GRAIN+2)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
+    .rept 1024
     jr ra
+    .endr
 
 TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept (1<<(UDB_PMP_GRANULARITY))
     nop
     .endr
 

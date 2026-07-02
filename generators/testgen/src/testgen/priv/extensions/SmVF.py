@@ -10,6 +10,7 @@
 
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 _CG = "SmVF_cg"
@@ -162,15 +163,17 @@ def _gen_fs_off(test_data: TestData, temp_reg: int) -> list[str]:
         "#define VDSEW 0",
     ],
 )
-def make_smvf(test_data: TestData) -> list[str]:
-    """Generate SmVF tests (vector-FP × mstatus.FS state)."""
-    temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
+def make_smvf(test_data: TestData) -> list[TestChunk]:
+    """Generate SmVF tests (vector-FP x mstatus.FS state)."""
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
+    temp_reg = test_data.int_regs.get_register()
 
-    lines: list[str] = []
-    lines.extend(_gen_fs_state_affecting_register(test_data, temp_reg))
-    lines.extend(_gen_fs_state_affecting_csr(test_data, temp_reg))
-    lines.extend(_gen_fs_state_nonaffecting(test_data, temp_reg))
-    lines.extend(_gen_fs_off(test_data, temp_reg))
+    tc.code.extend(_gen_fs_state_affecting_register(test_data, temp_reg))
+    tc.code.extend(_gen_fs_state_affecting_csr(test_data, temp_reg))
+    tc.code.extend(_gen_fs_state_nonaffecting(test_data, temp_reg))
+    tc.code.extend(_gen_fs_off(test_data, temp_reg))
 
     test_data.int_regs.return_registers([temp_reg])
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

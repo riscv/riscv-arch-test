@@ -22,7 +22,7 @@ covergroup Zic64bZicboz_cg with function sample(ins_t ins);
         bins offset_aligned[] = {[7'd0 : 7'd64]} with (item % 4 == 0);
     }
 
-    cp_zi64cb: cross cbo_zero, cbo_zero_offset ;
+    cp_zic64b: cross cbo_zero, cbo_zero_offset ;
 
 endgroup
 

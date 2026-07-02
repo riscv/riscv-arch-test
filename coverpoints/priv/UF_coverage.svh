@@ -22,7 +22,7 @@ covergroup UF_cg with function sample(ins_t ins);
     }
 
     walking_ones: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
-        bins b_1[] = { [0:`XLEN-1] };
+        bins b_1[] = { [0:`UDB_MXLEN-1] };
     }
 
     csrop: coverpoint ins.current.insn {

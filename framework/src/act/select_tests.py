@@ -15,10 +15,10 @@ from pathlib import Path
 from act.config import Config, load_config
 from act.parse_test_constraints import TestMetadata, generate_test_dict
 from act.parse_udb_config import (
-    generate_udb_files,
     get_config_implemented_extensions,
     get_config_params,
     get_implemented_extensions,
+    prepare_dut_outputs,
 )
 
 PRIV_EXTENSIONS = {"Sm", "S", "U"}
@@ -112,11 +112,11 @@ def select_tests_for_config_data(
             configured UDB yaml instead.
     """
     config = load_config(config_file, validate_tools=validate_tools)
-    config_dir = workdir / config.udb_config.stem
+    config_dir = workdir / config.name
     config_dir.mkdir(parents=True, exist_ok=True)
 
     if generate_udb:
-        generate_udb_files(config.udb_config, config_dir)
+        prepare_dut_outputs([config], workdir, jobs=1, verbose=False)
         implemented_extensions = get_implemented_extensions(config_dir / "extensions.txt")
     else:
         implemented_extensions = get_config_implemented_extensions(config.udb_config)

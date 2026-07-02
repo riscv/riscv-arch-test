@@ -54,14 +54,14 @@ covergroup EndianS_cg with function sample(ins_t ins);
         wildcard ignore_bins b2 = {3'b?1?};
         // all word offsets
     }
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         mstatus_mbe: coverpoint ins.current.csr[CSR_MSTATUS][37] { // mbe is mstatus[37] in RV64
         }
     `else
         mstatus_mbe: coverpoint ins.current.csr[CSR_MSTATUSH][5] { // mbe is mstatush[5] in RV32
         }
     `endif
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         mstatus_sbe: coverpoint ins.current.csr[CSR_MSTATUS][36] { // sbe is mstatus[36] in RV64
         }
     `else
@@ -101,7 +101,7 @@ covergroup EndianS_cg with function sample(ins_t ins);
     cp_sstatus_ube_endianness_lb:  cross priv_mode_u, sstatus_ube, cp_lb,  cp_byteoffset;
     cp_sstatus_ube_endianness_lhu: cross priv_mode_u, sstatus_ube, cp_lhu, cp_halfoffset;
     cp_sstatus_ube_endianness_lbu: cross priv_mode_u, sstatus_ube, cp_lbu, cp_byteoffset;
-    `ifdef XLEN64
+    `ifdef UDB_MXLEN_64
         cp_sd: coverpoint ins.current.insn {
             wildcard bins sd = {SD};
         }

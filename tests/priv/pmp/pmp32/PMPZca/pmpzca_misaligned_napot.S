@@ -29,7 +29,7 @@
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv32i_zca_zicsr
+# MARCH: rv32i_zca_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -45,8 +45,8 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#if RVMODEL_PMP_GRAIN !=0
-    #define REGION_SIZE  (1<<(RVMODEL_PMP_GRAIN+2))
+#if UDB_PMP_GRANULARITY != 2
+    #define REGION_SIZE  (1<<(UDB_PMP_GRANULARITY))
 #else
     #define REGION_SIZE 8
 #endif
@@ -62,14 +62,14 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/4
+    .rept UDB_NUM_PMP_ENTRIES/4
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+1
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
+    .rept UDB_NUM_PMP_ENTRIES
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -81,9 +81,9 @@ main:
 
 #define PMPADDRESS_TOP_GLOBAL       -1              // All memory region
 #define REGIONSTART                TEST_FOR_EXECUTION_1
-#if RVMODEL_PMP_GRAIN != 0
-    #define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
-    #define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)) - 1
+#if UDB_PMP_GRANULARITY != 2
+    #define PMP_MASK            ~((1 << (UDB_PMP_GRANULARITY - 3))-1)
+    #define PMP_REGION_SIZE     (1 << (UDB_PMP_GRANULARITY - 3)) - 1
 #else
     #define PMP_MASK            ~0
     #define PMP_REGION_SIZE     0
@@ -105,8 +105,10 @@ main:
 
     LA(x5, NEWREGION1)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr0, x5
 
     LA(x4, PMP0CFG)
@@ -114,8 +116,10 @@ main:
 
     LA(x5, NEWREGION2)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr1, x5
 
     LA(x4, PMP1CFG)
@@ -123,8 +127,10 @@ main:
 
     LA(x5, NEWREGION3)
     srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
+    LI(x6, PMP_MASK)
+    and x5, x5, x6
+    LI(x6, PMP_REGION_SIZE)
+    or x5, x5, x6
     csrw pmpaddr2, x5
 
     LA(x4, PMP2CFG)
@@ -147,26 +153,32 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
 
-.align 12
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     jalr x0, x1, 0
 
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_1:
     .rept ((REGION_SIZE / 2) -1)
     nop
     .endr
 
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_2:
     jalr x0, x1, 0                                              //uncompressed return straddling the start of the second region
 
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_3:
     .rept ((REGION_SIZE / 2) -2)
     nop
     .endr
 
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_4:
     jalr x0, x1, 0                                              // Uncompressed return straddling the end of the second region
 
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_5:
     .rept REGION_SIZE
     nop

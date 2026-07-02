@@ -837,10 +837,9 @@ normative_rule_definitions:
   # The mcycle CSR counts the number of clock cycles executed by the processor core
   # on which the hart is running.
   - name: mcycle_op
-    coverpoint: [
-        "Sm_mcsr_cg/cp_cntr_access/mcycle,
-        Sm_mcsr_cg/cp_mcycle_wraparound,
-        Sm_mcsr_cg/cp_mcycleh_wraparound",
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_cntr_access/mcycle, Sm_mcsr_cg/cp_mcycle_wraparound, Sm_mcsr_cg/cp_mcycleh_wraparound",
       ]
 
   # The mcycle and minstret registers have 64-bit precision on all RV32 and RV64
@@ -871,10 +870,9 @@ normative_rule_definitions:
 
   # The minstret CSR counts the number of instructions the hart has retired.
   - name: minstret_op
-    coverpoint: [
-        "Sm_mcsr_cg/cp_cntr_access/minstret,
-        Sm_mcsr_cg/cp_minstret_wraparound,
-        Sm_mcsr_cg/cp_minstreth_wraparound",
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_cntr_access/minstret, Sm_mcsr_cg/cp_minstret_wraparound, Sm_mcsr_cg/cp_minstreth_wraparound",
       ]
 
   # The mcycle and minstret registers have 64-bit precision on all RV32 and RV64

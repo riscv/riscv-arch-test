@@ -32,9 +32,9 @@ from __future__ import annotations
 import hashlib
 import heapq
 import json
+import os
 import sys
 from collections.abc import Mapping
-from contextlib import redirect_stdout
 from functools import cache
 from pathlib import Path
 
@@ -126,11 +126,36 @@ def file_hash(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()[:12]
 
 
+def _warm_udb_outputs(config_dir: Path, workdir: Path) -> None:
+    """Generate UDB outputs for every CI-enabled config in one parallel pass.
+
+    UDB resolution dominates discovery time and is independent of the
+    per-simulator exclusion lists, so prepare all configs up front with full
+    parallelism. The per-config selection calls in ``_selected_suite_weights``
+    then skip the UDB work via the build cache. The empty test dict makes the
+    selection part of this warm-up call a no-op.
+    """
+    config_files: list[Path] = []
+    for sim_ci_yaml in sorted(config_dir.rglob("*/ci.yaml")):
+        sim_config = load_simulator_ci_yaml(sim_ci_yaml)
+        if not sim_config.get("ci_enabled", True):
+            continue
+        exclude_configs: set[str] = set(sim_config.get("exclude_configs", []))
+        for run_cmd_file in sorted(sim_ci_yaml.parent.rglob("*/run_cmd.txt")):
+            if run_cmd_file.parent.name not in exclude_configs:
+                config_files.append(run_cmd_file.parent / "test_config.yaml")
+
+    if config_files:
+        prepare_configs_and_select_tests(config_files, {}, workdir, jobs=os.cpu_count() or 1, validate_tools=False)
+
+
 def discover_configs(config_dir: Path, workdir: Path | None = None) -> list[dict]:
     """Discover all CI-enabled configs and return matrix entries."""
     entries: list[dict] = []
     if workdir is None:
         workdir = REPO_ROOT / "work" / "ci-config"
+
+    _warm_udb_outputs(config_dir, workdir)
 
     for sim_ci_yaml in sorted(config_dir.rglob("*/ci.yaml")):
         sim_dir = sim_ci_yaml.parent
@@ -234,13 +259,18 @@ def main() -> int:
         print("Error: config/ directory not found. Run from repo root.", file=sys.stderr)
         return 1
 
-    # prepare_dut_outputs prints progress to stdout, but the workflow captures
-    # stdout as the JSON matrix — route everything else to stderr.
-    with redirect_stdout(sys.stderr):
-        entries = discover_configs(config_dir)
+    entries = discover_configs(config_dir)
+    matrix = json.dumps({"include": entries}, separators=(",", ":"))
 
-    matrix = {"include": entries}
-    print(json.dumps(matrix, separators=(",", ":")))
+    # In GitHub Actions, write the matrix straight to GITHUB_OUTPUT so stdout
+    # stays free for logs (UDB progress, bundle install, etc.). Locally,
+    # print it (after any progress output).
+    github_output = os.environ.get("GITHUB_OUTPUT")
+    if github_output:
+        with Path(github_output).open("a") as f:
+            f.write(f"matrix={matrix}\n")
+    else:
+        print(matrix)
     return 0
 
 

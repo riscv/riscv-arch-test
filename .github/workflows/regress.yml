@@ -42,6 +42,10 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.discover.outputs.matrix }}
+    env:
+      # Install UDB gems into a dedicated directory so they can be cached
+      # independently of the mise-managed Ruby installation.
+      BUNDLE_PATH: ${{ github.workspace }}/.bundle-gems
     steps:
       - name: Checkout code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
@@ -49,9 +53,34 @@ jobs:
       - name: Set up mise
         uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
 
+      - name: Cache UDB gems
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: .bundle-gems
+          key: udb-gems-${{ runner.os }}-${{ hashFiles('.mise.toml', 'framework/src/act/data/Gemfile.lock') }}
+
+      - name: Cache uv packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ~/.cache/uv
+          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+
+      # The act build cache is content-hash based and self-validating, so a
+      # stale restore is safe: only configs whose UDB yaml changed rebuild.
+      # Gemfile.lock stays in the primary prefix (not just restore-keys)
+      # because the build cache hashes commands, not tool binaries — a udb
+      # gem update must drop these caches entirely.
+      - name: Cache UDB outputs
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: work/ci-config
+          key: ci-config-udb-${{ hashFiles('framework/src/act/data/Gemfile.lock') }}-${{ hashFiles('config/**/*.yaml') }}
+          restore-keys: |
+            ci-config-udb-${{ hashFiles('framework/src/act/data/Gemfile.lock') }}-
+
       - name: Discover CI configs
         id: discover
-        run: echo "matrix=$(.github/scripts/ci_config.py)" >> "$GITHUB_OUTPUT"
+        run: .github/scripts/ci_config.py
 
   regress:
     name: ${{ matrix.simulator }} (${{ matrix.config }})${{ matrix.shard_suffix }}

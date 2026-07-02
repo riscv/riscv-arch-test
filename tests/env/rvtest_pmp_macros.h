@@ -105,10 +105,10 @@
 // PMP_VERIFICATION_RWX_LEGAL: full boundary R/W/X check (the *_legal_lxwr/lwxr family).
 // Probes execute, then store, then load at five offsets relative to the region:
 // start, start-4, start+4, start+g-4, start+g, where g = (1<<UDB_PMP_GRANULARITY) is the
-// PMP granule size in bytes. Execute is done first for all five offsets (results recorded
-// as TEST_CASE_11..15), then the five stores (_1.._5) and five loads (_6.._10).
-// RVTEST_FENCEI at the top syncs the I-cache so a prior invocation's store can't leave a
-// stale instruction. Needs test_1_str..test_15_str.
+// PMP granule size in bytes. Cases are numbered in execution order: the five execute
+// probes are recorded as TEST_CASE_1..5, then the five stores (_6.._10) and five loads
+// (_11.._15). RVTEST_FENCEI at the top syncs the I-cache so a prior invocation's store
+// can't leave a stale instruction. Needs test_1_str..test_15_str.
 //   ADDRESS   - region label to probe
 //   TEST_CASE - prefix for the local result labels
 .macro PMP_VERIFICATION_RWX_LEGAL ADDRESS, TEST_CASE
@@ -119,53 +119,53 @@
     // Execution Access Check
     LA (a4, \ADDRESS)
     LA(ra, 1f)         // ra: resume target on a fetch fault (and the region's ret target)
-    \TEST_CASE\()_11:
+    \TEST_CASE\()_1:
     jalr x0, 0(a4)
     nop
     nop
 1:
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_11, test_11_str)
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
 
     LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     addi a4, a4, -4                     // REGIONSTART - 4
     LA(ra, 2f)         // ra: resume target on a fetch fault (and the region's ret target)
-    \TEST_CASE\()_12:
+    \TEST_CASE\()_2:
     jalr x0, 0(a4)
     nop
     nop
 2:
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_12, test_12_str)
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
 
     LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     addi a4, a4, 8                      // REGIONSTART + 4
     LA(ra, 3f)         // ra: resume target on a fetch fault (and the region's ret target)
-    \TEST_CASE\()_13:
+    \TEST_CASE\()_3:
     jalr x0, 0(a4)
     nop
     nop
 3:
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_13, test_13_str)
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
 
     li t0, ((1<<(UDB_PMP_GRANULARITY))-8)   // g - 8, where g = (1<<UDB_PMP_GRANULARITY) is the granule size in bytes
     add a4, a4, t0                  // REGIONSTART + g - 4
     LA(ra, 4f)         // ra: resume target on a fetch fault (and the region's ret target)
-    \TEST_CASE\()_14:
+    \TEST_CASE\()_4:
     jalr x0, 0(a4)
     nop
     nop
 4:
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_14, test_14_str)
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)
 
     addi a4, a4, 4                      // REGIONSTART + g
-    \TEST_CASE\()_15:
+    \TEST_CASE\()_5:
     LA(ra, 5f)         // ra: resume target on a fetch fault (and the region's ret target)
     jalr x0, 0(a4)
     nop
@@ -173,91 +173,91 @@
 5:
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_15, test_15_str)
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_5, test_5_str)
 
     LI(a4, NOP)                                             // Value to write (NOP)
     // Store Access Check
     LA(a5, \ADDRESS)                                        // Address to be verified
 
-    \TEST_CASE\()_1:
-    sw a4, 0(a5)
-    nop
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
-
-    addi a5, a5, -4                                         // REGIONSTART - 4
-
-    \TEST_CASE\()_2:
-    sw a4, 0(a5)
-    nop
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
-
-    addi a5, a5, 8                                          // REGIONSTART + 4
-
-    \TEST_CASE\()_3:
-    sw a4, 0(a5)
-    nop
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
-
-    li t0, ((1<<(UDB_PMP_GRANULARITY))-8)   // g - 8, where g = (1<<UDB_PMP_GRANULARITY) is the granule size in bytes
-    add a5, a5, t0                                      // REGIONSTART + g - 4
-
-    \TEST_CASE\()_4:
-    sw a4, 0(a5)
-    nop
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)
-
-    addi a5, a5, 4                                          // REGIONSTART + g
-
-    \TEST_CASE\()_5:
-    sw a4, 0(a5)
-    nop
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_5, test_5_str)
-
-    LA(a5, \ADDRESS)                                        // Address to be verified
-
     \TEST_CASE\()_6:
-    lw a4, 0(a5)
+    sw a4, 0(a5)
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_6, test_6_str)                                   // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_6, test_6_str)
 
     addi a5, a5, -4                                         // REGIONSTART - 4
 
     \TEST_CASE\()_7:
-    lw a4, 0(a5)
+    sw a4, 0(a5)
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_7, test_7_str)                                   // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_7, test_7_str)
 
     addi a5, a5, 8                                          // REGIONSTART + 4
 
     \TEST_CASE\()_8:
-    lw a4, 0(a5)
+    sw a4, 0(a5)
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)                                   // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)
 
     li t0, ((1<<(UDB_PMP_GRANULARITY))-8)   // g - 8, where g = (1<<UDB_PMP_GRANULARITY) is the granule size in bytes
     add a5, a5, t0                                      // REGIONSTART + g - 4
 
     \TEST_CASE\()_9:
-    lw a4, 0(a5)
+    sw a4, 0(a5)
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_9, test_9_str)                                   // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_9, test_9_str)
 
     addi a5, a5, 4                                          // REGIONSTART + g
 
     \TEST_CASE\()_10:
+    sw a4, 0(a5)
+    nop
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_10, test_10_str)
+
+    LA(a5, \ADDRESS)                                        // Address to be verified
+
+    \TEST_CASE\()_11:
     lw a4, 0(a5)
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_10, test_10_str)                                   // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_11, test_11_str)                                   // Signature update
+
+    addi a5, a5, -4                                         // REGIONSTART - 4
+
+    \TEST_CASE\()_12:
+    lw a4, 0(a5)
+    nop
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_12, test_12_str)                                   // Signature update
+
+    addi a5, a5, 8                                          // REGIONSTART + 4
+
+    \TEST_CASE\()_13:
+    lw a4, 0(a5)
+    nop
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_13, test_13_str)                                   // Signature update
+
+    li t0, ((1<<(UDB_PMP_GRANULARITY))-8)   // g - 8, where g = (1<<UDB_PMP_GRANULARITY) is the granule size in bytes
+    add a5, a5, t0                                      // REGIONSTART + g - 4
+
+    \TEST_CASE\()_14:
+    lw a4, 0(a5)
+    nop
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_14, test_14_str)                                   // Signature update
+
+    addi a5, a5, 4                                          // REGIONSTART + g
+
+    \TEST_CASE\()_15:
+    lw a4, 0(a5)
+    nop
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_15, test_15_str)                                   // Signature update
 .endm
 
 // PMP_VERIFICATION_RWX_ALL: all-access-width R/W/X check (the cfg_XWR_all family).

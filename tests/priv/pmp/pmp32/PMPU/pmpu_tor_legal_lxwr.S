@@ -190,23 +190,23 @@ RVTEST_DATA_BEGIN
 .align 4
 
 // Test case strings for reporting
-test_1_str:  .string "\"test: 1;  cp: cp_cfg_A_tor_sw_address\""
-test_2_str:  .string "\"test: 2;  cp: cp_cfg_A_tor_sw_address-4\""
-test_3_str:  .string "\"test: 3;  cp: cp_cfg_A_tor_sw_address+4\""
-test_4_str:  .string "\"test: 4;  cp: cp_cfg_A_tor_sw_address+g-4\""
-test_5_str:  .string "\"test: 5;  cp: cp_cfg_A_tor_sw_address+g\""
+test_1_str:  .string "\"test: 1; cp: cp_cfg_A_tor_jalr_address\""
+test_2_str:  .string "\"test: 2; cp: cp_cfg_A_tor_jalr_address-4\""
+test_3_str:  .string "\"test: 3; cp: cp_cfg_A_tor_jalr_address+4\""
+test_4_str:  .string "\"test: 4; cp: cp_cfg_A_tor_jalr_address+g-4\""
+test_5_str:  .string "\"test: 5; cp: cp_cfg_A_tor_jalr_address+g\""
 
-test_6_str:  .string "\"test: 6;  cp: cp_cfg_A_tor_lw_address\""
-test_7_str:  .string "\"test: 7;  cp: cp_cfg_A_tor_lw_address-4\""
-test_8_str:  .string "\"test: 8;  cp: cp_cfg_A_tor_lw_address+4\""
-test_9_str:  .string "\"test: 9;  cp: cp_cfg_A_tor_lw_address+g-4\""
-test_10_str: .string "\"test: 10; cp: cp_cfg_A_tor_lw_address+g\""
+test_6_str:  .string "\"test: 6; cp: cp_cfg_A_tor_sw_address\""
+test_7_str:  .string "\"test: 7; cp: cp_cfg_A_tor_sw_address-4\""
+test_8_str:  .string "\"test: 8; cp: cp_cfg_A_tor_sw_address+4\""
+test_9_str:  .string "\"test: 9; cp: cp_cfg_A_tor_sw_address+g-4\""
+test_10_str: .string "\"test: 10; cp: cp_cfg_A_tor_sw_address+g\""
 
-test_11_str: .string "\"test: 11; cp: cp_cfg_A_tor_jalr_address\""
-test_12_str: .string "\"test: 12; cp: cp_cfg_A_tor_jalr_address-4\""
-test_13_str: .string "\"test: 13; cp: cp_cfg_A_tor_jalr_address+4\""
-test_14_str: .string "\"test: 14; cp: cp_cfg_A_tor_jalr_address+g-4\""
-test_15_str: .string "\"test: 15; cp: cp_cfg_A_tor_jalr_address+g\""
+test_11_str: .string "\"test: 11; cp: cp_cfg_A_tor_lw_address\""
+test_12_str: .string "\"test: 12; cp: cp_cfg_A_tor_lw_address-4\""
+test_13_str: .string "\"test: 13; cp: cp_cfg_A_tor_lw_address+4\""
+test_14_str: .string "\"test: 14; cp: cp_cfg_A_tor_lw_address+g-4\""
+test_15_str: .string "\"test: 15; cp: cp_cfg_A_tor_lw_address+g\""
 
 .align 12
 .align (UDB_PMP_GRANULARITY)

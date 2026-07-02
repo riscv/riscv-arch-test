@@ -227,7 +227,7 @@ jobs:
       - run: git submodule update --init docs/docs-resources
 
       - name: Build CTP
-        run: cd docs/ctp && make -j2
+        run: cd docs/ctp && make docker-pull-latest && make -j6
 
   crd-build:
     name: Build CRD
@@ -238,7 +238,7 @@ jobs:
       - run: git submodule update --init docs/docs-resources
 
       - name: Build CRD
-        run: cd docs/crd && make -j2
+        run: cd docs/crd && make docker-pull-latest && make -j6
 
   check-tests:
     name: Check generated tests

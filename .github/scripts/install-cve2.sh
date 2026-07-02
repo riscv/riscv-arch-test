@@ -9,7 +9,7 @@ set -euo pipefail
 
 INSTALL_DIR="${1:?Usage: install-cve2.sh <install-dir>}"
 CVE2_DV_REPO="https://github.com/openhwgroup/cv32e20-dv.git"
-CVE2_DV_COMMIT="29e08282ba24e456391288f865583f3463c9f7f0"
+CVE2_DV_COMMIT="e088f466282cf2e18f8df766b9589366ef586aa2"
 VERILATOR_VERSION="v5.042"
 
 mkdir -p "$INSTALL_DIR/bin"

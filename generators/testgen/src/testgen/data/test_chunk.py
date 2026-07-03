@@ -27,6 +27,9 @@ class TestChunk:
         data_strings: Debug strings for .data section
         sigupd_count: Number of signature updates
         num_testcases: Number of individual testcases (for split counting)
+        split_name: Optional named-split marker. A non-None value starts a new
+                    named file group (unless the current group already has the
+                    same name); subsequent None chunks stay in that group.
         section_header: Optional banner comment before a coverpoint section
         start_sig_reg: Signature pointer register expected at the start of this chunk
         start_data_reg: Data pointer register expected at the start of this chunk
@@ -39,6 +42,7 @@ class TestChunk:
     data_strings: list[str] = field(default_factory=list)
     sigupd_count: int = 0
     num_testcases: int = 0
+    split_name: str | None = None
     section_header: str | None = None
     start_sig_reg: int = 2
     start_data_reg: int = 3
@@ -71,3 +75,40 @@ def split_test_chunks(test_chunks: list[TestChunk], max_per_file: int) -> list[l
     if current_file_chunks:
         test_files.append(current_file_chunks)
     return test_files
+
+
+def group_test_chunks(
+    test_chunks: list[TestChunk], max_per_file: int
+) -> list[tuple[str | None, list[list[TestChunk]]]]:
+    """
+    Group TestChunks by their split_name, then length-split each group.
+
+    A chunk with a non-None split_name starts a new named group unless the current
+    group already has that name; chunks with split_name=None stay in the current
+    group. An unnamed group can only occur before the first named chunk. Reusing a
+    name non-contiguously raises ValueError.
+
+    Returns an ordered list of (group_name, test_files) pairs, where test_files is
+    the length-based split of that group's chunks (max_per_file testcases per file).
+    """
+    if not test_chunks:
+        raise ValueError("No test chunks provided!")
+
+    groups: list[tuple[str | None, list[TestChunk]]] = []
+    seen_names: set[str] = set()
+    current_name: str | None = None
+    current_group: list[TestChunk] = []
+
+    for tc in test_chunks:
+        if tc.split_name is not None and tc.split_name != current_name:
+            if tc.split_name in seen_names:
+                raise ValueError(f'Split name "{tc.split_name}" reused non-contiguously!')
+            seen_names.add(tc.split_name)
+            if current_group:
+                groups.append((current_name, current_group))
+            current_name = tc.split_name
+            current_group = []
+        current_group.append(tc)
+    groups.append((current_name, current_group))
+
+    return [(name, split_test_chunks(chunks, max_per_file)) for name, chunks in groups]

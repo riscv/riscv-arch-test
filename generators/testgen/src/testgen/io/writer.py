@@ -54,6 +54,7 @@ def write_test_file(
     output_dir: Path,
     file_idx: int = 0,
     extra_defines: list[str] | None = None,
+    split_name: str | None = None,
 ) -> None:
     """
     Write a single test file.
@@ -65,7 +66,10 @@ def write_test_file(
         output_dir: Directory to write the test file to
         file_idx: File index for the filename suffix (default 00)
         extra_defines: Additional #define statements for the test (e.g., trap handlers)
+        split_name: Named-split label for priv tests (mutually exclusive with instr_name)
     """
+    if instr_name is not None and split_name is not None:
+        raise ValueError("instr_name and split_name are mutually exclusive! Unpriv tests should not use split name.")
     testsuite = test_config.testsuite
 
     # Combine data from all test chunks
@@ -76,6 +80,8 @@ def write_test_file(
     # Construct filename and paths
     if instr_name is not None:
         filename = f"{testsuite}-{instr_name}-{file_idx:02d}.S"
+    elif split_name is not None:
+        filename = f"{testsuite}_{split_name}-{file_idx:02d}.S"
     else:
         filename = f"{testsuite}-{file_idx:02d}.S"
     test_file = output_dir / filename

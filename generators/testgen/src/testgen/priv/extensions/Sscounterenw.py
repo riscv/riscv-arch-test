@@ -7,6 +7,7 @@
 from testgen.asm.csr import csr_access_test, csr_walk_test
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -37,8 +38,10 @@ def _generate_scounteren_tests(test_data: TestData) -> list[str]:
 
 
 @add_priv_test_generator("Sscounterenw", required_extensions=["S"])
-def make_scounterenw(test_data: TestData) -> list[str]:
+def make_scounterenw(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Scounteren supervisor counter-enable register."""
-    lines: list[str] = []
-    lines.extend(_generate_scounteren_tests(test_data))
-    return lines
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
+    tc.code.extend(_generate_scounteren_tests(test_data))
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

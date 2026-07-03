@@ -26,8 +26,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
-      - name: Set up mise
-        uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
+      - name: Set up tools
+        uses: ./.github/actions/setup-tools
 
       - name: Run prek
         uses: j178/prek-action@bdca6f102f98e2b4c7029491a53dfd366469e33d # v2.0.4
@@ -46,15 +46,35 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
-      - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+      - name: Set up tools
+        uses: ./.github/actions/setup-tools
+        with:
+          udb-gems: "true"
+
+      # The act build cache is content-hash based and self-validating, so a
+      # stale restore is safe: only configs whose UDB yaml changed rebuild.
+      # Gemfile.lock stays in the primary prefix (not just restore-keys)
+      # because the build cache hashes commands, not tool binaries — a udb
+      # gem update must drop these caches entirely.
+      - name: Cache UDB outputs
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: work/ci-config
+          key: ci-config-udb-${{ hashFiles('framework/src/act/data/Gemfile.lock') }}-${{ hashFiles('config/**/*.yaml') }}
+          restore-keys: |
+            ci-config-udb-${{ hashFiles('framework/src/act/data/Gemfile.lock') }}-
+
+      # Generated tests (e.g. priv) are not checked in but count toward the
+      # suite weights used for shard bin-packing, so generate them first.
+      - name: Generate tests
+        run: make tests --jobs $(nproc)
 
       - name: Discover CI configs
         id: discover
-        run: echo "matrix=$(.github/scripts/ci_config.py)" >> "$GITHUB_OUTPUT"
+        run: .github/scripts/ci_config.py
 
   regress:
-    name: ${{ matrix.simulator }} (${{ matrix.config }})
+    name: ${{ matrix.simulator }} (${{ matrix.config }})${{ matrix.shard_suffix }}
     needs: discover-configs
     runs-on: ubuntu-latest
     strategy:
@@ -64,21 +84,34 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
-      - name: Set up mise
-        uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
+      - name: Set up tools
+        uses: ./.github/actions/setup-tools
+        with:
+          udb-gems: "true"
+
+      - name: Report shard assignment
+        run: |
+          if [ -z "${{ matrix.extensions }}" ]; then
+            echo "::notice::Shard $((${{ matrix.shard_index }} + 1))/${{ matrix.shard_total }} for ${{ matrix.config }} is empty after exclusions; skipping heavy steps."
+          else
+            echo "Shard $((${{ matrix.shard_index }} + 1))/${{ matrix.shard_total }} extensions: ${{ matrix.extensions }}"
+          fi
 
       - name: Install sail-riscv model
+        if: matrix.extensions != ''
         run: |
           sudo mkdir -p /usr/local
           curl --location https://github.com/riscv/sail-riscv/releases/download/${SAIL_VERSION}/sail-riscv-$(uname)-$(arch).tar.gz \
           | sudo tar xvz --directory=/usr/local --strip-components=1
 
       - name: Install RISC-V GCC toolchain
+        if: matrix.extensions != ''
         run: |
           curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${RISCV_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-24.04-gcc.tar.xz \
           | sudo tar xvJ --directory=/usr/local --strip-components=1
 
       - name: Install Clang
+        if: matrix.extensions != ''
         run: |
           retry() {
             local max_attempts="$1"
@@ -111,59 +144,62 @@ jobs:
           done
 
       - name: Install runtime dependencies
-        if: matrix.apt_packages != ''
+        if: matrix.extensions != '' && matrix.apt_packages != ''
         run: |
           sudo apt-get update
           sudo apt-get install -y ${{ matrix.apt_packages }}
 
       - name: Restore cached simulator
-        if: matrix.cache_key != ''
+        if: matrix.extensions != '' && matrix.cache_key != ''
         id: cache-restore
-        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ${{ github.workspace }}/${{ matrix.simulator }}
           key: ${{ matrix.cache_key }}
 
       - name: Install simulator
-        if: matrix.install_script != '' && steps.cache-restore.outputs.cache-hit != 'true'
+        if: matrix.extensions != '' && matrix.install_script != '' && steps.cache-restore.outputs.cache-hit != 'true'
         run: bash ${{ matrix.install_script }} ${{ github.workspace }}/${{ matrix.simulator }}
 
       - name: Save cached simulator
-        if: matrix.cache_key != '' && steps.cache-restore.outputs.cache-hit != 'true'
-        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
+        if: matrix.extensions != '' && matrix.cache_key != '' && steps.cache-restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ${{ github.workspace }}/${{ matrix.simulator }}
           key: ${{ matrix.cache_key }}
 
       - name: Add simulator to PATH
-        if: matrix.install_script != ''
+        if: matrix.extensions != '' && matrix.install_script != ''
         run: echo "$GITHUB_WORKSPACE/${{ matrix.simulator }}/bin" >> $GITHUB_PATH
 
       - name: Run setup script
-        if: matrix.setup_script != ''
+        if: matrix.extensions != '' && matrix.setup_script != ''
         run: bash ${{ matrix.setup_script }} ${{ github.workspace }}/${{ matrix.simulator }}
 
       - name: Generate tests and coverpoints
-        run: make tests --jobs $(nproc)
+        if: matrix.extensions != ''
+        run: EXTENSIONS=${{ matrix.extensions }} make tests --jobs $(nproc)
 
       - name: Build ELFs
+        if: matrix.extensions != ''
         run: |
           FAST=True \
+          EXTENSIONS=${{ matrix.extensions }} \
           EXCLUDE_EXTENSIONS=${{ matrix.exclude_extensions }} \
           CONFIG_FILES=${{ matrix.config_file }} \
           make elfs --jobs $(nproc)
 
       - name: Run tests
-        if: matrix.run_cmd != ''
+        if: matrix.extensions != '' && matrix.run_cmd != ''
         run: |
           ./run_tests.py "${{ matrix.run_cmd }}" \
           work/${{ matrix.config }}/elfs
 
       - name: Upload logs
-        if: always()
+        if: always() && matrix.extensions != ''
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: ${{ matrix.config }}-logs
+          name: ${{ matrix.config }}${{ matrix.shard_suffix }}-logs
           path: work/${{ matrix.config }}/logs
 
   vector-testgen:
@@ -173,8 +209,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
-      - name: Set up mise
-        uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
+      - name: Set up tools
+        uses: ./.github/actions/setup-tools
 
       - name: Generate vector tests
         run: make vector-tests --jobs $(nproc)
@@ -185,13 +221,13 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
-      - name: Set up mise
-        uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
+      - name: Set up tools
+        uses: ./.github/actions/setup-tools
 
       - run: git submodule update --init docs/docs-resources
 
       - name: Build CTP
-        run: cd docs/ctp && make -j2
+        run: cd docs/ctp && make docker-pull-latest && make -j6
 
   crd-build:
     name: Build CRD
@@ -202,7 +238,7 @@ jobs:
       - run: git submodule update --init docs/docs-resources
 
       - name: Build CRD
-        run: cd docs/crd && make -j2
+        run: cd docs/crd && make docker-pull-latest && make -j6
 
   check-tests:
     name: Check generated tests
@@ -212,8 +248,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
-      - name: Set up mise
-        uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
+      - name: Set up tools
+        uses: ./.github/actions/setup-tools
 
       - name: Regenerate tests and coverpoints
         run: make clean-tests tests
@@ -246,8 +282,10 @@ jobs:
       - name: Pin Python version for this job
         run: echo "${{ matrix.python-version }}" > .python-version
 
-      - name: Set up mise
-        uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
+      - name: Set up tools
+        uses: ./.github/actions/setup-tools
+        with:
+          udb-gems: "true"
 
       - name: Verify Python version
         run: uv run python --version

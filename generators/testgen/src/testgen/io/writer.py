@@ -69,7 +69,9 @@ def write_test_file(
         split_name: Named-split label for priv tests (mutually exclusive with instr_name)
     """
     if instr_name is not None and split_name is not None:
-        raise ValueError("instr_name and split_name are mutually exclusive! Unpriv tests should not use split name.")
+        raise ValueError("instr_name and split_name are mutually exclusive (unpriv tests should not use split_name).")
+    if split_name is not None and (".." in split_name or "/" in split_name or "\\" in split_name):
+        raise ValueError(f"Invalid split_name {split_name!r}; must not contain path separators or '..'.")
     testsuite = test_config.testsuite
 
     # Combine data from all test chunks

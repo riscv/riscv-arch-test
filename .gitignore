@@ -45,5 +45,3 @@ docs/crd/build
 coverpoints/norm/norm-rules.json
 coverpoints/norm/yaml/new
 coverpoints/norm/yaml/chapters
-framework/src/act/data/vendor/
-venv/

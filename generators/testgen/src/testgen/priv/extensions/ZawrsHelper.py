@@ -81,14 +81,7 @@ def _timeout_helper(
 
 
 def _wrs_no_res_helper(test_data: TestData, coverpoint: str, priv_list: list[str], covergroup: str) -> list[str]:
-    """Generate WRS instruction no reservation tests
-
-    mstatus.TW =0
-    mstatus.MIE = 0
-    mstatus.SIE = 0
-    mie= all 0s to disable interrupts
-    Clear all reservation with sc.w, then execute {WRS.STO, WRS.NTO} with no reservation created in specified mode
-    """
+    """Helper function for generating WRS instruction no reservation tests"""
 
     r_scratch, r_temp, r_temp2 = test_data.int_regs.get_registers(3)
 
@@ -139,17 +132,7 @@ def _wrs_no_res_helper(test_data: TestData, coverpoint: str, priv_list: list[str
 
 
 def _wrs_no_mie_helper(test_data: TestData, priv_list: list[str], covergroup: str, coverpoint: str) -> list[str]:
-    """Generate wrs tests with mie = all 0s.
-
-    cross lr instruction to set up reservation
-    mstatus.MIE = 1
-    mstatus.SIE = 1
-    mie = all 0s
-    mstatus.TW = 1
-    mip.mtip = all 1s
-    execute {WRS.NTO/WRS.STO} in {S/U} mode
-    2 x 2 bins
-    """
+    """Generate wrs tests with mie = all 0s"""
 
     r_temp, r_temp2, r_mtime, r_mtimecmp = test_data.int_regs.get_registers(4)
 

@@ -13,6 +13,7 @@ Zicboz : Cache-Block Zero instruction (cbo.zero).
 
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 _OFFSETS: list[int] = list(range(0, 65, 4))
@@ -75,8 +76,10 @@ def _generate_zic64b_tests(test_data: TestData) -> list[str]:
     "Zic64bZicboz",
     required_extensions=["Zicboz", "Zic64b"],
 )
-def make_zic64bzicboz(test_data: TestData) -> list[str]:
+def make_zic64bzicboz(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the Zic64bZicboz extension."""
-    lines: list[str] = []
-    lines.extend(_generate_zic64b_tests(test_data))
-    return lines
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
+    tc.code.extend(_generate_zic64b_tests(test_data))
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

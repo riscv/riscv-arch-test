@@ -15,11 +15,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.discovery import discover_and_import_modules
 from testgen.exceptions import MissingRegistryItemError
 
 # Type alias for priv test generator functions
-PrivTestGenerator = Callable[[TestData], list[str]]
+PrivTestGenerator = Callable[[TestData], list[TestChunk]]
 
 
 class MissingPrivGeneratorError(MissingRegistryItemError):

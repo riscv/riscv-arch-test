@@ -1172,7 +1172,7 @@ def genRandomVector(test, sew, vs="vs2", emul=1):
   vectordata += writeData(f"// {test}_{vs}_data for {vs}")
   vectordata += writeData("///////////////////////////////////////////\n")
   vectordata += writeData(".section .data\n")
-  vectordata += writeData("    .align 3")
+  vectordata += writeData("    .p2align 3")
   vectordata += writeData("// Corner Vectors")
 
   eew = sew * emul
@@ -1244,7 +1244,7 @@ def genRandomVectorLS():
   vectordata += writeData("// vector_ls_random_base data")
   vectordata += writeData("///////////////////////////////////////////\n")
   vectordata += writeData(".section .data\n")
-  vectordata += writeData("    .align 4")
+  vectordata += writeData("    .p2align 4")
   vectordata += writeData("// Corner Vectors")
 
   # Region sizing for vector LS test data. rs1 points at the `vector_ls_random_base`
@@ -1309,7 +1309,7 @@ def genVMaskedges():
   num_words = math.ceil(maxVLEN / 32)
 
   # generating random masks for length suite
-  vectordata += writeData("    .align 3")
+  vectordata += writeData("    .p2align 3")
   for name in range(3):
     vectordata += writeData(f"random_mask_{name}:")
     val = getrandbits(maxVLEN)
@@ -1389,7 +1389,7 @@ def genVsedges(test, sew, emul, crypto=False):
   while (r := randint(3, 2**(eew - 1) - 3)) in set(v_register_edges.values()): pass
   v_register_edges["random"] = r
 
-  vectordata += writeData("    .align 3")
+  vectordata += writeData("    .p2align 3")
   for corner in v_register_edges:
       val = v_register_edges[corner]
       val &= (1 << eew) - 1
@@ -1438,7 +1438,7 @@ def genVsedgesFP(test, sew, emul):
   vectordata += writeData("///////////////////////////////////////////")
   vectordata += writeData("// vector edges data (floating point)")
   vectordata += writeData("///////////////////////////////////////////\n")
-  vectordata += writeData("    .align 3")
+  vectordata += writeData("    .p2align 3")
   for corner in vs_edges_f:
       val = vs_edges_f[corner]
       vectordata += writeData(f"vs_corner_f_{corner}_{ending}:")
@@ -1505,7 +1505,7 @@ def genCustomData():
     data += writeData("///////////////////////////////////////////")
     data += writeData("// custom coverpoint data labels")
     data += writeData("///////////////////////////////////////////\n")
-    data += writeData("    .align 3")
+    data += writeData("    .p2align 3")
     for label, entries in _custom_data_labels.items():
         data += writeData(f"{label}:")
         for directive, value in entries:
@@ -1517,7 +1517,7 @@ def clearCustomData():
     _custom_data_labels.clear()
 
 def genVtestdata(test, sew):
-  test_data = ".align 4\n"
+  test_data = ".p2align 4\n"
   test_data += "vector_data:\n"
 
   if test in vector_loads:
@@ -1604,10 +1604,10 @@ def myhash(s):
     h = (h * 31 + ord(c)) & 0xFFFFFFFF
   return h
 
-def getPrivExtraDefines():
+def getPrivExtraDefines(sew):
     """Extra defines needed by vector privileged tests."""
     sew_to_suffix = {8: "e8", 16: "e16", 32: "e32", 64: "e64"}
-    sewsize = sew_to_suffix[minSEW_MIN]
+    sewsize = sew_to_suffix[minSEW_MIN] if sew == 0 else sew_to_suffix[sew]
     vle = f"vle{minSEW_MIN}.v"
     return "\n".join([
         "#define rvtest_mtrap_routine",
@@ -1764,7 +1764,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
         .replace("@EXTRA_DEFINES@", (f"#define RVTEST_VECTOR\n"
                                      f"#define RVTEST_SEW {sew}\n"
                                      f"#define VDSEW {vdsew}\n"
-                                     + (f"\n{getPrivExtraDefines()}" if priv else "")
+                                     + (f"\n{getPrivExtraDefines(sew)}" if priv else "")
                                      + ("\n#define TRAP_SIGUPD_COUNT 50000" if test.startswith("SsstrictV") else "")))
 
 
@@ -2661,7 +2661,7 @@ def prepMaskV(maskval, sew, tempReg, lmul):
     writeLine(f"la x{tempReg}, {maskval}")
     writeLine(f"vlm.v v0, (x{tempReg})",                      "# Load mask value into v0")
 
-def prepVstart(vstartval, lmul = 1, scratch = 8, scratch2 = 28):
+def prepVstart(vstartval, lmul = 1, scratch = 8, scratch2 = 28, sew=8):
   # `scratch` and `scratch2` must be picked via pickPrivScratch (which excludes
   # sigReg, framework-reserved regs, and the test's operand regs). Hardcoding
   # x8 / t3 (x28) here previously clobbered sigReg whenever resolveScalarSigConflict
@@ -2671,14 +2671,14 @@ def prepVstart(vstartval, lmul = 1, scratch = 8, scratch2 = 28):
   if   (vstartval == "one"):
     writeLine(f"li x{vstart_reg}, 1",                                    f"# Load x{vstart_reg} = 1 for vstart")
   elif (vstartval == "vlmaxm1"):
-    writeLine(f"vsetvli x{vstart_reg}, x0, SEWSIZE, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
+    writeLine(f"vsetvli x{vstart_reg}, x0, e{sew}, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
     writeLine(f"addi x{vstart_reg}, x{vstart_reg}, -1",                  f"# x{vstart_reg} = VLMAX - 1")
   elif (vstartval == "vlmaxd2"):
-    writeLine(f"vsetvli x{vstart_reg}, x0, SEWSIZE, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
+    writeLine(f"vsetvli x{vstart_reg}, x0, e{sew}, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
     writeLine(f"srli x{vstart_reg}, x{vstart_reg}, 1",                   f"# x{vstart_reg} = VLMAX / 2")
   else: # random vstart
     randvstart = randint(3, maxVLEN)  # TODO: check logic for this
-    writeLine(f"vsetvli x{vstart_reg}, x0, SEWSIZE, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
+    writeLine(f"vsetvli x{vstart_reg}, x0, e{sew}, m{lmul}, ta, ma",    f"# x{vstart_reg} = VLMAX")
     writeLine(f"li x{scratch2}, {randvstart}")
     writeLine(f"remu x{scratch2}, x{scratch2}, x{vstart_reg}",           f"# x{scratch2} = randvstart % VLMAX (< VLMAX)")
     vstart_reg = scratch2  # randomized vstart value lives in scratch2 from here on

@@ -99,7 +99,7 @@ def write_test_file(
             body += tc.section_header + "\n\n"
         elif i > 0:
             body += "\n\n"
-        body += "\n".join(indent_asm(line) for line in tc.code.split("\n"))
+        body += "\n".join(indent_asm(line) for line in "\n".join(tc.code).split("\n"))
 
     # Test footer
     test_data_section = generate_test_data_section(data_values, test_config.xlen, test_config.flen)

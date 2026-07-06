@@ -59,6 +59,7 @@ RVTEST_BEGIN
     // Execution Access Check
     LA (a4, \ADDRESS)
     LA(x1, 1f)                          // Store the return Address in x1
+    RVTEST_FENCEI                              // sync I-cache: a prior store may have updated this executable region
     jalr ra, 0(a4)
     nop
     nop
@@ -369,7 +370,7 @@ main:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 10
+.p2align 10
 
 // Test case strings for reporting
 test_1_str:  .string "\"test: 1;  cp: pmpm_aligned_sb_address\""
@@ -392,15 +393,15 @@ test_14_str: .string "\"test: 14; cp: pmpm_aligned_lw_address+4\""
 test_15_str: .string "\"test: 15; cp: pmpm_aligned_lw_address+g-4\""
 test_16_str: .string "\"test: 16; cp: pmpm_aligned_lw_address+g\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 
 TEST_FOR_EXECUTION_0:
-    .rept 1024
+    .rept (g>>2)                                         // NAPOT region must be 8-byte aligned at grain 2 -> region at 0x80005008 (pmpaddr=STANDARD_REGION). A 4-byte pad (0x80005004) yields a 16-byte NAPOT covering the pad -> hang.
     nop
     .endr
 
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept (1<<(UDB_PMP_GRANULARITY))
     nop

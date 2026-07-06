@@ -154,6 +154,8 @@
     #ifdef RVMODEL_IO_INIT
       RVMODEL_IO_INIT(T1, T2, T3)
     #endif
+
+    // boot to the lowest supported privilege mode unless a higher mode is specified by BOOT_TO_MMODE or BOOT_TO_SMODE
     // always boot to at least M-mode
     RVTEST_BOOT_TO_MMODE
     #ifndef BOOT_TO_MMODE
@@ -170,6 +172,8 @@
         #endif
       #endif
     #endif
+
+    // dh 7/1/26 temporary explicit booting to lower modes
 
     #ifdef S_SUPPORTED
       rvtest_identity_map:
@@ -759,7 +763,12 @@
     csrw senvcfg, t0
 
     // Boot into S-mode
-    # RVMODEL_GOTO_LOWER_MODE SMODE
+    // temporarily gate going to SMODE with BOOT_TO_SMODE until all tests are updated to work with S-mode booting
+    // dh 7/1/26 remove this gating when all tests are updated to handle booting to modes other than M
+    // Also this avoids going to S-mode when the goal is to get to U-mode because
+    #ifdef BOOT_TO_SMODE
+      RVTEST_GOTO_LOWER_MODE SMODE
+    #endif
   #endif
 .endm
 
@@ -768,6 +777,7 @@
 /*******************************************************************************************/
 .macro RVTEST_BOOT_TO_UMODE
   // We arrive here in S-mode if S_SUPPORTED, else in M-mode.
+  // dh 7/1/26 temporarily arriving here in M-mode if the goal is to go to U-mode
 
   // Run custom RVMODEL flavor if the DUT provides it to override this default boot
   #ifdef RVMODEL_BOOT_TO_UMODE
@@ -775,12 +785,22 @@
   #else
     rvtest_boot_to_umode:
     // Boot into U-mode
-    #ifdef S_SUPPORTED
-      // RVTEST_GOTO_LOWER_MODE UMODE // *** need a version that works from S-mode
-    #else
-      // if S-mode not supported, we must be in M-mode, so we can just switch to U-mode without an SBI call
-      // RVTEST_GOTO_LOWER_MODE UMODE
+    #ifdef BOOT_TO_UMODE
+      RVTEST_GOTO_LOWER_MODE UMODE
     #endif
+
+    // disabled 7/1/26 dh while booting to U-mode without going through S-mode until all tests are updated to handle booting to modes other than M
+    // #ifdef S_SUPPORTED
+    //   // RVTEST_GOTO_LOWER_MODE UMODE // *** need a version that works from S-mode
+    // #else
+    //   // if S-mode not supported, we must be in M-mode, so we can just switch to U-mode without an SBI call
+
+    //   // temporarily gate going to UMODE with BOOT_TO_UMODE until all tests are updated to work with U-mode booting
+    //   // dh 7/1/26 remove this gating when all tests are updated to handle booting to modes other than M
+    //   #ifdef BOOT_TO_UMODE
+    //     RVTEST_GOTO_LOWER_MODE UMODE
+    //   #endif
+    // #endif
   #endif
   nop
 .endm

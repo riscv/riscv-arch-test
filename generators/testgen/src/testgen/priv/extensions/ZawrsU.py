@@ -30,13 +30,7 @@ def _zawrs_resume_trap_handler_u(
 ) -> list[str]:
     """Local trap handlers for the WRS resume-on-interrupt tests.
 
-    Two handlers are emitted:
-      * zawrs_resume_trap_handler_m - always present; used by the U-mode tests,
-        whose timer interrupt is taken in M mode (mtvec).
-      * zawrs_resume_trap_handler_s - only when S_SUPPORTED; used by the S-mode
-        tests, whose Sstc timer interrupt is taken in S mode (stvec).
-
-    Each handler records xcause into r_cause (nonzero => trap fired: the loop
+    The handler records xcause into r_cause (nonzero => trap fired: the loop
     sentinel), SIGUPDs it, clears the timer, and RESTORES the framework trap
     vector from r_scratch before returning. The restore is essential: the test
     then issues RVTEST_GOTO_MMODE, which returns to M mode via an ecall that

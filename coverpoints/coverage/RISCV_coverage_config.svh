@@ -191,6 +191,9 @@
 `ifdef SSCCPTR_COVERAGE
   `include "Ssccptr_coverage.svh"
 `endif
+`ifdef SSCOFPMF_COVERAGE
+  `include "Sscofpmf_coverage.svh"
+`endif
 `ifdef SSCOUNTERENW_COVERAGE
   `include "Sscounterenw_coverage.svh"
 `endif

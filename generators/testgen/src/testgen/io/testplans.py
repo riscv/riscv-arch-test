@@ -18,42 +18,23 @@ def get_extensions(testplan_dir: Path) -> list[str]:
     extensions: list[str] = []
     for testplan in testplan_dir.glob("*.csv"):
         extension = testplan.stem
-        if ("V" not in extension and "Zv" not in extension) or extension == "ZfaZvfh":
+        if extension.startswith(("V", "Zv")):
+            extensions.extend(expand_vector_extension(extension))
+        else:
             extensions.append(extension)
     return extensions
 
 
-def get_vector_extensions(testplan_dir: Path, *, priv: bool) -> list[str]:
-    """Get the list of vector extensions from the testplan directory, appending any necessary SEW suffixes."""
-    if priv:
-        testplan_dir = testplan_dir / "priv"
-    testplans = []
-    for file in testplan_dir.glob("*.csv"):
-        arch = file.stem
-        if priv:
-            is_vector = arch.startswith(("ExceptionsV", "SsstrictV", "MisalignedV", "V", "Zv"))
-        else:
-            is_vector = arch.startswith(("V", "Zv"))
-
-        if not is_vector:
-            continue
-
-        elif arch in ["Vx", "Vls", "Zvbb", "Zvkb"]:
-            for effew in ["8", "16", "32", "64"]:
-                testplans.append(arch + effew)
-        elif arch in ["ExceptionsVf", "Vf"]:
-            for effew in ["16", "32", "64"]:
-                testplans.append(arch + effew)
-        elif arch == "Zvknhb":
-            for effew in ["32", "64"]:
-                testplans.append(arch + effew)
-        else:
-            testplans.append(arch)
-
-    # Only allow currently implemented testplans to run in ACT4
-    testplans = [testplan for testplan in testplans if testplan.startswith("Vx")]
-
-    return testplans
+def expand_vector_extension(extension: str) -> list[str]:
+    """Expands a vector extension by adding SEW suffixes."""
+    if extension in ["Vx", "Vls", "Zvbb", "Zvkb"]:
+        return [extension + effew for effew in ["8", "16", "32", "64"]]
+    elif extension in ["ExceptionsVf", "Vf"]:
+        return [extension + effew for effew in ["16", "32", "64"]]
+    elif extension == "Zvknhb":
+        return [extension + effew for effew in ["32", "64"]]
+    else:
+        return [extension]
 
 
 @dataclass

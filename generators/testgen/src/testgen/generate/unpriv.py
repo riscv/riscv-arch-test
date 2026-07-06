@@ -106,21 +106,6 @@ def _detect_sew(testsuite: str) -> int:
         e.g. _detect_sew("Vx64") = 64
     """
 
-    for pattern in [
-        r"Vx(\d+)$",
-        r"Vls(\d+)$",
-        r"Vf(\d+)$",
-        r"VlsCustom(\d+)$",
-        r"VfCustom(\d+)$",
-        r"Zvbb(\d+)$",
-        r"Zvkb(\d+)$",
-        r"Zvbc(\d+)$",
-        r"Zvknhb(\d+)$",
-    ]:
-        match = re.search(pattern, testsuite)
-        if match:
-            return int(match.group(1))
-
     for pattern, sew in [
         (r"Zvfbfmin$", 16),
         (r"Zvfhmin$", 16),
@@ -130,6 +115,10 @@ def _detect_sew(testsuite: str) -> int:
         match = re.search(pattern, testsuite)
         if match:
             return sew
+
+    match = re.search(r"(\d+)$", testsuite)
+    if match:
+        return int(match.group(1))
 
     return 8
 
@@ -160,7 +149,7 @@ def _generate_unpriv_tests_for_instruction(
     # Iterate through each coverpoint and generate test chunks
     for coverpoint in coverpoints:
         # Skip cp_asm_count and std_vec if mixed with other coverpoints
-        if (coverpoint == "cp_asm_count" or coverpoint == "std_vec") and len(coverpoints) > 1:
+        if coverpoint in ["cp_asm_count", "std_vec"] and len(coverpoints) > 1:
             continue
 
         all_test_chunks.extend(generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, test_data))

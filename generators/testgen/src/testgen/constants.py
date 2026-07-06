@@ -136,5 +136,5 @@ SKIP_COVERPOINTS = frozenset(
 # Vector Configuration
 # =============================================================================
 MIN_SEW_MIN = 8
-ELEN = 64
+ELEN_MAX = 64
 VLEN_MAX = 1024

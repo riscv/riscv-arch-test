@@ -32,7 +32,7 @@ from rich.progress import (
 
 from testgen.constants import E_EXTENSION_TESTS
 from testgen.generate import generate_priv_test, generate_unpriv_extension_tests
-from testgen.io.testplans import get_extensions, get_vector_extensions
+from testgen.io.testplans import get_extensions
 from testgen.priv import get_priv_test_extensions
 
 # CLI interface setup
@@ -90,15 +90,12 @@ def generate_all_tests(
     # Get available extensions
     available_unpriv_extensions = get_extensions(testplan_dir)
     available_priv_extensions = get_priv_test_extensions()
-    available_vector_unpriv_extensions = get_vector_extensions(testplan_dir, priv=False)
     unpriv_ext_list: list[str] = []
     priv_ext_list: list[str] = []
-    vector_unpriv_ext_list: list[str] = []
 
     if extensions == "all":
         unpriv_ext_list = available_unpriv_extensions
         priv_ext_list = available_priv_extensions
-        vector_unpriv_ext_list = available_vector_unpriv_extensions
     else:
         for ext in extensions.split(","):
             ext = ext.strip()
@@ -106,8 +103,6 @@ def generate_all_tests(
                 unpriv_ext_list.append(ext)
             elif ext in available_priv_extensions:
                 priv_ext_list.append(ext)
-            elif ext in available_vector_unpriv_extensions:
-                vector_unpriv_ext_list.append(ext)
             else:
                 print(
                     f"Extension {ext} not found in unpriv testplans at {testplan_dir} or priv test generators. This is normal for handwritten tests."
@@ -130,11 +125,8 @@ def generate_all_tests(
             for testsuite in sorted(unpriv_ext_list):
                 if E_ext and testsuite not in E_EXTENSION_TESTS:
                     continue
-                tasks.append(UnprivTask(xlen, E_ext, testsuite, testplan_dir, output_test_dir, False))
-
-    for xlen in [32, 64]:
-        for testsuite in sorted(vector_unpriv_ext_list):
-            tasks.append(UnprivTask(xlen, False, testsuite, testplan_dir, output_test_dir, True))
+                is_vector = testsuite.startswith(("V", "Zv"))
+                tasks.append(UnprivTask(xlen, E_ext, testsuite, testplan_dir, output_test_dir, is_vector))
 
     tasks.extend(PrivTask(testsuite, output_test_dir) for testsuite in sorted(priv_ext_list))
 

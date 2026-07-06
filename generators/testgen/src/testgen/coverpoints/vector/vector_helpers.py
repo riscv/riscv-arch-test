@@ -9,7 +9,7 @@ import dataclasses
 import random
 import re
 
-from testgen.constants import ELEN, MIN_SEW_MIN
+from testgen.constants import ELEN_MAX, MIN_SEW_MIN
 from testgen.data.random import random_int
 from testgen.formatters.registry import get_instr_type_config
 
@@ -329,7 +329,7 @@ def get_legal_lmuls(sew: int) -> list[int]:
     Args:
         sew: The SEW used to determine what LMULs are available. (e.g. often 2 is available at SEW=32, but not SEW=64)
     """
-    lmulmin = MIN_SEW_MIN / ELEN
+    lmulmin = MIN_SEW_MIN / ELEN_MAX
 
     legalvlmuls = [0, 1, 2, 3]
     # A given supported fractional LMUL setting must support SEW settings between SEWMIN and LMUL * ELEN

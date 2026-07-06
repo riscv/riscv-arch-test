@@ -30,7 +30,7 @@
   // *** not sure this is still needed after recent simplifications.  dh 4/24/26
   .option push
   .option rvc
-  .align UNROLLSZ
+  .p2align UNROLLSZ
   .option norvc
 
   // Include model specific boot code
@@ -38,9 +38,9 @@
   LA(ra, rvmodel_boot)
   jalr ra
 
-  // Create new section so that .align directives in the test code don't affect the
+  // Create new section so that .{b/p2}align directives in the test code don't affect the
   // entry point address. The assembler increases a section's overall alignment to
-  // the largest .align in that section, so any large .align used in a test would
+  // the largest .{b/p2}align in that section, so any large .{b/p2}align used in a test would
   // increase .text.init's alignment, shifting rvtest_entry_point to an unexpected
   // address. Placing test code in its own section avoids that because the .text.rvtest
   // section will have its own alignment. This requires .text.init and .text.rvtest
@@ -173,7 +173,13 @@
       #endif
     #endif
 
-    // dh 7/1/26 temporary explicit booting to lower modes
+    // Temporary workaround to boot to correct mode in Ssstrict tests until
+    // full boot flow with mode selection is working. TODO: Remove this
+    #ifdef RVTEST_TEMP_BOOT_TO_S
+      RVTEST_GOTO_LOWER_MODE Smode
+    #elif defined(RVTEST_TEMP_BOOT_TO_U)
+      RVTEST_GOTO_LOWER_MODE Umode
+    #endif
 
     #ifdef S_SUPPORTED
       rvtest_identity_map:
@@ -289,7 +295,7 @@
   // while remaining obviously recognizable as uninitialized scratch defaults.
   // 264 bytes = 33 doublewords (needed for atomic reservation tests with offsets up to 256 bytes)
   .data
-  .align 8
+  .p2align 8
   scratch:
     .dword 0xDEAD0001FFFEBEEF, 0xDEAD0002FFFDBEEF
     .dword 0xDEAD0003FFFCBEEF, 0xDEAD0004FFFBBEEF
@@ -309,7 +315,7 @@
     .dword 0xDEAD001FFFE0BEEF, 0xDEAD0020FFDFBEEF
     .dword 0xDEAD0021FFDEBEEF
 
-  .align 4
+  .p2align 4
 
   // Create separate save areas for each priv mode trap handler
   // Guard matches RVTEST_TRAP_HANDLER guard: RVTEST_TRAP_SAVEAREA references
@@ -320,7 +326,7 @@
   #endif
 
   // Data for use in test
-  .align 4
+  .p2align 4
   .global rvtest_data_begin
   rvtest_data_begin:
 .endm
@@ -336,14 +342,14 @@
 
   // Root page tables
   #ifdef S_SUPPORTED
-    .align 12
+    .p2align 12
     rvtest_Sroot_pg_tbl:
       .zero(4096)                // 4KB page table
     #ifdef H_SUPPORTED
-      .align 14
+      .p2align 14
       rvtest_Hroot_pg_tbl:
         .zero(16384)               // 16KB page table
-      .align 12
+      .p2align 12
       rvtest_Vroot_pg_tbl:
         .zero(4096)              // 4KB page table
     #endif
@@ -366,7 +372,7 @@
 /**** - Trap handler signature region                                                   ****/
 /*******************************************************************************************/
 .macro RVTEST_SIG_SETUP
-  .align 4
+  .p2align 4
   .global begin_signature
   begin_signature:
   .global rvtest_sig_begin
@@ -398,7 +404,7 @@
         CANARY
     #endif
 
-  .align 4
+  .p2align 4
   .global rvtest_sig_end
   rvtest_sig_end:
   .global end_signature

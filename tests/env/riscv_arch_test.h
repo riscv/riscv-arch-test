@@ -15,6 +15,7 @@
 #include "check_defines.h"
 #include "signature.h"
 #include "rvtest_macros.h"
+#include "rvtest_pmp_macros.h"
 #ifdef RVTEST_VECTOR
   #include "rvtest_macros_vector.h"
 #endif

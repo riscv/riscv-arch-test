@@ -18,6 +18,7 @@ from testgen.asm.interrupts import (
     set_stimecmp_zero,
 )
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 # ---------------------------------------------------------------------------
@@ -494,11 +495,13 @@ def _generate_user_stce_tests(test_data: TestData) -> list[str]:
 
 
 @add_priv_test_generator("InterruptsSstc", required_extensions=["Sm", "S", "Sstc"])
-def make_interruptss_s(test_data: TestData) -> list[str]:
+def make_interruptss_s(test_data: TestData) -> list[TestChunk]:
     """Generate all Sstc interrupt tests (machine, supervisor, user modes)."""
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
     r_temp, r_mtcmp = test_data.int_regs.get_registers(2)
 
-    lines = [
+    tc.code = [
         comment_banner(
             "InterruptsSstc",
             "Supervisor timer (Sstc) interrupt tests\n"
@@ -517,15 +520,16 @@ def make_interruptss_s(test_data: TestData) -> list[str]:
         "",
     ]
 
-    lines += _generate_machine_sti_tests(test_data)
-    lines += _generate_machine_tm_tests(test_data)
-    lines += _generate_machine_stce_tests(test_data)
-    lines += _generate_supervisor_sti_tests(test_data)
-    lines += _generate_supervisor_tm_tests(test_data)
-    lines += _generate_supervisor_stce_tests(test_data)
-    lines += _generate_user_sti_tests(test_data)
-    lines += _generate_user_tm_tests(test_data)
-    lines += _generate_user_stce_tests(test_data)
+    tc.code += _generate_machine_sti_tests(test_data)
+    tc.code += _generate_machine_tm_tests(test_data)
+    tc.code += _generate_machine_stce_tests(test_data)
+    tc.code += _generate_supervisor_sti_tests(test_data)
+    tc.code += _generate_supervisor_tm_tests(test_data)
+    tc.code += _generate_supervisor_stce_tests(test_data)
+    tc.code += _generate_user_sti_tests(test_data)
+    tc.code += _generate_user_tm_tests(test_data)
+    tc.code += _generate_user_stce_tests(test_data)
 
     test_data.int_regs.return_registers([r_temp, r_mtcmp])
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

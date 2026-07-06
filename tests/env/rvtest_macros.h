@@ -29,7 +29,7 @@
 
 
 //****NOTE: label `rvtest_Sroot_pg_tbl` must be declared after RVTEST_DATA_END
-//          in the test aligned at 4kiB (use .align 12)
+//          in the test aligned at 4kiB (use .p2align 12)
 #define PTE_SETUP_COMMON(_PAR, _PR, _TR0, _TR1, _VAR, level)      ;\
     srli _VAR, _VAR, (RISCV_PGLEVEL_BITS * level + RISCV_PGSHIFT) ;\
     srli _PAR, _PAR, (RISCV_PGLEVEL_BITS * level + RISCV_PGSHIFT) ;\

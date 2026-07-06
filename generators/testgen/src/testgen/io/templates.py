@@ -54,9 +54,7 @@ def insert_header_template(
     else:
         march = generate_march_string(ext_components, xlen)
         all_extensions = ext_components
-    if extra_defines is None:
-        extra_defines = []
-    extra_defines.extend(generate_defines_from_extensions(all_extensions))
+    all_defines = [*(extra_defines or []), *generate_defines_from_extensions(all_extensions)]
     # Replace placeholders
     template = (
         template.replace("@TEST_PATH@", f"{test_file}")
@@ -64,7 +62,7 @@ def insert_header_template(
         .replace("@EXTENSION_LIST@", f"{ext_components}")
         .replace("@PARAMS@", format_params(params, ext_components))
         .replace("@MARCH@", march)
-        .replace("@EXTRA_DEFINES@", "\n".join(extra_defines))
+        .replace("@EXTRA_DEFINES@", "\n".join(all_defines))
         .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(sigupd_count))
     )
     return template

@@ -1,12 +1,12 @@
 ##################################
-# priv/extensions/ZawrsSU.py
+# priv/extensions/ZawrsU.py
 #
-# ZawrsSU privileged extension test generator.
+# ZawrsU privileged extension test generator.
 # ellyu@hmc.edu June 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""ZawrsSU privileged extension test generator for user-mode (and Supervisor mode and H extension if supported)."""
+"""ZawrsU privileged extension test generator for user-mode (and Supervisor mode and H extension if supported)."""
 
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.interrupts import (
@@ -275,11 +275,6 @@ def make_zawrsu(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_wrs_sto_timeout_tests(test_data))
     tc.code.extend(_generate_wrs_no_res_tests(test_data))
     tc.code.extend(_generate_wrs_resume_tests(test_data))
-
-    # This refers to Spike, QEMU and Whisper:
-    # for any coverpoint with TW = 1, the DUTs trigger illegal instruction on WRS.NTO immediately if TW = 1 but sail just treats WRS.NTO as NOP
-    # NTO is_nop = true is set for the DUTs since they all treat WRS.NTO as NOP unless TW = 1
-
     tc.code.extend(_generate_wrs_nto_timeout_tests(test_data))
     tc.code.extend(_generate_wrs_no_mie_tests(test_data))
 

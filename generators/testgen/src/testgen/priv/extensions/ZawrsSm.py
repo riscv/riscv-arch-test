@@ -17,7 +17,7 @@ from testgen.priv.registry import add_priv_test_generator
 
 
 def _zawrs_resume_trap_handler_m(test_data: TestData, r_cause: int, r_temp: int, r_mtimecmp: int) -> list[str]:
-    """Trap handler for the M-mode wrs.nto resume-on-interrupt test (mie=1 bin).
+    """Trap handler for the M-mode wrs resume-on-interrupt test.
 
     SIGUPD mcause and clears timer interrupt, then return to the test
 
@@ -26,7 +26,7 @@ def _zawrs_resume_trap_handler_m(test_data: TestData, r_cause: int, r_temp: int,
     address it in direct mode (MODE=0).
     """
     return [
-        "# ---- Local trap handler for WRS.NTO resume, mie=1 (direct mode) ----",
+        "# ---- Local trap handler for WRS resume ----",
         "j 4f                             # skip handler in straight-line code",
         ".option push",
         ".option norvc",
@@ -155,13 +155,16 @@ def _generate_wrs_no_res_tests(test_data: TestData) -> list[str]:
 def _generate_wrs_resume_tests(test_data: TestData) -> list[str]:
     """Generate WRS instruction resume when interrupt pending tests
 
+    modify mtvec to point to a different trap handler
+    repeat the WRS operation until an interrupt actually happens
+
     cross lr instruction to set up reservation.
     mstatus.TW = 0
     mstatus.MIE = {0/1}
     cross with mie.MTIE=1
     Set up timer to interrupt soon
-    execute WRS.NTO in M mode
-    2 bins
+    execute WRS.NTO/WRS.STO in M mode
+    2 x 2 bins
     """
 
     ######################################
@@ -179,57 +182,58 @@ def _generate_wrs_resume_tests(test_data: TestData) -> list[str]:
         "",
     ]
 
-    for mie_val in [0, 1]:
-        lines.extend(
-            [
-                "#### Setup ####",
-                f"# mstatus.MIE = {mie_val}",
-                f"{'csrsi' if mie_val else 'csrci'} mstatus, 8",
-                "# Set mie.MTIE",
-                f"LI(x{r_temp}, 0x80)",
-                f"CSRS(mie, x{r_temp})",
-                "",
-                "# Clear mstatus.TW",
-                f"LI(x{r_temp}, 0x200000)",
-                f"CSRC(mstatus, x{r_temp})",
-                "",
-                f"# Install local trap handler in mtvec (direct mode); save old mtvec in x{r_scratch}",
-                f"LA(x{r_temp}, zawrs_resume_trap_handler)",
-                f"csrrw x{r_scratch}, mtvec, x{r_temp}",
-            ]
-        )
+    for op in ["WRS.NTO", "WRS.STO"]:
+        for mie_val in [0, 1]:
+            lines.extend(
+                [
+                    "#### Setup ####",
+                    f"# mstatus.MIE = {mie_val}",
+                    f"{'csrsi' if mie_val else 'csrci'} mstatus, 8",
+                    "# Set mie.MTIE",
+                    f"LI(x{r_temp}, 0x80)",
+                    f"CSRS(mie, x{r_temp})",
+                    "",
+                    "# Clear mstatus.TW",
+                    f"LI(x{r_temp}, 0x200000)",
+                    f"CSRC(mstatus, x{r_temp})",
+                    "",
+                    f"# Install local trap handler in mtvec (direct mode); save old mtvec in x{r_scratch}",
+                    f"LA(x{r_temp}, zawrs_resume_trap_handler)",
+                    f"csrrw x{r_scratch}, mtvec, x{r_temp}",
+                ]
+            )
 
-        lines.extend(
-            [
-                # r_cause is a safe scratch here (reset to sentinel below before it is read).
-                *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_temp, r_temp2, r_temp3, r_cause),
-                "",
-                "",
-                test_data.add_testcase(f"mie_{mie_val}", coverpoint, covergroup),
-                ".option push",
-                ".option norvc",
-                f"li x{r_cause}, 0                 # sentinel: nonzero means the trap was taken",
-                "# lr.w to set up reservation",
-                f"LA(x{r_temp}, scratch)",
-                f"lr.w x{r_temp2}, (x{r_temp})",
-                "1:",
-                "WRS.NTO",
-                f"bnez x{r_cause}, 2f              # MIE=1: handler recorded mcause -> done",
-                "# Only moves on if MIE = 0 and mip.MTIP = 1, expect no interrupt should be taken",
-                f"csrr x{r_temp}, mip",
-                f"andi x{r_temp}, x{r_temp}, 0x80  # Extract mip.MTIP",
-                f"csrr x{r_temp2}, mstatus",
-                f"andi x{r_temp2}, x{r_temp2}, 0x8  # Extract mstatus.MIE",
-                f"bnez x{r_temp2}, 1b              # MIE = 1 -> retry",
-                f"beqz x{r_temp}, 1b              # No interrupt pending -> retry",
-                "2:",
-                ".option pop",
-                "# Restore the framework trap handler",
-                f"csrw mtvec, x{r_scratch}",
-                *clr_mtimer_int(r_temp, r_mtimecmp),
-                "",
-            ]
-        )
+            lines.extend(
+                [
+                    # r_cause is a safe scratch here (reset to sentinel below before it is read).
+                    *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_temp, r_temp2, r_temp3, r_cause),
+                    "",
+                    "",
+                    test_data.add_testcase(f"mie_{mie_val}_{op}", coverpoint, covergroup),
+                    ".option push",
+                    ".option norvc",
+                    f"li x{r_cause}, 0                 # sentinel: nonzero means the trap was taken",
+                    "# lr.w to set up reservation",
+                    f"LA(x{r_temp}, scratch)",
+                    f"lr.w x{r_temp2}, (x{r_temp})",
+                    "1:",
+                    f"{op}",
+                    f"bnez x{r_cause}, 2f              # MIE=1: handler recorded mcause -> done",
+                    "# Only moves on if MIE = 0 and mip.MTIP = 1, expect no interrupt should be taken",
+                    f"csrr x{r_temp}, mip",
+                    f"andi x{r_temp}, x{r_temp}, 0x80  # Extract mip.MTIP",
+                    f"csrr x{r_temp2}, mstatus",
+                    f"andi x{r_temp2}, x{r_temp2}, 0x8  # Extract mstatus.MIE",
+                    f"bnez x{r_temp2}, 1b              # MIE = 1 -> retry",
+                    f"beqz x{r_temp}, 1b              # No interrupt pending -> retry",
+                    "2:",
+                    ".option pop",
+                    "# Restore the framework trap handler",
+                    f"csrw mtvec, x{r_scratch}",
+                    *clr_mtimer_int(r_temp, r_mtimecmp),
+                    "",
+                ]
+            )
     # Emit the shared local trap handler AFTER the loop: write_sigupd is evaluated
     # here (generation time), so it binds to the last testcase label, mie_1. Both
     # mie bins point mtvec at this label via a forward reference.

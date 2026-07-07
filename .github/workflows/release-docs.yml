@@ -31,7 +31,7 @@ jobs:
       - run: git submodule update --init docs/docs-resources
 
       - name: Build CTP
-        run: cd docs/ctp && make -j2
+        run: cd docs/ctp && make docker-pull-latest && make -j6
 
       - name: Upload CTP PDF
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
@@ -53,7 +53,7 @@ jobs:
       - run: git submodule update --init docs/docs-resources
 
       - name: Build CRD
-        run: cd docs/crd && make -j2
+        run: cd docs/crd && make docker-pull-latest && make -j6
 
       - name: Upload CRD PDFs
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
@@ -116,6 +116,8 @@ jobs:
             rvi20_crd.html
             mc100_crd.pdf
             mc100_crd.html
+            rva23_crd.pdf
+            rva23_crd.html
 
   deploy-pages:
     needs: [build-ctp, build-crd]

@@ -20,11 +20,10 @@ def make_custom_prefetch(instr_name: str, instr_type: str, coverpoint: str, test
         raise ValueError(f"cp_custom_prefetch generator only supports prefetch instructions, got {instr_name}")
 
     tc = test_data.begin_test_chunk()
-    test_lines: list[str] = []
 
     reg1, reg2 = test_data.int_regs.get_registers(2, exclude_regs=[0])
 
-    test_lines.extend(
+    tc.code.extend(
         [
             "# cp_custom_prefetch: Write 65 words to scratch, issue prefetch instruction, read them back and record signature",
             f"LA(x{reg2}, scratch)",
@@ -32,21 +31,21 @@ def make_custom_prefetch(instr_name: str, instr_type: str, coverpoint: str, test
     )
 
     for i in range(65):
-        test_lines.extend(
+        tc.code.extend(
             [
                 load_int_reg("rs1", reg1, i * 0x00FEDCBA + 0xD00F, test_data),
                 f"sw x{reg1}, {i * 4}(x{reg2})",
             ]
         )
 
-    test_lines.extend(
+    tc.code.extend(
         [
             f"{instr_name} 0(x{reg2}) # Issue prefetch instruction on first line of scratch",
         ]
     )
 
     for i in range(65):
-        test_lines.extend(
+        tc.code.extend(
             [
                 test_data.add_testcase(f"word {i}", "cp_custom_prefetch"),
                 f"lw x{reg1}, {i * 4}(x{reg2})",
@@ -58,5 +57,4 @@ def make_custom_prefetch(instr_name: str, instr_type: str, coverpoint: str, test
     # Return registers
     test_data.int_regs.return_registers([reg1, reg2])
 
-    tc.code = "\n".join(test_lines)
     return [test_data.end_test_chunk()]

@@ -326,14 +326,8 @@
 `ifdef ZAWRSS_COVERAGE
   `include "ZawrsS_coverage.svh"
 `endif
-`ifdef ZAWRSSU_COVERAGE
-  `include "ZawrsSU_coverage.svh"
-`endif
 `ifdef ZAWRSSM_COVERAGE
   `include "ZawrsSm_coverage.svh"
-`endif
-`ifdef ZAWRSU_COVERAGE
-  `include "ZawrsU_coverage.svh"
 `endif
 `ifdef ZAWRSU_COVERAGE
   `include "ZawrsU_coverage.svh"

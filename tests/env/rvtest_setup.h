@@ -38,9 +38,9 @@
   LA(ra, rvmodel_boot)
   jalr ra
 
-  // Create new section so that .align directives in the test code don't affect the
+  // Create new section so that .{b/p2}align directives in the test code don't affect the
   // entry point address. The assembler increases a section's overall alignment to
-  // the largest .align in that section, so any large .align used in a test would
+  // the largest .{b/p2}align in that section, so any large .{b/p2}align used in a test would
   // increase .text.init's alignment, shifting rvtest_entry_point to an unexpected
   // address. Placing test code in its own section avoids that because the .text.rvtest
   // section will have its own alignment. This requires .text.init and .text.rvtest

@@ -773,7 +773,7 @@
     // dh 7/1/26 remove this gating when all tests are updated to handle booting to modes other than M
     // Also this avoids going to S-mode when the goal is to get to U-mode because
     #ifdef BOOT_TO_SMODE
-      RVTEST_GOTO_LOWER_MODE SMODE
+      RVTEST_GOTO_LOWER_MODE Smode
     #endif
   #endif
 .endm
@@ -792,19 +792,19 @@
     rvtest_boot_to_umode:
     // Boot into U-mode
     #ifdef BOOT_TO_UMODE
-      RVTEST_GOTO_LOWER_MODE UMODE
+      RVTEST_GOTO_LOWER_MODE Umode
     #endif
 
     // disabled 7/1/26 dh while booting to U-mode without going through S-mode until all tests are updated to handle booting to modes other than M
     // #ifdef S_SUPPORTED
-    //   // RVTEST_GOTO_LOWER_MODE UMODE // *** need a version that works from S-mode
+    //   // RVTEST_GOTO_LOWER_MODE Umode // *** need a version that works from S-mode
     // #else
     //   // if S-mode not supported, we must be in M-mode, so we can just switch to U-mode without an SBI call
 
     //   // temporarily gate going to UMODE with BOOT_TO_UMODE until all tests are updated to work with U-mode booting
     //   // dh 7/1/26 remove this gating when all tests are updated to handle booting to modes other than M
     //   #ifdef BOOT_TO_UMODE
-    //     RVTEST_GOTO_LOWER_MODE UMODE
+    //     RVTEST_GOTO_LOWER_MODE Umode
     //   #endif
     // #endif
   #endif

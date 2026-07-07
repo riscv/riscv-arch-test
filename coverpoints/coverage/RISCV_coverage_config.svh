@@ -335,6 +335,9 @@
 `ifdef ZAWRSU_COVERAGE
   `include "ZawrsU_coverage.svh"
 `endif
+`ifdef ZAWRSU_COVERAGE
+  `include "ZawrsU_coverage.svh"
+`endif
 `ifdef ZBA_COVERAGE
   `include "Zba_coverage.svh"
 `endif

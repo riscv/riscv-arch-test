@@ -442,6 +442,10 @@
         `cover_info("//      ZawrsU - Enabled");
         `include "ZawrsU_coverage_init.svh"
     `endif
+    `ifdef COVER_ZAWRSU
+        `cover_info("//      ZawrsU - Enabled");
+        `include "ZawrsU_coverage_init.svh"
+    `endif
     `ifdef COVER_ZBA
         `cover_info("//      Zba - Enabled");
         `include "Zba_coverage_init.svh"

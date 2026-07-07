@@ -34,9 +34,9 @@ covergroup PMPSM_cg with function sample(
   }
 
   addr_offset_cp_cfg_A_napot_all: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_base      = {`PMP_REGION_START};
-    bins below_base   = {`PMP_REGION_START-4};
-    bins just_beyond  = {`PMP_REGION_START+`g_napot};
+    bins at_base      = {`PMP_NAPOT_REGION_START};
+    bins below_base   = {`PMP_NAPOT_REGION_START-4};
+    bins just_beyond  = {`PMP_NAPOT_REGION_START+`g_napot};
   }
 
   address_offsets_tor: coverpoint (ins.current.rs1_val + ins.current.imm) {
@@ -48,11 +48,11 @@ covergroup PMPSM_cg with function sample(
   }
 
   address_offsets_napot: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_base      = {`PMP_REGION_START};
-    bins below_base   = {`PMP_REGION_START-4};
-    bins above_base   = {`PMP_REGION_START+4};
-    bins just_beyond  = {`PMP_REGION_START+`g_napot};
-    bins highest_word  = {`PMP_REGION_START +`g_napot-4};
+    bins at_base      = {`PMP_NAPOT_REGION_START};
+    bins below_base   = {`PMP_NAPOT_REGION_START-4};
+    bins above_base   = {`PMP_NAPOT_REGION_START+4};
+    bins just_beyond  = {`PMP_NAPOT_REGION_START+`g_napot};
+    bins highest_word  = {`PMP_NAPOT_REGION_START +`g_napot-4};
   }
 
   `ifdef UDB_PMP_GRANULARITY_2

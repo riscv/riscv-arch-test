@@ -358,7 +358,7 @@ test_3_str: .string "\"test: 3; cp: pmpm_cfg_napot_all_address+4\""
 .p2align 12
 .p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
-    .rept (1 << (UDB_PMP_GRANULARITY - 2))              // one PMP granule of jr-ra fillers: puts TEST_FOR_EXECUTION on the next granule boundary (= PMP_REGION_START at coverage grain 2), while staying naturally aligned for NAPOT at larger grains
+    .rept (g>>2)                                        // NAPOT region must be g_napot-aligned: g_napot-byte pad puts the region at PMP_NAPOT_REGION_START (0x80005008 at grain 2), so pmpaddr matches STANDARD_REGION and the region does not swallow the pad
     jr ra
     .endr
 

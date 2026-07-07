@@ -316,7 +316,7 @@ def _generate_wrs_no_mie_tests(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator("ZawrsSm", required_extensions=["Sm", "Zawrs", "Zalrsc"])
 def make_zawrssm(test_data: TestData) -> list[TestChunk]:
-    """Generate tests for ZawrSm WRS instructions at machine-mode."""
+    """Generate tests for ZawrsSm WRS instructions at machine-mode."""
 
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()

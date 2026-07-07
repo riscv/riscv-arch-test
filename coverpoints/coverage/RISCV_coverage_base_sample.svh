@@ -325,14 +325,8 @@
     `ifdef COVER_ZAWRSS
         zawrss_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZAWRSSU
-        zawrssu_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_ZAWRSSM
         zawrssm_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZAWRSU
-        zawrsu_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZAWRSU
         zawrsu_sample(hart, issue, ins);

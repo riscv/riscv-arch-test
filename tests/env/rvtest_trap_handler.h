@@ -1427,8 +1427,8 @@ tsbi_\__MODE__\()csr_access:
 //
 // FORWARDED TO M-MODE (requires M-mode privileges):
 //   - GOTO_MMODE:  needs M-mode to set MPP
-//   - GOTO_VSMODE: needs M-mode to set MPV
-//   - GOTO_VUMODE: needs M-mode to set MPV
+//   - GOTO_VSMODE: needs M-mode to set MPV // TODO DH 7/7/26: seems like there could be an optimization to change sstatus.SPV from HS-mode
+//   - GOTO_VUMODE: needs M-mode to set MPV // TODO DH 7/7/26: seems like there could be an optimization to change sstatus.SPV from HS-mode
 //   - CSR_ACCESS for M-mode CSRs: needs M-mode privilege (CSR addr[9:8] == 11)
 //
 // FORWARDING MECHANISM:
@@ -1567,6 +1567,10 @@ tsbi_\__MODE__\()csr_access:
         j       resto_\__MODE__\()rtn              // sret to caller with CSR result in a0
 
 .endif  // --------- END S-MODE T-SBI DISPATCH ---------
+
+//==============================================================================
+// T-SBI DISPATCH — VS-MODE
+// TODO DH 7/7/26: is another T-SBI required for VS-mode trap handler?
 
 //==============================================================================
 // M-MODE FORWARDED ECALL HANDLING (TODO)

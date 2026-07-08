@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 _UPPER_PATTERNS: list[int] = [
@@ -854,7 +855,10 @@ def _emit_pmm_satp_block(
     required_extensions=["Ssnpm", "Zicsr", "S"],
     march_extensions=["Zicsr", "Zaamo", "Zabha", "Zacas", "F", "D", "Zca", "Zcd", "C", "Zicbom", "Zicboz", "Zicbop"],
 )
-def make_ssnpm(test_data: TestData) -> list[str]:
+def make_ssnpm(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
+
     lines: list[str] = _generate_data_section()
     lines.append(comment_banner("cp_pmlen_masking — Ssnpm (load/store step)"))
 
@@ -889,4 +893,6 @@ def make_ssnpm(test_data: TestData) -> list[str]:
     test_data.int_regs.return_registers([REG_BASE, REG_A, REG_TMP, REG_DATA, REG_SENV])
     test_data.float_regs.return_registers([REG_FP])
 
-    return lines
+    tc.code = lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

@@ -122,6 +122,7 @@
   abort_test:
     LI(     T5, 0xBAD0DEAD)
     j       cleanup_epilogs
+//    j       rvtest_code_end // switch to M-mode and clean up and terminate
 
   // Instantiate trap handlers for each priv mode
   // Guard matches the RVTEST_TRAP_EPILOG guard above: rvtest_Mend (and sibling
@@ -771,7 +772,7 @@
     // Boot into S-mode
     // temporarily gate going to SMODE with BOOT_TO_SMODE until all tests are updated to work with S-mode booting
     // dh 7/1/26 remove this gating when all tests are updated to handle booting to modes other than M
-    // Also this avoids going to S-mode when the goal is to get to U-mode because
+    // Also this avoids going to S-mode when the goal is to get to U-mode
     #ifdef BOOT_TO_SMODE
       RVTEST_GOTO_LOWER_MODE Smode
     #endif

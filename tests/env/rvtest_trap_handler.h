@@ -117,6 +117,8 @@
 #define DEFAULT_TEMP_REG x4                      // general temporary for test macros
 #define DEFAULT_LINK_REG x5                      // link register for test macros (jal return address)
 
+// Trap handler temporary registers cannot include x10/x11 (a0/a1) because they are needed by the T-SBI
+// Trap handler temporary registers should not include x16-x31 for compatibility with E
 #ifndef T1
   #define T1      x6                             // handler temporary 1
 #endif
@@ -130,10 +132,10 @@
   #define T4      x9                             // handler temporary 4
 #endif
 #ifndef T5
-  #define T5      x10                            // handler temporary 5 (NOTE: same as a0!)
+  #define T5      x12                            // handler temporary 5
 #endif
 #ifndef T6
-  #define T6      x11                            // handler temporary 6 (NOTE: same as a1!)
+  #define T6      x13                            // handler temporary 6
 #endif
 
 //==============================================================================

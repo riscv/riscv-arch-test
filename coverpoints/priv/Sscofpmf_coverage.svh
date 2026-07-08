@@ -23,18 +23,11 @@
 covergroup Sscofpmf_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
-
-    priv_mode_m: coverpoint ins.current.mode {
-            type_option.weight = 0;
-            bins M_mode = {2'b11};
-    }
-    priv_mode_s: coverpoint ins.current.mode {
-            type_option.weight = 0;
-            bins S_mode = {2'b01};
-    }
-    priv_mode_u: coverpoint ins.current.mode {
-            type_option.weight = 0;
-            bins U_mode = {2'b00};
+    csr_access_pattern: coverpoint ins.current.insn {
+        wildcard bins csrrw0   = {CSRRW} iff (ins.current.rs1_val ==  0); // write all zeros
+        wildcard bins csrrw1   = {CSRRW} iff (ins.current.rs1_val == '1); // write all ones
+        wildcard bins csrrs1   = {CSRRS} iff (ins.current.rs1_val == '1); // set all ones
+        wildcard bins csrrc1   = {CSRRC} iff (ins.current.rs1_val == '1); // clear all ones
     }
     priv_mode_m_maybes_u: coverpoint {ins.current.mode_virt, ins.prev.mode} {
             bins M_mode = {3'b011};
@@ -44,15 +37,27 @@ covergroup Sscofpmf_cg with function sample(ins_t ins);
         `endif
     }
     mhpmevent_of: coverpoint ins.current.csr[RVMODEL_MHPMEVENT][63] {
-            bins zero = {0};
             bins one  = {1};
+            bins zero = {0};
+    }
+    mhpmevent_of_zero: coverpoint ins.current.csr[RVMODEL_MHPMEVENT][63] {
+            bins zero = {0};
     }
     mhpmevent_minh: coverpoint ins.current.csr[RVMODEL_MHPMEVENT][62] {
-            bins zero = {0};  // not inhibited -> should count in M-mode
             bins one  = {1};  // inhibited     -> should NOT count in M-mode
+            bins zero = {0};  // not inhibited -> should count in M-mode
+    }
+    mhpmevent_minh_one: coverpoint ins.current.csr[RVMODEL_MHPMEVENT][62] {
+            bins one  = {1};  // inhibited     -> should NOT count in M-mode
+    }
+    mhpmevent_sinh_one: coverpoint ins.current.csr[RVMODEL_MHPMEVENT][61] {
+            bins one  = {1};
     }
     mhpmevent_sinh: coverpoint ins.current.csr[RVMODEL_MHPMEVENT][61] {
             bins zero = {0};
+            bins one  = {1};
+    }
+    mhpmevent_uinh_one: coverpoint ins.current.csr[RVMODEL_MHPMEVENT][60] {
             bins one  = {1};
     }
     mhpmevent_uinh: coverpoint ins.current.csr[RVMODEL_MHPMEVENT][60] {
@@ -69,10 +74,10 @@ covergroup Sscofpmf_cg with function sample(ins_t ins);
     mie_clear: coverpoint (ins.current.csr[CSR_MIE] == 0) {
             bins yes = {1};
     }
-    mhpmcounter_all_ones: coverpoint (ins.current.csr[RVMODEL_MHPMCOUNTER] == {64{1'b1}}) {
+    mhpmcounter_all_ones: coverpoint (ins.current.csr[RVMODEL_MHPMCOUNTER] == {1'b1}) {
             bins yes = {1};
     }
-    mhpmcounter_all_zeros: coverpoint (ins.current.csr[RVMODEL_MHPMCOUNTER] == 64'h0) {
+    mhpmcounter_all_zeros: coverpoint (ins.current.csr[RVMODEL_MHPMCOUNTER] == {1'b0}) {
             bins yes = {1};
     }
     mhpmcounter_extremes: coverpoint ins.current.csr[RVMODEL_MHPMCOUNTER] {
@@ -82,36 +87,36 @@ covergroup Sscofpmf_cg with function sample(ins_t ins);
     mhpmevent_of_set_then_cleared: coverpoint {ins.prev.csr[RVMODEL_MHPMEVENT][63], ins.current.csr[RVMODEL_MHPMEVENT][63]} {
             bins set_then_clear = {2'b10};
     }
-    mip_lcofip_zero: coverpoint ins.current.csr[CSR_MIP][13] {
-            bins zero = {0};
-    }
     // Pack the 29 OF bits (mhpmevent3..mhpmevent31) into one expression via macro
-    `define OF_VEC {ins.current.csr[CSR_MHPMEVENT31][63], ins.current.csr[CSR_MHPMEVENT30][63], \
-                     ins.current.csr[CSR_MHPMEVENT29][63], ins.current.csr[CSR_MHPMEVENT28][63], \
-                     ins.current.csr[CSR_MHPMEVENT27][63], ins.current.csr[CSR_MHPMEVENT26][63], \
-                     ins.current.csr[CSR_MHPMEVENT25][63], ins.current.csr[CSR_MHPMEVENT24][63], \
-                     ins.current.csr[CSR_MHPMEVENT23][63], ins.current.csr[CSR_MHPMEVENT22][63], \
-                     ins.current.csr[CSR_MHPMEVENT21][63], ins.current.csr[CSR_MHPMEVENT20][63], \
-                     ins.current.csr[CSR_MHPMEVENT19][63], ins.current.csr[CSR_MHPMEVENT18][63], \
-                     ins.current.csr[CSR_MHPMEVENT17][63], ins.current.csr[CSR_MHPMEVENT16][63], \
-                     ins.current.csr[CSR_MHPMEVENT15][63], ins.current.csr[CSR_MHPMEVENT14][63], \
-                     ins.current.csr[CSR_MHPMEVENT13][63], ins.current.csr[CSR_MHPMEVENT12][63], \
-                     ins.current.csr[CSR_MHPMEVENT11][63], ins.current.csr[CSR_MHPMEVENT10][63], \
-                     ins.current.csr[CSR_MHPMEVENT9][63],  ins.current.csr[CSR_MHPMEVENT8][63], \
-                     ins.current.csr[CSR_MHPMEVENT7][63],  ins.current.csr[CSR_MHPMEVENT6][63], \
-                     ins.current.csr[CSR_MHPMEVENT5][63],  ins.current.csr[CSR_MHPMEVENT4][63], \
-                     ins.current.csr[CSR_MHPMEVENT3][63]}
+    `define OF_VEC {ins.current.csr[CSR_MHPMEVENTH31][63], ins.current.csr[CSR_MHPMEVENTH30][63], \
+                     ins.current.csr[CSR_MHPMEVENTH29][63], ins.current.csr[CSR_MHPMEVENTH28][63], \
+                     ins.current.csr[CSR_MHPMEVENTH27][63], ins.current.csr[CSR_MHPMEVENTH26][63], \
+                     ins.current.csr[CSR_MHPMEVENTH25][63], ins.current.csr[CSR_MHPMEVENTH24][63], \
+                     ins.current.csr[CSR_MHPMEVENTH23][63], ins.current.csr[CSR_MHPMEVENTH22][63], \
+                     ins.current.csr[CSR_MHPMEVENTH21][63], ins.current.csr[CSR_MHPMEVENTH20][63], \
+                     ins.current.csr[CSR_MHPMEVENTH19][63], ins.current.csr[CSR_MHPMEVENTH18][63], \
+                     ins.current.csr[CSR_MHPMEVENTH17][63], ins.current.csr[CSR_MHPMEVENTH16][63], \
+                     ins.current.csr[CSR_MHPMEVENTH15][63], ins.current.csr[CSR_MHPMEVENTH14][63], \
+                     ins.current.csr[CSR_MHPMEVENTH13][63], ins.current.csr[CSR_MHPMEVENTH12][63], \
+                     ins.current.csr[CSR_MHPMEVENTH11][63], ins.current.csr[CSR_MHPMEVENTH10][63], \
+                     ins.current.csr[CSR_MHPMEVENTH9][63],  ins.current.csr[CSR_MHPMEVENTH8][63], \
+                     ins.current.csr[CSR_MHPMEVENTH7][63],  ins.current.csr[CSR_MHPMEVENTH6][63], \
+                     ins.current.csr[CSR_MHPMEVENTH5][63],  ins.current.csr[CSR_MHPMEVENTH4][63], \
+                     ins.current.csr[CSR_MHPMEVENTH3][63]}
 
-    mcounteren_all_ones: coverpoint (ins.current.csr[CSR_MCOUNTEREN] == '1) {
-            bins yes = {1};
+    mcounteren_write_all_ones: coverpoint ins.current.insn {
+                wildcard bins write_ones = {CSRRW} iff (ins.current.insn[31:20] == CSR_MCOUNTEREN &&
+                                                  ins.current.rs1_val[31:3] == '1);
+    }
+    of_walking_one: coverpoint $clog2(`OF_VEC) iff ($onehot(`OF_VEC)) {
+            bins b_of[] = {[0:28]};  // one bin per OF bit position (mhpmevent3..mhpmevent31 = 29 bits)
     }
     of_pattern_class: coverpoint $countones(`OF_VEC) {
             bins all_zeros   = {0};
-            bins walking_one = {1};
             bins all_ones    = {29};
     }
 
-    scountovf_of_match: coverpoint (ins.current.csr[CSR_SCOUNTOVF][31:3] == `OF_VEC) {
+    scountovf_of_match: coverpoint ((ins.current.csr[CSR_SCOUNTOVF][31:3] & ins.current.csr[CSR_MCOUNTEREN][31:3]) == (`OF_VEC & ins.current.csr[CSR_MCOUNTEREN][31:3])) {
             bins match = {1};
     }
 
@@ -121,17 +126,14 @@ covergroup Sscofpmf_cg with function sample(ins_t ins);
             bins checker_even = {29'b1_0101_0101_0101_0101_0101_0101_0101}; // even-indexed OF bits set
             bins checker_odd  = {29'b0_1010_1010_1010_1010_1010_1010_1010}; // odd-indexed OF bits set
     }
-    mcounteren_hpm_pattern: coverpoint (ins.current.csr[CSR_MCOUNTEREN][31:3]) {
-            bins all_zeros     = {29'h0};
-            bins all_ones      = {29'h1FFFFFFF};
-            bins walking_one[] = {29'h1,     29'h2,     29'h4,     29'h8,
-                                29'h10,    29'h20,    29'h40,    29'h80,
-                                29'h100,   29'h200,   29'h400,   29'h800,
-                                29'h1000,  29'h2000,  29'h4000,  29'h8000,
-                                29'h10000, 29'h20000, 29'h40000, 29'h80000,
-                                29'h100000, 29'h200000, 29'h400000, 29'h800000,
-                                29'h1000000, 29'h2000000, 29'h4000000, 29'h8000000,
-                                29'h10000000};
+    mcounteren_write_pattern: coverpoint $countones(ins.current.rs1_val[31:3])
+                        iff (ins.current.insn[31:20] == CSR_MCOUNTEREN && (ins.current.insn ==? CSRRW || ins.current.insn ==? CSRRS || ins.current.insn ==? CSRRC)) {
+            bins all_zeros   = {0};
+            bins walking_one = {1};
+            bins all_ones    = {29};
+    }
+    mhpmevent_all_zero: coverpoint ins.current.insn {
+            wildcard bins write_zero = {CSRRW} iff (ins.current.insn[31:20] == RVMODEL_MHPMEVENT && ins.current.rs1_val == '0);
     }
     csrops: coverpoint ins.current.insn {
             wildcard bins csrw = {CSRRW};
@@ -139,9 +141,8 @@ covergroup Sscofpmf_cg with function sample(ins_t ins);
             wildcard bins csrc = {CSRRC};
     }
 
-    csr_write_value_pattern: coverpoint ins.current.rs1_val {
-            bins all_ones  = {'1};
-            bins all_zeros = {'0};
+    mhpmevent_inhibits_all_set: coverpoint ins.current.insn {
+            wildcard bins write_pattern = {CSRRW} iff (ins.current.insn[31:20] == RVMODEL_MHPMEVENT && ins.current.rs1_val[62:58] == 5'b11100);
     }
     hpm_csr_target: coverpoint ins.current.insn[31:20] {
             bins scountovf   = {CSR_SCOUNTOVF};
@@ -157,6 +158,12 @@ covergroup Sscofpmf_cg with function sample(ins_t ins);
                                 CSR_MHPMEVENT27, CSR_MHPMEVENT28, CSR_MHPMEVENT29,
                                 CSR_MHPMEVENT30, CSR_MHPMEVENT31};
     }
+    lcofi_ip_one: coverpoint ins.current.csr[CSR_MIP][13] {
+            bins one  = {1};
+    }
+    lcofi_ip_zero: coverpoint ins.current.csr[CSR_MIP][13] {
+            bins zero = {0};
+    }
     lcofi_ip: coverpoint ins.current.csr[CSR_MIP][13] {
             bins zero = {0};
             bins one  = {1};
@@ -168,6 +175,12 @@ covergroup Sscofpmf_cg with function sample(ins_t ins);
     lcofi_mideleg: coverpoint ins.current.csr[CSR_MIDELEG][13] {
             bins zero = {0};
             bins one  = {1};
+    }
+    lcofi_mideleg_one: coverpoint ins.current.csr[CSR_MIDELEG][13] {
+            bins one  = {1};
+    }
+    lcofi_mideleg_zero: coverpoint ins.current.csr[CSR_MIDELEG][13] {
+            bins zero = {0};
     }
     mstatus_mie_clear: coverpoint ins.current.csr[CSR_MSTATUS][3] {
             bins zero = {0};
@@ -184,9 +197,6 @@ covergroup Sscofpmf_cg with function sample(ins_t ins);
     sstatus_sie_clear: coverpoint ins.current.csr[CSR_SSTATUS][1] {
             bins zero = {0};
     }
-    mie_all_ones: coverpoint (ins.current.csr[CSR_MIE] == '1) {
-            bins yes = {1};
-    }
     mip_other_pending: coverpoint {ins.current.csr[CSR_MIP][11], ins.current.csr[CSR_MIP][7], ins.current.csr[CSR_MIP][3],
                                     ins.current.csr[CSR_MIP][9],  ins.current.csr[CSR_MIP][5], ins.current.csr[CSR_MIP][1]} {
             bins none = {6'b000000};
@@ -197,31 +207,20 @@ covergroup Sscofpmf_cg with function sample(ins_t ins);
             bins stip = {6'b000010};
             bins ssip = {6'b000001};
     }
-
-    cp_minh_inhibits_mmode:  cross priv_mode_m, mhpmevent_minh, hpmcounter_nonzero, mhpmevent_of { ignore_bins of_one = binsof(mhpmevent_of.one); }
-    cp_sinh_inhibits_smode:  cross priv_mode_s, mhpmevent_sinh, hpmcounter_nonzero, mhpmevent_of { ignore_bins of_one = binsof(mhpmevent_of.one); }
-    cp_uinh_inhibits_umode:  cross priv_mode_u, mhpmevent_uinh, hpmcounter_nonzero, mhpmevent_of { ignore_bins of_one = binsof(mhpmevent_of.one); }
-    cp_of_set_on_overflow:   cross priv_mode_m_maybes_u, mip_clear, mie_clear, mhpmevent_of { ignore_bins of_zero = binsof(mhpmevent_of.zero); }
-    cp_overflow_hw_only:     cross priv_mode_m_maybes_u, mip_clear, mie_clear, mhpmcounter_extremes, mhpmevent_of { ignore_bins of_one = binsof(mhpmevent_of.one); }
-    cp_lcofip_hw_only:       cross priv_mode_s, mhpmevent_of_set_then_cleared, mip_lcofip_zero;
-    cp_scountovf_shadow:     cross priv_mode_s, mcounteren_all_ones, of_pattern_class, scountovf_of_match;
-    cp_scountovf_mcounteren: cross priv_mode_m_maybes_u, of_write_pattern, mcounteren_hpm_pattern {ignore_bins u_mode = binsof(priv_mode_m_maybes_u.U_mode);}
-    cp_sscofpmf_write:       cross priv_mode_m_maybes_u, csr_write_value_pattern, hpm_csr_target {
-            ignore_bins u_mode = binsof(priv_mode_m_maybes_u.U_mode);
-    }
-    cp_sscofpmf_setclear:    cross priv_mode_m_maybes_u, csrops, hpm_csr_target {
-            ignore_bins u_mode  = binsof(priv_mode_m_maybes_u.U_mode);
-            ignore_bins no_write = binsof(csrops.csrw);  // csrw handled by the cross above
-    }
-    cp_lcofi:                cross priv_mode_m_maybes_u, lcofi_ip, lcofi_ie, lcofi_mideleg, mstatus_mie_clear, mstatus_sie_set;
-    cp_lcofi_sip_s:          cross priv_mode_s, sstatus_sie_set, lcofi_ie, lcofi_ip, lcofi_mideleg { ignore_bins mideleg_zero = binsof(lcofi_mideleg.zero); }
-    cp_lcofi_sip_u:          cross priv_mode_u, sstatus_sie_clear, lcofi_ie, lcofi_ip, lcofi_mideleg { ignore_bins mideleg_zero = binsof(lcofi_mideleg.zero); }
-    cp_lcofip_priority:      cross priv_mode_m_maybes_u, mstatus_mie_set, sstatus_sie_set, mie_all_ones, lcofi_ip, mip_other_pending {
-            ignore_bins lcofip_zero = binsof(lcofi_ip.zero);
-    }
-
-
-
+    cp_mhpmevent_inhibit_bits: cross mhpmevent_minh, mhpmevent_sinh, mhpmevent_uinh;
+    cp_minh_inhibits_mmode:    cross priv_mode_m, mhpmevent_minh, hpmcounter_nonzero, mhpmevent_of_zero ;
+    cp_sinh_inhibits_smode:    cross priv_mode_s, mhpmevent_sinh, hpmcounter_nonzero, mhpmevent_of_zero ;
+    cp_uinh_inhibits_umode:    cross priv_mode_u, mhpmevent_uinh, hpmcounter_nonzero, mhpmevent_of_zero ;
+    cp_of_set_on_overflow:     cross priv_mode_m_maybes_u, mip_clear, mie_clear, mhpmevent_of, mhpmevent_minh_one, mhpmevent_sinh_one, mhpmevent_uinh_one;
+    cp_overflow_hw_only:       cross priv_mode_m_maybes_u, mip_clear, mie_clear, mhpmcounter_extremes, mhpmevent_all_zero;
+    cp_lcofip_hw_only:         cross priv_mode_s, mhpmevent_of_set_then_cleared;
+    cp_scountovf_shadow:       cross priv_mode_s, mcounteren_write_all_ones, of_pattern_class, of_walking_one, scountovf_of_match;
+    cp_scountovf_mcounteren:   cross priv_mode_m_maybes_u, of_write_pattern, mcounteren_write_pattern {ignore_bins u_mode = binsof(priv_mode_m_maybes_u.U_mode);}
+    cp_sscofpmf_access:        cross priv_mode_m_maybes_u, csr_access_pattern, hpm_csr_target {ignore_bins u_mode = binsof(priv_mode_m_maybes_u.U_mode);}
+    cp_lcofi:                  cross priv_mode_m_maybes_u, lcofi_ip, lcofi_ie, lcofi_mideleg, lcofi_mideleg, mstatus_mie_clear, mstatus_sie_set;
+    cp_lcofi_sip_s:            cross priv_mode_s, sstatus_sie_set, lcofi_ie, lcofi_ip, lcofi_mideleg_one ;
+    cp_lcofi_sip_u:            cross priv_mode_u, sstatus_sie_clear, lcofi_ie, lcofi_ip, lcofi_mideleg_one ;
+    cp_lcofip_priority:        cross priv_mode_m_maybes_u, mstatus_mie_set, sstatus_sie_set, csrops,  lcofi_ip_one, mip_other_pending {ignore_bins not_csrw    = binsof(csrops.csrs) || binsof(csrops.csrc);}
 endgroup
 
 function void sscofpmf_sample(int hart, int issue, ins_t ins);

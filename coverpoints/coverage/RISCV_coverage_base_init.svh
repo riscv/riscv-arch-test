@@ -250,9 +250,17 @@
         `cover_info("//      Ssccptr - Enabled");
         `include "Ssccptr_coverage_init.svh"
     `endif
-    `ifdef COVER_SSCOFPMF
-        `cover_info("//      Sscofpmf - Enabled");
-        `include "Sscofpmf_coverage_init.svh"
+    `ifdef COVER_SSCOFPMFS
+        `cover_info("//      SscofpmfS - Enabled");
+        `include "SscofpmfS_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSCOFPMFSM
+        `cover_info("//      SscofpmfSm - Enabled");
+        `include "SscofpmfSm_coverage_init.svh"
+    `endif
+    `ifdef COVER_SSCOFPMFU
+        `cover_info("//      SscofpmfU - Enabled");
+        `include "SscofpmfU_coverage_init.svh"
     `endif
     `ifdef COVER_SSCOUNTERENW
         `cover_info("//      Sscounterenw - Enabled");

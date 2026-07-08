@@ -10,4 +10,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Sscofpmf_cg = new();         Sscofpmf_cg.set_inst_name("obj_Sscofpmf");
+    SscofpmfS_cg = new();         SscofpmfS_cg.set_inst_name("obj_SscofpmfS");

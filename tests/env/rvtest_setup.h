@@ -121,7 +121,7 @@
   // Terminate test with a failure message
   abort_test:
     LI(     T5, 0xBAD0DEAD)
-    j       cleanup_epilogs
+    j       rvtest_code_end // switch to M-mode and clean up, then terminate with message
 
   // Instantiate trap handlers for each priv mode
   // Guard matches the RVTEST_TRAP_EPILOG guard above: rvtest_Mend (and sibling

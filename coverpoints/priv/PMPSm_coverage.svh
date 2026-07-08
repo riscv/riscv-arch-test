@@ -30,7 +30,7 @@ covergroup PMPSM_cg with function sample(
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
   addr_in_region: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_region = {`PMP_REGION_START};
+    bins at_region = {`PMP_NAPOT_REGION_START};   // NAPOT/OFF region-under-test lives at 0x80005008 (8-aligned); accesses probe here
   }
 
   addr_offset_cp_cfg_A_napot_all: coverpoint (ins.current.rs1_val + ins.current.imm) {

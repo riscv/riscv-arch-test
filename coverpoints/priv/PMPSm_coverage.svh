@@ -29,30 +29,32 @@ covergroup PMPSM_cg with function sample(
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
-  addr_in_region: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_region = {`PMP_NAPOT_REGION_START};   // NAPOT/OFF region-under-test lives at 0x80005008 (8-aligned); accesses probe here
+  // Address coverpoints mask the access address to its code-size-invariant low bits (see
+  // PMP_ADDR_LOWMASK) so they match wherever .data landed (region at 0x80005xxx or 0x80009xxx).
+  addr_in_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};   // NAPOT/OFF region-under-test start
   }
 
-  addr_offset_cp_cfg_A_napot_all: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_base      = {`PMP_NAPOT_REGION_START};
-    bins below_base   = {`PMP_NAPOT_REGION_START-4};
-    bins just_beyond  = {`PMP_NAPOT_REGION_START+`g_napot};
+  addr_offset_cp_cfg_A_napot_all: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    bins at_base      = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
+    bins below_base   = {(`PMP_NAPOT_REGION_START-4) & `PMP_ADDR_LOWMASK};
+    bins just_beyond  = {(`PMP_NAPOT_REGION_START+`g_napot) & `PMP_ADDR_LOWMASK};
   }
 
-  address_offsets_tor: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_base      = {`PMP_REGION_START};
-    bins below_base   = {`PMP_REGION_START-4};
-    bins above_base   = {`PMP_REGION_START+4};
-    bins just_beyond  = {`PMP_REGION_START+`g_tor};
-    bins highest_word  = {`PMP_REGION_START +`g_tor-4};
+  address_offsets_tor: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    bins at_base      = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
+    bins below_base   = {(`PMP_REGION_START-4) & `PMP_ADDR_LOWMASK};
+    bins above_base   = {(`PMP_REGION_START+4) & `PMP_ADDR_LOWMASK};
+    bins just_beyond  = {(`PMP_REGION_START+`g_tor) & `PMP_ADDR_LOWMASK};
+    bins highest_word  = {(`PMP_REGION_START +`g_tor-4) & `PMP_ADDR_LOWMASK};
   }
 
-  address_offsets_napot: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_base      = {`PMP_NAPOT_REGION_START};
-    bins below_base   = {`PMP_NAPOT_REGION_START-4};
-    bins above_base   = {`PMP_NAPOT_REGION_START+4};
-    bins just_beyond  = {`PMP_NAPOT_REGION_START+`g_napot};
-    bins highest_word  = {`PMP_NAPOT_REGION_START +`g_napot-4};
+  address_offsets_napot: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    bins at_base      = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
+    bins below_base   = {(`PMP_NAPOT_REGION_START-4) & `PMP_ADDR_LOWMASK};
+    bins above_base   = {(`PMP_NAPOT_REGION_START+4) & `PMP_ADDR_LOWMASK};
+    bins just_beyond  = {(`PMP_NAPOT_REGION_START+`g_napot) & `PMP_ADDR_LOWMASK};
+    bins highest_word  = {(`PMP_NAPOT_REGION_START +`g_napot-4) & `PMP_ADDR_LOWMASK};
   }
 
   `ifdef UDB_PMP_GRANULARITY_2
@@ -1423,11 +1425,14 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
-    pmp_hit[k] = (pmpaddr[k] == `STANDARD_REGION) || (pmpaddr[k] == `NON_STANDARD_REGION);
+    // Match on code-size-invariant low bits (see PMP_PMPADDR_LOWMASK): the region-under-test's
+    // absolute address drifts with test code size, but its low bits are fixed.
+    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION     & `PMP_PMPADDR_LOWMASK))
+              || ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
   end
 
   for (int k = 15; k < 63; k++) begin        // for next 48 regions
-    pmp_HIT[k-15] = (pmpaddr[k] == `STANDARD_REGION);
+    pmp_HIT[k-15] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
   end
 
   pack_pmpaddr = { ins.current.csr[CSR_PMPADDR15]

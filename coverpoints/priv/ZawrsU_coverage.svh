@@ -79,15 +79,43 @@ covergroup ZawrsU_cg with function sample(ins_t ins);
     mie_zeros: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")) {
         bins zeros = {0}; // zero in all 6 interrupt enable bits
     }
-    mie_mtie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie")) {
-        bins one = {1};
-    }
 
+    `ifdef S_SUPPORTED
+    mstatus_sie: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")) {
+        bins zero = {0};
+        bins one  = {1};
+    }
+    `endif
+    `ifdef SSTC_SUPPORTED
+        sie_stie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sie", "stie")) {
+            bins one = {1};
+        }
+        `ifdef UDB_MXLEN_64
+            menvcfg_STCE_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "stce")) {
+                bins one  = {1};
+            }
+
+        `else
+            menvcfg_STCE_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "stce")) {
+                bins one  = {1};
+            }
+        `endif
+    `else
+        mie_mtie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie")) {
+            bins one = {1};
+        }
+    `endif
 
     // main coverpoints
     cp_wrs_sto_timeout:     cross wrs_sto, mstatus_tw, mstatus_mie_zero, priv_mode_u, mie_zeros, lr_w;
     cp_wrs_no_res:          cross mstatus_tw_zero, mstatus_mie_zero, priv_mode_u, mie_zeros, sc_w, wrs_ops;
-    cp_wrs_resume:          cross mstatus_tw_zero, mie_mtie_one, mstatus_mie, priv_mode_u, wrs_nto, lr_w;
+    cp_wrs_resume:          cross mstatus_tw_zero,
+        `ifdef SSTC_SUPPORTED
+            sie_stie_one, mstatus_sie, menvcfg_STCE_one,
+        `else
+            mie_mtie_one,
+        `endif
+    mstatus_mie, priv_mode_u, wrs_ops, lr_w;
 
     cp_wrs_nto_timeout:     cross mstatus_tw_one, mstatus_mie_zero, priv_mode_u, mie_zeros, wrs_nto, lr_w;
 

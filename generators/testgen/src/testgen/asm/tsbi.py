@@ -125,6 +125,7 @@ _CSR_ALIASES = {
     "menvcfgh": 0x31A,
     "stimecmp": 0x14D,
     "stimecmph": 0x15D,
+    "tselect": 0x7A0,
     "tdata1": 0x7A1,
     "tdata2": 0x7A2,
     "tdata3": 0x7A3,

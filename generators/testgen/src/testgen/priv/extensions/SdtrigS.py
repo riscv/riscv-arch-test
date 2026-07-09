@@ -8,7 +8,7 @@
 
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.SdtrigCommon import generate_sdtrig_suite
+from testgen.priv.extensions.SdtrigCommon import UDB_DEFINES, generate_sdtrig_suite
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -16,7 +16,7 @@ from testgen.priv.registry import add_priv_test_generator
     "SdtrigS",
     required_extensions=["S", "Sdtrig"],
     march_extensions=["I", "Zicsr"],
-    extra_defines=["#define SKIP_MEPC"],  # hangs otherwise
+    extra_defines=[*UDB_DEFINES, "#define SKIP_MEPC"],  # SKIP_MEPC: hangs otherwise
 )
 def make_sdtrigs(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the SdtrigS debug-trigger testsuite."""

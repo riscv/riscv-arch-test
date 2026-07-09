@@ -54,11 +54,13 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     # Reserve registers for priv tests:
     #   - x0: avoid so desired values are actually loaded into registers
     #   - x1/ra: used as the return address for function calls
+    #   - x4 (tp): used to hold ACCE magic value to cause instruction access/page/guest page faults to return to x1.  TODO remove this use; see https://github.com/riscv/riscv-arch-test/issues/1829
     #   - x5: used by RVTEST_GOTO_MMODE and similar functions
-    #   - x6, x7, x9: used by the RVTEST_GOTO_LOWER_MODE macro
+    #   - x6, x7, x9: used by the RVTEST_GOTO_LOWER_MODE macro  TODO release these
     #   - x10/x11 (a0/a1) are used by the current T-SBI privileged helpers, so avoid using them for other purposes
+    #   - TODO: protect x12 (a2) as well, but presently that conflicts with having enough registers for pointers
     #   - x16-x31: ensure the same test can be used for I or E bases
-    priv_exclude_regs = [0, 1, 5, 6, 7, 9, 10, 11, *range(16, 32)]
+    priv_exclude_regs = [0, 1, 4, 5, 6, 7, 9, 10, 11, *range(28, 32)]  # TODO should be 16-32 instead of 28-32
     test_data.int_regs.consume_registers(priv_exclude_regs)
     seed(reproducible_hash(testsuite))
 

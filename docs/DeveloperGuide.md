@@ -18,6 +18,7 @@ Each is described below.
   - [Creating New Spreadsheet Testplans](#creating-new-spreadsheet-testplans)
   - [Adding New Privileged Coverpoints](#adding-new-privileged-coverpoints)
   - [Adding New Privileged Tests](#adding-new-privileged-tests)
+  - [Splitting Privileged Tests](#splitting-privileged-tests)
 - [Debugging Coverage](#debugging-coverage)
 - [Adding a New Simulator or DUT Config](#adding-a-new-simulator-or-dut-config)
   - [Adding a Config for Running Locally](#adding-a-config-for-running-locally)
@@ -79,9 +80,9 @@ test suite
 
 - **Test chunk** (`TestChunk`): An unsplittable group of one or more testcases. A test chunk is the building block of test files. Test chunks are never split across multiple files. Standard coverpoint generators (e.g., `cp_rd`, `cp_imm_edges`) produce one chunk per testcase via `format_single_testcase()`. Special coverpoint generators and privileged tests bundle multiple testcases into a single chunk using `test_data.begin_test_chunk()` / `test_data.end_test_chunk()`, typically because the testcases share setup code.
 
-- **Test file**: A complete `.S` assembly file that is compiled into a self-checking ELF. Each test file contains one or more test chunks. When an instruction has many testcases (e.g., hundreds of register/immediate combinations), the framework splits the chunks across multiple test files using `TESTCASES_PER_FILE` as the limit. Test files are named like `I-add-00.S`, `I-add-01.S`, etc., where the suffix indicates the file index.
+- **Test file**: A complete `.S` assembly file that is compiled into a self-checking ELF. Each test file contains one or more test chunks. When an instruction has many testcases (e.g., hundreds of register/immediate combinations), the framework splits the chunks across multiple test files using `TESTCASES_PER_FILE` as the limit. Test files are named like `I-add-00.S`, `I-add-01.S`, etc., where the suffix indicates the file index. Privileged tests use the same length-based splitting (limit `TESTCASES_PER_PRIV_FILE`) and can additionally be split into named groups — see [Splitting Privileged Tests](#splitting-privileged-tests).
 
-- **Test suite**: All test files in a given directory. Each test suite corresponds to one extension or combination of extensions (e.g., `I`, `Zcb`, `ZcbZbb`, `ExceptionsSm`) and maps to a single coverage file. Unprivileged test suites contain one or more test files per instruction. For privileged tests, a test suite typically contains a single test file covering all coverpoints for that feature.
+- **Test suite**: All test files in a given directory. Each test suite corresponds to one extension or combination of extensions (e.g., `I`, `Zcb`, `ZcbZbb`, `ExceptionsSm`) and maps to a single coverage file. Unprivileged test suites contain one or more test files per instruction. For privileged tests, a test suite contains one or more test files covering all coverpoints for that feature — a single file unless splitting kicks in.
 
 ## Test YAML Header
 
@@ -654,34 +655,35 @@ The following applies to all privileged test generators:
 - All privileged generator functions must use the following signature:
 
   ```py
-  def make_name(test_data: TestData) -> list[str]:
+  def make_name(test_data: TestData) -> list[TestChunk]:
 
   ```
 
   - `test_data` is a dataclass that is passed to all parts of the test generation process and stores the signature count, debug strings, etc.
-  - The generator must return a list of strings. They will be combined with newlines separating each string in the final output test.
+  - The generator must return a list of `TestChunk` objects, built the same way as [Special Generators](#special-generators): wrap assembly in a chunk with `test_data.begin_test_chunk()` / `test_data.end_test_chunk()`. The framework uses these chunks to split the suite across test files — see [Splitting Privileged Tests](#splitting-privileged-tests).
 
 The body of most privileged test generator functions is a series of calls to other functions that generate the code for each coverpoint. For example, the main generator from [`Sm.py`](../generators/testgen/src/testgen/priv/extensions/Sm.py) is included below:
 
 ```py
 # All priv test generators use the @add_priv_test_generator decorator to specify the
 # name and required extensions.
-@add_priv_test_generator("Sm", required_extensions=["Sm", "Zicsr"])
+@add_priv_test_generator("Sm", required_extensions=["Sm"])
 # All priv test generators must use the standard function signature.
-def make_sm(test_data: TestData) -> list[str]:
+def make_sm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Sm machine-mode testsuite."""
-    lines: list[str] = []
-    # Priv test generators call other internal functions to build up the test
-    lines.extend(_generate_mcause_tests(test_data))
-    lines.extend(_generate_mstatus_sd_tests(test_data))
-    lines.extend(_generate_priv_inst_tests(test_data))
-    lines.extend(_generate_mret_tests(test_data))
-    lines.extend(_generate_sret_tests(test_data))
-    lines.extend(_generate_mcsr_tests(test_data))
-    lines.extend(_generate_mcsr_cntr_tests(test_data))
-    # A list of assembly strings is returned. These strings will be joined together
-    # with newlines in the final output file.
-    return lines
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
+    tc.code.extend(_generate_mcause_tests(test_data))
+    tc.code.extend(_generate_mstatus_sd_tests(test_data))
+    tc.code.extend(_generate_priv_inst_tests(test_data))
+    tc.code.extend(_generate_mret_tests(test_data))
+    tc.code.extend(_generate_sret_tests(test_data))
+    tc.code.extend(_generate_mcsr_tests(test_data))
+    tc.code.extend(_generate_mcsr_cntr_tests(test_data))
+    test_chunks.append(test_data.end_test_chunk())
+    # A list of TestChunk objects is returned; the framework combines/splits
+    # them into the final output file(s).
+    return test_chunks
 ```
 
 There are a few important gotchas to keep in mind when writing privileged tests:
@@ -700,6 +702,19 @@ For examples of how to write the individual coverpoint helper functions for priv
   - Pre-processor directives (`#ifdef`, etc.), comments, and labels are unindented.
   - Code (instructions and macros) is indented by 2 spaces.
   - If deviations from this help the readability of a test (most often indenting certain comments), use the `INDENT` global at the beginning of the line (e.g. `f"{INDENT}# comment`).
+
+### Splitting Privileged Tests
+
+- **Length-based splitting**: If the total `num_testcases` across a suite's chunks exceeds `TESTCASES_PER_PRIV_FILE` (in [`constants.py`](../generators/testgen/src/testgen/constants.py)), the framework breaks the chunk list into multiple files, never splitting a single chunk. Split files are named `<testsuite>-00.S`, `<testsuite>-01.S`, etc.
+- **Named splits**: A generator can additionally tag chunks so that a specific scope (e.g. "the CSR sweep" or "the illegal instruction sweep") always lands in its own set of files, regardless of where length-based splitting would otherwise fall. This makes failures easier to triage (the file name says what scope failed) and lets that scope be run independently.
+
+To opt in to named splits, pass a name to `test_data.begin_test_chunk(split_name)` on the chunk that starts a scope:
+
+- A chunk created with a non-`None` `split_name` starts a new named group — i.e. a new output file boundary — unless the current group already has that same name, in which case it merges in with no forced split.
+- A chunk created with `split_name=None` (the default) stays in whichever group is currently open.
+- Reusing a name after a different name has already closed that group (i.e. non-contiguous reuse) raises an error.
+
+Length-based splitting still applies _within_ each named group, so a large named scope can still become `<testsuite>_<split_name>-00.S`, `<testsuite>_<split_name>-01.S`, etc.
 
 ## Debugging Coverage
 

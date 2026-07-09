@@ -11,6 +11,7 @@
 
 from testgen.asm.helpers import comment_banner, load_int_reg, write_sigupd
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -71,7 +72,9 @@ def _generate_ssu64xl_tests(test_data: TestData) -> list[str]:
     required_extensions=["S", "Ssu64xl"],
     march_extensions=["S"],
 )
-def make_ssu64xl(test_data: TestData) -> list[str]:
-    lines: list[str] = []
-    lines.extend(_generate_ssu64xl_tests(test_data))
-    return lines
+def make_ssu64xl(test_data: TestData) -> list[TestChunk]:
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
+    tc.code.extend(_generate_ssu64xl_tests(test_data))
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

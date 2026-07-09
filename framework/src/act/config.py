@@ -106,6 +106,8 @@ class Config(BaseModel):
     @classmethod
     def validate_executable(cls, v: Path | None, info: ValidationInfo) -> Path | None:
         """Ensure the executable can be found."""
+        if info.context is not None and not info.context.get("validate_tools", True):
+            return v
         if v is not None:
             full_path = shutil.which(v)
             if full_path is None:
@@ -259,7 +261,7 @@ def check_compiler_version(config: Config) -> None:
         raise RuntimeError(f"Timeout while checking compiler version: {e}") from e
 
 
-def load_config(config_file: Path) -> Config:
+def load_config(config_file: Path, *, validate_tools: bool = True) -> Config:
     """Load riscv-arch-test framework configuration from a YAML file."""
     if not config_file.exists():
         raise FileNotFoundError(f"Configuration file not found: {config_file}")
@@ -271,7 +273,10 @@ def load_config(config_file: Path) -> Config:
     if yaml_data is None:
         raise ValueError(f"Configuration file is empty: {config_file}")
 
-    config = Config.model_validate(yaml_data, context={"config_file_dir": config_file.parent})
-    check_ref_model_version(config)
-    check_compiler_version(config)
+    config = Config.model_validate(
+        yaml_data, context={"config_file_dir": config_file.parent, "validate_tools": validate_tools}
+    )
+    if validate_tools:
+        check_ref_model_version(config)
+        check_compiler_version(config)
     return config

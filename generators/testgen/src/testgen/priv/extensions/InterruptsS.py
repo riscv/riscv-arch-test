@@ -18,6 +18,7 @@ from testgen.asm.interrupts import (
     set_stimer_mmode,
 )
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -4186,16 +4187,18 @@ def _generate_wfi_timeout_u_tests(test_data: TestData) -> list[str]:
 
 
 @add_priv_test_generator("InterruptsS", required_extensions=["Sm", "S", "I", "Zicsr"])
-def make_interruptss_s(test_data: TestData) -> list[str]:
+def make_interruptss_s(test_data: TestData) -> list[TestChunk]:
     """Generate supervisor-mode interrupt tests.
 
     Covers STIP, SSIP, and SEIP across S-mode, M-mode, and U-mode scenarios,
     including trigger conditions, delegation, priority, vectoring, and WFI.
     Individual test groups are enabled incrementally as they are validated.
     """
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk()
     r_temp = test_data.int_regs.get_register()
 
-    lines = [
+    tc.code = [
         comment_banner(
             "InterruptsS_S",
             "Supervisor-mode interrupt tests\nTests S-mode interrupts (STIP, SSIP, SEIP) with M→S delegation",
@@ -4216,49 +4219,50 @@ def make_interruptss_s(test_data: TestData) -> list[str]:
     # -----------------------------------------------------------------------
     # S-mode interrupt tests (STIP, SSIP, SEIP with mideleg)
     # -----------------------------------------------------------------------
-    lines.extend(_generate_trigger_sti_tests(test_data))
-    lines.extend(_generate_trigger_ssi_mip_tests(test_data))
-    lines.extend(_generate_trigger_ssi_sip_tests(test_data))
-    lines.extend(_generate_trigger_sei_tests(test_data))
-    lines.extend(_generate_trigger_sei_seip_tests(test_data))
-    lines.extend(_generate_changingtos_sti_tests(test_data))
-    lines.extend(_generate_changingtos_ssi_tests(test_data))
-    lines.extend(_generate_changingtos_sei_tests(test_data))
-    lines.extend(_generate_interrupts_s_tests(test_data))
-    lines.extend(_generate_vectored_s_tests(test_data))
-    lines.extend(_generate_priority_mip_s_tests(test_data))
-    lines.extend(_generate_priority_mie_s_tests(test_data))
-    lines.extend(_generate_priority_both_s_tests(test_data))
-    lines.extend(_generate_priority_mideleg_tests(test_data))
-    lines.extend(_generate_wfi_s_tests(test_data))
-    lines.extend(_generate_wfi_timeout_s_tests(test_data))
+    tc.code.extend(_generate_trigger_sti_tests(test_data))
+    tc.code.extend(_generate_trigger_ssi_mip_tests(test_data))
+    tc.code.extend(_generate_trigger_ssi_sip_tests(test_data))
+    tc.code.extend(_generate_trigger_sei_tests(test_data))
+    tc.code.extend(_generate_trigger_sei_seip_tests(test_data))
+    tc.code.extend(_generate_changingtos_sti_tests(test_data))
+    tc.code.extend(_generate_changingtos_ssi_tests(test_data))
+    tc.code.extend(_generate_changingtos_sei_tests(test_data))
+    tc.code.extend(_generate_interrupts_s_tests(test_data))
+    tc.code.extend(_generate_vectored_s_tests(test_data))
+    tc.code.extend(_generate_priority_mip_s_tests(test_data))
+    tc.code.extend(_generate_priority_mie_s_tests(test_data))
+    tc.code.extend(_generate_priority_both_s_tests(test_data))
+    tc.code.extend(_generate_priority_mideleg_tests(test_data))
+    tc.code.extend(_generate_wfi_s_tests(test_data))
+    tc.code.extend(_generate_wfi_timeout_s_tests(test_data))
 
     # -----------------------------------------------------------------------
     # M-mode interrupt tests (non-delegated and delegated S-interrupts)
     # -----------------------------------------------------------------------
-    lines.extend(_generate_interrupts_m_tests(test_data))
-    lines.extend(_generate_vectored_m_tests(test_data))
-    lines.extend(_generate_priority_mip_m_tests(test_data))
-    lines.extend(_generate_priority_mie_m_tests(test_data))
-    lines.extend(_generate_wfi_m_tests(test_data))
-    lines.extend(_generate_trigger_mti_m_tests(test_data))
-    lines.extend(_generate_trigger_ssi_sip_m_tests(test_data))
-    lines.extend(_generate_trigger_msi_m_tests(test_data))
-    lines.extend(_generate_trigger_mei_m_tests(test_data))
-    lines.extend(_generate_trigger_sti_m_tests(test_data))
-    lines.extend(_generate_trigger_ssi_m_tests(test_data))
-    lines.extend(_generate_trigger_sei_m_tests(test_data))
-    lines.extend(_generate_sei_interaction_tests(test_data))
-    lines.extend(_generate_global_ie_tests(test_data))
+    tc.code.extend(_generate_interrupts_m_tests(test_data))
+    tc.code.extend(_generate_vectored_m_tests(test_data))
+    tc.code.extend(_generate_priority_mip_m_tests(test_data))
+    tc.code.extend(_generate_priority_mie_m_tests(test_data))
+    tc.code.extend(_generate_wfi_m_tests(test_data))
+    tc.code.extend(_generate_trigger_mti_m_tests(test_data))
+    tc.code.extend(_generate_trigger_ssi_sip_m_tests(test_data))
+    tc.code.extend(_generate_trigger_msi_m_tests(test_data))
+    tc.code.extend(_generate_trigger_mei_m_tests(test_data))
+    tc.code.extend(_generate_trigger_sti_m_tests(test_data))
+    tc.code.extend(_generate_trigger_ssi_m_tests(test_data))
+    tc.code.extend(_generate_trigger_sei_m_tests(test_data))
+    tc.code.extend(_generate_sei_interaction_tests(test_data))
+    tc.code.extend(_generate_global_ie_tests(test_data))
 
     # -----------------------------------------------------------------------
     # U-mode interrupt tests
     # -----------------------------------------------------------------------
-    lines.extend(_generate_user_mti_tests(test_data))
-    lines.extend(_generate_user_msi_tests(test_data))
-    lines.extend(_generate_user_mei_tests(test_data))
-    lines.extend(_generate_user_sei_tests(test_data))
-    lines.extend(_generate_wfi_u_tests(test_data))
-    lines.extend(_generate_wfi_timeout_u_tests(test_data))
+    tc.code.extend(_generate_user_mti_tests(test_data))
+    tc.code.extend(_generate_user_msi_tests(test_data))
+    tc.code.extend(_generate_user_mei_tests(test_data))
+    tc.code.extend(_generate_user_sei_tests(test_data))
+    tc.code.extend(_generate_wfi_u_tests(test_data))
+    tc.code.extend(_generate_wfi_timeout_u_tests(test_data))
 
-    return lines
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

@@ -1337,6 +1337,7 @@ tsbi_\__MODE__\()goto_vu:
 
         //--------------------------------------------------------------
         // T-SBI CSR_ACCESS handler (M-mode)
+        // TODO: rewrite
         //
         // Purpose: Execute an arbitrary CSR instruction on behalf of a
         //   lower-privilege caller. This enables S/U-mode tests to read/write
@@ -1370,6 +1371,10 @@ tsbi_\__MODE__\()goto_vu:
         //     opcode[6:0] = 1110011 (SYSTEM)
         //--------------------------------------------------------------
 tsbi_\__MODE__\()csr_access:
+        LA(T2, tsbi_instr_table)
+        lw T3, 0(T2)
+        beq T3, a0, found_instr
+
         addi    T2, sp, tsbi_csr_scratch_off       // T2 -> scratch location in save area's rvmodel_sv
 
         sw      a0, 0(T2)                          // write CSR instruction to scratch[0:3]
@@ -1574,6 +1579,84 @@ tsbi_\__MODE__\()csr_access:
 tsbi_\__MODE__\()handle_forwarded:
         nop                                        // placeholder for future forwarded ecall handling
 .endif
+
+//==============================================================================
+// TSBI Instruction Dispatch
+//
+// The T-SBI dispatch mechanism uses a table of known instructions to avoid self-modifying code.
+// It searches the table and jumps to a matching instruction, which is followed by a ret to return to the caller.
+// It expects the intended instruction to be in a0.
+//==============================================================================
+
+// tsbi_instr_table_dispatch
+tsbi_instr_table_dispatch:
+        LA(T2, tsbi_instr_table)                // initialize T2 = base address of instruction table
+tsbi_instr_table_search_loop:
+        lw T3, 0(T2)                            // fetch current instruction
+        beq T3, a0, found_instr                 // if it matches tsbi request, handle it
+        beqz T3, tsbi_instr_not_found           // if we hit the end of the table (0 sentinel), not found
+        addi T2, T2, 8                          // advance to next entry (4 bytes for instruction, 4 bytes for return)
+        j tsbi_instr_table_search_loop          // repeat search
+found_instr:
+        j T2                                    // jump to the matching instruction in the table
+tsbi_instr_not_found:
+        // abort with message
+
+
+.macro TSBI_INSTR_TABLE csr_addr
+.word (csr_addr << 20) | (0x02573) // csrr a0, csr_addr
+ret
+.word (csr_addr << 20) | (0x59073) // csrw csr_addr, a0
+ret
+.word (csr_addr << 20) | (0x5a073) // csrs csr_addr, a0
+ret
+.word (csr_addr << 20) | (0x5b073) // csrc csr_addr, a0
+ret
+.endm
+
+// T-SBI Instruction Table
+// This table contains all instructions that the T-SBI knows how to run.
+// The dispatcher searches through the table for the matching instruction, runs it, and returns.
+// This avoids the need for self-modifying code.
+// Only CSRs that lower-privilege code might be interested in accessing are needed here.
+// Each instruction must be followed by a ret to return to the caller
+tsbi_instr_table:
+
+TSBI_INSTR_TABLE(0x300) // mstatus
+TSBI_INSTR_TABLE(0x302) // medeleg
+TSBI_INSTR_TABLE(0x303) // mideleg
+TSBI_INSTR_TABLE(0x304) // mie
+//TSBI_INSTR_TABLE(0x305) // mtvec
+TSBI_INSTR_TABLE(0x306) // mcounteren
+TSBI_INSTR_TABLE(0x30A) // menvcfg
+TSBI_INSTR_TABLE(0x344) // mip
+TSBI_INSTR_TABLE(0x747) // mseccfg
+TSBI_INSTR_TABLE(0x320) // mcountinhibit
+TSBI_INSTR_TABLE(0xB00) // mcycle
+TSBI_INSTR_TABLE(0xB02) // minstret
+TSBI_INSTR_TABLE(0x100) // sstatus
+TSBI_INSTR_TABLE(0x104) // sie
+//TSBI_INSTR_TABLE(0x105) // stvec
+TSBI_INSTR_TABLE(0x106) // scounteren
+TSBI_INSTR_TABLE(0x10A) // senvcfg
+TSBI_INSTR_TABLE(0x144) // sip
+TSBI_INSTR_TABLE(0x14D) // stimecmp
+TSBI_INSTR_TABLE(0x180) // satp
+// loads and stores
+lw a0, 0(a1)
+ret
+lw a0, 4(a1)
+ret
+ld a0, 0(a1)
+ret
+sw a2, 0(a1)
+ret
+sw a2, 4(a1)
+ret
+sd a2, 0(a1)
+ret
+.word 0 // sentinel to mark end of table
+
 
 //==============================================================================
 // NORMAL TRAP HANDLING

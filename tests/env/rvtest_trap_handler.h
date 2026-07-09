@@ -19,7 +19,7 @@
 //    2. ARCHITECTURE CONSTANTS  — interrupt/exception cause counts, masks, mode encodings
 //    3. T-SBI DEFINITIONS       — Test Supervisor Binary Interface operation codes and macros
 //    4. CSR RENAME MACROS       — XCSR_RENAME parameterizes CSR names by privilege mode
-//    5. GOTO_MMODE / GOTO_SMODE — Legacy macros using x3==0 convention for mode switching
+//    5. GOTO_MMODE / GOTO_SMODE — Legacy macros, overwritten with the new T-SBI macros
 //    6. T-SBI CONVENIENCE MACROS— Test-facing macros for the a0-based SBI calling convention
 //    7. GOTO_LOWER_MODE         — Boot-time macro to descend from M-mode to a lower mode
 //    8. DEFAULT INTERRUPT MACROS— Stubs for RVMODEL interrupt set/clear if not DUT-defined
@@ -90,7 +90,6 @@
 //    - a0 = operation code (see TSBI_* constants below)
 //    - a1 = optional argument (e.g., CSR rs1 value)
 //    - Result returned in a0
-//    - x3 must be non-zero (x3==0 is reserved for legacy GOTO_MMODE)
 //    - a0/a1 are the ONLY registers the handler may leave modified (a0 as the
 //      return value). The handler never uses a0/a1 as internal temporaries;
 //      its temporaries are T1..T6 (x6..x9, x14, x15), which are always
@@ -111,19 +110,13 @@
 //    S-mode handler:  handles ECALL_TEST, GOTO_S/U, S-mode CSR_ACCESS locally;
 //                     forwards GOTO_M/VS/VU and M-mode CSR_ACCESS to M-mode via ecall
 //
-//  BACKWARD COMPATIBILITY
-//  =======================
-//
-//  The legacy x3==0 convention (RVTEST_GOTO_MMODE, RVTEST_GOTO_SMODE) is fully
-//  preserved. The T-SBI dispatch only activates when x3 != 0 and a0 contains a
-//  recognized operation code. Tests using the old macros continue to work unchanged.
-//
 //************************************************************************************
 
 #define DEFAULT_SIG_REG  x2                      // signature pointer register
-#define DEFAULT_DATA_REG x3                      // test data pointer register; also used as ecall flag (x3==0 means GOTO_MMODE)
+#define DEFAULT_DATA_REG x3                      // test data pointer register
 #define DEFAULT_TEMP_REG x4                      // general temporary for test macros
 #define DEFAULT_LINK_REG x5                      // link register for test macros (jal return address)
+
 
 #ifndef T1
   #define T1      x6                             // handler temporary 1
@@ -180,7 +173,6 @@
 //   - CSR_ACCESS uses the actual CSR instruction encoding (opcode 0x73 with
 //     funct3 != 0), making it self-describing — the handler doesn't need a
 //     lookup table; it just executes the encoding directly
-//   - The value 0 is NOT used because x3==0 is reserved for the legacy
 //     GOTO_MMODE fast path
 //
 // Dispatch order in the handler:
@@ -190,6 +182,7 @@
 //   4. Otherwise       -> RESERVED        (return -1)
 //==============================================================================
 
+#define ALT_GOTO_MMODE      0x00000000           // a0 value: Used by RVTEST_GOTO_DELEGATED_MMODE
 #define TSBI_GOTO_MMODE     0x00000001           // a0 value: switch to Machine mode
 #define TSBI_GOTO_SMODE     0x00000002           // a0 value: switch to Supervisor (or HS) mode
 #define TSBI_GOTO_UMODE     0x00000003           // a0 value: switch to User mode
@@ -457,90 +450,11 @@
 .endm
 
 //==============================================================================
-// SECTION 10: LEGACY MODE-SWITCHING MACROS (x3==0 convention)
-//
-// These macros use the ORIGINAL ACT convention where x3 is set to 0 before
-// an ecall to signal "return to higher privilege mode immediately."  The trap
-// handler detects x3==0, skips normal trap signature recording, and instead
-// relocates the return address to return at the new privilege level.
-//
-// RVTEST_GOTO_MMODE:
-//   - Saves x3 in a0, sets x3=0, executes ecall
-//   - M-mode handler detects x3==0, returns in M-mode to instruction after ecall
-//   - Restores x3 from a0
-//   - WARNING: fails if medeleg delegates the ecall cause (infinite loop)
-//   - Tests that set medeleg[ecall_cause] must use RVTEST_GOTO_DELEGATED_MMODE
-//
-// RVTEST_GOTO_DELEGATED_MMODE:
-//   - Same as GOTO_MMODE but uses ALT_GOTO_M_OP (default: .word 0 = illegal inst)
-//   - The illegal instruction trap is NOT delegated, so it reaches M-mode
-//   - M-mode handler detects x3==0 with ALT_GOTO_M_CAUSE, returns in M-mode
-//
-// RVTEST_GOTO_SMODE:
-//   - Used from U-mode when U-mode ecalls are delegated to S-mode
-//   - Saves x3, sets x3=0, ecalls
-//   - S-mode handler detects x3==0, sets SPP=1, bumps sepc+4, srets to S-mode
-//   - Only available when S_SUPPORTED is defined
-//
-// CLOBBERS: a0 (used to save/restore x3). a0 is the single designated clobber
-//   register for ALL mode-switching macros (matching the T-SBI convention,
-//   which also clobbers a0), so tests only ever have to keep one register
-//   free across a mode switch.
-// CONSTRAINT: x3 must not already be 0 when used for normal ecall handling
-//==============================================================================
-
-#ifndef GOTO_M_OP
-    #define GOTO_M_OP   ecall                    // default op for GOTO_MMODE: ecall
-#endif
-
-#ifndef GOTO_S_OP
-    #define GOTO_S_OP   ecall                    // default op for GOTO_SMODE: ecall
-#endif
-
-#ifndef CAUSE_SPCL_GO2MMODE_OP
-    #define ALT_GOTO_M_CAUSE CAUSE_ILLEGAL_INSTRUCTION  // alt cause: illegal instruction
-    #define ALT_GOTO_M_OP    .word 0                     // alt op: emit illegal instruction encoding
-#endif
-
-.macro  RVTEST_GOTO_MMODE
-  .option push
-  .option norvc                                  // disable compressed instructions for consistent code size
-  mv   a0, x3                                   // save x3 (DEFAULT_DATA_REG) in a0 (the designated clobber reg)
-  li   x3, 0                                    // set x3=0 to signal GOTO_MMODE to handler
-  GOTO_M_OP                                      // ecall: traps to M-mode handler
-  mv   x3, a0                                   // restore x3 from a0 (reached after handler returns in M-mode)
-  .option pop
-.endm
-
-.macro  RVTEST_GOTO_DELEGATED_MMODE
-  .option push
-  .option norvc                                  // disable compressed instructions
-  mv   a0, x3                                   // save x3 in a0 (the designated clobber reg)
-  li   x3, 0                                    // set x3=0 to signal GOTO_MMODE
-  ALT_GOTO_M_OP                                  // .word 0: triggers illegal instruction (not delegated)
-  mv   x3, a0                                   // restore x3 (reached after handler returns in M-mode)
-  .option pop
-.endm
-
-.macro  RVTEST_GOTO_SMODE
-  .option push
-  .option norvc                                  // disable compressed instructions
-  #ifdef  S_SUPPORTED
-    mv   a0, x3                                  // save x3 in a0 (the designated clobber reg)
-    li   x3, 0                                  // set x3=0 to signal GOTO_SMODE
-    GOTO_S_OP                                    // ecall: traps to S-mode handler (if U-mode ecalls delegated)
-    mv   x3, a0                                 // restore x3 (reached after handler returns in S-mode)
-  #endif
-  .option pop
-.endm
-
-//==============================================================================
-// SECTION 11: T-SBI CONVENIENCE MACROS FOR TESTS
+// SECTION 10: T-SBI CONVENIENCE MACROS FOR TESTS
 //
 // These macros provide a clean test-facing interface for the a0-based T-SBI
-// calling convention. Unlike the legacy GOTO_MMODE (which uses x3==0), these
-// set a0 to the operation code and ecall. The handler distinguishes these from
-// legacy calls by checking x3 != 0.
+// calling convention. Unlike the legacy GOTO_MMODE, these
+// set a0 to the operation code and ecall.
 //
 // Usage in tests:
 //   RVTEST_TSBI_GOTO_MMODE              // switch to M-mode, clobbers a0
@@ -549,8 +463,8 @@
 //   RVTEST_TSBI_CSR_ACCESS 0x30052573, zero  // read mstatus into a0
 //
 // CLOBBERS: a0 (operation code / return value), a1 (CSR_ACCESS argument only)
-// PRESERVES: all other registers including x3
-// PRECONDITION: x3 must be non-zero (it always is during normal test execution)
+// PRESERVES: all other registers
+// PRECONDITION: a0 must be non-zero (it always is during normal test execution)
 //==============================================================================
 
 // Switch to M-mode via T-SBI.
@@ -647,6 +561,78 @@
   .option pop
 .endm
 #endif // H_SUPPORTED
+
+//==============================================================================
+// SECTION 11: LEGACY MODE-SWITCHING MACROS
+//
+// These macros use the ORIGINAL ACT convention which has now a0 set to 0 before
+// an ecall to signal "return to higher privilege mode immediately."  The trap
+// handler detects a0==0, skips normal trap signature recording, and instead
+// relocates the return address to return at the new privilege level.
+//
+// RVTEST_GOTO_MMODE:
+//   - Saves x3 in a0, sets x3=0, executes ecall
+//   - M-mode handler detects x3==0, returns in M-mode to instruction after ecall
+//   - Restores x3 from a0
+//   - WARNING: fails if medeleg delegates the ecall cause (infinite loop)
+//   - Tests that set medeleg[ecall_cause] must use RVTEST_GOTO_DELEGATED_MMODE
+//
+// RVTEST_GOTO_DELEGATED_MMODE:
+//   - Same as GOTO_MMODE but uses ALT_GOTO_M_OP (default: .word 0 = illegal inst)
+//   - The illegal instruction trap is NOT delegated, so it reaches M-mode
+//   - M-mode handler detects a0==0 with ALT_GOTO_M_CAUSE, returns in M-mode
+//
+// RVTEST_GOTO_SMODE:
+//   - Used from U-mode when U-mode ecalls are delegated to S-mode
+//   - Saves a0, sets a0=0, ecalls
+//   - S-mode handler detects a0==0, sets SPP=1, bumps sepc+4, srets to S-mode
+//   - Only available when S_SUPPORTED is defined
+//
+// CLOBBERS: a0. a0 is the single designated clobber
+//   register for ALL mode-switching macros (matching the T-SBI convention,
+//   which also clobbers a0), so tests only ever have to keep one register
+//   free across a mode switch.
+//==============================================================================
+
+#ifndef GOTO_M_OP
+    #define GOTO_M_OP   ecall                    // default op for GOTO_MMODE: ecall
+#endif
+
+#ifndef GOTO_S_OP
+    #define GOTO_S_OP   ecall                    // default op for GOTO_SMODE: ecall
+#endif
+
+#ifndef CAUSE_SPCL_GO2MMODE_OP
+    #define ALT_GOTO_M_CAUSE CAUSE_ILLEGAL_INSTRUCTION  // alt cause: illegal instruction
+    #define ALT_GOTO_M_OP    .word 0                     // alt op: emit illegal instruction encoding
+#endif
+
+.macro  RVTEST_GOTO_MMODE
+  .option push
+  .option norvc                                  // disable compressed instructions for consistent code size
+  li   a0, 0                                    // set a0=0 to signal GOTO_MMODE to handler
+  GOTO_M_OP                                      // ecall: traps to M-mode handler
+  .option pop
+.endm
+
+.macro  RVTEST_GOTO_DELEGATED_MMODE
+  .option push
+  .option norvc                                  // disable compressed instructions
+  li   a0, 0                                    // set a0=0 to signal GOTO_MMODE
+  ALT_GOTO_M_OP                                  // .word 0: triggers illegal instruction (not delegated)
+  .option pop
+.endm
+
+.macro  RVTEST_GOTO_SMODE
+  .option push
+  .option norvc                                  // disable compressed instructions
+  #ifdef  S_SUPPORTED
+    li   a0, 0                                  // set a0=0 to signal GOTO_SMODE
+    GOTO_S_OP                                    // ecall: traps to S-mode handler (if U-mode ecalls delegated)
+  #endif
+  .option pop
+.endm
+
 
 
 //==============================================================================
@@ -1164,9 +1150,9 @@ common_\__MODE__\()entry:                        // common entry for all traps i
 // T-SBI DISPATCH — M-MODE
 //
 // CONTROL FLOW:
-//   1. Check for ALT_GOTO_M_CAUSE (alternate illegal instruction path) with x3==0 -> rtn2mmode
+//   1. Check for ALT_GOTO_M_CAUSE (alternate illegal instruction path) with a0==0 -> rtn2mmode
 //   2. Check if cause is an ecall (causes 8..11) -> if not, go to normal trap sig
-//   3. Check x3==0 (legacy GOTO_MMODE fast path) -> rtn2mmode
+//   3. Check a0==0 (legacy GOTO_MMODE fast path) -> rtn2mmode
 //   4. NEW: Dispatch on the caller's a0 (still live — the handler never
 //      touches a0/a1):
 //      a. a0 in [1..5] -> GOTO_xMODE (set MPP/MPV, bump mepc, mret)
@@ -1193,8 +1179,8 @@ spcl_\__MODE__\()chk4alt:                        // Check if cause matches ALT_G
         bnez    T3, spcl_\__MODE__\()chk4ecall   // not the alt cause -> check for standard ecall
 
 spcl_\__MODE__\()param_chk:                      // ALT_GOTO_M cause detected — check if it's a GOTO_MMODE request
-        beqz    x3, \__MODE__\()rtn2mmode         // x3==0 -> this IS a GOTO_MMODE request via alt path -> handle it
-        j           \__MODE__\()trapsig_ptr_upd   // x3!=0 -> normal trap (alt cause happened naturally) -> record sig
+        beqz    a0, \__MODE__\()rtn2mmode         // a0==0 -> this IS a GOTO_MMODE request via alt path -> handle it
+        j           \__MODE__\()trapsig_ptr_upd   // a0!=0 -> normal trap (alt cause happened naturally) -> record sig
 
 spcl_\__MODE__\()chk4ecall:                      // Step 2: Check if cause is an ecall (causes 8, 9, 10, or 11)
         addi    T3, T4, -CAUSE_USER_ECALL         // T3 = masked_cause - 8 (maps ecall causes 8..11 to 0..3)
@@ -1203,20 +1189,20 @@ spcl_\__MODE__\()chk4ecall:                      // Step 2: Check if cause is an
 
    .endif                                        // end of M-mode ALT check (S/H/V modes skip this)
 
-// ----- Legacy x3==0 fast path (GOTO_MMODE / GOTO_SMODE) -----
+// ----- Legacy a0==0 fast path (GOTO_MMODE / GOTO_SMODE) -----
 // This handles the ORIGINAL RVTEST_GOTO_MMODE convention.
-// Tests using the old macros set x3=0 before ecall. The handler detects
+// Tests using the old macros set a0=0 before ecall. The handler detects
 // this and returns in M-mode without recording a trap signature.
 
-.ifc \__MODE__ ,  M                              // M-mode: check x3==0 for GOTO_MMODE
+.ifc \__MODE__ ,  M                              // M-mode: check a0==0 for GOTO_MMODE
 
-\__MODE__\()goto_mchk:                           // Step 3: Is this a legacy GOTO_MMODE? (x3==0)
-        beqz    x3, \__MODE__\()rtn2mmode         // x3==0 -> legacy GOTO_MMODE -> jump to rtn2mmode handler
+\__MODE__\()goto_mchk:                           // Step 3: Is this a legacy GOTO_MMODE? (a0==0)
+        beqz    a0, \__MODE__\()rtn2mmode         // a0==0 -> legacy GOTO_MMODE -> jump to rtn2mmode handler
 
         //==============================================================
         // Step 4: T-SBI DISPATCH — a0-based operation dispatch (M-mode)
         //
-        // We've confirmed: this IS an ecall, and x3 IS NOT 0.
+        // We've confirmed: this IS an ecall, and a0 IS NOT 0.
         // So this is a T-SBI call. The caller's a0/a1 are still live in
         // their registers (the handler's temporaries are x6..x9/x14/x15,
         // so a0/a1 were never overwritten).
@@ -1488,11 +1474,10 @@ tsbi_\__MODE__\()csr_access:
 // FORWARDING MECHANISM:
 //   The S-mode handler restores all handler temporary registers, then executes
 //   ecall. This traps to M-mode with cause=CAUSE_SUPERVISOR_ECALL (9).
-//   The caller's a0/a1/x3 pass through unchanged because:
+//   The caller's a0/a1 pass through unchanged because:
 //   - a0/a1 are never touched by the handler (its temporaries are
 //     T1..T6 = x6..x9, x14, x15)
-//   - x3 is never modified by the handler
-//   M-mode's T-SBI dispatch sees the S-mode ecall, detects x3!=0 and a0 as
+//   M-mode's T-SBI dispatch sees the S-mode ecall, detects a0!=0 and a0 as
 //   a valid SBI op, and handles it directly.
 //
 // CALLER's a0/a1 HANDLING:
@@ -1508,7 +1493,7 @@ tsbi_\__MODE__\()csr_access:
         and     T4, T4, T5                        // T4 = masked xcause
         addi    T3, T4, -CAUSE_USER_ECALL          // T3 = masked_cause - 8 (U-mode ecall = cause 8)
         bnez    T3, \__MODE__\()trapsig_ptr_upd   // not a U-mode ecall -> normal trap sig recording
-        beqz    x3, \__MODE__\()rtn2smode          // x3==0 -> legacy GOTO_SMODE -> rtn2smode handler
+        beqz    a0, \__MODE__\()rtn2smode          // a0==0 -> legacy GOTO_SMODE -> rtn2smode handler
 
         //--- T-SBI dispatch: caller's a0 is live in its register ---
 tsbi_\__MODE__\()dispatch:
@@ -1596,7 +1581,7 @@ tsbi_\__MODE__\()forward_to_m:
         LREG    T5, trap_sv_off+5*REGWIDTH(sp)    // restore T5 (x14)
         LREG    T6, trap_sv_off+6*REGWIDTH(sp)    // restore T6 (x15)
         LREG    sp, trap_sv_off+7*REGWIDTH(sp)    // restore original sp (undo the xSCRATCH swap)
-        ecall                                      // trap to M-mode with a0/a1/x3 intact
+        ecall                                      // trap to M-mode with a0/a1 intact
         // For GOTO_MMODE: M-mode's rtn2mmode returns directly to caller in M-mode (never returns here)
         // For GOTO_VS/VU: M-mode sets MPP/MPV and mrets to target (never returns here)
         // For CSR_ACCESS: M-mode executes CSR, mrets back to S-mode handler (here), which srets to caller
@@ -1631,7 +1616,7 @@ tsbi_\__MODE__\()csr_access:
 //==============================================================================
 // M-MODE FORWARDED ECALL HANDLING (TODO)
 //
-// When M-mode receives an ecall from S-mode (cause 9) with x3!=0,
+// When M-mode receives an ecall from S-mode (cause 9) with a0!=0,
 // it could be the S-mode handler forwarding a T-SBI request.
 // The M-mode dispatch code above (tsbi_Mdispatch) handles the a0 value
 // regardless of which mode the ecall came from. However, for forwarded
@@ -1656,7 +1641,7 @@ tsbi_\__MODE__\()handle_forwarded:
 // NORMAL TRAP HANDLING
 //
 // Reached when the trap is NOT a T-SBI call (either not an ecall,
-// or an ecall with x3==0 that was already handled by the legacy path,
+// or an ecall with a0==0 that was already handled by the legacy path,
 // or a genuine ecall exception that should be recorded in the signature).
 //
 // This section:
@@ -1933,9 +1918,6 @@ sv_\__MODE__\()epc:
         TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()epc, sv_\__MODE__\()epc_str) // write word 2: xEPC
         csrr    T3, CSR_XEPC                          // re-read xEPC (T3 was modified by relocation)
 
-#ifdef SKIP_MEPC
-        LI(     T6, 0xACCE)
-        bne     x4, T6, adj_\__MODE__\()epc_rtn
         csrr    T2, CSR_XCAUSE
         LI(     T6, CAUSE_FETCH_PAGE_FAULT)
         beq     T2, T6, 1f
@@ -1945,7 +1927,6 @@ sv_\__MODE__\()epc:
         bne     T2, T6, adj_\__MODE__\()epc_rtn
 1:      csrw    CSR_XEPC, ra
         j skp_adj_\__MODE__\()epc
-#endif
 
 adj_\__MODE__\()epc_rtn:
         andi    T3, T3, ~WDBYTMSK                    // align EPC to 4-byte boundary
@@ -2200,14 +2181,14 @@ excpt_\__MODE__\()hndlr_tbl:
                 .ifc \__MODE__ , S
                         // Handler-context GOTO_MMODE: RVTEST_GOTO_MMODE clobbers a0,
                         // but here a0 belongs to the interrupted test and is NOT part
-                        // of the saved/restored register set. Use T5 to hold x3
+                        // of the saved/restored register set. Use T5 to hold a0
                         // instead — T5 is restored from the save area by resto_Srtn,
                         // so its use here is invisible to the test.
-                        mv   T5, x3               // save x3 (T5 survives the nested trap: the
+                        mv   T5, a0               // save a0 (T5 survives the nested trap: the
                                                   // M-handler restores it from its save slot)
-                        li   x3, 0                // x3==0 signals legacy GOTO_MMODE
+                        li   a0, 0                // a0==0 signals legacy GOTO_MMODE
                         ecall                     // trap to M-mode; returns here in M-mode
-                        mv   x3, T5               // restore x3
+                        mv   a0, T5               // restore a0
                         li T3, 0x200
                         csrc mip, T3
                         csrr T3, mip
@@ -2236,7 +2217,7 @@ excpt_\__MODE__\()hndlr_tbl:
 .popsection                                          // end of .text.rvmodel section
 
 //==============================================================================
-// GOTO_MMODE RETURN HANDLER (M-mode only, legacy x3==0 path)
+// GOTO_MMODE RETURN HANDLER (M-mode only, legacy a0==0 path)
 //==============================================================================
 
 .ifc \__MODE__ , M
@@ -2294,12 +2275,12 @@ rtn_fm_mmode:
 .endif  // end of M-mode rtn2mmode
 
 //==============================================================================
-// GOTO_SMODE RETURN HANDLER (S-mode only, legacy x3==0 path)
+// GOTO_SMODE RETURN HANDLER (S-mode only, legacy a0==0 path)
 //==============================================================================
 
 .ifc \__MODE__ , S
 
-\__MODE__\()rtn2smode:                               // U-mode ecall with x3==0 -> return in S-mode
+\__MODE__\()rtn2smode:                               // U-mode ecall with a0==0 -> return in S-mode
         csrr    T3, CSR_XEPC                          // T3 = sepc (U-mode ecall address)
         addi    T3, T3, 4                              // skip past ecall
         csrw    CSR_XEPC, T3                           // sepc = ecall_addr + 4

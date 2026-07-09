@@ -55,12 +55,8 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     #   - x0: avoid so desired values are actually loaded into registers
     #   - x1/ra: used as the return address for function calls
     #   - x6, x7, x9: handler/boot temporaries (T1, T2, T4)
-    #   - x10, x11 (a0/a1): the designated clobber registers of every
-    #     mode-switching macro (RVTEST_GOTO_MMODE/SMODE/DELEGATED_MMODE and all
-    #     RVTEST_TSBI_* macros pass arguments / return results in a0/a1), so
-    #     tests must never hold live values there across a mode switch
     #   - x16-x31: ensure the same test can be used for I or E bases
-    priv_exclude_regs = [0, 1, 6, 7, 9, 10, 11, *range(16, 32)]
+    priv_exclude_regs = [0, 1, 6, 7, 9, *range(16, 32)]
     test_data.int_regs.consume_registers(priv_exclude_regs)
     seed(reproducible_hash(testsuite))
 

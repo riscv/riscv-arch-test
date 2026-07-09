@@ -100,3 +100,20 @@
 #ifndef RVMODEL_CLR_SSW_INT
   #error "RVMODEL_CLR_SSW_INT not defined. Make sure to define it in rvmodel_macros.h."
 #endif
+
+#ifdef SSCOFPMF_SUPPORTED
+  // If SSCOFPMF_SUPPORTED is defined, these macros must also be defined
+  // because the tests will need them to exercise count overflow / mode-based filtering.
+  #ifndef RVMODEL_MHPMEVENT
+    #error "RVMODEL_MHPMEVENT not defined. Make sure to define it in rvmodel_macros.h."
+  #endif
+  #ifndef RVMODEL_MHPMCOUNTER
+    #error "RVMODEL_MHPMCOUNTER not defined. Make sure to define it in rvmodel_macros.h."
+  #endif
+  #ifndef RVMODEL_MHPMEVENT_VAL
+    #error "RVMODEL_MHPMEVENT_VAL not defined. Make sure to define it in rvmodel_macros.h."
+  #endif
+  #ifndef RVMODEL_MHPMEVENT_CODE
+    #error "RVMODEL_MHPMEVENT_CODE not defined. Make sure to define it in rvmodel_macros.h."
+  #endif
+#endif

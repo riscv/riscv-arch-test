@@ -22,7 +22,7 @@ from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 
-def _generate_trigger_sti_tests(test_data: TestData) -> list[str]:
+def _generate_trigger_sti_tests(test_data: TestData) -> list[TestChunk]:
     """Generate STIP trigger tests.
 
     With mstatus.MIE = 0, mstatus.SIE = {0/1}, mideleg = {0s/STI+SEI+SSI},
@@ -34,6 +34,7 @@ def _generate_trigger_sti_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
+    tc = test_data.begin_test_chunk("S")
     lines = [
         comment_banner(
             "cp_trigger_sti",
@@ -135,10 +136,11 @@ def _generate_trigger_sti_tests(test_data: TestData) -> list[str]:
             lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, r_stce))
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_trigger_ssi_mip_tests(test_data: TestData) -> list[str]:
+def _generate_trigger_ssi_mip_tests(test_data: TestData) -> list[TestChunk]:
     """Generate SSIP trigger tests.
 
     With mstatus.MIE = 0, mstatus.SIE = {0/1}, mideleg = {0s/STI+SEI+SSI},
@@ -149,6 +151,7 @@ def _generate_trigger_ssi_mip_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
+    tc = test_data.begin_test_chunk("S")
     lines = [
         comment_banner(
             "cp_trigger_ssi_mip",
@@ -256,10 +259,11 @@ def _generate_trigger_ssi_mip_tests(test_data: TestData) -> list[str]:
             )
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_trigger_ssi_sip_tests(test_data: TestData) -> list[str]:
+def _generate_trigger_ssi_sip_tests(test_data: TestData) -> list[TestChunk]:
     """Generate SSIP trigger tests via sip.
 
     With mstatus.MIE = 0, mstatus.SIE = {0/1}, mideleg = {0s/STI+SEI+SSI},
@@ -271,6 +275,7 @@ def _generate_trigger_ssi_sip_tests(test_data: TestData) -> list[str]:
 
     r_scratch = test_data.int_regs.get_register()
 
+    tc = test_data.begin_test_chunk("S")
     lines = [
         comment_banner(
             "cp_trigger_ssi_sip",
@@ -330,10 +335,11 @@ def _generate_trigger_ssi_sip_tests(test_data: TestData) -> list[str]:
             )
 
     test_data.int_regs.return_registers([r_scratch])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_trigger_sei_tests(test_data: TestData) -> list[str]:
+def _generate_trigger_sei_tests(test_data: TestData) -> list[TestChunk]:
     """Generate SEIP trigger tests.
 
     With mstatus.MIE = 0, mstatus.SIE = {0/1}, mideleg = {0/STI+SEI+SSI},
@@ -345,6 +351,7 @@ def _generate_trigger_sei_tests(test_data: TestData) -> list[str]:
 
     r_scratch, r_temp, r_stimecmp = test_data.int_regs.get_registers(3)
 
+    tc = test_data.begin_test_chunk("S")
     lines = [
         comment_banner(
             "cp_trigger_sei",
@@ -448,10 +455,11 @@ def _generate_trigger_sei_tests(test_data: TestData) -> list[str]:
             lines.append("RVTEST_CLR_SEXT_INT")
 
     test_data.int_regs.return_registers([r_scratch, r_temp, r_stimecmp])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_trigger_sei_seip_tests(test_data: TestData) -> list[str]:
+def _generate_trigger_sei_seip_tests(test_data: TestData) -> list[TestChunk]:
     """Generate SEIP trigger tests via sip write.
 
     With mstatus.MIE = 0, mstatus.SIE = {0/1}, mideleg = {STI+SEI+SSI},
@@ -463,6 +471,7 @@ def _generate_trigger_sei_seip_tests(test_data: TestData) -> list[str]:
 
     r_scratch = test_data.int_regs.get_register()
 
+    tc = test_data.begin_test_chunk("S")
     lines = [
         comment_banner(
             "cp_trigger_sei_seip",
@@ -536,10 +545,11 @@ def _generate_trigger_sei_seip_tests(test_data: TestData) -> list[str]:
         )
 
     test_data.int_regs.return_registers([r_scratch])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_changingtos_sti_tests(test_data: TestData) -> list[str]:
+def _generate_changingtos_sti_tests(test_data: TestData) -> list[TestChunk]:
     """Generate STIP trigger test when changing to S-mode and enabling SIE.
 
     With mstatus.MIE=0, mstatus.SIE=0, mideleg={STI+SEI+SSI}, mie=1s,
@@ -550,6 +560,7 @@ def _generate_changingtos_sti_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
+    tc = test_data.begin_test_chunk("S")
     lines = [
         comment_banner(
             "cp_trigger_changingtos_sti",
@@ -631,10 +642,11 @@ def _generate_changingtos_sti_tests(test_data: TestData) -> list[str]:
     lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_changingtos_ssi_tests(test_data: TestData) -> list[str]:
+def _generate_changingtos_ssi_tests(test_data: TestData) -> list[TestChunk]:
     """Generate SSIP trigger test when changing to S-mode and enabling SIE.
 
     With mstatus.MIE=0, mstatus.SIE=0, mideleg={STI+SEI+SSI}, mie=1s,
@@ -645,6 +657,7 @@ def _generate_changingtos_ssi_tests(test_data: TestData) -> list[str]:
 
     r_scratch = test_data.int_regs.get_register()
 
+    tc = test_data.begin_test_chunk("S")
     lines = [
         comment_banner(
             "cp_trigger_changingtos_ssi",
@@ -717,10 +730,11 @@ def _generate_changingtos_ssi_tests(test_data: TestData) -> list[str]:
     )
 
     test_data.int_regs.return_registers([r_scratch])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_changingtos_sei_tests(test_data: TestData) -> list[str]:
+def _generate_changingtos_sei_tests(test_data: TestData) -> list[TestChunk]:
     """Generate SEI interrupt trigger when changing to S-mode.
 
     with mstatus.MIE=0, mstatus.SIE=0, mideleg={STI+SEI+SSI}, mie=1s, set mip.SEIP,
@@ -731,6 +745,7 @@ def _generate_changingtos_sei_tests(test_data: TestData) -> list[str]:
 
     r_scratch = test_data.int_regs.get_register()
 
+    tc = test_data.begin_test_chunk("S")
     lines = [
         comment_banner(
             "cp_trigger_changingtos_sei",
@@ -766,10 +781,11 @@ def _generate_changingtos_sei_tests(test_data: TestData) -> list[str]:
     ]
 
     test_data.int_regs.return_registers([r_scratch])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
+def _generate_interrupts_s_tests(test_data: TestData) -> list[TestChunk]:
     """Generate interrupt tests with walking 1s in mip and mie.
 
     Cross of mstatus.MIE = 0, mstatus.SIE = 1, mtvec.MODE = 00, mideleg={0/STI+SEI+SSI},
@@ -781,6 +797,7 @@ def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
+    tc = test_data.begin_test_chunk("S")
     lines = [
         comment_banner(
             "cp_interrupts_s",
@@ -933,10 +950,11 @@ def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
                     lines.append(mip_clr)
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
+def _generate_vectored_s_tests(test_data: TestData) -> list[TestChunk]:
     """Generate vectored interrupt tests for S-mode.
 
     In M-mode with MIE=0, set interrupt pending but no trap fires.
@@ -950,6 +968,7 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
+    tc = test_data.begin_test_chunk("S")
     lines = [
         comment_banner(
             "cp_vectored_s",
@@ -1090,7 +1109,8 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
                 lines.append(int_clr)
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
 # ======================================================================
@@ -1098,7 +1118,7 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
 # ======================================================================
 
 
-def _generate_priority_mip_s_tests(test_data: TestData) -> list[str]:
+def _generate_priority_mip_s_tests(test_data: TestData) -> list[TestChunk]:
     """Generate interrupt priority tests.
 
     Set up with mstatus.MIE = 0, mstatus.SIE = 1, then change to supervisor mode after interrupts are set
@@ -1110,6 +1130,7 @@ def _generate_priority_mip_s_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
+    tc = test_data.begin_test_chunk("S")
     lines = [
         comment_banner(
             "cp_priority_mip_s / cp_priority_mip_s_m",
@@ -1228,10 +1249,11 @@ def _generate_priority_mip_s_tests(test_data: TestData) -> list[str]:
             lines.append("RVTEST_CLR_MEXT_INT")
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_priority_mie_s_tests(test_data: TestData) -> list[str]:
+def _generate_priority_mie_s_tests(test_data: TestData) -> list[TestChunk]:
     """Generate interrupt priority tests.
 
     Cross of 2^6 permutations of mie, mip=1s, mideleg ={0/STI+SEI+SSI}.
@@ -1240,6 +1262,7 @@ def _generate_priority_mie_s_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "InterruptsS_S_cg"
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
+    tc = test_data.begin_test_chunk("S")
     lines = [comment_banner("cp_priority_mie_s / cp_priority_mie_s_m", _generate_priority_mie_s_tests.__doc__), ""]
 
     def _setup(mideleg_hex: str, mie_val: int) -> list[str]:
@@ -1335,10 +1358,11 @@ def _generate_priority_mie_s_tests(test_data: TestData) -> list[str]:
         lines.append("RVTEST_CLR_MEXT_INT")
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_priority_both_s_tests(test_data: TestData) -> list[str]:
+def _generate_priority_both_s_tests(test_data: TestData) -> list[TestChunk]:
     """Generate interrupt priority test
 
     Cross of 2^6 permutations of mie, mip=mie, mideleg ={0/STI+SEI+SSI}.
@@ -1346,6 +1370,7 @@ def _generate_priority_both_s_tests(test_data: TestData) -> list[str]:
     """
     covergroup = "InterruptsS_S_cg"
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
+    tc = test_data.begin_test_chunk("S")
     lines = [comment_banner("cp_priority_both_s / cp_priority_both_m", _generate_priority_both_s_tests.__doc__), ""]
 
     def _setup(mideleg_hex: str, mie_val: int) -> list[str]:
@@ -1442,10 +1467,11 @@ def _generate_priority_both_s_tests(test_data: TestData) -> list[str]:
             lines.append("RVTEST_CLR_MEXT_INT")
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_priority_mideleg_tests(test_data: TestData) -> list[str]:
+def _generate_priority_mideleg_tests(test_data: TestData) -> list[TestChunk]:
     """Generate mideleg priority tests (combined M + S behavior).
 
     Covers:
@@ -1456,6 +1482,7 @@ def _generate_priority_mideleg_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
+    tc = test_data.begin_test_chunk("S")
     lines = [
         comment_banner(
             "cp_priority_mideleg_combined",
@@ -1645,10 +1672,11 @@ def _generate_priority_mideleg_tests(test_data: TestData) -> list[str]:
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
 
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_wfi_s_tests(test_data: TestData) -> list[str]:
+def _generate_wfi_s_tests(test_data: TestData) -> list[TestChunk]:
     """Generate S-mode WFI tests.
 
     Test WFI from S-mode with MTIP.
@@ -1660,6 +1688,7 @@ def _generate_wfi_s_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
+    tc = test_data.begin_test_chunk("S")
     lines = [
         comment_banner(
             "cp_wfi_s",
@@ -1770,10 +1799,11 @@ def _generate_wfi_s_tests(test_data: TestData) -> list[str]:
                 lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_wfi_timeout_s_tests(test_data: TestData) -> list[str]:
+def _generate_wfi_timeout_s_tests(test_data: TestData) -> list[TestChunk]:
     """Generate S-mode and U-mode WFI timeout tests.
 
     Test WFI timeout with TW=1, MTIMECMP=max.
@@ -1784,6 +1814,7 @@ def _generate_wfi_timeout_s_tests(test_data: TestData) -> list[str]:
 
     r_temp, r_stimecmp, r_scratch = test_data.int_regs.get_registers(3)
 
+    tc = test_data.begin_test_chunk("S")
     lines = [
         comment_banner(
             "cp_wfi_timeout_s",
@@ -1906,10 +1937,11 @@ def _generate_wfi_timeout_s_tests(test_data: TestData) -> list[str]:
                         lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
 
     test_data.int_regs.return_registers([r_temp, r_stimecmp, r_scratch])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_interrupts_m_tests(test_data: TestData) -> list[str]:
+def _generate_interrupts_m_tests(test_data: TestData) -> list[TestChunk]:
     """Generate interrupt tests in M-mode.
 
     Cross: MIE={0,1} × mideleg={0,0x222} × 6 mip walking × 6 mie walking
@@ -1920,6 +1952,8 @@ def _generate_interrupts_m_tests(test_data: TestData) -> list[str]:
     - cp_interrupts_m_deleg: Delegated S-interrupts (mideleg=0x222 + SSIP/STIP/SEIP)
     """
     covergroup = "InterruptsS_S_cg"
+
+    tc = test_data.begin_test_chunk("M")
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
@@ -2101,10 +2135,11 @@ def _generate_interrupts_m_tests(test_data: TestData) -> list[str]:
                             lines.append(clr_fn)
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_vectored_m_tests(test_data: TestData) -> list[str]:
+def _generate_vectored_m_tests(test_data: TestData) -> list[TestChunk]:
     """Generate vectored interrupt tests in M-mode.
     mstatus.MIE=1, mideleg =0s, all 3 of mie.STIE/SSIE/SEIE, 3 walking 1s in mip.STIP/SSIP/SEIP (3 bins)
     Test vectored with S-interrupts, mideleg=0 (fire in M-mode).
@@ -2114,6 +2149,7 @@ def _generate_vectored_m_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
+    tc = test_data.begin_test_chunk("M")
     lines = [
         comment_banner(
             "cp_vectored_m",
@@ -2218,10 +2254,11 @@ def _generate_vectored_m_tests(test_data: TestData) -> list[str]:
             lines.append(int_clr)
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_priority_mip_m_tests(test_data: TestData) -> list[str]:
+def _generate_priority_mip_m_tests(test_data: TestData) -> list[TestChunk]:
     """Generate priority tests varying mip with MIE rising.
 
     Set MIE=0, configure all 64 mip patterns, mie=all 1s, mideleg=0, then set MIE=1.
@@ -2232,6 +2269,7 @@ def _generate_priority_mip_m_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
+    tc = test_data.begin_test_chunk("M")
     lines = [
         comment_banner(
             "cp_priority_mip_m",
@@ -2341,10 +2379,11 @@ def _generate_priority_mip_m_tests(test_data: TestData) -> list[str]:
             lines.append("RVTEST_CLR_MEXT_INT")
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_priority_mie_m_tests(test_data: TestData) -> list[str]:
+def _generate_priority_mie_m_tests(test_data: TestData) -> list[TestChunk]:
     """Generate priority tests varying mie with MIE rising.
 
     Set MIE=0, configure all 64 mie patterns, set all mip, mideleg=0, then MIE=1.
@@ -2355,6 +2394,7 @@ def _generate_priority_mie_m_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
+    tc = test_data.begin_test_chunk("M")
     lines = [
         comment_banner(
             "cp_priority_mie_m",
@@ -2453,10 +2493,11 @@ def _generate_priority_mie_m_tests(test_data: TestData) -> list[str]:
         )
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_wfi_m_tests(test_data: TestData) -> list[str]:
+def _generate_wfi_m_tests(test_data: TestData) -> list[TestChunk]:
     """Generate WFI tests in M-mode.
 
     Test WFI with MTIP in M-mode across all MIE, SIE, TW, mideleg combinations.
@@ -2468,6 +2509,7 @@ def _generate_wfi_m_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_mtimecmp, r_temp1, r_temp2, r_temp3, r_temp4 = test_data.int_regs.get_registers(6)
 
+    tc = test_data.begin_test_chunk("M")
     lines = [
         comment_banner(
             "cp_wfi_m",
@@ -2556,10 +2598,11 @@ def _generate_wfi_m_tests(test_data: TestData) -> list[str]:
                 lines.extend(clr_mtimer_int(r_temp1, r_mtimecmp))
 
     test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_temp1, r_temp2, r_temp3, r_temp4])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_trigger_mti_m_tests(test_data: TestData) -> list[str]:
+def _generate_trigger_mti_m_tests(test_data: TestData) -> list[TestChunk]:
     """Generate MTIP trigger test when MIE rises via CSRRS.
 
     Set MTIP pending with MIE=0, then use CSRRS to set MIE=1.
@@ -2570,6 +2613,7 @@ def _generate_trigger_mti_m_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
+    tc = test_data.begin_test_chunk("M")
     lines = [
         comment_banner(
             "cp_trigger_mti_m",
@@ -2640,10 +2684,11 @@ def _generate_trigger_mti_m_tests(test_data: TestData) -> list[str]:
     lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_trigger_ssi_sip_m_tests(test_data: TestData) -> list[str]:
+def _generate_trigger_ssi_sip_m_tests(test_data: TestData) -> list[TestChunk]:
     """Generate SSIP trigger test via SIP CSR write in M-mode.
 
     Use CSRRS to write sip.SSIP, test with MIE={0,1} and mideleg.SSI={0,1}.
@@ -2654,6 +2699,7 @@ def _generate_trigger_ssi_sip_m_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
+    tc = test_data.begin_test_chunk("M")
     lines = [
         comment_banner(
             "cp_trigger_ssi_sip_m",
@@ -2747,10 +2793,11 @@ def _generate_trigger_ssi_sip_m_tests(test_data: TestData) -> list[str]:
             )
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_trigger_msi_m_tests(test_data: TestData) -> list[str]:
+def _generate_trigger_msi_m_tests(test_data: TestData) -> list[TestChunk]:
     """Generate MSIP trigger test when MIE rises via CSRRS.
 
     Set MSIP pending with MIE=0, then use CSRRS to set MIE=1.
@@ -2761,6 +2808,7 @@ def _generate_trigger_msi_m_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
+    tc = test_data.begin_test_chunk("M")
     lines = [
         comment_banner(
             "cp_trigger_msi_m",
@@ -2835,10 +2883,11 @@ def _generate_trigger_msi_m_tests(test_data: TestData) -> list[str]:
     )
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_trigger_mei_m_tests(test_data: TestData) -> list[str]:
+def _generate_trigger_mei_m_tests(test_data: TestData) -> list[TestChunk]:
     """Generate MEIP trigger test when MIE rises via CSRRS.
 
     Set MEIP pending with MIE=0, then use CSRRS to set MIE=1.
@@ -2849,6 +2898,7 @@ def _generate_trigger_mei_m_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
+    tc = test_data.begin_test_chunk("M")
     lines = [
         comment_banner(
             "cp_trigger_mei_m",
@@ -2916,10 +2966,11 @@ def _generate_trigger_mei_m_tests(test_data: TestData) -> list[str]:
     )
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_trigger_sti_m_tests(test_data: TestData) -> list[str]:
+def _generate_trigger_sti_m_tests(test_data: TestData) -> list[TestChunk]:
     """Generate STIP trigger test when MIE rises via CSRRS.
 
     Set STIP pending with MIE=0, then use CSRRS to set MIE=1.
@@ -2930,6 +2981,7 @@ def _generate_trigger_sti_m_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
+    tc = test_data.begin_test_chunk("M")
     lines = [
         comment_banner(
             "cp_trigger_sti_m",
@@ -2999,10 +3051,11 @@ def _generate_trigger_sti_m_tests(test_data: TestData) -> list[str]:
     )
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_trigger_ssi_m_tests(test_data: TestData) -> list[str]:
+def _generate_trigger_ssi_m_tests(test_data: TestData) -> list[TestChunk]:
     """Generate SSIP trigger test when MIE rises via CSRRS.
 
     Set SSIP pending with MIE=0, mideleg=0, then use CSRRS to set MIE=1.
@@ -3013,6 +3066,7 @@ def _generate_trigger_ssi_m_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
+    tc = test_data.begin_test_chunk("M")
     lines = [
         comment_banner(
             "cp_trigger_ssi_m",
@@ -3089,10 +3143,11 @@ def _generate_trigger_ssi_m_tests(test_data: TestData) -> list[str]:
     )
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_trigger_sei_m_tests(test_data: TestData) -> list[str]:
+def _generate_trigger_sei_m_tests(test_data: TestData) -> list[TestChunk]:
     """Generate SEIP trigger test when MIE rises via CSRRS.
 
     Set SEIP pending with MIE=0, mideleg=0, then use CSRRS to set MIE=1.
@@ -3103,6 +3158,7 @@ def _generate_trigger_sei_m_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
+    tc = test_data.begin_test_chunk("M")
     lines = [
         comment_banner(
             "cp_trigger_sei_m",
@@ -3173,10 +3229,11 @@ def _generate_trigger_sei_m_tests(test_data: TestData) -> list[str]:
     )
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_sei_interaction_tests(test_data: TestData) -> list[str]:
+def _generate_sei_interaction_tests(test_data: TestData) -> list[TestChunk]:
     """Generate SEIP/PLIC interaction tests.
 
     Tests interaction between software mip.SEIP writes and PLIC hardware SEIP.
@@ -3186,6 +3243,7 @@ def _generate_sei_interaction_tests(test_data: TestData) -> list[str]:
 
     r_scratch = test_data.int_regs.get_register()
 
+    tc = test_data.begin_test_chunk("M")
     lines = [
         comment_banner(
             "SEIP Interaction Tests",
@@ -3335,10 +3393,11 @@ def _generate_sei_interaction_tests(test_data: TestData) -> list[str]:
     )
 
     test_data.int_regs.return_registers([r_scratch])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_global_ie_tests(test_data: TestData) -> list[str]:
+def _generate_global_ie_tests(test_data: TestData) -> list[TestChunk]:
     """Generate global interrupt enable tests.
 
     Test MIE and SIE interaction with M-mode interrupts.
@@ -3350,6 +3409,7 @@ def _generate_global_ie_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
+    tc = test_data.begin_test_chunk("M")
     lines = [
         comment_banner(
             "cp_global_ie",
@@ -3441,10 +3501,11 @@ def _generate_global_ie_tests(test_data: TestData) -> list[str]:
                     lines.append(int_clr)
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_user_mti_tests(test_data: TestData) -> list[str]:
+def _generate_user_mti_tests(test_data: TestData) -> list[TestChunk]:
     """Generate U-mode MTIP tests.
 
     Test MTIP from U-mode with mideleg=0 (not delegated).
@@ -3456,6 +3517,7 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
+    tc = test_data.begin_test_chunk("S")
     lines = [
         comment_banner(
             "cp_user_mti",
@@ -3549,10 +3611,11 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
                     lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_user_msi_tests(test_data: TestData) -> list[str]:
+def _generate_user_msi_tests(test_data: TestData) -> list[TestChunk]:
     """Generate U-mode MSIP tests.
 
     Test MSIP from U-mode with mideleg=0 (not delegated).
@@ -3564,6 +3627,7 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
 
     r_scratch = test_data.int_regs.get_register()
 
+    tc = test_data.begin_test_chunk("S")
     lines = [
         comment_banner(
             "cp_user_msi",
@@ -3661,10 +3725,11 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
                     )
 
     test_data.int_regs.return_registers([r_scratch])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_user_mei_tests(test_data: TestData) -> list[str]:
+def _generate_user_mei_tests(test_data: TestData) -> list[TestChunk]:
     """Generate U-mode MEIP tests.
 
     Test MEIP from U-mode with mideleg=0 (not delegated).
@@ -3676,6 +3741,7 @@ def _generate_user_mei_tests(test_data: TestData) -> list[str]:
 
     r_scratch = test_data.int_regs.get_register()
 
+    tc = test_data.begin_test_chunk("S")
     lines = [
         comment_banner(
             "cp_user_mei",
@@ -3769,10 +3835,11 @@ def _generate_user_mei_tests(test_data: TestData) -> list[str]:
                     )
 
     test_data.int_regs.return_registers([r_scratch])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_user_sei_tests(test_data: TestData) -> list[str]:
+def _generate_user_sei_tests(test_data: TestData) -> list[TestChunk]:
     """Generate SEIP tests for cp_sei_handled_m and cp_sei_handled_s.
 
     Cross: MIE={0,1} x SIE={0,1} x stvec.MODE={0,1} x mideleg.SEI={0,1}
@@ -3788,6 +3855,7 @@ def _generate_user_sei_tests(test_data: TestData) -> list[str]:
 
     r_scratch = test_data.int_regs.get_register()
 
+    tc = test_data.begin_test_chunk("S")
     lines = [
         comment_banner(
             "cp_sei_handled",
@@ -3942,10 +4010,11 @@ def _generate_user_sei_tests(test_data: TestData) -> list[str]:
         )
 
     test_data.int_regs.return_registers([r_scratch])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_wfi_u_tests(test_data: TestData) -> list[str]:
+def _generate_wfi_u_tests(test_data: TestData) -> list[TestChunk]:
     """Generate U-mode WFI tests.
 
     Test WFI from U-mode with MTIP.
@@ -3956,6 +4025,7 @@ def _generate_wfi_u_tests(test_data: TestData) -> list[str]:
 
     r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce = test_data.int_regs.get_registers(6)
 
+    tc = test_data.begin_test_chunk("S")
     lines = [
         comment_banner(
             "cp_wfi_u",
@@ -4057,10 +4127,11 @@ def _generate_wfi_u_tests(test_data: TestData) -> list[str]:
                 lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
 
 
-def _generate_wfi_timeout_u_tests(test_data: TestData) -> list[str]:
+def _generate_wfi_timeout_u_tests(test_data: TestData) -> list[TestChunk]:
     """Generate U-mode WFI timeout tests.
 
     Test WFI timeout from U-mode with TW=1.
@@ -4076,6 +4147,7 @@ def _generate_wfi_timeout_u_tests(test_data: TestData) -> list[str]:
 
     r_temp, r_stimecmp, r_scratch = test_data.int_regs.get_registers(3)
 
+    tc = test_data.begin_test_chunk("S")
     lines = [
         comment_banner(
             "cp_wfi_timeout_u",
@@ -4183,7 +4255,32 @@ def _generate_wfi_timeout_u_tests(test_data: TestData) -> list[str]:
             lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
 
     test_data.int_regs.return_registers([r_temp, r_stimecmp, r_scratch])
-    return lines
+    tc.code = lines
+    return [test_data.end_test_chunk()]
+
+
+def _header(test_data: TestData, split_name: str, title: str) -> list[TestChunk]:
+    """Emit a per-file header chunk with the local interrupt macros and setup.
+
+    The SET_/CLR_ macros and initial state setup are used by both the S-mode
+    and M-mode files, so each file group gets its own copy at the top.
+    """
+    tc = test_data.begin_test_chunk(split_name)
+    r_temp = test_data.int_regs.get_register()
+    tc.code = [
+        comment_banner(f"InterruptsS_{split_name}", title),
+        "#define SET_SSW_INT(_R1, _R2)  LI(_R1, 0x2);  CSRS(mip, _R1);",
+        "#define CLR_SSW_INT(_R1, _R2)  LI(_R1, 0x2);  CSRC(mip, _R1);",
+        "#define SET_SEXT_INT(_R1, _R2)  LI(_R1, 0x200);  CSRS(mip, _R1);",
+        "#define CLR_SEXT_INT(_R1, _R2)  LI(_R1, 0x200);  CSRC(mip, _R1);",
+        "# Initial setup - clear mideleg",
+        "CSRW(mideleg, zero)",
+        f"LI(x{r_temp}, 0x200000) # Clear TW bit",
+        f"CSRC(mstatus, x{r_temp})",
+        "",
+    ]
+    test_data.int_regs.return_registers([r_temp])
+    return [test_data.end_test_chunk()]
 
 
 @add_priv_test_generator("InterruptsS", required_extensions=["Sm", "S", "I", "Zicsr"])
@@ -4195,74 +4292,56 @@ def make_interruptss_s(test_data: TestData) -> list[TestChunk]:
     Individual test groups are enabled incrementally as they are validated.
     """
     test_chunks: list[TestChunk] = []
-    tc = test_data.begin_test_chunk()
-    r_temp = test_data.int_regs.get_register()
 
-    tc.code = [
-        comment_banner(
-            "InterruptsS_S",
-            "Supervisor-mode interrupt tests\nTests S-mode interrupts (STIP, SSIP, SEIP) with M→S delegation",
-        ),
-        "#define SET_SSW_INT(_R1, _R2)  LI(_R1, 0x2);  CSRS(mip, _R1);",
-        "#define CLR_SSW_INT(_R1, _R2)  LI(_R1, 0x2);  CSRC(mip, _R1);",
-        "#define SET_SEXT_INT(_R1, _R2)  LI(_R1, 0x200);  CSRS(mip, _R1);",
-        "#define CLR_SEXT_INT(_R1, _R2)  LI(_R1, 0x200);  CSRC(mip, _R1);",
-        "# Initial setup - clear mideleg (no U-mode delegation)",
-        "CSRW(mideleg, zero)",
-        f"LI(x{r_temp}, 0x200000) # Clear TW bit",
-        f"CSRC(mstatus, x{r_temp})",
-        "",
-    ]
+    # =======================================================================
+    # S-mode file (split_name="S"): S-mode and U-mode interrupt tests
+    # =======================================================================
+    test_chunks.extend(_header(test_data, "S", "Supervisor-mode interrupt tests"))
 
-    test_data.int_regs.return_registers([r_temp])
-
-    # -----------------------------------------------------------------------
     # S-mode interrupt tests (STIP, SSIP, SEIP with mideleg)
-    # -----------------------------------------------------------------------
-    tc.code.extend(_generate_trigger_sti_tests(test_data))
-    tc.code.extend(_generate_trigger_ssi_mip_tests(test_data))
-    tc.code.extend(_generate_trigger_ssi_sip_tests(test_data))
-    tc.code.extend(_generate_trigger_sei_tests(test_data))
-    tc.code.extend(_generate_trigger_sei_seip_tests(test_data))
-    tc.code.extend(_generate_changingtos_sti_tests(test_data))
-    tc.code.extend(_generate_changingtos_ssi_tests(test_data))
-    tc.code.extend(_generate_changingtos_sei_tests(test_data))
-    tc.code.extend(_generate_interrupts_s_tests(test_data))
-    tc.code.extend(_generate_vectored_s_tests(test_data))
-    tc.code.extend(_generate_priority_mip_s_tests(test_data))
-    tc.code.extend(_generate_priority_mie_s_tests(test_data))
-    tc.code.extend(_generate_priority_both_s_tests(test_data))
-    tc.code.extend(_generate_priority_mideleg_tests(test_data))
-    tc.code.extend(_generate_wfi_s_tests(test_data))
-    tc.code.extend(_generate_wfi_timeout_s_tests(test_data))
+    test_chunks.extend(_generate_trigger_sti_tests(test_data))
+    test_chunks.extend(_generate_trigger_ssi_mip_tests(test_data))
+    test_chunks.extend(_generate_trigger_ssi_sip_tests(test_data))
+    test_chunks.extend(_generate_trigger_sei_tests(test_data))
+    test_chunks.extend(_generate_trigger_sei_seip_tests(test_data))
+    test_chunks.extend(_generate_changingtos_sti_tests(test_data))
+    test_chunks.extend(_generate_changingtos_ssi_tests(test_data))
+    test_chunks.extend(_generate_changingtos_sei_tests(test_data))
+    test_chunks.extend(_generate_interrupts_s_tests(test_data))
+    test_chunks.extend(_generate_vectored_s_tests(test_data))
+    test_chunks.extend(_generate_priority_mip_s_tests(test_data))
+    test_chunks.extend(_generate_priority_mie_s_tests(test_data))
+    test_chunks.extend(_generate_priority_both_s_tests(test_data))
+    test_chunks.extend(_generate_priority_mideleg_tests(test_data))
+    test_chunks.extend(_generate_wfi_s_tests(test_data))
+    test_chunks.extend(_generate_wfi_timeout_s_tests(test_data))
 
-    # -----------------------------------------------------------------------
-    # M-mode interrupt tests (non-delegated and delegated S-interrupts)
-    # -----------------------------------------------------------------------
-    tc.code.extend(_generate_interrupts_m_tests(test_data))
-    tc.code.extend(_generate_vectored_m_tests(test_data))
-    tc.code.extend(_generate_priority_mip_m_tests(test_data))
-    tc.code.extend(_generate_priority_mie_m_tests(test_data))
-    tc.code.extend(_generate_wfi_m_tests(test_data))
-    tc.code.extend(_generate_trigger_mti_m_tests(test_data))
-    tc.code.extend(_generate_trigger_ssi_sip_m_tests(test_data))
-    tc.code.extend(_generate_trigger_msi_m_tests(test_data))
-    tc.code.extend(_generate_trigger_mei_m_tests(test_data))
-    tc.code.extend(_generate_trigger_sti_m_tests(test_data))
-    tc.code.extend(_generate_trigger_ssi_m_tests(test_data))
-    tc.code.extend(_generate_trigger_sei_m_tests(test_data))
-    tc.code.extend(_generate_sei_interaction_tests(test_data))
-    tc.code.extend(_generate_global_ie_tests(test_data))
+    # U-mode interrupt tests (kept in the S-mode file)
+    test_chunks.extend(_generate_user_mti_tests(test_data))
+    test_chunks.extend(_generate_user_msi_tests(test_data))
+    test_chunks.extend(_generate_user_mei_tests(test_data))
+    test_chunks.extend(_generate_user_sei_tests(test_data))
+    test_chunks.extend(_generate_wfi_u_tests(test_data))
+    test_chunks.extend(_generate_wfi_timeout_u_tests(test_data))
 
-    # -----------------------------------------------------------------------
-    # U-mode interrupt tests
-    # -----------------------------------------------------------------------
-    tc.code.extend(_generate_user_mti_tests(test_data))
-    tc.code.extend(_generate_user_msi_tests(test_data))
-    tc.code.extend(_generate_user_mei_tests(test_data))
-    tc.code.extend(_generate_user_sei_tests(test_data))
-    tc.code.extend(_generate_wfi_u_tests(test_data))
-    tc.code.extend(_generate_wfi_timeout_u_tests(test_data))
+    # =======================================================================
+    # M-mode file (split_name="M"): non-delegated and delegated S-interrupts
+    # =======================================================================
+    test_chunks.extend(_header(test_data, "M", "Machine-mode interrupt tests"))
 
-    test_chunks.append(test_data.end_test_chunk())
+    test_chunks.extend(_generate_interrupts_m_tests(test_data))
+    test_chunks.extend(_generate_vectored_m_tests(test_data))
+    test_chunks.extend(_generate_priority_mip_m_tests(test_data))
+    test_chunks.extend(_generate_priority_mie_m_tests(test_data))
+    test_chunks.extend(_generate_wfi_m_tests(test_data))
+    test_chunks.extend(_generate_trigger_mti_m_tests(test_data))
+    test_chunks.extend(_generate_trigger_ssi_sip_m_tests(test_data))
+    test_chunks.extend(_generate_trigger_msi_m_tests(test_data))
+    test_chunks.extend(_generate_trigger_mei_m_tests(test_data))
+    test_chunks.extend(_generate_trigger_sti_m_tests(test_data))
+    test_chunks.extend(_generate_trigger_ssi_m_tests(test_data))
+    test_chunks.extend(_generate_trigger_sei_m_tests(test_data))
+    test_chunks.extend(_generate_sei_interaction_tests(test_data))
+    test_chunks.extend(_generate_global_ie_tests(test_data))
+
     return test_chunks

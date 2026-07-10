@@ -28,7 +28,7 @@ covergroup = "ZawrsSm_cg"
 def _generate_wrs_sto_timeout_tests(
     test_data: TestData, r_cause: int, r_scratch: int, r_temp: int, r_temp2: int
 ) -> list[str]:
-    """Generate wrs.sto timeout tests.
+    """Generate M mode wrs.sto timeout tests.
 
     Cross lr instruction to set up reservation.
     mstatus.TW = {0/1}
@@ -45,8 +45,7 @@ def _generate_wrs_sto_timeout_tests(
         comment_banner(
             coverpoint,
             _generate_wrs_sto_timeout_tests.__doc__,
-        ),
-        "",
+        )
     ]
 
     lines.extend(_wrs_timeout_helper(test_data, ["M"], coverpoint, covergroup, r_cause, r_scratch, r_temp, r_temp2))
@@ -54,7 +53,7 @@ def _generate_wrs_sto_timeout_tests(
 
 
 def _generate_wrs_no_res_tests(test_data: TestData) -> list[str]:
-    """Generate WRS instruction no reservation tests
+    """Generate M mode WRS instruction no reservation tests
 
     mstatus.TW ={0/1}
     mstatus.MIE = 0
@@ -71,8 +70,7 @@ def _generate_wrs_no_res_tests(test_data: TestData) -> list[str]:
         comment_banner(
             coverpoint,
             _generate_wrs_no_res_tests.__doc__,
-        ),
-        "",
+        )
     ]
 
     lines.extend(_wrs_no_res_helper(test_data, "M", covergroup))
@@ -82,27 +80,25 @@ def _generate_wrs_no_res_tests(test_data: TestData) -> list[str]:
 def _generate_wrs_resume_tests(
     test_data: TestData, r_cause: int, r_scratch: int, r_temp: int, r_timecmp: int, r_temp2: int
 ) -> list[str]:
-    """Generate WRS instruction resume when interrupt pending tests
-
-    For DUTs that supports S mode but do not have Sstc, the WRS resume behavior
-    can not be tested with stimer interrupt
+    """Generate M mode WRS instruction resume when interrupt pending tests
 
     cross lr instruction to set up reservation.
-    mstatus.TW = 0
+    mstatus.TW = {0/1}
     cross with mie.MTIE=1
     mstatus.MIE = {0/1}
-    (if S supported: mstatus.SIE = {0/1})
     Set up timer to interrupt soon
-    execute WRS.NTO in {S/U} mode
+    execute {WRS.NTO/WRS.STO} in mode
     2 x 2 x 2 bins
     """
+    ######################################
+    coverpoint = "cp_wrs_resume"
+    ######################################
 
     lines = [
         comment_banner(
-            "cp_wrs_resume",
+            coverpoint,
             _generate_wrs_resume_tests.__doc__,
-        ),
-        "",
+        )
     ]
 
     lines.extend(_wrs_resume_helper(test_data, "M", covergroup, r_cause, r_scratch, r_temp, r_timecmp, r_temp2))
@@ -112,7 +108,7 @@ def _generate_wrs_resume_tests(
 def _generate_wrs_no_mie_tests(
     test_data: TestData, r_cause: int, r_scratch: int, r_temp: int, r_timecmp: int, r_temp2: int
 ) -> list[str]:
-    """Generate wrs tests with mie = all 0s.
+    """Generate M mode wrs tests with mie = all 0s.
 
     cross lr instruction to set up reservation
     mstatus.MIE = 1
@@ -122,7 +118,15 @@ def _generate_wrs_no_mie_tests(
     execute WRS.STO in M mode
     1 bin
     """
-    lines = []
+    ######################################
+    coverpoint = "cp_wrs_no_mie"
+    ######################################
+    lines = [
+        comment_banner(
+            coverpoint,
+            _generate_wrs_no_mie_tests.__doc__,
+        )
+    ]
 
     lines.extend(_wrs_no_mie_helper(test_data, "M", covergroup, r_cause, r_scratch, r_temp, r_timecmp, r_temp2))
     return lines

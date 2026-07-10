@@ -1,7 +1,7 @@
 
 === SPMP
 
-The Sspmp extension provides supervisor-level Physical Memory Protection.  It defines a set of 
+The Sspmp extension provides supervisor-level Physical Memory Protection.  It defines a set of
 `spmpaddr*` and `spmpcfg*` CSRs that S-mode software programs through the Sscsrind indirect
 access mechanism (`siselect`/`sireg`/`sireg2`).  The single SspmpSm test suite exercises the base
 Sspmp extension together with its two ratified add-ons:

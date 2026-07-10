@@ -366,7 +366,7 @@ def _generate_spmp_lock_tests(test_data: TestData) -> list[str]:
             f"CSRW(0x352, x{val_reg})  # write mireg2 to clear lock",
             "nop",
             test_data.add_testcase(f"entry{test_entry}_mmode_unlock", coverpoint, covergroup),
-            gen_csr_read_sigupd(check_reg, "0x352", test_data),
+            gen_csr_read_sigupd(check_reg, ("0x352", None), test_data),
         ]
     )
 
@@ -946,7 +946,7 @@ def _generate_mxr_effect_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 test_data.add_testcase(f"mxr_{mxr_val}_x_only_region", coverpoint, covergroup),
-                gen_csr_read_sigupd(check_reg, "sstatus", test_data),
+                gen_csr_read_sigupd(check_reg, ("sstatus", None), test_data),
                 f"CSRW(sstatus, x{save_reg})  # restore sstatus",
             ]
         )
@@ -1286,7 +1286,7 @@ def _generate_mmode_indirect_access_tests(test_data: TestData) -> list[str]:
                 f"CSRW(0x351, x{val_reg})  # write spmpaddr via mireg",
                 "nop",
                 test_data.add_testcase(f"mmode_entry{entry}_addr", coverpoint, covergroup),
-                gen_csr_read_sigupd(check_reg, "0x351", test_data),
+                gen_csr_read_sigupd(check_reg, ("0x351", None), test_data),
             ]
         )
 
@@ -1298,7 +1298,7 @@ def _generate_mmode_indirect_access_tests(test_data: TestData) -> list[str]:
                 f"CSRW(0x352, x{val_reg})  # write spmpcfg via mireg2",
                 "nop",
                 test_data.add_testcase(f"mmode_entry{entry}_cfg", coverpoint, covergroup),
-                gen_csr_read_sigupd(check_reg, "0x352", test_data),
+                gen_csr_read_sigupd(check_reg, ("0x352", None), test_data),
             ]
         )
 
@@ -1365,7 +1365,7 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
             "nop",
             test_data.add_testcase("zero_all_delegated", coverpoint_field, covergroup),
             test_data.add_testcase("zero_and_delegating", "cp_mpmpdeleg_pmpnum_zero", covergroup),
-            gen_csr_read_sigupd(check_reg, mpmpdeleg_csr, test_data),
+            gen_csr_read_sigupd(check_reg, (mpmpdeleg_csr, None), test_data),
         ]
     )
 
@@ -1378,7 +1378,7 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
                 f"CSRW({mpmpdeleg_csr}, x{val_reg})",
                 "nop",
                 test_data.add_testcase(f"partial_pmpnum_{pmpnum}", coverpoint_field, covergroup),
-                gen_csr_read_sigupd(check_reg, mpmpdeleg_csr, test_data),
+                gen_csr_read_sigupd(check_reg, (mpmpdeleg_csr, None), test_data),
             ]
         )
 
@@ -1391,7 +1391,7 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
             "nop",
             test_data.add_testcase("max_none_delegated", coverpoint_field, covergroup),
             test_data.add_testcase("max_no_deleg_reads_zero", "cp_mpmpdeleg_no_delegation", covergroup),
-            gen_csr_read_sigupd(check_reg, mpmpdeleg_csr, test_data),
+            gen_csr_read_sigupd(check_reg, (mpmpdeleg_csr, None), test_data),
         ]
     )
 
@@ -1403,7 +1403,7 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
             f"CSRW({mpmpdeleg_csr}, x{val_reg})",
             "nop",
             test_data.add_testcase("clamp_pmpnum_100", coverpoint_field, covergroup),
-            gen_csr_read_sigupd(check_reg, mpmpdeleg_csr, test_data),
+            gen_csr_read_sigupd(check_reg, (mpmpdeleg_csr, None), test_data),
         ]
     )
 
@@ -1460,7 +1460,7 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
             f"CSRW({mpmpdeleg_csr}, x{val_reg})",
             "nop",
             test_data.add_testcase("locked_pmpnum_16_ok", coverpoint, covergroup),
-            gen_csr_read_sigupd(check_reg, mpmpdeleg_csr, test_data),
+            gen_csr_read_sigupd(check_reg, (mpmpdeleg_csr, None), test_data),
         ]
     )
 
@@ -1471,7 +1471,7 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
             f"CSRW({mpmpdeleg_csr}, x{val_reg})",
             "nop",
             test_data.add_testcase("locked_pmpnum_4_rejected", coverpoint, covergroup),
-            gen_csr_read_sigupd(check_reg, mpmpdeleg_csr, test_data),
+            gen_csr_read_sigupd(check_reg, (mpmpdeleg_csr, None), test_data),
         ]
     )
 
@@ -1572,7 +1572,7 @@ def _generate_satp_bare_spmp_tests(test_data: TestData) -> list[str]:
         [
             "# Read satp to confirm Bare mode (required for SPMP)",
             test_data.add_testcase("satp_bare_mode", coverpoint, covergroup),
-            gen_csr_read_sigupd(check_reg, "satp", test_data),
+            gen_csr_read_sigupd(check_reg, ("satp", None), test_data),
         ]
     )
 
@@ -1581,7 +1581,7 @@ def _generate_satp_bare_spmp_tests(test_data: TestData) -> list[str]:
         [
             "RVTEST_GOTO_MMODE",
             test_data.add_testcase("satp_bare_mmode_check", coverpoint, covergroup),
-            gen_csr_read_sigupd(check_reg, "satp", test_data),
+            gen_csr_read_sigupd(check_reg, ("satp", None), test_data),
             "RVTEST_GOTO_LOWER_MODE Smode",
         ]
     )
@@ -1822,7 +1822,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
             f"CSRW(CSR_SPMPEN, x{val_reg})",
             "nop",
             test_data.add_testcase("spmpen_write_allones", coverpoint, covergroup),
-            gen_csr_read_sigupd(check_reg, "CSR_SPMPEN", test_data),
+            gen_csr_read_sigupd(check_reg, ("CSR_SPMPEN", None), test_data),
         ]
     )
 
@@ -1833,7 +1833,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
             "CSRW(CSR_SPMPEN, zero)",
             "nop",
             test_data.add_testcase("spmpen_write_zero", coverpoint, covergroup),
-            gen_csr_read_sigupd(check_reg, "CSR_SPMPEN", test_data),
+            gen_csr_read_sigupd(check_reg, ("CSR_SPMPEN", None), test_data),
         ]
     )
 
@@ -1847,7 +1847,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
                 f"CSRW(CSR_SPMPEN, x{val_reg})",
                 "nop",
                 test_data.add_testcase(f"spmpen_bit{bit}", coverpoint, covergroup),
-                gen_csr_read_sigupd(check_reg, "CSR_SPMPEN", test_data),
+                gen_csr_read_sigupd(check_reg, ("CSR_SPMPEN", None), test_data),
             ]
         )
 
@@ -1887,7 +1887,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
             "nop",
             "sfence.vma x0, x0",
             test_data.add_testcase("spmpen_entry0_disabled", coverpoint, covergroup),
-            gen_csr_read_sigupd(check_reg, "CSR_SPMPEN", test_data),
+            gen_csr_read_sigupd(check_reg, ("CSR_SPMPEN", None), test_data),
         ]
     )
 
@@ -1900,7 +1900,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
             "nop",
             "sfence.vma x0, x0",
             test_data.add_testcase("spmpen_entry0_enabled", coverpoint, covergroup),
-            gen_csr_read_sigupd(check_reg, "CSR_SPMPEN", test_data),
+            gen_csr_read_sigupd(check_reg, ("CSR_SPMPEN", None), test_data),
         ]
     )
 
@@ -1915,7 +1915,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
             "nop",
             "sfence.vma x0, x0",
             test_data.add_testcase("spmpen_aoff_no_activate", coverpoint, covergroup),
-            gen_csr_read_sigupd(check_reg, "0x152", test_data),
+            gen_csr_read_sigupd(check_reg, ("0x152", None), test_data),
         ]
     )
 
@@ -1975,7 +1975,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
             f"CSRC(CSR_SPMPEN, x{val_reg})",
             "nop",
             test_data.add_testcase("locked_csrrc_attempt", coverpoint, covergroup),
-            gen_csr_read_sigupd(check_reg, "CSR_SPMPEN", test_data),
+            gen_csr_read_sigupd(check_reg, ("CSR_SPMPEN", None), test_data),
         ]
     )
 
@@ -1984,7 +1984,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
         [
             "\n# Verify spmpen[1] is still 1 (read-only when locked)",
             test_data.add_testcase("locked_bit_still_set", coverpoint, covergroup),
-            gen_csr_read_sigupd(check_reg, "CSR_SPMPEN", test_data),
+            gen_csr_read_sigupd(check_reg, ("CSR_SPMPEN", None), test_data),
         ]
     )
 

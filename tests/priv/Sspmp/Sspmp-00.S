@@ -20,9 +20,7 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define SKIP_MEPC
-#define RVTEST_PRIV_TEST
-#define rvtest_strap_routine
-#define rvtest_mtrap_routine
+#define BOOT_TO_SMODE
 
 // Include framework macros
 #include "riscv_arch_test.h"

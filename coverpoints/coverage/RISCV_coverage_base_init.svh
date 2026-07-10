@@ -262,6 +262,10 @@
         `cover_info("//      Ssnpm - Enabled");
         `include "Ssnpm_coverage_init.svh"
     `endif
+    `ifdef COVER_SSPMPSM
+        `cover_info("//      SspmpSm - Enabled");
+        `include "SspmpSm_coverage_init.svh"
+    `endif
     `ifdef COVER_SSSTATEEN
         `cover_info("//      Ssstateen - Enabled");
         `include "Ssstateen_coverage_init.svh"

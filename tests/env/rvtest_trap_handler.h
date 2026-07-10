@@ -2389,11 +2389,10 @@ rtn_fm_mmode:
 //  misaligned-load support. bits[1:0] fit in the loaded 16 bits.
 //
 //  Register usage:
-//    t0 (x5) — scratch throughout: CSR reads, instruction word, advance amount
-//    t1 (x6) — M-mode handler only: used for the mcause==2 compare and for the final mepc advance.
-//              The S-mode handler never touches t1/x6: with
-//              rvtest_strap_routine defined, x6 is the Mtrampoline save-area
-//              pointer.
+//    a0, a1 (x10, x11) — the ONLY scratch registers (CSR reads, instruction
+//              word, advance amount). These are the framework's designated
+//              clobber registers: the priv test generator never allocates them
+//              to tests, so clobbering them here without save/restore is safe.
 //==============================================================================
 //==============================================================================
 
@@ -2443,23 +2442,22 @@ fast_Mothertrap:
         j    Mtrampoline                // hand off all non-illegal-instruction traps
 
 #ifdef S_SUPPORTED
-// ── Fast S-mode handler (stvec) — delegated illegal instructions ───────────
-// Align to the core's WARL mtvec BASE boundary so the prolog's write of the
+// ── Fast S-mode handler (stvec) ─────────────────────────────────────────────
+// Align to the core's WARL stvec BASE boundary so the prolog's write of the
 // handler address into stvec survives.
 .balign 64
-#ifdef UDB_MTVEC_BASE_ALIGNMENT_VECTORED // TODO: UDB_STVEC_BASE_ALIGNMENT once defined
+#ifdef UDB_MTVEC_BASE_ALIGNMENT_VECTORED
 .balign UDB_MTVEC_BASE_ALIGNMENT_VECTORED
 #endif
 #ifdef UDB_MTVEC_BASE_ALIGNMENT_DIRECT
 .balign UDB_MTVEC_BASE_ALIGNMENT_DIRECT
 #endif
 strap_handler_fastillegalinstr:
-        csrr a0, scause
-        xori a0, a0, 2                  // a0=0 iff scause==2 (illegal instruction)
-        bnez a0, fast_Sothertrap        // not illegal — use S-mode framework handler
+        csrr a0, scause                 // read trap cause
+        li   a1, 2                      // Illegal Instruction cause = 2
+        bne  a0, a1, fast_Mothertrap    // not illegal instruction — use regular handler
 fast_Sillegalinstruction:
-        csrr a0, scause                 // re-read (=2)
-        SREG a0, 0(x2)                  // store scause to signature
+        SREG a0, 0(x2)                  // store scause (=2) to signature
         addi x2, x2, SIG_STRIDE
         csrr a0, sepc
         SREG a0, 0(x2)                  // store sepc to signature
@@ -2467,25 +2465,23 @@ fast_Sillegalinstruction:
         csrr a0, stval
         SREG a0, 0(x2)                  // store stval to signature
         addi x2, x2, SIG_STRIDE
-        // Width detection: lhu at sepc (2-byte aligned -> no misalign trap).
+        // Branchless sepc advance — reads bits[1:0] from *mepc using lhu.
+        // advance = (((bits[1:0]+1) >> 2) + 1) << 1  =  4 if bits[1:0]==0b11, else 2.
+        // (bits[1:0]+1)>>2 is 1 only for 0b11; all other values (0b10,0b01,0b00) give 0.
         csrr a0, sepc
-        lhu  a0, 0(a0)                  // load lower 16 bits of faulting instruction
-        andi a0, a0, 3
-        xori a0, a0, 3                  // a0=0 iff bits[1:0]==0b11 (uncompressed)
-        beqz a0, fast_Suncompressed
-fast_Scompressed:
-        csrr a0, sepc
-        addi a0, a0, 2                  // 16-bit instruction: advance sepc by 2
-        j    fast_Sdone
-fast_Suncompressed:
-        csrr a0, sepc
-        addi a0, a0, 4                  // 32-bit instruction: advance sepc by 4
-fast_Sdone:
-        csrw sepc, a0
-        sret
+        lhu  a0, 0(a0)                  // load lower 16 bits from *mepc (always 2-byte aligned)
+        andi a0, a0, 3                  // a0 = bits[1:0]
+        addi a0, a0, 1                  // a0 = bits[1:0]+1; equals 4 only when was 0b11
+        srli a0, a0, 2                  // a0 = 1 iff uncompressed (0b11), else 0
+        addi a0, a0, 1                  // a0 = 2 or 1
+        slli a0, a0, 1                  // a0 = 4 (uncompressed) or 2 (compressed)
+        csrr a1, sepc                   // a1 = sepc  (t1 first written here)
+        add  a1, a1, a0                 // a1 = sepc + advance
+        csrw sepc, a1
+        mret
 
 fast_Sothertrap:
-        j    Strampoline                // hand off non-illegal S-mode traps to framework
+        j    Strampoline                // hand off all non-illegal-instruction traps
 #endif // S_SUPPORTED
 
 .option pop

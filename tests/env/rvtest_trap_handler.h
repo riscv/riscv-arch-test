@@ -2412,31 +2412,31 @@ rtn_fm_mmode:
 .balign UDB_MTVEC_BASE_ALIGNMENT_DIRECT
 #endif
 trap_handler_fastillegalinstr:
-        csrr t0, mcause                 // read trap cause
-        li   t1, 2                      // Illegal Instruction cause = 2
-        bne  t0, t1, fast_Mothertrap    // not illegal instruction — use regular handler
+        csrr a0, mcause                 // read trap cause
+        li   a1, 2                      // Illegal Instruction cause = 2
+        bne  a0, a1, fast_Mothertrap    // not illegal instruction — use regular handler
 fast_Millegalinstruction:
-        SREG t0, 0(x2)                  // store mcause (=2) to signature
+        SREG a0, 0(x2)                  // store mcause (=2) to signature
         addi x2, x2, SIG_STRIDE
-        csrr t0, mepc
-        SREG t0, 0(x2)                  // store mepc to signature
+        csrr a0, mepc
+        SREG a0, 0(x2)                  // store mepc to signature
         addi x2, x2, SIG_STRIDE
-        csrr t0, mtval
-        SREG t0, 0(x2)                  // store mtval to signature
+        csrr a0, mtval
+        SREG a0, 0(x2)                  // store mtval to signature
         addi x2, x2, SIG_STRIDE
         // Branchless mepc advance — reads bits[1:0] from *mepc using lhu.
         // advance = (((bits[1:0]+1) >> 2) + 1) << 1  =  4 if bits[1:0]==0b11, else 2.
         // (bits[1:0]+1)>>2 is 1 only for 0b11; all other values (0b10,0b01,0b00) give 0.
-        csrr t0, mepc
-        lhu  t0, 0(t0)                  // load lower 16 bits from *mepc (always 2-byte aligned)
-        andi t0, t0, 3                  // t0 = bits[1:0]
-        addi t0, t0, 1                  // t0 = bits[1:0]+1; equals 4 only when was 0b11
-        srli t0, t0, 2                  // t0 = 1 iff uncompressed (0b11), else 0
-        addi t0, t0, 1                  // t0 = 2 or 1
-        slli t0, t0, 1                  // t0 = 4 (uncompressed) or 2 (compressed)
-        csrr t1, mepc                   // t1 = mepc  (t1 first written here)
-        add  t1, t1, t0                 // t1 = mepc + advance
-        csrw mepc, t1
+        csrr a0, mepc
+        lhu  a0, 0(a0)                  // load lower 16 bits from *mepc (always 2-byte aligned)
+        andi a0, a0, 3                  // a0 = bits[1:0]
+        addi a0, a0, 1                  // a0 = bits[1:0]+1; equals 4 only when was 0b11
+        srli a0, a0, 2                  // a0 = 1 iff uncompressed (0b11), else 0
+        addi a0, a0, 1                  // a0 = 2 or 1
+        slli a0, a0, 1                  // a0 = 4 (uncompressed) or 2 (compressed)
+        csrr a1, mepc                   // a1 = mepc  (t1 first written here)
+        add  a1, a1, a0                 // a1 = mepc + advance
+        csrw mepc, a1
         mret
 
 fast_Mothertrap:
@@ -2454,34 +2454,34 @@ fast_Mothertrap:
 .balign UDB_MTVEC_BASE_ALIGNMENT_DIRECT
 #endif
 strap_handler_fastillegalinstr:
-        csrr t0, scause
-        xori t0, t0, 2                  // t0=0 iff scause==2 (illegal instruction)
-        bnez t0, fast_Sothertrap        // not illegal — use S-mode framework handler
+        csrr a0, scause
+        xori a0, a0, 2                  // a0=0 iff scause==2 (illegal instruction)
+        bnez a0, fast_Sothertrap        // not illegal — use S-mode framework handler
 fast_Sillegalinstruction:
-        csrr t0, scause                 // re-read (=2)
-        SREG t0, 0(x2)                  // store scause to signature
+        csrr a0, scause                 // re-read (=2)
+        SREG a0, 0(x2)                  // store scause to signature
         addi x2, x2, SIG_STRIDE
-        csrr t0, sepc
-        SREG t0, 0(x2)                  // store sepc to signature
+        csrr a0, sepc
+        SREG a0, 0(x2)                  // store sepc to signature
         addi x2, x2, SIG_STRIDE
-        csrr t0, stval
-        SREG t0, 0(x2)                  // store stval to signature
+        csrr a0, stval
+        SREG a0, 0(x2)                  // store stval to signature
         addi x2, x2, SIG_STRIDE
         // Width detection: lhu at sepc (2-byte aligned -> no misalign trap).
-        csrr t0, sepc
-        lhu  t0, 0(t0)                  // load lower 16 bits of faulting instruction
-        andi t0, t0, 3
-        xori t0, t0, 3                  // t0=0 iff bits[1:0]==0b11 (uncompressed)
-        beqz t0, fast_Suncompressed
+        csrr a0, sepc
+        lhu  a0, 0(a0)                  // load lower 16 bits of faulting instruction
+        andi a0, a0, 3
+        xori a0, a0, 3                  // a0=0 iff bits[1:0]==0b11 (uncompressed)
+        beqz a0, fast_Suncompressed
 fast_Scompressed:
-        csrr t0, sepc
-        addi t0, t0, 2                  // 16-bit instruction: advance sepc by 2
+        csrr a0, sepc
+        addi a0, a0, 2                  // 16-bit instruction: advance sepc by 2
         j    fast_Sdone
 fast_Suncompressed:
-        csrr t0, sepc
-        addi t0, t0, 4                  // 32-bit instruction: advance sepc by 4
+        csrr a0, sepc
+        addi a0, a0, 4                  // 32-bit instruction: advance sepc by 4
 fast_Sdone:
-        csrw sepc, t0
+        csrw sepc, a0
         sret
 
 fast_Sothertrap:

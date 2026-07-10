@@ -565,15 +565,15 @@
 //==============================================================================
 // SECTION 11: LEGACY MODE-SWITCHING MACROS
 //
-// These macros use the ORIGINAL ACT convention which has now a0 set to 0 before
-// an ecall to signal "return to higher privilege mode immediately."  The trap
-// handler detects a0==0, skips normal trap signature recording, and instead
-// relocates the return address to return at the new privilege level.
+// These macros use the ORIGINAL ACT convention, now signaled through a0: a0 is
+// set to 0 before an ecall to signal "return to higher privilege mode
+// immediately."  The trap handler detects a0==0, skips normal trap signature
+// recording, and instead relocates the return address to return at the new
+// privilege level.
 //
 // RVTEST_GOTO_MMODE:
-//   - Saves x3 in a0, sets x3=0, executes ecall
-//   - M-mode handler detects x3==0, returns in M-mode to instruction after ecall
-//   - Restores x3 from a0
+//   - Sets a0=0, executes ecall; the handler returns in M-mode to the
+//     instruction after the ecall, which overwrites a0 with -1 (see below)
 //   - WARNING: fails if medeleg delegates the ecall cause (infinite loop)
 //   - Tests that set medeleg[ecall_cause] must use RVTEST_GOTO_DELEGATED_MMODE
 //
@@ -584,11 +584,11 @@
 //
 // RVTEST_GOTO_SMODE:
 //   - Used from U-mode when U-mode ecalls are delegated to S-mode
-//   - Saves a0, sets a0=0, ecalls
+//   - Sets a0=0, ecalls
 //   - S-mode handler detects a0==0, sets SPP=1, bumps sepc+4, srets to S-mode
 //   - Only available when S_SUPPORTED is defined
 //
-// CLOBBERS: a0. a0 is the single designated clobber
+// CLOBBERS: a0 (left as -1 on return). a0 is the single designated clobber
 //   register for ALL mode-switching macros (matching the T-SBI convention,
 //   which also clobbers a0), so tests only ever have to keep one register
 //   free across a mode switch.
@@ -612,6 +612,7 @@
   .option norvc                                  // disable compressed instructions for consistent code size
   li   a0, 0                                    // set a0=0 to signal GOTO_MMODE to handler
   GOTO_M_OP                                      // ecall: traps to M-mode handler
+  li   a0, -1                                   // handler returns HERE (in M-mode): kill the a0==0 signal
   .option pop
 .endm
 
@@ -620,6 +621,7 @@
   .option norvc                                  // disable compressed instructions
   li   a0, 0                                    // set a0=0 to signal GOTO_MMODE
   ALT_GOTO_M_OP                                  // .word 0: triggers illegal instruction (not delegated)
+  li   a0, -1                                   // handler returns HERE (in M-mode): kill the a0==0 signal
   .option pop
 .endm
 
@@ -629,6 +631,7 @@
   #ifdef  S_SUPPORTED
     li   a0, 0                                  // set a0=0 to signal GOTO_SMODE
     GOTO_S_OP                                    // ecall: traps to S-mode handler (if U-mode ecalls delegated)
+    li   a0, -1                                 // handler returns HERE (in S-mode): kill the a0==0 signal
   #endif
   .option pop
 .endm
@@ -756,21 +759,23 @@
 
         LREG  T4,   -1*sv_area_sz(T2)            // load M-mode code_bgn_ptr for relocation calc
         sub   T1, T1, T4                          // calc address delta between M-mode and target mode
-        addi  T1, T1, 4*WDBYTSZ                  // bias by instruction count from auipc to mret+4
+        addi  T1, T1, 8*WDBYTSZ                  // bias by instruction count from auipc to mret+4 (8 instrs incl. the 4 restores)
 1:      auipc T4, 0                               // T4 = current PC (address of this instruction)
         add   T4, T4, T1                          // T4 = PC + delta = return address in target mode's VM
         csrw  CSR_MEPC, T4                        // set mepc to return address in target mode
-        mret                                      // transition: enter target mode at mepc
 
-        //---- Step 4: Restore saved registers (now running in the target mode).
-        //     The mret lands on the first LREG below (the auipc bias above counts
-        //     4 instructions: auipc..mret). T3 still holds the save-area pointer,
-        //     which must be accessible from the target mode (identity-mapped
-        //     .data, same assumption as the trap handler's save-area access).
+        //---- Step 4: Restore saved registers BEFORE the mret, while still in
+        //     M-mode (bare translation), so the loads always use the physical
+        //     save-area address in T3. They MUST NOT be placed after the mret:
+        //     the target mode may run under a non-identity satp mapping, where the
+        //     physical save-area address is unmapped and every load would
+        //     page-fault, ending in an unrecoverable trap loop. All working
+        //     registers are dead once mepc is written, so restoring here is safe.
         LREG   T1, goto_lower_sv_off+0*REGWIDTH(T3) // restore T1
         LREG   T2, goto_lower_sv_off+1*REGWIDTH(T3) // restore T2
         LREG   T4, goto_lower_sv_off+2*REGWIDTH(T3) // restore T4
         LREG   T3, goto_lower_sv_off+3*REGWIDTH(T3) // restore T3 last (frees the pointer)
+        mret                                      // transition: enter target mode at mepc (lands at 2:)
 2:   .option pop
 .endm
 
@@ -1881,8 +1886,19 @@ common_\__MODE__\()excpt_handler:
   .endif
 
 // --- Offset adjustment for physical addresses ---
+// A fault deliberately triggered at an address outside every test segment — the
+// model's access-fault probe address (RVMODEL_ACCESS_FAULT_ADDRESS, used by the
+// instruction/load/store access-fault tests) or a null (0) fetch target — has an
+// xEPC that cannot be expressed as a segment-relative offset. Record such an
+// xEPC raw and skip the segment relocation below, which would otherwise fall
+// through to abort_test on the out-of-range EPC. These are fixed constants,
+// identical on the DUT and the reference model, so the raw value is
+// deterministic. This is ALWAYS safe (a normal in-segment EPC never equals the
+// probe address or 0), so it is unconditional. It used to be gated behind
+// SKIP_MEPC — but the generators no longer emit that define, so keeping the
+// gate silently compiled this skip out and every access-fault test aborted on
+// its first deliberate probe (EPC=0 is outside vmem/code/data -> abort_test).
 vmem_adj_\__MODE__\()epc:
-#ifdef SKIP_MEPC
         #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
                 LI(     T2, RVMODEL_ACCESS_FAULT_ADDRESS)
                 beq     T3, T2, sv_\__MODE__\()epc
@@ -1890,7 +1906,6 @@ vmem_adj_\__MODE__\()epc:
                 beq     T3, T2, sv_\__MODE__\()epc
         #endif
                 beqz    T3, sv_\__MODE__\()epc
-#endif
         LREG    T2, vmem_bgn_off(T4)                  // check if EPC is in vmem segment
         LREG    T6, vmem_seg_siz(T4)
         add     T6, T6, T2

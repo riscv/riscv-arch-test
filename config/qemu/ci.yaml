@@ -23,3 +23,4 @@ ci_enabled: true
 exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zicntr,Zacas,ZacasZabha,PMPSm,PMPZalrsc,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,SvaduPMP,Svpbmt,SvZicbo,Svinval,ExceptionsZaamo,ExceptionsSvZaamo,ExceptionsSvZalrsc,Zama16b,UV,SsstrictV,Smstateen"
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"
+shards: 1

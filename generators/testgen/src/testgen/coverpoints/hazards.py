@@ -22,8 +22,6 @@ def make_cp_gpr_hazard(instr_name: str, instr_type: str, coverpoint: str, test_d
     parts = coverpoint.split("_")
     haz_class = parts[-1] if len(parts) > 3 and parts[-1] in ["r", "w", "rw"] else "rw"
 
-    test_lines: list[str] = []
-
     # Determine which hazard types to test
     hazard_types: list[str] = ["nohaz"]
     if "r" in haz_class:
@@ -66,22 +64,21 @@ def make_cp_gpr_hazard(instr_name: str, instr_type: str, coverpoint: str, test_d
                 raise ValueError(f"Unknown hazard type: {haz_type}")
 
             # Generate both instructions
-            test_lines.append(f"\n# Testcase cp_gpr_hazard {haz_type} test")
+            tc.code.append(f"\n# Testcase cp_gpr_hazard {haz_type} test")
             setup1, test1, check1 = format_instruction("add", "R", test_data, params_a)
             setup2, test2, check2 = format_instruction(instr_name, instr_type, test_data, params_b)
 
             # Run both instructions in sequence and check results
-            test_lines.extend([setup1, setup2])
-            test_lines.extend([test1, test2])
+            tc.code.extend([setup1, setup2])
+            tc.code.extend([test1, test2])
             if haz_type == "waw":
                 # For waw, only check the result of the second instruction
-                test_lines.append(check2)
+                tc.code.append(check2)
             else:
-                test_lines.extend([check1, check2])
+                tc.code.extend([check1, check2])
 
             # Return used registers
             test_data.int_regs.return_registers(params_a.used_int_regs)
             test_data.int_regs.return_registers(params_b.used_int_regs)
 
-    tc.code = "\n".join(test_lines)
     return [test_data.end_test_chunk()]

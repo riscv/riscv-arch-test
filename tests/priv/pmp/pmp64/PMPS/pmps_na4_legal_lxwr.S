@@ -44,7 +44,7 @@ RVTEST_BEGIN                                // Encoded Instruction of nop (64 bi
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
-    RVMODEL_FENCEI
+    RVTEST_FENCEI
 
     LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     // Execution Access Check
@@ -226,7 +226,7 @@ exit:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
+.p2align 4
 
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmps_cfg_A_off_all_jalr_address\""
@@ -239,14 +239,14 @@ test_7_str: .string "\"test: 7; cp: pmps_cfg_A_off_all_lw_address-4\""
 test_8_str: .string "\"test: 8; cp: pmps_cfg_A_off_all_sw_address+4\""
 test_9_str: .string "\"test: 9; cp: pmps_cfg_A_off_all_lw_address+4\""
 
-.align 12
-.align (UDB_PMP_GRANULARITY)
+.p2align 12
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION_0:
     .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
     jr ra
     .endr
 
-.align (UDB_PMP_GRANULARITY)
+.p2align (UDB_PMP_GRANULARITY)
 TEST_FOR_EXECUTION:
     .rept ((1<<(UDB_PMP_GRANULARITY))>>2)
     jr ra
